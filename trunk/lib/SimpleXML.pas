@@ -1,7 +1,7 @@
 {************************************************************
  SimpleXML - Библиотека для синтаксического разбора текстов XML
 	 и преобразования в иерархию XML-объектов.
-	 И наоборот: можно сформировать иерархию XML-объектов, и         
+	 И наоборот: можно сформировать иерархию XML-объектов, и
 	 уже из нее получить текст XML.
 	 Достойная замена для MSXML. При использовании Ansi-строк
 	 работает быстрее и кушает меньше памяти.
@@ -17,9 +17,11 @@
 	 Так же рекомендую посетить мою страничку: http://mv.rb.ru
 	 Там Вы всегда найдете самую последнюю версию библиотеки.
 	 Желаю приятного программирования, Михаил Власов.
-	 
+
 	Текущая версия: 1.0.1
 *************************************************************}
+// Polaris Software: Added IXmlNode.LoadNodeXML
+
 unit SimpleXML;
 
 interface
@@ -35,7 +37,7 @@ const
 	BINXML_COMPRESSED = 2;
 
 	XSTR_NULL = '{{null}}';
-	
+
 	NODE_INVALID = $00000000;
 	NODE_ELEMENT = $00000001;
 	NODE_ATTRIBUTE = $00000002;
@@ -340,6 +342,7 @@ type
 		property TypedValue: Variant read Get_TypedValue write Set_TypedValue;
 		property XML: TXmlString read Get_XML;
 		property Values[const aName: String]: Variant read Get_Values write Set_Values; default;
+		procedure LoadNodeXML(const aXML: TXmlString);
 	end;
 
 	IXmlElement = interface(IXmlNode)
@@ -1148,7 +1151,7 @@ type
 		destructor Destroy; override;
 
 		function IndexOf(aNode: TXmlNode): Integer;
-		procedure ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreserveWhiteSpace: Boolean);
+		procedure ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreserveWhiteSpace: Boolean; aSkipLevel: Boolean = False);
 
 		procedure LoadBinXml(aReader: TBinXmlReader; aCount: Integer; aNames: TXmlNameTable);
 		procedure SaveBinXml(aWriter: TBinXmlWriter);
@@ -1311,7 +1314,7 @@ type
 		function AsCDATASection: IXmlCDATASection; virtual;
 		function AsComment: IXmlComment; virtual;
 		function AsProcessingInstruction: IXmlProcessingInstruction; virtual; 
-
+		procedure LoadNodeXML(const aXML: TXmlString);
 	public
 		constructor Create(aNames: TXmlNameTable);
 		destructor Destroy; override;
@@ -1602,7 +1605,7 @@ begin
 		Result := Result + FItems[i].Get_XML;
 end;
 
-procedure TXmlNodeList.ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreserveWhiteSpace: Boolean);
+procedure TXmlNodeList.ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreserveWhiteSpace: Boolean; aSkipLevel: Boolean = False);
 
 	// на входе: символ текста
 	// на выходе: символ разметки '<'
@@ -1678,14 +1681,23 @@ procedure TXmlNodeList.ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreser
 			raise Exception.Create(SSimpleXMLError2);
 		if not ((aXml.CurChar <= ' ') or (aXml.CurChar = '/') or (aXml.CurChar = '>')) then
 			raise Exception.Create(SSimpleXMLError3);
-		aNode := TXmlElement.Create(aNames, aNameID);
-		Insert(aNode, -1);
-		aXml.ParseAttrs(aNode);
+    if aSkipLevel then begin
+      aNode := nil;
+      aXml.ParseAttrs(FOwnerNode);
+    end
+    else begin
+      aNode := TXmlElement.Create(aNames, aNameID);
+      Insert(aNode, -1);
+      aXml.ParseAttrs(aNode);
+    end;
 		if aXml.CurChar = '/' then 
 			aXml.ExpectText('/>')
 		else begin
 			aXml.ExpectChar('>');
-			aNode.GetChilds.ParseXML(aXml, aNames, aPreserveWhiteSpace);
+      if aSkipLevel then
+        ParseXML(aXml, aNames, aPreserveWhiteSpace)
+      else
+        aNode.GetChilds.ParseXML(aXml, aNames, aPreserveWhiteSpace);
 			aXml.ExpectChar('/');
 			aXml.ExpectText(PXmlChar(aNames.GetName(aNameID)));
 			aXml.SkipBlanks;
@@ -2781,6 +2793,20 @@ end;
 function TXmlNode.CloneNode(aDeep: Boolean): IXmlNode;
 begin
 	Result := DoCloneNode(aDeep)
+end;
+
+procedure TXmlNode.LoadNodeXML(const aXML: TXmlString);
+var
+  aSource: TXmlStrSource;
+begin
+  RemoveAllChilds;
+  RemoveAllAttrs;
+  aSource := TXmlStrSource.Create(aXML);
+  try
+    GetChilds.ParseXML(aSource, GetOwnerDocument.FNames, GetOwnerDocument.FPreserveWhiteSpace, True);
+  finally
+    aSource.Free
+  end
 end;
 
 { TXmlElement }
