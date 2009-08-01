@@ -241,7 +241,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit;
+  HistoryUnit, CLSearchUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -2236,7 +2236,12 @@ end;
 
 procedure TMainForm.SearchInCLClick(Sender: TObject);
 begin
-  ShowMessage(DevelMess);
+  //--Открываем окно поиска контактов в контактном листе
+  if not Assigned(CLSearchForm) then CLSearchForm := TCLSearchForm.Create(self);
+  //--Отображаем окно
+  ShowWindow(CLSearchForm.Handle, SW_RESTORE);
+  CLSearchForm.Show;
+  SetForeGroundWindow(CLSearchForm.Handle);
 end;
 
 procedure TMainForm.SendAddContactClick(Sender: TObject);
@@ -2255,7 +2260,7 @@ procedure TMainForm.SendMessageForContactClick(Sender: TObject);
 begin
   //--Вызываем событие клика по кнопке КЛ
   if ContactList.SelectedItem = nil then Exit;
-  //
+  //--Делаем двойной клик по контакту
   ContactListButtonClicked(self, ContactList.SelectedItem);
   ContactListButtonClicked(self, ContactList.SelectedItem);
 end;

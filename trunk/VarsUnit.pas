@@ -14,7 +14,7 @@ uses
   SysUtils, Classes, ExtCtrls, JvDesktopAlert;
 
 const
-  Bild_Version = '5.0.0 alfa';
+  Bild_Version = '5.0.0 alpha';
   Update_Version = 500;
   PassKey = 12345;
 

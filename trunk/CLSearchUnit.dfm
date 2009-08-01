@@ -1,12 +1,12 @@
 object CLSearchForm: TCLSearchForm
   Left = 0
   Top = 0
-  Caption = 'CLSearchForm'
-  ClientHeight = 218
+  Caption = #1053#1072#1081#1090#1080' '#1082#1086#1085#1090#1072#1082#1090#1099
+  ClientHeight = 258
   ClientWidth = 413
   Color = clBtnFace
   Constraints.MinHeight = 230
-  Constraints.MinWidth = 421
+  Constraints.MinWidth = 420
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -19,25 +19,32 @@ object CLSearchForm: TCLSearchForm
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object ListView1: TListView
+  object CLSearchListView: TListView
     Left = 0
     Top = 57
     Width = 413
-    Height = 161
+    Height = 201
     Align = alClient
     Columns = <
       item
+        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         Width = 180
       end
       item
-        Width = 220
+        Caption = #1053#1080#1082
+        Width = 225
       end>
     ColumnClick = False
-    GridLines = True
     HideSelection = False
+    ReadOnly = True
     RowSelect = True
+    SmallImages = MainForm.AllImageList
     TabOrder = 0
+    TabStop = False
     ViewStyle = vsReport
+    OnDblClick = CLSearchListViewDblClick
+    OnSelectItem = CLSearchListViewSelectItem
+    ExplicitHeight = 161
   end
   object Panel1: TPanel
     Left = 0
@@ -48,27 +55,19 @@ object CLSearchForm: TCLSearchForm
     BevelOuter = bvNone
     TabOrder = 1
     object Label1: TLabel
-      Left = 9
-      Top = 10
-      Width = 31
+      Left = 11
+      Top = 9
+      Width = 110
       Height = 13
-      Caption = 'Label1'
+      Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100', '#1053#1080#1082':'
     end
-    object Edit1: TEdit
-      Left = 8
+    object CLSearchEdit: TEdit
+      Left = 10
       Top = 28
-      Width = 281
+      Width = 392
       Height = 21
       TabOrder = 0
-    end
-    object BitBtn1: TBitBtn
-      Left = 295
-      Top = 26
-      Width = 112
-      Height = 25
-      Caption = 'BitBtn1'
-      TabOrder = 1
-      OnClick = BitBtn1Click
+      OnChange = CLSearchEditChange
     end
   end
 end
