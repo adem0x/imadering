@@ -296,7 +296,9 @@ begin
   //----------------------------------------------------------------------------
   //--Записываем настройки ICQ протокола в файл
   With TrXML.Create() do try
-    If OpenKey('settings\icq-account', True) then try
+    if FileExists(MyPath + SettingsFileName) then
+      LoadFromFile(MyPath + SettingsFileName);
+    If OpenKey('settings\icq\account', True) then try
       WriteString('login', ICQUINEdit.Text);
       WriteBool('save-password', SavePassCheckBox.Checked);
       if SavePassCheckBox.Checked then
@@ -309,7 +311,7 @@ begin
     finally
       CloseKey();
     end;
-    SaveToFile(MyPath + 'Profile\IcqOptions.xml');
+    SaveToFile(MyPath + SettingsFileName);
   finally
     Free();
   end;
@@ -324,11 +326,11 @@ procedure TIcqOptionsForm.LoadSettings;
 begin
   //--Инициализируем XML
   With TrXML.Create() do try
-    if FileExists(MyPath + 'Profile\IcqOptions.xml') then begin
-      LoadFromFile(MyPath + 'Profile\IcqOptions.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
 
       //--Загружаем позицию окна
-      if OpenKey('settings\icq-account') then try
+      if OpenKey('settings\icq\account') then try
         ICQUINEdit.Text := ReadString('login');
         if ICQUINEdit.Text <> EmptyStr then
           ICQ_LoginUIN := ICQUINEdit.Text;

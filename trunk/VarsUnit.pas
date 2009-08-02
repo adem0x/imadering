@@ -42,6 +42,7 @@ var
   AccountToNick: TStringList;
   AvatarServiceDisable: boolean = false;
   UpdateAuto: boolean = true;
+  SettingsFileName: string = 'Profile\IMadeSettings.xml';
 
   //--Переменные звуков
   SoundON: boolean = true;

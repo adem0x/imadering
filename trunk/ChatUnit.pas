@@ -1114,10 +1114,10 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\ChatForm.xml') then begin
-      LoadFromFile(MyPath + 'Profile\ChatForm.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
       //--Загружаем позицию окна
-      if OpenKey('settings\chatform-position') then try
+      if OpenKey('settings\forms\chatform\position') then try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
@@ -1135,28 +1135,28 @@ begin
       end;
 
       //--Загружаем "отправлять по интер"
-      if OpenKey('settings\send-enter') then try
+      if OpenKey('settings\forms\chatform\send-enter') then try
         EnterKeyToolButton.Down := ReadBool('value');
       finally
         CloseKey();
       end;
 
       //--Загружаем отправлять отчёт о печати текста
-      if OpenKey('settings\send-typing-notify') then try
+      if OpenKey('settings\forms\chatform\send-typing-notify') then try
         TypingTextToolButton.Down := ReadBool('value');
       finally
         CloseKey();
       end;
 
       //--Загружаем "звук нажатия клавиш"
-      if OpenKey('settings\key-sound') then try
+      if OpenKey('settings\forms\chatform\key-sound') then try
         KeySoundToolButton.Down := ReadBool('value');
       finally
         CloseKey();
       end;
 
       //--Загружаем состояние панелей аватар
-      if OpenKey('settings\avatar-panels') then try
+      if OpenKey('settings\forms\chatform\avatar-panels') then try
         ContactAvatarPanel.Width := ReadInteger('contact-avatar'{, 68});
         if ContactAvatarPanel.Width = 0 then begin
           ContactAvatarPanelSpeedButton.NumGlyphs := 1;
@@ -1226,8 +1226,10 @@ begin
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна чата в xml
   With TrXML.Create() do try
+    if FileExists(MyPath + SettingsFileName) then
+      LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    If OpenKey('settings\chatform-position', True) then try
+    If OpenKey('settings\forms\chatform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -1240,28 +1242,28 @@ begin
     end;
 
     //--Сохраняем "отправлять по интер"
-    If OpenKey('settings\send-enter', True) then try
+    If OpenKey('settings\forms\chatform\send-enter', True) then try
       WriteBool('value', EnterKeyToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем отправлять отчёт о печати текста
-    If OpenKey('settings\send-typing-notify', True) then try
+    If OpenKey('settings\forms\chatform\send-typing-notify', True) then try
       WriteBool('value', TypingTextToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем "звук нажатия клавиш"
-    If OpenKey('settings\key-sound', True) then try
+    If OpenKey('settings\forms\chatform\key-sound', True) then try
       WriteBool('value', KeySoundToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем состояние панелей аватар
-    If OpenKey('settings\avatar-panels', True) then try
+    If OpenKey('settings\forms\chatform\avatar-panels', True) then try
       WriteInteger('contact-avatar', ContactAvatarPanel.Width);
       WriteInteger('my-avatar', MyAvatarPanel.Width);
     finally
@@ -1269,7 +1271,7 @@ begin
     end;
 
     //--Записываем сам файл
-    SaveToFile(MyPath + 'Profile\ChatForm.xml');
+    SaveToFile(MyPath + SettingsFileName);
   finally
     Free();
   end;

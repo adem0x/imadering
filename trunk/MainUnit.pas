@@ -2105,11 +2105,11 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\MainForm.xml') then begin
-      LoadFromFile(MyPath + 'Profile\MainForm.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
 
       //--Загружаем позицию окна
-      If OpenKey('settings\mainform-position') then try
+      If OpenKey('settings\forms\mainform\position') then try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
@@ -2124,41 +2124,41 @@ begin
       end;
 
       //--Загружаем состояние кнопки звуков
-      If OpenKey('settings\sounds-on-off') then try
+      If OpenKey('settings\forms\mainform\sounds-on-off') then try
         if ReadBool('value') then begin
           SoundOnOffToolButton.ImageIndex := 136;
           SoundOnOffToolButton.Down := true;
           SoundOnOffToolButton.Hint := SoundOnHint;
         end;
       finally
-        CloseKey();  
+        CloseKey();
       end;
 
       //--Загружаем состояние кнопки только онлайн
-      If OpenKey('settings\only-online-on-off') then try
+      If OpenKey('settings\forms\mainform\only-online-on-off') then try
         if ReadBool('value') then begin
           OnlyOnlineContactsToolButton.ImageIndex := 137;
           OnlyOnlineContactsToolButton.Down := true;
           OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
         end;
       finally
-        CloseKey();  
+        CloseKey();
       end;
 
       //--Загружаем был ли первый старт
-      If OpenKey('settings\first-start') then try
+      If OpenKey('settings\forms\mainform\first-start') then try
         FirstStart := ReadBool('value');
       finally
         CloseKey();
       end;
-      
+
       //--Загружаем выбранные протоколы
-      If OpenKey('settings\proto-select') then try
+      If OpenKey('settings\forms\mainform\proto-select') then try
         ICQEnable(ReadBool('icq'));
         MRAEnable(ReadBool('mra'));
         JabberEnable(ReadBool('jabber'));
       finally
-        CloseKey;  
+        CloseKey;
       end;
     end;
   finally
@@ -2171,23 +2171,23 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\Proxy.xml') then begin
-      LoadFromFile(MyPath + 'Profile\Proxy.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
 
-      if OpenKey('settings\proxy') then try
-        G_ProxyEnabled := ReadBool('proxy-enable');
+      if OpenKey('settings\proxy\main') then try
+        G_ProxyEnabled := ReadBool('enable');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings\proxy-address') then try      
+      if OpenKey('settings\proxy\address') then try
         G_ProxyHost := ReadString('host');
         G_ProxyPort := ReadString('port');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings\proxy-type') then try      
+      if OpenKey('settings\proxy\type') then try
         G_ProxyType := ReadString('type');
         G_ProxyVersion := ReadString('version');
         G_ProxyTypeIndex := ReadInteger('type-index');
@@ -2196,11 +2196,11 @@ begin
         CloseKey();
       end;
 
-      if OpenKey('settings\proxy-auth') then try      
-        G_ProxyAuthorize := ReadBool('proxy-auth-enable');
-        G_ProxyLogin := ReadString('proxy-login');
-        G_ProxyPassword := Decrypt(ReadString('proxy-password'), PassKey);
-        G_ProxyNTLM := ReadBool('proxy-ntlm-auth');
+      if OpenKey('settings\proxy\auth') then try      
+        G_ProxyAuthorize := ReadBool('auth-enable');
+        G_ProxyLogin := ReadString('login');
+        G_ProxyPassword := Decrypt(ReadString('password'), PassKey);
+        G_ProxyNTLM := ReadBool('ntlm-auth');
       finally
         CloseKey();
       end;
@@ -2263,9 +2263,10 @@ begin
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
   With TrXML.Create() do try
-
+    if FileExists(MyPath + SettingsFileName) then
+      LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    If OpenKey('settings\mainform-position', True) then try
+    If OpenKey('settings\forms\mainform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -2275,14 +2276,14 @@ begin
     end;
 
     //--Сохраняем звук вкл. выкл.
-    If OpenKey('settings\sounds-on-off', True) then try
+    If OpenKey('settings\forms\mainform\sounds-on-off', True) then try
       WriteBool('value', SoundOnOffToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем отображать только онлайн вкл. выкл.
-    If OpenKey('settings\only-online-on-off', True) then try
+    If OpenKey('settings\forms\mainform\only-online-on-off', True) then try
       WriteBool('value', OnlyOnlineContactsToolButton.Down);
     finally
       CloseKey();
@@ -2290,14 +2291,14 @@ begin
 
     //--Записываем что первый запуск программы уже состоялся и показывать
     //окно настройки протоколов больше не будем при запуске
-    If OpenKey('settings\first-start', True) then try
+    If OpenKey('settings\forms\mainform\first-start', True) then try
       WriteBool('value', true);
     finally
       CloseKey();
     end;
 
     //--Сохраняем активные протоколы
-    If OpenKey('settings\proto-select', True) then try
+    If OpenKey('settings\forms\mainform\proto-select', True) then try
       WriteBool('icq', ICQToolButton.Visible);
       WriteBool('mra', MRAToolButton.Visible);
       WriteBool('jabber', JabberToolButton.Visible);
@@ -2306,7 +2307,7 @@ begin
     end;
 
     //--Записываем сам файл
-    SaveToFile(MyPath + 'Profile\MainForm.xml');
+    SaveToFile(MyPath + SettingsFileName);
   finally
     Free();
   end;

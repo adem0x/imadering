@@ -180,35 +180,35 @@ var
   ListItemD: TListItem;
 begin
   //--Загружаем и отображаем настройки прокси
-  if FileExists(MyPath + 'Profile\Proxy.xml') then begin
+  if FileExists(MyPath + SettingsFileName) then begin
     With TrXML.Create() do try
-      LoadFromFile(MyPath + 'Profile\Proxy.xml');
+      LoadFromFile(MyPath + SettingsFileName);
 
-      If OpenKey('settings\proxy-address') then try
+      If OpenKey('settings\proxy\address') then try
         ProxyAddressEdit.Text := ReadString('host');
         ProxyPortEdit.Text := ReadString('port');
       finally
         CloseKey();
       end;
 
-      If OpenKey('settings\proxy-type') then try
+      If OpenKey('settings\proxy\type') then try
         ProxyTypeComboBox.ItemIndex := ReadInteger('type-index');
         ProxyVersionComboBox.ItemIndex := ReadInteger('version-index');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings\proxy-auth') then try
-        ProxyAuthCheckBox.Checked := ReadBool('proxy-auth-enable');
-        ProxyLoginEdit.Text := ReadString('proxy-login');
-        ProxyPasswordEdit.Text := Decrypt(ReadString('proxy-password'), PassKey);
-        NTLMCheckBox.Checked := ReadBool('proxy-ntlm-auth');
+      if OpenKey('settings\proxy\auth') then try
+        ProxyAuthCheckBox.Checked := ReadBool('auth-enable');
+        ProxyLoginEdit.Text := ReadString('login');
+        ProxyPasswordEdit.Text := Decrypt(ReadString('password'), PassKey);
+        NTLMCheckBox.Checked := ReadBool('ntlm-auth');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings\proxy') then try
-        ProxyEnableCheckBox.Checked := ReadBool('proxy-enable');
+      if OpenKey('settings\proxy\main') then try
+        ProxyEnableCheckBox.Checked := ReadBool('enable');
         ProxyEnableCheckBoxClick(nil);
       finally
         CloseKey();
@@ -220,11 +220,11 @@ begin
   end;
   //----------------------------------------------------------------------------
   //--Загружаем и отображаем другие настройки
-  if FileExists(MyPath + 'Profile\Settings.xml') then begin
-    With TrXML.Create() do try
-      LoadFromFile(MyPath + 'Profile\Settings.xml');
+  With TrXML.Create() do try
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
 
-      if OpenKey('settings/hide-in-tray-program-start') then try
+      if OpenKey('settings\main\hide-in-tray-program-start') then try
         //--Загружаем запуск свёрнутой в трэй
         HideInTrayProgramStartCheckBox.Checked := ReadBool('value');
         //--Загружаем автозапуск при старте Windows
@@ -233,66 +233,66 @@ begin
         CloseKey();
       end;
 
-      if OpenKey('settings/auto-update-check') then try
+      if OpenKey('settings\main\auto-update-check') then try
         //--Загружаем проверять наличие новой версии при запуске
         AutoUpdateCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/always-top') then try
+      if OpenKey('settings\main\always-top') then try
         //--Загружаем поверх всех окон
         AlwaylTopCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/transparent-value') then try
+      if OpenKey('settings\main\transparent-value') then try
         //--Загружаем настройки прозрачности списка контактов
         TransparentTrackBar.Position := ReadInteger('value');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/transparent-active') then try
+      if OpenKey('settings\main\transparent-active') then try
         //--Загружаем прозрачность неактивноно окна списка контактов
         TransparentNotActiveCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/auto-hide-cl') then try
+      if OpenKey('settings\main\auto-hide-cl') then try
         //--Загружаем автоскрытие списка контактов
         AutoHideCLCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/auto-hide-cl-value') then try
+      if OpenKey('settings\main\auto-hide-cl-value') then try
         //--Загружаем автоскрытие списка контактов
         AutoHideCLEdit.Text := ReadString('value');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/header-cl-form') then try
+      if OpenKey('settings\main\header-cl-form') then try
         //--Загружаем заголовок окна списка контактов
         HeaderTextEdit.Text := ReadString('text');
       finally
         CloseKey();
       end;
 
-      if OpenKey('settings/reconnect') then try
+      if OpenKey('settings\main\reconnect') then try
         //--Загружаем пересоединение при разрыве соединения
         ReconnectCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
-
-    finally
-      Free();
     end;
+  finally
+    Free();
   end;
+
   //----------------------------------------------------------------------------
   //--Устанавливаем галочки включенных протоколов
   ProtocolsListView.Clear;
@@ -465,20 +465,22 @@ begin
     //--Записываем настройки прокси
     if not NoReSave then begin
       With TrXML.Create() do try
-        if OpenKey('settings\proxy', True) then try
-          WriteBool('proxy-enable', ProxyEnableCheckBox.Checked);
+        if FileExists(MyPath + SettingsFileName) then
+          LoadFromFile(MyPath + SettingsFileName);
+        if OpenKey('settings\proxy\main', True) then try
+          WriteBool('enable', ProxyEnableCheckBox.Checked);
         finally
           CloseKey();
         end;
 
-        if OpenKey('settings\proxy-address', True) then try
+        if OpenKey('settings\proxy\address', True) then try
           WriteString('host', ProxyAddressEdit.Text);
           WriteString('port', ProxyPortEdit.Text);
         finally
           CloseKey();
         end;
 
-        if OpenKey('settings\proxy-type', True) then try
+        if OpenKey('settings\proxy\type', True) then try
           WriteString('type', ProxyTypeComboBox.Text);
           WriteInteger('type-index', ProxyTypeComboBox.ItemIndex);
           WriteString('version', ProxyVersionComboBox.Text);
@@ -487,85 +489,86 @@ begin
           CloseKey();
         end;
 
-        if OpenKey('settings\proxy-auth', True) then try
-          WriteBool('proxy-auth-enable', ProxyAuthCheckBox.Checked);
-          WriteString('proxy-login', ProxyLoginEdit.Text);
-          WriteString('proxy-password', Encrypt(ProxyPasswordEdit.Text, PassKey));
-          WriteBool('proxy-ntlm-auth', NTLMCheckBox.Checked);
+        if OpenKey('settings\proxy\auth', True) then try
+          WriteBool('auth-enable', ProxyAuthCheckBox.Checked);
+          WriteString('login', ProxyLoginEdit.Text);
+          WriteString('password', Encrypt(ProxyPasswordEdit.Text, PassKey));
+          WriteBool('ntlm-auth', NTLMCheckBox.Checked);
         finally
           CloseKey();
         end;
 
-        SaveToFile(MyPath + 'Profile\Proxy.xml');
+        SaveToFile(MyPath + SettingsFileName);
       finally
         Free();
       end;
       //--Сохраняем настройки
       With TrXML.Create() do try
-
+      if FileExists(MyPath + SettingsFileName) then
+        LoadFromFile(MyPath + SettingsFileName);
         //--Сохраняем запуск свёрнутой в трэй
-        if OpenKey('settings\hide-in-tray-program-start', True) then try
+        if OpenKey('settings\main\hide-in-tray-program-start', True) then try
           WriteBool('value', HideInTrayProgramStartCheckBox.Checked);
         finally
           CloseKey();
         end;
 
         //--Сохраняем пересоединяться при разрыве соединения
-        if OpenKey('settings\reconnect', True) then try
+        if OpenKey('settings\main\reconnect', True) then try
           WriteBool('value', ReconnectCheckBox.Checked);
         finally
           CloseKey();
         end;
 
         //--Сохраняем проверять наличие новой версии при запуске
-        if OpenKey('settings\auto-update-check', True) then try
+        if OpenKey('settings\main\auto-update-check', True) then try
           WriteBool('value', AutoUpdateCheckBox.Checked);
         finally
           CloseKey();
         end;
 
         //--Сохраняем поверх всех окон
-        if OpenKey('settings\always-top', True) then try
+        if OpenKey('settings\main\always-top', True) then try
           WriteBool('value', AlwaylTopCheckBox.Checked);
         finally
           CloseKey();
         end;
 
         //--Сохраняем настройки прозрачности списка контактов
-        if OpenKey('settings\transparent-value', True) then try
+        if OpenKey('settings\main\transparent-value', True) then try
           WriteInteger('value', TransparentTrackBar.Position);
         finally
           CloseKey();
         end;
 
         //--Сохраняем прозрачность неактивноно окна списка контактов
-        if OpenKey('settings\transparent-active', True) then try
+        if OpenKey('settings\main\transparent-active', True) then try
           WriteBool('value', TransparentNotActiveCheckBox.Checked);
         finally
           CloseKey();
         end;
 
         //--Сохраняем автоскрытие списка контактов
-        if OpenKey('settings\auto-hide-cl', True) then try
+        if OpenKey('settings\main\auto-hide-cl', True) then try
           WriteBool('value', AutoHideCLCheckBox.Checked);
         finally
           CloseKey();
         end;
 
-        if OpenKey('settings\auto-hide-cl-value', True) then try
+        if OpenKey('settings\main\auto-hide-cl-value', True) then try
           WriteString('value', AutoHideCLEdit.Text);
         finally
           CloseKey();
         end;
 
         //--Сохраняем заголовок окна списка контактов
-        if OpenKey('settings\header-cl-form', True) then try
+        if OpenKey('settings\main\header-cl-form', True) then try
           WriteString('text', HeaderTextEdit.Text);
         finally
           CloseKey();
         end;
 
-        SaveToFile(MyPath + 'Profile\Settings.xml');
+        SaveToFile(MyPath + SettingsFileName);
       finally
         Free();
       end;

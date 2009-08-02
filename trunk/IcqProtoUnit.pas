@@ -227,7 +227,7 @@ const
 
   ICQ_FLAP_HEAD_SIZE = 12;
 
-  Icq_Info: string = 'Profile\Contacts\Download\Icq_Info.xml';
+  Icq_Info: string = 'Profile\Contacts\Icq_';
 
 var
   ICQ_Bos_IP: string;
@@ -2524,12 +2524,12 @@ begin
             end;
 
             //--Создаём необходимые папки
-            ForceDirectories(MyPath + 'Profile\Contacts\Download');
+            ForceDirectories(MyPath + 'Profile\Contacts');
             //--Записываем сам файл
-            SaveToFile(MyPath + Icq_Info);
+            SaveToFile(MyPath + Icq_Info + UIN + '.xml');
             //--Сжимаем файл в архив
             //--Создаём временный лист для файла
-            ListF := TStringList.Create;
+            {ListF := TStringList.Create;
             try
               //--Добавляем в лист путь к файлу
               ListF.Add(MyPath + Icq_Info);
@@ -2542,7 +2542,7 @@ begin
               end;
             finally
               ListF.Free;
-            end;
+            end;}
           finally
             Free();
           end;

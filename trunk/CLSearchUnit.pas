@@ -156,10 +156,10 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\ClsearchForm.xml') then begin
-      LoadFromFile(MyPath + 'Profile\ClsearchForm.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
       //--Загружаем позицию окна
-      if OpenKey('settings\clsearch-position') then try
+      if OpenKey('settings\forms\clsearchform\position') then try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
@@ -191,8 +191,10 @@ begin
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна в xml
   With TrXML.Create() do try
+    if FileExists(MyPath + SettingsFileName) then
+      LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    if OpenKey('settings\clsearch-position', True) then try
+    if OpenKey('settings\forms\clsearchform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -201,7 +203,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + 'Profile\ClsearchForm.xml');
+    SaveToFile(MyPath + SettingsFileName);
   finally
     Free();
   end;

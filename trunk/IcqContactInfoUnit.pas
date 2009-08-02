@@ -33,7 +33,7 @@ type
     procedure AddHTML(const ToWhere: THTMLViewer; Text: string;
       TextClass: string = 'cdef'; InsertBR: boolean = false;
       StupidInsert: boolean = false; ClearIt: boolean = false);
-    procedure CreateSummery;
+    procedure CreateSummery(UIN: string);
   public
     { Public declarations }
     ReqUIN: string;
@@ -102,13 +102,13 @@ begin
   TopHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   BottomHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   //--Ищем локально файл с информацией
-  if FileExists(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.z') then
+  if FileExists(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.xml') then
   begin
     InfoLabel.Caption := InfoOKL;
     //--Распаковываем файл
-    UnZip_File(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.z', MyPath + 'Profile\Contacts\');
+    //UnZip_File(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.z', MyPath + 'Profile\Contacts\');
     //--Запускаем создание суммарного инфо из распакованного файла
-    CreateSummery;
+    CreateSummery(ReqUIN);
   end
   //--Если файл с инфой не нашли, то запрашиваем её и ожидаем получения
   else
@@ -130,7 +130,7 @@ begin
   end;
 end;
 
-procedure TIcqContactInfoForm.CreateSummery;
+procedure TIcqContactInfoForm.CreateSummery(UIN: string);
 var
   Nick, First, Last, Age, iDay, iMonth, iYear: string;
   Email1, Email2, Email3, oCity, oState, Gender: string;
@@ -173,8 +173,8 @@ begin
 
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\Contacts\Icq_Info.xml') then begin
-      LoadFromFile(MyPath + 'Profile\Contacts\Icq_Info.xml');
+    if FileExists(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml') then begin
+      LoadFromFile(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml');
       //--Ник, Имя и фамилию
       if OpenKey('settings\name-info') then try
         Nick := ReadString('nick');
@@ -652,7 +652,7 @@ begin
     ContactImage.Picture.Assign(NoAvatar.Picture);
   end;}
   //--Удаляем распакованный файл с информацией
-  if FileExists(MyPath + 'Profile\Contacts\Icq_Info.xml') then DeleteFile(MyPath + 'Profile\Contacts\Icq_Info.xml');
+  //if FileExists(MyPath + 'Profile\Contacts\Icq_Info.xml') then DeleteFile(MyPath + 'Profile\Contacts\Icq_Info.xml');
 end;
 
 procedure TIcqContactInfoForm.ReqInfoBitBtnClick(Sender: TObject);
@@ -676,10 +676,10 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\ContactInfoForm.xml') then begin
-      LoadFromFile(MyPath + 'Profile\ContactInfoForm.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
       //--Загружаем позицию окна
-      if OpenKey('settings\contactinfoform-position') then try
+      if OpenKey('settings\forms\contactinfoform\position') then try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
       finally
@@ -704,14 +704,16 @@ procedure TIcqContactInfoForm.FormDestroy(Sender: TObject);
 begin
   //--Сохраняем настройки положения окна в xml
   With TrXML.Create() do try
-    if OpenKey('settings\contactinfoform-position', True) then try
+    if FileExists(MyPath + SettingsFileName) then
+      LoadFromFile(MyPath + SettingsFileName);
+    if OpenKey('settings\forms\contactinfoform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
     finally
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + 'Profile\ContactInfoForm.xml');
+    SaveToFile(MyPath + SettingsFileName);
   finally
     Free();
   end;

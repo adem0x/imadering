@@ -304,10 +304,10 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\HistoryForm.xml') then begin
-      LoadFromFile(MyPath + 'Profile\HistoryForm.xml');
+    if FileExists(MyPath + SettingsFileName) then begin
+      LoadFromFile(MyPath + SettingsFileName);
       //--Загружаем позицию окна
-      If OpenKey('settings\historyform-position') then try
+      If OpenKey('settings\forms\historyform\position') then try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
@@ -346,8 +346,10 @@ begin
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна истории в xml
   With TrXML.Create() do try
+    if FileExists(MyPath + SettingsFileName) then
+      LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    If OpenKey('settings\historyform-position', True) then try
+    If OpenKey('settings\forms\historyform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -356,7 +358,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + 'Profile\HistoryForm.xml');
+    SaveToFile(MyPath + SettingsFileName);
   finally
     Free();
   end;
