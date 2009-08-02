@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, Htmlview, ShellApi, StrUtils, VarsUnit;
+  Dialogs, StdCtrls, Buttons, ExtCtrls, Htmlview, ShellApi, StrUtils, VarsUnit, rXML;
 
 type
   TIcqContactInfoForm = class(TForm)
@@ -58,7 +58,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, SimpleXML, IcqOptionsUnit, Code;
+  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, Code;
 
 procedure TIcqContactInfoForm.TranslateForm;
 begin
@@ -84,7 +84,7 @@ begin
     end;
     if InsertBR then Doc := Doc + '<br>';
     if ClearIt then Doc := Text;
-    ToWhere.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+    ToWhere.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   except
   end;
 end;
@@ -98,9 +98,9 @@ begin
   //--Стираем отображение предыдущей инфы
   TopHTMLViewer.Clear;
   BottomHTMLViewer.Clear;
-  Doc := '';
-  TopHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
-  BottomHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+  Doc := EmptyStr;
+  TopHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+  BottomHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   //--Ищем локально файл с информацией
   if FileExists(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.z') then
   begin
@@ -119,10 +119,10 @@ begin
       ICQ_ReqInfo_New_Pkt(ReqUIN);
     end;
     //--Добавляем стили
-    AddHTML(TopHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', '', false, false, true);
+    AddHTML(TopHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', EmptyStr, false, false, true);
     //--Учётная запись контакта
     AddHTML(TopHTMLViewer, ICQAccountInfo + ' ' + ReqUIN, 'cbold');
-    AddHTML(TopHTMLViewer, '<hr>', '', false, true);
+    AddHTML(TopHTMLViewer, '<hr>', EmptyStr, false, true);
     //--Очищаем картинку гороскопа
     HoroImage.Picture.Assign(nil);
     //--Загружаем аватар
@@ -132,8 +132,6 @@ end;
 
 procedure TIcqContactInfoForm.CreateSummery;
 var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
   Nick, First, Last, Age, iDay, iMonth, iYear: string;
   Email1, Email2, Email3, oCity, oState, Gender: string;
   Address, City, State, Zip, Country, oCountry: string;
@@ -148,12 +146,12 @@ var
     i: integer;
     s, ss: string;
   begin
-    Result := '';
+    Result := EmptyStr;
     for i := Low(StrArr) to High(StrArr) do
     begin
       s := StrArr[i];
-      if (s > '') and (ss > '') then ss := ss + ', ' + s
-      else if (s > '') and (ss = '') then ss := s;
+      if (s > EmptyStr) and (ss > EmptyStr) then ss := ss + ', ' + s
+      else if (s > EmptyStr) and (ss = EmptyStr) then ss := s;
     end;
     Result := ss;
   end;
@@ -165,113 +163,103 @@ var
 
 begin
   //--Добавляем стили
-  AddHTML(TopHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', '', false, false, true);
-  AddHTML(BottomHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', '', false, false, true);
+  AddHTML(TopHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', EmptyStr, false, false, true);
+  AddHTML(BottomHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', EmptyStr, false, false, true);
   //--Учётная запись контакта
   AddHTML(TopHTMLViewer, ICQAccountInfo + ' ' + ReqUIN, 'cbold');
-  AddHTML(TopHTMLViewer, '<hr>', '', false, true);
+  AddHTML(TopHTMLViewer, '<hr>', EmptyStr, false, true);
   //--Загружаем информацию из распакованного xml файла с инфой
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+
+  With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\Contacts\Icq_Info.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\Contacts\Icq_Info.xml');
+    if FileExists(MyPath + 'Profile\Contacts\Icq_Info.xml') then begin
+      LoadFromFile(MyPath + 'Profile\Contacts\Icq_Info.xml');
       //--Ник, Имя и фамилию
-      XmlElem := Xml.DocumentElement.SelectSingleNode('name-info');
-      if XmlElem <> nil then
-      begin
-        Nick := XmlElem.GetAttr('nick');
-        if Nick <> '' then
-        begin
+      if OpenKey('settings\name-info') then try
+        Nick := ReadString('nick');
+        if Nick <> EmptyStr then begin
           AddHTML(TopHTMLViewer, InfoNickL + ' ', 'cbold');
           AddHTML(TopHTMLViewer, Nick, 'cdef', true);
         end;
-        First := XmlElem.GetAttr('first');
-        Last := XmlElem.GetAttr('last');
-        if IsNotNull([First, Last]) then
-        begin
+        First := ReadString('first');
+        Last := ReadString('last');
+        if IsNotNull([First, Last]) then begin
           AddHTML(TopHTMLViewer, InfoNameL + ' ', 'cbold');
-          if Trim(First) <> '' then AddHTML(TopHTMLViewer, First + ' ');
+          if Trim(First) <> EmptyStr then
+            AddHTML(TopHTMLViewer, First + ' ');
           AddHTML(TopHTMLViewer, Last, 'cdef', true);
         end;
+      finally
+        CloseKey();
       end;
       //--Email адреса
-      XmlElem := Xml.DocumentElement.SelectSingleNode('emails-info');
-      if XmlElem <> nil then
-      begin
-        Email1 := XmlElem.GetAttr('email1');
-        Email2 := XmlElem.GetAttr('email2');
-        Email3 := XmlElem.GetAttr('email3');
-        if IsNotNull([Email1, Email2, Email3]) then
-        begin
-          if Trim(Email1) <> '' then
-          begin
+      if OpenKey('settings\emails-info') then try
+        Email1 := ReadString('email1');
+        Email2 := ReadString('email2');
+        Email3 := ReadString('email3');
+        if IsNotNull([Email1, Email2, Email3]) then begin
+          if Trim(Email1) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, EmailL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email1 + '">' + Email1 + '</a>', 'cmargin', true);
           end;
-          if Trim(Email2) <> '' then
-          begin
+          if Trim(Email2) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, EmailL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email2 + '">' + Email2 + '</a>', 'cmargin', true);
           end;
-          if Trim(Email3) <> '' then
-          begin
+          if Trim(Email3) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, EmailL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email3 + '">' + Email3 + '</a>', 'cmargin', true);
           end;
           //--Вставляем разделитель
-          AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
         end;
+      finally
+        CloseKey();
       end;
+
       //--Место жительства
-      XmlElem := Xml.DocumentElement.SelectSingleNode('home-info');
-      if XmlElem <> nil then
-      begin
-        Address := XmlElem.GetAttr('address');
-        City := XmlElem.GetAttr('city');
-        State := XmlElem.GetAttr('state');
-        Zip := XmlElem.GetAttr('zip');
-        Country := XmlElem.GetAttr('country');
+      if OpenKey('settings\home-info') then try
+        Address := ReadString('address');
+        City := ReadString('city');
+        State := ReadString('state');
+        Zip := ReadString('zip');
+        Country := ReadString('country');
         //--Получаем текст страны из кода
         if Assigned(IcqOptionsForm) then
           Country := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(Country)];
-        if IsNotNull([Country, City]) then
-        begin
+        if IsNotNull([Country, City]) then begin
           AddHTML(BottomHTMLViewer, InfoHomeL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), 'cdef', true);
         end;
-        if IsNotNull([Address, State, Zip]) then
-        begin
-          if Trim(Address) <> '' then
-          begin
+        if IsNotNull([Address, State, Zip]) then begin
+          if Trim(Address) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoAdressL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Address, 'cdef', true);
           end;
-          if Trim(State) <> '' then
-          begin
+          if Trim(State) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoStateL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, State, 'cdef', true);
           end;
-          if Trim(Zip) <> '' then
-          begin
+          if Trim(Zip) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoZipL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Zip, 'cdef', true);
           end;
         end;
         //--Вставляем разделитель
-        if (IsNotNull([Country, City])) or (IsNotNull([Address, State, Zip])) then AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+        if (IsNotNull([Country, City])) or (IsNotNull([Address, State, Zip])) then
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
+      finally
+        CloseKey();
       end;
+
       //--Пол, дата рождения и возраст
-      XmlElem := Xml.DocumentElement.SelectSingleNode('personal-info');
-      if XmlElem <> nil then
-      begin
+      if OpenKey('settings\personal-info') then try
         //WebAware := XmlElem.GetBoolAttr('webaware');
         //Auth := XmlElem.GetBoolAttr('auth');
-        HomePage := XmlElem.GetAttr('homepage');
-        LastUpdateInfo := XmlElem.GetAttr('lastchange');
-        Gender := XmlElem.GetAttr('gender');
+        HomePage := ReadString('homepage');
+        LastUpdateInfo := ReadString('lastchange');
+        Gender := ReadString('gender');
         if Gender = '1' then
         begin
           AddHTML(BottomHTMLViewer, InfoGenderL + ' ', 'cbold');
@@ -282,117 +270,106 @@ begin
           AddHTML(BottomHTMLViewer, InfoGenderL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, InfoGender2L, 'cdef', true);
         end;
+      finally
+        CloseKey();
       end;
-      XmlElem := Xml.DocumentElement.SelectSingleNode('age-info');
-      if XmlElem <> nil then
-      begin
-        Age := XmlElem.GetAttr('age');
-        iDay := XmlElem.GetAttr('day');
-        iMonth := XmlElem.GetAttr('mon');
-        iYear := XmlElem.GetAttr('year');
-        if Age <> '0' then
-        begin
+
+      if OpenKey('settings\age-info') then try
+        Age := ReadString('age');
+        iDay := ReadString('day');
+        iMonth := ReadString('month');
+        iYear := ReadString('year');
+        if Age <> '0' then begin
           AddHTML(BottomHTMLViewer, InfoAgeL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, Age, 'cdef', true);
         end;
-        if (iDay <> '0') and (iMonth <> '0') and (iYear <> '0') then
-        begin
+        if (iDay <> '0') and (iMonth <> '0') and (iYear <> '0') then begin
           AddHTML(BottomHTMLViewer, InfoBirDate + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, iDay + '.' + iMonth + '.' + iYear, 'cdef', true);
         end;
         //--Вставляем разделитель
-        if (Gender <> '0') or ((iDay <> '0') and (iMonth <> '0') and (iYear <> '0')) then AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+        if (Gender <> '0') or ((iDay <> '0') and (iMonth <> '0') and (iYear <> '0')) then
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
+      finally
+        CloseKey();
       end;
+      
       //--Место рождения
-      XmlElem := Xml.DocumentElement.SelectSingleNode('orig-home-info');
-      if XmlElem <> nil then
-      begin
-        oCountry := XmlElem.GetAttr('country');
+      if OpenKey('settings\orig-home-info') then try
+        oCountry := ReadString('country');
         //--Получаем текст страны из кода
         if Assigned(IcqOptionsForm) then
           oCountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(oCountry)];
-        oCity := XmlElem.GetAttr('city');
-        oState := XmlElem.GetAttr('state');
-        if IsNotNull([oCountry, oCity]) then
-        begin
+        oCity := ReadString('city');
+        oState := ReadString('state');
+        if IsNotNull([oCountry, oCity]) then begin
           AddHTML(BottomHTMLViewer, InfoOHomeL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([oCountry, oCity]), 'cdef', true);
         end;
-        if Trim(oState) <> '' then
-        begin
+        if Trim(oState) <> EmptyStr then begin
           AddHTML(BottomHTMLViewer, InfoStateL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, oState, 'cdef', true);
         end;
         //--Вставляем разделитель
-        if (IsNotNull([oCountry, oCity])) or (Trim(oState) <> '') then AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+        if (IsNotNull([oCountry, oCity])) or (Trim(oState) <> EmptyStr) then AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
+      finally
+        CloseKey();
       end;
+      
       //--Работа
-      XmlElem := Xml.DocumentElement.SelectSingleNode('work-info');
-      if XmlElem <> nil then
-      begin
-        wCity := XmlElem.GetAttr('city');
-        wState := XmlElem.GetAttr('state');
-        wZip := XmlElem.GetAttr('zip');
-        wAddress := XmlElem.GetAttr('address');
-        Company := XmlElem.GetAttr('corp');
-        Department := XmlElem.GetAttr('dep');
-        Position := XmlElem.GetAttr('prof');
-        wSite := XmlElem.GetAttr('site');
-        wCountry := XmlElem.GetAttr('country');
-        Occupation := XmlElem.GetAttr('occup');
+      if OpenKey('settings\work-info') then try
+        wCity := ReadString('city');
+        wState := ReadString('state');
+        wZip := ReadString('zip');
+        wAddress := ReadString('address');
+        Company := ReadString('corp');
+        Department := ReadString('dep');
+        Position := ReadString('prof');
+        wSite := ReadString('site');
+        wCountry := ReadString('country');
+        Occupation := ReadString('occup');
         //--Получаем текст страны из кода
         if Assigned(IcqOptionsForm) then
           wCountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(wCountry)];
         //--Получаем текст занятия из кода
         if Assigned(IcqOptionsForm) then
           Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Strings[IcqOptionsForm.OccupationCodeComboBox.Items.IndexOf(Occupation)];
-        if IsNotNull([wCountry, wCity]) then
-        begin
+        if IsNotNull([wCountry, wCity]) then begin
           AddHTML(BottomHTMLViewer, InfoWorkL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([wCountry, wCity]), 'cdef', true);
         end;
-        if IsNotNull([wAddress, wState, wZip]) then
-        begin
-          if Trim(wAddress) <> '' then
-          begin
+        if IsNotNull([wAddress, wState, wZip]) then begin
+          if Trim(wAddress) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoAdressL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wAddress, 'cdef', true);
           end;
-          if Trim(wState) <> '' then
-          begin
+          if Trim(wState) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoStateL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wState, 'cdef', true);
           end;
-          if Trim(wZip) <> '' then
-          begin
+          if Trim(wZip) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoZipL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wZip, 'cdef', true);
           end;
         end;
-        if IsNotNull([Company, Department, Position, Occupation, wSite]) then
-        begin
-          if Trim(Company) <> '' then
-          begin
+        if IsNotNull([Company, Department, Position, Occupation, wSite]) then begin
+          if Trim(Company) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoCompanyL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Company, 'cdef', true);
           end;
-          if Trim(Department) <> '' then
-          begin
+          if Trim(Department) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoDeportL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Department, 'cdef', true);
           end;
-          if Trim(Position) <> '' then
-          begin
+          if Trim(Position) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoPositionL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Position, 'cdef', true);
           end;
-          if Trim(Occupation) <> '' then
-          begin
+          if Trim(Occupation) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoOccupationL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Occupation, 'cdef', true);
           end;
-          if Trim(wSite) <> '' then
-          begin
+          if Trim(wSite) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoWebSiteL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wSite, 'cdef', true);
           end;
@@ -400,69 +377,65 @@ begin
         //--Вставляем разделитель
         if (IsNotNull([wCountry, wCity])) or (IsNotNull([wAddress, wState, wZip])) or
           (IsNotNull([Company, Department, Position, Occupation, wSite])) then
-          AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
+      finally
+        CloseKey();
       end;
+
+      
       //--Телефоны
-      XmlElem := Xml.DocumentElement.SelectSingleNode('phone-info');
-      if XmlElem <> nil then
-      begin
-        Phone := XmlElem.GetAttr('phone1');
-        Fax := XmlElem.GetAttr('phone2');
-        Cellular := XmlElem.GetAttr('phone3');
-        wPhone := XmlElem.GetAttr('phone4');
-        wFax := XmlElem.GetAttr('phone5');
-        if IsNotNull([Phone, Fax, Cellular, wPhone, wFax]) then
-        begin
-          if Trim(Phone) <> '' then
-          begin
+      if OpenKey('settings\phone-info') then try
+        Phone := ReadString('phone1');
+        Fax := ReadString('phone2');
+        Cellular := ReadString('phone3');
+        wPhone := ReadString('phone4');
+        wFax := ReadString('phone5');
+        if IsNotNull([Phone, Fax, Cellular, wPhone, wFax]) then begin
+          if Trim(Phone) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoPhoneL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Phone, 'cdef', true);
           end;
-          if Trim(Fax) <> '' then
-          begin
+          if Trim(Fax) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoFaxL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Fax, 'cdef', true);
           end;
-          if Trim(Cellular) <> '' then
-          begin
+          if Trim(Cellular) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoCellularL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Cellular, 'cdef', true);
           end;
-          if Trim(wPhone) <> '' then
-          begin
+          if Trim(wPhone) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfowPhoneL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wPhone, 'cdef', true);
           end;
-          if Trim(wFax) <> '' then
-          begin
+          if Trim(wFax) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfowFaxL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wFax, 'cdef', true);
           end;
           //--Вставляем разделитель
-          AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
         end;
+      finally
+        CloseKey();
       end;
+
       //--Интересы
-      XmlElem := Xml.DocumentElement.SelectSingleNode('interests-info');
-      if XmlElem <> nil then
-      begin
-        Int1 := XmlElem.GetAttr('int1');
-        Int2 := XmlElem.GetAttr('int2');
-        Int3 := XmlElem.GetAttr('int3');
-        Int4 := XmlElem.GetAttr('int4');
+      if OpenKey('settings\interests-info') then try
+        Int1 := ReadString('int1');
+        Int2 := ReadString('int2');
+        Int3 := ReadString('int3');
+        Int4 := ReadString('int4');
+      finally
+        CloseKey();
       end;
-      XmlElem := Xml.DocumentElement.SelectSingleNode('interests-id-info');
-      if XmlElem <> nil then
-      begin
-        I1 := XmlElem.GetAttr('int_id1');
-        I2 := XmlElem.GetAttr('int_id2');
-        I3 := XmlElem.GetAttr('int_id3');
-        I4 := XmlElem.GetAttr('int_id4');
+
+      if OpenKey('settings\interests-id-info') then try
+        I1 := ReadString('int_id1');
+        I2 := ReadString('int_id2');
+        I3 := ReadString('int_id3');
+        I4 := ReadString('int_id4');
         //--Получаем название интереса из кода интереса
-        if Assigned(IcqOptionsForm) then
-        begin
-          with IcqOptionsForm do
-          begin
+        if Assigned(IcqOptionsForm) then begin
+          with IcqOptionsForm do begin
             I1 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I1)];
             I2 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I2)];
             I3 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I3)];
@@ -470,49 +443,43 @@ begin
           end;
         end;
         //--Формируем отображение интересов
-        if IsNotNull([I1, I2, I3, I4, Int1, Int2, Int3, Int4]) then
-        begin
+        if IsNotNull([I1, I2, I3, I4, Int1, Int2, Int3, Int4]) then begin
           AddHTML(BottomHTMLViewer, InfoInterestsL + ' ', 'cbold', true);
-          if (Trim(I1) <> '') or (Trim(Int1) <> '') then
-          begin
+          if (Trim(I1) <> EmptyStr) or (Trim(Int1) <> EmptyStr) then begin
             AddHTML(BottomHTMLViewer, I1 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int1, 'cdef', true);
           end;
-          if (Trim(I2) <> '') or (Trim(Int2) <> '') then
-          begin
+          if (Trim(I2) <> EmptyStr) or (Trim(Int2) <> EmptyStr) then begin
             AddHTML(BottomHTMLViewer, I2 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int2, 'cdef', true);
           end;
-          if (Trim(I3) <> '') or (Trim(Int3) <> '') then
-          begin
+          if (Trim(I3) <> EmptyStr) or (Trim(Int3) <> EmptyStr) then begin
             AddHTML(BottomHTMLViewer, I3 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int3, 'cdef', true);
           end;
-          if (Trim(I4) <> '') or (Trim(Int4) <> '') then
-          begin
+          if (Trim(I4) <> EmptyStr) or (Trim(Int4) <> EmptyStr) then begin
             AddHTML(BottomHTMLViewer, I4 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int4, 'cdef', true);
           end;
           //--Вставляем разделитель
-          AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
         end;
+      finally
+        CloseKey();
       end;
+
       //--Личное
-      XmlElem := Xml.DocumentElement.SelectSingleNode('personal-x-info');
-      if XmlElem <> nil then
-      begin
-        Marital := XmlElem.GetAttr('marital');
-        Sexual := XmlElem.GetAttr('sexual');
-        Height := XmlElem.GetAttr('height');
-        Relig := XmlElem.GetAttr('relig');
-        Smok := XmlElem.GetAttr('smok');
-        Hair := XmlElem.GetAttr('hair');
-        Children := XmlElem.GetAttr('children');
+      if OpenKey('settings\personal-x-info') then try
+        Marital := ReadString('marital');
+        Sexual := ReadString('sexual');
+        Height := ReadString('height');
+        Relig := ReadString('relig');
+        Smok := ReadString('smok');
+        Hair := ReadString('hair');
+        Children := ReadString('children');
         //--Получаем название из кода
-        if Assigned(IcqOptionsForm) then
-        begin
-          with IcqOptionsForm do
-          begin
+        if Assigned(IcqOptionsForm) then begin
+          with IcqOptionsForm do begin
             Marital := PersonalMaritalInfoComboBox.Items.Strings[MaritalCodesComboBox.Items.IndexOf(Marital)];
             Sexual := PersonalSexInfoComboBox.Items.Strings[SexCodesComboBox.Items.IndexOf(Sexual)];
             Relig := PersonalReligionInfoComboBox.Items.Strings[ReligionCodesComboBox.Items.IndexOf(Relig)];
@@ -521,20 +488,16 @@ begin
           end;
         end;
         //--Формируем отображение
-        if IsNotNull([Marital, Sexual, Height, Relig, Smok, Hair, Children]) then
-        begin
-          if Trim(Marital) <> '' then
-          begin
+        if IsNotNull([Marital, Sexual, Height, Relig, Smok, Hair, Children]) then begin
+          if Trim(Marital) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoMaritalL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Marital, 'cdef', true);
           end;
-          if Trim(Sexual) <> '' then
-          begin
+          if Trim(Sexual) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoSexualL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Sexual, 'cdef', true);
           end;
-          if Height <> '0' then
-          begin
+          if Height <> '0' then begin
             case StrToInt(Height) of
               140: Height := '140cm';
               145: Height := '141-145cm';
@@ -556,23 +519,19 @@ begin
             AddHTML(BottomHTMLViewer, InfoHeightL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Height, 'cdef', true);
           end;
-          if Trim(Relig) <> '' then
-          begin
+          if Trim(Relig) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoReligL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Relig, 'cdef', true);
           end;
-          if Trim(Smok) <> '' then
-          begin
+          if Trim(Smok) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoSmokL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Smok, 'cdef', true);
           end;
-          if Trim(Hair) <> '' then
-          begin
+          if Trim(Hair) <> EmptyStr then begin
             AddHTML(BottomHTMLViewer, InfoHairL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Hair, 'cdef', true);
           end;
-          if Children <> '0' then
-          begin
+          if Children <> '0' then begin
             case StrToInt(Children) of
               1: Children := '1';
               2: Children := '2';
@@ -590,64 +549,66 @@ begin
           end;
           //--Вставляем разделитель
           if (IsNotNull([Marital, Sexual, Relig, Smok, Hair])) or (Height <> '0') or (Children <> '0') then
-            AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+            AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
         end;
+      finally
+        CloseKey();
       end;
+
       //--Языки
-      XmlElem := Xml.DocumentElement.SelectSingleNode('lang-info');
-      if XmlElem <> nil then
-      begin
-        Lang1 := XmlElem.GetAttr('lang1');
-        Lang2 := XmlElem.GetAttr('lang2');
-        Lang3 := XmlElem.GetAttr('lang3');
+      if OpenKey('settings\lang-info') then try
+        Lang1 := ReadString('lang1');
+        Lang2 := ReadString('lang2');
+        Lang3 := ReadString('lang3');
         //--Получаем название языка из кода языка
-        if Assigned(IcqOptionsForm) then
-        begin
-          with IcqOptionsForm do
-          begin
+        if Assigned(IcqOptionsForm) then begin
+          with IcqOptionsForm do begin
             Lang1 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang1)];
             Lang2 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang2)];
             Lang3 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang3)];
           end;
         end;
         //--Формируем отображение языков
-        if IsNotNull([Lang1, Lang2, Lang3]) then
-        begin
+        if IsNotNull([Lang1, Lang2, Lang3]) then begin
           AddHTML(BottomHTMLViewer, InfoLangL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([Lang1, Lang2, Lang3]), 'cdef', true);
           //--Вставляем разделитель
-          AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
         end;
+      finally
+        CloseKey();
       end;
+
       //--О себе
-      XmlElem := Xml.DocumentElement.SelectSingleNode('about-info');
-      if XmlElem <> nil then
-      begin
-        About := Decrypt(XmlElem.Text, 12345);
-        if Trim(About) <> '' then
-        begin
+      if OpenKey('settings\about-info') then try
+        About := Decrypt(ReadString('info'), 12345);
+        if Trim(About) <> EmptyStr then begin
           AddHTML(BottomHTMLViewer, InfoAboutL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, About, 'cdef', true);
           //--Вставляем разделитель
-          AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+          AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
         end;
+      finally
+        CloseKey();
       end;
+
       //--Домашняя страница
-      if Trim(HomePage) <> '' then
+      if Trim(HomePage) <> EmptyStr then
       begin
         AddHTML(BottomHTMLViewer, InfoHomePageL + ' ', 'cbold');
         AddHTML(BottomHTMLViewer, HomePage, 'cdef', true);
         //--Вставляем разделитель
-        AddHTML(BottomHTMLViewer, '<hr>', '', false, true);
+        AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, false, true);
       end;
       //--Дата последнего обновления, дополнительно
-      if Trim(LastUpdateInfo) <> '' then
+      if Trim(LastUpdateInfo) <> EmptyStr then
       begin
         AddHTML(BottomHTMLViewer, InfoLastUpDateL + ' ', 'cbold');
         AddHTML(BottomHTMLViewer, LastUpdateInfo, 'cdef', true);
       end;
     end;
-  except
+  finally
+    Free();
   end;
   //--Вычисляем знак гороскопа
   if (iDay <> '0') and (iMonth <> '0') then
@@ -697,7 +658,7 @@ end;
 procedure TIcqContactInfoForm.ReqInfoBitBtnClick(Sender: TObject);
 begin
   //--Запрашиваем информацию о контакте
-  if (ReqUIN > '') and (ICQ_Work_Phaze) then
+  if (ReqUIN > EmptyStr) and (ICQ_Work_Phaze) then
   begin
     InfoLabel.Caption := InfoReqL;
     ICQ_ReqInfo_New_Pkt(ReqUIN);
@@ -711,26 +672,22 @@ begin
 end;
 
 procedure TIcqContactInfoForm.FormCreate(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+  With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\ContactInfoForm.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\ContactInfoForm.xml');
+    if FileExists(MyPath + 'Profile\ContactInfoForm.xml') then begin
+      LoadFromFile(MyPath + 'Profile\ContactInfoForm.xml');
       //--Загружаем позицию окна
-      XmlElem := Xml.DocumentElement.SelectSingleNode('contactinfoform-position');
-      if XmlElem <> nil then
-      begin
-        Top := XmlElem.GetIntAttr('top');
-        Left := XmlElem.GetIntAttr('left');
+      if OpenKey('settings\contactinfoform-position') then try
+        Top := ReadInteger('top');
+        Left := ReadInteger('left');
+      finally
+        CloseKey();
       end;
     end;
-  except
+  finally
+    Free();
   end;
   //--Переводим форму на другие языки
   TranslateForm;
@@ -744,20 +701,19 @@ begin
 end;
 
 procedure TIcqContactInfoForm.FormDestroy(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Сохраняем настройки положения окна в xml
-  try
-    Xml := CreateXmlDocument('xml');
-    //--Сохраняем позицию окна
-    XmlElem := Xml.DocumentElement.AppendElement('contactinfoform-position');
-    XmlElem.SetIntAttr('top', Top);
-    XmlElem.SetIntAttr('left', Left);
+  With TrXML.Create() do try
+    if OpenKey('settings\contactinfoform-position', True) then try
+      WriteInteger('top', Top);
+      WriteInteger('left', Left);
+    finally
+      CloseKey();
+    end;
     //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\ContactInfoForm.xml');
-  except
+    SaveToFile(MyPath + 'Profile\ContactInfoForm.xml');
+  finally
+    Free();
   end;
 end;
 

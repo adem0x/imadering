@@ -231,13 +231,14 @@ var
   ChatFontSize: string = '9';
 
   //--Список для отображения в About
-  AboutList: array[1..13] of string = (
+  AboutList: array[1..14] of string = (
     'Автор проекта и главный программист;Эдуард Толмачёв',
     'Программирование;Максим Нижник',
     'Программирование;Francois PIETTE (Ics components)',
     'Программирование;David Baldwin (HTML components)',
     'Программирование;Project Jedi (jvcl components)',
     'Программирование;Михаил Власов (SimpleXML компонент)',
+    'Программирование;Polaris Software (rXML компонент)',    
     'Программирование;Anders Melander (GIFImage component)',
     'Дизайн;Пётр Степанов',
     'Дизайн;Michael Niedermayr (www.greensmilies.com)',
@@ -246,6 +247,19 @@ var
     'Специальная благодарность;Светлана Пономарева',
     'IMadering;Спасибо всем!'
     );
+
+  //--Прокси
+  G_ProxyEnabled: boolean;
+  G_ProxyType: string;
+  G_ProxyTypeIndex: integer;
+  G_ProxyVersion: string;
+  G_ProxyVersionIndex: integer;
+  G_ProxyHost: string;
+  G_ProxyPort: string;
+  G_ProxyAuthorize: boolean;
+  G_ProxyLogin: string;
+  G_ProxyPassword: string;
+  G_ProxyNTLM: boolean;
 
 implementation
 

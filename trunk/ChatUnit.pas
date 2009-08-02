@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Htmlview, StrUtils, Menus, ExtCtrls, StdCtrls, Buttons,
-  CategoryButtons, VarsUnit, ShellApi, MMsystem, GIFImage, SimpleXML,
+  CategoryButtons, VarsUnit, ShellApi, MMsystem, GIFImage, rXML,
   ComCtrls, CommCtrl, ToolWin;
 
 type
@@ -237,7 +237,7 @@ begin
       begin
         if Categories[i].Items[ii].UIN = InfoPanel2.Caption then
         begin
-          if Categories[i].Items[ii].QuoteMsg > '' then
+          if Categories[i].Items[ii].QuoteMsg > EmptyStr then
             InputMemo.Lines.Add('> ' + Categories[i].Items[ii].QuoteMsg);
         end;
       end;
@@ -273,7 +273,7 @@ begin
     begin
       for I := 0 to List.Count - 1 do
       begin
-        if list.Strings[I] <> '' then
+        if list.Strings[I] <> EmptyStr then
         begin
           Add(NewItem(list.Strings[I], 0, False, True, QuickMessClick, 0, 'MenuItem' + IntToStr(I)));
           //--Добавляем и в хинты, против глюка акселя
@@ -288,7 +288,7 @@ begin
     begin
       for I := 0 to List.Count - 1 do
       begin
-        if list.Strings[I] <> '' then
+        if list.Strings[I] <> EmptyStr then
         begin
           Add(NewItem(list.Strings[I], 0, False, True, QuickMessClick, 0, 'MenuItem' + IntToStr(I)));
           //--Добавляем и в хинты, против глюка акселя
@@ -361,7 +361,7 @@ begin
     for II := 1 to 20 do
     begin
       Cod := Parse(',', SmilesList.Strings[I], II);
-      if Cod > '' then msg := AnsiReplaceText(msg, Cod, GenTag(IntToStr(I) + '.gif'))
+      if Cod > EmptyStr then msg := AnsiReplaceText(msg, Cod, GenTag(IntToStr(I) + '.gif'))
       else Break;
     end;
   end;
@@ -380,7 +380,7 @@ begin
   //--Вырезаем таким образом все левые тэги из сообщения оставляя чистый текст
   HTMLMsg.Clear;
   Doc := msg;
-  HTMLMsg.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+  HTMLMsg.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   HTMLMsg.SelectAll;
   msg := HTMLMsg.SelText;
 end;
@@ -394,7 +394,7 @@ begin
     if MessIn then Doc := Doc + '<IMG NAME=i SRC="' + MyPath + 'Icons\' + CurrentIcons + '\inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' + Nick_Time + '</span><br>'
     else Doc := Doc + '<IMG NAME=o' + IntToStr(OutMessIndex) + ' SRC="' + MyPath + 'Icons\' + CurrentIcons + '\outmess1.gif" ALIGN=ABSMIDDLE BORDER=0><span class=a> ' + Nick_Time + '</span><br>';
     Doc := Doc + '<span class=c>' + Mess_Text + '</span><br><br>';
-    HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+    HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   except
   end;
 end;
@@ -424,7 +424,7 @@ procedure TChatForm.InputMemoKeyDown(Sender: TObject; var Key: Word;
   function GetSelText(var Str: string): boolean;
   begin
     result := false;
-    if self.InputMemo.SelText <> '' then
+    if self.InputMemo.SelText <> EmptyStr then
     begin
       result := true;
       Str := self.InputMemo.SelText;
@@ -511,9 +511,9 @@ begin
   //
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 90) then
   begin
-    if Zundo > '' then self.InputMemo.Text := Zundo;
+    if Zundo > EmptyStr then self.InputMemo.Text := Zundo;
     self.InputMemo.SelStart := self.InputMemo.GetTextLen;
-    Zundo := '';
+    Zundo := EmptyStr;
   end;}
 end;
 
@@ -525,7 +525,7 @@ var
   i, ii: integer;
 begin
   //--Если поле идентификатора пользователя пустое, то выходим от сюда (в будущем сделать чтобы закрывалось окно)
-  if InfoPanel2.Caption = '' then Exit;
+  if InfoPanel2.Caption = EmptyStr then Exit;
   //--Если нажата клавиша не интер, то если включен режим звуковой клавиатуры, то воспроизводим звуки
   if key <> #13 then
   begin
@@ -533,7 +533,7 @@ begin
     if KeySoundToolButton.Down then
     begin
       try
-        if (key = #8) and (InputMemo.Text <> '') then
+        if (key = #8) and (InputMemo.Text <> EmptyStr) then
         begin
           if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Back.wav') then
             sndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Back.wav'), SND_ASYNC);
@@ -786,7 +786,7 @@ begin
           //--Тип контакта
           UserType := Categories[I].Items[II].ContactType;
           //--Проверяем загружена ли история уже
-          if Categories[I].Items[II].History = '' then
+          if Categories[I].Items[II].History = EmptyStr then
           begin
             //--Загружаем файл истории сообщений
             HistoryFile := MyPath + 'Profile\History\' + UserType + '_' + UIN + '.z';
@@ -804,7 +804,7 @@ begin
             end;
           end;
           //--Отображаем историю в чате
-          if Categories[I].Items[II].History <> '' then
+          if Categories[I].Items[II].History <> EmptyStr then
           begin
             //--Очищаем чат от другой истории
             HTMLChatViewer.Clear;
@@ -815,7 +815,7 @@ begin
             if not TextSmilies then CheckMessage_Smilies(Doc);
             SetLength(Doc, Length(Doc) - 6);
             Doc := Doc + '<HR>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
             HTMLChatViewer.Position := HTMLChatViewer.VScrollBar.Max;
           end
           else
@@ -824,7 +824,7 @@ begin
             HTMLChatViewer.Clear;
             //--Добавляем стили
             Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
           end;
           //--Выходим из цыкла если нашли контакт
           goto x;
@@ -839,7 +839,7 @@ begin
   ChatPageControl.ActivePage.Margins.Left := 0;
   //--Ставим имя и фамилию в информационное поле
   InfoPanel1.Caption := NameAndLast(UIN);
-  if InfoPanel1.Caption = '' then InfoPanel1.Caption := ChatPageControl.ActivePage.Caption;
+  if InfoPanel1.Caption = EmptyStr then InfoPanel1.Caption := ChatPageControl.ActivePage.Caption;
   //--Ставим учётную запись контакта в информационное поле
   InfoPanel2.Caption := UIN;
   //--Ставим курсор в мемо после последнего символа
@@ -1110,59 +1110,70 @@ begin
 end;
 
 procedure TChatForm.FormCreate(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+  With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\ChatForm.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\ChatForm.xml');
+    if FileExists(MyPath + 'Profile\ChatForm.xml') then begin
+      LoadFromFile(MyPath + 'Profile\ChatForm.xml');
       //--Загружаем позицию окна
-      XmlElem := Xml.DocumentElement.SelectSingleNode('chatform-position');
-      if XmlElem <> nil then
-      begin
-        Top := XmlElem.GetIntAttr('top');
-        Left := XmlElem.GetIntAttr('left');
-        Height := XmlElem.GetIntAttr('height');
-        Width := XmlElem.GetIntAttr('width');
+      if OpenKey('settings\chatform-position') then try
+        Top := ReadInteger('top');
+        Left := ReadInteger('left');
+        Height := ReadInteger('height');
+        Width := ReadInteger('width');
         //--Загружаем позицию сплитеров
-        BottomChatFormPanel.Height := XmlElem.GetIntAttr('chat-splitter', 130);
-        ChatCategoryButtons.Width := XmlElem.GetIntAttr('group-splitter', 130);
+        BottomChatFormPanel.Height := ReadInteger('chat-splitter'{, 130});
+        ChatCategoryButtons.Width := ReadInteger('group-splitter'{, 130});
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do Top := Top - 50;
-        while Left + Width > Screen.Width do Left := Left - 50;
+        while Top + Height > Screen.Height do
+          Top := Top - 50;
+        while Left + Width > Screen.Width do
+          Left := Left - 50;
+      finally
+        CloseKey();
       end;
+
       //--Загружаем "отправлять по интер"
-      XmlElem := Xml.DocumentElement.SelectSingleNode('send-enter');
-      if XmlElem <> nil then EnterKeyToolButton.Down := XmlElem.GetBoolAttr('boolean');
+      if OpenKey('settings\send-enter') then try
+        EnterKeyToolButton.Down := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
       //--Загружаем отправлять отчёт о печати текста
-      XmlElem := Xml.DocumentElement.SelectSingleNode('send-typing-notify');
-      if XmlElem <> nil then TypingTextToolButton.Down := XmlElem.GetBoolAttr('boolean');
+      if OpenKey('settings\send-typing-notify') then try
+        TypingTextToolButton.Down := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
       //--Загружаем "звук нажатия клавиш"
-      XmlElem := Xml.DocumentElement.SelectSingleNode('key-sound');
-      if XmlElem <> nil then KeySoundToolButton.Down := XmlElem.GetBoolAttr('boolean');
+      if OpenKey('settings\key-sound') then try
+        KeySoundToolButton.Down := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
       //--Загружаем состояние панелей аватар
-      XmlElem := Xml.DocumentElement.SelectSingleNode('avatar-panels');
-      if XmlElem <> nil then
-      begin
-        ContactAvatarPanel.Width := XmlElem.GetIntAttr('contact-avatar', 68);
-        if ContactAvatarPanel.Width = 0 then
-        begin
+      if OpenKey('settings\avatar-panels') then try
+        ContactAvatarPanel.Width := ReadInteger('contact-avatar'{, 68});
+        if ContactAvatarPanel.Width = 0 then begin
           ContactAvatarPanelSpeedButton.NumGlyphs := 1;
           InfoPanel1.Left := 9;
           InfoPanel3.Left := 9;
           InfoPanel1.Width := Width - 238;
           InfoPanel3.Width := InfoPanel1.Width;
         end;
-        MyAvatarPanel.Width := XmlElem.GetIntAttr('my-avatar', 68);
-        if MyAvatarPanel.Width = 0 then MyAvatarPanelSpeedButton.NumGlyphs := 4;
+        MyAvatarPanel.Width := ReadInteger('my-avatar'{, 68});
+        if MyAvatarPanel.Width = 0 then
+          MyAvatarPanelSpeedButton.NumGlyphs := 4;
+      finally
+        CloseKey();
       end;
     end;
-  except
+  finally
+    Free();
   end;
   //--Включаем двойной буферинг для вкладок
   ChatPageControl.DoubleBuffered := true;
@@ -1210,40 +1221,57 @@ begin
 end;
 
 procedure TChatForm.FormDestroy(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна чата в xml
-  try
-    Xml := CreateXmlDocument('xml');
+  With TrXML.Create() do try
     //--Сохраняем позицию окна
-    XmlElem := Xml.DocumentElement.AppendElement('chatform-position');
-    XmlElem.SetIntAttr('top', Top);
-    XmlElem.SetIntAttr('left', Left);
-    XmlElem.SetIntAttr('height', Height);
-    XmlElem.SetIntAttr('width', Width);
-    //--Сохраняем позицию сплитеров
-    XmlElem.SetIntAttr('chat-splitter', BottomChatFormPanel.Height);
-    XmlElem.SetIntAttr('group-splitter', ChatCategoryButtons.Width);
+    If OpenKey('settings\chatform-position', True) then try
+      WriteInteger('top', Top);
+      WriteInteger('left', Left);
+      WriteInteger('height', Height);
+      WriteInteger('width', Width);
+      //--Сохраняем позицию сплитеров
+      WriteInteger('chat-splitter', BottomChatFormPanel.Height);
+      WriteInteger('group-splitter', ChatCategoryButtons.Width);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем "отправлять по интер"
-    XmlElem := Xml.DocumentElement.AppendElement('send-enter');
-    XmlElem.SetBoolAttr('boolean', EnterKeyToolButton.Down);
+    If OpenKey('settings\send-enter', True) then try
+      WriteBool('value', EnterKeyToolButton.Down);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем отправлять отчёт о печати текста
-    XmlElem := Xml.DocumentElement.AppendElement('send-typing-notify');
-    XmlElem.SetBoolAttr('boolean', TypingTextToolButton.Down);
+    If OpenKey('settings\send-typing-notify', True) then try
+      WriteBool('value', TypingTextToolButton.Down);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем "звук нажатия клавиш"
-    XmlElem := Xml.DocumentElement.AppendElement('key-sound');
-    XmlElem.SetBoolAttr('boolean', KeySoundToolButton.Down);
+    If OpenKey('settings\key-sound', True) then try
+      WriteBool('value', KeySoundToolButton.Down);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем состояние панелей аватар
-    XmlElem := Xml.DocumentElement.AppendElement('avatar-panels');
-    XmlElem.SetIntAttr('contact-avatar', ContactAvatarPanel.Width);
-    XmlElem.SetIntAttr('my-avatar', MyAvatarPanel.Width);
+    If OpenKey('settings\avatar-panels', True) then try
+      WriteInteger('contact-avatar', ContactAvatarPanel.Width);
+      WriteInteger('my-avatar', MyAvatarPanel.Width);
+    finally
+      CloseKey();
+    end;
+
     //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\ChatForm.xml');
-  except
+    SaveToFile(MyPath + 'Profile\ChatForm.xml');
+  finally
+    Free();
   end;
 end;
 
@@ -1376,8 +1404,8 @@ var
 begin
   //--Очищаем окно чата от истории сообщений
   HTMLChatViewer.Clear;
-  Doc := '';
-  HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+  Doc := EmptyStr;
+  HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
 end;
 
 procedure TChatForm.CloseTabBitBtnClick(Sender: TObject);
@@ -1415,9 +1443,9 @@ begin
         if Categories[I].Items[II].UIN = InfoPanel2.Caption then
         begin
           //--Проверяем загружена ли история уже
-          if Categories[I].Items[II].History = '' then goto x;
+          if Categories[I].Items[II].History = EmptyStr then goto x;
           //--Отображаем историю в чате
-          if Categories[I].Items[II].History <> '' then
+          if Categories[I].Items[II].History <> EmptyStr then
           begin
             //--Очистили компонент истории
             HTMLChatViewer.Clear;
@@ -1431,7 +1459,7 @@ begin
             if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
             SetLength(Doc, Length(Doc) - 6);
             Doc := Doc + '<HR>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
             HTMLChatViewer.Position := HTMLChatViewer.VScrollBar.Max;
             //--Ставим каретку в самый низ текста
             HTMLChatViewer.CaretPos := Length(Doc);

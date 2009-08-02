@@ -109,12 +109,12 @@ begin
   //их к специальному буферу накопления таких преобразованных данных
   ICQ_RegUIN_HexPkt := ICQ_RegUIN_HexPkt + Text2Hex(Pkt);
   //--Ищем ошибки в буфере пакетов
-  if ((ICQ_RegUIN_HexPkt > '') and (HexToInt(LeftStr(ICQ_RegUIN_HexPkt, 2)) <> $2A)) or
+  if ((ICQ_RegUIN_HexPkt > EmptyStr) and (HexToInt(LeftStr(ICQ_RegUIN_HexPkt, 2)) <> $2A)) or
     ((Length(ICQ_RegUIN_HexPkt) > 2) and ((HexToInt(ICQ_RegUIN_HexPkt[3] + ICQ_RegUIN_HexPkt[4]) = $0)
     or (HexToInt(ICQ_RegUIN_HexPkt[3] + ICQ_RegUIN_HexPkt[4]) > $05))) then
   begin
     //--Если в пакете есть ошибки, то закрываем сокет и выводим сообщение об ошибке
-    DAShow(ErrorHead, ParsingPktError, '', 134, 2, 0);
+    DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
     ICQRegWSocket.Close;
     Exit;
   end;
@@ -182,7 +182,7 @@ begin
                           //--Расшифровываем новый UIN
                           NewUin := FloatToStr(Swap32(HexToInt(NextData(SubPkt, 8))));
                           //--Если новый номер действительно есть, то отображаем его на панели
-                          if NewUin > '' then
+                          if NewUin > EmptyStr then
                           begin
                             //--Проверяем на всякий случай не была ли форма закрыта
                             if Assigned(IcqRegNewUINForm) then
@@ -208,7 +208,7 @@ begin
                           //--Получаем данные картинки найденной длинны
                           ImageData := Hex2Text(NextData(SubPkt, Len));
                           //--Если эти данные реально есть, то пишем их в память
-                          if ImageData > '' then
+                          if ImageData > EmptyStr then
                           begin
                             //--Создали блок памяти
                             StreamImg := TMemoryStream.Create;
@@ -269,7 +269,7 @@ begin
                         Len := Len * 2;
                         //--Показываем сообщение об этой ошибке
                         RegInfoPanel.Caption := ICQ_NotifyAuthCookieError(NextData(SubPkt, Len));
-                        DAShow(ErrorHead, RegInfoPanel.Caption, '', 134, 2, 0);
+                        DAShow(ErrorHead, RegInfoPanel.Caption, EmptyStr, 134, 2, 0);
                         //--Закрываем сокет и ждем пока закроется
                         ICQRegWSocket.Close;
                         ICQRegWSocket.WaitForClose;
@@ -294,7 +294,7 @@ begin
       begin
         //--Если начальная метка пакета не правильная,
         //то выводим сообщение об ошибке разбора и выходим
-        DAShow(ErrorHead, ParsingPktError, '', 134, 2, 0);
+        DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
         //--Закрываем сокет и ждем пока закроется
         ICQRegWSocket.Close;
         ICQRegWSocket.WaitForClose;
@@ -314,10 +314,10 @@ begin
   RegImage.Picture.Assign(nil);
   SecretWordEdit.Clear;
   //--Проверяем указан ли пароль для нового ICQ#
-  if RegPassEdit.Text = '' then
+  if RegPassEdit.Text = EmptyStr then
   begin
     //--Сообщаем о том что нужно ввести пароль
-    DAShow(AlertHead, RegNewAlert_1, '', 134, 2, 0);
+    DAShow(AlertHead, RegNewAlert_1, EmptyStr, 134, 2, 0);
     //--Ставим фокус в поле ввода
     if RegPassEdit.CanFocus then RegPassEdit.SetFocus;
     //--Выходим
@@ -342,7 +342,7 @@ begin
     begin
       //--Если при подключении произошла ошибка, то сообщаем об этом и закрываем сокет
       //E.Message;
-      DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+      DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
       ICQRegWSocket.Close;
     end;
   end;
@@ -351,10 +351,10 @@ end;
 procedure TIcqRegNewUINForm.NewUINRegButtonClick(Sender: TObject);
 begin
   //--Проверяем введено ли слово с картинки
-  if SecretWordEdit.Text = '' then
+  if SecretWordEdit.Text = EmptyStr then
   begin
     //--Сообщаем об этой ошибке
-    DAShow(AlertHead, RegNewAlert_2, '', 134, 2, 0);
+    DAShow(AlertHead, RegNewAlert_2, EmptyStr, 134, 2, 0);
     //--Ставим фокус в поле ввода
     if SecretWordEdit.CanFocus then SecretWordEdit.SetFocus;
     //--Выходим
@@ -368,7 +368,7 @@ begin
   else
   begin
     //--Если сокет уже отвалился, то сообщаем об этом
-    DAShow(AlertHead, SocketConnErrorInfo_4, '', 134, 2, 0);
+    DAShow(AlertHead, SocketConnErrorInfo_4, EmptyStr, 134, 2, 0);
     //--Запрашиваем новую картинку
     ReqSecretImageButton.Click;
   end;
@@ -396,7 +396,7 @@ begin
   //--Если при отключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   end;
 end;
 
@@ -406,7 +406,7 @@ begin
   //--Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   end;
 end;
 

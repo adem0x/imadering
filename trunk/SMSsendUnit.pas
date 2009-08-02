@@ -51,7 +51,7 @@ var
   SmsMsg, CellularNumber: string;
 begin
   if not ICQ_Work_Phaze then goto x;
-  if (Edit1.Text = '') or (Memo1.Text = '') then goto x;
+  if (Edit1.Text = EmptyStr) or (Memo1.Text = EmptyStr) then goto x;
   CellularNumber := NormalizeCellularNumber(Edit1.Text);
   if CellularNumber[1] <> '+' then CellularNumber := '+' + CellularNumber;
   SmsMsg := TranslitRus2Lat(Memo1.Text);

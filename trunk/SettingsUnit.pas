@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, JvPageList, JvExControls, ExtCtrls, ButtonGroup, StdCtrls, Buttons,
-  SimpleXML, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
+  rXml, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
   Registry, ComCtrls;
 
 type
@@ -34,7 +34,7 @@ type
     ChatFormGroupBox: TGroupBox;
     EventsGroupBox: TGroupBox;
     GroupBox5: TGroupBox;
-    ProxyAddresEdit: TEdit;
+    ProxyAddressEdit: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     ProxyPortEdit: TEdit;
@@ -92,7 +92,7 @@ type
     procedure ProxyAuthCheckBoxClick(Sender: TObject);
     procedure ProxyShowPassCheckBoxClick(Sender: TObject);
     procedure ProxyEnableCheckBoxClick(Sender: TObject);
-    procedure ProxyAddresEditChange(Sender: TObject);
+    procedure ProxyAddressEditChange(Sender: TObject);
     procedure ProxyTypeComboBoxSelect(Sender: TObject);
     procedure TransparentTrackBarChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -128,7 +128,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit;
+  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -177,73 +177,120 @@ end;
 
 procedure TSettingsForm.LoadSettings;
 var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
   ListItemD: TListItem;
 begin
   //--Загружаем и отображаем настройки прокси
-  if FileExists(MyPath + 'Profile\Proxy.xml') then
-  begin
-    try
-      Xml := CreateXmlDocument;
-      Xml.Load(MyPath + 'Profile\Proxy.xml');
-      //--Загружаем адрес прокси
-      XmlElem := Xml.DocumentElement.SelectSingleNode('proxy');
-      if XmlElem <> nil then
-      begin
-        if XmlElem.ChildNodes.Count > 0 then
-        begin
-          ProxyAddresEdit.Text := XmlElem.ChildNodes.Item[0].GetAttr('name');
-          ProxyPortEdit.Text := XmlElem.ChildNodes.Item[0].GetAttr('port');
-          ProxyTypeComboBox.ItemIndex := XmlElem.ChildNodes.Item[1].GetIntAttr('type-index');
-          ProxyVersionComboBox.ItemIndex := XmlElem.ChildNodes.Item[1].GetIntAttr('version-index');
-          ProxyAuthCheckBox.Checked := XmlElem.ChildNodes.Item[2].GetBoolAttr('proxy-auth-enable');
-          ProxyLoginEdit.Text := XmlElem.ChildNodes.Item[2].GetAttr('proxy-login');
-          ProxyPasswordEdit.Text := XmlElem.ChildNodes.Item[2].GetAttr('proxy-password');
-          NTLMCheckBox.Checked := XmlElem.ChildNodes.Item[2].GetBoolAttr('proxy-ntlm-auth');
-        end;
-        ProxyEnableCheckBox.Checked := XmlElem.GetBoolAttr('proxy-enable');
-        ProxyEnableCheckBoxClick(nil);
+  if FileExists(MyPath + 'Profile\Proxy.xml') then begin
+    With TrXML.Create() do try
+      LoadFromFile(MyPath + 'Profile\Proxy.xml');
+
+      If OpenKey('settings\proxy-address') then try
+        ProxyAddressEdit.Text := ReadString('host');
+        ProxyPortEdit.Text := ReadString('port');
+      finally
+        CloseKey();
       end;
-    except
+
+      If OpenKey('settings\proxy-type') then try
+        ProxyTypeComboBox.ItemIndex := ReadInteger('type-index');
+        ProxyVersionComboBox.ItemIndex := ReadInteger('version-index');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings\proxy-auth') then try
+        ProxyAuthCheckBox.Checked := ReadBool('proxy-auth-enable');
+        ProxyLoginEdit.Text := ReadString('proxy-login');
+        ProxyPasswordEdit.Text := Decrypt(ReadString('proxy-password'), PassKey);
+        NTLMCheckBox.Checked := ReadBool('proxy-ntlm-auth');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings\proxy') then try
+        ProxyEnableCheckBox.Checked := ReadBool('proxy-enable');
+        ProxyEnableCheckBoxClick(nil);
+      finally
+        CloseKey();
+      end;
+
+    finally
+      Free();
     end;
   end;
   //----------------------------------------------------------------------------
   //--Загружаем и отображаем другие настройки
-  if FileExists(MyPath + 'Profile\Settings.xml') then
-  begin
-    try
-      Xml := CreateXmlDocument;
-      Xml.Load(MyPath + 'Profile\Settings.xml');
-      //--Загружаем запуск свёрнутой в трэй
-      XmlElem := Xml.DocumentElement.SelectSingleNode('hide-in-tray-program-start');
-      if XmlElem <> nil then HideInTrayProgramStartCheckBox.Checked := XmlElem.GetBoolAttr('boolean');
-      //--Загружаем автозапуск при старте Windows
-      StartOnWinStartCheckBox.Checked := IsAppInRun('IMadering');
-      //--Загружаем проверять наличие новой версии при запуске
-      XmlElem := Xml.DocumentElement.SelectSingleNode('auto-update-check');
-      if XmlElem <> nil then AutoUpdateCheckBox.Checked := XmlElem.GetBoolAttr('boolean');
-      //--Загружаем поверх всех окон
-      XmlElem := Xml.DocumentElement.SelectSingleNode('always-top');
-      if XmlElem <> nil then AlwaylTopCheckBox.Checked := XmlElem.GetBoolAttr('boolean');
-      //--Загружаем настройки прозрачности списка контактов
-      XmlElem := Xml.DocumentElement.SelectSingleNode('transparent-value');
-      if XmlElem <> nil then TransparentTrackBar.Position := XmlElem.GetIntAttr('value');
-      //--Загружаем прозрачность неактивноно окна списка контактов
-      XmlElem := Xml.DocumentElement.SelectSingleNode('transparent-active');
-      if XmlElem <> nil then TransparentNotActiveCheckBox.Checked := XmlElem.GetBoolAttr('boolean');
-      //--Загружаем автоскрытие списка контактов
-      XmlElem := Xml.DocumentElement.SelectSingleNode('auto-hide-cl');
-      if XmlElem <> nil then AutoHideCLCheckBox.Checked := XmlElem.GetBoolAttr('boolean');
-      XmlElem := Xml.DocumentElement.SelectSingleNode('auto-hide-cl-value');
-      if XmlElem <> nil then AutoHideCLEdit.Text := XmlElem.GetAttr('value');
-      //--Загружаем заголовок окна списка контактов
-      XmlElem := Xml.DocumentElement.SelectSingleNode('header-cl-form');
-      if XmlElem <> nil then HeaderTextEdit.Text := XmlElem.GetAttr('text');
-      //--Загружаем пересоединение при разрыве соединения
-      XmlElem := Xml.DocumentElement.SelectSingleNode('reconnect');
-      if XmlElem <> nil then ReconnectCheckBox.Checked := XmlElem.GetBoolAttr('boolean');
-    except
+  if FileExists(MyPath + 'Profile\Settings.xml') then begin
+    With TrXML.Create() do try
+      LoadFromFile(MyPath + 'Profile\Settings.xml');
+
+      if OpenKey('settings/hide-in-tray-program-start') then try
+        //--Загружаем запуск свёрнутой в трэй
+        HideInTrayProgramStartCheckBox.Checked := ReadBool('value');
+        //--Загружаем автозапуск при старте Windows
+        StartOnWinStartCheckBox.Checked := IsAppInRun('IMadering');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/auto-update-check') then try
+        //--Загружаем проверять наличие новой версии при запуске
+        AutoUpdateCheckBox.Checked := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/always-top') then try
+        //--Загружаем поверх всех окон
+        AlwaylTopCheckBox.Checked := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/transparent-value') then try
+        //--Загружаем настройки прозрачности списка контактов
+        TransparentTrackBar.Position := ReadInteger('value');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/transparent-active') then try
+        //--Загружаем прозрачность неактивноно окна списка контактов
+        TransparentNotActiveCheckBox.Checked := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/auto-hide-cl') then try
+        //--Загружаем автоскрытие списка контактов
+        AutoHideCLCheckBox.Checked := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/auto-hide-cl-value') then try
+        //--Загружаем автоскрытие списка контактов
+        AutoHideCLEdit.Text := ReadString('value');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/header-cl-form') then try
+        //--Загружаем заголовок окна списка контактов
+        HeaderTextEdit.Text := ReadString('text');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings/reconnect') then try
+        //--Загружаем пересоединение при разрыве соединения
+        ReconnectCheckBox.Checked := ReadBool('value');
+      finally
+        CloseKey();
+      end;
+
+    finally
+      Free();
     end;
   end;
   //----------------------------------------------------------------------------
@@ -270,9 +317,6 @@ begin
 end;
 
 procedure TSettingsForm.ApplySettings;
-var
-  Xml: IXmlDocument;
-  XmlElem, XmlElem1: IXmlNode;
 begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
@@ -288,16 +332,16 @@ begin
     if (ProxyTypeComboBox.ItemIndex = 0) or (ProxyTypeComboBox.ItemIndex = 1) then
     begin
       //--Сбрасываем тип SOCKS прокси
-      MainForm.HttpClient.SocksLevel := '';
+      MainForm.HttpClient.SocksLevel := EmptyStr;
       //--Сбрасываем адрес SOCKS прокси и порт
-      MainForm.HttpClient.SocksServer := '';
-      MainForm.HttpClient.SocksPort := '';
+      MainForm.HttpClient.SocksServer := EmptyStr;
+      MainForm.HttpClient.SocksPort := EmptyStr;
       //--Сбрасываем авторизацию SOCKS прокси
       MainForm.HttpClient.SocksAuthentication := socksNoAuthentication;
-      MainForm.HttpClient.SocksUsercode := '';
-      MainForm.HttpClient.SocksPassword := '';
+      MainForm.HttpClient.SocksUsercode := EmptyStr;
+      MainForm.HttpClient.SocksPassword := EmptyStr;
       //--Назначаем адрес HTTP прокси и порт
-      MainForm.HttpClient.Proxy := ProxyAddresEdit.Text;
+      MainForm.HttpClient.Proxy := ProxyAddressEdit.Text;
       MainForm.HttpClient.ProxyPort := ProxyPortEdit.Text;
       //--Назначаем авторизацию на HTTP прокси
       if ProxyAuthCheckBox.Checked then
@@ -311,19 +355,19 @@ begin
       begin
         //--Сбрасываем авторизацию HTTP прокси
         MainForm.HttpClient.ProxyAuth := httpAuthNone;
-        MainForm.HttpClient.ProxyUsername := '';
-        MainForm.HttpClient.ProxyPassword := '';
+        MainForm.HttpClient.ProxyUsername := EmptyStr;
+        MainForm.HttpClient.ProxyPassword := EmptyStr;
       end;
     end
     else
     begin
       //--Сбрасываем адрес HTTP прокси и порт
-      MainForm.HttpClient.Proxy := '';
+      MainForm.HttpClient.Proxy := EmptyStr;
       MainForm.HttpClient.ProxyPort := '80';
       //--Сбрасываем авторизацию HTTP прокси
       MainForm.HttpClient.ProxyAuth := httpAuthNone;
-      MainForm.HttpClient.ProxyUsername := '';
-      MainForm.HttpClient.ProxyPassword := '';
+      MainForm.HttpClient.ProxyUsername := EmptyStr;
+      MainForm.HttpClient.ProxyPassword := EmptyStr;
       //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
       case ProxyTypeComboBox.ItemIndex of
         2: MainForm.HttpClient.SocksLevel := '4';
@@ -331,7 +375,7 @@ begin
         4: MainForm.HttpClient.SocksLevel := '5';
       end;
       //--Назначаем адрес SOCKS прокси и порт
-      MainForm.HttpClient.SocksServer := ProxyAddresEdit.Text;
+      MainForm.HttpClient.SocksServer := ProxyAddressEdit.Text;
       MainForm.HttpClient.SocksPort := ProxyPortEdit.Text;
       //--Назначаем авторизацию на SOCKS прокси
       if ProxyAuthCheckBox.Checked then
@@ -344,8 +388,8 @@ begin
       begin
         //--Сбрасываем авторизацию SOCKS прокси
         MainForm.HttpClient.SocksAuthentication := socksNoAuthentication;
-        MainForm.HttpClient.SocksUsercode := '';
-        MainForm.HttpClient.SocksPassword := '';
+        MainForm.HttpClient.SocksUsercode := EmptyStr;
+        MainForm.HttpClient.SocksPassword := EmptyStr;
       end;
     end;
   end
@@ -354,21 +398,21 @@ begin
     //--Сбрасываем версию запросов
     MainForm.HttpClient.RequestVer := '1.0';
     //--Сбрасываем адрес HTTP прокси и порт
-    MainForm.HttpClient.Proxy := '';
+    MainForm.HttpClient.Proxy := EmptyStr;
     MainForm.HttpClient.ProxyPort := '80';
     //--Сбрасываем авторизацию HTTP прокси
     MainForm.HttpClient.ProxyAuth := httpAuthNone;
-    MainForm.HttpClient.ProxyUsername := '';
-    MainForm.HttpClient.ProxyPassword := '';
+    MainForm.HttpClient.ProxyUsername := EmptyStr;
+    MainForm.HttpClient.ProxyPassword := EmptyStr;
     //--Сбрасываем тип SOCKS прокси
-    MainForm.HttpClient.SocksLevel := '';
+    MainForm.HttpClient.SocksLevel := EmptyStr;
     //--Сбрасываем адрес SOCKS прокси и порт
-    MainForm.HttpClient.SocksServer := '';
-    MainForm.HttpClient.SocksPort := '';
+    MainForm.HttpClient.SocksServer := EmptyStr;
+    MainForm.HttpClient.SocksPort := EmptyStr;
     //--Сбрасываем авторизацию SOCKS прокси
     MainForm.HttpClient.SocksAuthentication := socksNoAuthentication;
-    MainForm.HttpClient.SocksUsercode := '';
-    MainForm.HttpClient.SocksPassword := '';
+    MainForm.HttpClient.SocksUsercode := EmptyStr;
+    MainForm.HttpClient.SocksPassword := EmptyStr;
   end;
   //----------------------------------------------------------------------------
   //--Применяем общие настройки
@@ -402,66 +446,128 @@ begin
 
 
   //----------------------------------------------------------------------------
+
+  G_ProxyEnabled := ProxyEnableCheckBox.Checked;
+  G_ProxyHost := ProxyAddressEdit.Text;
+  G_ProxyPort := ProxyPortEdit.Text;
+  G_ProxyType := ProxyTypeComboBox.Text;
+  G_ProxyVersion := ProxyVersionComboBox.Text;
+  G_ProxyTypeIndex := ProxyTypeComboBox.ItemIndex;
+  G_ProxyVersionIndex := ProxyVersionComboBox.ItemIndex;
+  G_ProxyAuthorize := ProxyAuthCheckBox.Checked;
+  G_ProxyLogin := ProxyLoginEdit.Text;
+  G_ProxyPassword := ProxyPasswordEdit.Text;
+  G_ProxyNTLM := NTLMCheckBox.Checked;
+
   //--Записываем настройки
   if ApplyBitBtn.Enabled then
   begin
     //--Записываем настройки прокси
-    if not NoReSave then
-    begin
-      try
-        Xml := CreateXmlDocument('xml');
-        //--Сохраняем настройки прокси
-        XmlElem := Xml.DocumentElement.AppendElement('proxy');
-        XmlElem.SetBoolAttr('proxy-enable', ProxyEnableCheckBox.Checked);
-        XmlElem1 := XmlElem.AppendElement('proxy-addres');
-        XmlElem1.SetAttr('name', ProxyAddresEdit.Text);
-        XmlElem1.SetAttr('port', ProxyPortEdit.Text);
-        XmlElem1 := XmlElem.AppendElement('proxy-type');
-        XmlElem1.SetAttr('type', ProxyTypeComboBox.Text);
-        XmlElem1.SetIntAttr('type-index', ProxyTypeComboBox.ItemIndex);
-        XmlElem1.SetAttr('version', ProxyVersionComboBox.Text);
-        XmlElem1.SetIntAttr('version-index', ProxyVersionComboBox.ItemIndex);
-        XmlElem1 := XmlElem.AppendElement('proxy-auth');
-        XmlElem1.SetBoolAttr('proxy-auth-enable', ProxyAuthCheckBox.Checked);
-        XmlElem1.SetAttr('proxy-login', ProxyLoginEdit.Text);
-        XmlElem1.SetAttr('proxy-password', ProxyPasswordEdit.Text);
-        XmlElem1.SetBoolAttr('proxy-ntlm-auth', NTLMCheckBox.Checked);
-        //--Записываем сам файл
-        Xml.Save(MyPath + 'Profile\Proxy.xml');
-      except
+    if not NoReSave then begin
+      With TrXML.Create() do try
+        if OpenKey('settings\proxy', True) then try
+          WriteBool('proxy-enable', ProxyEnableCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
+        if OpenKey('settings\proxy-address', True) then try
+          WriteString('host', ProxyAddressEdit.Text);
+          WriteString('port', ProxyPortEdit.Text);
+        finally
+          CloseKey();
+        end;
+
+        if OpenKey('settings\proxy-type', True) then try
+          WriteString('type', ProxyTypeComboBox.Text);
+          WriteInteger('type-index', ProxyTypeComboBox.ItemIndex);
+          WriteString('version', ProxyVersionComboBox.Text);
+          WriteInteger('version-index', ProxyVersionComboBox.ItemIndex);
+        finally
+          CloseKey();
+        end;
+
+        if OpenKey('settings\proxy-auth', True) then try
+          WriteBool('proxy-auth-enable', ProxyAuthCheckBox.Checked);
+          WriteString('proxy-login', ProxyLoginEdit.Text);
+          WriteString('proxy-password', Encrypt(ProxyPasswordEdit.Text, PassKey));
+          WriteBool('proxy-ntlm-auth', NTLMCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
+        SaveToFile(MyPath + 'Profile\Proxy.xml');
+      finally
+        Free();
       end;
       //--Сохраняем настройки
-      try
-        Xml := CreateXmlDocument('xml');
+      With TrXML.Create() do try
+
         //--Сохраняем запуск свёрнутой в трэй
-        XmlElem := Xml.DocumentElement.AppendElement('hide-in-tray-program-start');
-        XmlElem.SetBoolAttr('boolean', HideInTrayProgramStartCheckBox.Checked);
+        if OpenKey('settings\hide-in-tray-program-start', True) then try
+          WriteBool('value', HideInTrayProgramStartCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем пересоединяться при разрыве соединения
-        XmlElem := Xml.DocumentElement.AppendElement('reconnect');
-        XmlElem.SetBoolAttr('boolean', ReconnectCheckBox.Checked);
+        if OpenKey('settings\reconnect', True) then try
+          WriteBool('value', ReconnectCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем проверять наличие новой версии при запуске
-        XmlElem := Xml.DocumentElement.AppendElement('auto-update-check');
-        XmlElem.SetBoolAttr('boolean', AutoUpdateCheckBox.Checked);
+        if OpenKey('settings\auto-update-check', True) then try
+          WriteBool('value', AutoUpdateCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем поверх всех окон
-        XmlElem := Xml.DocumentElement.AppendElement('always-top');
-        XmlElem.SetBoolAttr('boolean', AlwaylTopCheckBox.Checked);
+        if OpenKey('settings\always-top', True) then try
+          WriteBool('value', AlwaylTopCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем настройки прозрачности списка контактов
-        XmlElem := Xml.DocumentElement.AppendElement('transparent-value');
-        XmlElem.SetIntAttr('value', TransparentTrackBar.Position);
+        if OpenKey('settings\transparent-value', True) then try
+          WriteInteger('value', TransparentTrackBar.Position);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем прозрачность неактивноно окна списка контактов
-        XmlElem := Xml.DocumentElement.AppendElement('transparent-active');
-        XmlElem.SetBoolAttr('boolean', TransparentNotActiveCheckBox.Checked);
+        if OpenKey('settings\transparent-active', True) then try
+          WriteBool('value', TransparentNotActiveCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем автоскрытие списка контактов
-        XmlElem := Xml.DocumentElement.AppendElement('auto-hide-cl');
-        XmlElem.SetBoolAttr('boolean', AutoHideCLCheckBox.Checked);
-        XmlElem := Xml.DocumentElement.AppendElement('auto-hide-cl-value');
-        XmlElem.SetAttr('value', AutoHideCLEdit.Text);
+        if OpenKey('settings\auto-hide-cl', True) then try
+          WriteBool('value', AutoHideCLCheckBox.Checked);
+        finally
+          CloseKey();
+        end;
+
+        if OpenKey('settings\auto-hide-cl-value', True) then try
+          WriteString('value', AutoHideCLEdit.Text);
+        finally
+          CloseKey();
+        end;
+
         //--Сохраняем заголовок окна списка контактов
-        XmlElem := Xml.DocumentElement.AppendElement('header-cl-form');
-        XmlElem.SetAttr('text', HeaderTextEdit.Text);
-        //--Записываем сам файл
-        Xml.Save(MyPath + 'Profile\Settings.xml');
-      except
+        if OpenKey('settings\header-cl-form', True) then try
+          WriteString('text', HeaderTextEdit.Text);
+        finally
+          CloseKey();
+        end;
+
+        SaveToFile(MyPath + 'Profile\Settings.xml');
+      finally
+        Free();
       end;
     end;
   end;
@@ -472,7 +578,7 @@ end;
 procedure TSettingsForm.AutoHideClEditExit(Sender: TObject);
 begin
   //--Если ввод пустой, то ставим по дефолту
-  if AutoHideClEdit.Text = '' then AutoHideClEdit.Text := '10';
+  if AutoHideClEdit.Text = EmptyStr then AutoHideClEdit.Text := '10';
 end;
 
 procedure TSettingsForm.AutoHideClEditKeyPress(Sender: TObject; var Key: Char);
@@ -578,7 +684,7 @@ begin
   else SettingsProtoBitBtn.Enabled := false;
 end;
 
-procedure TSettingsForm.ProxyAddresEditChange(Sender: TObject);
+procedure TSettingsForm.ProxyAddressEditChange(Sender: TObject);
 begin
   //--Активируем кнопку Применить
   ApplyBitBtn.Enabled := true;
@@ -612,8 +718,8 @@ begin
   //--Разрешаем использование прокси
   if ProxyEnableCheckBox.Checked then
   begin
-    ProxyAddresEdit.Enabled := true;
-    ProxyAddresEdit.Color := clWindow;
+    ProxyAddressEdit.Enabled := true;
+    ProxyAddressEdit.Color := clWindow;
     ProxyPortEdit.Enabled := true;
     ProxyPortEdit.Color := clWindow;
     ProxyTypeComboBox.Enabled := true;
@@ -633,8 +739,8 @@ begin
   end
   else
   begin
-    ProxyAddresEdit.Enabled := false;
-    ProxyAddresEdit.Color := clBtnFace;
+    ProxyAddressEdit.Enabled := false;
+    ProxyAddressEdit.Color := clBtnFace;
     ProxyPortEdit.Enabled := false;
     ProxyPortEdit.Color := clBtnFace;
     ProxyTypeComboBox.Enabled := false;
@@ -669,7 +775,7 @@ begin
   case ProxyTypeComboBox.ItemIndex of
     0: ProxyPortEdit.Text := '80';
     1: ProxyPortEdit.Text := '443';
-  else ProxyPortEdit.Text := '';
+  else ProxyPortEdit.Text := EmptyStr;
   end;
 end;
 
@@ -741,41 +847,26 @@ end;
 
 procedure TSettingsForm.TranslateForms;
 var
-  i, c: integer;
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
+  i: integer;
 begin
   //--Загружаем перевод интерфейса программы
-  if CurrentLang <> '' then
+  if CurrentLang <> EmptyStr then
   begin
-    if FileExists(MyPath + 'Langs\' + CurrentLang + '.xml') then
-    begin
-      try
-        Xml := CreateXmlDocument;
-        Xml.Load(MyPath + 'Langs\' + CurrentLang + '.xml');
+    if FileExists(MyPath + 'Langs\' + CurrentLang + '.xml') then begin
+
+      With TrXML.Create() do try
+
+        LoadFromFile(MyPath + 'Langs\' + CurrentLang + '.xml');
         //--Переводим главное окно
-        XmlElem := Xml.DocumentElement.SelectSingleNode('main-form');
-        if XmlElem <> nil then
-        begin
-          if XmlElem.ChildNodes.Count > 0 then
-          begin
-            c := 0;
-            for i := 0 to MainForm.ComponentCount - 1 do
-            begin
-              if (c < XmlElem.ChildNodes.Count) and (MainForm.Components[i].Tag > 0) then
-              begin
-                if MainForm.Components[i].Tag = XmlElem.ChildNodes.Item[c].GetIntAttr('tag') then
-                begin
-                  SetStringPropertyIfExists(MainForm.Components[i], 'Hint', '<b>' + XmlElem.ChildNodes.Item[0].GetAttr('hint') + '</b>');
-                end;
-                Inc(c);
-              end;
-            end;
+        for i := 0 to MainForm.ComponentCount - 1 do begin
+          If OpenKey('settings\main-form\' + MainForm.Components[i].Name) then try
+            SetStringPropertyIfExists(MainForm.Components[i], 'Hint', '<b>' + ReadString('hint') + '</b>');
+          finally
+            CloseKey();
           end;
         end;
-        //--Переводим окно настроек
-
-      except
+      finally
+        Free();
       end;
     end;
   end;

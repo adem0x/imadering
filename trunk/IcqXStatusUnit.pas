@@ -81,7 +81,7 @@ begin
   //--Ставим иконку доп. статуса в меню icq
   MainForm.ICQPopupMenu.Items[2].ImageIndex := XButtonGroup.Items[XButtonGroup.ItemIndex].ImageIndex;
   //--Отправляем пакеты с инфой о новом статусе
-  SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', '', ICQ_X_CurrentStatus_Cap, '', '', ''));
+  SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
   ICQ_SetInfoP;
   ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
   //--Если шарик дня рождения то активируем этот режим
@@ -109,7 +109,7 @@ begin
     Xini.WriteString('XText', IntToStr(Xindex), Encrypt(Memo1.Text, 12345));
   Xindex := Index;
   Memo1.Clear;
-  Memo1.Text := Decrypt(Xini.ReadString('XText', IntToStr(Index), ''), 12345);
+  Memo1.Text := Decrypt(Xini.ReadString('XText', IntToStr(Index), EmptyStr), 12345);
   //
   Memo1.SelStart := Memo1.GetTextLen;
   if (Memo1.CanFocus) and (Assigned(IcqXStatusForm)) then Memo1.SetFocus;

@@ -116,11 +116,11 @@ procedure TAboutForm.AboutListTimerTimer(Sender: TObject);
 begin
   AboutListTimer.Enabled := false;
   //--Очищаем поля титров
-  SubJvBehaviorLabel.Caption := '';
+  SubJvBehaviorLabel.Caption := EmptyStr;
   //--Стартуем показ титров
   if HeadJvBehaviorLabel.Hint <> Parse(';', AboutList[AboutLen], 1) then
   begin
-    HeadJvBehaviorLabel.Caption := '';
+    HeadJvBehaviorLabel.Caption := EmptyStr;
     HeadJvBehaviorLabel.BehaviorOptions.Active := true;
   end
   else SubJvBehaviorLabel.BehaviorOptions.Active := true;

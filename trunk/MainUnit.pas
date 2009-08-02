@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  SimpleXML, JvHint, IdBaseComponent, IdThreadComponent;
+  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils;
 
 type
   TMainForm = class(TForm)
@@ -203,15 +203,15 @@ type
     procedure JvTimerListEvents6Timer(Sender: TObject);
     procedure ZipHistoryThreadRun(Sender: TIdThreadComponent);
     procedure JvTimerListEvents10Timer(Sender: TObject);
-    procedure ContactListCategoryCollapase(Sender: TObject;
-      const Category: TButtonCategory);
-    procedure OpenHistoryClick(Sender: TObject);
+    procedure OpenHistoryClick(Sender: TObject);    
   private
     { Private declarations }
     ButtonInd: integer;
     lastClick: Tdatetime;
     procedure LoadImageList(ImgList: TImageList; FName: string);
     procedure LoadMainFormSettings;
+    procedure LoadProxySettings;
+    procedure SetProxySettings;
     procedure MainFormHideInTray;
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
@@ -241,7 +241,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, CLSearchUnit;
+  HistoryUnit, Code, CLSearchUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -263,7 +263,7 @@ begin
           for ii := 0 to Categories[i].Items.Count - 1 do
           begin
             //--Если история этого контакта менялась и не пустая
-            if (Categories[i].Items[ii].HistoryChange) and (Categories[i].Items[ii].History <> '') then
+            if (Categories[i].Items[ii].HistoryChange) and (Categories[i].Items[ii].History <> EmptyStr) then
             begin
               //--Записываем в лист историю этого контакта
               ListF.Text := Categories[i].Items[ii].History;
@@ -427,28 +427,28 @@ begin
         HttpClient.RcvdStream.Free;
         HttpClient.RcvdStream := nil;
         //--Разбираем данные в листе
-        if list.Text > '' then
+        if list.Text > EmptyStr then
         begin
           ver := IsolateTextString(list.Text, '<v>', '</v>');
           bild := IsolateTextString(list.Text, '<b>', '</b>');
           mess := IsolateTextString(list.Text, '<m>', '</m>');
           //--Отображаем всплывающее окно с информацией о новой версии
-          if (ver <> '') and (bild <> '') then
+          if (ver <> EmptyStr) and (bild <> EmptyStr) then
           begin
             //--Если версия на сайте выше текущей
             if StrToInt(ver) > Update_Version then
             begin
-              DAShow(InformationHead, NewVersionIMaderingYES1, '', 133, 3, 100000000);
+              DAShow(InformationHead, NewVersionIMaderingYES1, EmptyStr, 133, 3, 100000000);
               goto x;
             end
             //--Если версия таже, но сборка выше текущей
             else if StrToInt(bild) > StrToInt(Parse('.', InitBuildInfo, 4)) then
             begin
-              DAShow(InformationHead, NewVersionIMaderingYES2, '', 133, 3, 100000000);
+              DAShow(InformationHead, NewVersionIMaderingYES2, EmptyStr, 133, 3, 100000000);
               goto x;
             end;
           end;
-          if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, '', 133, 0, 100000000);
+          if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
           goto y;
           x: ;
           //--Если форма не существует, то создаём её
@@ -488,15 +488,15 @@ end;
 procedure TMainForm.ICQStatusOnlineClick(Sender: TObject);
 begin
   //--Если логин ICQ или пароль пустые, то выводим окно настроек для их ввода
-  if (ICQ_LoginUIN = '') or (ICQ_LoginPassword = '') then
+  if (ICQ_LoginUIN = EmptyStr) or (ICQ_LoginPassword = EmptyStr) then
   begin
     //--Показываем сообщение об этой ошибке
-    DAShow(InformationHead, ICQAccountInfo_1, '', 133, 3, 0);
+    DAShow(InformationHead, ICQAccountInfo_1, EmptyStr, 133, 3, 0);
     //--Открываем настройки ICQ
     ICQSettingsClick(self);
     //--Ставим фокусы в поле ввода логина или пароля
-    if (IcqOptionsForm.ICQUINEdit.CanFocus) and (IcqOptionsForm.ICQUINEdit.Text = '') then IcqOptionsForm.ICQUINEdit.SetFocus
-    else if (IcqOptionsForm.PassEdit.CanFocus) and (IcqOptionsForm.PassEdit.Text = '') then IcqOptionsForm.PassEdit.SetFocus;
+    if (IcqOptionsForm.ICQUINEdit.CanFocus) and (IcqOptionsForm.ICQUINEdit.Text = EmptyStr) then IcqOptionsForm.ICQUINEdit.SetFocus
+    else if (IcqOptionsForm.PassEdit.CanFocus) and (IcqOptionsForm.PassEdit.Text = EmptyStr) then IcqOptionsForm.PassEdit.SetFocus;
     //--Выходим от сюда
     Exit;
   end;
@@ -533,29 +533,23 @@ begin
       JvTimerList.Events[5].Enabled := true;
       //--Устанавливаем параметры сокета
       ICQWSocket.Proto := 'tcp';
-      ICQWSocket.Addr := 'login.icq.com';
-      ICQWSocket.Port := '5190';
       //--Устанавливаем настройки прокси
-      {SetProxySettings;
-      if (G_ProxyEnabled) then
-      begin
-        if (G_ProxyType = 0) or (G_ProxyType = 1) then
-        begin
-          ICQWSocket1.Addr := ICQ_LoginServerAddr;
-          ICQWSocket1.Port := ICQ_LoginServerPort;
+      SetProxySettings;
+      if (G_ProxyEnabled) then begin
+        if (G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1) then begin
+          ICQWSocket.Addr := ICQ_LoginServerAddr;
+          ICQWSocket.Port := ICQ_LoginServerPort;
         end
         else
-          if G_ProxyType = 2 then
-          begin
-            ICQWSocket1.Addr := G_ProxyHost;
-            ICQWSocket1.Port := G_ProxyPort;
+          if G_ProxyTypeIndex = 2 then begin
+            ICQWSocket.Addr := G_ProxyHost;
+            ICQWSocket.Port := G_ProxyPort;
           end;
       end
-      else
-      begin
-        ICQWSocket1.Addr := ICQ_LoginServerAddr;
-        ICQWSocket1.Port := ICQ_LoginServerPort;
-      end;}
+      else begin
+        ICQWSocket.Addr := ICQ_LoginServerAddr;
+        ICQWSocket.Port := ICQ_LoginServerPort;
+      end;
       //--Подключаем сокет
       ICQWSocket.Connect;
     except
@@ -563,7 +557,7 @@ begin
       begin
         //--Если при подключении произошла ошибка, то сообщаем об этом
         //E.Message;
-        DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+        DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
         //--Активиуем режим оффлайн
         ICQ_GoOffline;
       end;
@@ -611,7 +605,7 @@ var
   i, ii: integer;
   mUIN: string;
 begin
-  if hUIN > '' then
+  if hUIN > EmptyStr then
   begin
     mUIN := hUIN;
     goto x;
@@ -625,7 +619,7 @@ begin
   //-Получаем учётную запись отправителя сообщения с самого низа списка
   mUIN := InMessList.Strings[InMessList.Count - 1];
   //--Если она вдруг пустая, то выходим
-  if mUIN = '' then Exit;
+  if mUIN = EmptyStr then Exit;
   x: ;
   //--Сканируем КЛ в поисках этого контакта
   with ContactList do
@@ -651,7 +645,7 @@ procedure TMainForm.ICQTrayIconClick(Sender: TObject);
 begin
   //--Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
   if ICQTrayIcon.Tag = 0 then MainFormHideInTray
-  else OpenFromTrayMessage('');
+  else OpenFromTrayMessage(EmptyStr);
 end;
 
 procedure TMainForm.ICQTrayIconMouseDown(Sender: TObject; Button: TMouseButton;
@@ -666,13 +660,13 @@ label
   x, z;
 var
   Pkt, HexPkt, SubPkt: string;
-  PktLen, Len {, ProxyErr}: integer;
+  PktLen, Len , ProxyErr: integer;
   i: byte;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := ICQWSocket.ReceiveStr;
   //--HTTP прокси коннект
-  {if (G_ProxyEnabled) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (G_ProxyType = 2) and (not ICQ_HTTP_Connect_Phaze) then
+  if (G_ProxyEnabled) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (G_ProxyTypeIndex = 2) and (not ICQ_HTTP_Connect_Phaze) then
   begin
     ICQ_myBeautifulSocketBuffer := ICQ_myBeautifulSocketBuffer + Pkt;
     if pos(#13#10 + #13#10, ICQ_myBeautifulSocketBuffer) = 0 then Exit;
@@ -684,38 +678,38 @@ begin
       ICQ_HTTP_Connect_Phaze := true;
     end
     else
-      if ansiStartsStr('HTTP/1.0 407', pkt) then
+      if AnsiStartsStr('HTTP/1.0 407', pkt) then
       begin
         ProxyErr := 1;
-        DAShow(false, '1', '17', '', 156, 2, 10000);
+        DAShow('1', '17', EmptyStr, 156, 2, 10000);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(false, '1', '18', '', 156, 2, 10000);
+        DAShow('1', '18', EmptyStr, 156, 2, 10000);
       end;
     //
     Pkt := ICQ_myBeautifulSocketBuffer;
-    ICQ_myBeautifulSocketBuffer := '';
+    ICQ_myBeautifulSocketBuffer := EmptyStr;
     //
     if ProxyErr <> 0 then
     begin
       ICQ_GoOffline;
       Exit;
     end;
-  end;}
+  end;
   //--Если длинна этих данных равна нулю, выходим от сюда :)
   if Length(Pkt) = 0 then Exit;
   //--Преобразуем данные из бинарного формата в HEX формат и прибавляем
   //их к специальному буферу накопления таких преобразованных данных
   ICQ_HexPkt := ICQ_HexPkt + Text2Hex(Pkt);
   //--Ищем ошибки в буфере пакетов
-  if ((ICQ_HexPkt > '') and (HexToInt(LeftStr(ICQ_HexPkt, 2)) <> $2A)) or
+  if ((ICQ_HexPkt > EmptyStr) and (HexToInt(LeftStr(ICQ_HexPkt, 2)) <> $2A)) or
     ((Length(ICQ_HexPkt) > 2) and ((HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) = $0)
     or (HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) > $05))) then
   begin
     //--Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-    DAShow(ErrorHead, ParsingPktError, '', 134, 2, 0);
+    DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
     ICQ_GoOffline;
     Exit;
   end;
@@ -814,7 +808,7 @@ begin
                       $0015:
                         begin
                           //--Новый пакет из протокла с "хорошими" ссылками
-                          ICQ_Well_Known_URL := '';
+                          ICQ_Well_Known_URL := EmptyStr;
                           //--Пропускаем раздел флагов
                           NextData(SubPkt, 12);
                           //--Делаем цикл с 0003 по 0009 TLV
@@ -936,7 +930,7 @@ begin
                             ICQ_AddEnd;
                             ICQ_Add_Contact_Phaze := false;
                             ICQ_SSI_Phaze := false;
-                            DAShow(ErrorHead, AddContactError, '', 134, 2, 0);
+                            DAShow(ErrorHead, AddContactError, EmptyStr, 134, 2, 0);
                           end else
                             //--Если фаза добавления группы
                             if ICQ_Add_Group_Phaze then
@@ -945,7 +939,7 @@ begin
                               ICQ_AddEnd;
                               ICQ_Add_Group_Phaze := false;
                               ICQ_SSI_Phaze := false;
-                              DAShow(ErrorHead, AddGroupError, '', 134, 2, 0);
+                              DAShow(ErrorHead, AddGroupError, EmptyStr, 134, 2, 0);
                             end else
                               //--Если фаза удаления группы
                               if ICQ_Group_Delete_Phaze then
@@ -954,7 +948,7 @@ begin
                                 ICQ_AddEnd;
                                 ICQ_Group_Delete_Phaze := false;
                                 ICQ_SSI_Phaze := false;
-                                DAShow(ErrorHead, DelGroupError, '', 134, 2, 0);
+                                DAShow(ErrorHead, DelGroupError, EmptyStr, 134, 2, 0);
                               end;
                         end;
                       $0006:
@@ -969,7 +963,7 @@ begin
                             //--Отсылаем подтверждение получения пакета с контактами
                             SendFLAP('2', '00130007000000000007');
                             //--Отсылаем первоначальную онлайн инфу
-                            SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', '', '', '', '', ''));
+                            SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
                             //--Отсылаем параметры ограничений
                             SendFLAP('2', ICQ_CliSetICBMparametersPkt);
                             //--Отсылаем первый пакет со статусом
@@ -983,7 +977,7 @@ begin
                             //--Если ещё есть доп. статус то отсылаем пакеты установки правильного доп. статуса как в ICQ 6
                             if ICQ_X_CurrentStatus > 0 then
                             begin
-                              SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', '', ICQ_X_CurrentStatus_Cap, '', '', ''));
+                              SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
                               ICQ_SetInfoP;
                               ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
                             end;
@@ -1054,7 +1048,7 @@ begin
                                 begin
                                   Len := HexToInt(NextData(SubPkt, 4));
                                   Len := Len * 2;
-                                  DAShow(ErrorHead, ICQ_NotifyAuthCookieError(NextData(SubPkt, Len)), '', 134, 2, 0);
+                                  DAShow(ErrorHead, ICQ_NotifyAuthCookieError(NextData(SubPkt, Len)), EmptyStr, 134, 2, 0);
                                   ICQ_GoOffline;
                                 end;
                               $0005: //--TLV с адресом для коннекта к основному серверу
@@ -1111,26 +1105,26 @@ begin
                     ICQ_HTTP_Connect_Phaze := false;
                     //--Устанавливаем параметры
                     ICQWSocket.Proto := 'tcp';
-                    //SetProxySettings;
-                    {if (G_ProxyEnabled) then
+                    SetProxySettings;
+                    if (G_ProxyEnabled) then
                     begin
-                      if (G_ProxyType = 0) or (G_ProxyType = 1) then
+                      if (G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1) then
                       begin
                         ICQWSocket.Addr := ICQ_Bos_IP;
                         ICQWSocket.Port := ICQ_Bos_Port;
                       end
                       else
-                        if G_ProxyType = 2 then
+                        if G_ProxyTypeIndex = 2 then
                         begin
                           ICQWSocket.Addr := G_ProxyHost;
                           ICQWSocket.Port := G_ProxyPort;
                         end;
                     end
                     else
-                    begin}
-                    ICQWSocket.Addr := ICQ_Bos_IP;
-                    ICQWSocket.Port := ICQ_Bos_Port;
-                    //end;
+                    begin
+                      ICQWSocket.Addr := ICQ_Bos_IP;
+                      ICQWSocket.Port := ICQ_Bos_Port;
+                    end;
                     //--Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
                   except
@@ -1138,7 +1132,7 @@ begin
                     begin
                       //--Если при подключении произошла ошибка, то сообщаем об этом
                       //E.Message;
-                      DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+                      DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
                       //--Активиуем режим оффлайн
                       ICQ_GoOffline;
                     end;
@@ -1156,7 +1150,7 @@ begin
                   $0009: //--TLV с кодом ошибки
                     begin
                       //--Выводим сообщение о том, что наш номер используется кем то другим
-                      DAShow(ErrorHead, ICQxUIN, '', 134, 2, 100000000);
+                      DAShow(ErrorHead, ICQxUIN, EmptyStr, 134, 2, 100000000);
                       //--Активиуем режим оффлайн
                       ICQ_GoOffline;
                     end;
@@ -1172,7 +1166,7 @@ begin
       begin
         //--Если начальная метка пакета не правильная,
         //то выводим сообщение об ошибке разбора и выходим в оффлайн
-        DAShow(ErrorHead, ParsingPktError, '', 134, 2, 0);
+        DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
         ICQ_GoOffline;
         Exit;
       end;
@@ -1188,7 +1182,7 @@ begin
   //--Если при отключении возникла ошибка, то сообщаем об этом
   if (ErrCode <> 0) and (not ICQ_Offline_Phaze) then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
     //--Активируем режим оффлайн
     ICQ_GoOffline;
     //--Если нужно переподключаться, то активируем этот таймер
@@ -1197,18 +1191,18 @@ begin
 end;
 
 procedure TMainForm.ICQWSocketSessionConnected(Sender: TObject; ErrCode: Word);
-//var
-  //http_data, http_login: string;
+var
+  http_data, http_login: string;
 begin
   //--Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), '', 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
     //--Активируем режим оффлайн
     ICQ_GoOffline;
   end;
   //--HTTP прокси коннект
-  {if (G_ProxyEnabled) and (G_ProxyType = 2) then
+  if (G_ProxyEnabled) and (G_ProxyTypeIndex = 2) then
   begin
     if ICQ_Connect_Phaze then http_data := ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort
     else http_data := ICQ_Bos_IP + ':' + ICQ_Bos_Port;
@@ -1222,7 +1216,7 @@ begin
       'User-agent: ICQ/2000b (Mozilla 1.24b; Windows; I; 32-bit)' + #13#10 +
       http_login + #13#10;
     ICQWSocket.sendStr(http_data);
-  end;}
+  end;
 end;
 
 procedure TMainForm.ICQXStatusClick(Sender: TObject);
@@ -1765,38 +1759,6 @@ begin
   ButtonInd := Button.Index;
 end;
 
-procedure TMainForm.ContactListCategoryCollapase(Sender: TObject;
-  const Category: TButtonCategory);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
-  i: integer;
-begin
-  //--Записываем в файл состояние раскрытых и свёрнутых групп
-  //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
-  //--Сохраняем настройки положения главного окна в xml
-  try
-    Xml := CreateXmlDocument('xml');
-    //--Сохраняем в цикле все группы и все контакты в них и флаги непрочитанных сообщений
-    with ContactList do
-    begin
-      for i := 0 to Categories.Count - 1 do
-      begin
-        //--Записываем группу
-        XmlElem := Xml.DocumentElement.AppendElement('g');
-        XmlElem.SetAttr('id', Categories[i].GroupId);
-        XmlElem.SetBoolAttr('s', Categories[i].Collapsed);
-        //--Растормаживаем фэйс
-        Application.ProcessMessages;
-      end;
-    end;
-    //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\Collapase.xml');
-  except
-  end;
-end;
-
 procedure TMainForm.ContactListContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 var
@@ -2084,6 +2046,12 @@ begin
   Application.OnHint := HintMaxTime;
   //--Загружаем настройки окна
   LoadMainFormSettings;
+
+  // Загрузим настройки прокси
+  LoadProxySettings;
+
+  SetProxySettings; 
+
   //--Проверяем активацию значков протоколов в трэе по умолчанию
   if not FirstStart then
   begin
@@ -2133,104 +2101,214 @@ begin
 end;
 
 procedure TMainForm.LoadMainFormSettings;
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+  With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\MainForm.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\MainForm.xml');
+    if FileExists(MyPath + 'Profile\MainForm.xml') then begin
+      LoadFromFile(MyPath + 'Profile\MainForm.xml');
+
       //--Загружаем позицию окна
-      XmlElem := Xml.DocumentElement.SelectSingleNode('mainform-position');
-      if XmlElem <> nil then
-      begin
-        Top := XmlElem.GetIntAttr('top');
-        Left := XmlElem.GetIntAttr('left');
-        Height := XmlElem.GetIntAttr('height');
-        Width := XmlElem.GetIntAttr('width');
+      If OpenKey('settings\mainform-position') then try
+        Top := ReadInteger('top');
+        Left := ReadInteger('left');
+        Height := ReadInteger('height');
+        Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do Top := Top - 50;
-        while Left + Width > Screen.Width do Left := Left - 50;
+        while Top + Height > Screen.Height do
+          Top := Top - 50;
+        while Left + Width > Screen.Width do
+          Left := Left - 50;
+      finally
+        CloseKey();
       end;
+
       //--Загружаем состояние кнопки звуков
-      XmlElem := Xml.DocumentElement.SelectSingleNode('sounds-on-off');
-      if XmlElem <> nil then
-      begin
-        if XmlElem.GetBoolAttr('boolean') then
-        begin
+      If OpenKey('settings\sounds-on-off') then try
+        if ReadBool('value') then begin
           SoundOnOffToolButton.ImageIndex := 136;
           SoundOnOffToolButton.Down := true;
           SoundOnOffToolButton.Hint := SoundOnHint;
         end;
+      finally
+        CloseKey();  
       end;
+
       //--Загружаем состояние кнопки только онлайн
-      XmlElem := Xml.DocumentElement.SelectSingleNode('only-online-on-off');
-      if XmlElem <> nil then
-      begin
-        if XmlElem.GetBoolAttr('boolean') then
-        begin
+      If OpenKey('settings\only-online-on-off') then try
+        if ReadBool('value') then begin
           OnlyOnlineContactsToolButton.ImageIndex := 137;
           OnlyOnlineContactsToolButton.Down := true;
           OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
         end;
+      finally
+        CloseKey();  
       end;
+
       //--Загружаем был ли первый старт
-      XmlElem := Xml.DocumentElement.SelectSingleNode('first-start');
-      if XmlElem <> nil then
-      begin
-        FirstStart := XmlElem.GetBoolAttr('boolean');
+      If OpenKey('settings\first-start') then try
+        FirstStart := ReadBool('value');
+      finally
+        CloseKey();
       end;
+      
       //--Загружаем выбранные протоколы
-      XmlElem := Xml.DocumentElement.SelectSingleNode('proto-select');
-      if XmlElem <> nil then
-      begin
-        ICQEnable(XmlElem.GetBoolAttr('icq'));
-        MRAEnable(XmlElem.GetBoolAttr('mra'));
-        JabberEnable(XmlElem.GetBoolAttr('jabber'));
+      If OpenKey('settings\proto-select') then try
+        ICQEnable(ReadBool('icq'));
+        MRAEnable(ReadBool('mra'));
+        JabberEnable(ReadBool('jabber'));
+      finally
+        CloseKey;  
       end;
     end;
-  except
+  finally
+    Free();
+  end;
+end;
+
+procedure TMainForm.LoadProxySettings;
+begin
+  //--Инициализируем XML
+  With TrXML.Create() do try
+    //--Загружаем настройки
+    if FileExists(MyPath + 'Profile\Proxy.xml') then begin
+      LoadFromFile(MyPath + 'Profile\Proxy.xml');
+
+      if OpenKey('settings\proxy') then try
+        G_ProxyEnabled := ReadBool('proxy-enable');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings\proxy-address') then try      
+        G_ProxyHost := ReadString('host');
+        G_ProxyPort := ReadString('port');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings\proxy-type') then try      
+        G_ProxyType := ReadString('type');
+        G_ProxyVersion := ReadString('version');
+        G_ProxyTypeIndex := ReadInteger('type-index');
+        G_ProxyVersionIndex := ReadInteger('version-index');
+      finally
+        CloseKey();
+      end;
+
+      if OpenKey('settings\proxy-auth') then try      
+        G_ProxyAuthorize := ReadBool('proxy-auth-enable');
+        G_ProxyLogin := ReadString('proxy-login');
+        G_ProxyPassword := Decrypt(ReadString('proxy-password'), PassKey);
+        G_ProxyNTLM := ReadBool('proxy-ntlm-auth');
+      finally
+        CloseKey();
+      end;
+    end;
+  finally
+    Free();
+  end;
+end;
+
+procedure TMainForm.SetProxySettings;
+begin
+  if ICQWSocket.State <> wsClosed then
+    Exit;
+
+  if (G_ProxyEnabled) and ((G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1)) then begin
+    case G_ProxyTypeIndex of
+      0: ICQWSocket.SocksLevel := '4';
+      1: ICQWSocket.SocksLevel := '5';
+    end;
+    //--Host
+    ICQWSocket.SocksServer := G_ProxyHost;
+    //--Port
+    ICQWSocket.SocksPort := G_ProxyPort;
+    //--Authorize
+    if G_ProxyAuthorize then begin
+      ICQWSocket.SocksAuthentication := socksAuthenticateUsercode;
+      //--Login
+      ICQWSocket.SocksUsercode := G_ProxyLogin;
+      //--Password
+      ICQWSocket.SocksPassword := G_ProxyPassword;
+    end
+    else begin
+      //--Login
+      ICQWSocket.SocksUsercode := EmptyStr;
+      //--Password
+      ICQWSocket.SocksPassword := EmptyStr;
+      //
+      ICQWSocket.SocksAuthentication := socksNoAuthentication;
+    end;
+  end
+  else begin
+    //--Socks level
+    ICQWSocket.SocksLevel := '5';
+    //--Host
+    ICQWSocket.SocksServer := EmptyStr;
+    //--Port
+    ICQWSocket.SocksPort := EmptyStr;
+    //--Authorize
+    ICQWSocket.SocksAuthentication := socksNoAuthentication;
+    //--Login
+    ICQWSocket.SocksUsercode := EmptyStr;
+    //--Password
+    ICQWSocket.SocksPassword := EmptyStr;
   end;
 end;
 
 procedure TMainForm.SaveMainFormSettings;
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
-  try
-    Xml := CreateXmlDocument('xml');
+  With TrXML.Create() do try
+
     //--Сохраняем позицию окна
-    XmlElem := Xml.DocumentElement.AppendElement('mainform-position');
-    XmlElem.SetIntAttr('top', Top);
-    XmlElem.SetIntAttr('left', Left);
-    XmlElem.SetIntAttr('height', Height);
-    XmlElem.SetIntAttr('width', Width);
+    If OpenKey('settings\mainform-position', True) then try
+      WriteInteger('top', Top);
+      WriteInteger('left', Left);
+      WriteInteger('height', Height);
+      WriteInteger('width', Width);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем звук вкл. выкл.
-    XmlElem := Xml.DocumentElement.AppendElement('sounds-on-off');
-    XmlElem.SetBoolAttr('boolean', SoundOnOffToolButton.Down);
+    If OpenKey('settings\sounds-on-off', True) then try
+      WriteBool('value', SoundOnOffToolButton.Down);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем отображать только онлайн вкл. выкл.
-    XmlElem := Xml.DocumentElement.AppendElement('only-online-on-off');
-    XmlElem.SetBoolAttr('boolean', OnlyOnlineContactsToolButton.Down);
+    If OpenKey('settings\only-online-on-off', True) then try
+      WriteBool('value', OnlyOnlineContactsToolButton.Down);
+    finally
+      CloseKey();
+    end;
+
     //--Записываем что первый запуск программы уже состоялся и показывать
     //окно настройки протоколов больше не будем при запуске
-    XmlElem := Xml.DocumentElement.AppendElement('first-start');
-    XmlElem.SetBoolAttr('boolean', true);
+    If OpenKey('settings\first-start', True) then try
+      WriteBool('value', true);
+    finally
+      CloseKey();
+    end;
+
     //--Сохраняем активные протоколы
-    XmlElem := Xml.DocumentElement.AppendElement('proto-select');
-    XmlElem.SetBoolAttr('icq', ICQToolButton.Visible);
-    XmlElem.SetBoolAttr('mra', MRAToolButton.Visible);
-    XmlElem.SetBoolAttr('jabber', JabberToolButton.Visible);
+    If OpenKey('settings\proto-select', True) then try
+      WriteBool('icq', ICQToolButton.Visible);
+      WriteBool('mra', MRAToolButton.Visible);
+      WriteBool('jabber', JabberToolButton.Visible);
+    finally
+      CloseKey();
+    end;
+
     //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\MainForm.xml');
-  except
+    SaveToFile(MyPath + 'Profile\MainForm.xml');
+  finally
+    Free();
   end;
 end;
 
@@ -2376,104 +2454,109 @@ end;
 
 procedure TMainForm.LoadContactList;
 var
-  Xml: IXmlDocument;
-  XmlElem, XmlElem1: IXmlNode;
-  i, ii: integer;
+  i, k: integer;
+  cnt_group, cnt_contact: integer;
 begin
+
+  cnt_group := 0;
+  cnt_contact := 0;
+
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+  With TrXML.Create() do try
     //--Загружаем файл контакт листа
-    if FileExists(MyPath + 'Profile\ContactList.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\ContactList.xml');
+    if FileExists(MyPath + 'Profile\ContactList.xml') then begin
+      LoadFromFile(MyPath + 'Profile\ContactList.xml');
+
       //--Загружаем группы и контакты в них
-      if Xml.DocumentElement.ChildNodes.Count <= 0 then Exit;
-      with ContactList do
-      begin
-        for i := 0 to Xml.DocumentElement.ChildNodes.Count - 1 do
-        begin
-          XmlElem := Xml.DocumentElement.ChildNodes.Item[i];
-          if XmlElem <> nil then
-          begin
-            Categories.Add.Caption := XmlElem.GetAttr('n');
-            Categories[i].GroupId := XmlElem.GetAttr('id');
-            Categories[i].GroupCaption := XmlElem.GetAttr('c');
-            Categories[i].Collapsed := XmlElem.GetBoolAttr('s');
-            if XmlElem.ChildNodes.Count <= 0 then Continue;
-            //--Ускоряем запись контактов в группу
-            Categories[i].Items.BeginUpdate;
-            for ii := 0 to XmlElem.ChildNodes.Count - 1 do
-            begin
-              XmlElem1 := XmlElem.ChildNodes.Item[ii];
-              Categories[i].Items.Add.Caption := XmlElem1.GetAttr('n');
-              Categories[i].Items[ii].UIN := XmlElem1.GetAttr('id');
-              Categories[i].Items[ii].ContactType := XmlElem1.GetAttr('t');
-              Categories[i].Items[ii].Msg := XmlElem1.GetBoolAttr('m');
-              //--Сбрасываем изображения иконок в дефолтные
-              if Categories[i].GroupId = 'NoCL' then
-              begin
-                Categories[i].Items[ii].Status := 214;
-                Categories[i].Items[ii].ImageIndex := 214;
-              end
-              else
-              begin
-                Categories[i].Items[ii].Status := 9;
-                Categories[i].Items[ii].ImageIndex := 9;
-              end;
-              Categories[i].Items[ii].ImageIndex1 := -1;
-              Categories[i].Items[ii].ImageIndex2 := -1;
-              //--Растормаживаем фэйс
-              Application.ProcessMessages;
-            end;
-            //--Заканчиваем запись контактов в группу
-            Categories[i].Items.EndUpdate;
-          end;
-        end;
+      if OpenKey('settings') then try
+        cnt_group := GetKeyCount('group');
+      finally
+        CloseKey();
       end;
+      With ContactList do
+        for i := 0 to cnt_group - 1 do begin
+          if OpenKey('settings\group', false, i) then try
+            Categories.Add.Caption := ReadString('caption');
+            Categories[i].GroupId := ReadString('id');
+            Categories[i].GroupCaption := ReadString('name');
+            Categories[i].Collapsed := ReadBool('collapsed');
+            cnt_contact := GetKeyCount('contact');
+          finally
+            CloseKey();
+          end;
+          //--Ускоряем запись контактов в группу
+          Categories[i].Items.BeginUpdate;
+          for k := 0 to cnt_contact - 1 do begin
+            if OpenKey('settings\group', false, i) then try
+              OpenKey('contact', false, k);
+              Categories[i].Items.Add.Caption := ReadString('nick');
+              Categories[i].Items[k].UIN := ReadString('id');
+              Categories[i].Items[k].ContactType := ReadString('type');
+              Categories[i].Items[k].Msg := ReadBool('msg');
+
+              if Categories[i].GroupId = 'NoCL' then begin
+                Categories[i].Items[k].Status := 214;
+                Categories[i].Items[k].ImageIndex := 214;
+              end
+              else begin
+                Categories[i].Items[k].Status := 9;
+                Categories[i].Items[k].ImageIndex := 9;
+              end;
+              Categories[i].Items[k].ImageIndex1 := -1;
+              Categories[i].Items[k].ImageIndex2 := -1;
+              //--Растормаживаем фэйс
+              Application.ProcessMessages;              
+            finally
+              CloseKey();
+            end;
+          end;
+          //--Заканчиваем запись контактов в группу
+          Categories[i].Items.EndUpdate;          
+        end;
     end;
-  except
+  finally
+    Free();
   end;
 end;
 
 procedure TMainForm.SaveContactList;
 var
-  Xml: IXmlDocument;
-  XmlElem, XmlElem1: IXmlNode;
-  i, ii: integer;
+  i, k: integer;
 begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
-  try
-    Xml := CreateXmlDocument('xml');
+  With TrXML.Create() do try
     //--Сохраняем в цикле все группы и все контакты в них и флаги непрочитанных сообщений
-    with ContactList do
-    begin
-      for i := 0 to Categories.Count - 1 do
-      begin
+    with ContactList do begin
+      for i := 0 to Categories.Count - 1 do begin
         //--Записываем группу
-        XmlElem := Xml.DocumentElement.AppendElement('g');
-        XmlElem.SetAttr('id', Categories[i].GroupId);
-        XmlElem.SetAttr('n', Categories[i].Caption);
-        XmlElem.SetAttr('c', Categories[i].GroupCaption);
-        XmlElem.SetBoolAttr('s', Categories[i].Collapsed);
-        for ii := 0 to Categories[i].Items.Count - 1 do
-        begin
+        if OpenKey('settings\group', True, i) then try
+          WriteString('id', Categories[i].GroupId);
+          WriteString('caption', Categories[i].Caption);
+          WriteString('name', Categories[i].GroupCaption);
+          WriteBool('collapsed', Categories[i].Collapsed);
+        finally
+          CloseKey();
+        end;
+        for k := 0 to Categories[i].Items.Count - 1 do begin
           //--Записываем контакты в этой группе
-          XmlElem1 := XmlElem.AppendElement('c');
-          XmlElem1.SetAttr('id', Categories[i].Items[ii].UIN);
-          XmlElem1.SetAttr('n', Categories[i].Items[ii].Caption);
-          XmlElem1.SetAttr('t', Categories[i].Items[ii].ContactType);
-          XmlElem1.SetBoolAttr('m', Categories[i].Items[ii].Msg);
-          //--Растормаживаем фэйс
-          Application.ProcessMessages;
+          if OpenKey('settings\group', True, i) then try
+            OpenKey('contact', True, k);
+            WriteString('id', Categories[i].Items[k].UIN);
+            WriteString('nick', Categories[i].Items[k].Caption);
+            WriteString('type', Categories[i].Items[k].ContactType);
+            WriteBool('msg', Categories[i].Items[k].Msg);
+          finally
+            CloseKey();
+          end;
         end;
       end;
     end;
     //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\ContactList.xml');
-  except
+    SaveToFile(MyPath + 'Profile\ContactList.xml');
+  finally
+    Free();
   end;
 end;
 

@@ -77,9 +77,9 @@ begin
   //
   if ICQ_X_CurrentStatus = 0 then
   begin
-    ICQ_X_CurrentStatus_Cap := '';
-    ICQ_X_CurrentStatus_Code := '';
-    ICQ_X_CurrentStatus_Text := '';
+    ICQ_X_CurrentStatus_Cap := EmptyStr;
+    ICQ_X_CurrentStatus_Code := EmptyStr;
+    ICQ_X_CurrentStatus_Text := EmptyStr;
   end;
   //
   for I := 0 to MainForm.ICQStatusPopupMenu.Items.Count - 1 do
@@ -88,7 +88,7 @@ begin
       MainForm.ICQStatusPopupMenu.Items[I].ImageIndex := ButtonGroup1.Items[ButtonGroup1.ItemIndex].ImageIndex;
   end;
   //
-  SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', '', ICQ_X_CurrentStatus_Cap, '', '', ''));
+  SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
   ICQ_SetInfoP;
   ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
   if CheckBox1.Checked then ICQ_BirthDay_Enabled := true
@@ -117,7 +117,7 @@ begin
     Xini.WriteString('XText', IntToStr(Xindex), Encrypt(Memo1.Text, 12345));
   Xindex := Index;
   Memo1.Clear;
-  Memo1.Text := Decrypt(Xini.ReadString('XText', IntToStr(Index), ''), 12345);
+  Memo1.Text := Decrypt(Xini.ReadString('XText', IntToStr(Index), EmptyStr), 12345);
   //
   Memo1.SelStart := Memo1.GetTextLen;
   if (Memo1.CanFocus) and (Assigned(MraXStatusForm)) then Memo1.SetFocus;

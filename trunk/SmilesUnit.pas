@@ -104,9 +104,9 @@ begin
   GetCursorPos(Pt);
   Pt1 := SmiliesHTMLViewer.ScreenToClient(Pt);
   TitleStr := SmiliesHTMLViewer.TitleAttr;
-  if (TitleStr = '') or not PtInRect(SmiliesHTMLViewer.ClientRect, Pt1) then
+  if (TitleStr = EmptyStr) or not PtInRect(SmiliesHTMLViewer.ClientRect, Pt1) then
   begin
-    OldTitle := '';
+    OldTitle := EmptyStr;
     CloseAll;
     Exit;
   end;
@@ -154,8 +154,8 @@ begin
   if not HintTimer.Enabled and Assigned(ActiveControl) and ActiveControl.Focused then
   begin
     TitleStr := SmiliesHTMLViewer.TitleAttr;
-    if TitleStr = '' then
-      OldTitle := ''
+    if TitleStr = EmptyStr then
+      OldTitle := EmptyStr
     else if TitleStr <> OldTitle then
     begin
       TimerCount := 0;

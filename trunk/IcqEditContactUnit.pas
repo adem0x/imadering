@@ -51,7 +51,7 @@ var
   i, ii: integer;}
 begin
   {if not ICQ_Work_Phaze then goto x;
-  if Edit1.Text = '' then goto x;
+  if Edit1.Text = EmptyStr then goto x;
   if RoasterForm.Roaster_Sel_Button = nil then goto x;
   //
   if (RoasterForm.Roaster_Sel_Button.GroupId = '0000') or

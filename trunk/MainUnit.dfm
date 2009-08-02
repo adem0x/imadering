@@ -47,7 +47,6 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 0
     OnButtonClicked = ContactListButtonClicked
-    OnCategoryCollapase = ContactListCategoryCollapase
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
   end

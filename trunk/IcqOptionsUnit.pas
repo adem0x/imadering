@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ButtonGroup, JvPageList, JvExControls, ExtCtrls, StdCtrls,
-  Buttons, ComCtrls, OverbyteIcsWSocket, VarsUnit, ShellApi, SimpleXML;
+  Buttons, ComCtrls, OverbyteIcsWSocket, VarsUnit, ShellApi, rXML;
 
 type
   TIcqOptionsForm = class(TForm)
@@ -278,9 +278,6 @@ uses
 //APPLY SETTINGS----------------------------------------------------------------
 
 procedure TIcqOptionsForm.ApplySettings;
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Применяем настройки ICQ протокола
   //--Нормализуем ICQ логин
@@ -298,22 +295,25 @@ begin
 
   //----------------------------------------------------------------------------
   //--Записываем настройки ICQ протокола в файл
-  try
-    Xml := CreateXmlDocument('xml');
-    //--Сохраняем логин и пароль
-    XmlElem := Xml.DocumentElement.AppendElement('icq-account');
-    XmlElem.SetAttr('login', ICQUINEdit.Text);
-    XmlElem.SetBoolAttr('save-password', SavePassCheckBox.Checked);
-    if SavePassCheckBox.Checked then XmlElem.SetAttr('password', Encrypt(PassEdit.Hint, PassKey))
-    else XmlElem.SetAttr('password', '');
-    //--Маскируем пароль
-    if PassEdit.Text <> '' then PassEdit.Text := '----------------------';
-    //--
-
-    //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\IcqOptions.xml');
-  except
+  With TrXML.Create() do try
+    If OpenKey('settings\icq-account', True) then try
+      WriteString('login', ICQUINEdit.Text);
+      WriteBool('save-password', SavePassCheckBox.Checked);
+      if SavePassCheckBox.Checked then
+        WriteString('password', Encrypt(PassEdit.Hint, PassKey))
+      else
+        WriteString('password', EmptyStr);
+      //--Маскируем пароль
+      if PassEdit.Text <> EmptyStr then
+        PassEdit.Text := '----------------------';
+    finally
+      CloseKey();
+    end;
+    SaveToFile(MyPath + 'Profile\IcqOptions.xml');
+  finally
+    Free();
   end;
+
   //--Деактивируем кнопку применения настроек
   ApplyButton.Enabled := false;
 end;
@@ -321,34 +321,30 @@ end;
 //LOAD SETTINGS-----------------------------------------------------------------
 
 procedure TIcqOptionsForm.LoadSettings;
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
-    //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\IcqOptions.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\IcqOptions.xml');
+  With TrXML.Create() do try
+    if FileExists(MyPath + 'Profile\IcqOptions.xml') then begin
+      LoadFromFile(MyPath + 'Profile\IcqOptions.xml');
+
       //--Загружаем позицию окна
-      XmlElem := Xml.DocumentElement.SelectSingleNode('icq-account');
-      if XmlElem <> nil then
-      begin
-        ICQUINEdit.Text := XmlElem.GetAttr('login');
-        if ICQUINEdit.Text <> '' then ICQ_LoginUIN := ICQUINEdit.Text;
-        SavePassCheckBox.Checked := XmlElem.GetBoolAttr('save-password');
-        PassEdit.Text := XmlElem.GetAttr('password');
-        if PassEdit.Text <> '' then
-        begin
+      if OpenKey('settings\icq-account') then try
+        ICQUINEdit.Text := ReadString('login');
+        if ICQUINEdit.Text <> EmptyStr then
+          ICQ_LoginUIN := ICQUINEdit.Text;
+        SavePassCheckBox.Checked := ReadBool('save-password');
+        PassEdit.Text := ReadString('password');
+        if PassEdit.Text <> EmptyStr then begin
           PassEdit.Hint := Decrypt(PassEdit.Text, PassKey);
           ICQ_LoginPassword := PassEdit.Hint;
           PassEdit.Text := '----------------------';
         end;
+      finally
+        CloseKey();
       end;
     end;
-  except
+  finally
+    Free();
   end;
 end;
 
@@ -403,7 +399,7 @@ end;
 procedure TIcqOptionsForm.PassEditClick(Sender: TObject);
 begin
   //--Если уже заменитель пароля, то очищаем поле ввода пароля
-  if PassEdit.Text = '----------------------' then PassEdit.Text := '';
+  if PassEdit.Text = '----------------------' then PassEdit.Text := EmptyStr;
 end;
 
 procedure TIcqOptionsForm.CancelButtonClick(Sender: TObject);
@@ -422,16 +418,16 @@ procedure TIcqOptionsForm.ChangePassButtonClick(Sender: TObject);
 begin
   if ICQ_Work_Phaze then
   begin
-    if (CurrentPassChangeEdit.Text = '') or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) then DAShow(AlertHead, PassChangeAlert_1, '', 134, 2, 0)
-    else if NewPassChangeEdit.Text = '' then DAShow(AlertHead, PassChangeAlert_1, '', 134, 2, 0)
-    else if Length(NewPassChangeEdit.Text) < 6 then DAShow(AlertHead, PassChangeAlert_1, '', 134, 2, 0)
-    else if (RetypeNewPassEdit.Text = '') or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then DAShow(AlertHead, PassChangeAlert_1, '', 134, 2, 0)
+    if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) then DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+    else if NewPassChangeEdit.Text = EmptyStr then DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+    else if Length(NewPassChangeEdit.Text) < 6 then DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+    else if (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
     else begin
       ICQ_PassChange(RetypeNewPassEdit.Text);
       ICQ_ChangePassword := RetypeNewPassEdit.Text;
     end;
   end
-  else DAShow(AlertHead, OnlineAlert, '', 134, 2, 0);
+  else DAShow(AlertHead, OnlineAlert, EmptyStr, 134, 2, 0);
 end;
 
 procedure TIcqOptionsForm.ClientIDInfoMemoMouseMove(Sender: TObject;
@@ -447,7 +443,7 @@ begin
   //--Копируем текст пакета из рича (используем ричедит против глюка с отрисовкой мемо в виндовс 7)
   Pkt := Trim(SendCustomICQPacketRichEdit.Text);
   //--Если пакет больше нуля и рабочая фаза icq подключения
-  if (Pkt > '') and ICQ_Work_Phaze then
+  if (Pkt > EmptyStr) and ICQ_Work_Phaze then
   begin
     //--Удаляем все переносы строк из пакета
     Pkt := DeleteLineBreaks(Pkt);
@@ -478,7 +474,7 @@ end;
 procedure TIcqOptionsForm.SendCustomICQPaketTimerEditExit(Sender: TObject);
 begin
   //--Если ввод пустой, то ставим по дефолту
-  if SendCustomICQPaketTimerEdit.Text = '' then SendCustomICQPaketTimerEdit.Text := '10';
+  if SendCustomICQPaketTimerEdit.Text = EmptyStr then SendCustomICQPaketTimerEdit.Text := '10';
 end;
 
 procedure TIcqOptionsForm.SendCustomICQPaketTimerEditKeyPress(Sender: TObject;
@@ -574,7 +570,7 @@ end;
 procedure TIcqOptionsForm.WebAwareTestButtonClick(Sender: TObject);
 begin
   //--Открываем браузер для проверки веб-статуса на сайте ICQ
-  if ICQ_LoginUIN <> '' then
+  if ICQ_LoginUIN <> EmptyStr then
     ShellExecute(Application.Handle, 'open', PChar('http://status.icq.com/online.gif?icq=' + ICQ_LoginUIN + '&img=5'), nil, nil, SW_SHOWNORMAL);
 end;
 
@@ -592,16 +588,16 @@ begin
   //--Начинаем заполнение строк
   ParamInfoRichEdit.Lines.BeginUpdate;
   //--Добавляем информацию не вошедшую в другие разделы
-  if ICQ_CollSince <> '' then ParamInfoRichEdit.Lines.Add(OnlineInfo1L + ': ' + ICQ_CollSince);
-  if ICQ_OnlineTime <> '' then ParamInfoRichEdit.Lines.Add(OnlineInfo2L + ': ' + ICQ_OnlineTime);
-  if ICQ_AwayMess <> '' then ParamInfoRichEdit.Lines.Add(OnlineInfo3L + ': ' + ICQ_AwayMess);
-  if ICQ_Well_Known_URL <> '' then
+  if ICQ_CollSince <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo1L + ': ' + ICQ_CollSince);
+  if ICQ_OnlineTime <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo2L + ': ' + ICQ_OnlineTime);
+  if ICQ_AwayMess <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo3L + ': ' + ICQ_AwayMess);
+  if ICQ_Well_Known_URL <> EmptyStr then
   begin
     ParamInfoRichEdit.Lines.Add(OnlineInfo4L + ':' + #13#10 + ICQ_Well_Known_URL);
     ParamInfoRichEdit.Lines.Delete(ParamInfoRichEdit.Lines.Count - 1);
   end;
-  if Bos_Addr <> '' then ParamInfoRichEdit.Lines.Add(OnlineInfo5L + ': ' + Bos_Addr);
-  if ICQ_MyIcon_Hash <> '' then ParamInfoRichEdit.Lines.Add(OnlineInfo6L + ': ' + ICQ_MyIcon_Hash);
+  if Bos_Addr <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo5L + ': ' + Bos_Addr);
+  if ICQ_MyIcon_Hash <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo6L + ': ' + ICQ_MyIcon_Hash);
   if ICQ_CL_Count > 0 then ParamInfoRichEdit.Lines.Add(OnlineInfo7L + ': ' + IntToStr(ICQ_CL_Count));
   //--Заканчиваем заполнение строк
   ParamInfoRichEdit.Lines.EndUpdate;

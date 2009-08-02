@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Htmlview, ExtCtrls, Buttons, Menus, VarsUnit,
-  ExtDlgs, SimpleXML;
+  ExtDlgs, rXML;
 
 type
   THistoryForm = class(TForm)
@@ -104,7 +104,7 @@ begin
         if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
         SetLength(Doc, Length(Doc) - 6);
         Doc := Doc + '<HR>';
-        HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+        HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
         HTMLHistoryViewer.Position := HTMLHistoryViewer.VScrollBar.Max;
         //--Ставим каретку в самый низ текста
         HTMLHistoryViewer.CaretPos := Length(Doc);
@@ -130,7 +130,7 @@ begin
             //--Прокручиваем список на эту учётную запись
             ContactsComboBox.ItemIndex := ContactsComboBox.Items.IndexOf(ReqCType + '_' + hUIN);
             //--Проверяем загружена ли история уже
-            if Categories[I].Items[II].History = '' then
+            if Categories[I].Items[II].History = EmptyStr then
             begin
               //--Загружаем файл истории сообщений
               HistoryFile := MyPath + 'Profile\History\' + ReqCType + '_' + hUIN + '.z';
@@ -148,7 +148,7 @@ begin
               end;
             end;
             //--Отображаем историю в чате
-            if Categories[I].Items[II].History <> '' then
+            if Categories[I].Items[II].History <> EmptyStr then
             begin
               //--Очистили компонент истории
               HTMLHistoryViewer.Clear;
@@ -159,7 +159,7 @@ begin
               if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
               SetLength(Doc, Length(Doc) - 6);
               Doc := Doc + '<HR>';
-              HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+              HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
               HTMLHistoryViewer.Position := HTMLHistoryViewer.VScrollBar.Max;
               //--Ставим каретку в самый низ текста
               HTMLHistoryViewer.CaretPos := Length(Doc);
@@ -171,7 +171,7 @@ begin
               //--Добавляем стили
               Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
               Doc := Doc + '<span class=d>' + HistoryNotFile + '</span>';
-              HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+              HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
             end;
             //--Выходим из цыкла если нашли контакт
             goto x;
@@ -234,7 +234,7 @@ var
   list: TStringList;
 begin
   //--Если путь к файлу пустой, то выходим
-  if (ReqHUIN = '') or (ReqCType = '') then Exit;
+  if (ReqHUIN = EmptyStr) or (ReqCType = EmptyStr) then Exit;
   //--Указываем начальное имя файла
   SaveTextAsFileDialog.FileName := 'History_' + ReqCType + '_' + ReqHUIN;
   //--Открываем диалог сохранения файла
@@ -263,7 +263,7 @@ var
   i: integer;
 begin
   //--Если путь к файлу пустой, то выходим
-  if (ReqHUIN = '') or (ReqCType = '') then Exit;
+  if (ReqHUIN = EmptyStr) or (ReqCType = EmptyStr) then Exit;
   //--Выводим запрос на удаление файла истории
   i := MessageBox(Handle, PChar(HistoryDelL), PChar(WarningHead), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
   //--Если ответ положительный
@@ -274,8 +274,8 @@ begin
       DeleteFile(MyPath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z');
     //--Очищаем компонент истории
     HTMLHistoryViewer.Clear;
-    Doc := '';
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+    Doc := EmptyStr;
+    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   end;
 end;
 
@@ -300,31 +300,29 @@ begin
 end;
 
 procedure THistoryForm.FormCreate(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+  With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\HistoryForm.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\HistoryForm.xml');
+    if FileExists(MyPath + 'Profile\HistoryForm.xml') then begin
+      LoadFromFile(MyPath + 'Profile\HistoryForm.xml');
       //--Загружаем позицию окна
-      XmlElem := Xml.DocumentElement.SelectSingleNode('historyform-position');
-      if XmlElem <> nil then
-      begin
-        Top := XmlElem.GetIntAttr('top');
-        Left := XmlElem.GetIntAttr('left');
-        Height := XmlElem.GetIntAttr('height');
-        Width := XmlElem.GetIntAttr('width');
+      If OpenKey('settings\historyform-position') then try
+        Top := ReadInteger('top');
+        Left := ReadInteger('left');
+        Height := ReadInteger('height');
+        Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do Top := Top - 50;
-        while Left + Width > Screen.Width do Left := Left - 50;
+        while Top + Height > Screen.Height do
+          Top := Top - 50;
+        while Left + Width > Screen.Width do
+          Left := Left - 50;
+      finally
+        CloseKey();
       end;
     end;
-  except
+  finally
+    Free();
   end;
   //--Переводим окно на другие языки
   TranslateForm;
@@ -343,24 +341,24 @@ begin
 end;
 
 procedure THistoryForm.FormDestroy(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна истории в xml
-  try
-    Xml := CreateXmlDocument('xml');
+  With TrXML.Create() do try
     //--Сохраняем позицию окна
-    XmlElem := Xml.DocumentElement.AppendElement('historyform-position');
-    XmlElem.SetIntAttr('top', Top);
-    XmlElem.SetIntAttr('left', Left);
-    XmlElem.SetIntAttr('height', Height);
-    XmlElem.SetIntAttr('width', Width);
+    If OpenKey('settings\historyform-position', True) then try
+      WriteInteger('top', Top);
+      WriteInteger('left', Left);
+      WriteInteger('height', Height);
+      WriteInteger('width', Width);
+    finally
+      CloseKey();
+    end;
     //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\HistoryForm.xml');
-  except
+    SaveToFile(MyPath + 'Profile\HistoryForm.xml');
+  finally
+    Free();
   end;
 end;
 

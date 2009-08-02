@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ComCtrls, ExtCtrls, VarsUnit, SimpleXML;
+  Dialogs, StdCtrls, Buttons, ComCtrls, ExtCtrls, VarsUnit, rXML;
 
 type
   TCLSearchForm = class(TForm)
@@ -152,31 +152,29 @@ begin
 end;
 
 procedure TCLSearchForm.FormCreate(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Инициализируем XML
-  try
-    Xml := CreateXmlDocument;
+  With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\ClsearchForm.xml') then
-    begin
-      Xml.Load(MyPath + 'Profile\ClsearchForm.xml');
+    if FileExists(MyPath + 'Profile\ClsearchForm.xml') then begin
+      LoadFromFile(MyPath + 'Profile\ClsearchForm.xml');
       //--Загружаем позицию окна
-      XmlElem := Xml.DocumentElement.SelectSingleNode('clsearch-position');
-      if XmlElem <> nil then
-      begin
-        Top := XmlElem.GetIntAttr('top');
-        Left := XmlElem.GetIntAttr('left');
-        Height := XmlElem.GetIntAttr('height');
-        Width := XmlElem.GetIntAttr('width');
+      if OpenKey('settings\clsearch-position') then try
+        Top := ReadInteger('top');
+        Left := ReadInteger('left');
+        Height := ReadInteger('height');
+        Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do Top := Top - 50;
-        while Left + Width > Screen.Width do Left := Left - 50;
+        while Top + Height > Screen.Height do
+          Top := Top - 50;
+        while Left + Width > Screen.Width do
+          Left := Left - 50;
+      finally
+        CloseKey();
       end;
     end;
-  except
+  finally
+    Free();
   end;
   //--Переводим окно на другие языки
   TranslateForm;
@@ -188,24 +186,24 @@ begin
 end;
 
 procedure TCLSearchForm.FormDestroy(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна в xml
-  try
-    Xml := CreateXmlDocument('xml');
+  With TrXML.Create() do try
     //--Сохраняем позицию окна
-    XmlElem := Xml.DocumentElement.AppendElement('clsearch-position');
-    XmlElem.SetIntAttr('top', Top);
-    XmlElem.SetIntAttr('left', Left);
-    XmlElem.SetIntAttr('height', Height);
-    XmlElem.SetIntAttr('width', Width);
+    if OpenKey('settings\clsearch-position', True) then try
+      WriteInteger('top', Top);
+      WriteInteger('left', Left);
+      WriteInteger('height', Height);
+      WriteInteger('width', Width);
+    finally
+      CloseKey();
+    end;
     //--Записываем сам файл
-    Xml.Save(MyPath + 'Profile\ClsearchForm.xml');
-  except
+    SaveToFile(MyPath + 'Profile\ClsearchForm.xml');
+  finally
+    Free();
   end;
 end;
 

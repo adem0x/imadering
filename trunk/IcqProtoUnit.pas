@@ -14,7 +14,7 @@ uses
   Windows, MainUnit, IcqOptionsUnit, SysUtils, JvTrayIcon, OSCARMd5,
   Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms, IcqSearchUnit,
   ComCtrls, Messages, Classes, IcqContactInfoUnit, Code, VarsUnit,
-  Graphics, CategoryButtons, SimpleXML, JvZLibMultiple;
+  Graphics, CategoryButtons, rXML, JvZLibMultiple;
 
 const
   DT2100miliseconds = 1 / (SecsPerDay * 10);
@@ -227,12 +227,14 @@ const
 
   ICQ_FLAP_HEAD_SIZE = 12;
 
+  Icq_Info: string = 'Profile\Contacts\Download\Icq_Info.xml';
+
 var
   ICQ_Bos_IP: string;
   ICQ_Bos_Port: string;
   ICQ_myBeautifulSocketBuffer: string;
   ICQ_LoginServerAddr: string = 'login.icq.com';
-  ICQ_LoginServerPort: string = '5190';
+  ICQ_LoginServerPort: string = '443';//'5190';
   ICQ_HexPkt: string;
   ICQ_RegUIN_HexPkt: string;
   ICQ_Avatar_HexPkt: string;
@@ -439,7 +441,7 @@ begin
   Len := Len * 2;
   ImageHex := NextData(PktData, Len);
   ImageStr := Hex2Text(ImageHex);
-  if ImageHex > '' then
+  if ImageHex > EmptyStr then
   begin
     ImageData := TMemoryStream.Create;
     try
@@ -498,7 +500,7 @@ begin
     end;
   end;
   //
-  if (BosIP > '') and (ICQ_Avatar_Cookie > '') then
+  if (BosIP > EmptyStr) and (ICQ_Avatar_Cookie > EmptyStr) then
   begin
     try
       ICQ_Avatar_Work_Phaze := false;
@@ -530,7 +532,7 @@ begin
   Utf8_City := StrToUtf8(City);
   Utf8_Key := StrToUtf8(Keywords);
   //
-  Pkt := ''; PktSub := '';
+  Pkt := EmptyStr; PktSub := EmptyStr;
   case AgeRange of
     0: PktSub := '0011000D';
     1: PktSub := '00160012';
@@ -540,24 +542,24 @@ begin
     5: PktSub := '003B0032';
     6: PktSub := '0078003C';
   end;
-  if PktSub <> '' then PktSub := '01540004' + PktSub;
-  if NickName <> '' then Pkt := '0078' + IntToHex(Length(Utf8_Nick), 4) + Text2Hex(Utf8_Nick);
-  if FirstName <> '' then Pkt := Pkt + '0064' + IntToHex(Length(Utf8_First), 4) + Text2Hex(Utf8_First);
-  if LastName <> '' then Pkt := Pkt + '006E' + IntToHex(Length(Utf8_Last), 4) + Text2Hex(Utf8_Last);
-  if City <> '' then Pkt := Pkt + '00A0' + IntToHex(Length(Utf8_City), 4) + Text2Hex(Utf8_City);
+  if PktSub <> EmptyStr then PktSub := '01540004' + PktSub;
+  if NickName <> EmptyStr then Pkt := '0078' + IntToHex(Length(Utf8_Nick), 4) + Text2Hex(Utf8_Nick);
+  if FirstName <> EmptyStr then Pkt := Pkt + '0064' + IntToHex(Length(Utf8_First), 4) + Text2Hex(Utf8_First);
+  if LastName <> EmptyStr then Pkt := Pkt + '006E' + IntToHex(Length(Utf8_Last), 4) + Text2Hex(Utf8_Last);
+  if City <> EmptyStr then Pkt := Pkt + '00A0' + IntToHex(Length(Utf8_City), 4) + Text2Hex(Utf8_City);
   if Gender <> -1 then Pkt := Pkt + '00820001' + IntToHex(Gender, 2);
   if Marital <> -1 then Pkt := Pkt + '012C0002' + IntToHex(Marital, 4);
   if Country <> -1 then Pkt := Pkt + '00BE0004' + IntToHex(Country, 8);
   Pkt := Pkt + PktSub;
   if Language <> -1 then Pkt := Pkt + '00FA0002' + IntToHex(Language, 4);
   if OnlineOnly then Pkt := Pkt + '013600020001';
-  if Keywords <> '' then Pkt := Pkt + '017C' + IntToHex(Length(Utf8_Key), 4) + Text2Hex(Utf8_Key);
+  if Keywords <> EmptyStr then Pkt := Pkt + '017C' + IntToHex(Length(Utf8_Key), 4) + Text2Hex(Utf8_Key);
   Pkt := '05B90FA0000000000000000004E3000000020002' + IntToHex(PageIndex, 4) + '0001' + IntToHex(Length(Hex2Text(Pkt)), 4) + Pkt;
   Pkt := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) + 'A00F' + IntToHex(Length(Hex2Text(Pkt)), 4) + Pkt;
   Len := Length(Hex2Text(Pkt));
   Pkt := '00150002000000000002' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt;
   //
-  ICQ_ReqInfo_UIN := '';
+  ICQ_ReqInfo_UIN := EmptyStr;
   SendFLAP('2', Pkt);
 end;
 
@@ -566,7 +568,7 @@ var
   Pkt, PktSub: string;
   Len: integer;
 begin
-  Pkt := ''; PktSub := '';
+  Pkt := EmptyStr; PktSub := EmptyStr;
   case AgeRange of
     0: PktSub := '0011000D';
     1: PktSub := '00160012';
@@ -576,12 +578,12 @@ begin
     5: PktSub := '003B0032';
     6: PktSub := '00781027';
   end;
-  if PktSub <> '' then PktSub := '68010400' + PktSub;
-  if NickName <> '' then Pkt := '5401' + IntToHex(Swap16(Length(NickName) + 3), 4) + IntToHex(Swap16(Length(NickName) + 1), 4) + Text2Hex(NickName) + '00';
-  if FirstName <> '' then Pkt := Pkt + '4001' + IntToHex(Swap16(Length(FirstName) + 3), 4) + IntToHex(Swap16(Length(FirstName) + 1), 4) + Text2Hex(FirstName) + '00';
-  if LastName <> '' then Pkt := Pkt + '4A01' + IntToHex(Swap16(Length(LastName) + 3), 4) + IntToHex(Swap16(Length(LastName) + 1), 4) + Text2Hex(LastName) + '00';
-  if City <> '' then Pkt := Pkt + '9001' + IntToHex(Swap16(Length(City) + 3), 4) + IntToHex(Swap16(Length(City) + 1), 4) + Text2Hex(City) + '00';
-  if Keywords <> '' then Pkt := Pkt + '2B02' + IntToHex(Swap16(Length(Keywords) + 3), 4) + IntToHex(Swap16(Length(Keywords) + 1), 4) + Text2Hex(Keywords) + '00';
+  if PktSub <> EmptyStr then PktSub := '68010400' + PktSub;
+  if NickName <> EmptyStr then Pkt := '5401' + IntToHex(Swap16(Length(NickName) + 3), 4) + IntToHex(Swap16(Length(NickName) + 1), 4) + Text2Hex(NickName) + '00';
+  if FirstName <> EmptyStr then Pkt := Pkt + '4001' + IntToHex(Swap16(Length(FirstName) + 3), 4) + IntToHex(Swap16(Length(FirstName) + 1), 4) + Text2Hex(FirstName) + '00';
+  if LastName <> EmptyStr then Pkt := Pkt + '4A01' + IntToHex(Swap16(Length(LastName) + 3), 4) + IntToHex(Swap16(Length(LastName) + 1), 4) + Text2Hex(LastName) + '00';
+  if City <> EmptyStr then Pkt := Pkt + '9001' + IntToHex(Swap16(Length(City) + 3), 4) + IntToHex(Swap16(Length(City) + 1), 4) + Text2Hex(City) + '00';
+  if Keywords <> EmptyStr then Pkt := Pkt + '2B02' + IntToHex(Swap16(Length(Keywords) + 3), 4) + IntToHex(Swap16(Length(Keywords) + 1), 4) + Text2Hex(Keywords) + '00';
   if Gender <> -1 then Pkt := Pkt + '7C010100' + IntToHex(Gender, 2);
   if Marital <> -1 then Pkt := Pkt + '3E030200' + IntToHex(Marital, 4);
   if Country <> -1 then Pkt := Pkt + 'A4010400' + IntToHex(Country, 8);
@@ -601,7 +603,7 @@ end;
 
 function ICQ_ClientCap2String(ClientCap: string): string;
 begin
-  Result := '';
+  Result := EmptyStr;
   //--Определяем клиент по капабилитисам
   if BMSearch(0, ClientCap, CAP_IMADERING) > -1 then Result := 'IMadering'
   else if BMSearch(0, ClientCap, CAP_QIP) > -1 then Result := 'QIP 2005'
@@ -668,14 +670,14 @@ begin
     begin
       {Uini := TIniFile.Create(MyPath + 'Profile\Contacts\' + Button.UIN + '.inf');
       //
-      Ln := Uini.ReadString('Info', 'cFirst', '');
-      Lf := Uini.ReadString('Info', 'cLast', '');
+      Ln := Uini.ReadString('Info', 'cFirst', EmptyStr);
+      Lf := Uini.ReadString('Info', 'cLast', EmptyStr);
       if IsNotNull([Ln, Lf]) then
       begin
         Result := Result + '<b>';
-        if Ln > '' then Result := Result + Ln;
-        if (Ln > '') and (Lf > '') then Result := Result + ' ' + Lf
-        else if (Ln = '') and (Lf > '') then Result := Result + Lf;
+        if Ln > EmptyStr then Result := Result + Ln;
+        if (Ln > EmptyStr) and (Lf > EmptyStr) then Result := Result + ' ' + Lf
+        else if (Ln = EmptyStr) and (Lf > EmptyStr) then Result := Result + Lf;
         Result := Result + '</b><hr=1>';
       end;
       //
@@ -690,23 +692,23 @@ begin
     else Result := Result + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(Button.Status));
     Result := Result + '</font>';
     //--Если доп. статус имеется, то пишем его
-    if Button.XStatus > '' then Result := Result + '<br>' + Button.XStatus;
+    if Button.XStatus > EmptyStr then Result := Result + '<br>' + Button.XStatus;
     //--Пищем в подсказку другие параметры контакта
-    if Button.ConnTime > '' then
+    if Button.ConnTime > EmptyStr then
       Result := Result + '<br>' + ConnTimeL + ' ' + Button.ConnTime;
-    if Button.TimeReg > '' then
+    if Button.TimeReg > EmptyStr then
       Result := Result + '<br>' + RegDateL + ' ' + Button.TimeReg;
-    if Button.Time > '' then
+    if Button.Time > EmptyStr then
       Result := Result + '<br>' + ChatDateL + ' ' + Button.Time;
-    if Button.ProtoVer > '' then
+    if Button.ProtoVer > EmptyStr then
       Result := Result + '<br>' + ProtoVerL + ' ' + Button.ProtoVer;
-    if Button.Client > '' then
+    if Button.Client > EmptyStr then
       Result := Result + '<br>' + ClientVariableL + ' ' + Button.Client;
-    if Button.Mobile > '' then
+    if Button.Mobile > EmptyStr then
       Result := Result + '<br>' + CellularPhoneL + ' ' + Button.Mobile;
-    if Button.Note > '' then
+    if Button.Note > EmptyStr then
       Result := Result + '<br>' + NoteL + ' ' + Button.Note;
-    if Button.Email > '' then
+    if Button.Email > EmptyStr then
       Result := Result + '<br>' + EmailL + ' ' + Button.Email;
   end;
 end;
@@ -828,7 +830,7 @@ begin
           //--Добавляем в чат сообщение о закрытиеи чата собеседником
           Doc := ChatForm.HTMLChatViewer.DocumentSource;
           Doc := Doc + '<span class=d>' + CloseChatWindowsL + '</span><br><br>';
-          ChatForm.HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), '');
+          ChatForm.HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
           //--Прокручиваем чат до конца
           ChatForm.HTMLChatViewer.Position := ChatForm.HTMLChatViewer.VScrollBar.Max;
         end;
@@ -1070,7 +1072,7 @@ var
     sDate64: TDateTime absolute Date64;
     iPkt, DateHex: string;
   begin
-    if (cDay > '') and (cMon > '') and (cYear > '') then
+    if (cDay > EmptyStr) and (cMon > EmptyStr) and (cYear > EmptyStr) then
     begin
       sDate64 := StrToDate(cDay + '.' + cMon + '.' + cYear);
       sDate64 := sDate64 - 48 * Hour; //--fuck + 2 days :(
@@ -1198,24 +1200,24 @@ var
     i, c, a, zLen: integer;
     zUIN, zId, zType, zTimeId: string;
   begin
-    Pkt := '';
-    Pkt1 := '';
-    Pkt2 := '';
+    Pkt := EmptyStr;
+    Pkt1 := EmptyStr;
+    Pkt2 := EmptyStr;
     if zTCL.Count > 50 then c := 50
     else c := zTCL.Count - 1;
     for i := 0 to c do
     begin
-      zUIN := '';
-      zId := '';
-      zType := '';
-      zTimeId := '';
-      Pkt2 := '';
+      zUIN := EmptyStr;
+      zId := EmptyStr;
+      zType := EmptyStr;
+      zTimeId := EmptyStr;
+      Pkt2 := EmptyStr;
       zUIN := Parse(';', zTCL.Strings[i], 1);
       zId := Parse(';', zTCL.Strings[i], 2);
       zType := Parse(';', zTCL.Strings[i], 3);
       zTimeId := Parse(';', zTCL.Strings[i], 4);
       Pkt2 := '006d' + zTimeId;
-      if zTimeId = '' then Pkt2 := Pkt2 + '000100';
+      if zTimeId = EmptyStr then Pkt2 := Pkt2 + '000100';
       zLen := Length(Hex2Text(Pkt2));
       Pkt1 := Pkt1 + IntToHex(Length(zUIN), 4) + Text2Hex(zUIN) +
         '0000' + zId + zType + IntToHex(zLen, 4) + Pkt2;
@@ -1491,7 +1493,7 @@ begin
         ICQ_AddEnd;
         ICQ_Add_Contact_Phaze := false;
         ICQ_SSI_Phaze := false;
-        DAShow(false, '2', '26', '', 156, 2, DATimeShow);
+        DAShow(false, '2', '26', EmptyStr, 156, 2, DATimeShow);
       end;
     end;
   end;
@@ -1530,7 +1532,7 @@ begin
         ICQ_AddEnd;
         ICQ_Add_Group_Phaze := false;
         ICQ_SSI_Phaze := false;
-        DAShow(false, '2', '30', '', 156, 2, DATimeShow);
+        DAShow(false, '2', '30', EmptyStr, 156, 2, DATimeShow);
       end;
     end;
   end;
@@ -1558,7 +1560,7 @@ begin
         ICQ_AddEnd;
         ICQ_Group_Delete_Phaze := false;
         ICQ_SSI_Phaze := false;
-        DAShow(false, '2', '27', '', 156, 2, DATimeShow);
+        DAShow(false, '2', '27', EmptyStr, 156, 2, DATimeShow);
       end;
     end;
   end;}
@@ -1635,7 +1637,7 @@ var
   Pkt, Pkt1: string;
   Utf8XText: string;
 begin
-  if XText <> '' then
+  if XText <> EmptyStr then
   begin
     Utf8XText := StrToUtf8(XText);
     Pkt1 := '0002' + '04' + IntToHex(Length(Utf8XText) + 4, 2) +
@@ -1678,7 +1680,7 @@ var
 begin
   if Assigned(IcqSearchForm) then
   begin
-    if (AUIN = '') and (AEndSearch) then
+    if (AUIN = EmptyStr) and (AEndSearch) then
     begin
       IcqSearchForm.Panel6.Caption := IcqSearchForm.SP4;
       Exit;
@@ -1704,16 +1706,16 @@ begin
     ListItemD.SubItems.Add(AFirst);
     ListItemD.SubItems.Add(ALast);
     case AGender of
-      0: Gend := '';
+      0: Gend := EmptyStr;
       1: Gend := ICQSearchForm.G1;
       2: Gend := ICQSearchForm.G2;
     end;
-    if (Gend <> '') and (AAge <> '0') then Gend := Gend + ' - ' + AAge
+    if (Gend <> EmptyStr) and (AAge <> '0') then Gend := Gend + ' - ' + AAge
     else if AAge <> '0' then Gend := AAge;
     ListItemD.SubItems.Add(Gend);
     if AAuth then ListItemD.SubItems.Add(ICQSearchForm.A1)
     else ListItemD.SubItems.Add(ICQSearchForm.A2);
-    ListItemD.SubItems.Add('');
+    ListItemD.SubItems.Add(EmptyStr);
     ListItemD.SubItems.Add(AEmail);
     ICQSearchForm.ListView1.Items.EndUpdate;
   end;
@@ -1736,8 +1738,6 @@ var
   Date64: Int64;
   sDate64: TDateTime absolute Date64;
   SubPkt, LastUpdateInfo: string;
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
   ListF: TStringList;
 begin
   EndSearch := false;
@@ -1749,7 +1749,7 @@ begin
         begin
           ICQ_LoginPassword := ICQ_ChangePassword;
           //--Информируем об успешной смене пароля
-          DAShow(InformationHead, PassChangeOKL, '', 133, 3, 0);
+          DAShow(InformationHead, PassChangeOKL, EmptyStr, 133, 3, 0);
           Exit;
         end;
       end;
@@ -1758,7 +1758,7 @@ begin
         if HexToInt(NextData(PktData, 2)) = $0A then
         begin
           SendFLAP('2', ICQ_CreateShortStatusPkt);
-          DAShow(InformationHead, AnketaSaveOKL, '', 133, 3, 0);
+          DAShow(InformationHead, AnketaSaveOKL, EmptyStr, 133, 3, 0);
           Exit;
         end;
       end;
@@ -1766,7 +1766,7 @@ begin
       begin
         if HexToInt(NextData(PktData, 2)) <> $0A then
         begin
-          ICQ_NotifyAddSearchResults('', '', '', '', '', '', 0, 0, false, EndSearch);
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
           Exit;
         end;
         ICQ_SearchPoUIN_old_1(IntToStr(Swap32(HexToInt(NextData(PktData, 8)))));
@@ -1789,7 +1789,7 @@ begin
         begin
           //--Заканчиваем поиск
           EndSearch := true;
-          ICQ_NotifyAddSearchResults('', '', '', '', '', '', 0, 0, false, EndSearch);
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
           Exit;
         end;
         //--Сбрасываем флаг об авторизации
@@ -1840,7 +1840,7 @@ begin
         begin
           //--Заканчиваем поиск
           EndSearch := true;
-          ICQ_NotifyAddSearchResults('', '', '', '', '', '', 0, 0, false, EndSearch);
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
           Exit;
         end;
         //--Сбрасываем флаг об авторизации
@@ -1850,7 +1850,7 @@ begin
         begin
           //--Заканчиваем поиск
           EndSearch := true;
-          ICQ_NotifyAddSearchResults('', '', '', '', '', '', 0, 0, false, EndSearch);
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
           Exit;
         end;
         //--Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
@@ -2329,7 +2329,7 @@ begin
         //--Начинаем обработку данных полученных из пакета с инфой
         //--Проверяем делали ли мы запрос на информацию о контакте или это был поиск
         //--При поиске контактов запрошенный UIN должен быть пустой
-        if ICQ_ReqInfo_UIN <> '' then
+        if ICQ_ReqInfo_UIN <> EmptyStr then
         begin
           try
             //--Добавляем ник контакта в список ников
@@ -2340,7 +2340,7 @@ begin
               if N = -1 then
               begin
                 //--Если ник не пустой и ник не равен UIN
-                if (Nick > '') and (Nick <> UIN) then
+                if (Nick > EmptyStr) and (Nick <> UIN) then
                 begin
                   AccountToNick.Add('Icq_' + UIN);
                   AccountToNick.Add(Nick);
@@ -2348,7 +2348,7 @@ begin
                 end;
               end;
               //--Если ник не пустой и ник не равен UIN
-              if (Nick > '') and (Nick <> UIN) then
+              if (Nick > EmptyStr) and (Nick <> UIN) then
               begin
                 //--Присваиваем этот ник контакту не из нашего КЛ
                 with MainForm.ContactList do
@@ -2398,106 +2398,158 @@ begin
           except
           end;
           //--Сохраняем полученные данные в локальный файл инфы о контакте
-          try
-            Xml := CreateXmlDocument('xml');
+
+          With TrXML.Create() do try
             //--Сохраняем позицию окна
-            XmlElem := Xml.DocumentElement.AppendElement('name-info');
-            XmlElem.SetAttr('nick', Nick);
-            XmlElem.SetAttr('first', First);
-            XmlElem.SetAttr('last', Last);
-            XmlElem := Xml.DocumentElement.AppendElement('personal-info');
-            XmlElem.SetIntAttr('gender', Gender);
-            XmlElem.SetBoolAttr('auth', Auth);
-            XmlElem.SetBoolAttr('webaware', WebAware);
-            XmlElem.SetAttr('homepage', HomePage);
-            XmlElem.SetAttr('lastchange', LastUpdateInfo);
-            XmlElem := Xml.DocumentElement.AppendElement('home-info');
-            XmlElem.SetAttr('address', Address);
-            XmlElem.SetAttr('city', City);
-            XmlElem.SetAttr('state', State);
-            XmlElem.SetAttr('zip', Zip);
-            XmlElem.SetIntAttr('country', Country);
-            XmlElem := Xml.DocumentElement.AppendElement('orig-home-info');
-            XmlElem.SetIntAttr('country', oCountry);
-            XmlElem.SetAttr('city', oCity);
-            XmlElem.SetAttr('state', oState);
-            XmlElem := Xml.DocumentElement.AppendElement('lang-info');
-            XmlElem.SetIntAttr('lang1', Lang1);
-            XmlElem.SetIntAttr('lang2', Lang2);
-            XmlElem.SetIntAttr('lang3', Lang3);
-            XmlElem := Xml.DocumentElement.AppendElement('phone-info');
-            XmlElem.SetAttr('phone1', Phone);
-            XmlElem.SetAttr('phone2', Fax);
-            XmlElem.SetAttr('phone3', Cellular);
-            XmlElem.SetAttr('phone4', wPhone);
-            XmlElem.SetAttr('phone5', wFax);
-            XmlElem := Xml.DocumentElement.AppendElement('work-info');
-            XmlElem.SetAttr('city', wCity);
-            XmlElem.SetAttr('state', wState);
-            XmlElem.SetAttr('zip', wZip);
-            XmlElem.SetAttr('address', wAddress);
-            XmlElem.SetAttr('corp', Company);
-            XmlElem.SetAttr('dep', Department);
-            XmlElem.SetAttr('prof', Position);
-            XmlElem.SetAttr('site', wSite);
-            XmlElem.SetIntAttr('country', wCountry);
-            XmlElem.SetIntAttr('occup', Occupation);
-            XmlElem := Xml.DocumentElement.AppendElement('interests-info');
-            XmlElem.SetAttr('int1', Int1);
-            XmlElem.SetAttr('int2', Int2);
-            XmlElem.SetAttr('int3', Int3);
-            XmlElem.SetAttr('int4', Int4);
-            XmlElem := Xml.DocumentElement.AppendElement('about-info');
-            XmlElem.AppendText(Encrypt(About, 12345));
-            XmlElem := Xml.DocumentElement.AppendElement('age-info');
-            XmlElem.SetIntAttr('age', Age);
-            XmlElem.SetIntAttr('day', iDay);
-            XmlElem.SetIntAttr('mon', iMonth);
-            XmlElem.SetIntAttr('year', iYear);
-            XmlElem := Xml.DocumentElement.AppendElement('emails-info');
-            XmlElem.SetAttr('email1', Email1);
-            XmlElem.SetAttr('email2', Email2);
-            XmlElem.SetAttr('email3', Email3);
-            XmlElem := Xml.DocumentElement.AppendElement('interests-id-info');
-            XmlElem.SetIntAttr('int_id1', I1);
-            XmlElem.SetIntAttr('int_id2', I2);
-            XmlElem.SetIntAttr('int_id3', I3);
-            XmlElem.SetIntAttr('int_id4', I4);
-            XmlElem := Xml.DocumentElement.AppendElement('personal-x-info');
-            XmlElem.SetIntAttr('marital', Marital);
-            XmlElem.SetIntAttr('sexual', Sexual);
-            XmlElem.SetIntAttr('height', Height);
-            XmlElem.SetIntAttr('relig', Relig);
-            XmlElem.SetIntAttr('smok', Smok);
-            XmlElem.SetIntAttr('hair', Hair);
-            XmlElem.SetIntAttr('children', Children);
+            if OpenKey('settings\name-info', True) then try
+              WriteString('nick', Nick);
+              WriteString('first', First);
+              WriteString('last', Last);
+            finally
+              CloseKey;
+            end;
+
+            if OpenKey('settings\personal-info', True) then try
+              WriteInteger('gender', Gender);
+              WriteBool('auth', Auth);
+              WriteBool('webaware', WebAware);
+              WriteString('homapage', HomePage);
+              WriteString('lastchange', LastUpdateInfo);
+            finally
+              CloseKey;
+            end;
+
+            if OpenKey('settings\home-info', True) then try
+              WriteString('address', Address);
+              WriteString('city', City);
+              WriteString('state', State);
+              WriteString('zip', Zip);
+              WriteInteger('country', Country);
+            finally
+              CloseKey;
+            end;
+
+            if OpenKey('settings\orig-home-info', True) then try
+              WriteInteger('country', oCountry);
+              WriteString('city', oCity);
+              WriteString('state', oState);
+            finally
+              CloseKey;
+            end;
+
+            if OpenKey('settings\lang-info', True) then try
+              WriteInteger('lang1', Lang1);
+              WriteInteger('lang2', Lang2);
+              WriteInteger('lang3', Lang3);
+            finally
+              CloseKey;
+            end;
+
+            if OpenKey('settings\phone-info', True) then try
+              WriteString('phone1', Phone);
+              WriteString('phone2', Fax);
+              WriteString('phone3', Cellular);
+              WriteString('phone4', wPhone);
+              WriteString('phone5', wFax);
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\work-info', True) then try
+              WriteString('city', wCity);
+              WriteString('state', wState);
+              WriteString('zip', wZip);
+              WriteString('address', wAddress);
+              WriteString('corp', Company);
+              WriteString('dep', Department);
+              WriteString('prof', Position);
+              WriteString('site', wSite);
+              WriteInteger('country', wCountry);
+              WriteInteger('occup', Occupation);
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\interests-info', True) then try
+              WriteString('int1', Int1);
+              WriteString('int2', Int2);
+              WriteString('int3', Int3);
+              WriteString('int4', Int4);
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\about-info', True) then try
+              WriteString('info', Encrypt(About, 12345));
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\age-info', True) then try
+              WriteInteger('age', Age);
+              WriteInteger('day', iDay);
+              WriteInteger('month', iMonth);
+              WriteInteger('year', iYear);
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\emails-info', True) then try
+              WriteString('email1', Email1);
+              WriteString('email2', Email2);
+              WriteString('email3', Email3);
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\interests-id-info', True) then try
+              WriteInteger('int_id1', I1);
+              WriteInteger('int_id2', I2);
+              WriteInteger('int_id3', I3);
+              WriteInteger('int_id4', I4);
+            finally
+              CloseKey();
+            end;
+
+            if OpenKey('settings\personal-x-info', True) then try
+              WriteInteger('marital', Marital);
+              WriteInteger('sexual', Sexual);
+              WriteInteger('height', Height);
+              WriteInteger('relig', Relig);
+              WriteInteger('smok', Smok);
+              WriteInteger('hair', Hair);
+              WriteInteger('children', Children);
+            finally
+              CloseKey();
+            end;
+
             //--Создаём необходимые папки
             ForceDirectories(MyPath + 'Profile\Contacts\Download');
             //--Записываем сам файл
-            Xml.Save(MyPath + 'Profile\Contacts\Download\Icq_Info.xml');
+            SaveToFile(MyPath + Icq_Info);
             //--Сжимаем файл в архив
             //--Создаём временный лист для файла
             ListF := TStringList.Create;
             try
               //--Добавляем в лист путь к файлу
-              ListF.Add(MyPath + 'Profile\Contacts\Download\Icq_Info.xml');
-              //--Сжимаем этот файл и ложим в эту же директорию
+              ListF.Add(MyPath + Icq_Info);
+              //--Сжимаем этот файл и кладем в эту же директорию
               Zip_File(ListF, MyPath + 'Profile\Contacts\Icq_' + UIN + '.z');
               //--Удаляем несжатый файл
-              if FileExists(MyPath + 'Profile\Contacts\Download\Icq_Info.xml') then
-              begin
-                DeleteFile(MyPath + 'Profile\Contacts\Download\Icq_Info.xml');
+              if FileExists(MyPath + Icq_Info) then begin
+                DeleteFile(MyPath + Icq_Info);
                 RemoveDir(MyPath + 'Profile\Contacts\Download');
               end;
             finally
               ListF.Free;
             end;
-          except
+          finally
+            Free();
           end;
           //--Отображаем в окне информации о контакте полученные данные
-          if Assigned(IcqContactInfoForm) then
-          begin
-            if IcqContactInfoForm.ReqUIN = UIN then IcqContactInfoForm.LoadUserUnfo;
+          if Assigned(IcqContactInfoForm) then begin
+            if IcqContactInfoForm.ReqUIN = UIN then
+              IcqContactInfoForm.LoadUserUnfo;
           end;
           //
           {if Assigned(IcqOptionsForm) then
@@ -2568,7 +2620,7 @@ begin
   Len2 := Length(sNick);
   Len3 := Length(sFirst);
   Len4 := Length(sLast);
-  Pkt2 := '';
+  Pkt2 := EmptyStr;
   if Len2 > 0 then Pkt2 := Pkt2 + '5401' + IntToHex(Swap16(Len2 + 3), 4) + IntToHex(Swap16(Len2 + 1), 4) + Text2Hex(sNick) + '00';
   if Len3 > 0 then Pkt2 := Pkt2 + '4001' + IntToHex(Swap16(Len3 + 3), 4) + IntToHex(Swap16(Len3 + 1), 4) + Text2Hex(sFirst) + '00';
   if Len4 > 0 then Pkt2 := Pkt2 + '4a01' + IntToHex(Swap16(Len4 + 3), 4) + IntToHex(Swap16(Len4 + 1), 4) + Text2Hex(sLast) + '00';
@@ -2595,7 +2647,7 @@ begin
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
   //
-  ICQ_ReqInfo_UIN := '';
+  ICQ_ReqInfo_UIN := EmptyStr;
   SendFLAP('2', Pkt);
 end;
 
@@ -2632,7 +2684,7 @@ begin
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
   //
-  ICQ_ReqInfo_UIN := '';
+  ICQ_ReqInfo_UIN := EmptyStr;
   SendFLAP('2', Pkt);
 end;
 
@@ -2768,7 +2820,7 @@ begin
   //--Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then ChatForm := TChatForm.Create(MainForm);
   //--Если сообщение пустое, то выходим
-  if Msg = '' then Exit;
+  if Msg = EmptyStr then Exit;
   //--Ставим начальные значения переменным
   NoCL := true;
   NoCLG := false;
@@ -2795,7 +2847,7 @@ begin
     end;
   end;
   //--Если ник не нашли в КЛ, то ищем его в файле-кэше ников
-  if Nick = '' then
+  if Nick = EmptyStr then
   begin
     try
       N := AccountToNick.IndexOf('Icq_' + UIN);
@@ -2806,7 +2858,7 @@ begin
     end;
   end;
   //--Если же ник всётаки не найден, то назначем ник как учётную запись
-  if Nick = '' then Nick := UIN;
+  if Nick = EmptyStr then Nick := UIN;
   a: ;
   //--Сохраняем сообщение в файл истории сообщений
   Mess := Msg;
@@ -2825,7 +2877,7 @@ begin
       Categories[G].Items[T].TypingTime := 0;
       Categories[G].Items[T].QuoteMsg := PopMsg;
       //--Проверяем загружена ли история уже
-      if Categories[G].Items[T].History = '' then
+      if Categories[G].Items[T].History = EmptyStr then
       begin
         //--Загружаем файл истории сообщений
         HistoryFile := MyPath + 'Profile\History\Icq_' + UIN + '.z';
@@ -3673,7 +3725,7 @@ begin
   Len := Len * 2;
   UIN := Hex2Text(NextData(PktData, Len));
   //--Запускаем событие контакт онлайн с неизвестным статусом номер иконки 214
-  ICQ_UserOnline_Event(UIN, '88888888', '', '', '', '', '', '', '', '', '', '', '');
+  ICQ_UserOnline_Event(UIN, '88888888', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
 end;
 
 procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: boolean);
@@ -3803,7 +3855,7 @@ begin
   begin
     if Status <> 'FFFFFFFF' then
       ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), ICQ_ClientCap2String(Caps), 0)
-    else ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), '', 2);
+    else ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), EmptyStr, 2);
   end
   else
   begin
@@ -3823,7 +3875,7 @@ begin
   Len := Len * 2;
   UIN := Hex2Text(NextData(PktData, Len));
   //--Запускаем событие контакт онлайн со статусом оффлайн номер иконки 9
-  ICQ_UserOnline_Event(UIN, 'FFFFFFFF', '', '', '', '', '', '', '', '', '', '', '');
+  ICQ_UserOnline_Event(UIN, 'FFFFFFFF', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
 end;
 
 function ICQ_CliClientReadyPkt: string;
@@ -3876,7 +3928,7 @@ var
   Pkt: string;
 begin
   //--Если код приватных групп пустой, то выходим
-  if ICQ_UpdatePrivateGroup_Code = '' then Exit;
+  if ICQ_UpdatePrivateGroup_Code = EmptyStr then Exit;
   //--Формируем пакет
   Pkt := '00130009000000000009' + '00000000' + ICQ_UpdatePrivateGroup_Code +
     '0004002100CA0001' + InvizStatus + '00CB0004FFFFFFFF00D000010100D10001' +
@@ -3940,9 +3992,7 @@ var
   SubData, qSN, qGroupId, qID, qType, qTimeId, Rsu, qNick: string;
   dt: TDateTime;
   Hour, Min, Sec, MSec: Word;
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
-  z, zz: integer;
+  z, zz, cnt: integer;
   Gid: string;
   Colap: boolean;
 begin
@@ -3983,7 +4033,7 @@ begin
           begin
             G := Categories.Count - 1;
             //--Ускоряем запись контактов в группу
-            Categories[G].Items.BeginUpdate;
+            Categories[G].Items.BeginUpdate;            
             Categories[G].Items.Add.Caption := qSN;
             T := Categories[G].Items.Count - 1;
             Categories[G].Items[T].UIN := qSN;
@@ -4001,11 +4051,11 @@ begin
               case HexToInt(NextData(SubData, 4)) of
                 $0131: //--Ник контакта
                   begin
-                    qNick := '';
+                    qNick := EmptyStr;
                     Len := HexToInt(NextData(SubData, 4));
                     Len := Len * 2;
                     qNick := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                    if qNick <> '' then Categories[G].Items[T].Caption := qNick;
+                    if qNick <> EmptyStr then Categories[G].Items[T].Caption := qNick;
                   end;
                 $013A: //--Номер сотового телефона
                   begin
@@ -4054,7 +4104,7 @@ begin
             //--Создаём подсказку для этого контакта
             Categories[G].Items[T].Hint := ICQ_CreateHint(Categories[G].Items[T]);
             //--Закрываем запись в группу
-            Categories[G].Items.EndUpdate;
+            Categories[G].Items.EndUpdate;            
           end;
         end;
       BUDDY_GROUP: //--Группа
@@ -4107,7 +4157,7 @@ begin
             if ICQ_Show_HideContacts then
             begin
               //--Ускоряем запись контактов в группу
-              Categories[0].Items.BeginUpdate;
+              Categories[0].Items.BeginUpdate;            
               try
                 //--Проверяем создан ли список ников
                 if Assigned(AccountToNick) then
@@ -4154,7 +4204,7 @@ begin
                 end;
               end;
               //--Закрываем запись в группу
-              Categories[0].Items.EndUpdate;
+              Categories[0].Items.EndUpdate;              
             end;
           end;
         end;
@@ -4227,6 +4277,7 @@ begin
         end;
     end;
   end;
+
   //--Финальное время контакт листа
   CLTimeStamp := HexToInt(NextData(PktData, 8));
   //--Если время больше нуля, то заканчиваем с наполнением КЛ
@@ -4244,6 +4295,7 @@ begin
       ICQ_SSI_Phaze := true;
       ICQ_AddGroup('General', ICQ_Add_GroupId);
     end;
+    
     //--Вычисляем количесво контактов в группах локального КЛ
     if not NewKL then
     begin
@@ -4258,35 +4310,38 @@ begin
       end;
       //--Считываем и применям файл с флагами открытых и свёрнутых групп
       //--Инициализируем XML
-      try
-        Xml := CreateXmlDocument;
+      With TrXML.Create() do try
         //--Загружаем файл контакт листа
-        if FileExists(MyPath + 'Profile\Collapase.xml') then
-        begin
-          Xml.Load(MyPath + 'Profile\Collapase.xml');
+        if FileExists(MyPath + 'Profile\ContactList.xml') then begin
+          LoadFromFile(MyPath + 'Profile\ContactList.xml');
           //--Загружаем группы и их флаги
-          if Xml.DocumentElement.ChildNodes.Count <= 0 then Exit;
-          with MainForm.ContactList do
-          begin
-            for z := 0 to Xml.DocumentElement.ChildNodes.Count - 1 do
-            begin
-              XmlElem := Xml.DocumentElement.ChildNodes.Item[z];
-              if XmlElem <> nil then
-              begin
-                Gid := XmlElem.GetAttr('id');
-                Colap := XmlElem.GetBoolAttr('s');
-                for zz := 0 to Categories.Count - 1 do
-                begin
-                  //--Если идентификатор группы совпадает, то присваиваем ей флаг
-                  if Categories[zz].GroupId = Gid then Categories[zz].Collapsed := Colap;
+          with MainForm.ContactList do begin
+            cnt := 0;
+            if OpenKey('settings') then try
+              cnt := GetKeyCount('group');
+            finally
+              CloseKey();
+            end;
+              for z := 0 to cnt - 1 do begin
+                if OpenKey('settings\group', false, z) then try
+                  Gid := ReadString('id');
+                  Colap := ReadBool('collapsed');
+                  for zz := 0 to Categories.Count - 1 do begin
+                    //--Если идентификатор группы совпадает, то присваиваем ей флаг
+                    if Categories[zz].GroupId = Gid then
+                      Categories[zz].Collapsed := Colap;
+                  end;
+                finally
+                  CloseKey;
                 end;
               end;
-            end;
           end;
         end;
-      except
+      finally
+        Free();
       end;
     end;
+    
     //--Заканчиваем с наполнением КЛ
     MainForm.ContactList.Enabled := true;
     //--Объявляем финальный результат разбора всего пакета
@@ -4299,7 +4354,7 @@ var
   Len, Count, I: integer;
 begin
   //--Если пакет пустой, то выходим
-  if PktData = '' then Exit;
+  if PktData = EmptyStr then Exit;
   //--Длинна нашего UIN
   Len := HexToInt(NextData(PktData, 2));
   Len := Len * 2;
@@ -4399,9 +4454,9 @@ var
   clz: string;
 begin
   //--Отображаем всплывающим сообщением статус контакта
-  if iClient > '' then clz := ClientL + ' ' + iClient;
+  if iClient > EmptyStr then clz := ClientL + ' ' + iClient;
   DAShow(InformationHead, '[ ' + UIN + ' ]' + #13#10 + #13#10 + StatusL + ' ' + iStatus +
-    #13#10 + #13#10 + clz, '', 133, iColor, 0);
+    #13#10 + #13#10 + clz, EmptyStr, 133, iColor, 0);
 end;
 
 function ICQ_NotifyAuthCookieError(ErrCode: string): string;
@@ -4473,19 +4528,19 @@ begin
   ICQ_Work_Phaze := false;
   ICQ_Offline_Phaze := true;
   ICQ_SSI_Phaze := false;
-  ICQ_myBeautifulSocketBuffer := '';
-  ICQ_HexPkt := '';
+  ICQ_myBeautifulSocketBuffer := EmptyStr;
+  ICQ_HexPkt := EmptyStr;
   //--Обнуляем переменные протокола
-  ICQ_Online_IP := '';
-  ICQ_MyUIN_RegTime := '';
-  ICQ_MyIcon_Hash := '';
-  ICQ_UpdatePrivateGroup_Code := '';
-  ICQ_CollSince := '';
-  ICQ_SendMess := '';
-  ICQ_OnlineTime := '';
-  ICQ_AwayMess := '';
-  ICQ_RecMess := '';
-  ICQ_LastActive := '';
+  ICQ_Online_IP := EmptyStr;
+  ICQ_MyUIN_RegTime := EmptyStr;
+  ICQ_MyIcon_Hash := EmptyStr;
+  ICQ_UpdatePrivateGroup_Code := EmptyStr;
+  ICQ_CollSince := EmptyStr;
+  ICQ_SendMess := EmptyStr;
+  ICQ_OnlineTime := EmptyStr;
+  ICQ_AwayMess := EmptyStr;
+  ICQ_RecMess := EmptyStr;
+  ICQ_LastActive := EmptyStr;
   //--Если сокет подключён, то отсылаем пакет "до свидания"
   if MainForm.ICQWSocket.State = wsConnected then
     MainForm.ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));

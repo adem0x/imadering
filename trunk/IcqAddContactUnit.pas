@@ -55,17 +55,17 @@ var
   i, ii: integer;
   newId, iGpId, iNick: string;}
 begin
-  {if (Edit1.Text = '') or (Length(Edit1.Text) < 5) or (not ICQ_Work_Phaze) then goto y;
+  {if (Edit1.Text = EmptyStr) or (Length(Edit1.Text) < 5) or (not ICQ_Work_Phaze) then goto y;
   //
   if ComboBox1.ItemIndex = -1 then
   begin
-    DAShow(false, '3', '31', '', 157, 2, DATimeShow);
+    DAShow(false, '3', '31', EmptyStr, 157, 2, DATimeShow);
     goto y;
   end;
   //
   Edit1.Text := exNormalizeScreenName(Edit1.Text);
   Edit1.Text := exNormalizeIcqNumber(Edit1.Text);
-  if Trim(Edit2.Text) = '' then iNick := Edit1.Text
+  if Trim(Edit2.Text) = EmptyStr then iNick := Edit1.Text
   else iNick := Edit2.Text;
   //
   for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
@@ -76,7 +76,7 @@ begin
     begin
       if RoasterForm.CategoryButtons1.Categories[i].Items[ii].UIN = Edit1.Text then
       begin
-        DAShow(false, '2', '24', '', 157, 0, DATimeShow);
+        DAShow(false, '2', '24', EmptyStr, 157, 0, DATimeShow);
         Exit;
       end;
     end;
@@ -84,7 +84,7 @@ begin
   //
   if ICQ_SSI_Phaze then
   begin
-    DAShow(false, '2', '25', '', 157, 3, DATimeShow);
+    DAShow(false, '2', '25', EmptyStr, 157, 3, DATimeShow);
     Exit;
   end;
   //

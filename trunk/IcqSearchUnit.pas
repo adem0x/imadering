@@ -210,87 +210,87 @@ procedure TIcqSearchForm.TranslateForm;
 begin
   {Lini := TIniFile.Create(MyPath + 'Langs\' + CurrentLang + '\General.txt');
   //
-  Caption := Lini.ReadString('IcqSearch', '1', '');
-  PageControl1.Pages[0].Caption := Lini.ReadString('IcqSearch', '2', '');
-  PageControl1.Pages[1].Caption := Lini.ReadString('IcqSearch', '3', '');
-  PageControl1.Pages[2].Caption := Lini.ReadString('IcqSearch', '4', '');
-  PageControl1.Pages[3].Caption := Lini.ReadString('IcqSearch', '5', '');
-  PageControl1.Pages[4].Caption := Lini.ReadString('IcqSearch', '6', '');
-  PageControl1.Pages[5].Caption := Lini.ReadString('IcqSearch', '7', '');
-  CheckBox1.Caption := Lini.ReadString('IcqSearch', '8', '');
-  CheckBox2.Caption := Lini.ReadString('IcqSearch', '9', '');
-  CheckBox3.Caption := Lini.ReadString('IcqSearch', '10', '');
-  CheckBox4.Caption := Lini.ReadString('IcqSearch', '14', '');
-  CheckBox5.Caption := Lini.ReadString('IcqSearch', '15', '');
-  BitBtn1.Caption := Lini.ReadString('IcqSearch', '16', '');
-  ListView1.Column[0].Caption := Lini.ReadString('IcqSearch', '17', '');
-  ListView1.Column[1].Caption := Lini.ReadString('IcqSearch', '11', '');
-  ListView1.Column[2].Caption := Lini.ReadString('IcqSearch', '12', '');
-  ListView1.Column[3].Caption := Lini.ReadString('IcqSearch', '13', '');
-  ListView1.Column[4].Caption := Lini.ReadString('IcqSearch', '18', '');
-  ListView1.Column[5].Caption := Lini.ReadString('IcqSearch', '19', '');
-  ListView1.Column[7].Caption := Lini.ReadString('IcqSearch', '20', '');
-  CheckBox6.Caption := Lini.ReadString('IcqSearch', '8', '');
-  CheckBox7.Caption := Lini.ReadString('IcqSearch', '9', '');
-  Label1.Caption := Lini.ReadString('IcqSearch', '11', '') + ':';
-  Label2.Caption := Lini.ReadString('IcqSearch', '12', '') + ':';
-  Label3.Caption := Lini.ReadString('IcqSearch', '13', '') + ':';
-  Panel6.Caption := Lini.ReadString('IcqSearch', '21', '');
+  Caption := Lini.ReadString('IcqSearch', '1', EmptyStr);
+  PageControl1.Pages[0].Caption := Lini.ReadString('IcqSearch', '2', EmptyStr);
+  PageControl1.Pages[1].Caption := Lini.ReadString('IcqSearch', '3', EmptyStr);
+  PageControl1.Pages[2].Caption := Lini.ReadString('IcqSearch', '4', EmptyStr);
+  PageControl1.Pages[3].Caption := Lini.ReadString('IcqSearch', '5', EmptyStr);
+  PageControl1.Pages[4].Caption := Lini.ReadString('IcqSearch', '6', EmptyStr);
+  PageControl1.Pages[5].Caption := Lini.ReadString('IcqSearch', '7', EmptyStr);
+  CheckBox1.Caption := Lini.ReadString('IcqSearch', '8', EmptyStr);
+  CheckBox2.Caption := Lini.ReadString('IcqSearch', '9', EmptyStr);
+  CheckBox3.Caption := Lini.ReadString('IcqSearch', '10', EmptyStr);
+  CheckBox4.Caption := Lini.ReadString('IcqSearch', '14', EmptyStr);
+  CheckBox5.Caption := Lini.ReadString('IcqSearch', '15', EmptyStr);
+  BitBtn1.Caption := Lini.ReadString('IcqSearch', '16', EmptyStr);
+  ListView1.Column[0].Caption := Lini.ReadString('IcqSearch', '17', EmptyStr);
+  ListView1.Column[1].Caption := Lini.ReadString('IcqSearch', '11', EmptyStr);
+  ListView1.Column[2].Caption := Lini.ReadString('IcqSearch', '12', EmptyStr);
+  ListView1.Column[3].Caption := Lini.ReadString('IcqSearch', '13', EmptyStr);
+  ListView1.Column[4].Caption := Lini.ReadString('IcqSearch', '18', EmptyStr);
+  ListView1.Column[5].Caption := Lini.ReadString('IcqSearch', '19', EmptyStr);
+  ListView1.Column[7].Caption := Lini.ReadString('IcqSearch', '20', EmptyStr);
+  CheckBox6.Caption := Lini.ReadString('IcqSearch', '8', EmptyStr);
+  CheckBox7.Caption := Lini.ReadString('IcqSearch', '9', EmptyStr);
+  Label1.Caption := Lini.ReadString('IcqSearch', '11', EmptyStr) + ':';
+  Label2.Caption := Lini.ReadString('IcqSearch', '12', EmptyStr) + ':';
+  Label3.Caption := Lini.ReadString('IcqSearch', '13', EmptyStr) + ':';
+  Panel6.Caption := Lini.ReadString('IcqSearch', '21', EmptyStr);
   SP1 := Panel6.Caption;
-  SP2 := Lini.ReadString('IcqSearch', '22', '');
-  SP3 := Lini.ReadString('IcqSearch', '23', '');
-  SP4 := Lini.ReadString('IcqSearch', '24', '');
-  SpeedButton1.Hint := Lini.ReadString('IcqSearch', '25', '');
-  SpeedButton2.Hint := Lini.ReadString('IcqSearch', '26', '');
-  Edit4.Text := ' ' + Lini.ReadString('IcqSearch', '27', '');
+  SP2 := Lini.ReadString('IcqSearch', '22', EmptyStr);
+  SP3 := Lini.ReadString('IcqSearch', '23', EmptyStr);
+  SP4 := Lini.ReadString('IcqSearch', '24', EmptyStr);
+  SpeedButton1.Hint := Lini.ReadString('IcqSearch', '25', EmptyStr);
+  SpeedButton2.Hint := Lini.ReadString('IcqSearch', '26', EmptyStr);
+  Edit4.Text := ' ' + Lini.ReadString('IcqSearch', '27', EmptyStr);
   QmessT := Edit4.Text;
   //
-  Label4.Caption := Lini.ReadString('IcqSearch', '28', '');
-  Label5.Caption := Lini.ReadString('IcqSearch', '29', '');
-  Label6.Caption := Lini.ReadString('IcqSearch', '30', '');
-  Label7.Caption := Lini.ReadString('IcqSearch', '31', '');
-  Label8.Caption := Lini.ReadString('IcqSearch', '32', '');
-  Label9.Caption := Lini.ReadString('IcqSearch', '33', '');
-  Label10.Caption := Lini.ReadString('IcqSearch', '34', '');
-  Label11.Caption := Lini.ReadString('IcqSearch', '35', '');
-  Label12.Caption := Lini.ReadString('IcqSearch', '36', '');
-  Label13.Caption := Lini.ReadString('IcqSearch', '37', '');
-  Label14.Caption := Lini.ReadString('IcqSearch', '11', '') + ':';
-  Label15.Caption := Lini.ReadString('IcqSearch', '12', '') + ':';
-  Label16.Caption := Lini.ReadString('IcqSearch', '13', '') + ':';
-  Label17.Caption := Lini.ReadString('IcqSearch', '20', '') + ':';
-  Label18.Caption := Lini.ReadString('IcqSearch', '38', '');
+  Label4.Caption := Lini.ReadString('IcqSearch', '28', EmptyStr);
+  Label5.Caption := Lini.ReadString('IcqSearch', '29', EmptyStr);
+  Label6.Caption := Lini.ReadString('IcqSearch', '30', EmptyStr);
+  Label7.Caption := Lini.ReadString('IcqSearch', '31', EmptyStr);
+  Label8.Caption := Lini.ReadString('IcqSearch', '32', EmptyStr);
+  Label9.Caption := Lini.ReadString('IcqSearch', '33', EmptyStr);
+  Label10.Caption := Lini.ReadString('IcqSearch', '34', EmptyStr);
+  Label11.Caption := Lini.ReadString('IcqSearch', '35', EmptyStr);
+  Label12.Caption := Lini.ReadString('IcqSearch', '36', EmptyStr);
+  Label13.Caption := Lini.ReadString('IcqSearch', '37', EmptyStr);
+  Label14.Caption := Lini.ReadString('IcqSearch', '11', EmptyStr) + ':';
+  Label15.Caption := Lini.ReadString('IcqSearch', '12', EmptyStr) + ':';
+  Label16.Caption := Lini.ReadString('IcqSearch', '13', EmptyStr) + ':';
+  Label17.Caption := Lini.ReadString('IcqSearch', '20', EmptyStr) + ':';
+  Label18.Caption := Lini.ReadString('IcqSearch', '38', EmptyStr);
   //
-  Label19.Caption := Lini.ReadString('IcqSearch', '11', '') + ':';
-  Label20.Caption := Lini.ReadString('IcqSearch', '12', '') + ':';
-  Label21.Caption := Lini.ReadString('IcqSearch', '13', '') + ':';
-  Label22.Caption := Lini.ReadString('IcqSearch', '28', '');
-  Label23.Caption := Lini.ReadString('IcqSearch', '29', '');
-  Label24.Caption := Lini.ReadString('IcqSearch', '32', '');
-  Label25.Caption := Lini.ReadString('IcqSearch', '30', '');
-  Label26.Caption := Lini.ReadString('IcqSearch', '31', '');
-  Label27.Caption := Lini.ReadString('IcqSearch', '38', '');
-  Label28.Caption := Lini.ReadString('IcqSearch', '33', '');
-  Label29.Caption := Lini.ReadString('IcqSearch', '36', '');
-  Label30.Caption := Lini.ReadString('IcqSearch', '37', '');
+  Label19.Caption := Lini.ReadString('IcqSearch', '11', EmptyStr) + ':';
+  Label20.Caption := Lini.ReadString('IcqSearch', '12', EmptyStr) + ':';
+  Label21.Caption := Lini.ReadString('IcqSearch', '13', EmptyStr) + ':';
+  Label22.Caption := Lini.ReadString('IcqSearch', '28', EmptyStr);
+  Label23.Caption := Lini.ReadString('IcqSearch', '29', EmptyStr);
+  Label24.Caption := Lini.ReadString('IcqSearch', '32', EmptyStr);
+  Label25.Caption := Lini.ReadString('IcqSearch', '30', EmptyStr);
+  Label26.Caption := Lini.ReadString('IcqSearch', '31', EmptyStr);
+  Label27.Caption := Lini.ReadString('IcqSearch', '38', EmptyStr);
+  Label28.Caption := Lini.ReadString('IcqSearch', '33', EmptyStr);
+  Label29.Caption := Lini.ReadString('IcqSearch', '36', EmptyStr);
+  Label30.Caption := Lini.ReadString('IcqSearch', '37', EmptyStr);
   //
-  CheckBox8.Caption := Lini.ReadString('IcqSearch', '39', '');
-  CheckBox9.Caption := Lini.ReadString('IcqSearch', '40', '');
-  Label31.Caption := Lini.ReadString('IcqSearch', '41', '');
-  Label32.Caption := Lini.ReadString('IcqSearch', '42', '');
-  BitBtn2.Caption := Lini.ReadString('IcqSearch', '43', '');
-  BitBtn3.Caption := Lini.ReadString('IcqSearch', '44', '');
-  BitBtn4.Caption := Lini.ReadString('IcqSearch', '49', '');
+  CheckBox8.Caption := Lini.ReadString('IcqSearch', '39', EmptyStr);
+  CheckBox9.Caption := Lini.ReadString('IcqSearch', '40', EmptyStr);
+  Label31.Caption := Lini.ReadString('IcqSearch', '41', EmptyStr);
+  Label32.Caption := Lini.ReadString('IcqSearch', '42', EmptyStr);
+  BitBtn2.Caption := Lini.ReadString('IcqSearch', '43', EmptyStr);
+  BitBtn3.Caption := Lini.ReadString('IcqSearch', '44', EmptyStr);
+  BitBtn4.Caption := Lini.ReadString('IcqSearch', '49', EmptyStr);
   //
-  G1 := Lini.ReadString('IcqSearch', '45', '');
-  G2 := Lini.ReadString('IcqSearch', '46', '');
-  A1 := Lini.ReadString('IcqSearch', '47', '');
-  A2 := Lini.ReadString('IcqSearch', '48', '');
+  G1 := Lini.ReadString('IcqSearch', '45', EmptyStr);
+  G2 := Lini.ReadString('IcqSearch', '46', EmptyStr);
+  A1 := Lini.ReadString('IcqSearch', '47', EmptyStr);
+  A2 := Lini.ReadString('IcqSearch', '48', EmptyStr);
   //
   ComboBox1.Clear;
-  ComboBox1.Items.Add('');
-  ComboBox1.Items.Add(Lini.ReadString('Gender', '1', ''));
-  ComboBox1.Items.Add(Lini.ReadString('Gender', '2', ''));
+  ComboBox1.Items.Add(EmptyStr);
+  ComboBox1.Items.Add(Lini.ReadString('Gender', '1', EmptyStr));
+  ComboBox1.Items.Add(Lini.ReadString('Gender', '2', EmptyStr));
   ComboBox1.ItemIndex := 0;
   ComboBox10.Items.Assign(ComboBox1.Items);
   //
@@ -443,15 +443,15 @@ begin
   for i := 0 to PopupMenu1.Items.Count - 1 do
   begin
     if PopupMenu1.Items[i].Tag = 1 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '15', '')
+      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '15', EmptyStr)
     else if PopupMenu1.Items[i].Tag = 2 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '18', '')
+      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '18', EmptyStr)
     else if PopupMenu1.Items[i].Tag = 3 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '14', '')
+      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '14', EmptyStr)
     else if PopupMenu1.Items[i].Tag = 4 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '16', '')
+      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '16', EmptyStr)
     else if PopupMenu1.Items[i].Tag = 5 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '43', '');
+      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '43', EmptyStr);
   end;
   //
   Lini.Free;}
@@ -485,7 +485,7 @@ begin
     //
     BitBtn2.Enabled := true;
     BitBtn3.Enabled := false;
-    //DAShow(false, '4', '34', '', 157, 3, 10000);
+    //DAShow(false, '4', '34', EmptyStr, 157, 3, 10000);
   end;
 end;
 
@@ -503,7 +503,7 @@ begin
   case PageControl1.ActivePageIndex of
     0:
       begin
-        if (Edit1.Text > '') and (CheckBox1.Checked) then
+        if (Edit1.Text > EmptyStr) and (CheckBox1.Checked) then
         begin
           Edit1.Text := exNormalizeScreenName(Edit1.Text);
           Edit1.Text := exNormalizeIcqNumber(Edit1.Text);
@@ -519,7 +519,7 @@ begin
           end;
         end;
         //
-        if (Edit2.Text > '') and (CheckBox2.Checked) then
+        if (Edit2.Text > EmptyStr) and (CheckBox2.Checked) then
         begin
           Edit2.Text := exNormalizeScreenName(Edit2.Text);
           Edit2.Text := exNormalizeIcqNumber(Edit2.Text);
@@ -535,7 +535,7 @@ begin
           end;
         end;
         //
-        if (Edit3.Text > '') and (CheckBox3.Checked) then
+        if (Edit3.Text > EmptyStr) and (CheckBox3.Checked) then
         begin
           Edit3.Text := exNormalizeScreenName(Edit3.Text);
           Edit3.Text := exNormalizeIcqNumber(Edit3.Text);
@@ -553,7 +553,7 @@ begin
       end;
     1:
       begin
-        if (Edit5.Text > '') and (CheckBox6.Checked) then
+        if (Edit5.Text > EmptyStr) and (CheckBox6.Checked) then
         begin
           if ICQ_Work_Phaze then
           begin
@@ -562,7 +562,7 @@ begin
           end;
         end;
         //
-        if (Edit6.Text > '') and (CheckBox7.Checked) then
+        if (Edit6.Text > EmptyStr) and (CheckBox7.Checked) then
         begin
           if ICQ_Work_Phaze then
           begin
@@ -573,7 +573,7 @@ begin
       end;
     2:
       begin
-        if (Edit7.Text > '') or (Edit8.Text > '') or (Edit9.Text > '') then
+        if (Edit7.Text > EmptyStr) or (Edit8.Text > EmptyStr) or (Edit9.Text > EmptyStr) then
         begin
           if ICQ_Work_Phaze then
           begin
@@ -768,7 +768,7 @@ begin
       end;
     5:
       begin
-        if (Edit21.Text > '') and (CheckBox8.Checked) then
+        if (Edit21.Text > EmptyStr) and (CheckBox8.Checked) then
         begin
           if ICQ_Work_Phaze then
           begin
@@ -794,7 +794,7 @@ begin
   if ListView1.Items.Count > 0 then
   begin
     autosendind := 0;
-    if (Edit23.Text = '') or (Edit23.Text = '0') then Edit23.Text := '60';
+    if (Edit23.Text = EmptyStr) or (Edit23.Text = '0') then Edit23.Text := '60';
     AutoSendTimer.Interval := StrToInt(Edit23.Text) * 1000;
     AutoSendTimer.Enabled := true;
     //
@@ -889,7 +889,7 @@ end;
 
 procedure TIcqSearchForm.Edit23Change(Sender: TObject);
 begin
-  if (Edit23.Text = '') or (Edit23.Text = '0') then Edit23.Text := '60';
+  if (Edit23.Text = EmptyStr) or (Edit23.Text = '0') then Edit23.Text := '60';
   AutoSendTimer.Interval := StrToInt(Edit23.Text) * 1000;
 end;
 
@@ -931,7 +931,7 @@ procedure TIcqSearchForm.Edit4Exit(Sender: TObject);
 var
   FOptions: TFontStyles;
 begin
-  if Edit4.Text = '' then
+  if Edit4.Text = EmptyStr then
   begin
     FOptions := [];
     Include(FOptions, fsBold);
@@ -1121,7 +1121,7 @@ begin
       if RoasterForm.CategoryButtons1.Categories[i].GroupId = 'NoCL' then
       begin
         Nick := ListView1.Selected.SubItems.Strings[0];
-        if Nick = '' then Nick := ListView1.Selected.Caption;
+        if Nick = EmptyStr then Nick := ListView1.Selected.Caption;
         RoasterForm.CategoryButtons1.Categories[i].Items.Add.Caption := Nick;
         T := RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1;
         RoasterForm.CategoryButtons1.Categories[i].Items[T].UIN := ListView1.Selected.Caption;
@@ -1133,7 +1133,7 @@ begin
         RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex2 := -1;
         RoasterForm.CategoryButtons1.Categories[i].Items[T].Msg := false;
         RoasterForm.CategoryButtons1.Categories[i].Items[T].Auth := true;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].QuoteMsg := '';
+        RoasterForm.CategoryButtons1.Categories[i].Items[T].QuoteMsg := EmptyStr;
         //RoasterForm.CategoryButtons1.Categories[i].Items[T].Index := 0;
         //
         RoasterForm.CategoryButtons1ButtonClicked(self, RoasterForm.CategoryButtons1.Categories[i].Items[T]);
@@ -1219,7 +1219,7 @@ begin
   if ListView1.Selected <> nil then
   begin
     if ListView1.Selected.Checked then Exit;
-    if (Edit4.Tag = 1) or (Edit4.Text = '') then Exit;
+    if (Edit4.Tag = 1) or (Edit4.Text = EmptyStr) then Exit;
     if ICQ_Work_Phaze then
     begin
       ICQ_SendMessage_0406(ListView1.Selected.Caption, Edit4.Text, true);

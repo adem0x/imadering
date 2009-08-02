@@ -52,19 +52,19 @@ begin
   {//
   if ICQ_SSI_Phaze then
   begin
-    DAShow(false, '2', '25', '', 157, 3, DATimeShow);
+    DAShow(false, '2', '25', EmptyStr, 157, 3, DATimeShow);
     Exit;
   end;
   //
   if Create_Group then
   begin
-    if Edit1.Text = '' then goto x;
+    if Edit1.Text = EmptyStr then goto x;
     //
     for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
     begin
       if RoasterForm.CategoryButtons1.Categories[i].GroupCaption = Edit1.Text then
       begin
-        DAShow(false, '2', '29', '', 157, 0, DATimeShow);
+        DAShow(false, '2', '29', EmptyStr, 157, 0, DATimeShow);
         goto x;
       end;
     end;
@@ -90,9 +90,9 @@ begin
   end
   else
   begin
-    if Edit1.Text = '' then goto x;
+    if Edit1.Text = EmptyStr then goto x;
     if Edit1.Text = Name_Group then goto x;
-    if (Id_Group = '') or (Id_Group = 'NoCL') then goto x;
+    if (Id_Group = EmptyStr) or (Id_Group = 'NoCL') then goto x;
     //
     ICQ_Add_Nick := Edit1.Text;
     ICQ_Add_GroupId := Id_Group;

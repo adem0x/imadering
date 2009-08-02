@@ -102,7 +102,7 @@ object SettingsForm: TSettingsForm
       Top = 3
       Width = 432
       Height = 359
-      ActivePage = JvStandardPage1
+      ActivePage = JvStandardPage5
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -138,7 +138,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
           object StartOnWinStartCheckBox: TCheckBox
             Left = 14
@@ -153,7 +153,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
           object AutoUpdateCheckBox: TCheckBox
             Left = 14
@@ -168,7 +168,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 2
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
         end
       end
@@ -204,7 +204,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
           object AutoHideCLCheckBox: TCheckBox
             Left = 12
@@ -219,7 +219,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
           object AutoHideClEdit: TEdit
             Left = 179
@@ -235,7 +235,7 @@ object SettingsForm: TSettingsForm
             ParentFont = False
             TabOrder = 2
             Text = '10'
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
             OnExit = AutoHideClEditExit
             OnKeyPress = AutoHideClEditKeyPress
           end
@@ -278,7 +278,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
         end
         object HeadTextGroupBox: TGroupBox
@@ -307,7 +307,7 @@ object SettingsForm: TSettingsForm
             ParentFont = False
             TabOrder = 0
             Text = 'IMadering'
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
           end
         end
         object CLOptionsGroupBox: TGroupBox
@@ -617,7 +617,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
           end
-          object ProxyAddresEdit: TEdit
+          object ProxyAddressEdit: TEdit
             Left = 91
             Top = 51
             Width = 207
@@ -631,7 +631,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
           end
           object ProxyPortEdit: TEdit
             Left = 91
@@ -647,7 +647,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
           end
           object ProxyTypeComboBox: TComboBox
             Left = 343
@@ -662,7 +662,7 @@ object SettingsForm: TSettingsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 0
+            ItemHeight = 13
             ItemIndex = 0
             ParentFont = False
             TabOrder = 2
@@ -687,12 +687,12 @@ object SettingsForm: TSettingsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 0
+            ItemHeight = 13
             ItemIndex = 0
             ParentFont = False
             TabOrder = 3
             Text = '1.0'
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
             Items.Strings = (
               '1.0'
               '1.1')
@@ -727,7 +727,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 5
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
           end
           object ProxyPasswordEdit: TEdit
             Left = 91
@@ -744,7 +744,7 @@ object SettingsForm: TSettingsForm
             ParentFont = False
             PasswordChar = '*'
             TabOrder = 6
-            OnChange = ProxyAddresEditChange
+            OnChange = ProxyAddressEditChange
           end
           object ProxyShowPassCheckBox: TCheckBox
             Left = 91
@@ -791,7 +791,7 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 9
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
         end
         object GroupBox6: TGroupBox
@@ -823,7 +823,7 @@ object SettingsForm: TSettingsForm
             ParentFont = False
             State = cbChecked
             TabOrder = 0
-            OnClick = ProxyAddresEditChange
+            OnClick = ProxyAddressEditChange
           end
         end
       end
