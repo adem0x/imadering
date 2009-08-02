@@ -159,6 +159,7 @@ var
   DellContactL: string = 'Контакт "%s" будет удалён. Вы уверены?';
   DellYourSelfL: string = 'Удалить себя из списка контакта: %s. Вы уверены?';
   HistoryNotFile: string = 'История сообщений с этим контактом отсутствует';
+  GroupInv: string = ' из ';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
