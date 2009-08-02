@@ -1,6 +1,6 @@
 unit CategoryButtons;
 
-interface
+interface                              
 
 uses
   Windows, SysUtils, Classes, Controls, ImgList, Forms, Messages,
@@ -3554,9 +3554,8 @@ end;
 
 constructor TButtonCategory.Create(Collection: TCollection);
 const
-  cMaxPresets = 10;
-  cPresetColors: array[0..cMaxPresets - 1] of TColor = ($00FFEAFF, $00F4F4F4, $00EAEBFF,
-    $00FFEAFF, $00FFEAEA, $00EAFFFF, $00FFFFEA, $00EAEBFF, $00EBFFEA, $00FFEAEA);
+  cMaxPresets = 4;
+  cPresetColors: array[0..cMaxPresets - 1] of TColor = ($00FFEAFF, $00FFEAEA, $00EAEBFF, $00FFEAEA);
 begin
   inherited Create(Collection);
   FGradientColor := clNone;
@@ -3565,8 +3564,7 @@ begin
   with TButtonCategories(Collection).ButtonGroup do
     FColor := cPresetColors[GLastPreset];
   Inc(GLastPreset);
-  if GLastPreset >= cMaxPresets then
-    GLastPreset := 0;
+  if GLastPreset >= cMaxPresets then GLastPreset := 0;
 end;
 
 destructor TButtonCategory.Destroy;
