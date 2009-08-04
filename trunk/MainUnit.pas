@@ -203,7 +203,7 @@ type
     procedure JvTimerListEvents6Timer(Sender: TObject);
     procedure ZipHistoryThreadRun(Sender: TIdThreadComponent);
     procedure JvTimerListEvents10Timer(Sender: TObject);
-    procedure OpenHistoryClick(Sender: TObject);    
+    procedure OpenHistoryClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -660,7 +660,7 @@ label
   x, z;
 var
   Pkt, HexPkt, SubPkt: string;
-  PktLen, Len , ProxyErr: integer;
+  PktLen, Len, ProxyErr: integer;
   i: byte;
 begin
   //--Получаем пришедшие от сервера данные с сокета
@@ -1688,6 +1688,21 @@ var
   diff: TdateTime;
   Sheet: TTabSheet;
 begin
+  //--Сбрасываем выделение заголовка группы при клике по любому контакту
+  with ContactList do
+  begin
+    for i := 0 to Categories.Count - 1 do
+    begin
+      if Categories[i].GroupSelected = true then
+      begin
+        Categories[i].GroupSelected := false;
+        //--Перерисовываем заголовок группы
+        ShareUpdateCategory(ContactList.Categories[i]);
+        //--Выходим из цикла
+        Break;
+      end;
+    end;
+  end;
   //--Вычитаем время плошлого клика
   diff := now - lastClick;
   //--Запоминаем время текущего клика
@@ -1763,23 +1778,73 @@ procedure TMainForm.ContactListContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 var
   FCursor: TPoint;
+  i: integer;
 begin
   //--Отключаем автоменю
   Handled := true;
   //--Вычисляем группу в которой происходит событие
-  RoasterGroup := (Sender as TCategoryButtons).GetCategoryAt(MousePos.X, MousePos.Y);
-  //
-  (Sender as TCategoryButtons).FocusedItem := nil;
-  (Sender as TCategoryButtons).SelectedItem := RoasterButton;
+  RoasterGroup := ContactList.GetCategoryAt(MousePos.X, MousePos.Y);
+  //--Выделяем контакт на котором был правый клик мыши
+  ContactList.FocusedItem := nil;
+  ContactList.SelectedItem := RoasterButton;
   //--Получаем координаты курсора
   GetCursorPos(FCursor);
   //--Если кнопка КЛ, то выводим меню контакта
   if RoasterButton <> nil then
   begin
+    //--Снимаем выделение с заголовка группы
+    if RoasterGroup <> nil then
+    begin
+      RoasterGroup.GroupSelected := false;
+      ContactList.ShareUpdateCategory(RoasterGroup);
+    end;
+    //--Активируем или деактивируем нужные для этого контакта пункты меню
+
+    //--Отображаем меню
     ContactPopupMenu.Popup(FCursor.X, FCursor.Y);
   end
   else
   begin
+    //--Если правый клик был по группе, то подсвечиваем её заголовок
+    //и активируем или деактивируем нужные пункты меню контакт листа
+    with ContactList do
+    begin
+      //--Если клик был по группе, то подсвечиваем её заголовок
+      if RoasterGroup <> nil then
+      begin
+        //--Сбрасываем подсветку заголовка другой группы
+        for i := 0 to Categories.Count - 1 do
+        begin
+          if Categories[i].GroupSelected = true then
+          begin
+            Categories[i].GroupSelected := false;
+            //--Перерисовываем заголовок группы
+            ShareUpdateCategory(ContactList.Categories[i]);
+            //--Выходим из цикла
+            Break;
+          end;
+        end;
+        //--Подсвечиваем заголовок текущей группы
+        RoasterGroup.GroupSelected := true;
+        ShareUpdateCategory(RoasterGroup);
+        //--Управляем пунктами меню для группы
+        RenemeGroupCL.Visible := true;
+        DeleteGroupCL.Visible := true;
+      end
+      else
+      begin
+        //--Если клик не по группе, то убираем подсветку со всех заголовков групп
+        for i := 0 to Categories.Count - 1 do
+        begin
+          Categories[i].GroupSelected := false;
+          ShareUpdateCategory(ContactList.Categories[i]);
+        end;
+        //--Управляем пунктами меню для группы
+        RenemeGroupCL.Visible := false;
+        DeleteGroupCL.Visible := false;
+      end;
+    end;
+    //--Отображаем меню
     ContactListPopupMenu.Popup(FCursor.X, FCursor.Y);
   end;
 end;
@@ -2050,7 +2115,7 @@ begin
   // Загрузим настройки прокси
   LoadProxySettings;
 
-  SetProxySettings; 
+  SetProxySettings;
 
   //--Проверяем активацию значков протоколов в трэе по умолчанию
   if not FirstStart then
@@ -2103,13 +2168,13 @@ end;
 procedure TMainForm.LoadMainFormSettings;
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     //--Загружаем настройки
     if FileExists(MyPath + SettingsFileName) then begin
       LoadFromFile(MyPath + SettingsFileName);
 
       //--Загружаем позицию окна
-      If OpenKey('settings\forms\mainform\position') then try
+      if OpenKey('settings\forms\mainform\position') then try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
@@ -2124,7 +2189,7 @@ begin
       end;
 
       //--Загружаем состояние кнопки звуков
-      If OpenKey('settings\forms\mainform\sounds-on-off') then try
+      if OpenKey('settings\forms\mainform\sounds-on-off') then try
         if ReadBool('value') then begin
           SoundOnOffToolButton.ImageIndex := 136;
           SoundOnOffToolButton.Down := true;
@@ -2135,7 +2200,7 @@ begin
       end;
 
       //--Загружаем состояние кнопки только онлайн
-      If OpenKey('settings\forms\mainform\only-online-on-off') then try
+      if OpenKey('settings\forms\mainform\only-online-on-off') then try
         if ReadBool('value') then begin
           OnlyOnlineContactsToolButton.ImageIndex := 137;
           OnlyOnlineContactsToolButton.Down := true;
@@ -2146,14 +2211,14 @@ begin
       end;
 
       //--Загружаем был ли первый старт
-      If OpenKey('settings\forms\mainform\first-start') then try
+      if OpenKey('settings\forms\mainform\first-start') then try
         FirstStart := ReadBool('value');
       finally
         CloseKey();
       end;
 
       //--Загружаем выбранные протоколы
-      If OpenKey('settings\forms\mainform\proto-select') then try
+      if OpenKey('settings\forms\mainform\proto-select') then try
         ICQEnable(ReadBool('icq'));
         MRAEnable(ReadBool('mra'));
         JabberEnable(ReadBool('jabber'));
@@ -2169,7 +2234,7 @@ end;
 procedure TMainForm.LoadProxySettings;
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     //--Загружаем настройки
     if FileExists(MyPath + SettingsFileName) then begin
       LoadFromFile(MyPath + SettingsFileName);
@@ -2196,7 +2261,7 @@ begin
         CloseKey();
       end;
 
-      if OpenKey('settings\proxy\auth') then try      
+      if OpenKey('settings\proxy\auth') then try
         G_ProxyAuthorize := ReadBool('auth-enable');
         G_ProxyLogin := ReadString('login');
         G_ProxyPassword := Decrypt(ReadString('password'), PassKey);
@@ -2262,11 +2327,11 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     if FileExists(MyPath + SettingsFileName) then
       LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    If OpenKey('settings\forms\mainform\position', True) then try
+    if OpenKey('settings\forms\mainform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -2276,14 +2341,14 @@ begin
     end;
 
     //--Сохраняем звук вкл. выкл.
-    If OpenKey('settings\forms\mainform\sounds-on-off', True) then try
+    if OpenKey('settings\forms\mainform\sounds-on-off', True) then try
       WriteBool('value', SoundOnOffToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем отображать только онлайн вкл. выкл.
-    If OpenKey('settings\forms\mainform\only-online-on-off', True) then try
+    if OpenKey('settings\forms\mainform\only-online-on-off', True) then try
       WriteBool('value', OnlyOnlineContactsToolButton.Down);
     finally
       CloseKey();
@@ -2291,14 +2356,14 @@ begin
 
     //--Записываем что первый запуск программы уже состоялся и показывать
     //окно настройки протоколов больше не будем при запуске
-    If OpenKey('settings\forms\mainform\first-start', True) then try
+    if OpenKey('settings\forms\mainform\first-start', True) then try
       WriteBool('value', true);
     finally
       CloseKey();
     end;
 
     //--Сохраняем активные протоколы
-    If OpenKey('settings\forms\mainform\proto-select', True) then try
+    if OpenKey('settings\forms\mainform\proto-select', True) then try
       WriteBool('icq', ICQToolButton.Visible);
       WriteBool('mra', MRAToolButton.Visible);
       WriteBool('jabber', JabberToolButton.Visible);
@@ -2463,7 +2528,7 @@ begin
   cnt_contact := 0;
 
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     //--Загружаем файл контакт листа
     if FileExists(MyPath + 'Profile\ContactList.xml') then begin
       LoadFromFile(MyPath + 'Profile\ContactList.xml');
@@ -2474,7 +2539,7 @@ begin
       finally
         CloseKey();
       end;
-      With ContactList do
+      with ContactList do
         for i := 0 to cnt_group - 1 do begin
           if OpenKey('settings\group', false, i) then try
             Categories.Add.Caption := ReadString('caption');
@@ -2506,13 +2571,13 @@ begin
               Categories[i].Items[k].ImageIndex1 := -1;
               Categories[i].Items[k].ImageIndex2 := -1;
               //--Растормаживаем фэйс
-              Application.ProcessMessages;              
+              Application.ProcessMessages;
             finally
               CloseKey();
             end;
           end;
           //--Заканчиваем запись контактов в группу
-          Categories[i].Items.EndUpdate;          
+          Categories[i].Items.EndUpdate;
         end;
     end;
   finally
@@ -2527,7 +2592,7 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     //--Сохраняем в цикле все группы и все контакты в них и флаги непрочитанных сообщений
     with ContactList do begin
       for i := 0 to Categories.Count - 1 do begin

@@ -26,9 +26,9 @@ type
   TButtonGroup = class(TCustomControl)
   private
     FDownIndex: Integer;
-    FDragIndex: Integer;
-    FDragStartPos: TPoint;
-    FDragStarted: Boolean;
+    //FDragIndex: Integer;
+    //FDragStartPos: TPoint;
+    //FDragStarted: Boolean;
     //FDragImageList: TDragImageList;
     FHiddenItems: Integer; { Hidden rows or Hidden columns, depending on the flow }
     FHotIndex: Integer;
@@ -146,9 +146,9 @@ type
     property ButtonWidth: Integer read FButtonWidth write SetButtonWidth default 24;
     property ButtonOptions: TGrpButtonOptions read FButtonOptions write SetGrpButtonOptions default [gboShowCaptions];
     property DockSite;
-    property DragCursor;
-    property DragKind;
-    property DragMode;
+    //property DragCursor;
+    //property DragKind;
+    //property DragMode;
     property Enabled;
     property Font;
     property Height default 100;
@@ -168,10 +168,10 @@ type
     property OnContextPopup;
     property OnDockDrop;
     property OnDockOver;
-    property OnDragDrop;
-    property OnDragOver;
+    //property OnDragDrop;
+    //property OnDragOver;
     property OnEndDock;
-    property OnEndDrag;
+    //property OnEndDrag;
     property OnEnter;
     property OnExit;
     property OnHotButton: TGrpButtonEvent read FOnHotButton write FOnHotButton;
@@ -193,7 +193,7 @@ type
     property OnMouseWheelDown;
     property OnMouseWheelUp;
     property OnStartDock;
-    property OnStartDrag;
+    //property OnStartDrag;
   end;
 
   TGrpButtonItem = class(TBaseButtonItem)
@@ -240,7 +240,7 @@ begin
   inherited Create(AOwner);
   Width := 100;
   Height := 100;
-  ControlStyle := [csDoubleClicks, csCaptureMouse, csDisplayDragImage, csPannable];
+  ControlStyle := [csDoubleClicks, csCaptureMouse, {csDisplayDragImage, }csPannable];
   FButtonItems := GetButtonsClass.Create(Self);
   FButtonOptions := [gboShowCaptions];
   FBorderStyle := bsSingle;
@@ -252,7 +252,7 @@ begin
   FHotIndex := -1;
   FDownIndex := -1;
   FItemIndex := -1;
-  FDragIndex := -1;
+  //FDragIndex := -1;
   FInsertBottom := -1;
   FInsertTop := -1;
   FInsertLeft := -1;
@@ -844,13 +844,13 @@ begin
     if not Focused then
       Windows.SetFocus(Handle);
 
-    FDragStarted := False;
+    //FDragStarted := False;
     FDownIndex := IndexOfButtonAt(X, Y);
     if FDownIndex <> -1 then
     begin
-      if gboAllowReorder in ButtonOptions then
+      {if gboAllowReorder in ButtonOptions then
         FDragIndex := FDownIndex;
-      FDragStartPos := Point(X, Y);
+      FDragStartPos := Point(X, Y);}
       { If it is the same as the selected, don't do anything }
       if FDownIndex <> FItemIndex then
         UpdateButton(FDownIndex)
@@ -858,13 +858,12 @@ begin
         FDownIndex := -1;
     end;
     //--Перенёс событие MouseUp сюда для более правильного выбора пунктов
-    if (Button = mbLeft) and (not FDragStarted) then
+    if Button = mbLeft then
     begin
       LastDown := FDownIndex;
       FDownIndex := -1;
-      FDragIndex := -1;
-      if (LastDown <> -1) and (IndexOfButtonAt(X, Y) = LastDown)
-        and (FDragIndex = -1) then
+      //FDragIndex := -1;
+      if (LastDown <> -1) and (IndexOfButtonAt(X, Y) = LastDown) then
       begin
         UpdateButton(LastDown);
         DoItemClicked(LastDown);
@@ -958,7 +957,7 @@ begin
     if Assigned(FOnClick) then
       FOnClick(Self);
   end;}
-  FDragStarted := False;
+  //FDragStarted := False;
 end;
 
 function TButtonGroup.IndexOfButtonAt(const X, Y: Integer): Integer;

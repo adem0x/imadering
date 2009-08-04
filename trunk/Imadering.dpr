@@ -26,7 +26,8 @@ uses
   MraXStatusUnit in 'MraXStatusUnit.pas' {MraXStatusForm},
   IcqRegNewUINUnit in 'IcqRegNewUINUnit.pas' {IcqRegNewUINForm},
   MraOptionsUnit in 'MraOptionsUnit.pas' {MraOptionsForm},
-  JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm};
+  JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
+  UpdateUnit in 'UpdateUnit.pas' {UpdateForm};
 
 {$R *.res}
 

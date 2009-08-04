@@ -1,6 +1,6 @@
 unit CategoryButtons;
 
-interface                              
+interface
 
 uses
   Windows, SysUtils, Classes, Controls, ImgList, Forms, Messages,
@@ -34,7 +34,7 @@ type
     bdsInsertBottom: Show that an item can be inserted below this item
   }
   TButtonDrawState = set of (bdsSelected, bdsHot, bdsFocused, bdsDown,
-    bdsDragged, bdsInsertLeft, bdsInsertTop, bdsInsertRight, bdsInsertBottom);
+    {bdsDragged, }bdsInsertLeft, bdsInsertTop, bdsInsertRight, bdsInsertBottom);
 
   TCatButtonOptions = set of (boAllowReorder, boAllowCopyingButtons,
     boFullSize, boGradientFill, boShowCaptions, boVerticalCategoryCaptions,
@@ -67,10 +67,10 @@ type
     FButtonFlow: TCatButtonFlow;
     FCollapsedHeight: Integer;
     FDownButton: TButtonItem;
-    FDragButton: TButtonItem;
-    FDragCategory: TButtonCategory;
-    FDragStartPos: TPoint;
-    FDragStarted: Boolean;
+    //FDragButton: TButtonItem;
+    //FDragCategory: TButtonCategory;
+    //FDragStartPos: TPoint;
+    //FDragStarted: Boolean;
     //FDragImageList: TDragImageList;
     FGradientDirection: TGradientDirection;
     FBackGradientDirection: TGradientDirection;
@@ -157,14 +157,14 @@ type
     procedure WMHScroll(var Message: TWMVScroll); message WM_HSCROLL;
     procedure WMSetFocus(var Message: TWMSetFocus); message WM_SETFOCUS;
     procedure WMKillFocus(var Message: TWMKillFocus); message WM_KILLFOCUS;
-    procedure SetDragButton(const Value: TButtonItem);
+    //procedure SetDragButton(const Value: TButtonItem);
     procedure SetBackgroundGradientColor(const Value: TColor);
     procedure SetBackGradientDirection(const Value: TGradientDirection);
   protected
-    procedure BeginAutoDrag; override;
+    //procedure BeginAutoDrag; override;
     procedure CreateHandle; override;
     procedure CreateParams(var Params: TCreateParams); override;
-    procedure DoBeginDrag(Immediate: Boolean; Threshold: Integer); virtual;
+    //procedure DoBeginDrag(Immediate: Boolean; Threshold: Integer); virtual;
     procedure DoCopyButton(const Button: TButtonItem;
       const TargetCategory: TButtonCategory; const TargetButton: TButtonItem); dynamic;
     //procedure DoEndDrag(Target: TObject; X: Integer; Y: Integer); override;
@@ -204,8 +204,8 @@ type
     { DragButton: If a drag operation is coming from this control, it is
       becuase they are dragging this item, or the category. One can
       write to it if they want to control what button is being dragged. }
-    property DragButton: TButtonItem read FDragButton write SetDragButton;
-    property DragCategory: TButtonCategory read FDragCategory write FDragCategory;
+    //property DragButton: TButtonItem read FDragButton write SetDragButton;
+    //property DragCategory: TButtonCategory read FDragCategory write FDragCategory;
     //property DragImageList: TDragImageList read FDragImageList;
     //procedure DragDrop(Source: TObject; X: Integer; Y: Integer); override;
     //procedure GenerateDragImage;
@@ -214,6 +214,7 @@ type
     function GetButtonAt(X, Y: Integer;
       Category: TButtonCategory = nil): TButtonItem;
     function GetCategoryAt(X, Y: Integer): TButtonCategory;
+    procedure ShareUpdateCategory(const Category: TButtonCategory);
     //procedure RemoveInsertionPoints;
     procedure ScrollIntoView(const Button: TButtonItem); overload;
     procedure ScrollIntoView(const Category: TButtonCategory); overload;
@@ -245,9 +246,9 @@ type
     property ButtonOptions: TCatButtonOptions read FButtonOptions
       write SetCatButtonOptions default [boGradientFill, boShowCaptions, boVerticalCategoryCaptions];
     property DockSite;
-    property DragCursor;
-    property DragKind;
-    property DragMode;
+    //property DragCursor;
+    //property DragKind;
+    //property DragMode;
     property Enabled;
     property Font;
     property Height default 100;
@@ -278,13 +279,13 @@ type
     property OnCopyButton: TCatButtonCopyEvent read FOnCopyButton write FOnCopyButton;
     property OnDockDrop;
     property OnDockOver;
-    property OnDragDrop;
-    property OnDragOver;
+    //property OnDragDrop;
+    //property OnDragOver;
     property OnDrawButton: TCatButtonDrawEvent read FOnDrawButton write SetOnDrawButton;
     property OnDrawIcon: TCatButtonDrawIconEvent read FOnDrawIcon write SetOnDrawIcon;
     property OnDrawText: TCatButtonDrawEvent read FOnDrawText write FOnDrawText;
     property OnEndDock;
-    property OnEndDrag;
+    //property OnEndDrag;
     property OnEnter;
     property OnExit;
     property OnGetHint: TCatButtonGetHint read FOnGetHint write FOnGetHint;
@@ -305,7 +306,7 @@ type
     property OnMouseWheelUp;
     property OnSelectedItemChange: TCatButtonEvent read FOnSelectedItemChange write FOnSelectedItemChange;
     property OnStartDock;
-    property OnStartDrag;
+    //property OnStartDrag;
   end;
 
   TBaseButtonItem = class(TCollectionItem)
@@ -466,6 +467,7 @@ type
     FGroupCaption: string;
     FMsg: boolean;
     FCollapsed: Boolean;
+    FGroupSelected: boolean;
     FColor: TColor;
     FGradientColor: TColor;
     FTextColor: TColor;
@@ -500,6 +502,7 @@ type
     property GroupCaption: string read FGroupCaption write FGroupCaption;
     property Color: TColor read FColor write SetColor;
     property Collapsed: Boolean read FCollapsed write SetCollapsed;
+    property GroupSelected: Boolean read FGroupSelected write FGroupSelected default false;
     property GradientColor: TColor read FGradientColor write SetGradientColor default clNone;
     property Items: TButtonCollection read FItems write SetItems;
     property TextColor: TColor read FTextColor write SetTextColor default clWindowText;
@@ -547,7 +550,7 @@ implementation
 
 uses Themes, ExtCtrls, Types;
 
-{$R CategoryButtons.res} { Contains the Copy DragCursor }
+//{$R CategoryButtons.res} { Contains the Copy DragCursor }
 
 { TCategoryButtons }
 
@@ -556,7 +559,7 @@ begin
   inherited Create(AOwner);
   Width := 100;
   Height := 100;
-  ControlStyle := [csDoubleClicks, csCaptureMouse, csDisplayDragImage, csPannable];
+  ControlStyle := [csDoubleClicks, csCaptureMouse, {csDisplayDragImage, } csPannable];
   FButtonCategories := GetButtonCategoriesClass.Create(Self);
   FBorderStyle := bsSingle;
   FButtonWidth := 24;
@@ -703,10 +706,10 @@ end;
 procedure TCategoryButtons.GetCategoryBounds(const Category: TButtonCategory;
   const StartingPos: Integer; var CategoryBounds, ButtonBounds: TRect);
 var
-  CatHeight{, CatWidth}: Integer;
-  ButtonsPerRow{, ButtonsPerCol}: Integer;
-  XStart{, YStart}: Integer;
-  XEnd{, YEnd}: Integer;
+  CatHeight {, CatWidth}: Integer;
+  ButtonsPerRow {, ButtonsPerCol}: Integer;
+  XStart {, YStart}: Integer;
+  XEnd {, YEnd}: Integer;
 begin
   if FButtonFlow = cbfVertical then
   begin
@@ -889,7 +892,7 @@ procedure TCategoryButtons.DrawCategory(
   begin
     {if boUsePlusMinus in ButtonOptions then
     begin}
-      DrawPlusMinus;
+    DrawPlusMinus;
     {end
     else
     begin
@@ -943,7 +946,7 @@ begin
 
     if (FButtonFlow = cbfVertical) and not Category.Collapsed
       and (Category.Items.Count = 0) then
-        CategoryRealBounds.Bottom := (CategoryRealBounds.Top + FCollapsedHeight + cBorderBuffer) - 2;
+      CategoryRealBounds.Bottom := (CategoryRealBounds.Top + FCollapsedHeight + cBorderBuffer) - 2;
 
   end;
 
@@ -1006,6 +1009,14 @@ begin
     with CategoryRealBounds do
       Canvas.FrameRect(Rect(Left + 1, Top + 1, Right, Bottom));
   end;}
+
+  //--Подсвечиваем заголовок выделенной группы
+  if Category.GroupSelected then
+  begin
+    Canvas.Brush.Color := GetShadowColor(SourceColor, -75);
+    with CategoryRealBounds do
+      Canvas.FrameRect(Rect(Left + 1, Top + 1, Right, Bottom));
+  end;
 
   ChevronBounds := GetChevronBounds(CategoryRealBounds);
 
@@ -1656,7 +1667,7 @@ begin
   inherited;
   if Button = mbLeft then
   begin
-    FDragStarted := False;
+    //FDragStarted := False;
     DownCategory := GetCategoryAt(X, Y);
     FDownButton := GetButtonAt(X, Y, DownCategory);
 
@@ -1667,25 +1678,25 @@ begin
 
     if FDownButton <> nil then
     begin
-      FDragButton := FDownButton;
-      FDragStartPos := Point(X, Y);
+      //FDragButton := FDownButton;
+      //FDragStartPos := Point(X, Y);
       UpdateButton(FDownButton);
-    end
-    else if DownCategory <> nil then
+    end;
+    {else if DownCategory <> nil then
     begin
       if GetAllowReorder then
       begin
         FDragCategory := DownCategory;
         FDragStartPos := Point(X, Y);
       end;
-    end;
+    end;}
     //--Перенёс событие MouseUp сюда для более правильного выбора пунктов
-    if (Button = mbLeft) and (not FDragStarted) then
+    if Button = mbLeft then
     begin
       LastDown := FDownButton;
       FDownButton := nil;
-      FDragButton := nil;
-      FDragCategory := nil;
+      //FDragButton := nil;
+      //FDragCategory := nil;
       if LastDown <> nil then
         UpdateButton(LastDown);
       if (LastDown <> nil) and (GetButtonAt(X, Y) = LastDown) then
@@ -1706,7 +1717,7 @@ begin
   end;
 end;
 
-procedure TCategoryButtons.BeginAutoDrag;
+(*procedure TCategoryButtons.BeginAutoDrag;
 begin
   FDragStartPos := ScreenToClient(Mouse.CursorPos);
   with FDragStartPos do
@@ -1717,7 +1728,7 @@ begin
     DoBeginDrag(Mouse.DragImmediate, Mouse.DragThreshold);
   end;
   { Don't call inherited; the above takes care of calling BeginDrag }
-end;
+end;*)
 
 procedure TCategoryButtons.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
@@ -1802,7 +1813,7 @@ begin
     if Assigned(FOnClick) then
       FOnClick(Self);
   end;}
-  FDragStarted := False;
+  //FDragStarted := False;
 end;
 
 function TCategoryButtons.GetButtonAt(X, Y: Integer;
@@ -2738,44 +2749,38 @@ begin
   RemoveInsertionPoints;
 end;*)
 
-procedure TCategoryButtons.SetSelectedItem(const Value: TButtonItem);
-
-  procedure UpdateCategory(const Category: TButtonCategory);
-  var
-    R: TRect;
+procedure TCategoryButtons.ShareUpdateCategory(const Category: TButtonCategory);
+var
+  R: TRect;
+begin
+  if HandleAllocated then
   begin
-    if HandleAllocated then
-    begin
-      R := GetCategoryRect(Category);
-      InvalidateRect(Handle, @R, False);
-    end;
+    R := GetCategoryRect(Category);
+    InvalidateRect(Handle, @R, False);
   end;
+end;
 
+procedure TCategoryButtons.SetSelectedItem(const Value: TButtonItem);
 begin
   if FSelectedItem <> Value then
   begin
-    if FFocusedItem <> Value then
-      UpdateButton(FFocusedItem);
-
+    if FFocusedItem <> Value then UpdateButton(FFocusedItem);
     if FSelectedItem <> nil then
     begin
       UpdateButton(FSelectedItem);
-      if FSelectedItem.Category.Collapsed then
-        UpdateCategory(FSelectedItem.Category)
+      //if FSelectedItem.Category.Collapsed then
+      //UpdateCategory(FSelectedItem.Category)
     end;
-    if Value <> nil then
-      ScrollIntoView(Value);
+    if Value <> nil then ScrollIntoView(Value);
     FSelectedItem := Value;
-    if Value <> nil then
-      FFocusedItem := Value;
+    if Value <> nil then FFocusedItem := Value;
     if FSelectedItem <> nil then
     begin
       UpdateButton(FSelectedItem);
-      if FSelectedItem.Category.Collapsed then
-        UpdateCategory(FSelectedItem.Category);
+      //if FSelectedItem.Category.Collapsed then
+      ShareUpdateCategory(FSelectedItem.Category);
     end;
-    if not (csDestroying in ComponentState) then
-      DoSelectedItemChanged(FSelectedItem);
+    if not (csDestroying in ComponentState) then DoSelectedItemChanged(FSelectedItem);
   end;
 end;
 
@@ -3135,7 +3140,7 @@ begin
   Result := TButtonItem;
 end;
 
-procedure TCategoryButtons.SetDragButton(const Value: TButtonItem);
+{procedure TCategoryButtons.SetDragButton(const Value: TButtonItem);
 begin
   FDragButton := Value;
   FDragStarted := True;
@@ -3145,7 +3150,7 @@ end;
 procedure TCategoryButtons.DoBeginDrag(Immediate: Boolean; Threshold: Integer);
 begin
   BeginDrag(Immediate, Threshold);
-end;
+end;}
 
 function TCategoryButtons.GetAllowReorder: Boolean;
 begin
@@ -3412,8 +3417,8 @@ begin
     begin
       if Item = ButtonGroup.FDownButton then
         ButtonGroup.FDownButton := nil;
-      if Item = ButtonGroup.FDragButton then
-        ButtonGroup.FDragButton := nil;
+      {if Item = ButtonGroup.FDragButton then
+        ButtonGroup.FDragButton := nil;}
       if Item = ButtonGroup.FHotButton then
         Buttongroup.FHotButton := nil;
       if Item = ButtonGroup.FSelectedItem then
