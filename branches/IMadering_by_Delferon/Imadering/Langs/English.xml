@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<xml>
+	<main-form>
+		<MainToolButton tag="1" caption="" hint="321"/>
+		<ICQToolButton tag="2" caption="" hint="321"/>
+		<MRAToolButton tag="3" caption="" hint="321"/>
+		<JabberToolButton tag="4" caption="" hint="321"/>
+	</main-form>
+</xml>
