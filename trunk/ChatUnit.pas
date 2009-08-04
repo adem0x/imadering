@@ -1123,8 +1123,8 @@ begin
         Height := ReadInteger('height');
         Width := ReadInteger('width');
         //--Загружаем позицию сплитеров
-        BottomChatFormPanel.Height := ReadInteger('chat-splitter'{, 130});
-        ChatCategoryButtons.Width := ReadInteger('group-splitter'{, 130});
+        BottomChatFormPanel.Height := ReadInteger('chat-splitter', 130);
+        ChatCategoryButtons.Width := ReadInteger('group-splitter', 130);
         //--Определяем не находится ли окно за пределами экрана
         while Top + Height > Screen.Height do
           Top := Top - 50;
@@ -1157,7 +1157,7 @@ begin
 
       //--Загружаем состояние панелей аватар
       if OpenKey('settings\forms\chatform\avatar-panels') then try
-        ContactAvatarPanel.Width := ReadInteger('contact-avatar'{, 68});
+        ContactAvatarPanel.Width := ReadInteger('contact-avatar', 68);
         if ContactAvatarPanel.Width = 0 then begin
           ContactAvatarPanelSpeedButton.NumGlyphs := 1;
           InfoPanel1.Left := 9;
@@ -1165,7 +1165,7 @@ begin
           InfoPanel1.Width := Width - 238;
           InfoPanel3.Width := InfoPanel1.Width;
         end;
-        MyAvatarPanel.Width := ReadInteger('my-avatar'{, 68});
+        MyAvatarPanel.Width := ReadInteger('my-avatar', 68);
         if MyAvatarPanel.Width = 0 then
           MyAvatarPanelSpeedButton.NumGlyphs := 4;
       finally

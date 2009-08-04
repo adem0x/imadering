@@ -42,11 +42,11 @@ type
     function GetKeyCount(const Name: string = ''): Integer;
     function GetValueCount: Integer;
 
-    function ReadBool(const Name: string): Boolean;
+    function ReadBool(const Name: string; Default: boolean = False): Boolean;
     function ReadDate(const Name: string): TDateTime;
     function ReadDateTime(const Name: string): TDateTime;
-    function ReadFloat(const Name: string): Double;
-    function ReadInteger(const Name: string): Integer;
+    function ReadFloat(const Name: string; Default: double = 0): Double;
+    function ReadInteger(const Name: string; Default: integer = 0): Integer;
     function ReadString(const Name: string): string;
     function ReadTime(const Name: string): TDateTime;
     function ValueExists(const Name: string): Boolean;
@@ -379,9 +379,9 @@ begin
   end;
 end;
 
-function TrXML.ReadBool(const Name: string): Boolean;
+function TrXML.ReadBool(const Name: string; Default: boolean = False): Boolean;
 begin
-  Result := GetNode.GetBoolAttr(Name)
+  Result := GetNode.GetBoolAttr(Name, Default)
 end;
 
 function TrXML.ReadDate(const Name: string): TDateTime;
@@ -394,14 +394,14 @@ begin
   Result := StrToDateTimeFix(ReadString(Name));
 end;
 
-function TrXML.ReadFloat(const Name: string): Double;
+function TrXML.ReadFloat(const Name: string; Default: double = 0): Double;
 begin
-  Result := GetNode.GetFloatAttr(Name);
+  Result := GetNode.GetFloatAttr(Name, Default);
 end;
 
-function TrXML.ReadInteger(const Name: string): Integer;
+function TrXML.ReadInteger(const Name: string; Default: integer = 0): Integer;
 begin
-  Result := GetNode.GetIntAttr(Name);
+  Result := GetNode.GetIntAttr(Name, Default);
 end;
 
 function TrXML.ReadString(const Name: string): string;
