@@ -1,6 +1,6 @@
 unit CategoryButtons;
 
-interface
+interface                              
 
 uses
   Windows, SysUtils, Classes, Controls, ImgList, Forms, Messages,
@@ -940,6 +940,11 @@ begin
       else
         CategoryRealBounds.Bottom := CategoryRealBounds.Top + FCollapsedHeight + cBorderBuffer
     end;
+
+    if (FButtonFlow = cbfVertical) and not Category.Collapsed
+      and (Category.Items.Count = 0) then
+        CategoryRealBounds.Bottom := (CategoryRealBounds.Top + FCollapsedHeight + cBorderBuffer) - 2;
+
   end;
 
   if boGradientFill in FButtonOptions then
@@ -3555,7 +3560,7 @@ end;
 constructor TButtonCategory.Create(Collection: TCollection);
 const
   cMaxPresets = 4;
-  cPresetColors: array[0..cMaxPresets - 1] of TColor = ($00FFEAFF, $00FFEAEA, $00EAEBFF, $00FFEAEA);
+  cPresetColors: array[0..cMaxPresets - 1] of TColor = ($00FFEAFF, $00FFEAEA, $00FFEAFF, $00FFEAEA);
 begin
   inherited Create(Collection);
   FGradientColor := clNone;

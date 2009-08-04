@@ -3656,8 +3656,7 @@ begin
           case Categories[i].Items[ii].Status of
             9, 80, 214: dec(cnt);
           end;
-        Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
-          IntToStr(Categories[i].Items.Count) + ' (' + IntToStr(cnt) + ')';
+        Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
       end;
     end;
   end;
@@ -4253,7 +4252,7 @@ begin
         begin
           if (Categories[i].GroupId = '0000') or (Categories[i].Items.Count = 0) then
             Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(Categories[i].Items.Count)
-          else Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(Categories[i].Items.Count) + ' (0)';
+          else Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
         end;
       end;
       //--Считываем и применям файл с флагами открытых и свёрнутых групп
@@ -4534,8 +4533,7 @@ begin
     begin
       if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
         (Categories[i].Items.Count = 0) then Continue;
-      Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
-        IntToStr(Categories[i].Items.Count) + ' (0)';
+      Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
     end;
   end;
   //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
