@@ -88,6 +88,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = ICQPopupMenu
       ShowHint = True
+      Visible = False
       OnClick = ICQToolButtonClick
       OnContextPopup = ICQToolButtonContextPopup
     end
@@ -100,6 +101,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = MRAPopupMenu
       ShowHint = True
+      Visible = False
       OnClick = MRAToolButtonClick
       OnContextPopup = MRAToolButtonContextPopup
     end
@@ -112,6 +114,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = JabberPopupMenu
       ShowHint = True
+      Visible = False
       OnClick = JabberToolButtonClick
       OnContextPopup = JabberToolButtonContextPopup
     end

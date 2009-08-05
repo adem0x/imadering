@@ -210,8 +210,8 @@ type
     lastClick: Tdatetime;
     procedure LoadImageList(ImgList: TImageList; FName: string);
     procedure LoadMainFormSettings;
-    procedure LoadProxySettings;
-    procedure SetProxySettings;
+    //procedure LoadProxySettings;
+    //procedure SetProxySettings;
     procedure MainFormHideInTray;
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
@@ -323,6 +323,8 @@ begin
     //--Прячем иконки в окне контактов и в трэе
     ICQTrayIcon.Visible := false;
     ICQToolButton.Visible := false;
+    //--Высвобождаем окно настроек протокола ICQ
+    if Assigned(IcqOptionsForm) then FreeAndNil(IcqOptionsForm);
   end;
 end;
 
@@ -331,7 +333,7 @@ begin
   if OnOff then
   begin
     //--Инициализируем окно настроек протокола MRA
-
+    if not Assigned(MraOptionsForm) then MraOptionsForm := TMraOptionsForm.Create(self);
     //--Ставим иконки в окне контактов и в трэе
     MRATrayIcon.Visible := true;
     MRAToolButton.Visible := true;
@@ -341,6 +343,8 @@ begin
     //--Прячем иконки в окне контактов и в трэе
     MRATrayIcon.Visible := false;
     MRAToolButton.Visible := false;
+    //--Высвобождаем окно настроек протокола MRA
+    if Assigned(MraOptionsForm) then FreeAndNil(MraOptionsForm);
   end;
 end;
 
@@ -358,7 +362,7 @@ begin
   if OnOff then
   begin
     //--Инициализируем окно настроек протокола Jabber
-
+    if not Assigned(JabberOptionsForm) then JabberOptionsForm := TJabberOptionsForm.Create(self);
     //--Ставим иконки в окне контактов и в трэе
     JabberTrayIcon.Visible := true;
     JabberToolButton.Visible := true;
@@ -368,6 +372,8 @@ begin
     //--Прячем иконки в окне контактов и в трэе
     JabberTrayIcon.Visible := false;
     JabberToolButton.Visible := false;
+    //--Высвобождаем окно настроек протокола Jabber
+    if Assigned(JabberOptionsForm) then FreeAndNil(JabberOptionsForm);
   end;
 end;
 
@@ -534,7 +540,7 @@ begin
       //--Устанавливаем параметры сокета
       ICQWSocket.Proto := 'tcp';
       //--Устанавливаем настройки прокси
-      SetProxySettings;
+      //SetProxySettings;
       if (G_ProxyEnabled) then begin
         if (G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1) then begin
           ICQWSocket.Addr := ICQ_LoginServerAddr;
@@ -1105,7 +1111,7 @@ begin
                     ICQ_HTTP_Connect_Phaze := false;
                     //--Устанавливаем параметры
                     ICQWSocket.Proto := 'tcp';
-                    SetProxySettings;
+                    //SetProxySettings;
                     if (G_ProxyEnabled) then
                     begin
                       if (G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1) then
@@ -2112,18 +2118,13 @@ begin
   //--Загружаем настройки окна
   LoadMainFormSettings;
 
-  // Загрузим настройки прокси
+  {// Загрузим настройки прокси
   LoadProxySettings;
 
-  SetProxySettings;
+  SetProxySettings;}
 
-  //--Проверяем активацию значков протоколов в трэе по умолчанию
-  if not FirstStart then
-  begin
-    ICQTrayIcon.Visible := true;
-    MRATrayIcon.Visible := true;
-    JabberTrayIcon.Visible := true;
-  end;
+  //--Если это первый старт программы, то по умолчанию активруем ICQ протокол
+  if not FirstStart then ICQEnable(true);
   //--Если автоматически проверять новые версии при старте
   if SettingsForm.AutoUpdateCheckBox.Checked then JvTimerList.Events[2].Enabled := true;
   //--Назначаем продвинутые функции активации и деактивации
@@ -2231,7 +2232,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LoadProxySettings;
+{procedure TMainForm.LoadProxySettings;
 begin
   //--Инициализируем XML
   with TrXML.Create() do try
@@ -2273,9 +2274,9 @@ begin
   finally
     Free();
   end;
-end;
+end;}
 
-procedure TMainForm.SetProxySettings;
+{procedure TMainForm.SetProxySettings;
 begin
   if ICQWSocket.State <> wsClosed then
     Exit;
@@ -2320,7 +2321,7 @@ begin
     //--Password
     ICQWSocket.SocksPassword := EmptyStr;
   end;
-end;
+end;}
 
 procedure TMainForm.SaveMainFormSettings;
 begin

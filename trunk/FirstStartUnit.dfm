@@ -242,14 +242,12 @@ object FirstStartForm: TFirstStartForm
         Height = 17
         TabStop = False
         Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1087#1086#1076#1076#1077#1088#1078#1082#1091' MRA '#1087#1088#1086#1090#1086#1082#1086#1083#1072
-        Checked = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        State = cbChecked
         TabOrder = 0
         OnClick = MRAEnableCheckBoxClick
       end
@@ -381,14 +379,12 @@ object FirstStartForm: TFirstStartForm
         Height = 17
         TabStop = False
         Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1087#1086#1076#1076#1077#1088#1078#1082#1091' Jabber '#1087#1088#1086#1090#1086#1082#1086#1083#1072
-        Checked = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        State = cbChecked
         TabOrder = 0
         OnClick = JabberEnableCheckBoxClick
       end

@@ -84,7 +84,8 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqRegNewUINUnit;
+  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqRegNewUINUnit,
+  IcqOptionsUnit;
 
 procedure TFirstStartForm.CheckSelectProtocols;
 begin
@@ -115,6 +116,16 @@ begin
   case JvPageList1.ActivePageIndex of
     0:
       begin
+        //--Применяем и сохраняем логин и пароль ICQ
+        if Assigned(IcqOptionsForm) then
+        begin
+          //--Присваиваем логин
+          IcqOptionsForm.ICQUINEdit.Text := ICQUINEdit.Text;
+          IcqOptionsForm.PassEdit.Text := ICQPassEdit.Text;
+          IcqOptionsForm.SavePassCheckBox.Checked := ICQSavePassCheckBox.Checked;
+          //--Применяем и сохраняем настройки логина ICQ
+          IcqOptionsForm.ApplySettings;
+        end;
         //--Переключаем на MRA страницу
         JvPageList1.ActivePageIndex := 1;
         //--Активируем клавишу возврата
@@ -158,6 +169,7 @@ end;
 
 procedure TFirstStartForm.JabberEnableCheckBoxClick(Sender: TObject);
 begin
+  //--Управляем контролами для Jabber
   if JabberEnableCheckBox.Checked then
   begin
     JabberGroupBox.Enabled := true;
@@ -166,6 +178,7 @@ begin
     JabberShowPassCheckBox.Enabled := true;
     JabberSavePassCheckBox.Enabled := true;
     JabberRegNewJIDButton.Enabled := true;
+    //--Включаем протокол жаббер
     MainForm.JabberEnable(true);
   end
   else
@@ -176,12 +189,14 @@ begin
     JabberShowPassCheckBox.Enabled := false;
     JabberSavePassCheckBox.Enabled := false;
     JabberRegNewJIDButton.Enabled := false;
+    //--Выключаем протокол жаббер
     MainForm.JabberEnable(false);
   end;
 end;
 
 procedure TFirstStartForm.ICQEnableCheckBoxClick(Sender: TObject);
 begin
+  //--Управляем контролами для ICQ
   if ICQEnableCheckBox.Checked then
   begin
     ICQGroupBox.Enabled := true;
@@ -190,6 +205,7 @@ begin
     ICQShowPassCheckBox.Enabled := true;
     ICQSavePassCheckBox.Enabled := true;
     ICQRegNewUINButton.Enabled := true;
+    //--Включаем протокол ICQ
     MainForm.ICQEnable(true);
   end
   else
@@ -200,6 +216,7 @@ begin
     ICQShowPassCheckBox.Enabled := false;
     ICQSavePassCheckBox.Enabled := false;
     ICQRegNewUINButton.Enabled := false;
+    //--Выключаем протокол ICQ
     MainForm.ICQEnable(false);
   end;
 end;
@@ -237,6 +254,7 @@ end;
 
 procedure TFirstStartForm.MRAEnableCheckBoxClick(Sender: TObject);
 begin
+  //--Управляем контролами для MRA
   if MRAEnableCheckBox.Checked then
   begin
     MRAGroupBox.Enabled := true;
@@ -245,6 +263,7 @@ begin
     MRAShowPassCheckBox.Enabled := true;
     MRASavePassCheckBox.Enabled := true;
     MRARegNewEmailLabel.Font.Color := clNavy;
+    //--Включаем протокол MRA
     MainForm.MRAEnable(true);
   end
   else
@@ -255,6 +274,7 @@ begin
     MRAShowPassCheckBox.Enabled := false;
     MRASavePassCheckBox.Enabled := false;
     MRARegNewEmailLabel.Font.Color := clGray;
+    //--Выключаем протокол MRA
     MainForm.MRAEnable(false);
   end;
 end;
@@ -282,16 +302,17 @@ begin
   MainForm.AllImageList.GetIcon(81, ICQIconImage.Picture.Icon);
   MainForm.AllImageList.GetIcon(24, MRAIconImage.Picture.Icon);
   MainForm.AllImageList.GetIcon(28, JabberIconImage.Picture.Icon);
-
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
   MainForm.AllImageList.GetBitmap(167, PrevButton.Glyph);
   MainForm.AllImageList.GetBitmap(166, NextButton.Glyph);
-
   //--Переводим форму на другие языки
   TranslateForm;
   //--Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  //--По умолчанию деактивируем контролы протоколов MRA и Jabber
+  MRAEnableCheckBoxClick(self);
+  JabberEnableCheckBoxClick(self);
 end;
 
 end.

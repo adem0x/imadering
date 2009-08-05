@@ -257,10 +257,10 @@ type
     procedure SendCustomICQPaketTimerTimer(Sender: TObject);
   private
     { Private declarations }
-    procedure ApplySettings;
     procedure LoadSettings;
   public
     { Public declarations }
+    procedure ApplySettings;
     procedure TranslateForm;
     procedure SetOnlineVars;
   end;

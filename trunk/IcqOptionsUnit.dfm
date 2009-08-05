@@ -687,7 +687,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ItemIndex = 0
             ParentFont = False
             TabOrder = 1
@@ -1652,7 +1652,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 7
             Items.Strings = (
@@ -1913,7 +1913,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 8
             Visible = False
@@ -2495,7 +2495,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 2
             Items.Strings = (
@@ -2553,7 +2553,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 55
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 5
             Visible = False
             Items.Strings = (
@@ -2807,7 +2807,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 0
             Items.Strings = (
@@ -2827,7 +2827,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 1
             Items.Strings = (
@@ -2897,7 +2897,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 5
             Items.Strings = (
@@ -2925,7 +2925,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 6
             Items.Strings = (
@@ -2961,7 +2961,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 7
             Items.Strings = (
@@ -3010,7 +3010,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 8
             Items.Strings = (
@@ -3040,7 +3040,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 9
             Items.Strings = (
@@ -3074,7 +3074,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 10
             Items.Strings = (
@@ -3098,7 +3098,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 11
             Items.Strings = (
@@ -3121,7 +3121,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 12
             Items.Strings = (
@@ -3144,7 +3144,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 56
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 13
             Visible = False
             Items.Strings = (
@@ -3165,7 +3165,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 56
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 14
             Visible = False
             Items.Strings = (
@@ -3188,7 +3188,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 56
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 15
             Visible = False
             Items.Strings = (
@@ -3218,7 +3218,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 56
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 16
             Visible = False
             Items.Strings = (
@@ -3236,7 +3236,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 56
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 17
             Visible = False
             Items.Strings = (
@@ -3280,7 +3280,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 0
             Items.Strings = (
@@ -3397,7 +3397,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 87
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 3
             Visible = False
             Items.Strings = (
@@ -3502,7 +3502,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ParentFont = False
             TabOrder = 0
             Items.Strings = (
@@ -3669,7 +3669,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 73
             Height = 21
             Style = csDropDownList
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 8
             Visible = False
             Items.Strings = (
