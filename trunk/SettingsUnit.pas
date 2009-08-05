@@ -117,6 +117,7 @@ type
   public
     { Public declarations }
     procedure ApplySettings;
+    procedure ApplyProxyHttpClient(HttpClient: THttpCli);
   end;
 
 var
@@ -873,6 +874,104 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TSettingsForm.ApplyProxyHttpClient(HttpClient: THttpCli);
+begin
+  {with HttpClient do
+  begin
+    //--Применяем настройки прокси
+    if ProxyEnableCheckBox.Checked then
+    begin
+      //--Версия запроов
+      RequestVer := ProxyVersionComboBox.Text;
+      //--HTTP и HTTPS тип прокси
+      if (ProxyTypeComboBox = 0) or (ProxyTypeComboBox = 1) then
+      begin
+        //--Сбрасываем тип SOCKS прокси
+        SocksLevel := '';
+        //--Сбрасываем адрес SOCKS прокси и порт
+        SocksServer := '';
+        SocksPort := '';
+        //--Сбрасываем авторизацию SOCKS прокси
+        SocksAuthentication := socksNoAuthentication;
+        SocksUsercode := '';
+        SocksPassword := '';
+        //--Назначаем адрес HTTP прокси и порт
+        Proxy := ProxyAddresEdit;
+        ProxyPort := ProxyPortEdit;
+        //--Назначаем авторизацию на HTTP прокси
+        if ProxyAuthCheckBox then
+        begin
+          ProxyAuth := httpAuthBasic;
+          if NTLMCheckBox then ProxyAuth := httpAuthNtlm;
+          ProxyUsername := ProxyLoginEdit;
+          ProxyPassword := ProxyPasswordEdit;
+        end
+        else
+        begin
+          //--Сбрасываем авторизацию HTTP прокси
+          ProxyAuth := httpAuthNone;
+          ProxyUsername := '';
+          ProxyPassword := '';
+        end;
+      end
+      else
+      begin
+        //--Сбрасываем адрес HTTP прокси и порт
+        Proxy := '';
+        ProxyPort := '80';
+        //--Сбрасываем авторизацию HTTP прокси
+        ProxyAuth := httpAuthNone;
+        ProxyUsername := '';
+        ProxyPassword := '';
+        //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
+        case ProxyTypeComboBox of
+          2: SocksLevel := '4';
+          3: SocksLevel := '4A';
+          4: SocksLevel := '5';
+        end;
+        //--Назначаем адрес SOCKS прокси и порт
+        SocksServer := ProxyAddresEdit;
+        SocksPort := ProxyPortEdit;
+        //--Назначаем авторизацию на SOCKS прокси
+        if ProxyAuthCheckBox then
+        begin
+          SocksAuthentication := socksAuthenticateUsercode;
+          SocksUsercode := ProxyLoginEdit;
+          SocksPassword := ProxyPasswordEdit;
+        end
+        else
+        begin
+          //--Сбрасываем авторизацию SOCKS прокси
+          SocksAuthentication := socksNoAuthentication;
+          SocksUsercode := '';
+          SocksPassword := '';
+        end;
+      end;
+    end
+    else
+    begin
+      //--Сбрасываем версию запросов
+      RequestVer := '1.0';
+      //--Сбрасываем адрес HTTP прокси и порт
+      Proxy := '';
+      ProxyPort := '80';
+      //--Сбрасываем авторизацию HTTP прокси
+      ProxyAuth := httpAuthNone;
+      ProxyUsername := '';
+      ProxyPassword := '';
+      //--Сбрасываем тип SOCKS прокси
+      SocksLevel := '';
+      //--Сбрасываем адрес SOCKS прокси и порт
+      SocksServer := '';
+      SocksPort := '';
+      //--Сбрасываем авторизацию SOCKS прокси
+      SocksAuthentication := socksNoAuthentication;
+      SocksUsercode := '';
+      SocksPassword := '';
+    end;
+  end;}
 end;
 
 end.

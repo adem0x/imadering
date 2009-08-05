@@ -27,7 +27,8 @@ uses
   IcqRegNewUINUnit in 'IcqRegNewUINUnit.pas' {IcqRegNewUINForm},
   MraOptionsUnit in 'MraOptionsUnit.pas' {MraOptionsForm},
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
-  UpdateUnit in 'UpdateUnit.pas' {UpdateForm};
+  UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
+  IcsLogUnit in 'IcsLogUnit.pas' {IcsLogForm};
 
 {$R *.res}
 

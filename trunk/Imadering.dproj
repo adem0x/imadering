@@ -84,6 +84,9 @@
     <DCCReference Include="IcqXStatusUnit.pas">
       <Form>IcqXStatusForm</Form>
     </DCCReference>
+    <DCCReference Include="IcsLogUnit.pas">
+      <Form>IcsLogForm</Form>
+    </DCCReference>
     <DCCReference Include="JabberOptionsUnit.pas">
       <Form>JabberOptionsForm</Form>
     </DCCReference>

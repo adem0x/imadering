@@ -41,7 +41,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, VarsUnit, UtilsUnit;
+  MainUnit, IcqProtoUnit, Code, VarsUnit, UtilsUnit, UpdateUnit;
 
 procedure TIcqReqAuthForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -87,12 +87,15 @@ procedure TIcqReqAuthForm.YesBitBtnClick(Sender: TObject);
 begin
   if UpDate then
   begin
-    //--Запускаем программу автообновления
-    try
-      if WinExec(PChar(MyPath + 'Update.exe'), SW_Restore) = 2 then ShowMessage(UpDate4L);
-    except
-    end;
-    //--Закрываем окно
+    //--Открываем окно автообновления
+    if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(self);
+    //--Запускаем процесс получения информации для обновления
+
+    //--Отображаем окно на передний план
+    ShowWindow(UpdateForm.Handle, SW_RESTORE);
+    UpdateForm.Show;
+    SetForeGroundWindow(UpdateForm.Handle);
+    //--Закрываем это окно
     Close;
   end;
 

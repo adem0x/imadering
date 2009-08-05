@@ -296,6 +296,15 @@ object MainForm: TMainForm
       Visible = False
       OnClick = N4Click
     end
+    object N26: TMenuItem
+      Caption = #1051#1086#1075' '#1089#1086#1082#1077#1090#1086#1074
+      ImageIndex = 227
+      OnClick = N26Click
+    end
+    object N25: TMenuItem
+      Caption = #1058#1088#1072#1092#1080#1082
+      ImageIndex = 226
+    end
     object OpenHistory: TMenuItem
       Caption = #1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
@@ -878,5 +887,12 @@ object MainForm: TMainForm
     OnRun = ZipHistoryThreadRun
     Left = 16
     Top = 144
+  end
+  object WIcsLogger: TIcsLogger
+    LogFileOption = lfoOverwrite
+    LogOptions = [loDestEvent, loDestFile, loDestOutDebug, loAddStamp, loWsockErr, loWsockInfo, loWsockDump, loSslErr, loSslInfo, loSslDump, loProtSpecErr, loProtSpecInfo, loProtSpecDump]
+    OnIcsLogEvent = WIcsLoggerIcsLogEvent
+    Left = 48
+    Top = 112
   end
 end

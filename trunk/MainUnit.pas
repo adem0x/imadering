@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils;
+  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils, OverbyteIcsLogger;
 
 type
   TMainForm = class(TForm)
@@ -126,6 +126,9 @@ type
     N24: TMenuItem;
     ZipHistoryThread: TIdThreadComponent;
     OpenHistory: TMenuItem;
+    WIcsLogger: TIcsLogger;
+    N25: TMenuItem;
+    N26: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -204,6 +207,9 @@ type
     procedure ZipHistoryThreadRun(Sender: TIdThreadComponent);
     procedure JvTimerListEvents10Timer(Sender: TObject);
     procedure OpenHistoryClick(Sender: TObject);
+    procedure WIcsLoggerIcsLogEvent(Sender: TObject; LogOption: TLogOption;
+      const Msg: string);
+    procedure N26Click(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -241,7 +247,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit;
+  HistoryUnit, Code, CLSearchUnit, IcsLogUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -293,6 +299,14 @@ begin
   if DirectoryExists(MyPath + 'Profile\History\Unzip') then RemoveDir(MyPath + 'Profile\History\Unzip');
   //--Останавливаем поток после сжатия всех необходимых файлов с историей
   ZipHistoryThread.Stop;
+end;
+
+procedure TMainForm.WIcsLoggerIcsLogEvent(Sender: TObject;
+  LogOption: TLogOption; const Msg: string);
+begin
+  //--Заносим лог всех событий работые сокетов в окно просмотра логера
+  IcsLogForm.IcsLogMemo.Lines.Add(Msg);
+  //SendMessage(Memo3.Handle, WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
 procedure TMainForm.WMQueryEndSession(var Msg: TWMQueryEndSession);
@@ -1612,6 +1626,16 @@ procedure TMainForm.CheckUpdateClick(Sender: TObject);
 begin
   //--Запускаем проверку обновлений программы на сайте
   JvTimerListEvents2Timer(nil);
+end;
+
+procedure TMainForm.N26Click(Sender: TObject);
+begin
+  //--Отображаем окно лога сокетов
+  if not Assigned(IcsLogForm) then IcsLogForm := TIcsLogForm.Create(self);
+  //--Отображаем окно на передний план
+  ShowWindow(IcsLogForm.Handle, SW_RESTORE);
+  IcsLogForm.Show;
+  SetForeGroundWindow(IcsLogForm.Handle);
 end;
 
 procedure TMainForm.N4Click(Sender: TObject);
