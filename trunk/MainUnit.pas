@@ -213,6 +213,9 @@ type
     procedure N26Click(Sender: TObject);
     procedure N25Click(Sender: TObject);
     procedure UpdateHttpClientSendEnd(Sender: TObject);
+    procedure MRAAvatarHttpClientSendEnd(Sender: TObject);
+    procedure MRAAvatarHttpClientDocEnd(Sender: TObject);
+    procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -350,6 +353,24 @@ begin
   end;
 end;
 
+procedure TMainForm.MRAAvatarHttpClientDocEnd(Sender: TObject);
+begin
+  //--Читаем полученные http данные из блока памяти
+  if MRAAvatarHttpClient.RcvdStream <> nil then
+  begin
+    //--Увеличиваем статистику входящего трафика
+    TrafRecev := TrafRecev + MRAAvatarHttpClient.RcvdCount;
+    AllTrafRecev := AllTrafRecev + MRAAvatarHttpClient.RcvdCount;
+  end;
+end;
+
+procedure TMainForm.MRAAvatarHttpClientSendEnd(Sender: TObject);
+begin
+  //--Увеличиваем статистику исходящего трафика
+  TrafSend := TrafSend + MRAAvatarHttpClient.SentCount;
+  AllTrafSend := AllTrafSend + MRAAvatarHttpClient.SentCount;
+end;
+
 procedure TMainForm.MRAEnable(OnOff: boolean);
 begin
   if OnOff then
@@ -432,11 +453,22 @@ begin
 end;
 
 procedure TMainForm.UpdateHttpClientDocEnd(Sender: TObject);
-label
-  x, y;
 var
   list: TStringList;
   ver, bild, mess: string;
+
+  procedure ShowUpdateNote;
+  begin
+    //--Если форма не существует, то создаём её
+    if not Assigned(IcqReqAuthForm) then IcqReqAuthForm := TIcqReqAuthForm.Create(self);
+    //--Делаем запрос в форме на обновление программы
+    IcqReqAuthForm.UpDateVersion(mess);
+    //--Отображаем окно
+    IcqReqAuthForm.Show;
+    //--Выводим окно на самый передний план, против глюков в вин и вайн
+    SetForeGroundWindow(IcqReqAuthForm.Handle);
+  end;
+
 begin
   //--Читаем полученные http данные из блока памяти
   if UpdateHttpClient.RcvdStream <> nil then
@@ -444,57 +476,58 @@ begin
     //--Увеличиваем статистику входящего трафика
     TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
     AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
-    //--Создаём временный лист
-    list := TStringList.Create;
-    try
-      try
-        //--Обнуляем позицию начала чтения в блоке памяти
-        UpdateHttpClient.RcvdStream.Position := 0;
-        //--Читаем данные в лист
-        list.LoadFromStream(UpdateHttpClient.RcvdStream);
-        //--Высвобождаем блок памяти
-        UpdateHttpClient.RcvdStream.Free;
-        UpdateHttpClient.RcvdStream := nil;
-        //--Разбираем данные в листе
-        if list.Text > EmptyStr then
+    //--Определяем выполнение задания для данных по флагу
+    case UpdateHttpClient.Tag of
+      0:
         begin
-          ver := IsolateTextString(list.Text, '<v>', '</v>');
-          bild := IsolateTextString(list.Text, '<b>', '</b>');
-          mess := IsolateTextString(list.Text, '<m>', '</m>');
-          //--Отображаем всплывающее окно с информацией о новой версии
-          if (ver <> EmptyStr) and (bild <> EmptyStr) then
-          begin
-            //--Если версия на сайте выше текущей
-            if StrToInt(ver) > Update_Version then
-            begin
-              DAShow(InformationHead, NewVersionIMaderingYES1, EmptyStr, 133, 3, 100000000);
-              goto x;
-            end
-            //--Если версия таже, но сборка выше текущей
-            else if StrToInt(bild) > StrToInt(Parse('.', InitBuildInfo, 4)) then
-            begin
-              DAShow(InformationHead, NewVersionIMaderingYES2, EmptyStr, 133, 3, 100000000);
-              goto x;
+          //--Создаём временный лист
+          list := TStringList.Create;
+          try
+            try
+              //--Обнуляем позицию начала чтения в блоке памяти
+              UpdateHttpClient.RcvdStream.Position := 0;
+              //--Читаем данные в лист
+              list.LoadFromStream(UpdateHttpClient.RcvdStream);
+              //--Разбираем данные в листе
+              if list.Text > EmptyStr then
+              begin
+                ver := IsolateTextString(list.Text, '<v>', '</v>');
+                bild := IsolateTextString(list.Text, '<b>', '</b>');
+                mess := IsolateTextString(list.Text, '<m>', '</m>');
+                //--Отображаем всплывающее окно с информацией о новой версии
+                if (ver <> EmptyStr) and (bild <> EmptyStr) then
+                begin
+                  //--Если версия на сайте выше текущей
+                  if StrToInt(ver) > Update_Version then
+                  begin
+                    DAShow(InformationHead, NewVersionIMaderingYES1, EmptyStr, 133, 3, 100000000);
+                    ShowUpdateNote;
+                  end
+                  //--Если версия таже, но сборка выше текущей
+                  else if StrToInt(bild) > StrToInt(Parse('.', InitBuildInfo, 4)) then
+                  begin
+                    DAShow(InformationHead, NewVersionIMaderingYES2, EmptyStr, 133, 3, 100000000);
+                    ShowUpdateNote;
+                  end
+                  else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
+                end
+                else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
+              end;
+            except
             end;
+          finally
+            list.Free;
           end;
-          if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
-          goto y;
-          x: ;
-          //--Если форма не существует, то создаём её
-          if not Assigned(IcqReqAuthForm) then IcqReqAuthForm := TIcqReqAuthForm.Create(self);
-          //--Делаем запрос в форме на обновление программы
-          IcqReqAuthForm.UpDateVersion(mess);
-          //--Отображаем окно
-          IcqReqAuthForm.Show;
-          //--Выводим окно на самый передний план, против глюков в вин и вайн
-          SetForeGroundWindow(IcqReqAuthForm.Handle);
-          y: ;
         end;
-      except
-      end;
-    finally
-      list.Free;
+      1:
+        begin
+          //--Информируем о успешной закачке файла обновления
+          
+        end;
     end;
+    //--Высвобождаем блок памяти
+    UpdateHttpClient.RcvdStream.Free;
+    UpdateHttpClient.RcvdStream := nil;
   end;
 end;
 
@@ -729,6 +762,9 @@ begin
   end;
   //--Если длинна этих данных равна нулю, выходим от сюда :)
   if Length(Pkt) = 0 then Exit;
+  //--Увеличиваем статистику входящего трафика
+  TrafRecev := TrafRecev + Length(Pkt);
+  AllTrafRecev := AllTrafRecev + Length(Pkt);
   //--Преобразуем данные из бинарного формата в HEX формат и прибавляем
   //их к специальному буферу накопления таких преобразованных данных
   ICQ_HexPkt := ICQ_HexPkt + Text2Hex(Pkt);
@@ -1206,6 +1242,13 @@ begin
   end;
 end;
 
+procedure TMainForm.ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
+begin
+  //--Увеличиваем статистику исходящего трафика
+  TrafSend := TrafSend + BytesSent;
+  AllTrafSend := AllTrafSend + BytesSent;
+end;
+
 procedure TMainForm.ICQWSocketSessionClosed(Sender: TObject; ErrCode: Word);
 begin
   //--Если при отключении возникла ошибка, то сообщаем об этом
@@ -1458,6 +1501,8 @@ begin
   else UpdateAuto := true;
   //--Сбрасываем сокет если он занят чем то другим или висит
   UpdateHttpClient.Abort;
+  //--Ставим флаг задания
+  UpdateHttpClient.Tag := 0;
   //--Запускаем проверку обновлений программы на сайте
   try
     UpdateHttpClient.URL := 'http://imadering.com/version.txt';
@@ -2701,7 +2746,7 @@ end;
 
 procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);
 begin
-  //--Увеличиваем статистику входящего трафика
+  //--Увеличиваем статистику исходящего трафика
   TrafSend := TrafSend + UpdateHttpClient.SentCount;
   AllTrafSend := AllTrafSend + UpdateHttpClient.SentCount;
 end;

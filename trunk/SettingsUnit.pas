@@ -325,96 +325,8 @@ begin
   ForceDirectories(MyPath + 'Profile\Avatars');
   ForceDirectories(MyPath + 'Profile\Contacts');
   //--Применяем настройки прокси
-  if ProxyEnableCheckBox.Checked then
-  begin
-    //--Версия запроов
-    MainForm.UpdateHttpClient.RequestVer := ProxyVersionComboBox.Text;
-    //--HTTP и HTTPS тип прокси
-    if (ProxyTypeComboBox.ItemIndex = 0) or (ProxyTypeComboBox.ItemIndex = 1) then
-    begin
-      //--Сбрасываем тип SOCKS прокси
-      MainForm.UpdateHttpClient.SocksLevel := EmptyStr;
-      //--Сбрасываем адрес SOCKS прокси и порт
-      MainForm.UpdateHttpClient.SocksServer := EmptyStr;
-      MainForm.UpdateHttpClient.SocksPort := EmptyStr;
-      //--Сбрасываем авторизацию SOCKS прокси
-      MainForm.UpdateHttpClient.SocksAuthentication := socksNoAuthentication;
-      MainForm.UpdateHttpClient.SocksUsercode := EmptyStr;
-      MainForm.UpdateHttpClient.SocksPassword := EmptyStr;
-      //--Назначаем адрес HTTP прокси и порт
-      MainForm.UpdateHttpClient.Proxy := ProxyAddressEdit.Text;
-      MainForm.UpdateHttpClient.ProxyPort := ProxyPortEdit.Text;
-      //--Назначаем авторизацию на HTTP прокси
-      if ProxyAuthCheckBox.Checked then
-      begin
-        MainForm.UpdateHttpClient.ProxyAuth := httpAuthBasic;
-        if NTLMCheckBox.Checked then MainForm.UpdateHttpClient.ProxyAuth := httpAuthNtlm;
-        MainForm.UpdateHttpClient.ProxyUsername := ProxyLoginEdit.Text;
-        MainForm.UpdateHttpClient.ProxyPassword := ProxyPasswordEdit.Text;
-      end
-      else
-      begin
-        //--Сбрасываем авторизацию HTTP прокси
-        MainForm.UpdateHttpClient.ProxyAuth := httpAuthNone;
-        MainForm.UpdateHttpClient.ProxyUsername := EmptyStr;
-        MainForm.UpdateHttpClient.ProxyPassword := EmptyStr;
-      end;
-    end
-    else
-    begin
-      //--Сбрасываем адрес HTTP прокси и порт
-      MainForm.UpdateHttpClient.Proxy := EmptyStr;
-      MainForm.UpdateHttpClient.ProxyPort := '80';
-      //--Сбрасываем авторизацию HTTP прокси
-      MainForm.UpdateHttpClient.ProxyAuth := httpAuthNone;
-      MainForm.UpdateHttpClient.ProxyUsername := EmptyStr;
-      MainForm.UpdateHttpClient.ProxyPassword := EmptyStr;
-      //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
-      case ProxyTypeComboBox.ItemIndex of
-        2: MainForm.UpdateHttpClient.SocksLevel := '4';
-        3: MainForm.UpdateHttpClient.SocksLevel := '4A';
-        4: MainForm.UpdateHttpClient.SocksLevel := '5';
-      end;
-      //--Назначаем адрес SOCKS прокси и порт
-      MainForm.UpdateHttpClient.SocksServer := ProxyAddressEdit.Text;
-      MainForm.UpdateHttpClient.SocksPort := ProxyPortEdit.Text;
-      //--Назначаем авторизацию на SOCKS прокси
-      if ProxyAuthCheckBox.Checked then
-      begin
-        MainForm.UpdateHttpClient.SocksAuthentication := socksAuthenticateUsercode;
-        MainForm.UpdateHttpClient.SocksUsercode := ProxyLoginEdit.Text;
-        MainForm.UpdateHttpClient.SocksPassword := ProxyPasswordEdit.Text;
-      end
-      else
-      begin
-        //--Сбрасываем авторизацию SOCKS прокси
-        MainForm.UpdateHttpClient.SocksAuthentication := socksNoAuthentication;
-        MainForm.UpdateHttpClient.SocksUsercode := EmptyStr;
-        MainForm.UpdateHttpClient.SocksPassword := EmptyStr;
-      end;
-    end;
-  end
-  else
-  begin
-    //--Сбрасываем версию запросов
-    MainForm.UpdateHttpClient.RequestVer := '1.0';
-    //--Сбрасываем адрес HTTP прокси и порт
-    MainForm.UpdateHttpClient.Proxy := EmptyStr;
-    MainForm.UpdateHttpClient.ProxyPort := '80';
-    //--Сбрасываем авторизацию HTTP прокси
-    MainForm.UpdateHttpClient.ProxyAuth := httpAuthNone;
-    MainForm.UpdateHttpClient.ProxyUsername := EmptyStr;
-    MainForm.UpdateHttpClient.ProxyPassword := EmptyStr;
-    //--Сбрасываем тип SOCKS прокси
-    MainForm.UpdateHttpClient.SocksLevel := EmptyStr;
-    //--Сбрасываем адрес SOCKS прокси и порт
-    MainForm.UpdateHttpClient.SocksServer := EmptyStr;
-    MainForm.UpdateHttpClient.SocksPort := EmptyStr;
-    //--Сбрасываем авторизацию SOCKS прокси
-    MainForm.UpdateHttpClient.SocksAuthentication := socksNoAuthentication;
-    MainForm.UpdateHttpClient.SocksUsercode := EmptyStr;
-    MainForm.UpdateHttpClient.SocksPassword := EmptyStr;
-  end;
+  ApplyProxyHttpClient(MainForm.UpdateHttpClient);
+  ApplyProxyHttpClient(MainForm.MRAAvatarHttpClient);
   //----------------------------------------------------------------------------
   //--Применяем общие настройки
   //--Если "Запускать при старте системы", то ставим это в реестре
@@ -878,7 +790,7 @@ end;
 
 procedure TSettingsForm.ApplyProxyHttpClient(HttpClient: THttpCli);
 begin
-  {with HttpClient do
+  with HttpClient do
   begin
     //--Применяем настройки прокси
     if ProxyEnableCheckBox.Checked then
@@ -886,7 +798,7 @@ begin
       //--Версия запроов
       RequestVer := ProxyVersionComboBox.Text;
       //--HTTP и HTTPS тип прокси
-      if (ProxyTypeComboBox = 0) or (ProxyTypeComboBox = 1) then
+      if (ProxyTypeComboBox.ItemIndex = 0) or (ProxyTypeComboBox.ItemIndex = 1) then
       begin
         //--Сбрасываем тип SOCKS прокси
         SocksLevel := '';
@@ -898,15 +810,15 @@ begin
         SocksUsercode := '';
         SocksPassword := '';
         //--Назначаем адрес HTTP прокси и порт
-        Proxy := ProxyAddresEdit;
-        ProxyPort := ProxyPortEdit;
+        Proxy := ProxyAddressEdit.Text;
+        ProxyPort := ProxyPortEdit.Text;
         //--Назначаем авторизацию на HTTP прокси
-        if ProxyAuthCheckBox then
+        if ProxyAuthCheckBox.Checked then
         begin
           ProxyAuth := httpAuthBasic;
-          if NTLMCheckBox then ProxyAuth := httpAuthNtlm;
-          ProxyUsername := ProxyLoginEdit;
-          ProxyPassword := ProxyPasswordEdit;
+          if NTLMCheckBox.Checked then ProxyAuth := httpAuthNtlm;
+          ProxyUsername := ProxyLoginEdit.Text;
+          ProxyPassword := ProxyPasswordEdit.Text;
         end
         else
         begin
@@ -926,20 +838,20 @@ begin
         ProxyUsername := '';
         ProxyPassword := '';
         //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
-        case ProxyTypeComboBox of
+        case ProxyTypeComboBox.ItemIndex of
           2: SocksLevel := '4';
           3: SocksLevel := '4A';
           4: SocksLevel := '5';
         end;
         //--Назначаем адрес SOCKS прокси и порт
-        SocksServer := ProxyAddresEdit;
-        SocksPort := ProxyPortEdit;
+        SocksServer := ProxyAddressEdit.Text;
+        SocksPort := ProxyPortEdit.Text;
         //--Назначаем авторизацию на SOCKS прокси
-        if ProxyAuthCheckBox then
+        if ProxyAuthCheckBox.Checked then
         begin
           SocksAuthentication := socksAuthenticateUsercode;
-          SocksUsercode := ProxyLoginEdit;
-          SocksPassword := ProxyPasswordEdit;
+          SocksUsercode := ProxyLoginEdit.Text;
+          SocksPassword := ProxyPasswordEdit.Text;
         end
         else
         begin
@@ -971,7 +883,7 @@ begin
       SocksUsercode := '';
       SocksPassword := '';
     end;
-  end;}
+  end;
 end;
 
 end.

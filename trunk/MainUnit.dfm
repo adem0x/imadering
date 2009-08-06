@@ -439,6 +439,7 @@ object MainForm: TMainForm
     ReqVerLow = 1
     ReqVerHigh = 1
     OnDataAvailable = ICQWSocketDataAvailable
+    OnSendData = ICQWSocketSendData
     OnSessionClosed = ICQWSocketSessionClosed
     OnSessionConnected = ICQWSocketSessionConnected
     Left = 48
@@ -913,8 +914,8 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnDocBegin = UpdateHttpClientDocBegin
-    OnDocEnd = UpdateHttpClientDocEnd
+    OnDocEnd = MRAAvatarHttpClientDocEnd
+    OnSendEnd = MRAAvatarHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
     Left = 80
     Top = 48
