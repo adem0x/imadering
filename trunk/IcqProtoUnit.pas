@@ -4610,6 +4610,8 @@ begin
       end;
     end
   end;
+  //--Сохраняем историю сообщений, но уже не в потоке
+  MainForm.ZipHistory;
 end;
 
 function ICQ_GenerateClientCaps(ClientName, CVer: string): string;

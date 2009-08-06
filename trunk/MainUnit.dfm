@@ -304,6 +304,7 @@ object MainForm: TMainForm
     object N25: TMenuItem
       Caption = #1058#1088#1072#1092#1080#1082
       ImageIndex = 226
+      OnClick = N25Click
     end
     object OpenHistory: TMenuItem
       Caption = #1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
@@ -533,10 +534,10 @@ object MainForm: TMainForm
     Left = 80
     Top = 16
   end
-  object HttpClient: THttpCli
+  object UpdateHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
-    Agent = 'Mozilla/4.0 (compatible; ICS)'
+    Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
     Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
     NoCache = False
     ContentTypePost = 'application/x-www-form-urlencoded'
@@ -549,11 +550,12 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnDocBegin = HttpClientDocBegin
-    OnDocEnd = HttpClientDocEnd
+    OnDocBegin = UpdateHttpClientDocBegin
+    OnDocEnd = UpdateHttpClientDocEnd
+    OnSendEnd = UpdateHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
-    Left = 152
-    Top = 328
+    Left = 48
+    Top = 112
   end
   object ContactListPopupMenu: TPopupMenu
     Alignment = paCenter
@@ -893,6 +895,28 @@ object MainForm: TMainForm
     LogOptions = [loDestEvent, loDestFile, loDestOutDebug, loAddStamp, loWsockErr, loWsockInfo, loWsockDump, loSslErr, loSslInfo, loSslDump, loProtSpecErr, loProtSpecInfo, loProtSpecDump]
     OnIcsLogEvent = WIcsLoggerIcsLogEvent
     Left = 48
-    Top = 112
+    Top = 144
+  end
+  object MRAAvatarHttpClient: THttpCli
+    LocalAddr = '0.0.0.0'
+    ProxyPort = '80'
+    Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
+    Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
+    NoCache = False
+    ContentTypePost = 'application/x-www-form-urlencoded'
+    MultiThreaded = False
+    RequestVer = '1.0'
+    FollowRelocation = True
+    LocationChangeMaxCount = 5
+    ServerAuth = httpAuthNone
+    ProxyAuth = httpAuthNone
+    BandwidthLimit = 10000
+    BandwidthSampling = 1000
+    Options = []
+    OnDocBegin = UpdateHttpClientDocBegin
+    OnDocEnd = UpdateHttpClientDocEnd
+    SocksAuthentication = socksNoAuthentication
+    Left = 80
+    Top = 48
   end
 end

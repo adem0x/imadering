@@ -106,11 +106,11 @@ begin
   // сразу определим, служебная ли 1-ая нода
   FNodePad := 0;
   if FDoc.ChildNodes.Count <> 0 then
-    begin
-      S := FDoc.ChildNodes[0].XML;
-      S := Copy(S, 1, length(ServiceTag));
-      if AnsiCompareText(S, ServiceTag) = 0 then FNodePad := 1;
-    end;
+  begin
+    S := FDoc.ChildNodes[0].XML;
+    S := Copy(S, 1, length(ServiceTag));
+    if AnsiCompareText(S, ServiceTag) = 0 then FNodePad := 1;
+  end;
 end;
 
 function TrXML.CreateKey(const Key: string): Boolean;
@@ -159,33 +159,33 @@ end;
 function TrXML.GetKeyName(Index: integer): string;
 begin
   if FFollowNode = nil
-    then Result := FDoc.ChildNodes[ Index + FNodePad ].NodeName
-    else Result := FFollowNode.ChildNodes[ index ].NodeName;
+    then Result := FDoc.ChildNodes[Index + FNodePad].NodeName
+  else Result := FFollowNode.ChildNodes[index].NodeName;
 end;
 
 function TrXML.GetKeyCount(const Name: string = ''): integer;
 var
   i: Integer;
 begin
-  if FFollowNode = Nil then
-    begin
-      if Name <> '' then
-        begin
-          Result := 0;
-          for i := FNodePad to FDoc.ChildNodes.Count - 1 do
-            if AnsiCompareText( Name, FDoc.ChildNodes[i].NodeName ) = 0 then
-              inc( Result );
-        end else
-        Result := FDoc.ChildNodes.Count - FNodePad;
-      Exit;
-    end;
-  if Name <> '' then
+  if FFollowNode = nil then
+  begin
+    if Name <> '' then
     begin
       Result := 0;
-      for i := 0 to FFollowNode.ChildNodes.Count - 1 do
-        if AnsiCompareText( Name, FFollowNode.ChildNodes[i].NodeName ) = 0 then
-          inc( Result );
+      for i := FNodePad to FDoc.ChildNodes.Count - 1 do
+        if AnsiCompareText(Name, FDoc.ChildNodes[i].NodeName) = 0 then
+          inc(Result);
     end else
+      Result := FDoc.ChildNodes.Count - FNodePad;
+    Exit;
+  end;
+  if Name <> '' then
+  begin
+    Result := 0;
+    for i := 0 to FFollowNode.ChildNodes.Count - 1 do
+      if AnsiCompareText(Name, FFollowNode.ChildNodes[i].NodeName) = 0 then
+        inc(Result);
+  end else
     Result := FFollowNode.ChildNodes.Count;
 end;
 
@@ -198,12 +198,12 @@ begin
   Strings.Clear;
   I := FFollowNode;
   n := 0;
-  if I = Nil then
-    begin
-      I := FDoc;
-      n := FNodePad;
-    end;
-  for j := n to I.ChildNodes.Count - 1 do Strings.Add( I.ChildNodes[j].NodeName );
+  if I = nil then
+  begin
+    I := FDoc;
+    n := FNodePad;
+  end;
+  for j := n to I.ChildNodes.Count - 1 do Strings.Add(I.ChildNodes[j].NodeName);
 end;
 
 function TrXML.GetNode: IXmlNode;
@@ -224,7 +224,7 @@ var
 begin
   Strings.Clear;
   I := GetNode;
-  for j := 0 to I.AttrCount - 1 do Strings.Add( I.AttrNames[j] );
+  for j := 0 to I.AttrCount - 1 do Strings.Add(I.AttrNames[j]);
 end;
 
 function TrXML.GetText: string;
@@ -258,10 +258,10 @@ end;
 function TrXML.HasSubKeys: Boolean;
 begin
   if FFollowNode = nil then
-    begin
-      Result := (FDoc.ChildNodes.Count > FNodePad);
-      Exit;
-    end;
+  begin
+    Result := (FDoc.ChildNodes.Count > FNodePad);
+    Exit;
+  end;
   Result := (FFollowNode.ChildNodes.Count <> 0);
 end;
 
@@ -296,37 +296,37 @@ begin
   Result := true;
   I := FFollowNode;
   n := 0;
-  if I = Nil then
-    begin
-      I := FDoc;
-      n := FNodePad;
-    end;
+  if I = nil then
+  begin
+    I := FDoc;
+    n := FNodePad;
+  end;
   // проверим, не переход ли это на уровень выше
   if AName = '..' then
-    begin
-      if FFollowNode = Nil then Exit;
-      FFollowNode := FFollowNode.ParentNode;
-      if AnsiCompareText(FFollowNode.NodeName, '#document') = 0 then FFollowNode := nil;
-      Exit;
-    end;
+  begin
+    if FFollowNode = nil then Exit;
+    FFollowNode := FFollowNode.ParentNode;
+    if AnsiCompareText(FFollowNode.NodeName, '#document') = 0 then FFollowNode := nil;
+    Exit;
+  end;
   // ищем ноду с нужным названием
   Founded := 0;
   for j := n to I.ChildNodes.Count - 1 do
     if I.ChildNodes[j].NodeName = AName then
+    begin
+      inc(Founded);
+      if Founded > Num then
       begin
-        inc( Founded );
-        if Founded > Num then
-          begin
-            FFollowNode := I.ChildNodes[j];
-            Exit;
-          end;
+        FFollowNode := I.ChildNodes[j];
+        Exit;
       end;
+    end;
   // не нашли
   if not CanCreate then
-    begin
-      Result := False;
-      Exit;
-    end;
+  begin
+    Result := False;
+    Exit;
+  end;
   // необходимо создать ноду
   {
   n := I.ChildNodes.Count;
@@ -355,7 +355,7 @@ begin
   S := Key;
   if S[1] = '\' then begin
     CloseKey;
-    S := copy( S, 2, length(S) - 1 );
+    S := copy(S, 2, length(S) - 1);
   end;
   // поехали
   n := WordCount(S, ['\']);
@@ -442,7 +442,7 @@ procedure TrXML.SaveToStream(Stream: TStream);
 var S: string;
 begin
   S := GetText;
-  Stream.WriteBuffer(S[1], sizeof(TXmlChar)*Length(S));
+  Stream.WriteBuffer(S[1], sizeof(TXmlChar) * Length(S));
 end;
 
 procedure TrXML.SetText(const Value: string);
@@ -464,11 +464,11 @@ begin
   Result := false;
   I := GetNode;
   for j := 0 to I.AttrCount - 1 do
-    if Name = I.AttrNames[ j ] then
-      begin
-        Result := true;
-        Break;
-      end;
+    if Name = I.AttrNames[j] then
+    begin
+      Result := true;
+      Break;
+    end;
 end;
 
 procedure TrXML.WriteBool(const Name: string; Value: Boolean);
@@ -574,3 +574,4 @@ begin
 end;
 
 end.
+

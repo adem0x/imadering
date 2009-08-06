@@ -40,7 +40,7 @@ type
     MRAWSocket: TWSocket;
     JabberWSocket: TWSocket;
     ICQAvatarWSocket: TWSocket;
-    HttpClient: THttpCli;
+    UpdateHttpClient: THttpCli;
     MRAToolButton: TToolButton;
     JabberToolButton: TToolButton;
     AboutIMadering: TMenuItem;
@@ -129,6 +129,7 @@ type
     WIcsLogger: TIcsLogger;
     N25: TMenuItem;
     N26: TMenuItem;
+    MRAAvatarHttpClient: THttpCli;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -138,8 +139,8 @@ type
     procedure ICQTrayIconClick(Sender: TObject);
     procedure N4Click(Sender: TObject);
     procedure AboutIMaderingClick(Sender: TObject);
-    procedure HttpClientDocBegin(Sender: TObject);
-    procedure HttpClientDocEnd(Sender: TObject);
+    procedure UpdateHttpClientDocBegin(Sender: TObject);
+    procedure UpdateHttpClientDocEnd(Sender: TObject);
     procedure JvTimerListEvents2Timer(Sender: TObject);
     procedure ICQSettingsClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -210,6 +211,8 @@ type
     procedure WIcsLoggerIcsLogEvent(Sender: TObject; LogOption: TLogOption;
       const Msg: string);
     procedure N26Click(Sender: TObject);
+    procedure N25Click(Sender: TObject);
+    procedure UpdateHttpClientSendEnd(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -247,7 +250,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit, IcsLogUnit;
+  HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -305,8 +308,13 @@ procedure TMainForm.WIcsLoggerIcsLogEvent(Sender: TObject;
   LogOption: TLogOption; const Msg: string);
 begin
   //--Заносим лог всех событий работые сокетов в окно просмотра логера
-  IcsLogForm.IcsLogMemo.Lines.Add(Msg);
-  //SendMessage(Memo3.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+  //--Записываем в него только если окно лога открыто
+  if Assigned(IcsLogForm) then
+  begin
+    if (IcsLogForm.SocketComboBox.ItemIndex > 0) and
+      (IcsLogForm.LogEnableCheckBox.Enabled) then IcsLogForm.IcsLogMemo.Lines.Add(Msg);
+  end;
+  //SendMessage(IcsLogForm.IcsLogMemo.Handle, WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
 procedure TMainForm.WMQueryEndSession(var Msg: TWMQueryEndSession);
@@ -417,15 +425,13 @@ begin
   SetForeGroundWindow(HistoryForm.Handle);
 end;
 
-procedure TMainForm.HttpClientDocBegin(Sender: TObject);
+procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
 begin
-  //--Если http сокет уже кудато подключён отключаем его
-  if HttpClient.State <> httpNotConnected then HttpClient.Abort;
   //--Создаём блок памяти для приёма http данных
-  HttpClient.RcvdStream := TMemoryStream.Create;
+  UpdateHttpClient.RcvdStream := TMemoryStream.Create;
 end;
 
-procedure TMainForm.HttpClientDocEnd(Sender: TObject);
+procedure TMainForm.UpdateHttpClientDocEnd(Sender: TObject);
 label
   x, y;
 var
@@ -433,19 +439,22 @@ var
   ver, bild, mess: string;
 begin
   //--Читаем полученные http данные из блока памяти
-  if HttpClient.RcvdStream <> nil then
+  if UpdateHttpClient.RcvdStream <> nil then
   begin
+    //--Увеличиваем статистику входящего трафика
+    TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
+    AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
     //--Создаём временный лист
     list := TStringList.Create;
     try
       try
         //--Обнуляем позицию начала чтения в блоке памяти
-        HttpClient.RcvdStream.Position := 0;
+        UpdateHttpClient.RcvdStream.Position := 0;
         //--Читаем данные в лист
-        list.LoadFromStream(HttpClient.RcvdStream);
+        list.LoadFromStream(UpdateHttpClient.RcvdStream);
         //--Высвобождаем блок памяти
-        HttpClient.RcvdStream.Free;
-        HttpClient.RcvdStream := nil;
+        UpdateHttpClient.RcvdStream.Free;
+        UpdateHttpClient.RcvdStream := nil;
         //--Разбираем данные в листе
         if list.Text > EmptyStr then
         begin
@@ -1448,11 +1457,11 @@ begin
   if Sender = nil then UpdateAuto := false
   else UpdateAuto := true;
   //--Сбрасываем сокет если он занят чем то другим или висит
-  if HttpClient.State <> httpNotConnected then HttpClient.Abort;
+  UpdateHttpClient.Abort;
   //--Запускаем проверку обновлений программы на сайте
   try
-    HttpClient.URL := 'http://imadering.com/version.txt';
-    HttpClient.GetASync;
+    UpdateHttpClient.URL := 'http://imadering.com/version.txt';
+    UpdateHttpClient.GetASync;
   except
   end;
 end;
@@ -1626,6 +1635,20 @@ procedure TMainForm.CheckUpdateClick(Sender: TObject);
 begin
   //--Запускаем проверку обновлений программы на сайте
   JvTimerListEvents2Timer(nil);
+end;
+
+procedure TMainForm.N25Click(Sender: TObject);
+begin
+  //--Отображаем окно трафика
+  if not Assigned(TrafficForm) then TrafficForm := TTrafficForm.Create(self);
+  //--Показываем сколько трафика передано за эту сессию
+  TrafficForm.Edit1.Text := FloatToStrF(TrafRecev / 1000, ffFixed, 18, 3) + ' Кб | ' +
+    FloatToStrF(TrafSend / 1000, ffFixed, 18, 3) + ' Кб | ' + DateTimeToStr(SesDataTraf);
+  //--Показываем сколько трафика передано всего
+  TrafficForm.Edit2.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3) + ' Мб | ' +
+    FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' Мб | ' + AllSesDataTraf;
+  //--Отображаем окно модально
+  TrafficForm.ShowModal;
 end;
 
 procedure TMainForm.N26Click(Sender: TObject);
@@ -2059,7 +2082,7 @@ begin
     MRAWSocket.Abort;
     JabberWSocket.Abort;
     //--Отключаем HTTP сокет
-    if HttpClient.State <> httpNotConnected then HttpClient.Abort;
+    UpdateHttpClient.Abort;
     //--Уничтожаем другие ресурсы
     if Assigned(AccountToNick) then FreeAndNil(AccountToNick);
     if Assigned(SmilesList) then FreeAndNil(SmilesList);
@@ -2171,6 +2194,10 @@ begin
   MainForm.JvTimerList.Events[9].Enabled := true;
   //--Загружаем копию локальную списка контактов
   LoadContactList;
+  //--Назначаем путь для файла лога сокетов
+  WIcsLogger.LogFileName := MyPath + 'Profile\IcsLog.txt';
+  //--Инициализируем переменную времени начала статистики трафика сессии
+  SesDataTraf := now;
 end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);
@@ -2193,29 +2220,30 @@ end;
 procedure TMainForm.LoadMainFormSettings;
 begin
   //--Инициализируем XML
-  with TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then begin
+    if FileExists(MyPath + SettingsFileName) then
+    begin
       LoadFromFile(MyPath + SettingsFileName);
-
       //--Загружаем позицию окна
-      if OpenKey('settings\forms\mainform\position') then try
+      if OpenKey('settings\forms\mainform\position') then
+      try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
         Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do
-          Top := Top - 50;
-        while Left + Width > Screen.Width do
-          Left := Left - 50;
+        while Top + Height > Screen.Height do Top := Top - 50;
+        while Left + Width > Screen.Width do Left := Left - 50;
       finally
         CloseKey();
       end;
-
       //--Загружаем состояние кнопки звуков
-      if OpenKey('settings\forms\mainform\sounds-on-off') then try
-        if ReadBool('value') then begin
+      if OpenKey('settings\forms\mainform\sounds-on-off') then
+      try
+        if ReadBool('value') then
+        begin
           SoundOnOffToolButton.ImageIndex := 136;
           SoundOnOffToolButton.Down := true;
           SoundOnOffToolButton.Hint := SoundOnHint;
@@ -2223,10 +2251,11 @@ begin
       finally
         CloseKey();
       end;
-
       //--Загружаем состояние кнопки только онлайн
-      if OpenKey('settings\forms\mainform\only-online-on-off') then try
-        if ReadBool('value') then begin
+      if OpenKey('settings\forms\mainform\only-online-on-off') then
+      try
+        if ReadBool('value') then
+        begin
           OnlyOnlineContactsToolButton.ImageIndex := 137;
           OnlyOnlineContactsToolButton.Down := true;
           OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
@@ -2234,22 +2263,32 @@ begin
       finally
         CloseKey();
       end;
-
       //--Загружаем был ли первый старт
-      if OpenKey('settings\forms\mainform\first-start') then try
+      if OpenKey('settings\forms\mainform\first-start') then
+      try
         FirstStart := ReadBool('value');
       finally
         CloseKey();
       end;
-
       //--Загружаем выбранные протоколы
-      if OpenKey('settings\forms\mainform\proto-select') then try
+      if OpenKey('settings\forms\mainform\proto-select') then
+      try
         ICQEnable(ReadBool('icq'));
         MRAEnable(ReadBool('mra'));
         JabberEnable(ReadBool('jabber'));
       finally
         CloseKey;
       end;
+      //--Загружаем данные трафика
+      if OpenKey('settings\traffic') then
+      try
+        AllTrafSend := ReadFloat('send');
+        AllTrafRecev := ReadFloat('recev');
+        AllSesDataTraf := ReadString('start-date');
+      finally
+        CloseKey();
+      end
+      else AllSesDataTraf := DateTimeToStr(now);
     end;
   finally
     Free();
@@ -2352,11 +2391,12 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
-  with TrXML.Create() do try
-    if FileExists(MyPath + SettingsFileName) then
-      LoadFromFile(MyPath + SettingsFileName);
+  with TrXML.Create() do
+  try
+    if FileExists(MyPath + SettingsFileName) then LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    if OpenKey('settings\forms\mainform\position', True) then try
+    if OpenKey('settings\forms\mainform\position', True) then
+    try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -2364,38 +2404,46 @@ begin
     finally
       CloseKey();
     end;
-
     //--Сохраняем звук вкл. выкл.
-    if OpenKey('settings\forms\mainform\sounds-on-off', True) then try
+    if OpenKey('settings\forms\mainform\sounds-on-off', True) then
+    try
       WriteBool('value', SoundOnOffToolButton.Down);
     finally
       CloseKey();
     end;
-
     //--Сохраняем отображать только онлайн вкл. выкл.
-    if OpenKey('settings\forms\mainform\only-online-on-off', True) then try
+    if OpenKey('settings\forms\mainform\only-online-on-off', True) then
+    try
       WriteBool('value', OnlyOnlineContactsToolButton.Down);
     finally
       CloseKey();
     end;
-
     //--Записываем что первый запуск программы уже состоялся и показывать
     //окно настройки протоколов больше не будем при запуске
-    if OpenKey('settings\forms\mainform\first-start', True) then try
+    if OpenKey('settings\forms\mainform\first-start', True) then
+    try
       WriteBool('value', true);
     finally
       CloseKey();
     end;
-
     //--Сохраняем активные протоколы
-    if OpenKey('settings\forms\mainform\proto-select', True) then try
+    if OpenKey('settings\forms\mainform\proto-select', True) then
+    try
       WriteBool('icq', ICQToolButton.Visible);
       WriteBool('mra', MRAToolButton.Visible);
       WriteBool('jabber', JabberToolButton.Visible);
     finally
       CloseKey();
     end;
-
+    //--Сохраняем трафик
+    if OpenKey('settings\traffic', True) then
+    try
+      WriteFloat('send', AllTrafSend);
+      WriteFloat('recev', AllTrafRecev);
+      WriteString('start-date', AllSesDataTraf);
+    finally
+      CloseKey();
+    end;
     //--Записываем сам файл
     SaveToFile(MyPath + SettingsFileName);
   finally
@@ -2649,6 +2697,13 @@ begin
   finally
     Free();
   end;
+end;
+
+procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);
+begin
+  //--Увеличиваем статистику входящего трафика
+  TrafSend := TrafSend + UpdateHttpClient.SentCount;
+  AllTrafSend := AllTrafSend + UpdateHttpClient.SentCount;
 end;
 
 initialization

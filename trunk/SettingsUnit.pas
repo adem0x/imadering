@@ -328,92 +328,92 @@ begin
   if ProxyEnableCheckBox.Checked then
   begin
     //--Версия запроов
-    MainForm.HttpClient.RequestVer := ProxyVersionComboBox.Text;
+    MainForm.UpdateHttpClient.RequestVer := ProxyVersionComboBox.Text;
     //--HTTP и HTTPS тип прокси
     if (ProxyTypeComboBox.ItemIndex = 0) or (ProxyTypeComboBox.ItemIndex = 1) then
     begin
       //--Сбрасываем тип SOCKS прокси
-      MainForm.HttpClient.SocksLevel := EmptyStr;
+      MainForm.UpdateHttpClient.SocksLevel := EmptyStr;
       //--Сбрасываем адрес SOCKS прокси и порт
-      MainForm.HttpClient.SocksServer := EmptyStr;
-      MainForm.HttpClient.SocksPort := EmptyStr;
+      MainForm.UpdateHttpClient.SocksServer := EmptyStr;
+      MainForm.UpdateHttpClient.SocksPort := EmptyStr;
       //--Сбрасываем авторизацию SOCKS прокси
-      MainForm.HttpClient.SocksAuthentication := socksNoAuthentication;
-      MainForm.HttpClient.SocksUsercode := EmptyStr;
-      MainForm.HttpClient.SocksPassword := EmptyStr;
+      MainForm.UpdateHttpClient.SocksAuthentication := socksNoAuthentication;
+      MainForm.UpdateHttpClient.SocksUsercode := EmptyStr;
+      MainForm.UpdateHttpClient.SocksPassword := EmptyStr;
       //--Назначаем адрес HTTP прокси и порт
-      MainForm.HttpClient.Proxy := ProxyAddressEdit.Text;
-      MainForm.HttpClient.ProxyPort := ProxyPortEdit.Text;
+      MainForm.UpdateHttpClient.Proxy := ProxyAddressEdit.Text;
+      MainForm.UpdateHttpClient.ProxyPort := ProxyPortEdit.Text;
       //--Назначаем авторизацию на HTTP прокси
       if ProxyAuthCheckBox.Checked then
       begin
-        MainForm.HttpClient.ProxyAuth := httpAuthBasic;
-        if NTLMCheckBox.Checked then MainForm.HttpClient.ProxyAuth := httpAuthNtlm;
-        MainForm.HttpClient.ProxyUsername := ProxyLoginEdit.Text;
-        MainForm.HttpClient.ProxyPassword := ProxyPasswordEdit.Text;
+        MainForm.UpdateHttpClient.ProxyAuth := httpAuthBasic;
+        if NTLMCheckBox.Checked then MainForm.UpdateHttpClient.ProxyAuth := httpAuthNtlm;
+        MainForm.UpdateHttpClient.ProxyUsername := ProxyLoginEdit.Text;
+        MainForm.UpdateHttpClient.ProxyPassword := ProxyPasswordEdit.Text;
       end
       else
       begin
         //--Сбрасываем авторизацию HTTP прокси
-        MainForm.HttpClient.ProxyAuth := httpAuthNone;
-        MainForm.HttpClient.ProxyUsername := EmptyStr;
-        MainForm.HttpClient.ProxyPassword := EmptyStr;
+        MainForm.UpdateHttpClient.ProxyAuth := httpAuthNone;
+        MainForm.UpdateHttpClient.ProxyUsername := EmptyStr;
+        MainForm.UpdateHttpClient.ProxyPassword := EmptyStr;
       end;
     end
     else
     begin
       //--Сбрасываем адрес HTTP прокси и порт
-      MainForm.HttpClient.Proxy := EmptyStr;
-      MainForm.HttpClient.ProxyPort := '80';
+      MainForm.UpdateHttpClient.Proxy := EmptyStr;
+      MainForm.UpdateHttpClient.ProxyPort := '80';
       //--Сбрасываем авторизацию HTTP прокси
-      MainForm.HttpClient.ProxyAuth := httpAuthNone;
-      MainForm.HttpClient.ProxyUsername := EmptyStr;
-      MainForm.HttpClient.ProxyPassword := EmptyStr;
+      MainForm.UpdateHttpClient.ProxyAuth := httpAuthNone;
+      MainForm.UpdateHttpClient.ProxyUsername := EmptyStr;
+      MainForm.UpdateHttpClient.ProxyPassword := EmptyStr;
       //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
       case ProxyTypeComboBox.ItemIndex of
-        2: MainForm.HttpClient.SocksLevel := '4';
-        3: MainForm.HttpClient.SocksLevel := '4A';
-        4: MainForm.HttpClient.SocksLevel := '5';
+        2: MainForm.UpdateHttpClient.SocksLevel := '4';
+        3: MainForm.UpdateHttpClient.SocksLevel := '4A';
+        4: MainForm.UpdateHttpClient.SocksLevel := '5';
       end;
       //--Назначаем адрес SOCKS прокси и порт
-      MainForm.HttpClient.SocksServer := ProxyAddressEdit.Text;
-      MainForm.HttpClient.SocksPort := ProxyPortEdit.Text;
+      MainForm.UpdateHttpClient.SocksServer := ProxyAddressEdit.Text;
+      MainForm.UpdateHttpClient.SocksPort := ProxyPortEdit.Text;
       //--Назначаем авторизацию на SOCKS прокси
       if ProxyAuthCheckBox.Checked then
       begin
-        MainForm.HttpClient.SocksAuthentication := socksAuthenticateUsercode;
-        MainForm.HttpClient.SocksUsercode := ProxyLoginEdit.Text;
-        MainForm.HttpClient.SocksPassword := ProxyPasswordEdit.Text;
+        MainForm.UpdateHttpClient.SocksAuthentication := socksAuthenticateUsercode;
+        MainForm.UpdateHttpClient.SocksUsercode := ProxyLoginEdit.Text;
+        MainForm.UpdateHttpClient.SocksPassword := ProxyPasswordEdit.Text;
       end
       else
       begin
         //--Сбрасываем авторизацию SOCKS прокси
-        MainForm.HttpClient.SocksAuthentication := socksNoAuthentication;
-        MainForm.HttpClient.SocksUsercode := EmptyStr;
-        MainForm.HttpClient.SocksPassword := EmptyStr;
+        MainForm.UpdateHttpClient.SocksAuthentication := socksNoAuthentication;
+        MainForm.UpdateHttpClient.SocksUsercode := EmptyStr;
+        MainForm.UpdateHttpClient.SocksPassword := EmptyStr;
       end;
     end;
   end
   else
   begin
     //--Сбрасываем версию запросов
-    MainForm.HttpClient.RequestVer := '1.0';
+    MainForm.UpdateHttpClient.RequestVer := '1.0';
     //--Сбрасываем адрес HTTP прокси и порт
-    MainForm.HttpClient.Proxy := EmptyStr;
-    MainForm.HttpClient.ProxyPort := '80';
+    MainForm.UpdateHttpClient.Proxy := EmptyStr;
+    MainForm.UpdateHttpClient.ProxyPort := '80';
     //--Сбрасываем авторизацию HTTP прокси
-    MainForm.HttpClient.ProxyAuth := httpAuthNone;
-    MainForm.HttpClient.ProxyUsername := EmptyStr;
-    MainForm.HttpClient.ProxyPassword := EmptyStr;
+    MainForm.UpdateHttpClient.ProxyAuth := httpAuthNone;
+    MainForm.UpdateHttpClient.ProxyUsername := EmptyStr;
+    MainForm.UpdateHttpClient.ProxyPassword := EmptyStr;
     //--Сбрасываем тип SOCKS прокси
-    MainForm.HttpClient.SocksLevel := EmptyStr;
+    MainForm.UpdateHttpClient.SocksLevel := EmptyStr;
     //--Сбрасываем адрес SOCKS прокси и порт
-    MainForm.HttpClient.SocksServer := EmptyStr;
-    MainForm.HttpClient.SocksPort := EmptyStr;
+    MainForm.UpdateHttpClient.SocksServer := EmptyStr;
+    MainForm.UpdateHttpClient.SocksPort := EmptyStr;
     //--Сбрасываем авторизацию SOCKS прокси
-    MainForm.HttpClient.SocksAuthentication := socksNoAuthentication;
-    MainForm.HttpClient.SocksUsercode := EmptyStr;
-    MainForm.HttpClient.SocksPassword := EmptyStr;
+    MainForm.UpdateHttpClient.SocksAuthentication := socksNoAuthentication;
+    MainForm.UpdateHttpClient.SocksUsercode := EmptyStr;
+    MainForm.UpdateHttpClient.SocksPassword := EmptyStr;
   end;
   //----------------------------------------------------------------------------
   //--Применяем общие настройки

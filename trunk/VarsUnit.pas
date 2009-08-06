@@ -44,6 +44,14 @@ var
   UpdateAuto: boolean = true;
   SettingsFileName: string = 'Profile\IMadeSettings.xml';
 
+  //--Статистика трафика
+  TrafSend: real;
+  TrafRecev: real;
+  SesDataTraf: TDateTime;
+  AllTrafSend: real;
+  AllTrafRecev: real;
+  AllSesDataTraf: string;
+
   //--Переменные звуков
   SoundON: boolean = true;
   SoundIncMsg: boolean = true;

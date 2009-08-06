@@ -28,7 +28,8 @@ uses
   MraOptionsUnit in 'MraOptionsUnit.pas' {MraOptionsForm},
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
   UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
-  IcsLogUnit in 'IcsLogUnit.pas' {IcsLogForm};
+  IcsLogUnit in 'IcsLogUnit.pas' {IcsLogForm},
+  TrafficUnit in 'TrafficUnit.pas' {TrafficForm};
 
 {$R *.res}
 
