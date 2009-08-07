@@ -633,7 +633,7 @@ begin
       //--Добавляем в чат сообщение
       AddChatText(msgD, msg);
       //--Прокручиваем чат до конца
-      HTMLChatViewer.Position := HTMLChatViewer.VScrollBar.Max;
+      HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
       //--Очищаем поле ввода теста
       InputMemo.Clear;
       InputMemoChange(self);
@@ -816,7 +816,9 @@ begin
             SetLength(Doc, Length(Doc) - 6);
             Doc := Doc + '<HR>';
             HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-            HTMLChatViewer.Position := HTMLChatViewer.VScrollBar.Max;
+            //--Ставим каретку в самый низ текста
+            HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+            HTMLChatViewer.CaretPos := Length(Doc);
           end
           else
           begin
@@ -1112,7 +1114,7 @@ end;
 procedure TChatForm.FormCreate(Sender: TObject);
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     //--Загружаем настройки
     if FileExists(MyPath + SettingsFileName) then begin
       LoadFromFile(MyPath + SettingsFileName);
@@ -1225,11 +1227,11 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна чата в xml
-  With TrXML.Create() do try
+  with TrXML.Create() do try
     if FileExists(MyPath + SettingsFileName) then
       LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    If OpenKey('settings\forms\chatform\position', True) then try
+    if OpenKey('settings\forms\chatform\position', True) then try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -1242,28 +1244,28 @@ begin
     end;
 
     //--Сохраняем "отправлять по интер"
-    If OpenKey('settings\forms\chatform\send-enter', True) then try
+    if OpenKey('settings\forms\chatform\send-enter', True) then try
       WriteBool('value', EnterKeyToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем отправлять отчёт о печати текста
-    If OpenKey('settings\forms\chatform\send-typing-notify', True) then try
+    if OpenKey('settings\forms\chatform\send-typing-notify', True) then try
       WriteBool('value', TypingTextToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем "звук нажатия клавиш"
-    If OpenKey('settings\forms\chatform\key-sound', True) then try
+    if OpenKey('settings\forms\chatform\key-sound', True) then try
       WriteBool('value', KeySoundToolButton.Down);
     finally
       CloseKey();
     end;
 
     //--Сохраняем состояние панелей аватар
-    If OpenKey('settings\forms\chatform\avatar-panels', True) then try
+    if OpenKey('settings\forms\chatform\avatar-panels', True) then try
       WriteInteger('contact-avatar', ContactAvatarPanel.Width);
       WriteInteger('my-avatar', MyAvatarPanel.Width);
     finally
@@ -1290,13 +1292,13 @@ begin
   //--Проверяем есть ли выделенный текст в истории чата
   if HTMLChatViewer.SelLength = 0 then
   begin
-    HTMLPopupMenu.Items.Items[0].Enabled := false;
-    HTMLPopupMenu.Items.Items[2].Enabled := false;
+    ChatHTMLTextCopy.Enabled := false;
+    ChatHTMLQText.Enabled := false;
   end
   else
   begin
-    HTMLPopupMenu.Items.Items[0].Enabled := true;
-    HTMLPopupMenu.Items.Items[2].Enabled := true;
+    ChatHTMLTextCopy.Enabled := true;
+    ChatHTMLQText.Enabled := true;
   end;
 end;
 
@@ -1449,8 +1451,11 @@ begin
           //--Отображаем историю в чате
           if Categories[I].Items[II].History <> EmptyStr then
           begin
-            //--Очистили компонент истории
-            HTMLChatViewer.Clear;
+            //--Очистили компонент истории и выводим надпись, что история загружается
+            Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+            Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+            HTMLChatViewer.Refresh;
             //--Добавляем стили
             Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
             //--Загружаем из файла истории указанное количесво сообщений
@@ -1462,8 +1467,8 @@ begin
             SetLength(Doc, Length(Doc) - 6);
             Doc := Doc + '<HR>';
             HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-            HTMLChatViewer.Position := HTMLChatViewer.VScrollBar.Max;
             //--Ставим каретку в самый низ текста
+            HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
             HTMLChatViewer.CaretPos := Length(Doc);
           end;
           //--Выходим из цыкла если нашли контакт
@@ -1488,13 +1493,13 @@ begin
   //--Управляем пунктами меню
   if InputMemo.SelLength = 0 then
   begin
-    MemoPopupMenu.Items.Items[2].Enabled := false;
-    MemoPopupMenu.Items.Items[3].Enabled := false;
+    CutMemo.Enabled := false;
+    CopyMemo.Enabled := false;
   end
   else
   begin
-    MemoPopupMenu.Items.Items[2].Enabled := true;
-    MemoPopupMenu.Items.Items[3].Enabled := true;
+    CutMemo.Enabled := true;
+    CopyMemo.Enabled := true;
   end;
 end;
 

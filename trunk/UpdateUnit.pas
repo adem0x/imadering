@@ -19,7 +19,6 @@ type
     UpJvTimerList: TJvTimerList;
     LoadSizeLabel: TLabel;
     InfoMemo: TMemo;
-    procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CloseBitBtnClick(Sender: TObject);
     procedure UpJvTimerListEvents0Timer(Sender: TObject);
@@ -37,24 +36,12 @@ type
     procedure SubHttpClientSessionClosed(Sender: TObject);
     procedure UpJvTimerListEvents2Timer(Sender: TObject);
     procedure DownloadHttpClientSessionClosed(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
-    ver: string;
-    bild: string;
-    MyPath: string;
-    ProxyAddresEdit: string;
-    ProxyPortEdit: string;
-    ProxyTypeComboBox: integer;
-    ProxyVersionComboBox: integer;
-    ProxyAuthCheckBox: boolean;
-    ProxyLoginEdit: string;
-    ProxyPasswordEdit: string;
-    NTLMCheckBox: boolean;
-    ProxyEnableCheckBox: boolean;
     GetM: boolean;
     UpdateFile: TMemoryStream;
     AbortUpdate: boolean;
-    procedure ProxyEnableCheckBoxClick(HttpClient: THttpCli);
     procedure UnZip(FileName: TStream; SDir: string);
   public
     { Public declarations }
@@ -67,38 +54,8 @@ implementation
 
 {$R *.dfm}
 
-function IsolateTextString(const S: string; Tag1, Tag2: string): string;
-var
-  pScan, pEnd, pTag1, pTag2: PChar;
-  foundText: string;
-  searchtext: string;
-begin
-  Result := '';
-  searchtext := Uppercase(S);
-  Tag1 := Uppercase(Tag1);
-  Tag2 := Uppercase(Tag2);
-  pTag1 := PChar(Tag1);
-  pTag2 := PChar(Tag2);
-  pScan := PChar(searchtext);
-  repeat
-    pScan := StrPos(pScan, pTag1);
-    if pScan <> nil then
-    begin
-      Inc(pScan, Length(Tag1));
-      pEnd := StrPos(pScan, pTag2);
-      if pEnd <> nil then
-      begin
-        SetString(foundText,
-          Pchar(S) + (pScan - PChar(searchtext)),
-          pEnd - pScan);
-        Result := foundText;
-        pScan := pEnd + Length(tag2);
-      end
-      else
-        pScan := nil;
-    end;
-  until pScan = nil;
-end;
+uses
+  MainUnit, UtilsUnit, VarsUnit;
 
 procedure TUpdateForm.AbortBitBtnClick(Sender: TObject);
 begin
@@ -193,154 +150,17 @@ begin
 end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
-var
-  Xml: IXmlDocument;
-  XmlElem: IXmlNode;
 begin
-  //--Узнаём путь откуда запущена программа
-  MyPath := ExtractFilePath(Application.ExeName);
-  //--Ищем настройки прокси в имадеринге чтобы применить их
-  if FileExists(MyPath + 'Profile\Proxy.xml') then
-  begin
-    try
-      Xml := CreateXmlDocument;
-      Xml.Load(MyPath + 'Profile\Proxy.xml');
-      //--Загружаем адрес прокси
-      XmlElem := Xml.DocumentElement.SelectSingleNode('proxy');
-      if XmlElem <> nil then
-      begin
-        //--Считываем параметры прокси
-        if XmlElem.ChildNodes.Count > 0 then
-        begin
-          ProxyAddresEdit := XmlElem.ChildNodes.Item[0].GetAttr('name');
-          ProxyPortEdit := XmlElem.ChildNodes.Item[0].GetAttr('port');
-          ProxyTypeComboBox := XmlElem.ChildNodes.Item[1].GetIntAttr('type-index');
-          ProxyVersionComboBox := XmlElem.ChildNodes.Item[1].GetIntAttr('version-index');
-          ProxyAuthCheckBox := XmlElem.ChildNodes.Item[2].GetBoolAttr('proxy-auth-enable');
-          ProxyLoginEdit := XmlElem.ChildNodes.Item[2].GetAttr('proxy-login');
-          ProxyPasswordEdit := XmlElem.ChildNodes.Item[2].GetAttr('proxy-password');
-          NTLMCheckBox := XmlElem.ChildNodes.Item[2].GetBoolAttr('proxy-ntlm-auth');
-        end;
-        ProxyEnableCheckBox := XmlElem.GetBoolAttr('proxy-enable');
-        //--Применяем параметры прокси для обоих http сокетов
-        ProxyEnableCheckBoxClick(DownloadHttpClient);
-        ProxyEnableCheckBoxClick(SubHttpClient);
-      end;
-    except
-    end;
-  end;
-  //--Сообщаем о начале обновления
-  InfoMemo.Lines.Add('Запрос информации для обновления...');
-  //--Создаём блок в памяти для приёма файла обновления
-  UpdateFile := TMemoryStream.Create;
-  //--Удаляем старый файл Update.exe
-  if FileExists(MyPath + 'Update.old') then DeleteFile(MyPath + 'Update.old');
-  //--Запускаем таймер получения файла версии
-  UpJvTimerList.Events[0].Enabled := true;
-end;
-
-procedure TUpdateForm.ProxyEnableCheckBoxClick(HttpClient: THttpCli);
-var
-  RequestVerProxy: string;
-begin
-  with HttpClient do
-  begin
-    //--Применяем настройки прокси
-    if ProxyEnableCheckBox then
-    begin
-      //--Версия запроов
-      case ProxyVersionComboBox of
-        0: RequestVerProxy := '1.0';
-        1: RequestVerProxy := '1.1';
-      end;
-      RequestVer := RequestVerProxy;
-      //--HTTP и HTTPS тип прокси
-      if (ProxyTypeComboBox = 0) or (ProxyTypeComboBox = 1) then
-      begin
-        //--Сбрасываем тип SOCKS прокси
-        SocksLevel := '';
-        //--Сбрасываем адрес SOCKS прокси и порт
-        SocksServer := '';
-        SocksPort := '';
-        //--Сбрасываем авторизацию SOCKS прокси
-        SocksAuthentication := socksNoAuthentication;
-        SocksUsercode := '';
-        SocksPassword := '';
-        //--Назначаем адрес HTTP прокси и порт
-        Proxy := ProxyAddresEdit;
-        ProxyPort := ProxyPortEdit;
-        //--Назначаем авторизацию на HTTP прокси
-        if ProxyAuthCheckBox then
-        begin
-          ProxyAuth := httpAuthBasic;
-          if NTLMCheckBox then ProxyAuth := httpAuthNtlm;
-          ProxyUsername := ProxyLoginEdit;
-          ProxyPassword := ProxyPasswordEdit;
-        end
-        else
-        begin
-          //--Сбрасываем авторизацию HTTP прокси
-          ProxyAuth := httpAuthNone;
-          ProxyUsername := '';
-          ProxyPassword := '';
-        end;
-      end
-      else
-      begin
-        //--Сбрасываем адрес HTTP прокси и порт
-        Proxy := '';
-        ProxyPort := '80';
-        //--Сбрасываем авторизацию HTTP прокси
-        ProxyAuth := httpAuthNone;
-        ProxyUsername := '';
-        ProxyPassword := '';
-        //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
-        case ProxyTypeComboBox of
-          2: SocksLevel := '4';
-          3: SocksLevel := '4A';
-          4: SocksLevel := '5';
-        end;
-        //--Назначаем адрес SOCKS прокси и порт
-        SocksServer := ProxyAddresEdit;
-        SocksPort := ProxyPortEdit;
-        //--Назначаем авторизацию на SOCKS прокси
-        if ProxyAuthCheckBox then
-        begin
-          SocksAuthentication := socksAuthenticateUsercode;
-          SocksUsercode := ProxyLoginEdit;
-          SocksPassword := ProxyPasswordEdit;
-        end
-        else
-        begin
-          //--Сбрасываем авторизацию SOCKS прокси
-          SocksAuthentication := socksNoAuthentication;
-          SocksUsercode := '';
-          SocksPassword := '';
-        end;
-      end;
-    end
-    else
-    begin
-      //--Сбрасываем версию запросов
-      RequestVer := '1.0';
-      //--Сбрасываем адрес HTTP прокси и порт
-      Proxy := '';
-      ProxyPort := '80';
-      //--Сбрасываем авторизацию HTTP прокси
-      ProxyAuth := httpAuthNone;
-      ProxyUsername := '';
-      ProxyPassword := '';
-      //--Сбрасываем тип SOCKS прокси
-      SocksLevel := '';
-      //--Сбрасываем адрес SOCKS прокси и порт
-      SocksServer := '';
-      SocksPort := '';
-      //--Сбрасываем авторизацию SOCKS прокси
-      SocksAuthentication := socksNoAuthentication;
-      SocksUsercode := '';
-      SocksPassword := '';
-    end;
-  end;
+  //--Включаем двойную буферезацию графики окна
+  DoubleBuffered := true;
+  //--Присваиваем иконку окну и кнопке
+  MainForm.AllImageList.GetIcon(225, Icon);
+  MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(139, AbortBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(140, StartBitBtn.Glyph);
+  //--Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TUpdateForm.StartBitBtnClick(Sender: TObject);
@@ -391,7 +211,7 @@ begin
     //--Если нужные нам действия первого уровня
     if not GetM then
     begin
-      //--Создаём временный лист
+      {//--Создаём временный лист
       list := TStringList.Create;
       try
         try
@@ -419,7 +239,7 @@ begin
         end;
       finally
         list.Free;
-      end;
+      end;}
     end;
     x: ;
     //--Высвобождаем блок памяти
@@ -450,8 +270,8 @@ begin
   InfoMemo.Lines.Add('Загрузка обновления...');
   //--Запускаем закачку файла обновления с сайта
   try
-    DownloadHttpClient.URL := 'http://imadering.com/Update_' + ver + '_' + bild + '.z';
-    DownloadHttpClient.GetASync;
+    //DownloadHttpClient.URL := 'http://imadering.com/Update_' + ver + '_' + bild + '.z';
+    //DownloadHttpClient.GetASync;
   except
     on E: Exception do
       //--Если при подключении произошла ошибка, то сообщаем об этом

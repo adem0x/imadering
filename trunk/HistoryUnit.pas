@@ -86,8 +86,11 @@ begin
     //--Получаем тип и идентификатор контакта
     ReqHUIN := Parse('_', hUIN, 2);
     ReqCType := Parse('_', hUIN, 1);
-    //--Очистили компонент истории
-    HTMLHistoryViewer.Clear;
+    //--Очистили компонент истории и выводим надпись, что история загружается
+    Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+    Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+    HTMLHistoryViewer.Refresh;
     //--Загружаем файл истории сообщений
     HistoryFile := MyPath + 'Profile\History\' + hUIN + '.z';
     if FileExists(HistoryFile) then
@@ -105,8 +108,8 @@ begin
         SetLength(Doc, Length(Doc) - 6);
         Doc := Doc + '<HR>';
         HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-        HTMLHistoryViewer.Position := HTMLHistoryViewer.VScrollBar.Max;
         //--Ставим каретку в самый низ текста
+        HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
         HTMLHistoryViewer.CaretPos := Length(Doc);
       except
       end;
@@ -150,8 +153,11 @@ begin
             //--Отображаем историю в чате
             if Categories[I].Items[II].History <> EmptyStr then
             begin
-              //--Очистили компонент истории
-              HTMLHistoryViewer.Clear;
+              //--Очистили компонент истории и выводим надпись, что история загружается
+              Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+              Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+              HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+              HTMLHistoryViewer.Refresh;
               //--Добавляем стили
               Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
               //--Загружаем из файла истории указанное количесво сообщений
@@ -160,17 +166,15 @@ begin
               SetLength(Doc, Length(Doc) - 6);
               Doc := Doc + '<HR>';
               HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-              HTMLHistoryViewer.Position := HTMLHistoryViewer.VScrollBar.Max;
               //--Ставим каретку в самый низ текста
+              HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
               HTMLHistoryViewer.CaretPos := Length(Doc);
             end
             else
             begin
-              //--Очистили компонент истории
-              HTMLHistoryViewer.Clear;
-              //--Добавляем стили
+              //--Очистили компонент истории и выводим сообщение, что история не найдена
               Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-              Doc := Doc + '<span class=d>' + HistoryNotFile + '</span>';
+              Doc := Doc + '<span class=d>' + HistoryNotFileL + '</span>';
               HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
             end;
             //--Выходим из цыкла если нашли контакт
@@ -203,11 +207,11 @@ begin
   //--Определяем есть ли выделенный текст
   if HTMLHistoryViewer.SelLength = 0 then
   begin
-    HistoryPopupMenu.Items.Items[0].Enabled := false;
+    CopyHistorySelText.Enabled := false;
   end
   else
   begin
-    HistoryPopupMenu.Items.Items[0].Enabled := true;
+    CopyHistorySelText.Enabled := true;
   end;
 end;
 
@@ -219,8 +223,11 @@ end;
 
 procedure THistoryForm.SearchTextBitBtnClick(Sender: TObject);
 begin
+  //--Снимаем предыдущее выделение текста
+  HTMLHistoryViewer.SelLength := 0;
   //--Делаем поиск текста в истории
-  HTMLHistoryViewer.FindEx(SearchTextEdit.Text, RegistrCheckBox.Checked, UpSearchCheckBox.Checked);
+  if not HTMLHistoryViewer.FindEx(SearchTextEdit.Text, RegistrCheckBox.Checked,
+    UpSearchCheckBox.Checked) then Showmessage(HistorySearchNoL);
 end;
 
 procedure THistoryForm.ReloadHistoryBitBtnClick(Sender: TObject);

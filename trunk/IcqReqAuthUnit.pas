@@ -56,7 +56,6 @@ end;
 procedure TIcqReqAuthForm.FormCreate(Sender: TObject);
 begin
   //--Присваиваем иконку окну и кнопке
-  MainForm.AllImageList.GetIcon(6, Icon);
   MainForm.AllImageList.GetBitmap(139, NoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, YesBitBtn.Glyph);
 end;
@@ -69,6 +68,8 @@ end;
 
 procedure TIcqReqAuthForm.UpDateVersion(m: string);
 begin
+  //--Ставим иконку окну
+  MainForm.AllImageList.GetIcon(6, Icon);
   //--Отображаем информацию и запрос на закачку новой версии
   Caption := UpDate3L;
   headLabel.Caption := UpDate1L;
@@ -89,14 +90,14 @@ begin
   begin
     //--Открываем окно автообновления
     if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(self);
-    //--Запускаем процесс получения информации для обновления
-
     //--Отображаем окно на передний план
-    ShowWindow(UpdateForm.Handle, SW_RESTORE);
+    //ShowWindow(UpdateForm.Handle, SW_RESTORE);
     UpdateForm.Show;
     SetForeGroundWindow(UpdateForm.Handle);
+    //--Запускаем процесс получения информации для обновления
+    
     //--Закрываем это окно
-    Close;
+   // Close;
   end;
 
   {if RoasterForm.Roaster_Sel_Button = nil then goto x;

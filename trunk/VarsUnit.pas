@@ -43,6 +43,8 @@ var
   AvatarServiceDisable: boolean = false;
   UpdateAuto: boolean = true;
   SettingsFileName: string = 'Profile\IMadeSettings.xml';
+  UpdateVersionPath: string = 'Update_%s_%s.z';
+  UpdateFile: TMemoryStream;
 
   //--Статистика трафика
   TrafSend: real;
@@ -167,8 +169,10 @@ var
   InfoChildrenL3: string = 'Нет';
   DellContactL: string = 'Контакт "%s" будет удалён. Вы уверены?';
   DellYourSelfL: string = 'Удалить себя из списка контакта: %s. Вы уверены?';
-  HistoryNotFile: string = 'История сообщений с этим контактом отсутствует';
+  HistoryNotFileL: string = 'История сообщений с этим контактом отсутствует';
   GroupInv: string = ' из ';
+  HistorySearchNoL: string = 'Такой текст не найден.';
+  HistoryLoadFileL: string = 'Загружается история...';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';

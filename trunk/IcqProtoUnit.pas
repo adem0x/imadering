@@ -832,7 +832,7 @@ begin
           Doc := Doc + '<span class=d>' + CloseChatWindowsL + '</span><br><br>';
           ChatForm.HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
           //--Прокручиваем чат до конца
-          ChatForm.HTMLChatViewer.Position := ChatForm.HTMLChatViewer.VScrollBar.Max;
+          ChatForm.HTMLChatViewer.VScrollBarPosition := ChatForm.HTMLChatViewer.VScrollBar.Max;
         end;
         //--Если активная вкладка совпадает с этим UIN
         if ActivePage.HelpKeyword = UIN then
@@ -2922,7 +2922,7 @@ begin
         //--Добавляем сообщение в текущий чат
         AddChatText(msgD, Mess, true);
         //--Прокручиваем чат в самый конец
-        HTMLChatViewer.Position := HTMLChatViewer.VScrollBar.Max;
+        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
         //--Если окно сообщений активно, то выходим
         if ChatForm.Active then Exit;
       end;

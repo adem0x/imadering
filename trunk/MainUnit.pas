@@ -130,6 +130,8 @@ type
     N25: TMenuItem;
     N26: TMenuItem;
     MRAAvatarHttpClient: THttpCli;
+    RightMRAPopupMenu: TPopupMenu;
+    RightJabberPopupMenu: TPopupMenu;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -253,7 +255,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit;
+  HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit, UpdateUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -494,6 +496,8 @@ begin
                 ver := IsolateTextString(list.Text, '<v>', '</v>');
                 bild := IsolateTextString(list.Text, '<b>', '</b>');
                 mess := IsolateTextString(list.Text, '<m>', '</m>');
+                //--Запоминаем переменную аддэйтпатч для автообновления
+                UpdateVersionPath := Format(UpdateVersionPath, [ver, bild]);
                 //--Отображаем всплывающее окно с информацией о новой версии
                 if (ver <> EmptyStr) and (bild <> EmptyStr) then
                 begin
@@ -522,7 +526,9 @@ begin
       1:
         begin
           //--Информируем о успешной закачке файла обновления
-          
+
+          //--Создаём блок в памяти для приёма файла обновления
+          //UpdateFile := TMemoryStream.Create;
         end;
     end;
     //--Высвобождаем блок памяти
@@ -1710,15 +1716,20 @@ procedure TMainForm.N4Click(Sender: TObject);
 begin
   //--Место для запуска тестов
 
-  {if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(self);
-  IcqContactInfoForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(IcqContactInfoForm.Handle);}
+  {if not Assigned(IcqReqAuthForm) then IcqReqAuthForm := TIcqReqAuthForm.Create(self);
+  IcqReqAuthForm.UpDateVersion('test');
 
-  if not Assigned(ChatForm) then ChatForm := TChatForm.Create(self);
-  ChatForm.Show;
+  IcqReqAuthForm.Show;
   //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(ChatForm.Handle);
+  SetForeGroundWindow(IcqReqAuthForm.Handle);}
+
+
+  if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(self);
+  if UpdateForm.Visible then ShowWindow(UpdateForm.Handle, SW_RESTORE);
+  UpdateForm.Show;
+  //--Выводим окно на самый передний план, против глюков в вин и вайн
+  SetForeGroundWindow(UpdateForm.Handle);
+
 
 end;
 
@@ -2187,6 +2198,8 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   l: DWORD;
 begin
+  //--Включаем двойную буферезацию графики окна
+  DoubleBuffered := true;
   //--Убираем кнопку "свернуть" в заголовке окна
   l := GetWindowLong(Self.Handle, GWL_STYLE);
   l := l and not (WS_MINIMIZEBOX);
@@ -2207,6 +2220,10 @@ begin
   //--Делаем всплывающие подсказки неисчезающими
   Application.HintHidePause := MaxInt;
   Application.OnHint := HintMaxTime;
+  //--Заранее подгружаем иконки начальных статусов протоколов в трэй
+  AllImageList.GetIcon(9, ICQTrayIcon.Icon);
+  AllImageList.GetIcon(23, MRATrayIcon.Icon);
+  AllImageList.GetIcon(30, JabberTrayIcon.Icon);
   //--Загружаем настройки окна
   LoadMainFormSettings;
 
@@ -2550,11 +2567,11 @@ begin
   //соответствующую иконку и таг для идентификации на пуект меню выбора статуса
   if TrayProtoClickMenu = 'icqtrayicon' then
   begin
-    TrayPopupMenu.Items[2].ImageIndex := ICQToolButton.ImageIndex;
+    StatusTray.ImageIndex := ICQToolButton.ImageIndex;
     //--Очищаем пункты субменю
-    TrayPopupMenu.Items[2].Clear;
+    StatusTray.Clear;
     //--Заполняем субменю пунктами из основного ICQ меню
-    with TrayPopupMenu.Items[2] do
+    with StatusTray do
     begin
       for I := 0 to ICQPopupMenu.Items.Count - 1 do
       begin
@@ -2568,11 +2585,11 @@ begin
   end
   else if TrayProtoClickMenu = 'mratrayicon' then
   begin
-    TrayPopupMenu.Items[2].ImageIndex := MRAToolButton.ImageIndex;
+    StatusTray.ImageIndex := MRAToolButton.ImageIndex;
     //--Очищаем пункты субменю
-    TrayPopupMenu.Items[2].Clear;
+    StatusTray.Clear;
     //--Заполняем субменю пунктами из основного ICQ меню
-    with TrayPopupMenu.Items[2] do
+    with StatusTray do
     begin
       for I := 0 to MRAPopupMenu.Items.Count - 1 do
       begin
@@ -2586,11 +2603,11 @@ begin
   end
   else if TrayProtoClickMenu = 'jabbertrayicon' then
   begin
-    TrayPopupMenu.Items[2].ImageIndex := JabberToolButton.ImageIndex;
+    StatusTray.ImageIndex := JabberToolButton.ImageIndex;
     //--Очищаем пункты субменю
-    TrayPopupMenu.Items[2].Clear;
+    StatusTray.Clear;
     //--Заполняем субменю пунктами из основного ICQ меню
-    with TrayPopupMenu.Items[2] do
+    with StatusTray do
     begin
       for I := 0 to JabberPopupMenu.Items.Count - 1 do
       begin
