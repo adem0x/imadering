@@ -147,6 +147,8 @@ end;
 
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
+  //--Включаем двойную буферезацию графики окна
+  DoubleBuffered := true;
   //--Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetIcon(0, Icon);
   MainForm.AllImageList.GetBitmap(6, CheckUpdateBitBtn.Glyph);

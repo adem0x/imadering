@@ -218,6 +218,8 @@ type
     procedure MRAAvatarHttpClientSendEnd(Sender: TObject);
     procedure MRAAvatarHttpClientDocEnd(Sender: TObject);
     procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
+    procedure UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer;
+      Len: Integer);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -443,7 +445,7 @@ begin
   //--Загружаем файл истории для текущего чата
   HistoryForm.LoadHistoryFromFile(ContactList.SelectedItem.UIN);
   //--Отображаем окно на передний план
-  ShowWindow(HistoryForm.Handle, SW_RESTORE);
+  if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
   HistoryForm.Show;
   SetForeGroundWindow(HistoryForm.Handle);
 end;
@@ -452,6 +454,32 @@ procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
 begin
   //--Создаём блок памяти для приёма http данных
   UpdateHttpClient.RcvdStream := TMemoryStream.Create;
+end;
+
+procedure TMainForm.UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer;
+  Len: Integer);
+begin
+  //--Если был активирован аборт сессии, то выходим и отключаем сокет
+  if UpdateHttpClient.Tag = 2 then
+  begin
+    UpdateHttpClient.CloseAsync;
+    UpdateHttpClient.Abort;
+  end;
+  //--Отображаем процесс получения данных
+  if Assigned(UpdateForm) then
+  begin
+    with UpdateForm do
+    begin
+      if UpdateHttpClient.ContentLength > -1 then
+      begin
+        LoadSizeLabel.Caption := 'Скачано: ' + FloatToStrF(UpdateHttpClient.RcvdCount / 1000, ffFixed, 7, 1) + ' Кб';
+        DownloadProgressBar.Max := UpdateHttpClient.ContentLength;
+        DownloadProgressBar.Position := UpdateHttpClient.RcvdCount;
+      end;
+      //--Обновляем форму и контролы чтобы видеть изменения
+      Update;
+    end;
+  end;
 end;
 
 procedure TMainForm.UpdateHttpClientDocEnd(Sender: TObject);
@@ -525,10 +553,39 @@ begin
         end;
       1:
         begin
-          //--Информируем о успешной закачке файла обновления
-
-          //--Создаём блок в памяти для приёма файла обновления
-          //UpdateFile := TMemoryStream.Create;
+          if Assigned(UpdateForm) then
+          begin
+            with UpdateForm do
+            begin
+              //--Создаём блок в памяти для приёма файла обновления
+              UpdateFile := TMemoryStream.Create;
+              try
+                try
+                  //--Обнуляем позицию начала чтения в блоке памяти
+                  UpdateHttpClient.RcvdStream.Position := 0;
+                  //--Читаем данные в лист
+                  UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
+                  //--Информируем о успешной закачке файла обновления
+                  InfoMemo.Lines.Add(UpDateLoadL);
+                  InfoMemo.Lines.Add(UpDateUnL);
+                  //--Переименовываем файл Imadering.exe
+                  if FileExists(MyPath + 'Imadering.exe') then RenameFile(MyPath + 'Imadering.exe', MyPath + 'Imadering.old');
+                  //--Запускаем установку обновления
+                  UnZip_Stream(UpdateFile, MyPath);
+                  //--Выводим информацию об окончании обновления
+                  InfoMemo.Lines.Add(UpDateOKL);
+                except
+                end;
+              finally
+                //--Уничтожаем блок памяти
+                FreeAndNil(UpdateFile);
+              end;
+            end;
+          end;
+        end;
+      2:
+        begin
+          //--Ничего не делаем с данными
         end;
     end;
     //--Высвобождаем блок памяти
@@ -1707,7 +1764,7 @@ begin
   //--Отображаем окно лога сокетов
   if not Assigned(IcsLogForm) then IcsLogForm := TIcsLogForm.Create(self);
   //--Отображаем окно на передний план
-  ShowWindow(IcsLogForm.Handle, SW_RESTORE);
+  if IcsLogForm.Visible then ShowWindow(IcsLogForm.Handle, SW_RESTORE);
   IcsLogForm.Show;
   SetForeGroundWindow(IcsLogForm.Handle);
 end;
@@ -1722,14 +1779,6 @@ begin
   IcqReqAuthForm.Show;
   //--Выводим окно на самый передний план, против глюков в вин и вайн
   SetForeGroundWindow(IcqReqAuthForm.Handle);}
-
-
-  if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(self);
-  if UpdateForm.Visible then ShowWindow(UpdateForm.Handle, SW_RESTORE);
-  UpdateForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(UpdateForm.Handle);
-
 
 end;
 
@@ -1862,7 +1911,7 @@ begin
     //--Активируем чат и применяем параметры в окне чата
     ChatForm.ChatPageControlChange(self);
     //--Отображаем окно сообщений
-    ShowWindow(ChatForm.Handle, SW_RESTORE);
+    if ChatForm.Visible then ShowWindow(ChatForm.Handle, SW_RESTORE);
     ChatForm.Show;
     SetForegroundWindow(ChatForm.Handle);
     //BringWindowToTop(ChatForm.Handle);
@@ -2180,8 +2229,10 @@ begin
   IcqContactInfoForm.ReqUIN := ContactList.SelectedItem.UIN;
   //--Загружаем информацию о нем
   IcqContactInfoForm.LoadUserUnfo;
-  //--Отображаем окно с информацией
+  //--Отображаем окно на передний план
+  if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
   IcqContactInfoForm.Show;
+  SetForeGroundWindow(IcqContactInfoForm.Handle);
 end;
 
 procedure TMainForm.AppActivate(Sender: TObject);
@@ -2518,7 +2569,7 @@ begin
   //--Открываем окно поиска контактов в контактном листе
   if not Assigned(CLSearchForm) then CLSearchForm := TCLSearchForm.Create(self);
   //--Отображаем окно
-  ShowWindow(CLSearchForm.Handle, SW_RESTORE);
+  if CLSearchForm.Visible then ShowWindow(CLSearchForm.Handle, SW_RESTORE);
   CLSearchForm.Show;
   SetForeGroundWindow(CLSearchForm.Handle);
 end;
@@ -2648,7 +2699,7 @@ begin
   //--Открываем пустое окно истории сообщений
   if not Assigned(HistoryForm) then HistoryForm := THistoryForm.Create(self);
   //--Отображаем окно на передний план
-  ShowWindow(HistoryForm.Handle, SW_RESTORE);
+  if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
   HistoryForm.Show;
   SetForeGroundWindow(HistoryForm.Handle);
 end;

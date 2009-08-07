@@ -89,15 +89,15 @@ begin
   if UpDate then
   begin
     //--Открываем окно автообновления
-    if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(self);
+    if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(MainForm);
     //--Отображаем окно на передний план
-    //ShowWindow(UpdateForm.Handle, SW_RESTORE);
+    if UpdateForm.Visible then ShowWindow(UpdateForm.Handle, SW_RESTORE);
     UpdateForm.Show;
     SetForeGroundWindow(UpdateForm.Handle);
     //--Запускаем процесс получения информации для обновления
-    
+    UpdateForm.StartBitBtnClick(nil);
     //--Закрываем это окно
-   // Close;
+    Close;
   end;
 
   {if RoasterForm.Roaster_Sel_Button = nil then goto x;

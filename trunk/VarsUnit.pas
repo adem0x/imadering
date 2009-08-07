@@ -173,6 +173,11 @@ var
   GroupInv: string = ' из ';
   HistorySearchNoL: string = 'Такой текст не найден.';
   HistoryLoadFileL: string = 'Загружается история...';
+  UpDateStartL: string = 'Загрузка обновления...';
+  UpDateAbortL: string = 'Загрузка обновления прервана.';
+  UpDateLoadL: string = 'Файл обновления успешно получен.';
+  UpDateUnL: string = 'Установка обновления...';
+  UpDateOKL: string = 'Установка обновления завершена.' + #13#10 + #13#10 + 'Для завершения обновления необходимо перезапустить программу IMadering!';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';

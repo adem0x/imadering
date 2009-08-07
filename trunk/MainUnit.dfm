@@ -265,6 +265,7 @@ object MainForm: TMainForm
     Top = 328
     object N4: TMenuItem
       Caption = #1058#1077#1089#1090'!'
+      Visible = False
       OnClick = N4Click
     end
     object N26: TMenuItem
@@ -465,6 +466,7 @@ object MainForm: TMainForm
     BandwidthSampling = 1000
     Options = []
     OnDocBegin = UpdateHttpClientDocBegin
+    OnDocData = UpdateHttpClientDocData
     OnDocEnd = UpdateHttpClientDocEnd
     OnSendEnd = UpdateHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication

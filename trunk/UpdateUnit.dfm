@@ -16,6 +16,7 @@ object UpdateForm: TUpdateForm
   Position = poDesktopCenter
   Scaled = False
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -32,7 +33,6 @@ object UpdateForm: TUpdateForm
     Width = 110
     Height = 25
     Caption = #1042#1086#1079#1086#1073#1085#1086#1074#1080#1090#1100
-    Enabled = False
     TabOrder = 0
     TabStop = False
     OnClick = StartBitBtnClick
@@ -43,6 +43,7 @@ object UpdateForm: TUpdateForm
     Width = 110
     Height = 25
     Caption = #1055#1088#1077#1088#1074#1072#1090#1100
+    Enabled = False
     TabOrder = 1
     TabStop = False
     OnClick = AbortBitBtnClick
@@ -75,76 +76,5 @@ object UpdateForm: TUpdateForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 4
-  end
-  object SubHttpClient: THttpCli
-    LocalAddr = '0.0.0.0'
-    ProxyPort = '80'
-    Agent = 'Mozilla/4.0 (compatible; ICS)'
-    Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
-    NoCache = False
-    ContentTypePost = 'application/x-www-form-urlencoded'
-    MultiThreaded = False
-    RequestVer = '1.0'
-    FollowRelocation = True
-    LocationChangeMaxCount = 5
-    ServerAuth = httpAuthNone
-    ProxyAuth = httpAuthNone
-    BandwidthLimit = 10000
-    BandwidthSampling = 1000
-    Options = []
-    OnSessionClosed = SubHttpClientSessionClosed
-    OnDocBegin = SubHttpClientDocBegin
-    OnDocData = SubHttpClientDocData
-    OnDocEnd = SubHttpClientDocEnd
-    SocksAuthentication = socksNoAuthentication
-    Left = 16
-    Top = 16
-  end
-  object DownloadHttpClient: THttpCli
-    LocalAddr = '0.0.0.0'
-    ProxyPort = '80'
-    Agent = 'Mozilla/4.0 (compatible; ICS)'
-    Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
-    NoCache = False
-    ContentTypePost = 'application/x-www-form-urlencoded'
-    MultiThreaded = False
-    RequestVer = '1.0'
-    FollowRelocation = True
-    LocationChangeMaxCount = 5
-    ServerAuth = httpAuthNone
-    ProxyAuth = httpAuthNone
-    BandwidthLimit = 10000
-    BandwidthSampling = 1000
-    Options = []
-    OnSessionClosed = DownloadHttpClientSessionClosed
-    OnDocBegin = DownloadHttpClientDocBegin
-    OnDocData = DownloadHttpClientDocData
-    OnDocEnd = DownloadHttpClientDocEnd
-    SocksAuthentication = socksNoAuthentication
-    Left = 80
-    Top = 16
-  end
-  object UpJvTimerList: TJvTimerList
-    Events = <
-      item
-        Name = 'GetVersionInfo'
-        Cycled = False
-        Enabled = False
-        OnTimer = UpJvTimerListEvents0Timer
-      end
-      item
-        Name = 'GetUpdateFile'
-        Cycled = False
-        Enabled = False
-        OnTimer = UpJvTimerListEvents1Timer
-      end
-      item
-        Name = 'UnzipUpdateFile'
-        Cycled = False
-        Enabled = False
-        OnTimer = UpJvTimerListEvents2Timer
-      end>
-    Left = 48
-    Top = 16
   end
 end

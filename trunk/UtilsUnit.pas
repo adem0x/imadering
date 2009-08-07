@@ -80,6 +80,7 @@ function InitBuildInfo: string;
 procedure Zip_File(FileName: TStrings; SFileName: string);
 procedure UnZip_File(FileName, SDir: string);
 function GetFileSize(FileName: string): Longint;
+procedure UnZip_Stream(FileName: TStream; SDir: string);
 
 implementation
 
@@ -1421,6 +1422,19 @@ begin
   z := TJvZlibMultiple.Create(nil);
   try
     z.DecompressFile(FileName, SDir, true);
+  finally
+    z.Free;
+  end;
+end;
+
+procedure UnZip_Stream(FileName: TStream; SDir: string);
+var
+  z: TJvZlibMultiple;
+begin
+  //--Распаковываем файл в указанную директорию
+  z := TJvZlibMultiple.Create(nil);
+  try
+    z.DecompressStream(FileName, SDir, true);
   finally
     z.Free;
   end;

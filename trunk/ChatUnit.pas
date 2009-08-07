@@ -1017,8 +1017,10 @@ begin
   IcqContactInfoForm.ReqUIN := InfoPanel2.Caption;
   //--Загружаем информацию о нем
   IcqContactInfoForm.LoadUserUnfo;
-  //--Отображаем окно с информацией
+  //--Отображаем окно на передний план
+  if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
   IcqContactInfoForm.Show;
+  SetForeGroundWindow(IcqContactInfoForm.Handle);
 end;
 
 procedure TChatForm.EditContactSpeedButtonClick(Sender: TObject);
