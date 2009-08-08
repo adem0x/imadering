@@ -88,9 +88,12 @@ function GetFileSize(FileName: string): Longint;
 var
   SearchRec: TSearchRec;
 begin
-  if FindFirst(FileName, faAnyFile, SearchRec) = 0 then
+  Result := -1;
+  if FindFirst(FileName, faAnyFile, SearchRec) = 0 then try
     Result := SearchRec.Size
-  else Result := -1;
+  finally
+    FindClose(SearchRec);
+  end;
 end;
 
 procedure CatBut2NewCatBut(CB1, CB2: TButtonItem);
