@@ -118,11 +118,11 @@ type
     { Public declarations }
     procedure ApplySettings;
     procedure ApplyProxyHttpClient(HttpClient: THttpCli);
+    procedure ApplyProxySocketClient(SocketClient: TWSocket);
   end;
 
 var
   SettingsForm: TSettingsForm;
-  NoReSave: boolean = false;
 
 implementation
 
@@ -180,26 +180,29 @@ procedure TSettingsForm.LoadSettings;
 var
   ListItemD: TListItem;
 begin
-  //--Загружаем и отображаем настройки прокси
-  if FileExists(MyPath + SettingsFileName) then begin
-    With TrXML.Create() do try
+  //--Считываем настройки из xml файла
+  if FileExists(MyPath + SettingsFileName) then
+  begin
+    with TrXML.Create() do
+    try
       LoadFromFile(MyPath + SettingsFileName);
-
-      If OpenKey('settings\proxy\address') then try
+      //--Загружаем и отображаем настройки прокси
+      if OpenKey('settings\proxy\address') then
+      try
         ProxyAddressEdit.Text := ReadString('host');
         ProxyPortEdit.Text := ReadString('port');
       finally
         CloseKey();
       end;
-
-      If OpenKey('settings\proxy\type') then try
+      if OpenKey('settings\proxy\type') then
+      try
         ProxyTypeComboBox.ItemIndex := ReadInteger('type-index');
         ProxyVersionComboBox.ItemIndex := ReadInteger('version-index');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\proxy\auth') then try
+      if OpenKey('settings\proxy\auth') then
+      try
         ProxyAuthCheckBox.Checked := ReadBool('auth-enable');
         ProxyLoginEdit.Text := ReadString('login');
         ProxyPasswordEdit.Text := Decrypt(ReadString('password'), PassKey);
@@ -207,25 +210,17 @@ begin
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\proxy\main') then try
+      if OpenKey('settings\proxy\main') then
+      try
         ProxyEnableCheckBox.Checked := ReadBool('enable');
         ProxyEnableCheckBoxClick(nil);
       finally
         CloseKey();
       end;
-
-    finally
-      Free();
-    end;
-  end;
-  //----------------------------------------------------------------------------
-  //--Загружаем и отображаем другие настройки
-  With TrXML.Create() do try
-    if FileExists(MyPath + SettingsFileName) then begin
-      LoadFromFile(MyPath + SettingsFileName);
-
-      if OpenKey('settings\main\hide-in-tray-program-start') then try
+      //------------------------------------------------------------------------
+      //--Загружаем и отображаем другие настройки
+      if OpenKey('settings\main\hide-in-tray-program-start') then
+      try
         //--Загружаем запуск свёрнутой в трэй
         HideInTrayProgramStartCheckBox.Checked := ReadBool('value');
         //--Загружаем автозапуск при старте Windows
@@ -233,67 +228,66 @@ begin
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\auto-update-check') then try
+      if OpenKey('settings\main\auto-update-check') then
+      try
         //--Загружаем проверять наличие новой версии при запуске
         AutoUpdateCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\always-top') then try
+      if OpenKey('settings\main\always-top') then
+      try
         //--Загружаем поверх всех окон
         AlwaylTopCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\transparent-value') then try
+      if OpenKey('settings\main\transparent-value') then
+      try
         //--Загружаем настройки прозрачности списка контактов
         TransparentTrackBar.Position := ReadInteger('value');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\transparent-active') then try
+      if OpenKey('settings\main\transparent-active') then
+      try
         //--Загружаем прозрачность неактивноно окна списка контактов
         TransparentNotActiveCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\auto-hide-cl') then try
+      if OpenKey('settings\main\auto-hide-cl') then
+      try
         //--Загружаем автоскрытие списка контактов
         AutoHideCLCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\auto-hide-cl-value') then try
+      if OpenKey('settings\main\auto-hide-cl-value') then
+      try
         //--Загружаем автоскрытие списка контактов
         AutoHideCLEdit.Text := ReadString('value');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\header-cl-form') then try
+      if OpenKey('settings\main\header-cl-form') then
+      try
         //--Загружаем заголовок окна списка контактов
         HeaderTextEdit.Text := ReadString('text');
       finally
         CloseKey();
       end;
-
-      if OpenKey('settings\main\reconnect') then try
+      if OpenKey('settings\main\reconnect') then
+      try
         //--Загружаем пересоединение при разрыве соединения
         ReconnectCheckBox.Checked := ReadBool('value');
       finally
         CloseKey();
       end;
+    finally
+      Free();
     end;
-  finally
-    Free();
   end;
-
   //----------------------------------------------------------------------------
   //--Устанавливаем галочки включенных протоколов
   ProtocolsListView.Clear;
@@ -327,6 +321,10 @@ begin
   //--Применяем настройки прокси
   ApplyProxyHttpClient(MainForm.UpdateHttpClient);
   ApplyProxyHttpClient(MainForm.MRAAvatarHttpClient);
+  ApplyProxySocketClient(MainForm.ICQWSocket);
+  ApplyProxySocketClient(MainForm.ICQAvatarWSocket);
+  ApplyProxySocketClient(MainForm.MRAWSocket);
+  ApplyProxySocketClient(MainForm.JabberWSocket);
   //----------------------------------------------------------------------------
   //--Применяем общие настройки
   //--Если "Запускать при старте системы", то ставим это в реестре
@@ -355,45 +353,31 @@ begin
   MainForm.JvTimerList.Events[8].Interval := (StrToInt(AutoHideCLEdit.Text) * 1000);
   //--Применяем настройку залоговка окна списка контактов
   MainForm.Caption := HeaderTextEdit.Text;
-
-
-
   //----------------------------------------------------------------------------
-
-  G_ProxyEnabled := ProxyEnableCheckBox.Checked;
-  G_ProxyHost := ProxyAddressEdit.Text;
-  G_ProxyPort := ProxyPortEdit.Text;
-  G_ProxyType := ProxyTypeComboBox.Text;
-  G_ProxyVersion := ProxyVersionComboBox.Text;
-  G_ProxyTypeIndex := ProxyTypeComboBox.ItemIndex;
-  G_ProxyVersionIndex := ProxyVersionComboBox.ItemIndex;
-  G_ProxyAuthorize := ProxyAuthCheckBox.Checked;
-  G_ProxyLogin := ProxyLoginEdit.Text;
-  G_ProxyPassword := ProxyPasswordEdit.Text;
-  G_ProxyNTLM := NTLMCheckBox.Checked;
-
   //--Записываем настройки
   if ApplyBitBtn.Enabled then
   begin
-    //--Записываем настройки прокси
-    if not NoReSave then begin
-      With TrXML.Create() do try
-        if FileExists(MyPath + SettingsFileName) then
-          LoadFromFile(MyPath + SettingsFileName);
-        if OpenKey('settings\proxy\main', True) then try
+    if not NoReSave then //--Если разрешена перезапись настроек
+    begin
+      with TrXML.Create() do
+      try
+        if FileExists(MyPath + SettingsFileName) then LoadFromFile(MyPath + SettingsFileName);
+        //--Записываем настройки прокси
+        if OpenKey('settings\proxy\main', True) then
+        try
           WriteBool('enable', ProxyEnableCheckBox.Checked);
         finally
           CloseKey();
         end;
-
-        if OpenKey('settings\proxy\address', True) then try
+        if OpenKey('settings\proxy\address', True) then
+        try
           WriteString('host', ProxyAddressEdit.Text);
           WriteString('port', ProxyPortEdit.Text);
         finally
           CloseKey();
         end;
-
-        if OpenKey('settings\proxy\type', True) then try
+        if OpenKey('settings\proxy\type', True) then
+        try
           WriteString('type', ProxyTypeComboBox.Text);
           WriteInteger('type-index', ProxyTypeComboBox.ItemIndex);
           WriteString('version', ProxyVersionComboBox.Text);
@@ -401,8 +385,8 @@ begin
         finally
           CloseKey();
         end;
-
-        if OpenKey('settings\proxy\auth', True) then try
+        if OpenKey('settings\proxy\auth', True) then
+        try
           WriteBool('auth-enable', ProxyAuthCheckBox.Checked);
           WriteString('login', ProxyLoginEdit.Text);
           WriteString('password', Encrypt(ProxyPasswordEdit.Text, PassKey));
@@ -410,77 +394,69 @@ begin
         finally
           CloseKey();
         end;
-
-        SaveToFile(MyPath + SettingsFileName);
-      finally
-        Free();
-      end;
-      //--Сохраняем настройки
-      With TrXML.Create() do try
-      if FileExists(MyPath + SettingsFileName) then
-        LoadFromFile(MyPath + SettingsFileName);
+        //----------------------------------------------------------------------
         //--Сохраняем запуск свёрнутой в трэй
-        if OpenKey('settings\main\hide-in-tray-program-start', True) then try
+        if OpenKey('settings\main\hide-in-tray-program-start', True) then
+        try
           WriteBool('value', HideInTrayProgramStartCheckBox.Checked);
         finally
           CloseKey();
         end;
-
         //--Сохраняем пересоединяться при разрыве соединения
-        if OpenKey('settings\main\reconnect', True) then try
+        if OpenKey('settings\main\reconnect', True) then
+        try
           WriteBool('value', ReconnectCheckBox.Checked);
         finally
           CloseKey();
         end;
-
         //--Сохраняем проверять наличие новой версии при запуске
-        if OpenKey('settings\main\auto-update-check', True) then try
+        if OpenKey('settings\main\auto-update-check', True) then
+        try
           WriteBool('value', AutoUpdateCheckBox.Checked);
         finally
           CloseKey();
         end;
-
         //--Сохраняем поверх всех окон
-        if OpenKey('settings\main\always-top', True) then try
+        if OpenKey('settings\main\always-top', True) then
+        try
           WriteBool('value', AlwaylTopCheckBox.Checked);
         finally
           CloseKey();
         end;
-
         //--Сохраняем настройки прозрачности списка контактов
-        if OpenKey('settings\main\transparent-value', True) then try
+        if OpenKey('settings\main\transparent-value', True) then
+        try
           WriteInteger('value', TransparentTrackBar.Position);
         finally
           CloseKey();
         end;
-
         //--Сохраняем прозрачность неактивноно окна списка контактов
-        if OpenKey('settings\main\transparent-active', True) then try
+        if OpenKey('settings\main\transparent-active', True) then
+        try
           WriteBool('value', TransparentNotActiveCheckBox.Checked);
         finally
           CloseKey();
         end;
-
         //--Сохраняем автоскрытие списка контактов
-        if OpenKey('settings\main\auto-hide-cl', True) then try
+        if OpenKey('settings\main\auto-hide-cl', True) then
+        try
           WriteBool('value', AutoHideCLCheckBox.Checked);
         finally
           CloseKey();
         end;
-
-        if OpenKey('settings\main\auto-hide-cl-value', True) then try
+        if OpenKey('settings\main\auto-hide-cl-value', True) then
+        try
           WriteString('value', AutoHideCLEdit.Text);
         finally
           CloseKey();
         end;
-
         //--Сохраняем заголовок окна списка контактов
-        if OpenKey('settings\main\header-cl-form', True) then try
+        if OpenKey('settings\main\header-cl-form', True) then
+        try
           WriteString('text', HeaderTextEdit.Text);
         finally
           CloseKey();
         end;
-
         SaveToFile(MyPath + SettingsFileName);
       finally
         Free();
@@ -520,6 +496,7 @@ end;
 procedure TSettingsForm.OKBitBtnClick(Sender: TObject);
 begin
   //--Применяем настройки
+  NoReSave := false;
   ApplySettings;
   //--Закрываем окно настроек
   Close;
@@ -534,6 +511,7 @@ end;
 procedure TSettingsForm.ApplyBitBtnClick(Sender: TObject);
 begin
   //--Применяем настройки
+  NoReSave := false;
   ApplySettings;
 end;
 
@@ -770,12 +748,12 @@ begin
   begin
     if FileExists(MyPath + 'Langs\' + CurrentLang + '.xml') then begin
 
-      With TrXML.Create() do try
+      with TrXML.Create() do try
 
         LoadFromFile(MyPath + 'Langs\' + CurrentLang + '.xml');
         //--Переводим главное окно
         for i := 0 to MainForm.ComponentCount - 1 do begin
-          If OpenKey('settings\main-form\' + MainForm.Components[i].Name) then try
+          if OpenKey('settings\main-form\' + MainForm.Components[i].Name) then try
             SetStringPropertyIfExists(MainForm.Components[i], 'Hint', '<b>' + ReadString('hint') + '</b>');
           finally
             CloseKey();
@@ -801,14 +779,14 @@ begin
       if (ProxyTypeComboBox.ItemIndex = 0) or (ProxyTypeComboBox.ItemIndex = 1) then
       begin
         //--Сбрасываем тип SOCKS прокси
-        SocksLevel := '';
+        SocksLevel := EmptyStr;
         //--Сбрасываем адрес SOCKS прокси и порт
-        SocksServer := '';
-        SocksPort := '';
+        SocksServer := EmptyStr;
+        SocksPort := EmptyStr;
         //--Сбрасываем авторизацию SOCKS прокси
         SocksAuthentication := socksNoAuthentication;
-        SocksUsercode := '';
-        SocksPassword := '';
+        SocksUsercode := EmptyStr;
+        SocksPassword := EmptyStr;
         //--Назначаем адрес HTTP прокси и порт
         Proxy := ProxyAddressEdit.Text;
         ProxyPort := ProxyPortEdit.Text;
@@ -824,19 +802,19 @@ begin
         begin
           //--Сбрасываем авторизацию HTTP прокси
           ProxyAuth := httpAuthNone;
-          ProxyUsername := '';
-          ProxyPassword := '';
+          ProxyUsername := EmptyStr;
+          ProxyPassword := EmptyStr;
         end;
       end
       else
       begin
         //--Сбрасываем адрес HTTP прокси и порт
-        Proxy := '';
+        Proxy := EmptyStr;
         ProxyPort := '80';
         //--Сбрасываем авторизацию HTTP прокси
         ProxyAuth := httpAuthNone;
-        ProxyUsername := '';
-        ProxyPassword := '';
+        ProxyUsername := EmptyStr;
+        ProxyPassword := EmptyStr;
         //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
         case ProxyTypeComboBox.ItemIndex of
           2: SocksLevel := '4';
@@ -857,8 +835,8 @@ begin
         begin
           //--Сбрасываем авторизацию SOCKS прокси
           SocksAuthentication := socksNoAuthentication;
-          SocksUsercode := '';
-          SocksPassword := '';
+          SocksUsercode := EmptyStr;
+          SocksPassword := EmptyStr;
         end;
       end;
     end
@@ -867,22 +845,121 @@ begin
       //--Сбрасываем версию запросов
       RequestVer := '1.0';
       //--Сбрасываем адрес HTTP прокси и порт
-      Proxy := '';
+      Proxy := EmptyStr;
       ProxyPort := '80';
       //--Сбрасываем авторизацию HTTP прокси
       ProxyAuth := httpAuthNone;
-      ProxyUsername := '';
-      ProxyPassword := '';
+      ProxyUsername := EmptyStr;
+      ProxyPassword := EmptyStr;
       //--Сбрасываем тип SOCKS прокси
-      SocksLevel := '';
+      SocksLevel := EmptyStr;
       //--Сбрасываем адрес SOCKS прокси и порт
-      SocksServer := '';
-      SocksPort := '';
+      SocksServer := EmptyStr;
+      SocksPort := EmptyStr;
       //--Сбрасываем авторизацию SOCKS прокси
       SocksAuthentication := socksNoAuthentication;
-      SocksUsercode := '';
-      SocksPassword := '';
+      SocksUsercode := EmptyStr;
+      SocksPassword := EmptyStr;
     end;
+  end;
+end;
+
+procedure TSettingsForm.ApplyProxySocketClient(SocketClient: TWSocket);
+begin
+  with SocketClient do
+  begin
+    //--Применяем настройки прокси
+    if ProxyEnableCheckBox.Checked then
+    begin
+      //--HTTP и HTTPS тип прокси
+      if (ProxyTypeComboBox.ItemIndex = 0) or (ProxyTypeComboBox.ItemIndex = 1) then
+      begin
+        //--Сбрасываем тип SOCKS прокси
+        SocksLevel := '5';
+        //--Сбрасываем адрес SOCKS прокси и порт
+        SocksServer := EmptyStr;
+        SocksPort := EmptyStr;
+        //--Сбрасываем авторизацию SOCKS прокси
+        SocksAuthentication := socksNoAuthentication;
+        SocksUsercode := EmptyStr;
+        SocksPassword := EmptyStr;
+        //--Ставим флаг, что для сокета активен режим через HTTP прокси
+        HttpProxy_Enable := true;
+        //--Назначаем адрес HTTP прокси и порт
+        HttpProxy_Address := ProxyAddressEdit.Text;
+        HttpProxy_Port := ProxyPortEdit.Text;
+        //--Назначаем авторизацию на HTTP прокси
+        if ProxyAuthCheckBox.Checked then
+        begin
+          HttpProxy_Auth := true;
+          HttpProxy_Login := ProxyLoginEdit.Text;
+          HttpProxy_Password := ProxyPasswordEdit.Text;
+        end
+        else
+        begin
+          //--Сбрасываем авторизацию HTTP прокси
+          HttpProxy_Auth := false;
+          HttpProxy_Login := EmptyStr;
+          HttpProxy_Password := EmptyStr;
+        end;
+      end
+      else
+      begin
+        //--Убираем флаг, что для сокета активен режим через HTTP прокси
+        HttpProxy_Enable := false;
+        //--Сбрасываем адрес HTTP прокси и порт
+        HttpProxy_Address := EmptyStr;
+        HttpProxy_Port := EmptyStr;
+        //--Сбрасываем авторизацию HTTP прокси
+        HttpProxy_Auth := false;
+        HttpProxy_Login := EmptyStr;
+        HttpProxy_Password := EmptyStr;
+        //--SOCKS4, SOCKS4A и SOCKS5 тип прокси
+        case ProxyTypeComboBox.ItemIndex of
+          2: SocksLevel := '4';
+          3: SocksLevel := '4A';
+          4: SocksLevel := '5';
+        end;
+        //--Назначаем адрес SOCKS прокси и порт
+        SocksServer := ProxyAddressEdit.Text;
+        SocksPort := ProxyPortEdit.Text;
+        //--Назначаем авторизацию на SOCKS прокси
+        if ProxyAuthCheckBox.Checked then
+        begin
+          SocksAuthentication := socksAuthenticateUsercode;
+          SocksUsercode := ProxyLoginEdit.Text;
+          SocksPassword := ProxyPasswordEdit.Text;
+        end
+        else
+        begin
+          //--Сбрасываем авторизацию SOCKS прокси
+          SocksAuthentication := socksNoAuthentication;
+          SocksUsercode := EmptyStr;
+          SocksPassword := EmptyStr;
+        end;
+      end;
+    end
+    else
+    begin
+      //--Убираем флаг, что для сокета активен режим через HTTP прокси
+      HttpProxy_Enable := false;
+      //--Сбрасываем адрес HTTP прокси и порт
+      HttpProxy_Address := EmptyStr;
+      HttpProxy_Port := EmptyStr;
+      //--Сбрасываем авторизацию HTTP прокси
+      HttpProxy_Auth := false;
+      HttpProxy_Login := EmptyStr;
+      HttpProxy_Password := EmptyStr;
+      //--Сбрасываем тип SOCKS прокси
+      SocksLevel := '5';
+      //--Сбрасываем адрес SOCKS прокси и порт
+      SocksServer := EmptyStr;
+      SocksPort := EmptyStr;
+      //--Сбрасываем авторизацию SOCKS прокси
+      SocksAuthentication := socksNoAuthentication;
+      SocksUsercode := EmptyStr;
+      SocksPassword := EmptyStr;
+    end;  
   end;
 end;
 

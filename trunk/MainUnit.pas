@@ -46,7 +46,7 @@ type
     AboutIMadering: TMenuItem;
     OpenSettings: TMenuItem;
     HideInTrayTray: TMenuItem;
-    N4: TMenuItem;
+    OpenTest: TMenuItem;
     ContactListPopupMenu: TPopupMenu;
     ICQPopupMenu: TPopupMenu;
     MRAPopupMenu: TPopupMenu;
@@ -127,8 +127,8 @@ type
     ZipHistoryThread: TIdThreadComponent;
     OpenHistory: TMenuItem;
     WIcsLogger: TIcsLogger;
-    N25: TMenuItem;
-    N26: TMenuItem;
+    OpenTraffic: TMenuItem;
+    OpenSocketLog: TMenuItem;
     MRAAvatarHttpClient: THttpCli;
     RightMRAPopupMenu: TPopupMenu;
     RightJabberPopupMenu: TPopupMenu;
@@ -139,7 +139,7 @@ type
     procedure MainToolButtonClick(Sender: TObject);
     procedure OpenSettingsClick(Sender: TObject);
     procedure ICQTrayIconClick(Sender: TObject);
-    procedure N4Click(Sender: TObject);
+    procedure OpenTestClick(Sender: TObject);
     procedure AboutIMaderingClick(Sender: TObject);
     procedure UpdateHttpClientDocBegin(Sender: TObject);
     procedure UpdateHttpClientDocEnd(Sender: TObject);
@@ -212,8 +212,8 @@ type
     procedure OpenHistoryClick(Sender: TObject);
     procedure WIcsLoggerIcsLogEvent(Sender: TObject; LogOption: TLogOption;
       const Msg: string);
-    procedure N26Click(Sender: TObject);
-    procedure N25Click(Sender: TObject);
+    procedure OpenSocketLogClick(Sender: TObject);
+    procedure OpenTrafficClick(Sender: TObject);
     procedure UpdateHttpClientSendEnd(Sender: TObject);
     procedure MRAAvatarHttpClientSendEnd(Sender: TObject);
     procedure MRAAvatarHttpClientDocEnd(Sender: TObject);
@@ -365,6 +365,7 @@ begin
     //--Увеличиваем статистику входящего трафика
     TrafRecev := TrafRecev + MRAAvatarHttpClient.RcvdCount;
     AllTrafRecev := AllTrafRecev + MRAAvatarHttpClient.RcvdCount;
+    if Assigned(TrafficForm) then OpenTrafficClick(nil);
   end;
 end;
 
@@ -373,6 +374,7 @@ begin
   //--Увеличиваем статистику исходящего трафика
   TrafSend := TrafSend + MRAAvatarHttpClient.SentCount;
   AllTrafSend := AllTrafSend + MRAAvatarHttpClient.SentCount;
+  if Assigned(TrafficForm) then OpenTrafficClick(nil);
 end;
 
 procedure TMainForm.MRAEnable(OnOff: boolean);
@@ -506,6 +508,7 @@ begin
     //--Увеличиваем статистику входящего трафика
     TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
     AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
+    if Assigned(TrafficForm) then OpenTrafficClick(nil);
     //--Определяем выполнение задания для данных по флагу
     case UpdateHttpClient.Tag of
       0:
@@ -574,6 +577,7 @@ begin
                   UnZip_Stream(UpdateFile, MyPath);
                   //--Выводим информацию об окончании обновления
                   InfoMemo.Lines.Add(UpDateOKL);
+                  AbortBitBtn.Enabled := false;
                 except
                 end;
               finally
@@ -659,19 +663,13 @@ begin
       //--Устанавливаем параметры сокета
       ICQWSocket.Proto := 'tcp';
       //--Устанавливаем настройки прокси
-      //SetProxySettings;
-      if (G_ProxyEnabled) then begin
-        if (G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1) then begin
-          ICQWSocket.Addr := ICQ_LoginServerAddr;
-          ICQWSocket.Port := ICQ_LoginServerPort;
-        end
-        else
-          if G_ProxyTypeIndex = 2 then begin
-            ICQWSocket.Addr := G_ProxyHost;
-            ICQWSocket.Port := G_ProxyPort;
-          end;
+      if HttpProxy_Enable then
+      begin
+        ICQWSocket.Addr := HttpProxy_Address;
+        ICQWSocket.Port := HttpProxy_Port;
       end
-      else begin
+      else
+      begin
         ICQWSocket.Addr := ICQ_LoginServerAddr;
         ICQWSocket.Port := ICQ_LoginServerPort;
       end;
@@ -786,37 +784,44 @@ label
 var
   Pkt, HexPkt, SubPkt: string;
   PktLen, Len, ProxyErr: integer;
-  i: byte;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := ICQWSocket.ReceiveStr;
   //--HTTP прокси коннект
-  if (G_ProxyEnabled) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (G_ProxyTypeIndex = 2) and (not ICQ_HTTP_Connect_Phaze) then
+  if (HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
   begin
+    //--Заносим данные в специальный буфер
     ICQ_myBeautifulSocketBuffer := ICQ_myBeautifulSocketBuffer + Pkt;
+    //--Если нет ответа нормального от прокси, то выходим
     if pos(#13#10 + #13#10, ICQ_myBeautifulSocketBuffer) = 0 then Exit;
+    //--Забираем из ответа прокси нужную информацию от прокси
     Pkt := chop(#13#10 + #13#10, ICQ_myBeautifulSocketBuffer);
+    //--Обнуляем ошибки прокси
     ProxyErr := 0;
+    //--Если ответ положительный и прокси установил соединение,
+    //то активируем фазу подключения через http прокси
     if AnsiStartsStr('HTTPS/1.0 200', pkt) or AnsiStartsStr('HTTPS/1.1 200', pkt)
       or AnsiStartsStr('HTTP/1.0 200', pkt) or AnsiStartsStr('HTTP/1.1 200', pkt) then
     begin
       ICQ_HTTP_Connect_Phaze := true;
     end
     else
+      //--Сообщаем об ошибках прокси DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
       if AnsiStartsStr('HTTP/1.0 407', pkt) then
       begin
         ProxyErr := 1;
-        DAShow('1', '17', EmptyStr, 156, 2, 10000);
+        DAShow(ErrorHead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow('1', '18', EmptyStr, 156, 2, 10000);
+        DAShow(ErrorHead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
       end;
-    //
+    //--Забираем из буфера пакет с данными ICQ
     Pkt := ICQ_myBeautifulSocketBuffer;
+    //--Очищаем буфер
     ICQ_myBeautifulSocketBuffer := EmptyStr;
-    //
+    //--Если в работе с прокси были ошибки, то уходим в оффлайн
     if ProxyErr <> 0 then
     begin
       ICQ_GoOffline;
@@ -828,6 +833,7 @@ begin
   //--Увеличиваем статистику входящего трафика
   TrafRecev := TrafRecev + Length(Pkt);
   AllTrafRecev := AllTrafRecev + Length(Pkt);
+  if Assigned(TrafficForm) then OpenTrafficClick(nil);
   //--Преобразуем данные из бинарного формата в HEX формат и прибавляем
   //их к специальному буферу накопления таких преобразованных данных
   ICQ_HexPkt := ICQ_HexPkt + Text2Hex(Pkt);
@@ -931,23 +937,6 @@ begin
                             //--Пока думаем, что у нас новый (обсолютно чистый) список контактов
                             NewKL := true;
                             ICQ_CL_Count := 0;
-                          end;
-                        end;
-                      $0015:
-                        begin
-                          //--Новый пакет из протокла с "хорошими" ссылками
-                          ICQ_Well_Known_URL := EmptyStr;
-                          //--Пропускаем раздел флагов
-                          NextData(SubPkt, 12);
-                          //--Делаем цикл с 0003 по 0009 TLV
-                          for i := 3 to 9 do
-                          begin
-                            if HexToInt(NextData(SubPkt, 4)) = i then
-                            begin
-                              Len := HexToInt(NextData(SubPkt, 4));
-                              Len := Len * 2;
-                              ICQ_Well_Known_URL := ICQ_Well_Known_URL + Hex2Text(NextData(SubPkt, Len)) + #13#10;
-                            end;
                           end;
                         end;
                       $000F:
@@ -1233,20 +1222,10 @@ begin
                     ICQ_HTTP_Connect_Phaze := false;
                     //--Устанавливаем параметры
                     ICQWSocket.Proto := 'tcp';
-                    //SetProxySettings;
-                    if (G_ProxyEnabled) then
+                    if HttpProxy_Enable then
                     begin
-                      if (G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1) then
-                      begin
-                        ICQWSocket.Addr := ICQ_Bos_IP;
-                        ICQWSocket.Port := ICQ_Bos_Port;
-                      end
-                      else
-                        if G_ProxyTypeIndex = 2 then
-                        begin
-                          ICQWSocket.Addr := G_ProxyHost;
-                          ICQWSocket.Port := G_ProxyPort;
-                        end;
+                      ICQWSocket.Addr := HttpProxy_Address;
+                      ICQWSocket.Port := HttpProxy_Port;
                     end
                     else
                     begin
@@ -1310,6 +1289,7 @@ begin
   //--Увеличиваем статистику исходящего трафика
   TrafSend := TrafSend + BytesSent;
   AllTrafSend := AllTrafSend + BytesSent;
+  if Assigned(TrafficForm) then OpenTrafficClick(nil);
 end;
 
 procedure TMainForm.ICQWSocketSessionClosed(Sender: TObject; ErrCode: Word);
@@ -1337,19 +1317,23 @@ begin
     ICQ_GoOffline;
   end;
   //--HTTP прокси коннект
-  if (G_ProxyEnabled) and (G_ProxyTypeIndex = 2) then
+  if HttpProxy_Enable then
   begin
+    //--Составляем адрес
     if ICQ_Connect_Phaze then http_data := ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort
     else http_data := ICQ_Bos_IP + ':' + ICQ_Bos_Port;
-    if G_ProxyAuthorize then
+    //--Если авторизация на прокси
+    if HttpProxy_Auth then
     begin
-      http_login := base64encode(G_ProxyLogin + ':' + G_ProxyPassword);
+      http_login := base64encode(HttpProxy_Login + ':' + HttpProxy_Password);
       http_login := 'Authorization: Basic ' + http_login + #13#10 +
         'Proxy-authorization: Basic ' + http_login + #13#10;
     end;
+    //--Формируем основной запрос для http прокси
     http_data := 'CONNECT ' + http_data + ' HTTP/1.0' + #13#10 +
-      'User-agent: ICQ/2000b (Mozilla 1.24b; Windows; I; 32-bit)' + #13#10 +
+      'User-agent: Mozilla/4.08 [en] (WinNT; U)' + #13#10 +
       http_login + #13#10;
+    //--Отсылаем запрос для прокси
     ICQWSocket.sendStr(http_data);
   end;
 end;
@@ -1745,7 +1729,7 @@ begin
   JvTimerListEvents2Timer(nil);
 end;
 
-procedure TMainForm.N25Click(Sender: TObject);
+procedure TMainForm.OpenTrafficClick(Sender: TObject);
 begin
   //--Отображаем окно трафика
   if not Assigned(TrafficForm) then TrafficForm := TTrafficForm.Create(self);
@@ -1756,10 +1740,10 @@ begin
   TrafficForm.Edit2.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3) + ' Мб | ' +
     FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' Мб | ' + AllSesDataTraf;
   //--Отображаем окно модально
-  TrafficForm.ShowModal;
+  if not TrafficForm.Visible then TrafficForm.Show;
 end;
 
-procedure TMainForm.N26Click(Sender: TObject);
+procedure TMainForm.OpenSocketLogClick(Sender: TObject);
 begin
   //--Отображаем окно лога сокетов
   if not Assigned(IcsLogForm) then IcsLogForm := TIcsLogForm.Create(self);
@@ -1769,7 +1753,7 @@ begin
   SetForeGroundWindow(IcsLogForm.Handle);
 end;
 
-procedure TMainForm.N4Click(Sender: TObject);
+procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   //--Место для запуска тестов
 
@@ -2277,12 +2261,7 @@ begin
   AllImageList.GetIcon(30, JabberTrayIcon.Icon);
   //--Загружаем настройки окна
   LoadMainFormSettings;
-
-  {// Загрузим настройки прокси
-  LoadProxySettings;
-
-  SetProxySettings;}
-
+  if AllSesDataTraf = EmptyStr then AllSesDataTraf := DateTimeToStr(now);
   //--Если это первый старт программы, то по умолчанию активруем ICQ протокол
   if not FirstStart then ICQEnable(true);
   //--Если автоматически проверять новые версии при старте
@@ -2400,8 +2379,7 @@ begin
         AllSesDataTraf := ReadString('start-date');
       finally
         CloseKey();
-      end
-      else AllSesDataTraf := DateTimeToStr(now);
+      end;
     end;
   finally
     Free();
@@ -2709,25 +2687,26 @@ var
   i, k: integer;
   cnt_group, cnt_contact: integer;
 begin
-
   cnt_group := 0;
   cnt_contact := 0;
-
   //--Инициализируем XML
   with TrXML.Create() do try
     //--Загружаем файл контакт листа
-    if FileExists(MyPath + 'Profile\ContactList.xml') then begin
+    if FileExists(MyPath + 'Profile\ContactList.xml') then
+    begin
       LoadFromFile(MyPath + 'Profile\ContactList.xml');
-
       //--Загружаем группы и контакты в них
-      if OpenKey('settings') then try
+      if OpenKey('settings') then
+      try
         cnt_group := GetKeyCount('group');
       finally
         CloseKey();
       end;
       with ContactList do
-        for i := 0 to cnt_group - 1 do begin
-          if OpenKey('settings\group', false, i) then try
+        for i := 0 to cnt_group - 1 do
+        begin
+          if OpenKey('settings\group', false, i) then
+          try
             Categories.Add.Caption := ReadString('caption');
             Categories[i].GroupId := ReadString('id');
             Categories[i].GroupCaption := ReadString('name');
@@ -2736,21 +2715,22 @@ begin
           finally
             CloseKey();
           end;
-          //--Ускоряем запись контактов в группу
-          Categories[i].Items.BeginUpdate;
-          for k := 0 to cnt_contact - 1 do begin
-            if OpenKey('settings\group', false, i) then try
+          for k := 0 to cnt_contact - 1 do
+          begin
+            if OpenKey('settings\group', false, i) then
+            try
               OpenKey('contact', false, k);
               Categories[i].Items.Add.Caption := ReadString('nick');
               Categories[i].Items[k].UIN := ReadString('id');
               Categories[i].Items[k].ContactType := ReadString('type');
               Categories[i].Items[k].Msg := ReadBool('msg');
-
-              if Categories[i].GroupId = 'NoCL' then begin
+              if Categories[i].GroupId = 'NoCL' then
+              begin
                 Categories[i].Items[k].Status := 214;
                 Categories[i].Items[k].ImageIndex := 214;
               end
-              else begin
+              else
+              begin
                 Categories[i].Items[k].Status := 9;
                 Categories[i].Items[k].ImageIndex := 9;
               end;
@@ -2762,8 +2742,6 @@ begin
               CloseKey();
             end;
           end;
-          //--Заканчиваем запись контактов в группу
-          Categories[i].Items.EndUpdate;
         end;
     end;
   finally
@@ -2817,6 +2795,7 @@ begin
   //--Увеличиваем статистику исходящего трафика
   TrafSend := TrafSend + UpdateHttpClient.SentCount;
   AllTrafSend := AllTrafSend + UpdateHttpClient.SentCount;
+  if Assigned(TrafficForm) then OpenTrafficClick(nil);
 end;
 
 initialization

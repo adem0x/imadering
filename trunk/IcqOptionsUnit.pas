@@ -230,6 +230,8 @@ type
     ReligionCodesComboBox: TComboBox;
     SmokCodesComboBox: TComboBox;
     SexCodesComboBox: TComboBox;
+    GroupBox1: TGroupBox;
+    ShowHideContactsCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -291,23 +293,26 @@ begin
     PassEdit.Hint := PassEdit.Text;
     ICQ_LoginPassword := PassEdit.Hint;
   end;
-
-
   //----------------------------------------------------------------------------
   //--Записываем настройки ICQ протокола в файл
-  With TrXML.Create() do try
-    if FileExists(MyPath + SettingsFileName) then
-      LoadFromFile(MyPath + SettingsFileName);
-    If OpenKey('settings\icq\account', True) then try
+  with TrXML.Create() do
+  try
+    if FileExists(MyPath + SettingsFileName) then LoadFromFile(MyPath + SettingsFileName);
+    if OpenKey('settings\icq\account', True) then
+    try
       WriteString('login', ICQUINEdit.Text);
       WriteBool('save-password', SavePassCheckBox.Checked);
       if SavePassCheckBox.Checked then
         WriteString('password', Encrypt(PassEdit.Hint, PassKey))
-      else
-        WriteString('password', EmptyStr);
+      else WriteString('password', EmptyStr);
       //--Маскируем пароль
-      if PassEdit.Text <> EmptyStr then
-        PassEdit.Text := '----------------------';
+      if PassEdit.Text <> EmptyStr then PassEdit.Text := '----------------------';
+    finally
+      CloseKey();
+    end;
+    if OpenKey('settings\icq\show-hide-contacts', True) then
+    try
+      WriteBool('value', ShowHideContactsCheckBox.Checked);
     finally
       CloseKey();
     end;
@@ -315,7 +320,6 @@ begin
   finally
     Free();
   end;
-
   //--Деактивируем кнопку применения настроек
   ApplyButton.Enabled := false;
 end;
@@ -325,22 +329,32 @@ end;
 procedure TIcqOptionsForm.LoadSettings;
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
-    if FileExists(MyPath + SettingsFileName) then begin
+  with TrXML.Create() do
+  try
+    if FileExists(MyPath + SettingsFileName) then
+    begin
       LoadFromFile(MyPath + SettingsFileName);
-
-      //--Загружаем позицию окна
-      if OpenKey('settings\icq\account') then try
+      //--Загружаем данные логина
+      if OpenKey('settings\icq\account') then
+      try
         ICQUINEdit.Text := ReadString('login');
-        if ICQUINEdit.Text <> EmptyStr then
-          ICQ_LoginUIN := ICQUINEdit.Text;
+        if ICQUINEdit.Text <> EmptyStr then ICQ_LoginUIN := ICQUINEdit.Text;
         SavePassCheckBox.Checked := ReadBool('save-password');
         PassEdit.Text := ReadString('password');
-        if PassEdit.Text <> EmptyStr then begin
+        if PassEdit.Text <> EmptyStr then
+        begin
           PassEdit.Hint := Decrypt(PassEdit.Text, PassKey);
           ICQ_LoginPassword := PassEdit.Hint;
           PassEdit.Text := '----------------------';
         end;
+      finally
+        CloseKey();
+      end;
+      //--Загружаем остальные настройки
+      if OpenKey('settings\icq\show-hide-contacts') then
+      try
+        ShowHideContactsCheckBox.Checked := ReadBool('value');
+        ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
       finally
         CloseKey();
       end;
@@ -593,11 +607,6 @@ begin
   if ICQ_CollSince <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo1L + ': ' + ICQ_CollSince);
   if ICQ_OnlineTime <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo2L + ': ' + ICQ_OnlineTime);
   if ICQ_AwayMess <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo3L + ': ' + ICQ_AwayMess);
-  if ICQ_Well_Known_URL <> EmptyStr then
-  begin
-    ParamInfoRichEdit.Lines.Add(OnlineInfo4L + ':' + #13#10 + ICQ_Well_Known_URL);
-    ParamInfoRichEdit.Lines.Delete(ParamInfoRichEdit.Lines.Count - 1);
-  end;
   if Bos_Addr <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo5L + ': ' + Bos_Addr);
   if ICQ_MyIcon_Hash <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo6L + ': ' + ICQ_MyIcon_Hash);
   if ICQ_CL_Count > 0 then ParamInfoRichEdit.Lines.Add(OnlineInfo7L + ': ' + IntToStr(ICQ_CL_Count));

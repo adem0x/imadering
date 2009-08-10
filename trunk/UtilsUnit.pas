@@ -73,7 +73,6 @@ function ICQ_BodySize3: integer;
 function IsNotNull(StringsArr: array of string): boolean;
 procedure DecorateURL(var Text: string);
 function NameAndLast(UIN: string): string;
-procedure CatBut2NewCatBut(CB1, CB2: TButtonItem);
 procedure Popup(Compon: TComponent; pm: TPopupMenu);
 procedure Popup_down(Compon: TComponent; pm: TPopupMenu);
 function InitBuildInfo: string;
@@ -89,52 +88,12 @@ var
   SearchRec: TSearchRec;
 begin
   Result := -1;
-  if FindFirst(FileName, faAnyFile, SearchRec) = 0 then try
-    Result := SearchRec.Size
+  if FindFirst(FileName, faAnyFile, SearchRec) = 0 then
+  try
+    Result := SearchRec.Size;
   finally
     FindClose(SearchRec);
   end;
-end;
-
-procedure CatBut2NewCatBut(CB1, CB2: TButtonItem);
-begin
-  CB1.Caption := CB2.Caption;
-  CB1.UIN := CB2.UIN;
-  CB1.Status := CB2.Status;
-  CB1.Msg := CB2.Msg;
-  CB1.Typing := CB2.Typing;
-  CB1.GroupId := CB2.GroupId;
-  CB1.Idd := CB2.Idd;
-  CB1.iType := CB2.iType;
-  CB1.Email := CB2.Email;
-  CB1.Mobile := CB2.Mobile;
-  CB1.Note := CB2.Note;
-  CB1.Auth := CB2.Auth;
-  CB1.Time := CB2.Time;
-  CB1.XStatus := CB2.XStatus;
-  CB1.XText := CB2.XText;
-  CB1.InputText := CB2.InputText;
-  CB1.QuoteMsg := CB2.QuoteMsg;
-  CB1.Client := CB2.Client;
-  CB1.TimeId := CB2.TimeId;
-  CB1.UserClass := CB2.UserClass;
-  CB1.IntIP := CB2.IntIP;
-  CB1.IntPort := CB2.IntPort;
-  CB1.ExtIP := CB2.ExtIP;
-  CB1.ConnFlag := CB2.ConnFlag;
-  CB1.ProtoVer := CB2.ProtoVer;
-  CB1.TimeReg := CB2.TimeReg;
-  CB1.CapsId := CB2.CapsId;
-  CB1.Caps := CB2.Caps;
-  CB1.Capslist := CB2.Capslist;
-  CB1.IconHash := CB2.IconHash;
-  CB1.ConnTime := CB2.ConnTime;
-  CB1.TypingTime := CB2.TypingTime;
-  CB1.Utf8Supported := CB2.Utf8Supported;
-  CB1.Hint := CB2.Hint;
-  CB1.ImageIndex := CB2.ImageIndex;
-  CB1.ImageIndex1 := CB2.ImageIndex1;
-  CB1.ImageIndex2 := CB2.ImageIndex2;
 end;
 
 function NameAndLast(UIN: string): string;

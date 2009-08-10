@@ -35,7 +35,7 @@ var
   CurrentSounds: string = 'Imadering';
   ProgramCloseCommand: boolean = false;
   FirstStart: boolean = false;
-  TrayProtoClickMenu: string = '';
+  TrayProtoClickMenu: string;
   AlphaBlendInactive: boolean = false;
   RoasterAlphaBlend: boolean = false;
   RoasterAlphaValue: integer = 255;
@@ -45,6 +45,7 @@ var
   SettingsFileName: string = 'Profile\IMadeSettings.xml';
   UpdateVersionPath: string = 'Update_%s_%s.z';
   UpdateFile: TMemoryStream;
+  NoReSave: boolean = true;
 
   //--Статистика трафика
   TrafSend: real;
@@ -178,6 +179,8 @@ var
   UpDateLoadL: string = 'Файл обновления успешно получен.';
   UpDateUnL: string = 'Установка обновления...';
   UpDateOKL: string = 'Установка обновления завершена.' + #13#10 + #13#10 + 'Для завершения обновления необходимо перезапустить программу IMadering!';
+  ProxyConnectErrL1: string = 'Неверный логин или пароль для прокси.';
+  ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
@@ -267,18 +270,13 @@ var
     'IMadering;Спасибо всем!'
     );
 
-  //--Прокси
-  G_ProxyEnabled: boolean;
-  G_ProxyType: string;
-  G_ProxyTypeIndex: integer;
-  G_ProxyVersion: string;
-  G_ProxyVersionIndex: integer;
-  G_ProxyHost: string;
-  G_ProxyPort: string;
-  G_ProxyAuthorize: boolean;
-  G_ProxyLogin: string;
-  G_ProxyPassword: string;
-  G_ProxyNTLM: boolean;
+  //--Http прокси для сокетов протоколов
+  HttpProxy_Enable: boolean = false;
+  HttpProxy_Address: string;
+  HttpProxy_Port: string;
+  HttpProxy_Auth: boolean = false;
+  HttpProxy_Login: string;
+  HttpProxy_Password: string;
 
 implementation
 

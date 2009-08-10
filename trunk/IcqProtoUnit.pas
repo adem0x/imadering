@@ -7,7 +7,7 @@
 *******************************************************************************}
 
 unit IcqProtoUnit;
-                                                               
+
 interface
 
 uses
@@ -234,7 +234,7 @@ var
   ICQ_Bos_Port: string;
   ICQ_myBeautifulSocketBuffer: string;
   ICQ_LoginServerAddr: string = 'login.icq.com';
-  ICQ_LoginServerPort: string = '443';//'5190';
+  ICQ_LoginServerPort: string = '5190';
   ICQ_HexPkt: string;
   ICQ_RegUIN_HexPkt: string;
   ICQ_Avatar_HexPkt: string;
@@ -281,7 +281,6 @@ var
   ICQ_BirthDay_Enabled: boolean = false;
   ICQ_PrivatStatus_Enabled: boolean = true;
   ICQ_UpdatePrivateGroup_Code: string;
-  ICQ_Well_Known_URL: string;
   MyConnTime: string;
   NewKL: boolean;
   Bos_Addr: string = '';
@@ -2399,7 +2398,7 @@ begin
           end;
           //--Сохраняем полученные данные в локальный файл инфы о контакте
 
-          With TrXML.Create() do try
+          with TrXML.Create() do try
             //--Сохраняем позицию окна
             if OpenKey('settings\name-info', True) then try
               WriteString('nick', Nick);
@@ -4031,8 +4030,6 @@ begin
           with MainForm.ContactList do
           begin
             G := Categories.Count - 1;
-            //--Ускоряем запись контактов в группу
-            Categories[G].Items.BeginUpdate;            
             Categories[G].Items.Add.Caption := qSN;
             T := Categories[G].Items.Count - 1;
             Categories[G].Items[T].UIN := qSN;
@@ -4102,8 +4099,6 @@ begin
             end;
             //--Создаём подсказку для этого контакта
             Categories[G].Items[T].Hint := ICQ_CreateHint(Categories[G].Items[T]);
-            //--Закрываем запись в группу
-            Categories[G].Items.EndUpdate;            
           end;
         end;
       BUDDY_GROUP: //--Группа
@@ -4118,6 +4113,7 @@ begin
               Categories[G].GroupCaption := HideContactGroupCaption;
               Categories[G].GroupId := qGroupId;
               Categories[G].Collapsed := true;
+              Categories[G].GroupType := 'Icq';
             end;
             //--Стандартная група
             if qGroupId <> '0000' then
@@ -4129,6 +4125,7 @@ begin
               G := Categories.Count - 1;
               Categories[G].GroupCaption := qSN;
               Categories[G].GroupId := qGroupId;
+              Categories[G].GroupType := 'Icq';
             end;
           end;
         end;
@@ -4155,55 +4152,61 @@ begin
             //--Если показывать временные контакты
             if ICQ_Show_HideContacts then
             begin
-              //--Ускоряем запись контактов в группу
-              Categories[0].Items.BeginUpdate;            
-              try
-                //--Проверяем создан ли список ников
-                if Assigned(AccountToNick) then
-                begin
-                  //--Находим ники в списке ников по учётной записи
-                  N := AccountToNick.IndexOf('Icq_' + qSN);
-                  if N > -1 then Categories[0].Items.Add.Caption := AccountToNick.Strings[N + 1]
-                  else Categories[0].Items.Add.Caption := qSN;
-                end;
-              except
-                //--Если ошибка, то ник делаем как учётную запись
-                Categories[0].Items.Add.Caption := qSN;
-              end;
-              //--Добавляем временный контакт в локальный КЛ
-              T := Categories[0].Items.Count - 1;
-              Categories[0].Items[T].UIN := qSN;
-              Categories[0].Items[T].GroupId := qGroupId;
-              Categories[0].Items[T].Idd := qID;
-              Categories[0].Items[T].iType := qType;
-              Categories[0].Items[T].ContactType := 'Icq';
-              //--Назначаем такому контакту серый неизвестный статус и иконку
-              Categories[0].Items[T].Status := 214;
-              Categories[0].Items[T].ImageIndex := 214;
-              Categories[0].Items[T].ImageIndex1 := -1;
-              Categories[0].Items[T].ImageIndex2 := -1;
-              Categories[0].Items[T].Hint := ICQ_CreateHint(Categories[0].Items[T]);
-              //--Сканируем пакет на нужные нам TLV
-              while Length(SubData) > 0 do
+              //--Делаем поиск группы с идентификатором 0000 (для скрытых контактов)
+              for G := 0 to Categories.Count - 1 do
               begin
-                case HexToInt(NextData(SubData, 4)) of
-                  $006D: //--Время последнего сеанса чата
+                if Categories[G].GroupId = '0000' then
+                begin
+                  try
+                    //--Проверяем создан ли список ников
+                    if Assigned(AccountToNick) then
                     begin
+                      //--Находим ники в списке ников по учётной записи
+                      N := AccountToNick.IndexOf('Icq_' + qSN);
+                      if N > -1 then Categories[G].Items.Add.Caption := AccountToNick.Strings[N + 1]
+                      else Categories[G].Items.Add.Caption := qSN;
+                    end;
+                  except
+                    //--Если ошибка, то ник делаем как учётную запись
+                    Categories[G].Items.Add.Caption := qSN;
+                  end;
+                  //--Добавляем временный контакт в локальный КЛ
+                  T := Categories[G].Items.Count - 1;
+                  Categories[G].Items[T].UIN := qSN;
+                  Categories[G].Items[T].GroupId := qGroupId;
+                  Categories[G].Items[T].Idd := qID;
+                  Categories[G].Items[T].iType := qType;
+                  Categories[G].Items[T].ContactType := 'Icq';
+                  //--Назначаем такому контакту серый неизвестный статус и иконку
+                  Categories[G].Items[T].Status := 214;
+                  Categories[G].Items[T].ImageIndex := 214;
+                  Categories[G].Items[T].ImageIndex1 := -1;
+                  Categories[G].Items[T].ImageIndex2 := -1;
+                  Categories[G].Items[T].Hint := ICQ_CreateHint(Categories[0].Items[T]);
+                  //--Сканируем пакет на нужные нам TLV
+                  while Length(SubData) > 0 do
+                  begin
+                    case HexToInt(NextData(SubData, 4)) of
+                      $006D: //--Время последнего сеанса чата
+                        begin
+                          Len := HexToInt(NextData(SubData, 4));
+                          Len := Len * 2;
+                          qTimeId := NextData(SubData, Len);
+                          Categories[G].Items[T].TimeId := qTimeId;
+                          Categories[G].Items[T].Time := DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                        end
+                    else
+                      //--Если пакет содержит другие TLV, то пропускаем их
                       Len := HexToInt(NextData(SubData, 4));
                       Len := Len * 2;
-                      qTimeId := NextData(SubData, Len);
-                      Categories[0].Items[T].TimeId := qTimeId;
-                      Categories[0].Items[T].Time := DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                    end
-                else
-                  //--Если пакет содержит другие TLV, то пропускаем их
-                  Len := HexToInt(NextData(SubData, 4));
-                  Len := Len * 2;
-                  NextData(SubData, Len);
+                      NextData(SubData, Len);
+                    end;
+                  end;
+                  //--Выходим из цикла
+                  Break;
                 end;
+                Application.ProcessMessages;
               end;
-              //--Закрываем запись в группу
-              Categories[0].Items.EndUpdate;              
             end;
           end;
         end;
@@ -4308,7 +4311,7 @@ begin
       end;
       //--Считываем и применям файл с флагами открытых и свёрнутых групп
       //--Инициализируем XML
-      With TrXML.Create() do try
+      with TrXML.Create() do try
         //--Загружаем файл контакт листа
         if FileExists(MyPath + 'Profile\ContactList.xml') then begin
           LoadFromFile(MyPath + 'Profile\ContactList.xml');
@@ -4320,19 +4323,19 @@ begin
             finally
               CloseKey();
             end;
-              for z := 0 to cnt - 1 do begin
-                if OpenKey('settings\group', false, z) then try
-                  Gid := ReadString('id');
-                  Colap := ReadBool('collapsed');
-                  for zz := 0 to Categories.Count - 1 do begin
+            for z := 0 to cnt - 1 do begin
+              if OpenKey('settings\group', false, z) then try
+                Gid := ReadString('id');
+                Colap := ReadBool('collapsed');
+                for zz := 0 to Categories.Count - 1 do begin
                     //--Если идентификатор группы совпадает, то присваиваем ей флаг
-                    if Categories[zz].GroupId = Gid then
-                      Categories[zz].Collapsed := Colap;
-                  end;
-                finally
-                  CloseKey;
+                  if Categories[zz].GroupId = Gid then
+                    Categories[zz].Collapsed := Colap;
                 end;
+              finally
+                CloseKey;
               end;
+            end;
           end;
         end;
       finally

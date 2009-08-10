@@ -465,6 +465,7 @@ type
     FCaption: string;
     FGroupId: string;
     FGroupCaption: string;
+    FGroupType: string;
     FMsg: boolean;
     FCollapsed: Boolean;
     FGroupSelected: boolean;
@@ -500,6 +501,7 @@ type
     property GroupId: string read FGroupId write FGroupId;
     property Msg: Boolean read FMsg write FMsg default false;
     property GroupCaption: string read FGroupCaption write FGroupCaption;
+    property GroupType: string read FGroupType write FGroupType;
     property Color: TColor read FColor write SetColor;
     property Collapsed: Boolean read FCollapsed write SetCollapsed;
     property GroupSelected: Boolean read FGroupSelected write FGroupSelected default false;
@@ -2636,8 +2638,12 @@ begin
     begin
       if not Handled then
         HintStr := '<b>' + CurrentCat.Caption + '</b>';
-      if CurrentCat.GroupId > '' then
+
+      //--Добавляем свои параметры во всплывающие подсказки у группы
+      if CurrentCat.GroupId > EmptyStr then
         HintStr := HintStr + '<BR>' + 'Id: ' + CurrentCat.GroupId;
+      if CurrentCat.GroupType > EmptyStr then
+        HintStr := HintStr + '<BR>' + CurrentCat.GroupType;
 
       CatRect := GetCategoryRect(CurrentCat);
       if not CurrentCat.Collapsed then { exclude the button area on the right }

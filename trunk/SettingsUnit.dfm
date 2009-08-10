@@ -102,7 +102,7 @@ object SettingsForm: TSettingsForm
       Top = 3
       Width = 432
       Height = 359
-      ActivePage = JvStandardPage5
+      ActivePage = JvStandardPage1
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient

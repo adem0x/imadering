@@ -263,20 +263,20 @@ object MainForm: TMainForm
     Images = AllImageList
     Left = 16
     Top = 328
-    object N4: TMenuItem
+    object OpenTest: TMenuItem
       Caption = #1058#1077#1089#1090'!'
       Visible = False
-      OnClick = N4Click
+      OnClick = OpenTestClick
     end
-    object N26: TMenuItem
+    object OpenSocketLog: TMenuItem
       Caption = #1051#1086#1075' '#1089#1086#1082#1077#1090#1086#1074
       ImageIndex = 227
-      OnClick = N26Click
+      OnClick = OpenSocketLogClick
     end
-    object N25: TMenuItem
+    object OpenTraffic: TMenuItem
       Caption = #1058#1088#1072#1092#1080#1082
       ImageIndex = 226
-      OnClick = N25Click
+      OnClick = OpenTrafficClick
     end
     object OpenHistory: TMenuItem
       Caption = #1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081

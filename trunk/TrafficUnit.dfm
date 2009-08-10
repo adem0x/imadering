@@ -5,7 +5,7 @@ object TrafficForm: TTrafficForm
   BorderStyle = bsSingle
   Caption = #1055#1086#1076#1089#1095#1105#1090' '#1090#1088#1072#1092#1080#1082#1072
   ClientHeight = 171
-  ClientWidth = 409
+  ClientWidth = 430
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object TrafficForm: TTrafficForm
   object GroupBox1: TGroupBox
     Left = 8
     Top = 8
-    Width = 393
+    Width = 414
     Height = 124
     Caption = #1058#1088#1072#1092#1080#1082
     Font.Charset = DEFAULT_CHARSET
@@ -35,9 +35,9 @@ object TrafficForm: TTrafficForm
     object Label1: TLabel
       Left = 13
       Top = 20
-      Width = 275
+      Width = 305
       Height = 13
-      Caption = #1058#1077#1082#1091#1097#1072#1103' '#1089#1077#1089#1089#1080#1103' ('#1074#1093#1086#1076#1103#1097#1080#1081' | '#1080#1089#1093#1086#1076#1103#1097#1080#1081' | '#1087#1086#1076#1089#1095#1105#1090' '#1089'):'
+      Caption = #1058#1077#1082#1091#1097#1072#1103' '#1089#1077#1089#1089#1080#1103' ('#1074#1093#1086#1076#1103#1097#1080#1081' | '#1080#1089#1093#1086#1076#1103#1097#1080#1081' | '#1087#1086#1076#1089#1095#1105#1090' '#1089' '#1076#1072#1090#1099'):'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -48,9 +48,9 @@ object TrafficForm: TTrafficForm
     object Label2: TLabel
       Left = 13
       Top = 73
-      Width = 222
+      Width = 252
       Height = 13
-      Caption = #1042#1089#1077#1075#1086' ('#1074#1093#1086#1076#1103#1097#1080#1081' | '#1080#1089#1093#1086#1076#1103#1097#1080#1081' | '#1087#1086#1076#1089#1095#1105#1090' '#1089'):'
+      Caption = #1042#1089#1077#1075#1086' ('#1074#1093#1086#1076#1103#1097#1080#1081' | '#1080#1089#1093#1086#1076#1103#1097#1080#1081' | '#1087#1086#1076#1089#1095#1105#1090' '#1089' '#1076#1072#1090#1099'):'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -59,7 +59,7 @@ object TrafficForm: TTrafficForm
       ParentFont = False
     end
     object Button1: TButton
-      Left = 319
+      Left = 340
       Top = 37
       Width = 63
       Height = 25
@@ -75,7 +75,7 @@ object TrafficForm: TTrafficForm
       OnClick = Button1Click
     end
     object Button2: TButton
-      Left = 319
+      Left = 340
       Top = 90
       Width = 63
       Height = 25
@@ -93,7 +93,7 @@ object TrafficForm: TTrafficForm
     object Edit1: TEdit
       Left = 12
       Top = 39
-      Width = 301
+      Width = 322
       Height = 21
       TabStop = False
       Color = clBtnFace
@@ -109,7 +109,7 @@ object TrafficForm: TTrafficForm
     object Edit2: TEdit
       Left = 12
       Top = 92
-      Width = 301
+      Width = 322
       Height = 21
       TabStop = False
       Color = clBtnFace
@@ -124,7 +124,7 @@ object TrafficForm: TTrafficForm
     end
   end
   object BitBtn1: TBitBtn
-    Left = 156
+    Left = 166
     Top = 138
     Width = 97
     Height = 25
