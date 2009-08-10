@@ -14,7 +14,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils, OverbyteIcsLogger;
+  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils, OverbyteIcsLogger,
+  OverbyteIcsMimeUtils;
 
 type
   TMainForm = class(TForm)
@@ -220,6 +221,10 @@ type
     procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
     procedure UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer;
       Len: Integer);
+    procedure JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
+    procedure JabberWSocketSessionClosed(Sender: TObject; ErrCode: Word);
+    procedure JabberWSocketSessionConnected(Sender: TObject; ErrCode: Word);
+    procedure JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -257,7 +262,8 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit, UpdateUnit;
+  HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit, UpdateUnit,
+  JabberProtoUnit, MraProtoUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -806,7 +812,7 @@ begin
       ICQ_HTTP_Connect_Phaze := true;
     end
     else
-      //--Сообщаем об ошибках прокси DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+      //--Сообщаем об ошибках прокси 
       if AnsiStartsStr('HTTP/1.0 407', pkt) then
       begin
         ProxyErr := 1;
@@ -1325,7 +1331,7 @@ begin
     //--Если авторизация на прокси
     if HttpProxy_Auth then
     begin
-      http_login := base64encode(HttpProxy_Login + ':' + HttpProxy_Password);
+      http_login := Base64Encode(HttpProxy_Login + ':' + HttpProxy_Password);
       http_login := 'Authorization: Basic ' + http_login + #13#10 +
         'Proxy-authorization: Basic ' + http_login + #13#10;
     end;
@@ -1376,6 +1382,118 @@ begin
     //
   end;
 end;
+               
+procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
+var
+  Pkt: string;
+  ProxyErr: integer;
+begin
+  //--Получаем пришедшие от сервера данные с сокета
+  Pkt := JabberWSocket.ReceiveStr;
+  //--HTTP прокси коннект
+  if (HttpProxy_Enable) and ((Jabber_Connect_Phaze) or (Jabber_BosConnect_Phaze)) and (not Jabber_HTTP_Connect_Phaze) then
+  begin
+    //--Заносим данные в специальный буфер
+    Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
+    //--Если нет ответа нормального от прокси, то выходим
+    if pos(#13#10 + #13#10, Jabber_myBeautifulSocketBuffer) = 0 then Exit;
+    //--Забираем из ответа прокси нужную информацию от прокси
+    Pkt := chop(#13#10 + #13#10, Jabber_myBeautifulSocketBuffer);
+    //--Обнуляем ошибки прокси
+    ProxyErr := 0;
+    //--Если ответ положительный и прокси установил соединение,
+    //то активируем фазу подключения через http прокси
+    if AnsiStartsStr('HTTPS/1.0 200', pkt) or AnsiStartsStr('HTTPS/1.1 200', pkt)
+      or AnsiStartsStr('HTTP/1.0 200', pkt) or AnsiStartsStr('HTTP/1.1 200', pkt) then
+    begin
+      Jabber_HTTP_Connect_Phaze := true;
+    end
+    else
+      //--Сообщаем об ошибках прокси 
+      if AnsiStartsStr('HTTP/1.0 407', pkt) then
+      begin
+        ProxyErr := 1;
+        DAShow(ErrorHead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
+      end
+      else
+      begin
+        ProxyErr := 2;
+        DAShow(ErrorHead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
+      end;
+    //--Забираем из буфера пакет с данными Jabber
+    Pkt := Jabber_myBeautifulSocketBuffer;
+    //--Очищаем буфер
+    Jabber_myBeautifulSocketBuffer := EmptyStr;
+    //--Если в работе с прокси были ошибки, то уходим в оффлайн
+    if ProxyErr <> 0 then
+    begin
+      Jabber_GoOffline;
+      Exit;
+    end;
+  end;
+  //--Если длинна этих данных равна нулю, выходим от сюда :)
+  if Length(Pkt) = 0 then Exit;
+  //--Увеличиваем статистику входящего трафика
+  TrafRecev := TrafRecev + Length(Pkt);
+  AllTrafRecev := AllTrafRecev + Length(Pkt);
+  if Assigned(TrafficForm) then OpenTrafficClick(nil);
+  //--
+  showmessage(Pkt);
+end;
+
+procedure TMainForm.JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
+begin
+  //--Увеличиваем статистику исходящего трафика
+  TrafSend := TrafSend + BytesSent;
+  AllTrafSend := AllTrafSend + BytesSent;
+  if Assigned(TrafficForm) then OpenTrafficClick(nil);
+end;
+
+procedure TMainForm.JabberWSocketSessionClosed(Sender: TObject; ErrCode: Word);
+begin
+  //--Если при отключении возникла ошибка, то сообщаем об этом
+  if (ErrCode <> 0) and (not Jabber_Offline_Phaze) then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    Jabber_GoOffline;
+    //--Если нужно переподключаться, то активируем этот таймер
+    Jabber_Reconnect := true;
+  end;
+end;
+
+procedure TMainForm.JabberWSocketSessionConnected(Sender: TObject;
+  ErrCode: Word);
+var
+  http_data, http_login: string;
+begin
+  //--Если при подключении возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    Jabber_GoOffline;
+  end;
+  //--HTTP прокси коннект
+  if HttpProxy_Enable then
+  begin
+    //--Составляем адрес
+    if Jabber_Connect_Phaze then http_data := Jabber_ServerAddr + ':' + Jabber_ServerPort;
+    //--Если авторизация на прокси
+    if HttpProxy_Auth then
+    begin
+      http_login := Base64Encode(HttpProxy_Login + ':' + HttpProxy_Password);
+      http_login := 'Authorization: Basic ' + http_login + #13#10 +
+        'Proxy-authorization: Basic ' + http_login + #13#10;
+    end;
+    //--Формируем основной запрос для http прокси
+    http_data := 'CONNECT ' + http_data + ' HTTP/1.0' + #13#10 +
+      'User-agent: Mozilla/4.08 [en] (WinNT; U)' + #13#10 +
+      http_login + #13#10;
+    //--Отсылаем запрос для прокси
+    JabberWSocket.sendStr(http_data);
+  end;
+end;
 
 procedure TMainForm.JvTimerListEvents0Timer(Sender: TObject);
 begin
@@ -1389,7 +1507,6 @@ begin
     FirstStartForm := TFirstStartForm.Create(self);
     //--Даём главному окну нормально прорисоваться
     Application.ProcessMessages;
-    Sleep(500);
     //--Затем показываем окно начальной настройки протоколов
     FirstStartForm.Show;
   end;
@@ -1627,7 +1744,7 @@ end;
 procedure TMainForm.JvTimerListEvents9Timer(Sender: TObject);
 begin
   //--Создаём форму со смайликами через секунду после создания окна чата
-  if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(ChatForm);
+  if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(nil);
 end;
 
 procedure TMainForm.LoadImageList(ImgList: TImageList; FName: string);
@@ -1898,7 +2015,6 @@ begin
     if ChatForm.Visible then ShowWindow(ChatForm.Handle, SW_RESTORE);
     ChatForm.Show;
     SetForegroundWindow(ChatForm.Handle);
-    //BringWindowToTop(ChatForm.Handle);
     //--Ставим фокус в поле ввода текста
     if (ChatForm.InputMemo.CanFocus) and (ChatForm.Visible) then ChatForm.InputMemo.SetFocus;
     //--Запрашиваем анкету неопознанных контактов
@@ -2009,7 +2125,7 @@ procedure TMainForm.DeleteContactClick(Sender: TObject);
 label
   x;
 var
-  i, G, z, zz: integer;
+  i, ii, G, z, zz, cnt: integer;
 begin
   //--Если ICQ не подключено к серверу, то выходим
   if not ICQ_Work_Phaze then Exit;
@@ -2076,9 +2192,23 @@ begin
         end;
         x: ;
         //--Вычисляем оставшееся количество контактов в группах
-        for i := 0 to Categories.Count - 1 do
+        with MainForm.ContactList do
         begin
-          Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(Categories[i].Items.Count);
+          for i := 0 to Categories.Count - 1 do
+          begin
+            if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
+              (Categories[i].Items.Count = 0) then Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
+              IntToStr(Categories[i].Items.Count)
+            else
+            begin
+              cnt := Categories[i].Items.Count;
+              for ii := 0 to Categories[i].Items.Count - 1 do
+                case Categories[i].Items[ii].Status of
+                  9, 80, 214: dec(cnt);
+                end;
+              Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
+            end;
+          end;
         end;
       end;
     end;
@@ -2179,6 +2309,7 @@ begin
     if Assigned(NoAvatar) then FreeAndNil(NoAvatar);
     if Assigned(OutMessage2) then FreeAndNil(OutMessage2);
     if Assigned(OutMessage3) then FreeAndNil(OutMessage3);
+    if Assigned(SmilesForm) then FreeAndNil(SmilesForm);
     //--Останавливаем таймеры
     JvTimerList.Active := false;
     //--Если поток сжатия истории не остановился ещё, то ждём его остановки

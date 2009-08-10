@@ -241,11 +241,13 @@ var
   ICQ_LoginUIN: string = '';
   ICQ_LoginPassword: string = '';
   ICQ_ChangePassword: string = '';
+  //--Фазы работы начало
   ICQ_Connect_Phaze: boolean = false;
   ICQ_HTTP_Connect_Phaze: boolean = false;
   ICQ_BosConnect_Phaze: boolean = false;
   ICQ_Work_Phaze: boolean = false;
   ICQ_Offline_Phaze: boolean = true;
+  //--Фазы работы конец
   ICQ_CurrentStatus: integer = 9;
   ICQ_CurrentStatus_bac: integer = 9;
   ICQ_X_CurrentStatus: integer = 0;
@@ -838,19 +840,19 @@ begin
         begin
           if Typing then
           begin
-              //--Ставим флаг о печати сообщения
+            //--Ставим флаг о печати сообщения
             ActivePage.Margins.Top := 1;
             ActivePage.Margins.Right := 0;
-              //--Ставим сообщение о наборе текста
+            //--Ставим сообщение о наборе текста
             ChatForm.NotifyPanel.Font.Color := clBlue;
             ChatForm.NotifyPanel.Caption := TypingTextL;
           end
           else
           begin
-              //--Снимаем флаг о печати сообщения
+            //--Снимаем флаг о печати сообщения
             ActivePage.Margins.Top := 0;
             ActivePage.Margins.Right := 0;
-              //--Сбрасываем сообщение о наборе текста
+            //--Сбрасываем сообщение о наборе текста
             ChatForm.NotifyPanel.Font.Color := clWindowText;
             ChatForm.NotifyPanel.Caption := '...';
           end;

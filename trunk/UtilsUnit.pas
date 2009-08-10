@@ -58,7 +58,6 @@ function Dump(data: string): string;
 function chop(i: integer; var s: string): string; overload;
 function chop(i, l: integer; var s: string): string; overload;
 function chop(ss: string; var s: string): string; overload;
-function base64encode(s: string): string;
 function ReadFromFile(FileName: string): string;
 function IsolateTextString(const S: string; Tag1, Tag2: string): string;
 function Int64ToHex(c: int64): string;
@@ -80,6 +79,8 @@ procedure Zip_File(FileName: TStrings; SFileName: string);
 procedure UnZip_File(FileName, SDir: string);
 function GetFileSize(FileName: string): Longint;
 procedure UnZip_Stream(FileName: TStream; SDir: string);
+function PacketToHex(Buffer: Pointer; BufLen: Word): string;
+function GetRandomHexBytes(BytesCount: Integer): string;
 
 implementation
 
@@ -402,33 +403,6 @@ begin
     result := text;
   finally
     Free;
-  end;
-end;
-
-function base64encode(s: string): string;
-const
-  TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-type
-  Ttriple = array[0..2] of byte;
-var
-  p: ^Ttriple;
-  i: integer;
-begin
-  result := '';
-  p := @s[1];
-  for i := 1 to length(s) div 3 do
-  begin
-    result := result + TABLE[1 + p[0] shr 2]
-      + TABLE[1 + (p[0] and 3) shl 4 + p[1] shr 4]
-      + TABLE[1 + (p[1] and 15) shl 2 + p[2] shr 6]
-      + TABLE[1 + (p[2] and 63)];
-    inc(p);
-  end;
-  if length(s) mod 3 > 0 then
-    result := result + TABLE[1 + p[0] shr 2] + TABLE[1 + (p[0] and 3) shl 4 + p[1] shr 4];
-  case length(s) mod 3 of
-    1: result := result + '==';
-    2: result := result + TABLE[1 + (p[1] and 15) shl 2 + p[2] shr 6] + '=';
   end;
 end;
 
@@ -1399,6 +1373,35 @@ begin
     z.DecompressStream(FileName, SDir, true);
   finally
     z.Free;
+  end;
+end;
+
+{$WARNINGS OFF}
+
+function PacketToHex(Buffer: Pointer; BufLen: Word): string;
+var
+  S: string;
+  i: Integer;
+begin
+  for i := 1 to BufLen do
+  begin
+    S := S + IntToHex(PByte(LongWord(Buffer) + i - 1)^, 2);
+  end;
+  Result := S;
+end;
+
+{$WARNINGS ON}
+
+function GetRandomHexBytes(BytesCount: Integer): string;
+const
+  Bit16 = '0123456789abcdef';
+var
+  I: Integer;
+begin
+  Result := '';
+  for I := 0 to BytesCount do
+  begin
+    Result := Result + Bit16[Random(15) + 1];
   end;
 end;
 

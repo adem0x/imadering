@@ -15,7 +15,7 @@ object SmilesForm: TSmilesForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  PopupMode = pmAuto
+  Position = poDefaultSizeOnly
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate

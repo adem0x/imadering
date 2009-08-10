@@ -1118,10 +1118,12 @@ begin
   //--Инициализируем XML
   with TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then begin
+    if FileExists(MyPath + SettingsFileName) then
+    begin
       LoadFromFile(MyPath + SettingsFileName);
       //--Загружаем позицию окна
-      if OpenKey('settings\forms\chatform\position') then try
+      if OpenKey('settings\forms\chatform\position') then
+      try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
@@ -1130,39 +1132,38 @@ begin
         BottomChatFormPanel.Height := ReadInteger('chat-splitter', 130);
         ChatCategoryButtons.Width := ReadInteger('group-splitter', 130);
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do
-          Top := Top - 50;
-        while Left + Width > Screen.Width do
-          Left := Left - 50;
+        while Top + Height > Screen.Height do Top := Top - 50;
+        while Left + Width > Screen.Width do Left := Left - 50;
       finally
         CloseKey();
       end;
-
       //--Загружаем "отправлять по интер"
-      if OpenKey('settings\forms\chatform\send-enter') then try
+      if OpenKey('settings\forms\chatform\send-enter') then
+      try
         EnterKeyToolButton.Down := ReadBool('value');
       finally
         CloseKey();
       end;
-
       //--Загружаем отправлять отчёт о печати текста
-      if OpenKey('settings\forms\chatform\send-typing-notify') then try
+      if OpenKey('settings\forms\chatform\send-typing-notify') then
+      try
         TypingTextToolButton.Down := ReadBool('value');
       finally
         CloseKey();
       end;
-
       //--Загружаем "звук нажатия клавиш"
-      if OpenKey('settings\forms\chatform\key-sound') then try
+      if OpenKey('settings\forms\chatform\key-sound') then
+      try
         KeySoundToolButton.Down := ReadBool('value');
       finally
         CloseKey();
       end;
-
       //--Загружаем состояние панелей аватар
-      if OpenKey('settings\forms\chatform\avatar-panels') then try
+      if OpenKey('settings\forms\chatform\avatar-panels') then
+      try
         ContactAvatarPanel.Width := ReadInteger('contact-avatar', 68);
-        if ContactAvatarPanel.Width = 0 then begin
+        if ContactAvatarPanel.Width = 0 then
+        begin
           ContactAvatarPanelSpeedButton.NumGlyphs := 1;
           InfoPanel1.Left := 9;
           InfoPanel3.Left := 9;
@@ -1347,7 +1348,9 @@ var
   xPoint: TPoint;
 begin
   //--Если окно не создано ещё, то создаём его
-  if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(MainForm);
+  if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(nil);
+  //--Присваиваем окну чата
+  SmilesForm.PopupParent := ChatForm;
   //--Вычисляем позицию над вызывающим контролом
   xPoint := Point(SmiliesSpeedButton.Width, SmiliesSpeedButton.Top);
   with SmiliesSpeedButton.ClientToScreen(xPoint) do
@@ -1355,13 +1358,10 @@ begin
     SmilesForm.Left := X - SmiliesSpeedButton.Width;
     SmilesForm.Top := (Y - SmilesForm.Height) - 2;
   end;
-  {//--Отображаем окно смайлов
-  SmilesForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(SmilesForm.Handle);
-  BringWindowToTop(SmilesForm.Handle);}
+  //--Ставим флаги окну отображаться поверх всех (против глюка в вайн)
   SetWindowPos(SmilesForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or
     SWP_NOACTIVATE or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOSENDCHANGING);
+  //--Отображаем окно смайлов
   SmilesForm.Show;
 end;
 

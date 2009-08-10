@@ -416,6 +416,10 @@ object MainForm: TMainForm
     ListenBacklog = 5
     ReqVerLow = 1
     ReqVerHigh = 1
+    OnDataAvailable = JabberWSocketDataAvailable
+    OnSendData = JabberWSocketSendData
+    OnSessionClosed = JabberWSocketSessionClosed
+    OnSessionConnected = JabberWSocketSessionConnected
     Left = 48
     Top = 80
   end
