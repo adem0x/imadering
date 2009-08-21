@@ -21,23 +21,28 @@ var
   Jabber_CurrentStatus_bac: integer = 30;
   Jabber_Seq: word = 0;
   JabberResurs: string = 'IMadering';
+  JabberPriority: string = '30';
   //--Фазы работы начало
   Jabber_Connect_Phaze: boolean = false;
   Jabber_HTTP_Connect_Phaze: boolean = false;
   Jabber_Work_Phaze: boolean = false;
   Jabber_Offline_Phaze: boolean = true;
+  Jabber_Session_OK: boolean = false;
   //--Фазы работы конец
   StreamHead: string = '<?xml version=''1.0'' encoding=''UTF-8''?>' +
   '<stream:stream to=''%s'' xmlns=''jabber' +
     ':client'' xmlns:stream=''http://etherx.jabber.org/streams'' xm' +
     'l:lang=''ru'' version=''1.0''>';
   IqTypeSet: string = '<iq type=''set'' id=''imadering_%d''>';
+  IqTypeGet: string = '<iq type=''get'' id=''imadering_%d''>';
   FRootTag: string = 'stream:stream';
 
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
 procedure Jabber_GoOffline;
 function Jabber_SetBind: string;
 function Jabber_SetSession: string;
+function Jabber_GetRoster: string;
+function Jabber_SetStatus(jStatus: integer): string;
 
 implementation
 
@@ -142,6 +147,7 @@ begin
   Jabber_myBeautifulSocketBuffer := EmptyStr;
   Jabber_BuffPkt := EmptyStr;
   Jabber_Seq := 0;
+  Jabber_Session_OK := false;
   //--Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do
   begin
@@ -223,6 +229,37 @@ begin
     '</iq>';
   //--Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
+end;
+
+function Jabber_GetRoster: string;
+begin
+  Result := Format(IqTypeGet, [Jabber_Seq]) + '<query xmlns=''jabber:iq:roster''/></iq>';
+  //--Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+
+function Jabber_SetStatus(jStatus: integer): string;
+var
+  st: string;
+begin
+  //--Формируем статус строку
+  case jStatus of
+    29: st := '<show>away</show>';
+    32: st := '<show>dnd</show><x xmlns=''qip:x:status'' value=''8''/>';
+    33: st := '<show>dnd</show>';
+    34: st := '<show>xa</show>';
+    35: st := '<show>away</show><x xmlns=''qip:x:status'' value=''10''/>';
+    36: st := '<show>chat</show>';
+    37: st := '<x xmlns=''qip:x:status'' value=''5''/>';
+    38: st := '<x xmlns=''qip:x:status'' value=''4''/>';
+    39: st := '<x xmlns=''qip:x:status'' value=''6''/>';
+    40: st := '<x xmlns=''qip:x:status'' value=''7''/>';
+  else st := '';
+  end;
+  //--Формируем пакет
+  Result := '<presence><priority>' + JabberPriority + '</priority>' +
+    '<c xmlns=''http://jabber.org/protocol/caps'' node=''http://imadering.com/caps'' ver=''0.5.0.0''/>' +
+    st + '</presence>';
 end;
 
 end.

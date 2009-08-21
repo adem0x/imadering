@@ -51,9 +51,9 @@ type
     MRAPassEdit: TEdit;
     MRAShowPassCheckBox: TCheckBox;
     MRASavePassCheckBox: TCheckBox;
-    ICQRegNewUINButton: TButton;
     PrevButton: TBitBtn;
-    JabberRegNewJIDButton: TButton;
+    RegNewJIDLabel: TLabel;
+    RegNewUINLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CancelButtonClick(Sender: TObject);
@@ -67,7 +67,8 @@ type
     procedure ICQShowPassCheckBoxClick(Sender: TObject);
     procedure MRAShowPassCheckBoxClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure ICQRegNewUINButtonClick(Sender: TObject);
+    procedure RegNewUINLabelClick(Sender: TObject);
+    procedure MRARegNewEmailLabelClick(Sender: TObject);
   private
     { Private declarations }
     procedure CheckSelectProtocols;
@@ -84,8 +85,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqRegNewUINUnit,
-  IcqOptionsUnit;
+  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqOptionsUnit;
 
 procedure TFirstStartForm.CheckSelectProtocols;
 begin
@@ -177,7 +177,7 @@ begin
     JabberPassEdit.Color := clWindow;
     JabberShowPassCheckBox.Enabled := true;
     JabberSavePassCheckBox.Enabled := true;
-    JabberRegNewJIDButton.Enabled := true;
+    RegNewJIDLabel.Enabled := true;
     //--Включаем протокол жаббер
     MainForm.JabberEnable(true);
   end
@@ -188,10 +188,16 @@ begin
     JabberPassEdit.Color := clBtnFace;
     JabberShowPassCheckBox.Enabled := false;
     JabberSavePassCheckBox.Enabled := false;
-    JabberRegNewJIDButton.Enabled := false;
+    RegNewJIDLabel.Enabled := false;
     //--Выключаем протокол жаббер
     MainForm.JabberEnable(false);
   end;
+end;
+
+procedure TFirstStartForm.RegNewUINLabelClick(Sender: TObject);
+begin
+  //--Открываем регистрацию на веб сайте ICQ
+  ShellExecute(Application.Handle, 'open', PChar('http://www.icq.com/register'), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TFirstStartForm.ICQEnableCheckBoxClick(Sender: TObject);
@@ -204,7 +210,7 @@ begin
     ICQPassEdit.Color := clWindow;
     ICQShowPassCheckBox.Enabled := true;
     ICQSavePassCheckBox.Enabled := true;
-    ICQRegNewUINButton.Enabled := true;
+    RegNewUINLabel.Enabled := true;
     //--Включаем протокол ICQ
     MainForm.ICQEnable(true);
   end
@@ -215,19 +221,10 @@ begin
     ICQPassEdit.Color := clBtnFace;
     ICQShowPassCheckBox.Enabled := false;
     ICQSavePassCheckBox.Enabled := false;
-    ICQRegNewUINButton.Enabled := false;
+    RegNewUINLabel.Enabled := false;
     //--Выключаем протокол ICQ
     MainForm.ICQEnable(false);
   end;
-end;
-
-procedure TFirstStartForm.ICQRegNewUINButtonClick(Sender: TObject);
-begin
-  //--Открываем окно регистрации нового номера ICQ
-  if not Assigned(IcqRegNewUINForm) then IcqRegNewUINForm := TIcqRegNewUINForm.Create(MainForm);
-  IcqRegNewUINForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(IcqRegNewUINForm.Handle);
 end;
 
 procedure TFirstStartForm.ICQShowPassCheckBoxClick(Sender: TObject);
@@ -236,14 +233,20 @@ begin
   else ICQPassEdit.PasswordChar := '*';
 end;
 
+procedure TFirstStartForm.MRARegNewEmailLabelClick(Sender: TObject);
+begin
+  //--Открываем регистрацию на веб сайте mail.ru
+  ShellExecute(Application.Handle, 'open', PChar('http://win.mail.ru/cgi-bin/signup'), nil, nil, SW_SHOWNORMAL);
+end;
+
 procedure TFirstStartForm.MRARegNewEmailLabelMouseEnter(Sender: TObject);
 begin
-  MRARegNewEmailLabel.Font.Color := clBlue;
+  (Sender as TLabel).Font.Color := clBlue;
 end;
 
 procedure TFirstStartForm.MRARegNewEmailLabelMouseLeave(Sender: TObject);
 begin
-  MRARegNewEmailLabel.Font.Color := clNavy;
+  (Sender as TLabel).Font.Color := clNavy;
 end;
 
 procedure TFirstStartForm.MRAShowPassCheckBoxClick(Sender: TObject);
@@ -262,7 +265,7 @@ begin
     MRAPassEdit.Color := clWindow;
     MRAShowPassCheckBox.Enabled := true;
     MRASavePassCheckBox.Enabled := true;
-    MRARegNewEmailLabel.Font.Color := clNavy;
+    MRARegNewEmailLabel.Enabled := true;
     //--Включаем протокол MRA
     MainForm.MRAEnable(true);
   end
@@ -273,7 +276,7 @@ begin
     MRAPassEdit.Color := clBtnFace;
     MRAShowPassCheckBox.Enabled := false;
     MRASavePassCheckBox.Enabled := false;
-    MRARegNewEmailLabel.Font.Color := clGray;
+    MRARegNewEmailLabel.Enabled := false;
     //--Выключаем протокол MRA
     MainForm.MRAEnable(false);
   end;

@@ -709,12 +709,80 @@ object MainForm: TMainForm
       ImageIndex = 160
       OnClick = JabberSettingsClick
     end
+    object N25: TMenuItem
+      Caption = '-'
+    end
+    object JabberXStatus: TMenuItem
+      Caption = #1044#1086#1087'. '#1057#1090#1072#1090#1091#1089
+      ImageIndex = 44
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object JabberStatusFFC: TMenuItem
+      Caption = #1043#1086#1090#1086#1074' '#1087#1086#1073#1086#1083#1090#1072#1090#1100
+      ImageIndex = 36
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusEvil: TMenuItem
+      Caption = #1047#1083#1086#1081
+      ImageIndex = 38
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusDepression: TMenuItem
+      Caption = #1044#1077#1087#1088#1077#1089#1089#1080#1103
+      ImageIndex = 37
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusHome: TMenuItem
+      Caption = #1044#1086#1084#1072
+      ImageIndex = 39
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusWork: TMenuItem
+      Caption = #1053#1072' '#1088#1072#1073#1086#1090#1077
+      ImageIndex = 40
+      OnClick = JabberStatusOnlineClick
+    end
+    object N26: TMenuItem
+      Caption = '-'
+    end
+    object JabberStatusLunch: TMenuItem
+      Caption = #1050#1091#1096#1072#1102
+      ImageIndex = 35
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusAway: TMenuItem
+      Caption = #1054#1090#1086#1096#1105#1083
+      ImageIndex = 29
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusNA: TMenuItem
+      Caption = #1053#1077#1076#1086#1089#1090#1091#1087#1077#1085
+      ImageIndex = 34
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusOccupied: TMenuItem
+      Caption = #1047#1072#1085#1103#1090
+      ImageIndex = 32
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusDND: TMenuItem
+      Caption = #1053#1077' '#1073#1077#1089#1087#1086#1082#1086#1080#1090#1100
+      ImageIndex = 33
+      OnClick = JabberStatusOnlineClick
+    end
     object N17: TMenuItem
       Caption = '-'
     end
     object JabberStatusOnline: TMenuItem
       Caption = #1042' '#1089#1077#1090#1080
       ImageIndex = 28
+      OnClick = JabberStatusOnlineClick
+    end
+    object JabberStatusInvisible: TMenuItem
+      Caption = #1053#1077#1074#1080#1076#1080#1084#1099#1081
+      ImageIndex = 31
       OnClick = JabberStatusOnlineClick
     end
     object N12: TMenuItem

@@ -108,10 +108,10 @@ object JabberOptionsForm: TJabberOptionsForm
           object RegNewAccountLabel: TLabel
             Left = 80
             Top = 176
-            Width = 238
+            Width = 229
             Height = 13
             Cursor = crHandPoint
-            Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1101#1090#1091' '#1091#1095#1105#1090#1085#1091#1102' '#1079#1072#1087#1080#1089#1100'...'
+            Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1101#1090#1091' '#1091#1095#1105#1090#1085#1091#1102' '#1079#1072#1087#1080#1089#1100
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clNavy
             Font.Height = -11

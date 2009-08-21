@@ -133,6 +133,21 @@ type
     MRAAvatarHttpClient: THttpCli;
     RightMRAPopupMenu: TPopupMenu;
     RightJabberPopupMenu: TPopupMenu;
+    JabberStatusInvisible: TMenuItem;
+    JabberStatusDND: TMenuItem;
+    N25: TMenuItem;
+    JabberStatusOccupied: TMenuItem;
+    JabberXStatus: TMenuItem;
+    N4: TMenuItem;
+    JabberStatusNA: TMenuItem;
+    JabberStatusAway: TMenuItem;
+    JabberStatusLunch: TMenuItem;
+    JabberStatusWork: TMenuItem;
+    N26: TMenuItem;
+    JabberStatusHome: TMenuItem;
+    JabberStatusDepression: TMenuItem;
+    JabberStatusEvil: TMenuItem;
+    JabberStatusFFC: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -279,7 +294,7 @@ implementation
 
 uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
-  MraXStatusUnit, FirstStartUnit, IcqRegNewUINUnit, IcqProtoUnit, IcqContactInfoUnit,
+  MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit, UpdateUnit,
   JabberProtoUnit, MraProtoUnit;
@@ -523,7 +538,6 @@ begin
   //--Ставим иконки статуса в окне и в трэе
   JabberToolButton.ImageIndex := Jabber_CurrentStatus;
   JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
-
   //--Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
   begin
@@ -572,8 +586,9 @@ begin
       end;
     end;
   end;
-  {if (not Jabber_Connect_Phaze) and (not Jabber_Offline_Phaze) then
-                                                                      }
+  //--Отсылаем пакет со статусом
+  if (not Jabber_Connect_Phaze) and (not Jabber_Offline_Phaze) then
+    JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
 end;
 
 procedure TMainForm.HintMaxTime(Sender: TObject);
@@ -1674,21 +1689,37 @@ begin
           try
             //--Загружаем пакет в объект xml
             Text := Pkt;
-            //--Разбираем пакеты
-            if OpenKey('stream:features\bind') then
-            try
-              //--Устанавливаем bind
-              JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
-            finally
-              CloseKey();
+            //--Разделяем стадии
+            if not Jabber_Session_OK then
+            begin
+              //--Разбираем пакеты
+              if OpenKey('stream:features\bind') then
+              try
+                //--Устанавливаем bind
+                JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
+              finally
+                CloseKey();
+              end;
+              if OpenKey('stream:features\session') then
+              try
+                //--Устанавливаем session
+                JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
+              finally
+                CloseKey();
+              end;
+              if OpenKey('iq\session') then
+              try
+                Jabber_Session_OK := true;
+                //--Запрашиваем список контактов
+                JabberWSocket.SendStr(UTF8Encode(Jabber_GetRoster));
+                //--Устанавливаем статус
+                JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
+              finally
+                CloseKey();
+              end;
             end;
-            if OpenKey('stream:features\session') then
-            try
-              //--Устанавливаем session
-              JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
-            finally
-              CloseKey();
-            end;
+            //--Парсим пакеты iq
+
           finally
             Free();
           end;

@@ -256,10 +256,8 @@ var
   ICQ_X_CurrentStatus_Text: string = '';
   ICQ_Seq1: Word = $1000;
   ICQ_Seq2: Word = $2000;
-  ICQ_Seq3: Word = $3000;
   ICQ_LastSendedFlap1: TDateTime;
   ICQ_LastSendedFlap2: TDateTime;
-  ICQ_LastSendedFlap3: TDateTime;
   ICQ_Bos_Cookie: string;
   ICQ_Online_IP: string;
   ICQ_MyUIN_RegTime: string;
@@ -314,7 +312,7 @@ procedure ICQ_SendMessage_0406(sUIN, sMsg: string; old: boolean);
 procedure ICQ_ReqMessage_0407(PktData: string);
 procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP,
   TimeReg, IconHash, ConnTime: string);
-procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
+//procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
 procedure ICQ_SearchPoUIN_old_1(sUIN: string);
 procedure ICQ_SearchPoUIN_old_2(sUIN: string);
 procedure ICQ_SearchPoUIN_new(sUIN: string);
@@ -2716,7 +2714,7 @@ begin
   SendFLAP('2', Pkt);
 end;
 
-procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
+{procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
 var
   Len: integer;
   Pkt, Pkt1, Pkt2: string;
@@ -2733,7 +2731,7 @@ begin
   Pkt := '00170004000000000000' + '0001' + IntToHex(Len, 4) + Pkt1 + Pkt2;
   //--Отправка в сокет
   SendFLAP_Reg('2', Pkt);
-end;
+end;}
 
 function ICQ_StatusCode2ImgId(StatusCode: string): integer;
 var

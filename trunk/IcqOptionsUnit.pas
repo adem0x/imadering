@@ -61,7 +61,6 @@ type
     YesAutoAuthRadioButton: TRadioButton;
     ShowWebAwareCheckBox: TCheckBox;
     WebAwareTestButton: TButton;
-    RegNewICQUINButton: TButton;
     CheckAccountGroupBox: TGroupBox;
     CheckAccountLabel: TLabel;
     Edit5: TEdit;
@@ -232,6 +231,7 @@ type
     SexCodesComboBox: TComboBox;
     GroupBox1: TGroupBox;
     ShowHideContactsCheckBox: TCheckBox;
+    RegNewUINLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -245,7 +245,6 @@ type
     procedure ShowPassChangeCheckBoxClick(Sender: TObject);
     procedure ChangePassButtonClick(Sender: TObject);
     procedure WebAwareTestButtonClick(Sender: TObject);
-    procedure RegNewICQUINButtonClick(Sender: TObject);
     procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure PassEditClick(Sender: TObject);
@@ -256,6 +255,7 @@ type
       var Key: Char);
     procedure SendCustomICQPacketButtonClick(Sender: TObject);
     procedure SendCustomICQPaketTimerTimer(Sender: TObject);
+    procedure RegNewUINLabelClick(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -274,7 +274,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, SettingsUnit, UtilsUnit, IcqRegNewUINUnit;
+  MainUnit, IcqProtoUnit, Code, SettingsUnit, UtilsUnit;
 
 //--APPLY SETTINGS--------------------------------------------------------------
 
@@ -329,6 +329,12 @@ end;
 
 //--LOAD SETTINGS---------------------------------------------------------------
 
+procedure TIcqOptionsForm.RegNewUINLabelClick(Sender: TObject);
+begin
+  //--Открываем регистрацию на веб сайте ICQ
+  ShellExecute(Application.Handle, 'open', PChar('http://www.icq.com/register'), nil, nil, SW_SHOWNORMAL);
+end;
+
 procedure TIcqOptionsForm.LoadSettings;
 begin
   //--Инициализируем XML
@@ -365,15 +371,6 @@ begin
   finally
     Free();
   end;
-end;
-
-procedure TIcqOptionsForm.RegNewICQUINButtonClick(Sender: TObject);
-begin
-  //--Открываем окно регистрации нового номера ICQ
-  if not Assigned(IcqRegNewUINForm) then IcqRegNewUINForm := TIcqRegNewUINForm.Create(MainForm);
-  IcqRegNewUINForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(IcqRegNewUINForm.Handle);
 end;
 
 procedure TIcqOptionsForm.ReqPassLabelClick(Sender: TObject);

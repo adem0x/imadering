@@ -14,8 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert,
   JvDesktopAlertForm, StdCtrls, VarsUnit, MainUnit, IcqProtoUnit, JvTrayIcon,
-  WinSock, OverbyteIcsWSocket, CategoryButtons, IcqRegNewUINUnit,
-  JvZLibMultiple, JabberProtoUnit;
+  WinSock, OverbyteIcsWSocket, CategoryButtons, JvZLibMultiple, JabberProtoUnit;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileDirHist(Path, Ext, Eext: string; FileList: TStrings);
@@ -38,7 +37,6 @@ function AppendOrWriteTextToFile(FileName: TFilename; WriteText: string): boolea
 procedure DebugLog(Str: string; Send: boolean);
 function DateTimeChatMess: string;
 function SendFLAP(Channel, Data: string): boolean;
-function SendFLAP_Reg(Channel, Data: string): boolean;
 function SendFLAP_Avatar(Channel, Data: string): boolean;
 function NumToIp(Addr: LongWord): string;
 function UnixToDateTime(const AValue: Int64): TDateTime;
@@ -949,30 +947,6 @@ begin
   Result := true;
 end;
 
-function SendFLAP_Reg(Channel, Data: string): boolean;
-var
-  Str: string;
-  Len: integer;
-begin
-  Result := false;
-  Len := Length(Hex2Text(Data));
-  //
-  if IcqRegNewUINForm.ICQRegWSocket.State <> wsConnected then Exit;
-  Str := Hex2Text('2a0' + Channel + IntToHex(ICQ_Seq2, 4) + IntToHex(Len, 4) + Data);
-  try
-    while abs(now - ICQ_LastSendedFlap2) < DT2100miliseconds do
-    begin
-      //--делаем нано паузу :)
-    end;
-    IcqRegNewUINForm.ICQRegWSocket.SendStr(Str);
-    ICQ_LastSendedFlap2 := now;
-    Inc(ICQ_Seq2);
-  except
-    //
-  end;
-  Result := true;
-end;
-
 function SendFLAP_Avatar(Channel, Data: string): boolean;
 var
   Str: string;
@@ -981,15 +955,15 @@ begin
   Result := false;
   Len := Length(Hex2Text(Data));
   if MainForm.ICQAvatarWSocket.State <> wsConnected then Exit;
-  Str := Hex2Text('2a0' + Channel + IntToHex(ICQ_Seq3, 4) + IntToHex(Len, 4) + Data);
+  Str := Hex2Text('2a0' + Channel + IntToHex(ICQ_Seq2, 4) + IntToHex(Len, 4) + Data);
   try
-    while abs(now - ICQ_LastSendedFlap3) < DT2100miliseconds do
+    while abs(now - ICQ_LastSendedFlap2) < DT2100miliseconds do
     begin
       //--делаем нано паузу :)
     end;
     MainForm.ICQAvatarWSocket.SendStr(Str);
-    ICQ_LastSendedFlap3 := now;
-    Inc(ICQ_Seq3);
+    ICQ_LastSendedFlap2 := now;
+    Inc(ICQ_Seq2);
   except
     //
   end;

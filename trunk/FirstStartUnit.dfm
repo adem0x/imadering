@@ -149,6 +149,23 @@ object FirstStartForm: TFirstStartForm
           Font.Style = [fsBold]
           ParentFont = False
         end
+        object RegNewUINLabel: TLabel
+          Left = 14
+          Top = 136
+          Width = 180
+          Height = 13
+          Cursor = crHandPoint
+          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' ICQ#'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clNavy
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          OnClick = RegNewUINLabelClick
+          OnMouseEnter = MRARegNewEmailLabelMouseEnter
+          OnMouseLeave = MRARegNewEmailLabelMouseLeave
+        end
         object ICQUINEdit: TEdit
           Left = 109
           Top = 23
@@ -208,16 +225,6 @@ object FirstStartForm: TFirstStartForm
           Font.Style = []
           ParentFont = False
           TabOrder = 3
-        end
-        object ICQRegNewUINButton: TButton
-          Left = 14
-          Top = 133
-          Width = 283
-          Height = 25
-          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' ICQ#'
-          TabOrder = 4
-          TabStop = False
-          OnClick = ICQRegNewUINButtonClick
         end
       end
     end
@@ -281,7 +288,7 @@ object FirstStartForm: TFirstStartForm
           Caption = #1055#1072#1088#1086#1083#1100':'
         end
         object MRARegNewEmailLabel: TLabel
-          Left = 18
+          Left = 14
           Top = 136
           Width = 275
           Height = 13
@@ -293,6 +300,7 @@ object FirstStartForm: TFirstStartForm
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+          OnClick = MRARegNewEmailLabelClick
           OnMouseEnter = MRARegNewEmailLabelMouseEnter
           OnMouseLeave = MRARegNewEmailLabelMouseLeave
         end
@@ -417,6 +425,22 @@ object FirstStartForm: TFirstStartForm
           Alignment = taRightJustify
           Caption = #1055#1072#1088#1086#1083#1100':'
         end
+        object RegNewJIDLabel: TLabel
+          Left = 14
+          Top = 136
+          Width = 229
+          Height = 13
+          Cursor = crHandPoint
+          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1101#1090#1091' '#1091#1095#1105#1090#1085#1091#1102' '#1079#1072#1087#1080#1089#1100
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clNavy
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          OnMouseEnter = MRARegNewEmailLabelMouseEnter
+          OnMouseLeave = MRARegNewEmailLabelMouseLeave
+        end
         object JabberIDEdit: TEdit
           Left = 109
           Top = 23
@@ -475,15 +499,6 @@ object FirstStartForm: TFirstStartForm
           Font.Style = []
           ParentFont = False
           TabOrder = 3
-        end
-        object JabberRegNewJIDButton: TButton
-          Left = 14
-          Top = 133
-          Width = 283
-          Height = 25
-          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' Jabber ID'
-          TabOrder = 4
-          TabStop = False
         end
       end
     end
