@@ -1557,7 +1557,7 @@ var
   ProxyErr: integer;
 begin
   //--Получаем пришедшие от сервера данные с сокета
-  Pkt := JabberWSocket.ReceiveStr;
+  Pkt := DecodeStr(JabberWSocket.ReceiveStr);
   //--Если при получении данных возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
   begin
@@ -1612,84 +1612,90 @@ begin
   TrafRecev := TrafRecev + Length(Pkt);
   AllTrafRecev := AllTrafRecev + Length(Pkt);
   if Assigned(TrafficForm) then OpenTrafficClick(nil);
-  //--Если это стадия подключения к серверу жаббер
-  if Jabber_Connect_Phaze then
-  begin
-    //--Ищем механизм авторизации DIGEST-MD5
-    if BMSearch(0, Pkt, '>DIGEST-MD5<') > -1 then
-      //--Отсылаем запрос challenge
-      JabberWSocket.SendStr(UTF8Encode('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>'))
-    //--Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
-    else if BMSearch(0, Pkt, '</challenge>') > -1 then
+  //--Проверяем пакет окончания сессии
+  if Pkt = ('</' + FRootTag + '>') then Jabber_GoOffline;
+  //--Буферизируем данные пакетов из сокета и забираем цельные данные
+  Jabber_BuffPkt := Jabber_BuffPkt + Pkt;
+  repeat
+    Pkt := GetFullTag(Jabber_BuffPkt);
+    if Pkt <> EmptyStr then
     begin
-      //--Получаем чистый challenge из пакета и расшифровываем
-      challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
-      //--Забираем из challenge ключ nonce
-      challenge := IsolateTextString(challenge, 'nonce="', '"');
-      //--Если challenge пустой, то значит мы уже авторизовались
-      if challenge = EmptyStr then JabberWSocket.SendStr(UTF8Encode('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>'))
-      else
-        //--Отсылаем пакет с авторизацией
-        JabberWSocket.SendStr(JabberDIGESTMD5_Auth(Jabber_LoginUIN,
-          Jabber_ServerAddr, Jabber_LoginPassword, challenge, GetRandomHexBytes(32)));
-    end
-    else if BMSearch(0, Pkt, '<not-authorized') > -1 then
-    begin
-      //--Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-      DAShow(ErrorHead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
-      Jabber_GoOffline;
-    end
-    else if BMSearch(0, Pkt, '<success') > -1 then
-    begin
-      //--Закрепляем сессию с жаббер сервером
-      JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
-      //--Активируем режим онлайн для Jabber
-      Jabber_Connect_Phaze := false;
-      Jabber_HTTP_Connect_Phaze := false;
-      Jabber_Work_Phaze := true;
-      Jabber_Offline_Phaze := false;
-      //--Отключаем метку пересоединения ведь мы уже и так онлайн!
-      Jabber_Reconnect := false;
-      //--Запускаем таймер отсылки пинг пакетов
-      if Jabber_KeepAlive then JvTimerList.Events[9].Enabled := true;
-      //--Выходим
-      Exit;
-    end;
-  end;
-  //--Разбираем пакеты рабочей фазы jabber
-  if Jabber_Work_Phaze then
-  begin
-    //--Инициализируем XML
-    with TrXML.Create() do
-    try
-      //--Загружаем пакет в объект xml
-
-      //Text := Pkt;
-
-
-
-      //showmessage(Text);
-
-      //--Разбираем пакеты
-      {if OpenKey('stream:features\bind') then
-      try
-        //--Устанавливаем bind
-        //JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
-      finally
-        CloseKey();
+      if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (BMSearch(0, Pkt, FRootTag) = -1) then
+      begin
+        //--Если это стадия подключения к серверу жаббер
+        if Jabber_Connect_Phaze then
+        begin
+          //--Ищем механизм авторизации DIGEST-MD5
+          if BMSearch(0, Pkt, '>DIGEST-MD5<') > -1 then
+            //--Отсылаем запрос challenge
+            JabberWSocket.SendStr(UTF8Encode('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>'))
+          //--Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
+          else if BMSearch(0, Pkt, '</challenge>') > -1 then
+          begin
+            //--Получаем чистый challenge из пакета и расшифровываем
+            challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
+            //--Забираем из challenge ключ nonce
+            challenge := IsolateTextString(challenge, 'nonce="', '"');
+            //--Если challenge пустой, то значит мы уже авторизовались
+            if challenge = EmptyStr then JabberWSocket.SendStr(UTF8Encode('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>'))
+            else
+              //--Отсылаем пакет с авторизацией
+              JabberWSocket.SendStr(JabberDIGESTMD5_Auth(Jabber_LoginUIN,
+                Jabber_ServerAddr, Jabber_LoginPassword, challenge, GetRandomHexBytes(32)));
+          end
+          else if BMSearch(0, Pkt, '<not-authorized') > -1 then
+          begin
+            //--Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
+            DAShow(ErrorHead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
+            Jabber_GoOffline;
+          end
+          else if BMSearch(0, Pkt, '<success') > -1 then
+          begin
+            //--Закрепляем сессию с жаббер сервером
+            JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
+            //--Активируем режим онлайн для Jabber
+            Jabber_Connect_Phaze := false;
+            Jabber_HTTP_Connect_Phaze := false;
+            Jabber_Work_Phaze := true;
+            Jabber_Offline_Phaze := false;
+            //--Отключаем метку пересоединения ведь мы уже и так онлайн!
+            Jabber_Reconnect := false;
+            //--Запускаем таймер отсылки пинг пакетов
+            if Jabber_KeepAlive then JvTimerList.Events[9].Enabled := true;
+            //--Выходим
+            Exit;
+          end;
+        end;
+        //--Разбираем пакеты рабочей фазы jabber
+        if Jabber_Work_Phaze then
+        begin
+          //--Инициализируем XML
+          with TrXML.Create() do
+          try
+            //--Загружаем пакет в объект xml
+            Text := Pkt;
+            //--Разбираем пакеты
+            if OpenKey('stream:features\bind') then
+            try
+              //--Устанавливаем bind
+              JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
+            finally
+              CloseKey();
+            end;
+            if OpenKey('stream:features\session') then
+            try
+              //--Устанавливаем session
+              JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
+            finally
+              CloseKey();
+            end;
+          finally
+            Free();
+          end;
+        end;
       end;
-      if OpenKey('stream:features\session') then
-      try
-        //--Устанавливаем session
-        //JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
-      finally
-        CloseKey();
-      end;}
-    finally
-      //showmessage(Text);
-      Free();
     end;
-  end;
+  until ((Pkt = '') or (Jabber_BuffPkt = ''));
 end;
 
 procedure TMainForm.JabberWSocketError(Sender: TObject);
@@ -2053,7 +2059,7 @@ begin
     Exit;
   end;
   //--Отсылаем пакет с пингом равным 60 секундам
-  JabberWSocket.SendStr(#20#09#20);
+  JabberWSocket.SendStr(Utf8Encode(' ' + #09 + ' '));
 end;
 
 procedure TMainForm.LoadImageList(ImgList: TImageList; FName: string);

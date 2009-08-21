@@ -9,6 +9,7 @@ uses
   OverbyteIcsMD5, OverbyteIcsMimeUtils, JabberOptionsUnit;
 
 var
+  Jabber_BuffPkt: string = '';
   Jabber_LoginUIN: string = '';
   Jabber_LoginPassword: string = '';
   Jabber_ServerAddr: string = 'jabber.ru';
@@ -31,6 +32,7 @@ var
     ':client'' xmlns:stream=''http://etherx.jabber.org/streams'' xm' +
     'l:lang=''ru'' version=''1.0''>';
   IqTypeSet: string = '<iq type=''set'' id=''imadering_%d''>';
+  FRootTag: string = 'stream:stream';
 
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
 procedure Jabber_GoOffline;
@@ -138,6 +140,7 @@ begin
   Jabber_Work_Phaze := false;
   Jabber_Offline_Phaze := true;
   Jabber_myBeautifulSocketBuffer := EmptyStr;
+  Jabber_BuffPkt := EmptyStr;
   Jabber_Seq := 0;
   //--Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do

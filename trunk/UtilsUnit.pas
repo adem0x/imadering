@@ -15,7 +15,7 @@ uses
   Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert,
   JvDesktopAlertForm, StdCtrls, VarsUnit, MainUnit, IcqProtoUnit, JvTrayIcon,
   WinSock, OverbyteIcsWSocket, CategoryButtons, IcqRegNewUINUnit,
-  JvZLibMultiple;
+  JvZLibMultiple, JabberProtoUnit;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileDirHist(Path, Ext, Eext: string; FileList: TStrings);
@@ -82,7 +82,7 @@ procedure UnZip_Stream(FileName: TStream; SDir: string);
 function PacketToHex(Buffer: Pointer; BufLen: Word): string;
 function GetRandomHexBytes(BytesCount: Integer): string;
 function ErrorHttpClient(ErrCode: integer): string;
-//function GetFullTag(AData: string): string;
+function GetFullTag(AData: string): string;
 
 implementation
 
@@ -1440,8 +1440,14 @@ begin
   Result := Result + #13#10 + Format(HttpSocketErrCodeL, [ErrCode]);
 end;
 
+function Min(const A, B: Integer): Integer;
+begin
+  if A < B then Result := A
+  else Result := B;
+end;
+
 //--Thanks Exodus Project
-{function GetFullTag(AData: string): string;
+function GetFullTag(AData: string): string;
 
   function RPos(find_data, in_data: string): cardinal;
   var
@@ -1464,10 +1470,12 @@ end;
   end;
 
 var
-  sbuff, r, stag, etag, tmps: string;
+  FRoot, sbuff, r, stag, etag, tmps: string;
   p, ls, le, e, l, ps, pe, ws, sp, tb, cr, nl, i: longint;
   _counter: integer;
+
 begin
+  FRoot := '';
   Result := '';
   _counter := 0;
   sbuff := AData;
@@ -1476,7 +1484,7 @@ begin
   p := Pos('<', sbuff);
   if p <= 0 then
   begin
-    DoError('Not a valid XML data!');
+    //DoError('Not a valid XML data!');
     Exit;
   end;
   tmps := Copy(sbuff, p, l - p + 1);
@@ -1507,7 +1515,7 @@ begin
     begin
       r := Copy(sbuff, p, e);
       FRoot := '';
-      FBuff := Copy(sbuff, p + e, l - e - p + 1);
+      Jabber_BuffPkt := Copy(sbuff, p + e, l - e - p + 1);
       Result := r;
       exit;
     end;
@@ -1516,7 +1524,7 @@ begin
   begin
     r := Copy(sbuff, p, e);
     FRoot := '';
-    FBuff := Copy(sbuff, p + e, l - e - p + 1);
+    Jabber_BuffPkt := Copy(sbuff, p + e, l - e - p + 1);
   end
   else
   begin
@@ -1544,14 +1552,14 @@ begin
         begin
           r := Copy(sbuff, p, i - p);
           FRoot := '';
-          FBuff := Copy(sbuff, i, l - i + 1);
+          Jabber_BuffPkt := Copy(sbuff, i, l - i + 1);
           break;
         end;
       end;
     until ((pe <= 0) or (ps <= 0) or (tmps = ''));
   end;
   result := r;
-end;}
+end;
 
 end.
 
