@@ -81,6 +81,8 @@ function GetFileSize(FileName: string): Longint;
 procedure UnZip_Stream(FileName: TStream; SDir: string);
 function PacketToHex(Buffer: Pointer; BufLen: Word): string;
 function GetRandomHexBytes(BytesCount: Integer): string;
+function ErrorHttpClient(ErrCode: integer): string;
+//function GetFullTag(AData: string): string;
 
 implementation
 
@@ -1404,6 +1406,152 @@ begin
     Result := Result + Bit16[Random(15) + 1];
   end;
 end;
+
+function ErrorHttpClient(ErrCode: integer): string;
+begin
+  case ErrCode of
+    0: Result := SocketConnErrorInfo_1;
+    400: Result := Err400;
+    401: Result := Err401;
+    402: Result := Err402;
+    403: Result := Err403;
+    404: Result := Err404;
+    405: Result := Err405;
+    406: Result := Err406;
+    407: Result := Err407;
+    408: Result := Err408;
+    409: Result := Err409;
+    410: Result := Err410;
+    411: Result := Err411;
+    412: Result := Err412;
+    413: Result := Err413;
+    414: Result := Err414;
+    415: Result := Err415;
+    416: Result := Err416;
+    417: Result := Err417;
+    500: Result := Err500;
+    501: Result := Err501;
+    502: Result := Err502;
+    503: Result := Err503;
+    504: Result := Err504;
+    505: Result := Err505
+  else Result := SocketConnErrorInfo_1;
+  end;
+  Result := Result + #13#10 + Format(HttpSocketErrCodeL, [ErrCode]);
+end;
+
+//--Thanks Exodus Project
+{function GetFullTag(AData: string): string;
+
+  function RPos(find_data, in_data: string): cardinal;
+  var
+    lastpos, newpos: cardinal;
+    mybuff: string;
+    origlen: cardinal;
+  begin
+    lastpos := 0;
+    newpos := 0;
+    origlen := Length(AData);
+    repeat
+      mybuff := Copy(in_data, lastpos + 1, origlen - newpos);
+      newpos := pos(find_data, mybuff);
+      if (newpos > 0) then
+      begin
+        lastpos := lastpos + newpos;
+      end;
+    until (newpos <= 0);
+    Result := lastpos;
+  end;
+
+var
+  sbuff, r, stag, etag, tmps: string;
+  p, ls, le, e, l, ps, pe, ws, sp, tb, cr, nl, i: longint;
+  _counter: integer;
+begin
+  Result := '';
+  _counter := 0;
+  sbuff := AData;
+  l := Length(sbuff);
+  if (Trim(sbuff)) = '' then exit;
+  p := Pos('<', sbuff);
+  if p <= 0 then
+  begin
+    DoError('Not a valid XML data!');
+    Exit;
+  end;
+  tmps := Copy(sbuff, p, l - p + 1);
+  e := Pos('>', tmps);
+  i := Pos('/>', tmps);
+  if ((e = 0) and (i = 0)) then exit;
+  if FRoot = '' then
+  begin
+    sp := Pos(' ', tmps);
+    tb := Pos(#09, tmps);
+    cr := Pos(#10, tmps);
+    nl := Pos(#13, tmps);
+    ws := sp;
+    if (tb > 0) then ws := Min(ws, tb);
+    if (cr > 0) then ws := Min(ws, cr);
+    if (nl > 0) then ws := Min(ws, nl);
+    if ((i > 0) and (i < ws)) then
+      FRoot := Trim(Copy(sbuff, p + 1, i - 2))
+    else if (e < ws) then
+      FRoot := Trim(Copy(sbuff, p + 1, e - 2))
+    else
+      FRoot := Trim(Copy(sbuff, p + 1, ws - 2));
+    if (FRoot = '?xml') or
+      (FRoot = '!ENTITY') or
+      (FRoot = '!--') or
+      (FRoot = '!ATTLIST') or
+      (FRoot = FRootTag) then
+    begin
+      r := Copy(sbuff, p, e);
+      FRoot := '';
+      FBuff := Copy(sbuff, p + e, l - e - p + 1);
+      Result := r;
+      exit;
+    end;
+  end;
+  if (e = (i + 1)) then
+  begin
+    r := Copy(sbuff, p, e);
+    FRoot := '';
+    FBuff := Copy(sbuff, p + e, l - e - p + 1);
+  end
+  else
+  begin
+    i := p;
+    stag := '<' + FRoot;
+    etag := '</' + FRoot + '>';
+    ls := length(stag);
+    le := length(etag);
+    r := '';
+    repeat
+      tmps := Copy(sbuff, i, l - i + 1);
+      ps := Pos(stag, tmps);
+      if (ps > 0) then
+      begin
+        _counter := _counter + 1;
+        i := i + ps + ls - 1;
+      end;
+      tmps := Copy(sbuff, i, l - i + 1);
+      pe := RPos(etag, tmps);
+      if ((pe > 0) and ((ps > 0) and (pe > ps))) then
+      begin
+        _counter := _counter - 1;
+        i := i + pe + le - 1;
+        if (_counter <= 0) then
+        begin
+          r := Copy(sbuff, p, i - p);
+          FRoot := '';
+          FBuff := Copy(sbuff, i, l - i + 1);
+          break;
+        end;
+      end;
+    until ((pe <= 0) or (ps <= 0) or (tmps = ''));
+  end;
+  result := r;
+end;}
 
 end.
 

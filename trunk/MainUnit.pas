@@ -15,7 +15,7 @@ uses
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
   rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils, OverbyteIcsLogger,
-  OverbyteIcsMimeUtils;
+  OverbyteIcsMimeUtils, StdCtrls;
 
 type
   TMainForm = class(TForm)
@@ -158,8 +158,6 @@ type
     procedure TrayPopupMenuPopup(Sender: TObject);
     procedure ICQTrayIconMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure MRATrayIconClick(Sender: TObject);
-    procedure JabberTrayIconClick(Sender: TObject);
     procedure ICQStatusOnlineClick(Sender: TObject);
     procedure ICQStatusOfflineClick(Sender: TObject);
     procedure ICQWSocketSessionClosed(Sender: TObject; ErrCode: Word);
@@ -167,7 +165,6 @@ type
     procedure ICQWSocketDataAvailable(Sender: TObject; ErrCode: Word);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
-    procedure JvTimerListEvents8Timer(Sender: TObject);
     procedure MRASettingsClick(Sender: TObject);
     procedure JabberSettingsClick(Sender: TObject);
     procedure CheckUpdateClick(Sender: TObject);
@@ -179,15 +176,12 @@ type
       var Handled: Boolean);
     procedure JabberToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
-    procedure JvTimerListEvents7Timer(Sender: TObject);
-    procedure JvTimerListEvents5Timer(Sender: TObject);
     procedure ContactListHotButton(Sender: TObject; const Button: TButtonItem);
     procedure ContactListContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
     procedure ContactListButtonClicked(Sender: TObject;
       const Button: TButtonItem);
     procedure SendMessageForContactClick(Sender: TObject);
-    procedure JvTimerListEvents9Timer(Sender: TObject);
     procedure JvTimerListEvents1Timer(Sender: TObject);
     procedure CheckStatusContactClick(Sender: TObject);
     procedure AnketaContactClick(Sender: TObject);
@@ -207,9 +201,7 @@ type
     procedure DelYourSelfContactClick(Sender: TObject);
     procedure SendInviteContactClick(Sender: TObject);
     procedure UnstableICQStatusClick(Sender: TObject);
-    procedure JvTimerListEvents6Timer(Sender: TObject);
     procedure ZipHistoryThreadRun(Sender: TIdThreadComponent);
-    procedure JvTimerListEvents10Timer(Sender: TObject);
     procedure OpenHistoryClick(Sender: TObject);
     procedure WIcsLoggerIcsLogEvent(Sender: TObject; LogOption: TLogOption;
       const Msg: string);
@@ -225,6 +217,33 @@ type
     procedure JabberWSocketSessionClosed(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSessionConnected(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
+    procedure JvTimerListEvents4Timer(Sender: TObject);
+    procedure JvTimerListEvents3Timer(Sender: TObject);
+    procedure JvTimerListEvents5Timer(Sender: TObject);
+    procedure JvTimerListEvents6Timer(Sender: TObject);
+    procedure JvTimerListEvents7Timer(Sender: TObject);
+    procedure JvTimerListEvents8Timer(Sender: TObject);
+    procedure JabberStatusOfflineClick(Sender: TObject);
+    procedure JabberStatusOnlineClick(Sender: TObject);
+    procedure ICQWSocketSocksError(Sender: TObject; Error: Integer;
+      Msg: string);
+    procedure JabberWSocketSocksError(Sender: TObject; Error: Integer;
+      Msg: string);
+    procedure UpdateHttpClientSocksError(Sender: TObject; Error: Integer;
+      Msg: string);
+    procedure UpdateHttpClientSessionClosed(Sender: TObject);
+    procedure MRAAvatarHttpClientSessionClosed(Sender: TObject);
+    procedure ICQWSocketError(Sender: TObject);
+    procedure ICQWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
+    procedure ICQWSocketSocksConnected(Sender: TObject; ErrCode: Word);
+    procedure UpdateHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
+    procedure MRAAvatarHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
+    procedure MRAAvatarHttpClientSocksError(Sender: TObject; Error: Integer;
+      Msg: string);
+    procedure JabberWSocketError(Sender: TObject);
+    procedure JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
+    procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
+    procedure JvTimerListEvents9Timer(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -383,6 +402,35 @@ begin
   if Assigned(TrafficForm) then OpenTrafficClick(nil);
 end;
 
+procedure TMainForm.MRAAvatarHttpClientSessionClosed(Sender: TObject);
+begin
+  //--Обрабатываем возможные ошибки в работе http сокета
+  if (MRAAvatarHttpClient.StatusCode = 0) or (MRAAvatarHttpClient.StatusCode >= 400) then
+  begin
+    DAShow(ErrorHead, ErrorHttpClient(MRAAvatarHttpClient.StatusCode), EmptyStr, 134, 2, 0);
+  end;
+end;
+
+procedure TMainForm.MRAAvatarHttpClientSocksConnected(Sender: TObject;
+  ErrCode: Word);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+  end;
+end;
+
+procedure TMainForm.MRAAvatarHttpClientSocksError(Sender: TObject;
+  Error: Integer; Msg: string);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if Error <> 0 then
+  begin
+    DAShow(ErrorHead, Msg, EmptyStr, 134, 2, 0);
+  end;
+end;
+
 procedure TMainForm.MRAEnable(OnOff: boolean);
 begin
   if OnOff then
@@ -439,6 +487,93 @@ begin
   JabberOptionsForm.Show;
   //--Выводим окно на самый передний план, против глюков в вин и вайн
   SetForeGroundWindow(JabberOptionsForm.Handle);
+end;
+
+procedure TMainForm.JabberStatusOfflineClick(Sender: TObject);
+begin
+  //--Уводим ICQ протокол в оффлайн
+  Jabber_GoOffline;
+  Jabber_Reconnect := false;
+end;
+
+procedure TMainForm.JabberStatusOnlineClick(Sender: TObject);
+begin
+  //--Если логин Jabber или пароль пустые, то выводим окно настроек для их ввода
+  if (Jabber_LoginUIN = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
+  begin
+    //--Показываем сообщение об этой ошибке
+    DAShow(InformationHead, JabberAccountInfo_1, EmptyStr, 133, 3, 0);
+    //--Открываем настройки ICQ
+    JabberSettingsClick(self);
+    //--Ставим фокусы в поле ввода логина или пароля
+    with JabberOptionsForm do
+    begin
+      if (JabberJIDEdit.CanFocus) and (JabberJIDEdit.Text = EmptyStr) then JabberJIDEdit.SetFocus
+      else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then PassEdit.SetFocus;
+    end;
+    //--Выходим от сюда
+    Exit;
+  end;
+  //--Делаем выбранный статус в меню выделенным
+  TMenuItem(Sender).Default := true;
+  //--Ставим статус для протокола
+  Jabber_CurrentStatus := TMenuItem(Sender).ImageIndex;
+  //--Ставим запасное значение статуса для протокола
+  Jabber_CurrentStatus_bac := ICQ_CurrentStatus;
+  //--Ставим иконки статуса в окне и в трэе
+  JabberToolButton.ImageIndex := Jabber_CurrentStatus;
+  JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+
+  //--Подключаемся к Jabber серверу
+  if Jabber_Offline_Phaze then
+  begin
+    try
+      //--Блокируем контролы логина и пароля ICQ
+      if Assigned(JabberOptionsForm) then
+      begin
+        with JabberOptionsForm do
+        begin
+          JabberJIDEdit.Enabled := false;
+          JabberJIDEdit.Color := clBtnFace;
+          PassEdit.Enabled := false;
+          PassEdit.Color := clBtnFace;
+        end;
+      end;
+      //--Активируем фазу коннекта к серверу Jabber
+      Jabber_Connect_Phaze := true;
+      Jabber_HTTP_Connect_Phaze := false;
+      Jabber_Work_Phaze := false;
+      Jabber_Offline_Phaze := false;
+      //--Запускаем показ иконки коннекта Jabber
+      JvTimerList.Events[3].Enabled := true;
+      //--Устанавливаем параметры сокета
+      JabberWSocket.Proto := 'tcp';
+      //--Устанавливаем настройки прокси
+      if HttpProxy_Enable then
+      begin
+        JabberWSocket.Addr := HttpProxy_Address;
+        JabberWSocket.Port := HttpProxy_Port;
+      end
+      else
+      begin
+        JabberWSocket.Addr := Jabber_ServerAddr;
+        JabberWSocket.Port := Jabber_ServerPort;
+      end;
+      //--Подключаем сокет
+      JabberWSocket.Connect;
+    except
+      on E: Exception do
+      begin
+        //--Если при подключении произошла ошибка, то сообщаем об этом
+        //E.Message;
+        DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+        //--Активиуем режим оффлайн
+        Jabber_GoOffline;
+      end;
+    end;
+  end;
+  {if (not Jabber_Connect_Phaze) and (not Jabber_Offline_Phaze) then
+                                                                      }
 end;
 
 procedure TMainForm.HintMaxTime(Sender: TObject);
@@ -630,8 +765,11 @@ begin
     //--Открываем настройки ICQ
     ICQSettingsClick(self);
     //--Ставим фокусы в поле ввода логина или пароля
-    if (IcqOptionsForm.ICQUINEdit.CanFocus) and (IcqOptionsForm.ICQUINEdit.Text = EmptyStr) then IcqOptionsForm.ICQUINEdit.SetFocus
-    else if (IcqOptionsForm.PassEdit.CanFocus) and (IcqOptionsForm.PassEdit.Text = EmptyStr) then IcqOptionsForm.PassEdit.SetFocus;
+    with IcqOptionsForm do
+    begin
+      if (ICQUINEdit.CanFocus) and (ICQUINEdit.Text = EmptyStr) then ICQUINEdit.SetFocus
+      else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then PassEdit.SetFocus;
+    end;
     //--Выходим от сюда
     Exit;
   end;
@@ -645,7 +783,11 @@ begin
   ICQToolButton.ImageIndex := ICQ_CurrentStatus;
   ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
   //--Отключаем статус Нестабильный если он включен
-  if JvTimerList.Events[6].Enabled then JvTimerList.Events[6].Enabled := false;
+  if JvTimerList.Events[4].Enabled then
+  begin
+    JvTimerList.Events[4].Enabled := false;
+    UnstableICQStatus.Checked := false;
+  end;
   //--Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
   begin
@@ -653,10 +795,13 @@ begin
       //--Блокируем контролы логина и пароля ICQ
       if Assigned(IcqOptionsForm) then
       begin
-        IcqOptionsForm.ICQUINEdit.Enabled := false;
-        IcqOptionsForm.ICQUINEdit.Color := clBtnFace;
-        IcqOptionsForm.PassEdit.Enabled := false;
-        IcqOptionsForm.PassEdit.Color := clBtnFace;
+        with IcqOptionsForm do
+        begin
+          ICQUINEdit.Enabled := false;
+          ICQUINEdit.Color := clBtnFace;
+          PassEdit.Enabled := false;
+          PassEdit.Color := clBtnFace;
+        end;
       end;
       //--Активируем фазу коннекта к серверу ICQ
       ICQ_Connect_Phaze := true;
@@ -665,7 +810,7 @@ begin
       ICQ_Work_Phaze := false;
       ICQ_Offline_Phaze := false;
       //--Запускаем показ иконки коннекта ICQ
-      JvTimerList.Events[5].Enabled := true;
+      JvTimerList.Events[3].Enabled := true;
       //--Устанавливаем параметры сокета
       ICQWSocket.Proto := 'tcp';
       //--Устанавливаем настройки прокси
@@ -682,14 +827,6 @@ begin
       //--Подключаем сокет
       ICQWSocket.Connect;
     except
-      on E: Exception do
-      begin
-        //--Если при подключении произошла ошибка, то сообщаем об этом
-        //E.Message;
-        DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
-        //--Активиуем режим оффлайн
-        ICQ_GoOffline;
-      end;
     end;
   end;
   if (not ICQ_Connect_Phaze) and (not ICQ_BosConnect_Phaze) and (not ICQ_Offline_Phaze) then
@@ -712,18 +849,18 @@ end;
 procedure TMainForm.MainFormHideInTray;
 begin
   //--Показываем или сворачиваем главное окно
-  if MainForm.Visible then
+  if Visible then
   begin
     Hide;
-    TrayPopupMenu.Items[0].Caption := RestoreFromTrayStr;
-    TrayPopupMenu.Items[0].ImageIndex := 5;
+    HideInTrayTray.Caption := RestoreFromTrayStr;
+    HideInTrayTray.ImageIndex := 5;
   end
   else
   begin
     Show;
     SetForeGroundWindow(Application.MainForm.Handle);
-    TrayPopupMenu.Items[0].Caption := HideInTrayStr;
-    TrayPopupMenu.Items[0].ImageIndex := 4;
+    HideInTrayTray.Caption := HideInTrayStr;
+    HideInTrayTray.ImageIndex := 4;
   end;
 end;
 
@@ -793,6 +930,13 @@ var
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := ICQWSocket.ReceiveStr;
+  //--Если при получении данных возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    ICQ_GoOffline;
+  end;
   //--HTTP прокси коннект
   if (HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
   begin
@@ -812,7 +956,7 @@ begin
       ICQ_HTTP_Connect_Phaze := true;
     end
     else
-      //--Сообщаем об ошибках прокси 
+      //--Сообщаем об ошибках прокси
       if AnsiStartsStr('HTTP/1.0 407', pkt) then
       begin
         ProxyErr := 1;
@@ -1113,7 +1257,7 @@ begin
                             //--Отключаем метку пересоединения ведь мы уже и так онлайн!
                             ICQ_Reconnect := false;
                             //--Запускаем таймер отсылки пинг пакетов
-                            if ICQ_KeepAlive then JvTimerList.Events[7].Enabled := true;
+                            if ICQ_KeepAlive then JvTimerList.Events[5].Enabled := true;
                           end;
                         end;
                       $000E:
@@ -1298,12 +1442,23 @@ begin
   if Assigned(TrafficForm) then OpenTrafficClick(nil);
 end;
 
+procedure TMainForm.ICQWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    ICQ_GoOffline;
+  end;
+end;
+
 procedure TMainForm.ICQWSocketSessionClosed(Sender: TObject; ErrCode: Word);
 begin
   //--Если при отключении возникла ошибка, то сообщаем об этом
-  if (ErrCode <> 0) and (not ICQ_Offline_Phaze) then
+  if (not ICQ_Connect_Phaze) and (not ICQ_Offline_Phaze) then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
     //--Активируем режим оффлайн
     ICQ_GoOffline;
     //--Если нужно переподключаться, то активируем этот таймер
@@ -1318,7 +1473,7 @@ begin
   //--Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
     //--Активируем режим оффлайн
     ICQ_GoOffline;
   end;
@@ -1341,6 +1496,29 @@ begin
       http_login + #13#10;
     //--Отсылаем запрос для прокси
     ICQWSocket.sendStr(http_data);
+  end;
+end;
+
+procedure TMainForm.ICQWSocketSocksConnected(Sender: TObject; ErrCode: Word);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    ICQ_GoOffline;
+  end;
+end;
+
+procedure TMainForm.ICQWSocketSocksError(Sender: TObject; Error: Integer;
+  Msg: string);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if Error <> 0 then
+  begin
+    DAShow(ErrorHead, Msg, EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    ICQ_GoOffline;
   end;
 end;
 
@@ -1373,25 +1551,22 @@ begin
   JabberToolButtonClick(Sender);
 end;
 
-procedure TMainForm.JabberTrayIconClick(Sender: TObject);
-begin
-  //--Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
-  if JabberTrayIcon.Tag = 0 then MainFormHideInTray
-  else
-  begin
-    //
-  end;
-end;
-               
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 var
-  Pkt: string;
+  Pkt, challenge: string;
   ProxyErr: integer;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := JabberWSocket.ReceiveStr;
+  //--Если при получении данных возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    Jabber_GoOffline;
+  end;
   //--HTTP прокси коннект
-  if (HttpProxy_Enable) and ((Jabber_Connect_Phaze) or (Jabber_BosConnect_Phaze)) and (not Jabber_HTTP_Connect_Phaze) then
+  if (HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
   begin
     //--Заносим данные в специальный буфер
     Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
@@ -1409,7 +1584,7 @@ begin
       Jabber_HTTP_Connect_Phaze := true;
     end
     else
-      //--Сообщаем об ошибках прокси 
+      //--Сообщаем об ошибках прокси
       if AnsiStartsStr('HTTP/1.0 407', pkt) then
       begin
         ProxyErr := 1;
@@ -1437,8 +1612,92 @@ begin
   TrafRecev := TrafRecev + Length(Pkt);
   AllTrafRecev := AllTrafRecev + Length(Pkt);
   if Assigned(TrafficForm) then OpenTrafficClick(nil);
-  //--
-  showmessage(Pkt);
+  //--Если это стадия подключения к серверу жаббер
+  if Jabber_Connect_Phaze then
+  begin
+    //--Ищем механизм авторизации DIGEST-MD5
+    if BMSearch(0, Pkt, '>DIGEST-MD5<') > -1 then
+      //--Отсылаем запрос challenge
+      JabberWSocket.SendStr(UTF8Encode('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>'))
+    //--Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
+    else if BMSearch(0, Pkt, '</challenge>') > -1 then
+    begin
+      //--Получаем чистый challenge из пакета и расшифровываем
+      challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
+      //--Забираем из challenge ключ nonce
+      challenge := IsolateTextString(challenge, 'nonce="', '"');
+      //--Если challenge пустой, то значит мы уже авторизовались
+      if challenge = EmptyStr then JabberWSocket.SendStr(UTF8Encode('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>'))
+      else
+        //--Отсылаем пакет с авторизацией
+        JabberWSocket.SendStr(JabberDIGESTMD5_Auth(Jabber_LoginUIN,
+          Jabber_ServerAddr, Jabber_LoginPassword, challenge, GetRandomHexBytes(32)));
+    end
+    else if BMSearch(0, Pkt, '<not-authorized') > -1 then
+    begin
+      //--Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
+      DAShow(ErrorHead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
+      Jabber_GoOffline;
+    end
+    else if BMSearch(0, Pkt, '<success') > -1 then
+    begin
+      //--Закрепляем сессию с жаббер сервером
+      JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
+      //--Активируем режим онлайн для Jabber
+      Jabber_Connect_Phaze := false;
+      Jabber_HTTP_Connect_Phaze := false;
+      Jabber_Work_Phaze := true;
+      Jabber_Offline_Phaze := false;
+      //--Отключаем метку пересоединения ведь мы уже и так онлайн!
+      Jabber_Reconnect := false;
+      //--Запускаем таймер отсылки пинг пакетов
+      if Jabber_KeepAlive then JvTimerList.Events[9].Enabled := true;
+      //--Выходим
+      Exit;
+    end;
+  end;
+  //--Разбираем пакеты рабочей фазы jabber
+  if Jabber_Work_Phaze then
+  begin
+    //--Инициализируем XML
+    with TrXML.Create() do
+    try
+      //--Загружаем пакет в объект xml
+
+      //Text := Pkt;
+
+
+
+      //showmessage(Text);
+
+      //--Разбираем пакеты
+      {if OpenKey('stream:features\bind') then
+      try
+        //--Устанавливаем bind
+        //JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
+      finally
+        CloseKey();
+      end;
+      if OpenKey('stream:features\session') then
+      try
+        //--Устанавливаем session
+        //JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
+      finally
+        CloseKey();
+      end;}
+    finally
+      //showmessage(Text);
+      Free();
+    end;
+  end;
+end;
+
+procedure TMainForm.JabberWSocketError(Sender: TObject);
+begin
+  //--Отображаем ошибки сокета
+  DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  //--Активируем режим оффлайн
+  Jabber_GoOffline;
 end;
 
 procedure TMainForm.JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
@@ -1449,12 +1708,24 @@ begin
   if Assigned(TrafficForm) then OpenTrafficClick(nil);
 end;
 
+procedure TMainForm.JabberWSocketSessionAvailable(Sender: TObject;
+  ErrCode: Word);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    Jabber_GoOffline;
+  end;
+end;
+
 procedure TMainForm.JabberWSocketSessionClosed(Sender: TObject; ErrCode: Word);
 begin
   //--Если при отключении возникла ошибка, то сообщаем об этом
-  if (ErrCode <> 0) and (not Jabber_Offline_Phaze) then
+  if not Jabber_Offline_Phaze then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
     //--Активируем режим оффлайн
     Jabber_GoOffline;
     //--Если нужно переподключаться, то активируем этот таймер
@@ -1470,7 +1741,7 @@ begin
   //--Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
   begin
-    DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
     //--Активируем режим оффлайн
     Jabber_GoOffline;
   end;
@@ -1493,6 +1764,31 @@ begin
     //--Отсылаем запрос для прокси
     JabberWSocket.sendStr(http_data);
   end;
+  //--Отсылаем строку начала сессии с сервером
+  JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
+end;
+
+procedure TMainForm.JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    Jabber_GoOffline;
+  end;
+end;
+
+procedure TMainForm.JabberWSocketSocksError(Sender: TObject; Error: Integer;
+  Msg: string);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if Error <> 0 then
+  begin
+    DAShow(ErrorHead, Msg, EmptyStr, 134, 2, 0);
+    //--Активируем режим оффлайн
+    Jabber_GoOffline;
+  end;
 end;
 
 procedure TMainForm.JvTimerListEvents0Timer(Sender: TObject);
@@ -1510,13 +1806,6 @@ begin
     //--Затем показываем окно начальной настройки протоколов
     FirstStartForm.Show;
   end;
-end;
-
-procedure TMainForm.JvTimerListEvents10Timer(Sender: TObject);
-begin
-  //--Запускаем выполнение потока сжатия и сохранения истории
-  //--Если поток остановлен и не работает, то запускаем его
-  if ZipHistoryThread.Terminated then ZipHistoryThread.Start;
 end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
@@ -1636,7 +1925,7 @@ begin
     end;
   end;
   //--Если не активен таймер иконки соединения, то можно мигать иконками сообщений
-  if not JvTimerList.Events[5].Enabled then
+  if not JvTimerList.Events[3].Enabled then
   begin
     //--Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
     if (YesMsg) and (InMessList.Count > 0) then
@@ -1675,7 +1964,7 @@ begin
   end;
 end;
 
-procedure TMainForm.JvTimerListEvents5Timer(Sender: TObject);
+procedure TMainForm.JvTimerListEvents3Timer(Sender: TObject);
 begin
   //--Отображаем мигающую иконку подключения к серверу
   if (ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze) then
@@ -1693,18 +1982,19 @@ begin
   end
   else
   begin
-    JvTimerList.Events[5].Enabled := false;
+    //--Останавливаем таймер
+    JvTimerList.Events[3].Enabled := false;
     ICQToolButton.ImageIndex := ICQ_CurrentStatus;
     ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
   end;
 end;
 
-procedure TMainForm.JvTimerListEvents6Timer(Sender: TObject);
+procedure TMainForm.JvTimerListEvents4Timer(Sender: TObject);
 begin
   //--Если функция отключена, то выключаем таймер и выходим
   if not UnstableICQStatus.Checked then
   begin
-    JvTimerList.Events[6].Enabled := false;
+    JvTimerList.Events[4].Enabled := false;
     //--Возвращаем прежнёё значение статуса
     ICQ_CurrentStatus := ICQ_CurrentStatus_bac;
     //--Отсылаем короткий пакет статуса
@@ -1721,12 +2011,12 @@ begin
   end;
 end;
 
-procedure TMainForm.JvTimerListEvents7Timer(Sender: TObject);
+procedure TMainForm.JvTimerListEvents5Timer(Sender: TObject);
 begin
   //--Если не подключена рабочая фаза ICQ, то выключаем таймер
   if not ICQ_Work_Phaze then
   begin
-    JvTimerList.Events[7].Enabled := false;
+    JvTimerList.Events[5].Enabled := false;
     Exit;
   end;
   //--Отсылаем пакет с пингом равным 60 секундам
@@ -1735,16 +2025,35 @@ begin
   if ICQ_Avatar_Work_Phaze then SendFLAP_Avatar('5', '0000003C');
 end;
 
-procedure TMainForm.JvTimerListEvents8Timer(Sender: TObject);
+procedure TMainForm.JvTimerListEvents6Timer(Sender: TObject);
 begin
   //--Скрываем окно списка контактов по события таймера автоскрытия
   Hide;
 end;
 
-procedure TMainForm.JvTimerListEvents9Timer(Sender: TObject);
+procedure TMainForm.JvTimerListEvents7Timer(Sender: TObject);
 begin
   //--Создаём форму со смайликами через секунду после создания окна чата
   if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(nil);
+end;
+
+procedure TMainForm.JvTimerListEvents8Timer(Sender: TObject);
+begin
+  //--Запускаем выполнение потока сжатия и сохранения истории
+  //--Если поток остановлен и не работает, то запускаем его
+  if ZipHistoryThread.Terminated then ZipHistoryThread.Start;
+end;
+
+procedure TMainForm.JvTimerListEvents9Timer(Sender: TObject);
+begin
+  //--Если не подключена рабочая фаза Jabber, то выключаем таймер
+  if not Jabber_Work_Phaze then
+  begin
+    JvTimerList.Events[9].Enabled := false;
+    Exit;
+  end;
+  //--Отсылаем пакет с пингом равным 60 секундам
+  JabberWSocket.SendStr(#20#09#20);
 end;
 
 procedure TMainForm.LoadImageList(ImgList: TImageList; FName: string);
@@ -1805,16 +2114,6 @@ procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
 begin
   //--Отображаем правильное всплывающее меню
   MRAToolButtonClick(Sender);
-end;
-
-procedure TMainForm.MRATrayIconClick(Sender: TObject);
-begin
-  //--Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
-  if MRATrayIcon.Tag = 0 then MainFormHideInTray
-  else
-  begin
-    //
-  end;
 end;
 
 procedure TMainForm.MRAXStatusClick(Sender: TObject);
@@ -2257,10 +2556,10 @@ begin
   if RoasterAlphaBlend then
     if AlphaBlendInactive then AlphaBlendValue := 255;
   //--Сбрасываем таймер автоскрытия окна при активности окна
-  if JvTimerList.Events[8].Enabled then
+  if JvTimerList.Events[6].Enabled then
   begin
-    JvTimerList.Events[8].Enabled := false;
-    JvTimerList.Events[8].Enabled := true;
+    JvTimerList.Events[6].Enabled := false;
+    JvTimerList.Events[6].Enabled := true;
   end;
   //--Убираем тут глюк в вайн с активацией окна чата (для сброса сообщения)
   if Assigned(ChatForm) then
@@ -2291,17 +2590,13 @@ begin
   begin
     //--Переводим все протоколы в оффлайн
     if not ICQ_Offline_Phaze then ICQ_GoOffline;
+    if not Jabber_Offline_Phaze then Jabber_GoOffline;
     //--Скрываем окно чтобы небыло ощющения тормазов
-    //при закрытии если ресурсы будут высвобождаться долго
     Hide;
     Application.ProcessMessages;
-    //--Закрываем все открытые сокеты
-    ICQWSocket.Abort;
-    ICQAvatarWSocket.Abort;
-    MRAWSocket.Abort;
-    JabberWSocket.Abort;
-    //--Отключаем HTTP сокет
+    //--Отключаем HTTP сокеты
     UpdateHttpClient.Abort;
+    MRAAvatarHttpClient.Abort;
     //--Уничтожаем другие ресурсы
     if Assigned(AccountToNick) then FreeAndNil(AccountToNick);
     if Assigned(SmilesList) then FreeAndNil(SmilesList);
@@ -2414,7 +2709,7 @@ begin
   //--Если не активно запускаться свёрнутой в трэй то показываем клавное окно
   if not SettingsForm.HideInTrayProgramStartCheckBox.Checked then JvTimerList.Events[0].Enabled := true;
   //--В фоне создаём окно смайлов
-  MainForm.JvTimerList.Events[9].Enabled := true;
+  MainForm.JvTimerList.Events[7].Enabled := true;
   //--Загружаем копию локальную списка контактов
   LoadContactList;
   //--Назначаем путь для файла лога сокетов
@@ -2516,97 +2811,6 @@ begin
     Free();
   end;
 end;
-
-{procedure TMainForm.LoadProxySettings;
-begin
-  //--Инициализируем XML
-  with TrXML.Create() do try
-    //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then begin
-      LoadFromFile(MyPath + SettingsFileName);
-
-      if OpenKey('settings\proxy\main') then try
-        G_ProxyEnabled := ReadBool('enable');
-      finally
-        CloseKey();
-      end;
-
-      if OpenKey('settings\proxy\address') then try
-        G_ProxyHost := ReadString('host');
-        G_ProxyPort := ReadString('port');
-      finally
-        CloseKey();
-      end;
-
-      if OpenKey('settings\proxy\type') then try
-        G_ProxyType := ReadString('type');
-        G_ProxyVersion := ReadString('version');
-        G_ProxyTypeIndex := ReadInteger('type-index');
-        G_ProxyVersionIndex := ReadInteger('version-index');
-      finally
-        CloseKey();
-      end;
-
-      if OpenKey('settings\proxy\auth') then try
-        G_ProxyAuthorize := ReadBool('auth-enable');
-        G_ProxyLogin := ReadString('login');
-        G_ProxyPassword := Decrypt(ReadString('password'), PassKey);
-        G_ProxyNTLM := ReadBool('ntlm-auth');
-      finally
-        CloseKey();
-      end;
-    end;
-  finally
-    Free();
-  end;
-end;}
-
-{procedure TMainForm.SetProxySettings;
-begin
-  if ICQWSocket.State <> wsClosed then
-    Exit;
-
-  if (G_ProxyEnabled) and ((G_ProxyTypeIndex = 0) or (G_ProxyTypeIndex = 1)) then begin
-    case G_ProxyTypeIndex of
-      0: ICQWSocket.SocksLevel := '4';
-      1: ICQWSocket.SocksLevel := '5';
-    end;
-    //--Host
-    ICQWSocket.SocksServer := G_ProxyHost;
-    //--Port
-    ICQWSocket.SocksPort := G_ProxyPort;
-    //--Authorize
-    if G_ProxyAuthorize then begin
-      ICQWSocket.SocksAuthentication := socksAuthenticateUsercode;
-      //--Login
-      ICQWSocket.SocksUsercode := G_ProxyLogin;
-      //--Password
-      ICQWSocket.SocksPassword := G_ProxyPassword;
-    end
-    else begin
-      //--Login
-      ICQWSocket.SocksUsercode := EmptyStr;
-      //--Password
-      ICQWSocket.SocksPassword := EmptyStr;
-      //
-      ICQWSocket.SocksAuthentication := socksNoAuthentication;
-    end;
-  end
-  else begin
-    //--Socks level
-    ICQWSocket.SocksLevel := '5';
-    //--Host
-    ICQWSocket.SocksServer := EmptyStr;
-    //--Port
-    ICQWSocket.SocksPort := EmptyStr;
-    //--Authorize
-    ICQWSocket.SocksAuthentication := socksNoAuthentication;
-    //--Login
-    ICQWSocket.SocksUsercode := EmptyStr;
-    //--Password
-    ICQWSocket.SocksPassword := EmptyStr;
-  end;
-end;}
 
 procedure TMainForm.SaveMainFormSettings;
 begin
@@ -2787,7 +2991,7 @@ begin
   if not UnstableICQStatus.Checked then
   begin
     UnstableICQStatus.Checked := true;
-    JvTimerList.Events[6].Enabled := true;
+    JvTimerList.Events[4].Enabled := true;
   end
   else UnstableICQStatus.Checked := false;
 end;
@@ -2821,7 +3025,8 @@ begin
   cnt_group := 0;
   cnt_contact := 0;
   //--Инициализируем XML
-  with TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Загружаем файл контакт листа
     if FileExists(MyPath + 'Profile\ContactList.xml') then
     begin
@@ -2887,12 +3092,16 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
-  with TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Сохраняем в цикле все группы и все контакты в них и флаги непрочитанных сообщений
-    with ContactList do begin
-      for i := 0 to Categories.Count - 1 do begin
+    with ContactList do
+    begin
+      for i := 0 to Categories.Count - 1 do
+      begin
         //--Записываем группу
-        if OpenKey('settings\group', True, i) then try
+        if OpenKey('settings\group', True, i) then
+        try
           WriteString('id', Categories[i].GroupId);
           WriteString('caption', Categories[i].Caption);
           WriteString('name', Categories[i].GroupCaption);
@@ -2900,9 +3109,11 @@ begin
         finally
           CloseKey();
         end;
-        for k := 0 to Categories[i].Items.Count - 1 do begin
+        for k := 0 to Categories[i].Items.Count - 1 do
+        begin
           //--Записываем контакты в этой группе
-          if OpenKey('settings\group', True, i) then try
+          if OpenKey('settings\group', True, i) then
+          try
             OpenKey('contact', True, k);
             WriteString('id', Categories[i].Items[k].UIN);
             WriteString('nick', Categories[i].Items[k].Caption);
@@ -2927,6 +3138,43 @@ begin
   TrafSend := TrafSend + UpdateHttpClient.SentCount;
   AllTrafSend := AllTrafSend + UpdateHttpClient.SentCount;
   if Assigned(TrafficForm) then OpenTrafficClick(nil);
+end;
+
+procedure TMainForm.UpdateHttpClientSessionClosed(Sender: TObject);
+begin
+  //--Обрабатываем возможные ошибки в работе http сокета
+  if (UpdateHttpClient.StatusCode = 0) or (UpdateHttpClient.StatusCode >= 400) then
+  begin
+    DAShow(ErrorHead, ErrorHttpClient(UpdateHttpClient.StatusCode), EmptyStr, 134, 2, 0);
+  end;
+end;
+
+procedure TMainForm.UpdateHttpClientSocksConnected(Sender: TObject;
+  ErrCode: Word);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+  begin
+    DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+  end;
+end;
+
+procedure TMainForm.UpdateHttpClientSocksError(Sender: TObject; Error: Integer;
+  Msg: string);
+begin
+  //--Если возникла ошибка, то сообщаем об этом
+  if Error <> 0 then
+  begin
+    DAShow(ErrorHead, Msg, EmptyStr, 134, 2, 0);
+  end;
+end;
+
+procedure TMainForm.ICQWSocketError(Sender: TObject);
+begin
+  //--Отображаем ошибки сокета
+  DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  //--Активируем режим оффлайн
+  ICQ_GoOffline;
 end;
 
 initialization

@@ -662,7 +662,7 @@ object SettingsForm: TSettingsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ItemIndex = 0
             ParentFont = False
             TabOrder = 2
@@ -687,7 +687,7 @@ object SettingsForm: TSettingsForm
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 0
             ItemIndex = 0
             ParentFont = False
             TabOrder = 3

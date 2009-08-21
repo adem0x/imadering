@@ -452,8 +452,7 @@ resourcestring
 	SSimpleXmlError4 = 'Ошибка чтения двоичного XML: некорректный тип узла';
 	SSimpleXmlError5 = 'Ошибка записи двоичного XML: некорректный тип узла';
 	SSimpleXmlError6 = 'Неверное значение атрибута "%s" элемента "%s".'^M^J +
-		'Допустимые значения:'^M^J +
-		'%s';
+		'Допустимые значения:'^M^J + '%s';
 	SSimpleXmlError7 = 'Не найден атрибут "%s"';
 	SSimpleXmlError8 = 'Не задан атрибут "%s"';
 	SSimpleXmlError9 = 'Данная возможность не поддерживается SimpleXML';
@@ -463,7 +462,7 @@ resourcestring
 	SSimpleXmlError13 = 'Ожидается шестнадцатеричное число';
 	SSimpleXmlError14 = 'Ожидается "#" или имя упрамляющего символа';
 	SSimpleXmlError15 = 'Некорректное имя управляющего символа';
-	SSimpleXmlError16 = 'Ожидается "%c"';
+	SSimpleXmlError16 = 'Ожидается "%s"';
 	SSimpleXmlError17 = 'Ожидается "%s"';
 	SSimpleXmlError18 = 'Символ "<" не может использоваться в значениях атрибутов';
 	SimpleXmlError19 = 'Ожидается "%s"';

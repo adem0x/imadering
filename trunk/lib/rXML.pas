@@ -19,14 +19,16 @@ type
                        // FNodePad должна быть 1, типа смещение ноды.
     FFollowNode: IXmlNode; // Текущая нода
     FCurrentPath: string;
-    function GetText: string;
-    procedure SetText(const Value: string);
     // Делаем попытку открыть ноду на 1 уровень ниже, чем у FollowNode
     // Если нет такой ноды, а есть параметр CanCreate, то пытаемся такую ноду создать
     function Open1Node(const AName: string; CanCreate: Boolean; Num: Integer): Boolean;
     function GetNode: IXmlNode;
     function GetValueName(Index: integer): string;
     function GetKeyName(Index: integer): string;
+
+    function GetText: string;
+    procedure SetText(const Value: string);
+
   public
     constructor Create;
     procedure CloseKey;
@@ -353,23 +355,28 @@ begin
   sOldPath := FCurrentPath;
   // начинаем открывать
   S := Key;
-  if S[1] = '\' then begin
+  if S[1] = '\' then
+  begin
     CloseKey;
     S := copy(S, 2, length(S) - 1);
   end;
   // поехали
   n := WordCount(S, ['\']);
-  for i := 1 to n do begin
+  for i := 1 to n do
+  begin
     S1 := ExtractWord(i, S, ['\']);
     Result := Open1Node(S1, CanCreate, iif(i = n, Num, 0));
-    if not Result then begin
+    if not Result then
+    begin
       FFollowNode := LastFollowNode;
       FCurrentPath := sOldPath;
       Exit;
     end;
-    if S1 = '..' then begin
+    if S1 = '..' then
+    begin
       k := Length(FCurrentPath);
-      while k > 1 do begin
+      while k > 1 do
+      begin
         if FCurrentPath[k] = '\' then Break;
         Dec(k);
       end;
@@ -515,7 +522,8 @@ function TrXML.GetKeyValue(const aName: string): string;
 begin
   Result := '';
   if not KeyExists(aName) then Exit;
-  if OpenKey(aName, False) then try
+  if OpenKey(aName, False) then
+  try
     Result := ReadString('value');
   finally
     OpenKey('..', False);
@@ -524,7 +532,8 @@ end;
 
 procedure TrXML.SetKeyValue(const aName, aValue: string);
 begin
-  if OpenKey(aName, True) then try
+  if OpenKey(aName, True) then
+  try
     WriteString('value', aValue);
   finally
     OpenKey('..', False);
@@ -540,15 +549,19 @@ var
     i: Integer;
     k, s: string;
   begin
-    for i := 0 to x.ValueCount - 1 do begin
+    for i := 0 to x.ValueCount - 1 do
+    begin
       k := x.ValueNames[i];
       s := x.ReadString(k);
       WriteString(k, s);
     end;
-    for i := 0 to x.KeyCount[''] - 1 do begin
+    for i := 0 to x.KeyCount[''] - 1 do
+    begin
       k := x.KeyNames[i];
-      if x.OpenKey(k, aCanCreate) then begin
-        if OpenKey(k, aCanCreate) then begin
+      if x.OpenKey(k, aCanCreate) then
+      begin
+        if OpenKey(k, aCanCreate) then
+        begin
           __appendxml(True);
           OpenKey('..', False);
         end;

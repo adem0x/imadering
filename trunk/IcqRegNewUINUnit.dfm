@@ -217,6 +217,7 @@ object IcqRegNewUINForm: TIcqRegNewUINForm
     OnDataAvailable = ICQRegWSocketDataAvailable
     OnSessionClosed = ICQRegWSocketSessionClosed
     OnSessionConnected = ICQRegWSocketSessionConnected
+    OnSocksError = ICQRegWSocketSocksError
     Left = 24
     Top = 48
   end

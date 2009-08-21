@@ -41,6 +41,8 @@ type
     procedure WebRegLabelClick(Sender: TObject);
     procedure ICQRegWSocketSessionConnected(Sender: TObject; ErrCode: Word);
     procedure ICQRegWSocketSessionClosed(Sender: TObject; ErrCode: Word);
+    procedure ICQRegWSocketSocksError(Sender: TObject; Error: Integer;
+      Msg: string);
   private
     { Private declarations }
   public
@@ -368,7 +370,7 @@ begin
   else
   begin
     //--Если сокет уже отвалился, то сообщаем об этом
-    DAShow(AlertHead, SocketConnErrorInfo_4, EmptyStr, 134, 2, 0);
+    DAShow(AlertHead, SocketConnErrorInfo_1, EmptyStr, 134, 2, 0);
     //--Запрашиваем новую картинку
     ReqSecretImageButton.Click;
   end;
@@ -408,6 +410,13 @@ begin
   begin
     DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   end;
+end;
+
+procedure TIcqRegNewUINForm.ICQRegWSocketSocksError(Sender: TObject;
+  Error: Integer; Msg: string);
+begin
+  //--Отображаем ошибки подключения через Socks прокси
+  
 end;
 
 end.

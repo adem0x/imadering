@@ -79,13 +79,12 @@ var
   WarningHead: string = 'Внимание!';
   ICQAccountInfo: string = 'Учётная запись ICQ#:';
   ICQAccountInfo_1: string = 'Перед тем как подключиться к ICQ серверу, сначала укажите в настройках свой ICQ номер и пароль!';
+  JabberAccountInfo: string = 'Учётная запись JID:';
+  JabberAccountInfo_1: string = 'Перед тем как подключиться к Jabber серверу, сначала укажите в настройках свой JID аккаунт и пароль!';
   PassLabelInfo: string = 'Пароль:';
   RegPanelInfo_1: string = 'Запущен процесс регистрации ...';
   ParsingPktError: string = 'Неудалось произвести разбор пакета данных полученных от сервера.';
-  SocketConnErrorInfo_1: string = 'Соединение с сервером не установлено. Проверьте ваше подключение к Интернет.';
-  SocketConnErrorInfo_2: string = 'Сервер не найден.';
-  SocketConnErrorInfo_3: string = 'Неизвестная ошибка';
-  SocketConnErrorInfo_4: string = 'Подключение разорвано!';
+  SocketConnErrorInfo_1: string = 'Соединение не установлено.';
   ICQRegNewInfo_1: string = 'Извините, в регистрации отказано.';
   RegNewAlert_1: string = 'Укажите пароль для новой учётной записи.';
   RegNewAlert_2: string = 'Введите слово на картинке.';
@@ -110,7 +109,6 @@ var
   UpDate1L: string = 'Обновить версию автоматически?';
   UpDate2L: string = 'На официальном сайте www.imadering.com доступно обновление программы IMadering';
   UpDate3L: string = 'Обновление';
-  UpDate4L: string = 'Программа автоматического обновления не найдена.' + #13#10 + 'Посетите сайт www.imadering.com и установите полную версию IMadering.';
   QReply1L: string = 'Привет!';
   QReply2L: string = 'Как дела?';
   QReply3L: string = 'Пока';
@@ -181,6 +179,8 @@ var
   UpDateOKL: string = 'Установка обновления завершена.' + #13#10 + #13#10 + 'Для завершения обновления необходимо перезапустить программу IMadering!';
   ProxyConnectErrL1: string = 'Неверный логин или пароль для прокси.';
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
+  JabberLoginErrorL: string = 'Неправильный JID или пароль.';
+  HttpSocketErrCodeL: string = 'Код ошибки: %d';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
@@ -233,6 +233,31 @@ var
   LStatus16: string = 'Нестабильный';
   LStatus17: string = 'Необходима авторизация';
 
+  //--Ошибки http сокетов
+  Err400: string = 'Неверный запрос.';
+  Err401: string = 'Несанкционированно.';
+  Err402: string = 'Требуется оплата.';
+  Err403: string = 'Запрещено.';
+  Err404: string = 'Не найдено.';
+  Err405: string = 'Метод не допускается.';
+  Err406: string = 'Не приемлемо.';
+  Err407: string = 'Требуется авторизация на прокси.';
+  Err408: string = 'Время ожидания запроса истекло.';
+  Err409: string = 'Конфликт.';
+  Err410: string = 'Удален.';
+  Err411: string = 'Требуется длина.';
+  Err412: string = 'Предусловие неверно.';
+  Err413: string = 'Объект запроса слишком большой.';
+  Err414: string = 'URI запроса слишком большой.';
+  Err415: string = 'Неподдерживаемый тип медиа.';
+  Err416: string = 'Диапазон не отвечает требованиям.';
+  Err417: string = 'Результат не соответствует ожидаемому.';
+  Err500: string = 'Внутренняя ошибка сервера.';
+  Err501: string = 'Не реализовано.';
+  Err502: string = 'Ошибка шлюза.';
+  Err503: string = 'Сервис недоступен.';
+  Err504: string = 'Истекло время ожидания от шлюза.';
+  Err505: string = 'Не поддерживаемая версия HTTP.';
 
   //--Переменные оформления всплывающих подсказок
   FDAOptions: TJvDesktopAlertOptions;
@@ -260,7 +285,7 @@ var
     'Программирование;David Baldwin (HTML components)',
     'Программирование;Project Jedi (jvcl components)',
     'Программирование;Михаил Власов (SimpleXML компонент)',
-    'Программирование;Polaris Software (rXML компонент)',    
+    'Программирование;Polaris Software (rXML компонент)',
     'Программирование;Anders Melander (GIFImage component)',
     'Дизайн;Пётр Степанов',
     'Дизайн;Michael Niedermayr (www.greensmilies.com)',

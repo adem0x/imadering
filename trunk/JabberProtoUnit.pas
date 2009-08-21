@@ -6,7 +6,7 @@ uses
   Windows, MainUnit, SysUtils, JvTrayIcon, Dialogs, OverbyteIcsWSocket,
   ChatUnit, MmSystem, Forms, ComCtrls, Messages, Classes, IcqContactInfoUnit,
   Code, VarsUnit, Graphics, CategoryButtons, rXML, JvZLibMultiple,
-  OverbyteIcsMD5, OverbyteIcsMimeUtils;
+  OverbyteIcsMD5, OverbyteIcsMimeUtils, JabberOptionsUnit;
 
 var
   Jabber_LoginUIN: string = '';
@@ -14,17 +14,28 @@ var
   Jabber_ServerAddr: string = 'jabber.ru';
   Jabber_ServerPort: string = '5222';
   Jabber_Reconnect: boolean = false;
+  Jabber_KeepAlive: boolean = true;
   Jabber_myBeautifulSocketBuffer: string;
+  Jabber_CurrentStatus: integer = 30;
+  Jabber_CurrentStatus_bac: integer = 30;
+  Jabber_Seq: word = 0;
+  JabberResurs: string = 'IMadering';
   //--Фазы работы начало
   Jabber_Connect_Phaze: boolean = false;
   Jabber_HTTP_Connect_Phaze: boolean = false;
-  Jabber_BosConnect_Phaze: boolean = false;
   Jabber_Work_Phaze: boolean = false;
   Jabber_Offline_Phaze: boolean = true;
   //--Фазы работы конец
+  StreamHead: string = '<?xml version=''1.0'' encoding=''UTF-8''?>' +
+  '<stream:stream to=''%s'' xmlns=''jabber' +
+    ':client'' xmlns:stream=''http://etherx.jabber.org/streams'' xm' +
+    'l:lang=''ru'' version=''1.0''>';
+  IqTypeSet: string = '<iq type=''set'' id=''imadering_%d''>';
 
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
 procedure Jabber_GoOffline;
+function Jabber_SetBind: string;
+function Jabber_SetSession: string;
 
 implementation
 
@@ -98,104 +109,78 @@ begin
     'qop=auth,digest-uri="xmpp/%s",charset=utf-8,response=%s', [User, Host, nonce, cnonce, host, Response]));
   //--Шифруем строку алгоритмом Base64
   Str := Base64Encode(Str);
-  Result := Format('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''>%S</response>', [Str]);
+  Result := Format('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''>%s</response>', [Str]);
 end;
 
 procedure Jabber_GoOffline;
-//var
-//  i, ii: integer;
+var
+  i, ii: integer;
 begin
-  {//--Отключаем таймер показа иконки подключения и таймер пингов
+  //--Отключаем таймер пингов
   with MainForm.JvTimerList do
   begin
-    Events[5].Enabled := false;
-    Events[7].Enabled := false;
+    Events[9].Enabled := false;
   end;
-  //--Если существует форма настроек протокола ICQ, то блокируем там контролы
-  if Assigned(IcqOptionsForm) then
+  //--Если существует форма настроек протокола Jabber, то блокируем там контролы
+  if Assigned(JabberOptionsForm) then
   begin
-    with IcqOptionsForm do
+    with JabberOptionsForm do
     begin
-      NoAutoAuthRadioButton.Enabled := false;
-      YesAutoAuthRadioButton.Enabled := false;
-      ShowWebAwareCheckBox.Enabled := false;
-      ICQUINEdit.Enabled := true;
-      ICQUINEdit.Color := clWindow;
+      JabberJIDEdit.Enabled := true;
+      JabberJIDEdit.Color := clWindow;
       PassEdit.Enabled := true;
       PassEdit.Color := clWindow;
     end;
   end;
   //--Активируем фазу оффлайн и обнуляем буферы пакетов
-  ICQ_Connect_Phaze := false;
-  ICQ_HTTP_Connect_Phaze := false;
-  ICQ_BosConnect_Phaze := false;
-  ICQ_Work_Phaze := false;
-  ICQ_Offline_Phaze := true;
-  ICQ_SSI_Phaze := false;
-  ICQ_myBeautifulSocketBuffer := EmptyStr;
-  ICQ_HexPkt := EmptyStr;
-  //--Обнуляем переменные протокола
-  ICQ_Online_IP := EmptyStr;
-  ICQ_MyUIN_RegTime := EmptyStr;
-  ICQ_MyIcon_Hash := EmptyStr;
-  ICQ_UpdatePrivateGroup_Code := EmptyStr;
-  ICQ_CollSince := EmptyStr;
-  ICQ_SendMess := EmptyStr;
-  ICQ_OnlineTime := EmptyStr;
-  ICQ_AwayMess := EmptyStr;
-  ICQ_RecMess := EmptyStr;
-  ICQ_LastActive := EmptyStr;
+  Jabber_Connect_Phaze := false;
+  Jabber_HTTP_Connect_Phaze := false;
+  Jabber_Work_Phaze := false;
+  Jabber_Offline_Phaze := true;
+  Jabber_myBeautifulSocketBuffer := EmptyStr;
+  Jabber_Seq := 0;
   //--Если сокет подключён, то отсылаем пакет "до свидания"
-  if MainForm.ICQWSocket.State = wsConnected then
-    MainForm.ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));
-  //--Закрываем сокет
-  MainForm.ICQWSocket.Close;
-  //--Ставим иконку и значение статуса оффлайн
-  ICQ_CurrentStatus := 9;
-  MainForm.ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-  MainForm.ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
-  //--Подсвечиваем в меню статуса ICQ статус оффлайн
-  for i := 0 to MainForm.ICQPopupMenu.Items.Count - 1 do
+  with MainForm do
   begin
-    if MainForm.ICQPopupMenu.Items.Items[i].Tag = 999 then
-    begin
-      MainForm.ICQPopupMenu.Items.Items[i].Default := true;
-      Break;
-    end;
+    if JabberWSocket.State = wsConnected then JabberWSocket.SendStr('</stream:stream>');
+    //--Закрываем сокет
+    JabberWSocket.Abort;
+    //--Ставим иконку и значение статуса оффлайн
+    Jabber_CurrentStatus := 30;
+    JabberToolButton.ImageIndex := Jabber_CurrentStatus;
+    JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+    //--Подсвечиваем в меню статуса Jabber статус оффлайн
+    JabberStatusOffline.Default := true;
   end;
   //--Сбрасываем иконки контактов в КЛ в оффлайн
   with MainForm.ContactList do
   begin
     for i := 0 to Categories.Count - 1 do
     begin
-      if Categories[i].GroupId = 'NoCL' then Continue;
-      for ii := 0 to Categories[i].Items.Count - 1 do
+      if Categories[i].GroupType = 'Jabber' then
       begin
-        if (Categories[i].Items[ii].Status = 9) and
-          (Categories[i].Items[ii].ImageIndex = 9) then Continue
-        else
+        if (Categories[i].GroupId = 'NoCL') or (Categories[i].Items.Count = 0) then Continue;
+        //--Сбросим количесво онлайн-контактов в группах локального КЛ
+        Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
+        //--Сбросим статусы
+        for ii := 0 to Categories[i].Items.Count - 1 do
         begin
-          Categories[i].Items[ii].Status := 9;
-          Categories[i].Items[ii].ImageIndex := 9;
+          if (Categories[i].Items[ii].Status = 30) and
+            (Categories[i].Items[ii].ImageIndex = 30) then Continue
+          else
+          begin
+            Categories[i].Items[ii].Status := 30;
+            Categories[i].Items[ii].ImageIndex := 30;
+          end;
+          Categories[i].Items[ii].ImageIndex1 := -1;
+          //--Не замораживаем интерфейс
+          Application.ProcessMessages;
         end;
-        Categories[i].Items[ii].ImageIndex1 := -1;
-        //--Не замораживаем интерфейс
-        Application.ProcessMessages;
       end;
     end;
   end;
   //--Разблокировываем контакт лист если он был в стадии обновления
   MainForm.ContactList.Enabled := true;
-  //--Сбросим количесво онлайн-контактов в группах локального КЛ
-  with MainForm.ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
-        (Categories[i].Items.Count = 0) then Continue;
-      Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
-    end;
-  end;
   //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
   if Assigned(ChatForm) then
   begin
@@ -205,11 +190,11 @@ begin
       begin
         for i := 0 to PageCount - 1 do
         begin
-          if Pages[i].ImageIndex = 9 then Continue
-          else
+          if Pages[i].Tag = 30 then Continue
+          else if (Pages[i].Tag > 27) and (Pages[i].Tag < 41) then
           begin
-            Pages[i].Tag := 9;
-            Pages[i].ImageIndex := 9;
+            Pages[i].Tag := 30;
+            Pages[i].ImageIndex := 30;
           end;
           //--Не замораживаем интерфейс
           Application.ProcessMessages;
@@ -218,7 +203,23 @@ begin
     end
   end;
   //--Сохраняем историю сообщений, но уже не в потоке
-  MainForm.ZipHistory;}
+  MainForm.ZipHistory;
+end;
+
+function Jabber_SetBind: string;
+begin
+  Result := Format(IqTypeSet, [Jabber_Seq]) + '<bind xmlns=''urn:ietf:params:xml:ns:xmpp-bind''>' +
+    '<resource>' + JabberResurs + '</resource></bind></iq>';
+  //--Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+
+function Jabber_SetSession: string;
+begin
+  Result := Format(IqTypeSet, [Jabber_Seq]) + '<session xmlns=''urn:ietf:params:xml:ns:xmpp-session''/>' +
+    '</iq>';
+  //--Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
 end;
 
 end.

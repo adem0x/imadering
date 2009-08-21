@@ -319,12 +319,45 @@ begin
   ForceDirectories(MyPath + 'Profile\Avatars');
   ForceDirectories(MyPath + 'Profile\Contacts');
   //--Применяем настройки прокси
-  ApplyProxyHttpClient(MainForm.UpdateHttpClient);
-  ApplyProxyHttpClient(MainForm.MRAAvatarHttpClient);
-  ApplyProxySocketClient(MainForm.ICQWSocket);
-  ApplyProxySocketClient(MainForm.ICQAvatarWSocket);
-  ApplyProxySocketClient(MainForm.MRAWSocket);
-  ApplyProxySocketClient(MainForm.JabberWSocket);
+  with MainForm do
+  begin
+    //--HTTP сокет для обновлений программы
+    if UpdateHttpClient.State <> httpConnected then
+    begin
+      UpdateHttpClient.Abort;
+      ApplyProxyHttpClient(UpdateHttpClient);
+    end;
+    //--HTTP сокет для аватар MRA протокола
+    if MRAAvatarHttpClient.State <> httpConnected then
+    begin
+      MRAAvatarHttpClient.Abort;
+      ApplyProxyHttpClient(MRAAvatarHttpClient);
+    end;
+    //--Сокет для протокола ICQ
+    if ICQWSocket.State <> wsConnected then
+    begin
+      ICQWSocket.Abort;
+      ApplyProxySocketClient(ICQWSocket);
+    end;
+    //--Сокет для аватар ICQ
+    if ICQAvatarWSocket.State <> wsConnected then
+    begin
+      ICQAvatarWSocket.Abort;
+      ApplyProxySocketClient(ICQAvatarWSocket);
+    end;
+    //--Сокет для протокола MRA
+    if MRAWSocket.State <> wsConnected then
+    begin
+      MRAWSocket.Abort;
+      ApplyProxySocketClient(MRAWSocket);
+    end;
+    //--Сокет для протокла Jabber
+    if JabberWSocket.State <> wsConnected then
+    begin
+      JabberWSocket.Abort;
+      ApplyProxySocketClient(JabberWSocket);
+    end;
+  end;
   //----------------------------------------------------------------------------
   //--Применяем общие настройки
   //--Если "Запускать при старте системы", то ставим это в реестре
@@ -349,8 +382,8 @@ begin
   end;
   AlphaBlendInactive := TransparentNotActiveCheckBox.Checked;
   //--Применяем настройки автоскрытия списка контактов
-  MainForm.JvTimerList.Events[8].Enabled := AutoHideCLCheckBox.Checked;
-  MainForm.JvTimerList.Events[8].Interval := (StrToInt(AutoHideCLEdit.Text) * 1000);
+  MainForm.JvTimerList.Events[6].Enabled := AutoHideCLCheckBox.Checked;
+  MainForm.JvTimerList.Events[6].Interval := (StrToInt(AutoHideCLEdit.Text) * 1000);
   //--Применяем настройку залоговка окна списка контактов
   MainForm.Caption := HeaderTextEdit.Text;
   //----------------------------------------------------------------------------

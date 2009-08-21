@@ -37,6 +37,7 @@ object JabberOptionsForm: TJabberOptionsForm
     Enabled = False
     TabOrder = 1
     TabStop = False
+    OnClick = ApplyButtonClick
   end
   object OKButton: TBitBtn
     Left = 482
@@ -47,6 +48,7 @@ object JabberOptionsForm: TJabberOptionsForm
     Default = True
     TabOrder = 2
     TabStop = False
+    OnClick = OKButtonClick
   end
   object JabberOptionButtonGroup: TButtonGroup
     Left = 8
@@ -61,7 +63,7 @@ object JabberOptionsForm: TJabberOptionsForm
     Items = <
       item
         Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
-        ImageIndex = 81
+        ImageIndex = 41
       end>
     ItemIndex = 0
     TabOrder = 3
@@ -94,7 +96,7 @@ object JabberOptionsForm: TJabberOptionsForm
           Left = 3
           Top = 3
           Width = 422
-          Height = 350
+          Height = 232
           Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -105,7 +107,7 @@ object JabberOptionsForm: TJabberOptionsForm
           TabOrder = 0
           object RegNewAccountLabel: TLabel
             Left = 80
-            Top = 181
+            Top = 176
             Width = 238
             Height = 13
             Cursor = crHandPoint
@@ -122,9 +124,9 @@ object JabberOptionsForm: TJabberOptionsForm
           object ICQUINLabel: TLabel
             Left = 80
             Top = 25
-            Width = 189
+            Width = 174
             Height = 13
-            Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100' (JID@jabber.ru):'
+            Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100' (JID@server):'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -147,7 +149,7 @@ object JabberOptionsForm: TJabberOptionsForm
           end
           object DeleteAccountLabel: TLabel
             Left = 80
-            Top = 210
+            Top = 205
             Width = 103
             Height = 13
             Cursor = crHandPoint
@@ -190,6 +192,7 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            OnChange = JabberJIDEditChange
           end
           object PassEdit: TEdit
             Left = 78
@@ -204,11 +207,13 @@ object JabberOptionsForm: TJabberOptionsForm
             ParentFont = False
             PasswordChar = '*'
             TabOrder = 1
+            OnChange = JabberJIDEditChange
+            OnClick = PassEditClick
           end
           object ShowPassCheckBox: TCheckBox
             Left = 78
             Top = 123
-            Width = 341
+            Width = 331
             Height = 17
             Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
             Enabled = False
@@ -219,11 +224,12 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 2
+            OnClick = ShowPassCheckBoxClick
           end
           object SavePassCheckBox: TCheckBox
             Left = 78
             Top = 146
-            Width = 341
+            Width = 331
             Height = 17
             Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
             Font.Charset = DEFAULT_CHARSET
@@ -234,6 +240,20 @@ object JabberOptionsForm: TJabberOptionsForm
             ParentFont = False
             TabOrder = 3
           end
+        end
+        object GroupBox1: TGroupBox
+          Left = 3
+          Top = 241
+          Width = 422
+          Height = 112
+          Caption = #1054#1087#1094#1080#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 1
         end
       end
     end

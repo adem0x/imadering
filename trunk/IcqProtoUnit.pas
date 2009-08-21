@@ -4446,9 +4446,8 @@ end;
 function ICQ_NotifyConnectError(ErrCode: integer): string;
 begin
   //--Определяем что за ошибка произошла при подключении
-  Result := SocketConnErrorInfo_3 + ' (' + IntToStr(ErrCode) + ')';
-  if (ErrCode = 11004) or (ErrCode = 11035) or (ErrCode = 10035) or (ErrCode = 0) then Result := SocketConnErrorInfo_1;
-  if ErrCode = 11001 then Result := SocketConnErrorInfo_2;
+  Result := SocketConnErrorInfo_1 + #13#10 + WSocketErrorDesc(ErrCode) +
+    #13#10 + Format(HttpSocketErrCodeL, [ErrCode]);
 end;
 
 procedure ICQ_NotifyUserStatus(UIN, iStatus, iClient: string; iColor: integer);
@@ -4503,11 +4502,12 @@ procedure ICQ_GoOffline;
 var
   i, ii: integer;
 begin
-  //--Отключаем таймер показа иконки подключения и таймер пингов
+  //--Отключаем таймер факстатуса, пингов
+  MainForm.UnstableICQStatus.Checked := false;
   with MainForm.JvTimerList do
   begin
+    Events[4].Enabled := false;
     Events[5].Enabled := false;
-    Events[7].Enabled := false;
   end;
   //--Если существует форма настроек протокола ICQ, то блокируем там контролы
   if Assigned(IcqOptionsForm) then
@@ -4544,56 +4544,49 @@ begin
   ICQ_RecMess := EmptyStr;
   ICQ_LastActive := EmptyStr;
   //--Если сокет подключён, то отсылаем пакет "до свидания"
-  if MainForm.ICQWSocket.State = wsConnected then
-    MainForm.ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));
-  //--Закрываем сокет
-  MainForm.ICQWSocket.Close;
-  //--Ставим иконку и значение статуса оффлайн
-  ICQ_CurrentStatus := 9;
-  MainForm.ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-  MainForm.ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
-  //--Подсвечиваем в меню статуса ICQ статус оффлайн
-  for i := 0 to MainForm.ICQPopupMenu.Items.Count - 1 do
+  with MainForm do
   begin
-    if MainForm.ICQPopupMenu.Items.Items[i].Tag = 999 then
-    begin
-      MainForm.ICQPopupMenu.Items.Items[i].Default := true;
-      Break;
-    end;
+    if ICQWSocket.State = wsConnected then
+      ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));
+    //--Закрываем сокет
+    ICQWSocket.Abort;
+    //--Ставим иконку и значение статуса оффлайн
+    ICQ_CurrentStatus := 9;
+    ICQToolButton.ImageIndex := ICQ_CurrentStatus;
+    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    //--Подсвечиваем в меню статуса ICQ статус оффлайн
+    ICQStatusOffline.Default := true;
   end;
   //--Сбрасываем иконки контактов в КЛ в оффлайн
   with MainForm.ContactList do
   begin
     for i := 0 to Categories.Count - 1 do
     begin
-      if Categories[i].GroupId = 'NoCL' then Continue;
-      for ii := 0 to Categories[i].Items.Count - 1 do
+      if Categories[i].GroupType = 'Icq' then
       begin
-        if (Categories[i].Items[ii].Status = 9) and
-          (Categories[i].Items[ii].ImageIndex = 9) then Continue
-        else
+        if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
+          (Categories[i].Items.Count = 0) then Continue;
+        //--Сбросим количесво онлайн-контактов в группах локального КЛ
+        Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
+        //--Сбросим статусы
+        for ii := 0 to Categories[i].Items.Count - 1 do
         begin
-          Categories[i].Items[ii].Status := 9;
-          Categories[i].Items[ii].ImageIndex := 9;
+          if (Categories[i].Items[ii].Status = 9) and
+            (Categories[i].Items[ii].ImageIndex = 9) then Continue
+          else
+          begin
+            Categories[i].Items[ii].Status := 9;
+            Categories[i].Items[ii].ImageIndex := 9;
+          end;
+          Categories[i].Items[ii].ImageIndex1 := -1;
+          //--Не замораживаем интерфейс
+          Application.ProcessMessages;
         end;
-        Categories[i].Items[ii].ImageIndex1 := -1;
-        //--Не замораживаем интерфейс
-        Application.ProcessMessages;
       end;
     end;
   end;
   //--Разблокировываем контакт лист если он был в стадии обновления
   MainForm.ContactList.Enabled := true;
-  //--Сбросим количесво онлайн-контактов в группах локального КЛ
-  with MainForm.ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
-        (Categories[i].Items.Count = 0) then Continue;
-      Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
-    end;
-  end;
   //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
   if Assigned(ChatForm) then
   begin
@@ -4603,8 +4596,8 @@ begin
       begin
         for i := 0 to PageCount - 1 do
         begin
-          if Pages[i].ImageIndex = 9 then Continue
-          else
+          if Pages[i].Tag = 9 then Continue
+          else if (Pages[i].Tag > 6) and (Pages[i].Tag < 21) then
           begin
             Pages[i].Tag := 9;
             Pages[i].ImageIndex := 9;

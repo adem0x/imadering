@@ -171,20 +171,26 @@ begin
   //--Загружаем информацию из распакованного xml файла с инфой
   //--Инициализируем XML
 
-  With TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml') then begin
+    if FileExists(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml') then
+    begin
       LoadFromFile(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml');
+
       //--Ник, Имя и фамилию
-      if OpenKey('settings\name-info') then try
+      if OpenKey('settings\name-info') then
+      try
         Nick := ReadString('nick');
-        if Nick <> EmptyStr then begin
+        if Nick <> EmptyStr then
+        begin
           AddHTML(TopHTMLViewer, InfoNickL + ' ', 'cbold');
           AddHTML(TopHTMLViewer, Nick, 'cdef', true);
         end;
         First := ReadString('first');
         Last := ReadString('last');
-        if IsNotNull([First, Last]) then begin
+        if IsNotNull([First, Last]) then
+        begin
           AddHTML(TopHTMLViewer, InfoNameL + ' ', 'cbold');
           if Trim(First) <> EmptyStr then
             AddHTML(TopHTMLViewer, First + ' ');
@@ -193,21 +199,27 @@ begin
       finally
         CloseKey();
       end;
+
       //--Email адреса
-      if OpenKey('settings\emails-info') then try
+      if OpenKey('settings\emails-info') then
+      try
         Email1 := ReadString('email1');
         Email2 := ReadString('email2');
         Email3 := ReadString('email3');
-        if IsNotNull([Email1, Email2, Email3]) then begin
-          if Trim(Email1) <> EmptyStr then begin
+        if IsNotNull([Email1, Email2, Email3]) then
+        begin
+          if Trim(Email1) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, EmailL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email1 + '">' + Email1 + '</a>', 'cmargin', true);
           end;
-          if Trim(Email2) <> EmptyStr then begin
+          if Trim(Email2) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, EmailL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email2 + '">' + Email2 + '</a>', 'cmargin', true);
           end;
-          if Trim(Email3) <> EmptyStr then begin
+          if Trim(Email3) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, EmailL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email3 + '">' + Email3 + '</a>', 'cmargin', true);
           end;
@@ -219,7 +231,8 @@ begin
       end;
 
       //--Место жительства
-      if OpenKey('settings\home-info') then try
+      if OpenKey('settings\home-info') then
+      try
         Address := ReadString('address');
         City := ReadString('city');
         State := ReadString('state');
@@ -228,20 +241,25 @@ begin
         //--Получаем текст страны из кода
         if Assigned(IcqOptionsForm) then
           Country := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(Country)];
-        if IsNotNull([Country, City]) then begin
+        if IsNotNull([Country, City]) then
+        begin
           AddHTML(BottomHTMLViewer, InfoHomeL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), 'cdef', true);
         end;
-        if IsNotNull([Address, State, Zip]) then begin
-          if Trim(Address) <> EmptyStr then begin
+        if IsNotNull([Address, State, Zip]) then
+        begin
+          if Trim(Address) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoAdressL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Address, 'cdef', true);
           end;
-          if Trim(State) <> EmptyStr then begin
+          if Trim(State) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoStateL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, State, 'cdef', true);
           end;
-          if Trim(Zip) <> EmptyStr then begin
+          if Trim(Zip) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoZipL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Zip, 'cdef', true);
           end;
@@ -253,8 +271,9 @@ begin
         CloseKey();
       end;
 
-      //--Пол, дата рождения и возраст
-      if OpenKey('settings\personal-info') then try
+      //--Пол, последнее обновление, домашняя страничка, авторизация и вебаваре
+      if OpenKey('settings\personal-info') then
+      try
         //WebAware := XmlElem.GetBoolAttr('webaware');
         //Auth := XmlElem.GetBoolAttr('auth');
         HomePage := ReadString('homepage');
@@ -274,16 +293,20 @@ begin
         CloseKey();
       end;
 
-      if OpenKey('settings\age-info') then try
+      //--Дата рождения
+      if OpenKey('settings\age-info') then
+      try
         Age := ReadString('age');
         iDay := ReadString('day');
         iMonth := ReadString('month');
         iYear := ReadString('year');
-        if Age <> '0' then begin
+        if Age <> '0' then
+        begin
           AddHTML(BottomHTMLViewer, InfoAgeL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, Age, 'cdef', true);
         end;
-        if (iDay <> '0') and (iMonth <> '0') and (iYear <> '0') then begin
+        if (iDay <> '0') and (iMonth <> '0') and (iYear <> '0') then
+        begin
           AddHTML(BottomHTMLViewer, InfoBirDate + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, iDay + '.' + iMonth + '.' + iYear, 'cdef', true);
         end;
@@ -293,20 +316,23 @@ begin
       finally
         CloseKey();
       end;
-      
+
       //--Место рождения
-      if OpenKey('settings\orig-home-info') then try
+      if OpenKey('settings\orig-home-info') then
+      try
         oCountry := ReadString('country');
         //--Получаем текст страны из кода
         if Assigned(IcqOptionsForm) then
           oCountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(oCountry)];
         oCity := ReadString('city');
         oState := ReadString('state');
-        if IsNotNull([oCountry, oCity]) then begin
+        if IsNotNull([oCountry, oCity]) then
+        begin
           AddHTML(BottomHTMLViewer, InfoOHomeL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([oCountry, oCity]), 'cdef', true);
         end;
-        if Trim(oState) <> EmptyStr then begin
+        if Trim(oState) <> EmptyStr then
+        begin
           AddHTML(BottomHTMLViewer, InfoStateL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, oState, 'cdef', true);
         end;
@@ -315,9 +341,10 @@ begin
       finally
         CloseKey();
       end;
-      
+
       //--Работа
-      if OpenKey('settings\work-info') then try
+      if OpenKey('settings\work-info') then
+      try
         wCity := ReadString('city');
         wState := ReadString('state');
         wZip := ReadString('zip');
@@ -334,42 +361,53 @@ begin
         //--Получаем текст занятия из кода
         if Assigned(IcqOptionsForm) then
           Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Strings[IcqOptionsForm.OccupationCodeComboBox.Items.IndexOf(Occupation)];
-        if IsNotNull([wCountry, wCity]) then begin
+        if IsNotNull([wCountry, wCity]) then
+        begin
           AddHTML(BottomHTMLViewer, InfoWorkL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([wCountry, wCity]), 'cdef', true);
         end;
-        if IsNotNull([wAddress, wState, wZip]) then begin
-          if Trim(wAddress) <> EmptyStr then begin
+        if IsNotNull([wAddress, wState, wZip]) then
+        begin
+          if Trim(wAddress) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoAdressL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wAddress, 'cdef', true);
           end;
-          if Trim(wState) <> EmptyStr then begin
+          if Trim(wState) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoStateL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wState, 'cdef', true);
           end;
-          if Trim(wZip) <> EmptyStr then begin
+          if Trim(wZip) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoZipL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wZip, 'cdef', true);
           end;
         end;
-        if IsNotNull([Company, Department, Position, Occupation, wSite]) then begin
-          if Trim(Company) <> EmptyStr then begin
+        if IsNotNull([Company, Department, Position, Occupation, wSite]) then
+        begin
+          if Trim(Company) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoCompanyL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Company, 'cdef', true);
           end;
-          if Trim(Department) <> EmptyStr then begin
+          if Trim(Department) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoDeportL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Department, 'cdef', true);
           end;
-          if Trim(Position) <> EmptyStr then begin
+          if Trim(Position) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoPositionL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Position, 'cdef', true);
           end;
-          if Trim(Occupation) <> EmptyStr then begin
+          if Trim(Occupation) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoOccupationL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Occupation, 'cdef', true);
           end;
-          if Trim(wSite) <> EmptyStr then begin
+          if Trim(wSite) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoWebSiteL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wSite, 'cdef', true);
           end;
@@ -382,32 +420,39 @@ begin
         CloseKey();
       end;
 
-      
+
       //--Телефоны
-      if OpenKey('settings\phone-info') then try
+      if OpenKey('settings\phone-info') then
+      try
         Phone := ReadString('phone1');
         Fax := ReadString('phone2');
         Cellular := ReadString('phone3');
         wPhone := ReadString('phone4');
         wFax := ReadString('phone5');
-        if IsNotNull([Phone, Fax, Cellular, wPhone, wFax]) then begin
-          if Trim(Phone) <> EmptyStr then begin
+        if IsNotNull([Phone, Fax, Cellular, wPhone, wFax]) then
+        begin
+          if Trim(Phone) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoPhoneL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Phone, 'cdef', true);
           end;
-          if Trim(Fax) <> EmptyStr then begin
+          if Trim(Fax) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoFaxL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Fax, 'cdef', true);
           end;
-          if Trim(Cellular) <> EmptyStr then begin
+          if Trim(Cellular) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoCellularL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Cellular, 'cdef', true);
           end;
-          if Trim(wPhone) <> EmptyStr then begin
+          if Trim(wPhone) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfowPhoneL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wPhone, 'cdef', true);
           end;
-          if Trim(wFax) <> EmptyStr then begin
+          if Trim(wFax) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfowFaxL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, wFax, 'cdef', true);
           end;
@@ -419,7 +464,8 @@ begin
       end;
 
       //--Интересы
-      if OpenKey('settings\interests-info') then try
+      if OpenKey('settings\interests-info') then
+      try
         Int1 := ReadString('int1');
         Int2 := ReadString('int2');
         Int3 := ReadString('int3');
@@ -428,14 +474,17 @@ begin
         CloseKey();
       end;
 
-      if OpenKey('settings\interests-id-info') then try
+      if OpenKey('settings\interests-id-info') then
+      try
         I1 := ReadString('int_id1');
         I2 := ReadString('int_id2');
         I3 := ReadString('int_id3');
         I4 := ReadString('int_id4');
         //--Получаем название интереса из кода интереса
-        if Assigned(IcqOptionsForm) then begin
-          with IcqOptionsForm do begin
+        if Assigned(IcqOptionsForm) then
+        begin
+          with IcqOptionsForm do
+          begin
             I1 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I1)];
             I2 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I2)];
             I3 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I3)];
@@ -443,21 +492,26 @@ begin
           end;
         end;
         //--Формируем отображение интересов
-        if IsNotNull([I1, I2, I3, I4, Int1, Int2, Int3, Int4]) then begin
+        if IsNotNull([I1, I2, I3, I4, Int1, Int2, Int3, Int4]) then
+        begin
           AddHTML(BottomHTMLViewer, InfoInterestsL + ' ', 'cbold', true);
-          if (Trim(I1) <> EmptyStr) or (Trim(Int1) <> EmptyStr) then begin
+          if (Trim(I1) <> EmptyStr) or (Trim(Int1) <> EmptyStr) then
+          begin
             AddHTML(BottomHTMLViewer, I1 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int1, 'cdef', true);
           end;
-          if (Trim(I2) <> EmptyStr) or (Trim(Int2) <> EmptyStr) then begin
+          if (Trim(I2) <> EmptyStr) or (Trim(Int2) <> EmptyStr) then
+          begin
             AddHTML(BottomHTMLViewer, I2 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int2, 'cdef', true);
           end;
-          if (Trim(I3) <> EmptyStr) or (Trim(Int3) <> EmptyStr) then begin
+          if (Trim(I3) <> EmptyStr) or (Trim(Int3) <> EmptyStr) then
+          begin
             AddHTML(BottomHTMLViewer, I3 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int3, 'cdef', true);
           end;
-          if (Trim(I4) <> EmptyStr) or (Trim(Int4) <> EmptyStr) then begin
+          if (Trim(I4) <> EmptyStr) or (Trim(Int4) <> EmptyStr) then
+          begin
             AddHTML(BottomHTMLViewer, I4 + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Int4, 'cdef', true);
           end;
@@ -469,7 +523,8 @@ begin
       end;
 
       //--Личное
-      if OpenKey('settings\personal-x-info') then try
+      if OpenKey('settings\personal-x-info') then
+      try
         Marital := ReadString('marital');
         Sexual := ReadString('sexual');
         Height := ReadString('height');
@@ -478,8 +533,10 @@ begin
         Hair := ReadString('hair');
         Children := ReadString('children');
         //--Получаем название из кода
-        if Assigned(IcqOptionsForm) then begin
-          with IcqOptionsForm do begin
+        if Assigned(IcqOptionsForm) then
+        begin
+          with IcqOptionsForm do
+          begin
             Marital := PersonalMaritalInfoComboBox.Items.Strings[MaritalCodesComboBox.Items.IndexOf(Marital)];
             Sexual := PersonalSexInfoComboBox.Items.Strings[SexCodesComboBox.Items.IndexOf(Sexual)];
             Relig := PersonalReligionInfoComboBox.Items.Strings[ReligionCodesComboBox.Items.IndexOf(Relig)];
@@ -488,16 +545,20 @@ begin
           end;
         end;
         //--Формируем отображение
-        if IsNotNull([Marital, Sexual, Height, Relig, Smok, Hair, Children]) then begin
-          if Trim(Marital) <> EmptyStr then begin
+        if IsNotNull([Marital, Sexual, Height, Relig, Smok, Hair, Children]) then
+        begin
+          if Trim(Marital) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoMaritalL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Marital, 'cdef', true);
           end;
-          if Trim(Sexual) <> EmptyStr then begin
+          if Trim(Sexual) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoSexualL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Sexual, 'cdef', true);
           end;
-          if Height <> '0' then begin
+          if Height <> '0' then
+          begin
             case StrToInt(Height) of
               140: Height := '140cm';
               145: Height := '141-145cm';
@@ -519,19 +580,23 @@ begin
             AddHTML(BottomHTMLViewer, InfoHeightL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Height, 'cdef', true);
           end;
-          if Trim(Relig) <> EmptyStr then begin
+          if Trim(Relig) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoReligL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Relig, 'cdef', true);
           end;
-          if Trim(Smok) <> EmptyStr then begin
+          if Trim(Smok) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoSmokL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Smok, 'cdef', true);
           end;
-          if Trim(Hair) <> EmptyStr then begin
+          if Trim(Hair) <> EmptyStr then
+          begin
             AddHTML(BottomHTMLViewer, InfoHairL + ' ', 'cbold');
             AddHTML(BottomHTMLViewer, Hair, 'cdef', true);
           end;
-          if Children <> '0' then begin
+          if Children <> '0' then
+          begin
             case StrToInt(Children) of
               1: Children := '1';
               2: Children := '2';
@@ -556,20 +621,24 @@ begin
       end;
 
       //--Языки
-      if OpenKey('settings\lang-info') then try
+      if OpenKey('settings\lang-info') then
+      try
         Lang1 := ReadString('lang1');
         Lang2 := ReadString('lang2');
         Lang3 := ReadString('lang3');
         //--Получаем название языка из кода языка
-        if Assigned(IcqOptionsForm) then begin
-          with IcqOptionsForm do begin
+        if Assigned(IcqOptionsForm) then
+        begin
+          with IcqOptionsForm do
+          begin
             Lang1 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang1)];
             Lang2 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang2)];
             Lang3 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang3)];
           end;
         end;
         //--Формируем отображение языков
-        if IsNotNull([Lang1, Lang2, Lang3]) then begin
+        if IsNotNull([Lang1, Lang2, Lang3]) then
+        begin
           AddHTML(BottomHTMLViewer, InfoLangL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, StrArrayToStr([Lang1, Lang2, Lang3]), 'cdef', true);
           //--Вставляем разделитель
@@ -580,9 +649,11 @@ begin
       end;
 
       //--О себе
-      if OpenKey('settings\about-info') then try
+      if OpenKey('settings\about-info') then
+      try
         About := Decrypt(ReadString('info'), 12345);
-        if Trim(About) <> EmptyStr then begin
+        if Trim(About) <> EmptyStr then
+        begin
           AddHTML(BottomHTMLViewer, InfoAboutL + ' ', 'cbold');
           AddHTML(BottomHTMLViewer, About, 'cdef', true);
           //--Вставляем разделитель
@@ -674,12 +745,15 @@ end;
 procedure TIcqContactInfoForm.FormCreate(Sender: TObject);
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then begin
+    if FileExists(MyPath + SettingsFileName) then
+    begin
       LoadFromFile(MyPath + SettingsFileName);
       //--Загружаем позицию окна
-      if OpenKey('settings\forms\contactinfoform\position') then try
+      if OpenKey('settings\forms\contactinfoform\position') then
+      try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
       finally
@@ -703,10 +777,12 @@ end;
 procedure TIcqContactInfoForm.FormDestroy(Sender: TObject);
 begin
   //--Сохраняем настройки положения окна в xml
-  With TrXML.Create() do try
+  with TrXML.Create() do
+  try
     if FileExists(MyPath + SettingsFileName) then
       LoadFromFile(MyPath + SettingsFileName);
-    if OpenKey('settings\forms\contactinfoform\position', True) then try
+    if OpenKey('settings\forms\contactinfoform\position', True) then
+    try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
     finally

@@ -214,46 +214,49 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents2Timer
       end
       item
-        Name = 'MRAMessagesTimer'
-        Enabled = False
-      end
-      item
-        Name = 'JabberMessagesTimer'
-        Enabled = False
-      end
-      item
         Name = 'ConnectIconTimer'
         Enabled = False
-        OnTimer = JvTimerListEvents5Timer
+        OnTimer = JvTimerListEvents3Timer
       end
       item
         Name = 'ICQFuckStatusTimer'
         Enabled = False
         Interval = 20000
-        OnTimer = JvTimerListEvents6Timer
+        OnTimer = JvTimerListEvents4Timer
       end
       item
         Name = 'ICQAliveTimer'
         Enabled = False
         Interval = 60000
-        OnTimer = JvTimerListEvents7Timer
+        OnTimer = JvTimerListEvents5Timer
       end
       item
         Name = 'AutoHideCLTimer'
         Enabled = False
         Interval = 10000
-        OnTimer = JvTimerListEvents8Timer
+        OnTimer = JvTimerListEvents6Timer
       end
       item
         Name = 'CreateSmiliesFormTimer'
         Cycled = False
         Enabled = False
-        OnTimer = JvTimerListEvents9Timer
+        OnTimer = JvTimerListEvents7Timer
       end
       item
         Name = 'ZipHistoryTimer'
         Interval = 60000
-        OnTimer = JvTimerListEvents10Timer
+        OnTimer = JvTimerListEvents8Timer
+      end
+      item
+        Name = 'JabberAliveTimer'
+        Enabled = False
+        Interval = 60000
+        OnTimer = JvTimerListEvents9Timer
+      end
+      item
+        Name = 'MRAAliveTimer'
+        Enabled = False
+        Interval = 60000
       end>
     Left = 16
     Top = 264
@@ -311,7 +314,7 @@ object MainForm: TMainForm
     Hint = 'IMadering MRA'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
-    OnClick = MRATrayIconClick
+    OnClick = ICQTrayIconClick
     OnMouseDown = ICQTrayIconMouseDown
     Left = 16
     Top = 48
@@ -320,7 +323,7 @@ object MainForm: TMainForm
     Hint = 'IMadering Jabber'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
-    OnClick = JabberTrayIconClick
+    OnClick = ICQTrayIconClick
     OnMouseDown = ICQTrayIconMouseDown
     Left = 16
     Top = 80
@@ -355,7 +358,11 @@ object MainForm: TMainForm
     OnDataAvailable = ICQWSocketDataAvailable
     OnSendData = ICQWSocketSendData
     OnSessionClosed = ICQWSocketSessionClosed
+    OnSessionAvailable = ICQWSocketSessionAvailable
     OnSessionConnected = ICQWSocketSessionConnected
+    OnSocksConnected = ICQWSocketSocksConnected
+    OnError = ICQWSocketError
+    OnSocksError = ICQWSocketSocksError
     Left = 48
     Top = 16
   end
@@ -419,7 +426,11 @@ object MainForm: TMainForm
     OnDataAvailable = JabberWSocketDataAvailable
     OnSendData = JabberWSocketSendData
     OnSessionClosed = JabberWSocketSessionClosed
+    OnSessionAvailable = JabberWSocketSessionAvailable
     OnSessionConnected = JabberWSocketSessionConnected
+    OnSocksConnected = JabberWSocketSocksConnected
+    OnError = JabberWSocketError
+    OnSocksError = JabberWSocketSocksError
     Left = 48
     Top = 80
   end
@@ -469,11 +480,14 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
+    OnSessionClosed = UpdateHttpClientSessionClosed
     OnDocBegin = UpdateHttpClientDocBegin
     OnDocData = UpdateHttpClientDocData
     OnDocEnd = UpdateHttpClientDocEnd
     OnSendEnd = UpdateHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
+    OnSocksConnected = UpdateHttpClientSocksConnected
+    OnSocksError = UpdateHttpClientSocksError
     Left = 48
     Top = 112
   end
@@ -623,7 +637,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ICQStatusOffline: TMenuItem
-      Tag = 999
       Caption = #1053#1077' '#1074' '#1089#1077#1090#1080
       Default = True
       ImageIndex = 9
@@ -702,6 +715,7 @@ object MainForm: TMainForm
     object JabberStatusOnline: TMenuItem
       Caption = #1042' '#1089#1077#1090#1080
       ImageIndex = 28
+      OnClick = JabberStatusOnlineClick
     end
     object N12: TMenuItem
       Caption = '-'
@@ -710,6 +724,7 @@ object MainForm: TMainForm
       Caption = #1053#1077' '#1074' '#1089#1077#1090#1080
       Default = True
       ImageIndex = 30
+      OnClick = JabberStatusOfflineClick
     end
   end
   object ContactPopupMenu: TPopupMenu
@@ -833,9 +848,12 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
+    OnSessionClosed = MRAAvatarHttpClientSessionClosed
     OnDocEnd = MRAAvatarHttpClientDocEnd
     OnSendEnd = MRAAvatarHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
+    OnSocksConnected = MRAAvatarHttpClientSocksConnected
+    OnSocksError = MRAAvatarHttpClientSocksError
     Left = 80
     Top = 48
   end

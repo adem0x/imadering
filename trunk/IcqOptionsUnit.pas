@@ -241,7 +241,6 @@ type
     procedure ApplyButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure ShowPassCheckBoxClick(Sender: TObject);
-    procedure SavePassCheckBoxClick(Sender: TObject);
     procedure ReqPassLabelClick(Sender: TObject);
     procedure ShowPassChangeCheckBoxClick(Sender: TObject);
     procedure ChangePassButtonClick(Sender: TObject);
@@ -277,7 +276,7 @@ implementation
 uses
   MainUnit, IcqProtoUnit, Code, SettingsUnit, UtilsUnit, IcqRegNewUINUnit;
 
-//APPLY SETTINGS----------------------------------------------------------------
+//--APPLY SETTINGS--------------------------------------------------------------
 
 procedure TIcqOptionsForm.ApplySettings;
 begin
@@ -290,8 +289,11 @@ begin
   if ICQUINEdit.Enabled then
   begin
     ICQ_LoginUIN := ICQUINEdit.Text;
-    PassEdit.Hint := PassEdit.Text;
-    ICQ_LoginPassword := PassEdit.Hint;
+    if PassEdit.Text <> '----------------------' then
+    begin
+      PassEdit.Hint := PassEdit.Text;
+      ICQ_LoginPassword := PassEdit.Hint;
+    end;
   end;
   //----------------------------------------------------------------------------
   //--Записываем настройки ICQ протокола в файл
@@ -313,6 +315,7 @@ begin
     if OpenKey('settings\icq\show-hide-contacts', True) then
     try
       WriteBool('value', ShowHideContactsCheckBox.Checked);
+      ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
     finally
       CloseKey();
     end;
@@ -324,7 +327,7 @@ begin
   ApplyButton.Enabled := false;
 end;
 
-//LOAD SETTINGS-----------------------------------------------------------------
+//--LOAD SETTINGS---------------------------------------------------------------
 
 procedure TIcqOptionsForm.LoadSettings;
 begin
@@ -391,7 +394,7 @@ end;
 
 procedure TIcqOptionsForm.TranslateForm;
 begin
-  //
+  //--Переводим форму на другие языки
 
   //--Присваиваем список стран другим комбобоксам отображающим такой же список
   OCountryInfoComboBox.Items.Assign(CountryInfoComboBox.Items);
@@ -534,11 +537,6 @@ begin
   else PassEdit.PasswordChar := '*';
   //--Восстанавливаем событие изменения поля пароля
   PassEdit.OnChange := ICQUINEditChange;
-end;
-
-procedure TIcqOptionsForm.SavePassCheckBoxClick(Sender: TObject);
-begin
-  //Edit1Change(self);
 end;
 
 procedure TIcqOptionsForm.ShowPassChangeCheckBoxClick(Sender: TObject);
