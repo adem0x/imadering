@@ -1,7 +1,7 @@
 object MraXStatusForm: TMraXStatusForm
   Left = 0
   Top = 0
-  BorderStyle = bsToolWindow
+  BorderStyle = bsDialog
   Caption = ' '#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
   ClientHeight = 302
   ClientWidth = 223

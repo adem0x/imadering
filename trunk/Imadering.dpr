@@ -28,7 +28,8 @@ uses
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
   UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
   IcsLogUnit in 'IcsLogUnit.pas' {IcsLogForm},
-  TrafficUnit in 'TrafficUnit.pas' {TrafficForm};
+  TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
+  RosterUnit in 'RosterUnit.pas' {RosterForm};
 
 {$R *.res}
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -40,6 +41,7 @@ begin
   Application.Title := 'IMadering';
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TRosterForm, RosterForm);
   ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

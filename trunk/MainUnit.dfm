@@ -271,6 +271,11 @@ object MainForm: TMainForm
       Visible = False
       OnClick = OpenTestClick
     end
+    object RosterMainMenu: TMenuItem
+      Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      ImageIndex = 1
+      OnClick = RosterMainMenuClick
+    end
     object OpenSocketLog: TMenuItem
       Caption = #1051#1086#1075' '#1089#1086#1082#1077#1090#1086#1074
       ImageIndex = 227

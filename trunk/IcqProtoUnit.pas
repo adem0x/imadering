@@ -2397,18 +2397,18 @@ begin
           except
           end;
           //--Сохраняем полученные данные в локальный файл инфы о контакте
-
-          with TrXML.Create() do try
-            //--Сохраняем позицию окна
-            if OpenKey('settings\name-info', True) then try
+          with TrXML.Create() do
+          try
+            if OpenKey('settings\name-info', True) then
+            try
               WriteString('nick', Nick);
               WriteString('first', First);
               WriteString('last', Last);
             finally
               CloseKey;
             end;
-
-            if OpenKey('settings\personal-info', True) then try
+            if OpenKey('settings\personal-info', True) then
+            try
               WriteInteger('gender', Gender);
               WriteBool('auth', Auth);
               WriteBool('webaware', WebAware);
@@ -2417,8 +2417,8 @@ begin
             finally
               CloseKey;
             end;
-
-            if OpenKey('settings\home-info', True) then try
+            if OpenKey('settings\home-info', True) then
+            try
               WriteString('address', Address);
               WriteString('city', City);
               WriteString('state', State);
@@ -2427,24 +2427,24 @@ begin
             finally
               CloseKey;
             end;
-
-            if OpenKey('settings\orig-home-info', True) then try
+            if OpenKey('settings\orig-home-info', True) then
+            try
               WriteInteger('country', oCountry);
               WriteString('city', oCity);
               WriteString('state', oState);
             finally
               CloseKey;
             end;
-
-            if OpenKey('settings\lang-info', True) then try
+            if OpenKey('settings\lang-info', True) then
+            try
               WriteInteger('lang1', Lang1);
               WriteInteger('lang2', Lang2);
               WriteInteger('lang3', Lang3);
             finally
               CloseKey;
             end;
-
-            if OpenKey('settings\phone-info', True) then try
+            if OpenKey('settings\phone-info', True) then
+            try
               WriteString('phone1', Phone);
               WriteString('phone2', Fax);
               WriteString('phone3', Cellular);
@@ -2453,8 +2453,8 @@ begin
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\work-info', True) then try
+            if OpenKey('settings\work-info', True) then
+            try
               WriteString('city', wCity);
               WriteString('state', wState);
               WriteString('zip', wZip);
@@ -2468,8 +2468,8 @@ begin
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\interests-info', True) then try
+            if OpenKey('settings\interests-info', True) then
+            try
               WriteString('int1', Int1);
               WriteString('int2', Int2);
               WriteString('int3', Int3);
@@ -2477,14 +2477,14 @@ begin
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\about-info', True) then try
+            if OpenKey('settings\about-info', True) then
+            try
               WriteString('info', Encrypt(About, 12345));
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\age-info', True) then try
+            if OpenKey('settings\age-info', True) then
+            try
               WriteInteger('age', Age);
               WriteInteger('day', iDay);
               WriteInteger('month', iMonth);
@@ -2492,16 +2492,16 @@ begin
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\emails-info', True) then try
+            if OpenKey('settings\emails-info', True) then
+            try
               WriteString('email1', Email1);
               WriteString('email2', Email2);
               WriteString('email3', Email3);
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\interests-id-info', True) then try
+            if OpenKey('settings\interests-id-info', True) then
+            try
               WriteInteger('int_id1', I1);
               WriteInteger('int_id2', I2);
               WriteInteger('int_id3', I3);
@@ -2509,8 +2509,8 @@ begin
             finally
               CloseKey();
             end;
-
-            if OpenKey('settings\personal-x-info', True) then try
+            if OpenKey('settings\personal-x-info', True) then
+            try
               WriteInteger('marital', Marital);
               WriteInteger('sexual', Sexual);
               WriteInteger('height', Height);
@@ -2521,7 +2521,6 @@ begin
             finally
               CloseKey();
             end;
-
             //--Создаём необходимые папки
             ForceDirectories(MyPath + 'Profile\Contacts');
             //--Записываем сам файл
@@ -2546,9 +2545,9 @@ begin
             Free();
           end;
           //--Отображаем в окне информации о контакте полученные данные
-          if Assigned(IcqContactInfoForm) then begin
-            if IcqContactInfoForm.ReqUIN = UIN then
-              IcqContactInfoForm.LoadUserUnfo;
+          if Assigned(IcqContactInfoForm) then
+          begin
+            if IcqContactInfoForm.ReqUIN = UIN then IcqContactInfoForm.LoadUserUnfo;
           end;
           //
           {if Assigned(IcqOptionsForm) then
@@ -2843,6 +2842,7 @@ begin
         end;
         Application.ProcessMessages;
       end;
+      Application.ProcessMessages;
     end;
   end;
   //--Если ник не нашли в КЛ, то ищем его в файле-кэше ников
@@ -4449,13 +4449,36 @@ begin
 end;
 
 procedure ICQ_NotifyUserStatus(UIN, iStatus, iClient: string; iColor: integer);
+label
+  a;
 var
-  clz: string;
+  clz, cnz: string;
+  i, ii: integer;
 begin
+  //--Ищем ник этой учётной записи в КЛ
+  with MainForm.ContactList do
+  begin
+    for i := 0 to Categories.Count - 1 do
+    begin
+      for ii := 0 to Categories[i].Items.Count - 1 do
+      begin
+        if Categories[i].Items[ii].UIN = UIN then
+        begin
+          cnz := Categories[i].Items[ii].Caption;
+          //--Если ник нашли, то выходим из цыкла
+          goto a;
+        end;
+        Application.ProcessMessages;
+      end;
+      Application.ProcessMessages;
+    end;
+  end;
+  a: ;
   //--Отображаем всплывающим сообщением статус контакта
   if iClient > EmptyStr then clz := ClientL + ' ' + iClient;
-  DAShow(InformationHead, '[ ' + UIN + ' ]' + #13#10 + #13#10 + StatusL + ' ' + iStatus +
-    #13#10 + #13#10 + clz, EmptyStr, 133, iColor, 0);
+  DAShow(InformationHead, InfoNickL + ' ' + cnz + #13#10 +
+    'ICQ#: ' + UIN + #13#10 + StatusL + ' ' +
+    iStatus + #13#10 + clz, EmptyStr, 133, iColor, 0);
 end;
 
 function ICQ_NotifyAuthCookieError(ErrCode: string): string;

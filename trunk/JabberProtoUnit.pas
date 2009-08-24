@@ -36,6 +36,7 @@ var
   IqTypeSet: string = '<iq type=''set'' id=''imadering_%d''>';
   IqTypeGet: string = '<iq type=''get'' id=''imadering_%d''>';
   FRootTag: string = 'stream:stream';
+  Iq_Roster: string = 'jabber:iq:roster';
 
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
 procedure Jabber_GoOffline;
@@ -43,6 +44,7 @@ function Jabber_SetBind: string;
 function Jabber_SetSession: string;
 function Jabber_GetRoster: string;
 function Jabber_SetStatus(jStatus: integer): string;
+procedure Jabber_ParseRoster(XmlData: string);
 
 implementation
 
@@ -260,6 +262,48 @@ begin
   Result := '<presence><priority>' + JabberPriority + '</priority>' +
     '<c xmlns=''http://jabber.org/protocol/caps'' node=''http://imadering.com/caps'' ver=''0.5.0.0''/>' +
     st + '</presence>';
+end;
+
+procedure Jabber_ParseRoster(XmlData: string);
+var
+  cnt, i: integer;
+begin
+  cnt := 0;
+  //--Инициализируем XML
+  with TrXML.Create() do
+  try
+    begin
+      Text := XmlData;
+      if OpenKey('iq\query') then
+      try
+        cnt := GetKeyCount('item');
+      finally
+        CloseKey();
+      end;
+      //--Разбираем список контктов Jabber
+      with MainForm.ContactList do
+      begin
+        for i := 0 to cnt - 1 do
+        begin
+
+          if OpenKey('iq\query\item', false, i) then
+          try
+            showmessage(ReadString('name'));
+            OpenKey('group', false, 0);
+            showmessage(GetKeyText);
+
+            //--Добавляем в локальный список контактов группу если такая ещё не создана
+
+          finally
+            CloseKey();
+          end;
+
+        end;
+      end;
+    end;
+  finally
+    Free();
+  end;
 end;
 
 end.

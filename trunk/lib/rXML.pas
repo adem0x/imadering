@@ -67,6 +67,7 @@ type
 
     // XML текст для данной ветки
     function GetKeyXML: string;
+    function GetKeyText: string;
     procedure SetKeyXML(const aValue: string);
 
     procedure SaveToFile(const FileName: string);
@@ -151,6 +152,11 @@ end;
 function TrXML.GetKeyXML: string;
 begin
   Result := Trim(GetNode.XML);
+end;
+
+function TrXML.GetKeyText: string;
+begin
+  Result := Trim(GetNode.Text);
 end;
 
 procedure TrXML.SetKeyXML(const aValue: string);

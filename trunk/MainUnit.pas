@@ -148,6 +148,7 @@ type
     JabberStatusDepression: TMenuItem;
     JabberStatusEvil: TMenuItem;
     JabberStatusFFC: TMenuItem;
+    RosterMainMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -259,6 +260,7 @@ type
     procedure JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure JvTimerListEvents9Timer(Sender: TObject);
+    procedure RosterMainMenuClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -297,7 +299,7 @@ uses
   MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit, UpdateUnit,
-  JabberProtoUnit, MraProtoUnit;
+  JabberProtoUnit, MraProtoUnit, RosterUnit;
 
 procedure TMainForm.ZipHistory;
 var
@@ -470,9 +472,9 @@ procedure TMainForm.MRASettingsClick(Sender: TObject);
 begin
   //--Открываем настройки сети MRA протокола
   if not Assigned(MraOptionsForm) then MraOptionsForm := TMraOptionsForm.Create(self);
+  //--Отображаем окно
+  if MraOptionsForm.Visible then ShowWindow(MraOptionsForm.Handle, SW_RESTORE);
   MraOptionsForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(MraOptionsForm.Handle);
 end;
 
 procedure TMainForm.JabberEnable(OnOff: boolean);
@@ -499,9 +501,9 @@ procedure TMainForm.JabberSettingsClick(Sender: TObject);
 begin
   //--Открываем настройки сети Jabber протокола
   if not Assigned(JabberOptionsForm) then JabberOptionsForm := TJabberOptionsForm.Create(self);
+  //--Отображаем окно
+  if JabberOptionsForm.Visible then ShowWindow(JabberOptionsForm.Handle, SW_RESTORE);
   JabberOptionsForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(JabberOptionsForm.Handle);
 end;
 
 procedure TMainForm.JabberStatusOfflineClick(Sender: TObject);
@@ -536,12 +538,18 @@ begin
   //--Ставим запасное значение статуса для протокола
   Jabber_CurrentStatus_bac := ICQ_CurrentStatus;
   //--Ставим иконки статуса в окне и в трэе
-  JabberToolButton.ImageIndex := Jabber_CurrentStatus;
-  JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+  if not Jabber_Offline_Phaze then
+  begin
+    JabberToolButton.ImageIndex := Jabber_CurrentStatus;
+    JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+  end;
   //--Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
   begin
     try
+      //--Ставим иконки статуса в окне и в трэе
+      JabberToolButton.ImageIndex := 168;
+      JabberTrayIcon.IconIndex := 168;
       //--Блокируем контролы логина и пароля ICQ
       if Assigned(JabberOptionsForm) then
       begin
@@ -573,17 +581,11 @@ begin
         JabberWSocket.Addr := Jabber_ServerAddr;
         JabberWSocket.Port := Jabber_ServerPort;
       end;
+      //--Прорисовываем фэйс
+      Application.ProcessMessages;
       //--Подключаем сокет
       JabberWSocket.Connect;
     except
-      on E: Exception do
-      begin
-        //--Если при подключении произошла ошибка, то сообщаем об этом
-        //E.Message;
-        DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
-        //--Активиуем режим оффлайн
-        Jabber_GoOffline;
-      end;
     end;
   end;
   //--Отсылаем пакет со статусом
@@ -602,10 +604,9 @@ begin
   if not Assigned(HistoryForm) then HistoryForm := THistoryForm.Create(self);
   //--Загружаем файл истории для текущего чата
   HistoryForm.LoadHistoryFromFile(ContactList.SelectedItem.UIN);
-  //--Отображаем окно на передний план
+  //--Отображаем окно
   if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
   HistoryForm.Show;
-  SetForeGroundWindow(HistoryForm.Handle);
 end;
 
 procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
@@ -758,9 +759,9 @@ procedure TMainForm.ICQSettingsClick(Sender: TObject);
 begin
   //--Открываем окно настроек ICQ протокола
   if not Assigned(IcqOptionsForm) then IcqOptionsForm := TIcqOptionsForm.Create(self);
+  //--Отображаем окно
+  if IcqOptionsForm.Visible then ShowWindow(IcqOptionsForm.Handle, SW_RESTORE);
   IcqOptionsForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(IcqOptionsForm.Handle);
 end;
 
 procedure TMainForm.ICQStatusOfflineClick(Sender: TObject);
@@ -794,9 +795,12 @@ begin
   ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
   //--Ставим запасное значение статуса для протокола
   ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
-  //--Ставим иконки статуса в окне и в трэе
-  ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-  ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+  //--Ставим иконки статусов в окне и в трэе
+  if not ICQ_Offline_Phaze then
+  begin
+    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    ICQToolButton.ImageIndex := ICQ_CurrentStatus;
+  end;
   //--Отключаем статус Нестабильный если он включен
   if JvTimerList.Events[4].Enabled then
   begin
@@ -807,6 +811,9 @@ begin
   if ICQ_Offline_Phaze then
   begin
     try
+      //--Ставим иконки подключения в окне и в трэе
+      ICQTrayIcon.IconIndex := 168;
+      ICQToolButton.ImageIndex := 168;
       //--Блокируем контролы логина и пароля ICQ
       if Assigned(IcqOptionsForm) then
       begin
@@ -839,6 +846,8 @@ begin
         ICQWSocket.Addr := ICQ_LoginServerAddr;
         ICQWSocket.Port := ICQ_LoginServerPort;
       end;
+      //--Прорисовываем фэйс
+      Application.ProcessMessages;
       //--Подключаем сокет
       ICQWSocket.Connect;
     except
@@ -1545,12 +1554,13 @@ begin
   if not Assigned(IcqXStatusForm) then IcqXStatusForm := TIcqXStatusForm.Create(self);
   //--Вычисляем позицию окна от позиции курсора
   GetCursorPos(FCursor);
-  IcqXStatusForm.Top := FCursor.Y - (IcqXStatusForm.Height div 2);
-  IcqXStatusForm.Left := FCursor.X - (IcqXStatusForm.Width div 2);
-  //--Показываем окно доп. статуса
-  IcqXStatusForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(IcqXStatusForm.Handle);
+  with IcqXStatusForm do
+  begin
+    Top := FCursor.Y - (Height div 2);
+    Left := FCursor.X - (Width div 2);
+    //--Показываем окно доп. статуса
+    Show;
+  end;
 end;
 
 procedure TMainForm.JabberToolButtonClick(Sender: TObject);
@@ -1717,9 +1727,20 @@ begin
               finally
                 CloseKey();
               end;
+            end
+            else
+            begin
+              //--Парсим пакеты iq
+              if OpenKey('iq\query') then
+              try
+                begin
+                  //--Разбираем список контктов Jabber
+                  if ReadString('xmlns') = Iq_Roster then Jabber_ParseRoster(Pkt);
+                end;
+              finally
+                CloseKey();
+              end;
             end;
-            //--Парсим пакеты iq
-
           finally
             Free();
           end;
@@ -1848,12 +1869,13 @@ end;
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
 var
   i, ii: integer;
-  YesMsg, GroupRoasterMsg: boolean;
+  YesMsgICQ, YesMsgJabber, GroupRoasterMsg: boolean;
 begin
   //--Смотрим по таймеру везде все флаги сообщений не прочитанных
   //и отображаем иконки мигающих сообщений
   //--Обнуляем местные метки
-  YesMsg := false;
+  YesMsgICQ := false;
+  YesMsgJabber := false;
   GroupRoasterMsg := false;
   //--Сканируем и управляем иконками контактов с флагами сообщений
   with MainForm.ContactList do
@@ -1882,7 +1904,8 @@ begin
               Categories[i].Items[ii].ImageIndex := Categories[i].Items[ii].Status
             else Categories[i].Items[ii].ImageIndex := 165;
             //--Ставим метку, что в этой группе были найдены контакты с сообщениями
-            YesMsg := true;
+            if Categories[i].Items[ii].ContactType = 'Icq' then YesMsgICQ := true
+            else if Categories[i].Items[ii].ContactType = 'Jabber' then YesMsgJabber := true;
             //--Если группа свёрнута, то мигаем ей один раз
             if (Categories[i].Collapsed) and (not GroupRoasterMsg) then
             begin
@@ -1900,7 +1923,7 @@ begin
             if Categories[i].Items[ii].ImageIndex <> Categories[i].Items[ii].Status then
               Categories[i].Items[ii].ImageIndex := Categories[i].Items[ii].Status;
             //--Если нет сообщений вообще, то делаем текст группы чёрным
-            if (not YesMsg) and (not GroupRoasterMsg) then Categories[i].TextColor := clBlack;
+            if ((not YesMsgICQ) and (not YesMsgJabber)) and (not GroupRoasterMsg) then Categories[i].TextColor := clBlack;
           end;
         end;
         //--Не даём замерзать интерфейсу
@@ -1965,7 +1988,7 @@ begin
   if not JvTimerList.Events[3].Enabled then
   begin
     //--Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-    if (YesMsg) and (InMessList.Count > 0) then
+    if (YesMsgICQ) and (InMessList.Count > 0) then
     begin
       //--Ставим флаг в трэе, что есть сообщения для открытия
       ICQTrayIcon.Tag := 1;
@@ -1976,9 +1999,25 @@ begin
     end
     else
     begin
-      //--Сбрасываем отображение иконки сообщений в трэе
+      //--Сбрасываем отображение иконки сообщений в трэе для ICQ
       ICQTrayIcon.Tag := 0;
       ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    end;
+    //--Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
+    if (YesMsgJabber) and (InMessList.Count > 0) then
+    begin
+      //--Ставим флаг в трэе, что есть сообщения для открытия
+      JabberTrayIcon.Tag := 1;
+      //--Если иконка сообщения уже отображается, то меняем её на статус,
+      //если наоборот, то на иконку сообщения
+      if JabberTrayIcon.IconIndex = 165 then JabberTrayIcon.IconIndex := Jabber_CurrentStatus
+      else JabberTrayIcon.IconIndex := 165;
+    end
+    else
+    begin
+      //--Сбрасываем отображение иконки сообщений в трэе для ICQ
+      JabberTrayIcon.Tag := 0;
+      JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
     end;
   end;
 end;
@@ -2002,10 +2041,14 @@ begin
 end;
 
 procedure TMainForm.JvTimerListEvents3Timer(Sender: TObject);
+var
+  NoStopTimer: boolean;
 begin
-  //--Отображаем мигающую иконку подключения к серверу
+  NoStopTimer := false;
+  //--Отображаем мигающую иконку подключения к серверу ICQ
   if (ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze) then
   begin
+    NoStopTimer := true;
     if ICQTrayIcon.IconIndex <> 168 then
     begin
       ICQTrayIcon.IconIndex := 168;
@@ -2019,11 +2062,31 @@ begin
   end
   else
   begin
-    //--Останавливаем таймер
-    JvTimerList.Events[3].Enabled := false;
     ICQToolButton.ImageIndex := ICQ_CurrentStatus;
     ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
   end;
+  //--Отображаем мигающую иконку подключения к серверу Jabber
+  if Jabber_Connect_Phaze then
+  begin
+    NoStopTimer := true;
+    if JabberTrayIcon.IconIndex <> 168 then
+    begin
+      JabberTrayIcon.IconIndex := 168;
+      JabberToolButton.ImageIndex := 168;
+    end
+    else
+    begin
+      JabberTrayIcon.IconIndex := 169;
+      JabberToolButton.ImageIndex := 169;
+    end;
+  end
+  else
+  begin
+    JabberToolButton.ImageIndex := Jabber_CurrentStatus;
+    JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+  end;
+  //--Останавливаем таймер
+  if not NoStopTimer then JvTimerList.Events[3].Enabled := false;
 end;
 
 procedure TMainForm.JvTimerListEvents4Timer(Sender: TObject);
@@ -2161,12 +2224,13 @@ begin
   if not Assigned(MraXStatusForm) then MraXStatusForm := TMraXStatusForm.Create(self);
   //--Вычисляем позицию окна от позиции курсора
   GetCursorPos(FCursor);
-  MraXStatusForm.Top := FCursor.Y - (MraXStatusForm.Height div 2);
-  MraXStatusForm.Left := FCursor.X - (MraXStatusForm.Width div 2);
-  //--Показываем окно доп. статуса
-  MraXStatusForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(MraXStatusForm.Handle);
+  with MraXStatusForm do
+  begin
+    Top := FCursor.Y - (Height div 2);
+    Left := FCursor.X - (Width div 2);
+    //--Показываем окно доп. статуса
+    Show;
+  end;
 end;
 
 procedure TMainForm.CheckStatusContactClick(Sender: TObject);
@@ -2192,7 +2256,7 @@ begin
   //--Показываем сколько трафика передано всего
   TrafficForm.Edit2.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3) + ' Мб | ' +
     FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' Мб | ' + AllSesDataTraf;
-  //--Отображаем окно модально
+  //--Отображаем окно
   if not TrafficForm.Visible then TrafficForm.Show;
 end;
 
@@ -2200,22 +2264,14 @@ procedure TMainForm.OpenSocketLogClick(Sender: TObject);
 begin
   //--Отображаем окно лога сокетов
   if not Assigned(IcsLogForm) then IcsLogForm := TIcsLogForm.Create(self);
-  //--Отображаем окно на передний план
+  //--Отображаем окно
   if IcsLogForm.Visible then ShowWindow(IcsLogForm.Handle, SW_RESTORE);
   IcsLogForm.Show;
-  SetForeGroundWindow(IcsLogForm.Handle);
 end;
 
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   //--Место для запуска тестов
-
-  {if not Assigned(IcqReqAuthForm) then IcqReqAuthForm := TIcqReqAuthForm.Create(self);
-  IcqReqAuthForm.UpDateVersion('test');
-
-  IcqReqAuthForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(IcqReqAuthForm.Handle);}
 
 end;
 
@@ -2238,9 +2294,9 @@ procedure TMainForm.OpenSettingsClick(Sender: TObject);
 begin
   //--Открываем окно с настройками программы
   if not Assigned(SettingsForm) then SettingsForm := TSettingsForm.Create(self);
+  //--Отображаем окно
+  if SettingsForm.Visible then ShowWindow(SettingsForm.Handle, SW_RESTORE);
   SettingsForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(SettingsForm.Handle);
 end;
 
 procedure TMainForm.RenemeGroupCLClick(Sender: TObject);
@@ -2248,13 +2304,20 @@ begin
   ShowMessage(DevelMess);
 end;
 
+procedure TMainForm.RosterMainMenuClick(Sender: TObject);
+begin
+  //--Открываем окно списка контактов
+  if RosterForm.Visible then ShowWindow(RosterForm.Handle, SW_RESTORE);
+  RosterForm.Show;
+end;
+
 procedure TMainForm.AboutIMaderingClick(Sender: TObject);
 begin
   //--Открываем окно о программе
   if not Assigned(AboutForm) then AboutForm := TAboutForm.Create(self);
+  //--Отображаем окно
+  if AboutForm.Visible then ShowWindow(AboutForm.Handle, SW_RESTORE);
   AboutForm.Show;
-  //--Выводим окно на самый передний план, против глюков в вин и вайн
-  SetForeGroundWindow(AboutForm.Handle);
 end;
 
 procedure TMainForm.CloseGroupsCLClick(Sender: TObject);
@@ -2350,7 +2413,6 @@ begin
     //--Отображаем окно сообщений
     if ChatForm.Visible then ShowWindow(ChatForm.Handle, SW_RESTORE);
     ChatForm.Show;
-    SetForegroundWindow(ChatForm.Handle);
     //--Ставим фокус в поле ввода текста
     if (ChatForm.InputMemo.CanFocus) and (ChatForm.Visible) then ChatForm.InputMemo.SetFocus;
     //--Запрашиваем анкету неопознанных контактов
@@ -2599,11 +2661,7 @@ begin
     JvTimerList.Events[6].Enabled := true;
   end;
   //--Убираем тут глюк в вайн с активацией окна чата (для сброса сообщения)
-  if Assigned(ChatForm) then
-  begin
-    //--Отлично это сработало!
-    if ChatForm.Active then ChatForm.FormActivate(self);
-  end;
+  if Assigned(ChatForm) then if ChatForm.Active then ChatForm.FormActivate(self);
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2676,10 +2734,9 @@ begin
   IcqContactInfoForm.ReqUIN := ContactList.SelectedItem.UIN;
   //--Загружаем информацию о нем
   IcqContactInfoForm.LoadUserUnfo;
-  //--Отображаем окно на передний план
+  //--Отображаем окно
   if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
   IcqContactInfoForm.Show;
-  SetForeGroundWindow(IcqContactInfoForm.Handle);
 end;
 
 procedure TMainForm.AppActivate(Sender: TObject);
@@ -2921,7 +2978,6 @@ begin
   //--Отображаем окно
   if CLSearchForm.Visible then ShowWindow(CLSearchForm.Handle, SW_RESTORE);
   CLSearchForm.Show;
-  SetForeGroundWindow(CLSearchForm.Handle);
 end;
 
 procedure TMainForm.SendAddContactClick(Sender: TObject);
@@ -3048,10 +3104,9 @@ procedure TMainForm.OpenHistoryClick(Sender: TObject);
 begin
   //--Открываем пустое окно истории сообщений
   if not Assigned(HistoryForm) then HistoryForm := THistoryForm.Create(self);
-  //--Отображаем окно на передний план
+  //--Отображаем окно
   if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
   HistoryForm.Show;
-  SetForeGroundWindow(HistoryForm.Handle);
 end;
 
 procedure TMainForm.LoadContactList;
@@ -3109,12 +3164,14 @@ begin
               end;
               Categories[i].Items[k].ImageIndex1 := -1;
               Categories[i].Items[k].ImageIndex2 := -1;
-              //--Растормаживаем фэйс
-              Application.ProcessMessages;
             finally
               CloseKey();
             end;
+            //--Растормаживаем фэйс
+            Application.ProcessMessages;
           end;
+          //--Растормаживаем фэйс
+          Application.ProcessMessages;
         end;
     end;
   finally
