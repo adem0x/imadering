@@ -181,6 +181,7 @@ var
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
   JabberLoginErrorL: string = 'Неправильный JID или пароль.';
   HttpSocketErrCodeL: string = 'Код ошибки: %d';
+  JabberPktErrorL: string = 'Неправильные XML данные!';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';

@@ -15,7 +15,7 @@ object RosterForm: TRosterForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object JvListView1: TJvListView
+  object RosterJvListView: TJvListView
     Left = 0
     Top = 0
     Width = 585
@@ -33,14 +33,26 @@ object RosterForm: TRosterForm
       item
         Caption = #1043#1088#1091#1087#1087#1072
         Width = 100
+      end
+      item
+        Caption = #1040#1074#1090#1086#1088#1080#1079#1072#1094#1080#1103
+      end
+      item
+        Caption = #1055#1088#1086#1090#1086#1082#1086#1083
       end>
+    ColumnClick = False
     GridLines = True
+    ReadOnly = True
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
-    ColumnsOrder = '0=100,1=100,2=100'
+    ColumnsOrder = '0=100,1=100,2=100,3=50,4=50'
     Groups = <>
     ExtendedColumns = <
+      item
+      end
+      item
+      end
       item
       end
       item

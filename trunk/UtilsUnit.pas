@@ -34,7 +34,6 @@ function exNormalizeScreenName(SN: string): string;
 function exNormalizeIcqNumber(SN: string): string;
 function NormalizeCellularNumber(const Value: string): string;
 function AppendOrWriteTextToFile(FileName: TFilename; WriteText: string): boolean;
-procedure DebugLog(Str: string; Send: boolean);
 function DateTimeChatMess: string;
 function SendFLAP(Channel, Data: string): boolean;
 function SendFLAP_Avatar(Channel, Data: string): boolean;
@@ -1000,17 +999,6 @@ end;
 
 {$HINTS ON}
 
-procedure DebugLog(Str: string; Send: boolean);
-var
-  SoR: string;
-begin
-  if Send then SoR := ' | Client >>>'
-  else SoR := ' | Server <<<';
-  SetCurrentDir(MyPath);
-  AppendOrWriteTextToFile(MyPath + 'DebugLog.txt', FormatDateTime('HH:NN:SS:MS', Time) +
-    SoR + #13#10 + Dump(Str) + #13#10);
-end;
-
 function exNormalizeIcqNumber(SN: string): string;
 
   function DeleteDashes(const Value: string): string;
@@ -1458,7 +1446,7 @@ begin
   p := Pos('<', sbuff);
   if p <= 0 then
   begin
-    //DoError('Not a valid XML data!');
+    DAShow(ErrorHead, JabberPktErrorL, EmptyStr, 134, 2, 0);
     Exit;
   end;
   tmps := Copy(sbuff, p, l - p + 1);

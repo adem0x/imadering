@@ -1579,7 +1579,7 @@ end;
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 var
   Pkt, challenge: string;
-  ProxyErr: integer;
+  ProxyErr, CntPkt, i: integer;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := DecodeStr(JabberWSocket.ReceiveStr);
@@ -1694,52 +1694,49 @@ begin
         //--Разбираем пакеты рабочей фазы jabber
         if Jabber_Work_Phaze then
         begin
+          //--Обрамляем в STREAM для корректной обработки братских узлов парсером
+          Pkt := '<istream>' + Pkt + '</istream>';
           //--Инициализируем XML
           with TrXML.Create() do
           try
             //--Загружаем пакет в объект xml
             Text := Pkt;
-            //--Разделяем стадии
-            if not Jabber_Session_OK then
+            //--Начинаем пробег по возможным склеенным пакетам
+            if OpenKey('istream') then
+            try
+              CntPkt := GetKeyCount();
+            finally
+              CloseKey();
+            end;
+            CntPkt := 0;
+            for i := 0 to CntPkt - 1 do
             begin
-              //--Разбираем пакеты
-              if OpenKey('stream:features\bind') then
+              if OpenKey('istream\stream:features', false, i) then
               try
-                //--Устанавливаем bind
-                JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
+                Jabber_ParseFeatures(GetKeyXML);
               finally
                 CloseKey();
               end;
-              if OpenKey('stream:features\session') then
-              try
-                //--Устанавливаем session
-                JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
-              finally
-                CloseKey();
-              end;
-              if OpenKey('iq\session') then
-              try
-                Jabber_Session_OK := true;
-                //--Запрашиваем список контактов
-                JabberWSocket.SendStr(UTF8Encode(Jabber_GetRoster));
-                //--Устанавливаем статус
-                JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
-              finally
-                CloseKey();
-              end;
-            end
-            else
-            begin
               //--Парсим пакеты iq
-              if OpenKey('iq\query') then
+              if OpenKey('istream\iq', false, i) then
               try
                 begin
+                  if OpenKey('session', false, 0) then
+                  try
+                    //--Запрашиваем список контактов
+                    MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_GetRoster));
+                    //--Устанавливаем статус
+                    MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
+                  finally
+                    CloseKey();
+                  end;
                   //--Разбираем список контктов Jabber
-                  if ReadString('xmlns') = Iq_Roster then Jabber_ParseRoster(Pkt);
+                  if ReadString('xmlns') = Iq_Roster then Jabber_ParseRoster(GetKeyXML);
                 end;
               finally
                 CloseKey();
               end;
+              Application.ProcessMessages;
             end;
           finally
             Free();

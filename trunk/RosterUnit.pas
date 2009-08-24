@@ -8,7 +8,7 @@ uses
 
 type
   TRosterForm = class(TForm)
-    JvListView1: TJvListView;
+    RosterJvListView: TJvListView;
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }

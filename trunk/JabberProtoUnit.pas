@@ -6,7 +6,7 @@ uses
   Windows, MainUnit, SysUtils, JvTrayIcon, Dialogs, OverbyteIcsWSocket,
   ChatUnit, MmSystem, Forms, ComCtrls, Messages, Classes, IcqContactInfoUnit,
   Code, VarsUnit, Graphics, CategoryButtons, rXML, JvZLibMultiple,
-  OverbyteIcsMD5, OverbyteIcsMimeUtils, JabberOptionsUnit;
+  OverbyteIcsMD5, OverbyteIcsMimeUtils, JabberOptionsUnit, RosterUnit;
 
 var
   Jabber_BuffPkt: string = '';
@@ -27,7 +27,6 @@ var
   Jabber_HTTP_Connect_Phaze: boolean = false;
   Jabber_Work_Phaze: boolean = false;
   Jabber_Offline_Phaze: boolean = true;
-  Jabber_Session_OK: boolean = false;
   //--Фазы работы конец
   StreamHead: string = '<?xml version=''1.0'' encoding=''UTF-8''?>' +
   '<stream:stream to=''%s'' xmlns=''jabber' +
@@ -45,6 +44,7 @@ function Jabber_SetSession: string;
 function Jabber_GetRoster: string;
 function Jabber_SetStatus(jStatus: integer): string;
 procedure Jabber_ParseRoster(XmlData: string);
+procedure Jabber_ParseFeatures(XmlData: string);
 
 implementation
 
@@ -149,7 +149,6 @@ begin
   Jabber_myBeautifulSocketBuffer := EmptyStr;
   Jabber_BuffPkt := EmptyStr;
   Jabber_Seq := 0;
-  Jabber_Session_OK := false;
   //--Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do
   begin
@@ -267,6 +266,7 @@ end;
 procedure Jabber_ParseRoster(XmlData: string);
 var
   cnt, i: integer;
+  ListItemD: TListItem;
 begin
   cnt := 0;
   //--Инициализируем XML
@@ -283,22 +283,54 @@ begin
       //--Разбираем список контктов Jabber
       with MainForm.ContactList do
       begin
+        //--Начинаем добаление записей контактов в Ростер
+        RosterForm.RosterJvListView.Items.BeginUpdate;
         for i := 0 to cnt - 1 do
         begin
-
           if OpenKey('iq\query\item', false, i) then
           try
-            showmessage(ReadString('name'));
+            ListItemD := RosterForm.RosterJvListView.Items.Add;
+            ListItemD.Caption := ReadString('jid');
+            ListItemD.SubItems.Add(ReadString('name'));
+            ListItemD.SubItems.Add('');
+            ListItemD.SubItems.Add(ReadString('subscription'));
+            //--Открываем ключ группы
             OpenKey('group', false, 0);
-            showmessage(GetKeyText);
-
-            //--Добавляем в локальный список контактов группу если такая ещё не создана
-
+            ListItemD.SubItems.Strings[1] := GetKeyText;
+            ListItemD.SubItems.Add('Jabber');
           finally
             CloseKey();
           end;
-
         end;
+        //--Заканчиваем добаление записей контактов в Ростер
+        RosterForm.RosterJvListView.Items.EndUpdate;
+      end;
+    end;
+  finally
+    Free();
+  end;
+end;
+
+procedure Jabber_ParseFeatures(XmlData: string);
+begin
+  //--Инициализируем XML
+  with TrXML.Create() do
+  try
+    begin
+      Text := XmlData;
+      if OpenKey('stream:features\bind') then
+      try
+        //--Устанавливаем bind
+        MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetBind));
+      finally
+        CloseKey();
+      end;
+      if OpenKey('stream:features\session') then
+      try
+        //--Устанавливаем session
+        MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
+      finally
+        CloseKey();
       end;
     end;
   finally
