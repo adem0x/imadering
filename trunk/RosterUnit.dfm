@@ -39,6 +39,33 @@ object RosterForm: TRosterForm
       end
       item
         Caption = #1055#1088#1086#1090#1086#1082#1086#1083
+      end
+      item
+        Caption = #1048#1076#1077#1085#1090#1080#1092#1080#1082#1072#1090#1086#1088
+      end
+      item
+        Caption = #1058#1080#1087
+      end
+      item
+        Caption = #1057#1090#1072#1090#1091#1089
+      end
+      item
+        Caption = #1044#1086#1087'. '#1057#1090#1072#1090#1091#1089
+      end
+      item
+        Caption = #1050#1083#1080#1077#1085#1090
+      end
+      item
+        Caption = #1058#1077#1083#1077#1092#1086#1085
+      end
+      item
+        Caption = #1047#1072#1084#1077#1090#1082#1072
+      end
+      item
+        Caption = 'E-mail'
+      end
+      item
+        Caption = 'TimeId'
       end>
     ColumnClick = False
     GridLines = True
@@ -46,7 +73,9 @@ object RosterForm: TRosterForm
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
-    ColumnsOrder = '0=100,1=100,2=100,3=50,4=50'
+    ColumnsOrder = 
+      '0=100,1=100,2=100,3=50,4=50,5=50,6=50,7=50,8=50,9=50,10=50,11=50' +
+      ',12=50,13=50'
     Groups = <>
     ExtendedColumns = <
       item
@@ -58,10 +87,24 @@ object RosterForm: TRosterForm
       item
       end
       item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
+      item
       end>
-    ExplicitLeft = 208
-    ExplicitTop = 144
-    ExplicitWidth = 250
-    ExplicitHeight = 150
   end
 end

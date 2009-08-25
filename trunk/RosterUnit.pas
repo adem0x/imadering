@@ -14,6 +14,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    procedure ClearContacts(cType: string);
   end;
 
 var
@@ -35,4 +36,30 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
+procedure TRosterForm.ClearContacts(cType: string);
+label
+  a;
+var
+  i: integer;
+begin
+  with RosterJvListView do
+  begin
+    Items.BeginUpdate;
+    a: ;
+    for i := 0 to Items.Count - 1 do
+    begin
+      //--Удаляем все контакты протокола ICQ
+      if Items[i].SubItems.Strings[3] = cType then
+      begin
+        Items[i].Delete;
+        goto a;
+      end;
+      //--Размораживаем фэйс
+      Application.ProcessMessages;
+    end;
+    Items.EndUpdate;
+  end;
+end;
+
 end.
+

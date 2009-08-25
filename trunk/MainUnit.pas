@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils, OverbyteIcsLogger,
+  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils,
   OverbyteIcsMimeUtils, StdCtrls;
 
 type
@@ -127,9 +127,7 @@ type
     N24: TMenuItem;
     ZipHistoryThread: TIdThreadComponent;
     OpenHistory: TMenuItem;
-    WIcsLogger: TIcsLogger;
     OpenTraffic: TMenuItem;
-    OpenSocketLog: TMenuItem;
     MRAAvatarHttpClient: THttpCli;
     RightMRAPopupMenu: TPopupMenu;
     RightJabberPopupMenu: TPopupMenu;
@@ -219,9 +217,6 @@ type
     procedure UnstableICQStatusClick(Sender: TObject);
     procedure ZipHistoryThreadRun(Sender: TIdThreadComponent);
     procedure OpenHistoryClick(Sender: TObject);
-    procedure WIcsLoggerIcsLogEvent(Sender: TObject; LogOption: TLogOption;
-      const Msg: string);
-    procedure OpenSocketLogClick(Sender: TObject);
     procedure OpenTrafficClick(Sender: TObject);
     procedure UpdateHttpClientSendEnd(Sender: TObject);
     procedure MRAAvatarHttpClientSendEnd(Sender: TObject);
@@ -261,14 +256,13 @@ type
     procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure JvTimerListEvents9Timer(Sender: TObject);
     procedure RosterMainMenuClick(Sender: TObject);
+    procedure JvTimerListEvents11Timer(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
     lastClick: Tdatetime;
     procedure LoadImageList(ImgList: TImageList; FName: string);
     procedure LoadMainFormSettings;
-    //procedure LoadProxySettings;
-    //procedure SetProxySettings;
     procedure MainFormHideInTray;
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
@@ -298,7 +292,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit, IcsLogUnit, TrafficUnit, UpdateUnit,
+  HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit;
 
 procedure TMainForm.ZipHistory;
@@ -351,19 +345,6 @@ begin
   if DirectoryExists(MyPath + 'Profile\History\Unzip') then RemoveDir(MyPath + 'Profile\History\Unzip');
   //--Останавливаем поток после сжатия всех необходимых файлов с историей
   ZipHistoryThread.Stop;
-end;
-
-procedure TMainForm.WIcsLoggerIcsLogEvent(Sender: TObject;
-  LogOption: TLogOption; const Msg: string);
-begin
-  //--Заносим лог всех событий работые сокетов в окно просмотра логера
-  //--Записываем в него только если окно лога открыто
-  if Assigned(IcsLogForm) then
-  begin
-    if (IcsLogForm.SocketComboBox.ItemIndex > 0) and
-      (IcsLogForm.LogEnableCheckBox.Enabled) then IcsLogForm.IcsLogMemo.Lines.Add(Msg);
-  end;
-  //SendMessage(IcsLogForm.IcsLogMemo.Handle, WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
 procedure TMainForm.WMQueryEndSession(var Msg: TWMQueryEndSession);
@@ -595,6 +576,7 @@ end;
 
 procedure TMainForm.HintMaxTime(Sender: TObject);
 begin
+  //--Делаем отображение подсказки бесконечным
   Application.HintHidePause := MaxInt;
 end;
 
@@ -926,7 +908,9 @@ begin
           //--Выходим
           Exit;
         end;
+        Application.ProcessMessages;
       end;
+      Application.ProcessMessages;
     end;
   end;
 end;
@@ -1106,8 +1090,8 @@ begin
                             SendFLAP('2', '00030002000000000002' + '000500020003');
                             SendFLAP('2', '00040004000000000004');
                             SendFLAP('2', '00090002000000000002');
-                            //--Очищаем группы ICQ в списке контактов
-                            ContactList.Categories.Clear;
+                            //--Очищаем группы ICQ в Ростере
+                            RosterForm.ClearContacts('Icq');
                             //--Пока думаем, что у нас новый (обсолютно чистый) список контактов
                             NewKL := true;
                             ICQ_CL_Count := 0;
@@ -1581,6 +1565,7 @@ var
   Pkt, challenge: string;
   ProxyErr, CntPkt, i: integer;
 begin
+  CntPkt := 0;
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := DecodeStr(JabberWSocket.ReceiveStr);
   //--Если при получении данных возникла ошибка, то сообщаем об этом
@@ -1688,6 +1673,8 @@ begin
             //--Запускаем таймер отсылки пинг пакетов
             if Jabber_KeepAlive then JvTimerList.Events[9].Enabled := true;
             //--Выходим
+            //--Очищаем группы Jabber в Ростере
+            RosterForm.ClearContacts('Jabber');
             Exit;
           end;
         end;
@@ -1699,44 +1686,33 @@ begin
           //--Инициализируем XML
           with TrXML.Create() do
           try
-            //--Загружаем пакет в объект xml
-            Text := Pkt;
-            //--Начинаем пробег по возможным склеенным пакетам
-            if OpenKey('istream') then
-            try
-              CntPkt := GetKeyCount();
-            finally
-              CloseKey();
-            end;
-            CntPkt := 0;
-            for i := 0 to CntPkt - 1 do
             begin
-              if OpenKey('istream\stream:features', false, i) then
+              //--Загружаем пакет в объект xml
+              Text := Pkt;
+              //--Начинаем пробег по возможным склеенным пакетам
+              if OpenKey('istream') then
               try
-                Jabber_ParseFeatures(GetKeyXML);
+                CntPkt := GetKeyCount();
               finally
                 CloseKey();
               end;
-              //--Парсим пакеты iq
-              if OpenKey('istream\iq', false, i) then
-              try
-                begin
-                  if OpenKey('session', false, 0) then
-                  try
-                    //--Запрашиваем список контактов
-                    MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_GetRoster));
-                    //--Устанавливаем статус
-                    MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
-                  finally
-                    CloseKey();
-                  end;
-                  //--Разбираем список контктов Jabber
-                  if ReadString('xmlns') = Iq_Roster then Jabber_ParseRoster(GetKeyXML);
+              for i := 0 to CntPkt - 1 do
+              begin
+                if OpenKey('istream\stream:features', false, i) then
+                try
+                  Jabber_ParseFeatures(GetKeyXML);
+                finally
+                  CloseKey();
+                end
+                //--Парсим пакеты iq
+                else if OpenKey('istream\iq', false, i) then
+                try
+                  Jabber_ParseIQ(GetKeyXML);
+                finally
+                  CloseKey();
                 end;
-              finally
-                CloseKey();
+                Application.ProcessMessages;
               end;
-              Application.ProcessMessages;
             end;
           finally
             Free();
@@ -1860,6 +1836,22 @@ begin
     Application.ProcessMessages;
     //--Затем показываем окно начальной настройки протоколов
     FirstStartForm.Show;
+  end;
+end;
+
+procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
+var
+  i: integer;
+begin
+  //--Обрабатываем Ростер
+  with RosterForm.RosterJvListView do
+  begin
+    for i := 0 to Items.Count - 1 do
+    begin
+      
+      //--Размораживаем фэйс
+      Application.ProcessMessages;
+    end;
   end;
 end;
 
@@ -2255,15 +2247,6 @@ begin
     FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' Мб | ' + AllSesDataTraf;
   //--Отображаем окно
   if not TrafficForm.Visible then TrafficForm.Show;
-end;
-
-procedure TMainForm.OpenSocketLogClick(Sender: TObject);
-begin
-  //--Отображаем окно лога сокетов
-  if not Assigned(IcsLogForm) then IcsLogForm := TIcsLogForm.Create(self);
-  //--Отображаем окно
-  if IcsLogForm.Visible then ShowWindow(IcsLogForm.Handle, SW_RESTORE);
-  IcsLogForm.Show;
 end;
 
 procedure TMainForm.OpenTestClick(Sender: TObject);
@@ -2803,8 +2786,6 @@ begin
   MainForm.JvTimerList.Events[7].Enabled := true;
   //--Загружаем копию локальную списка контактов
   LoadContactList;
-  //--Назначаем путь для файла лога сокетов
-  WIcsLogger.LogFileName := MyPath + 'Profile\IcsLog.txt';
   //--Инициализируем переменную времени начала статистики трафика сессии
   SesDataTraf := now;
 end;

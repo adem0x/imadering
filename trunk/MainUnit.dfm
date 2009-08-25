@@ -257,6 +257,12 @@ object MainForm: TMainForm
         Name = 'MRAAliveTimer'
         Enabled = False
         Interval = 60000
+      end
+      item
+        Name = 'RosterTimer'
+        Enabled = False
+        Interval = 3000
+        OnTimer = JvTimerListEvents11Timer
       end>
     Left = 16
     Top = 264
@@ -275,11 +281,6 @@ object MainForm: TMainForm
       Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 1
       OnClick = RosterMainMenuClick
-    end
-    object OpenSocketLog: TMenuItem
-      Caption = #1051#1086#1075' '#1089#1086#1082#1077#1090#1086#1074
-      ImageIndex = 227
-      OnClick = OpenSocketLogClick
     end
     object OpenTraffic: TMenuItem
       Caption = #1058#1088#1072#1092#1080#1082
@@ -896,13 +897,6 @@ object MainForm: TMainForm
     StopMode = smTerminate
     OnRun = ZipHistoryThreadRun
     Left = 16
-    Top = 144
-  end
-  object WIcsLogger: TIcsLogger
-    LogFileOption = lfoOverwrite
-    LogOptions = [loDestEvent, loDestFile, loDestOutDebug, loAddStamp, loWsockErr, loWsockInfo, loWsockDump, loSslErr, loSslInfo, loSslDump, loProtSpecErr, loProtSpecInfo, loProtSpecDump]
-    OnIcsLogEvent = WIcsLoggerIcsLogEvent
-    Left = 48
     Top = 144
   end
   object MRAAvatarHttpClient: THttpCli

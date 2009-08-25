@@ -45,6 +45,7 @@ function Jabber_GetRoster: string;
 function Jabber_SetStatus(jStatus: integer): string;
 procedure Jabber_ParseRoster(XmlData: string);
 procedure Jabber_ParseFeatures(XmlData: string);
+procedure Jabber_ParseIQ(XmlData: string);
 
 implementation
 
@@ -189,8 +190,6 @@ begin
       end;
     end;
   end;
-  //--Разблокировываем контакт лист если он был в стадии обновления
-  MainForm.ContactList.Enabled := true;
   //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
   if Assigned(ChatForm) then
   begin
@@ -274,7 +273,7 @@ begin
   try
     begin
       Text := XmlData;
-      if OpenKey('iq\query') then
+      if OpenKey('query') then
       try
         cnt := GetKeyCount('item');
       finally
@@ -287,7 +286,7 @@ begin
         RosterForm.RosterJvListView.Items.BeginUpdate;
         for i := 0 to cnt - 1 do
         begin
-          if OpenKey('iq\query\item', false, i) then
+          if OpenKey('query\item', false, i) then
           try
             ListItemD := RosterForm.RosterJvListView.Items.Add;
             ListItemD.Caption := ReadString('jid');
@@ -301,6 +300,8 @@ begin
           finally
             CloseKey();
           end;
+          //--Размораживаем фэйс
+          Application.ProcessMessages;
         end;
         //--Заканчиваем добаление записей контактов в Ростер
         RosterForm.RosterJvListView.Items.EndUpdate;
@@ -329,6 +330,39 @@ begin
       try
         //--Устанавливаем session
         MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetSession));
+      finally
+        CloseKey();
+      end;
+    end;
+  finally
+    Free();
+  end;
+end;
+
+procedure Jabber_ParseIQ(XmlData: string);
+begin
+  //--Инициализируем XML
+  with TrXML.Create() do
+  try
+    begin
+      Text := XmlData;
+      if OpenKey('iq\session') then
+      try
+        begin
+          //--Запрашиваем список контактов
+          MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_GetRoster));
+          //--Устанавливаем статус
+          MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
+        end;
+      finally
+        CloseKey();
+      end
+      else if OpenKey('iq\query') then
+      try
+        begin
+          //--Разбираем список контктов Jabber
+          if ReadString('xmlns') = Iq_Roster then Jabber_ParseRoster(GetKeyXML);
+        end;
       finally
         CloseKey();
       end;

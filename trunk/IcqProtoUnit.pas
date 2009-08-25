@@ -14,7 +14,7 @@ uses
   Windows, MainUnit, IcqOptionsUnit, SysUtils, JvTrayIcon, OSCARMd5,
   Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms, IcqSearchUnit,
   ComCtrls, Messages, Classes, IcqContactInfoUnit, Code, VarsUnit,
-  Graphics, CategoryButtons, rXML, JvZLibMultiple;
+  Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit;
 
 const
   DT2100miliseconds = 1 / (SecsPerDay * 10);
@@ -3985,14 +3985,15 @@ end;
 
 function ICQ_Parse_1306(PktData: string): boolean;
 var
-  Len, Count, I, N, G, T: integer;
+  Len, Count, I, N: integer;
   CLTimeStamp: DWord;
   SubData, qSN, qGroupId, qID, qType, qTimeId, Rsu, qNick: string;
   dt: TDateTime;
   Hour, Min, Sec, MSec: Word;
-  z, zz, cnt: integer;
-  Gid: string;
-  Colap: boolean;
+  //z, zz, cnt: integer;
+  //Gid: string;
+  //Colap: boolean;
+  ListItemD: TListItem;
 begin
   //--Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
   Result := false;
@@ -4001,9 +4002,9 @@ begin
   //--Получаем количесво записей в нашем КЛ
   Count := HexToInt(NextData(PktData, 4));
   ICQ_CL_Count := ICQ_CL_Count + Count;
-  //--Блокируем список контактов на время обновления
-  MainForm.ContactList.Enabled := false;
   //--Разбираем записи
+  //--Начинаем добаление записей контактов в Ростер
+  RosterForm.RosterJvListView.Items.BeginUpdate;
   for I := 0 to Count - 1 do
   begin
     //--Длинна записи
@@ -4026,107 +4027,100 @@ begin
     case HexToInt(qType) of
       BUDDY_NORMAL: //--Нормальный контакт
         begin
-          //--Добавляем контакт в локальный список контактов
-          with MainForm.ContactList do
+          //--Добавляем контакт в Ростер
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          ListItemD.Caption := qSN;
+          ListItemD.SubItems.Add(''); //--Резервируем для Ник
+          ListItemD.SubItems.Add(qGroupId);
+          ListItemD.SubItems.Add('both');
+          ListItemD.SubItems.Add('Icq');
+          ListItemD.SubItems.Add(qID);
+          ListItemD.SubItems.Add(qType);
+          ListItemD.SubItems.Add('9');
+          ListItemD.SubItems.Add('-1');
+          ListItemD.SubItems.Add('-1');
+          //--Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
+          while Length(SubData) > 0 do
           begin
-            G := Categories.Count - 1;
-            Categories[G].Items.Add.Caption := qSN;
-            T := Categories[G].Items.Count - 1;
-            Categories[G].Items[T].UIN := qSN;
-            Categories[G].Items[T].GroupId := qGroupId;
-            Categories[G].Items[T].Idd := qID;
-            Categories[G].Items[T].iType := qType;
-            Categories[G].Items[T].ImageIndex := 9;
-            Categories[G].Items[T].ImageIndex1 := -1;
-            Categories[G].Items[T].ImageIndex2 := -1;
-            Categories[G].Items[T].Status := 9;
-            Categories[G].Items[T].ContactType := 'Icq';
-            //--Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
-            while Length(SubData) > 0 do
-            begin
-              case HexToInt(NextData(SubData, 4)) of
-                $0131: //--Ник контакта
-                  begin
-                    qNick := EmptyStr;
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    qNick := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                    if qNick <> EmptyStr then Categories[G].Items[T].Caption := qNick;
-                  end;
-                $013A: //--Номер сотового телефона
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    Categories[G].Items[T].Mobile := Hex2Text(NextData(SubData, Len));
-                  end;
-                $0066: //--Авторизован ли контакт для нашего КЛ
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    NextData(SubData, Len);
-                    //--Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
-                    Categories[G].Items[T].Auth := true;
-                    Categories[G].Items[T].Status := 80;
-                    Categories[G].Items[T].ImageIndex := 80;
-                    Categories[G].Items[T].ImageIndex2 := 220;
-                  end;
-                $013C: //--Заметка о контакте
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    Categories[G].Items[T].Note := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                  end;
-                $0137: //--Email контакта
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    Categories[G].Items[T].Email := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                  end;
-                $006D: //--Время последнего сеанса чата
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    qTimeId := NextData(SubData, Len);
-                    Categories[G].Items[T].TimeId := qTimeId;
-                    Categories[G].Items[T].Time := DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                  end
-              else
-                //--Если пакет содержит другие TLV, то пропускаем их
-                Len := HexToInt(NextData(SubData, 4));
-                Len := Len * 2;
-                NextData(SubData, Len);
-              end;
+            case HexToInt(NextData(SubData, 4)) of
+              $0131: //--Ник контакта
+                begin
+                  qNick := EmptyStr;
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  qNick := DecodeStr(Hex2Text(NextData(SubData, Len)));
+                  if qNick <> EmptyStr then ListItemD.SubItems.Strings[0] := qNick;
+                end;
+              $013A: //--Номер сотового телефона
+                begin
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  ListItemD.SubItems.Add(Hex2Text(NextData(SubData, Len)));
+                end;
+              $0066: //--Авторизован ли контакт для нашего КЛ
+                begin
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  NextData(SubData, Len);
+                  //--Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
+                  ListItemD.SubItems.Strings[2] := 'none';
+                  ListItemD.SubItems.Strings[6] := '80';
+                  ListItemD.SubItems.Strings[8] := '220';
+                end;
+              $013C: //--Заметка о контакте
+                begin
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  ListItemD.SubItems.Add(DecodeStr(Hex2Text(NextData(SubData, Len))));
+                end;
+              $0137: //--Email контакта
+                begin
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  ListItemD.SubItems.Add(DecodeStr(Hex2Text(NextData(SubData, Len))));
+                end;
+              $006D: //--TimeId
+                begin
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  qTimeId := NextData(SubData, Len);
+                  ListItemD.SubItems.Add(qTimeId);
+                  //DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                end
+            else
+              //--Если пакет содержит другие TLV, то пропускаем их
+              Len := HexToInt(NextData(SubData, 4));
+              Len := Len * 2;
+              NextData(SubData, Len);
             end;
-            //--Создаём подсказку для этого контакта
-            Categories[G].Items[T].Hint := ICQ_CreateHint(Categories[G].Items[T]);
           end;
         end;
       BUDDY_GROUP: //--Группа
         begin
-          with MainForm.ContactList do
+          //--Нулевая группа для временных контактов в серверном КЛ
+          if qGroupId = '0000' then
           begin
-            //--Нулевая группа для временных контактов в серверном КЛ
-            if (qGroupId = '0000') and (ICQ_Show_HideContacts) then
-            begin
-              Categories.Add.Caption := HideContactGroupCaption;
-              G := Categories.Count - 1;
-              Categories[G].GroupCaption := HideContactGroupCaption;
-              Categories[G].GroupId := qGroupId;
-              Categories[G].Collapsed := true;
-              Categories[G].GroupType := 'Icq';
-            end;
-            //--Стандартная група
-            if qGroupId <> '0000' then
-            begin
-              //--Если есть хоть одна группа, то отключаем режим "нового" КЛ
-              NewKL := false;
-              //--Отображаем группу в локальном КЛ
-              Categories.Add.Caption := qSN;
-              G := Categories.Count - 1;
-              Categories[G].GroupCaption := qSN;
-              Categories[G].GroupId := qGroupId;
-              Categories[G].GroupType := 'Icq';
-            end;
+            //--Добавляем группу в Ростер
+            ListItemD := RosterForm.RosterJvListView.Items.Add;
+            ListItemD.Caption := qGroupId;
+            ListItemD.SubItems.Add('Group');
+            ListItemD.SubItems.Add(HideContactGroupCaption);
+            ListItemD.SubItems.Add('');
+            ListItemD.SubItems.Add('Icq');
+            ListItemD.Checked := true; //--Флаг свёрнутой группы
+          end
+          //--Стандартная група
+          else if qGroupId <> '0000' then
+          begin
+            //--Если есть хоть одна группа, то отключаем режим "нового" КЛ
+            NewKL := false;
+            //--Добавляем группу в Ростер
+            ListItemD := RosterForm.RosterJvListView.Items.Add;
+            ListItemD.Caption := qGroupId;
+            ListItemD.SubItems.Add('Group');
+            ListItemD.SubItems.Add(qSN);
+            ListItemD.SubItems.Add('');
+            ListItemD.SubItems.Add('Icq');
           end;
         end;
       BUDDY_UPGROUP: //--Код для приватных групп
@@ -4147,66 +4141,52 @@ begin
         end;
       BUDDY_DELETE, BUDDY_AUTORIZ: //--Временные контакты из нулевой группы
         begin
-          with MainForm.ContactList do
-          begin
-            //--Если показывать временные контакты
-            if ICQ_Show_HideContacts then
+          //--Если показывать временные контакты
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          ListItemD.Caption := qSN;
+          //--Делаем поиск ника в кэше ников
+          try
+            //--Проверяем создан ли список ников
+            if Assigned(AccountToNick) then
             begin
-              //--Делаем поиск группы с идентификатором 0000 (для скрытых контактов)
-              for G := 0 to Categories.Count - 1 do
-              begin
-                if Categories[G].GroupId = '0000' then
+              //--Находим ники в списке ников по учётной записи
+              N := AccountToNick.IndexOf('Icq_' + qSN);
+              if N > -1 then ListItemD.SubItems.Add(AccountToNick.Strings[N + 1])
+              else ListItemD.SubItems.Add(qSN);
+            end;
+          except
+            //--Если ошибка, то ник делаем как учётную запись
+            ListItemD.SubItems.Add(qSN);
+          end;
+          ListItemD.SubItems.Add(qGroupId);
+          ListItemD.SubItems.Add('none');
+          ListItemD.SubItems.Add('Icq');
+          ListItemD.SubItems.Add(qID);
+          ListItemD.SubItems.Add(qType);
+          //--Назначаем такому контакту серый неизвестный статус и иконку
+          ListItemD.SubItems.Add('214');
+          ListItemD.SubItems.Add('-1');
+          ListItemD.SubItems.Add('-1');
+          ListItemD.SubItems.Add('');
+          ListItemD.SubItems.Add('');
+          ListItemD.SubItems.Add('');
+          //--Сканируем пакет на нужные нам TLV
+          while Length(SubData) > 0 do
+          begin
+            case HexToInt(NextData(SubData, 4)) of
+              $006D: //--TimeId
                 begin
-                  try
-                    //--Проверяем создан ли список ников
-                    if Assigned(AccountToNick) then
-                    begin
-                      //--Находим ники в списке ников по учётной записи
-                      N := AccountToNick.IndexOf('Icq_' + qSN);
-                      if N > -1 then Categories[G].Items.Add.Caption := AccountToNick.Strings[N + 1]
-                      else Categories[G].Items.Add.Caption := qSN;
-                    end;
-                  except
-                    //--Если ошибка, то ник делаем как учётную запись
-                    Categories[G].Items.Add.Caption := qSN;
-                  end;
-                  //--Добавляем временный контакт в локальный КЛ
-                  T := Categories[G].Items.Count - 1;
-                  Categories[G].Items[T].UIN := qSN;
-                  Categories[G].Items[T].GroupId := qGroupId;
-                  Categories[G].Items[T].Idd := qID;
-                  Categories[G].Items[T].iType := qType;
-                  Categories[G].Items[T].ContactType := 'Icq';
-                  //--Назначаем такому контакту серый неизвестный статус и иконку
-                  Categories[G].Items[T].Status := 214;
-                  Categories[G].Items[T].ImageIndex := 214;
-                  Categories[G].Items[T].ImageIndex1 := -1;
-                  Categories[G].Items[T].ImageIndex2 := -1;
-                  Categories[G].Items[T].Hint := ICQ_CreateHint(Categories[0].Items[T]);
-                  //--Сканируем пакет на нужные нам TLV
-                  while Length(SubData) > 0 do
-                  begin
-                    case HexToInt(NextData(SubData, 4)) of
-                      $006D: //--Время последнего сеанса чата
-                        begin
-                          Len := HexToInt(NextData(SubData, 4));
-                          Len := Len * 2;
-                          qTimeId := NextData(SubData, Len);
-                          Categories[G].Items[T].TimeId := qTimeId;
-                          Categories[G].Items[T].Time := DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                        end
-                    else
-                      //--Если пакет содержит другие TLV, то пропускаем их
-                      Len := HexToInt(NextData(SubData, 4));
-                      Len := Len * 2;
-                      NextData(SubData, Len);
-                    end;
-                  end;
-                  //--Выходим из цикла
-                  Break;
-                end;
-                Application.ProcessMessages;
-              end;
+                  Len := HexToInt(NextData(SubData, 4));
+                  Len := Len * 2;
+                  qTimeId := NextData(SubData, Len);
+                  ListItemD.SubItems.Add(qTimeId);
+                  //DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                end
+            else
+              //--Если пакет содержит другие TLV, то пропускаем их
+              Len := HexToInt(NextData(SubData, 4));
+              Len := Len * 2;
+              NextData(SubData, Len);
             end;
           end;
         end;
@@ -4273,13 +4253,18 @@ begin
               Len := Len * 2;
               NextData(SubData, Len);
             end;
+            //--Размораживаем фэйс
+            Application.ProcessMessages;
           end;
           //--Отображаем эти переменные в окне настроек ICQ
           if Assigned(IcqOptionsForm) then IcqOptionsForm.SetOnlineVars;
         end;
     end;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
   end;
-
+  //--Заканчиваем добаление записей контактов в Ростер
+  RosterForm.RosterJvListView.Items.EndUpdate;
   //--Финальное время контакт листа
   CLTimeStamp := HexToInt(NextData(PktData, 8));
   //--Если время больше нуля, то заканчиваем с наполнением КЛ
@@ -4300,7 +4285,7 @@ begin
     //--Вычисляем количесво контактов в группах локального КЛ
     if not NewKL then
     begin
-      with MainForm.ContactList do
+      {with MainForm.ContactList do
       begin
         for i := 0 to Categories.Count - 1 do
         begin
@@ -4308,27 +4293,34 @@ begin
             Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(Categories[i].Items.Count)
           else Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
         end;
-      end;
+      end;}
       //--Считываем и применям файл с флагами открытых и свёрнутых групп
       //--Инициализируем XML
-      with TrXML.Create() do try
+      {with TrXML.Create() do
+      try
         //--Загружаем файл контакт листа
-        if FileExists(MyPath + 'Profile\ContactList.xml') then begin
+        if FileExists(MyPath + 'Profile\ContactList.xml') then
+        begin
           LoadFromFile(MyPath + 'Profile\ContactList.xml');
           //--Загружаем группы и их флаги
-          with MainForm.ContactList do begin
+          with MainForm.ContactList do
+          begin
             cnt := 0;
-            if OpenKey('settings') then try
+            if OpenKey('settings') then
+            try
               cnt := GetKeyCount('group');
             finally
               CloseKey();
             end;
-            for z := 0 to cnt - 1 do begin
-              if OpenKey('settings\group', false, z) then try
+            for z := 0 to cnt - 1 do
+            begin
+              if OpenKey('settings\group', false, z) then
+              try
                 Gid := ReadString('id');
                 Colap := ReadBool('collapsed');
-                for zz := 0 to Categories.Count - 1 do begin
-                    //--Если идентификатор группы совпадает, то присваиваем ей флаг
+                for zz := 0 to Categories.Count - 1 do
+                begin
+                  //--Если идентификатор группы совпадает, то присваиваем ей флаг
                   if Categories[zz].GroupId = Gid then
                     Categories[zz].Collapsed := Colap;
                 end;
@@ -4340,10 +4332,8 @@ begin
         end;
       finally
         Free();
-      end;
+      end;}
     end;
-    //--Заканчиваем с наполнением КЛ
-    MainForm.ContactList.Enabled := true;
     //--Объявляем финальный результат разбора всего пакета
     Result := true;
   end;
@@ -4606,8 +4596,6 @@ begin
       end;
     end;
   end;
-  //--Разблокировываем контакт лист если он был в стадии обновления
-  MainForm.ContactList.Enabled := true;
   //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
   if Assigned(ChatForm) then
   begin
