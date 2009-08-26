@@ -27,11 +27,11 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit;
+  MainUnit, IcqProtoUnit;
 
 procedure TRosterForm.UpdateFullCL;
 label
-  jl;
+  jl, il;
 var
   i, c, cc: integer;
 begin
@@ -51,8 +51,7 @@ begin
             for c := 0 to Categories.Count - 1 do
             begin
               //--Если такую группу нашли
-              if (Categories[c].GroupCaption = Items[i].SubItems.Strings[1]) and
-                (Categories[c].GroupType = 'Jabber') then
+              if (Categories[c].GroupCaption = Items[i].SubItems.Strings[1]) and (Categories[c].GroupType = 'Jabber') then
               begin
                 //--Начинаем поиск в ней этого контакта
                 for cc := 0 to Categories[c].Items.Count - 1 do
@@ -76,6 +75,7 @@ begin
                   ImageIndex := 30;
                   ImageIndex1 := -1;
                   ImageIndex2 := -1;
+                  ContactType := 'Jabber';
                 end;
                 //--Продолжаем сканирование Ростера
                 goto jl;
@@ -99,6 +99,7 @@ begin
                 ImageIndex := 30;
                 ImageIndex1 := -1;
                 ImageIndex2 := -1;
+                ContactType := 'Jabber';
               end;
             end;
             jl: ;
@@ -106,6 +107,72 @@ begin
           end
           //--Добавляем ICQ контакты в КЛ
           else if Items[i].SubItems.Strings[3] = 'Icq' then
+          begin
+            if (Length(Items[i].Caption) = 4) and (Items[i].SubItems.Strings[0] = '') then
+            begin //--Группа ICQ
+              if (not ICQ_Show_HideContacts) and (Items[i].Caption = '0000') then goto il;
+              for c := 0 to Categories.Count - 1 do
+              begin
+                //--Если такую группу нашли
+                if (Categories[c].GroupId = Items[i].Caption) and (Categories[c].GroupType = 'Icq') then goto il;
+                //--Размораживаем фэйс
+                Application.ProcessMessages;
+              end;
+              //--Если такую группу не нашли, то добавляем её
+              with Categories.Add do
+              begin
+                Caption := RosterJvListView.Items[i].SubItems.Strings[1];
+                GroupCaption := RosterJvListView.Items[i].SubItems.Strings[1];
+                GroupId := RosterJvListView.Items[i].Caption;
+                GroupType := 'Icq';
+                if GroupId = '0000' then Collapsed := true; //--Сворачиваем группу временных контактов
+              end;
+            end
+            else //--Контакт
+            begin
+              if (not ICQ_Show_HideContacts) and (Items[i].SubItems.Strings[1] = '0000') then goto il;
+              //--Ищем группу контакта в КЛ
+              for c := 0 to Categories.Count - 1 do
+              begin
+                //--Если такую группу нашли
+                if (Categories[c].GroupId = Items[i].SubItems.Strings[1]) and (Categories[c].GroupType = 'Icq') then
+                begin
+                  //--Начинаем поиск в ней этого контакта
+                  for cc := 0 to Categories[c].Items.Count - 1 do
+                  begin
+                    if Categories[c].Items[cc].UIN = Items[i].Caption then
+                    begin
+                      //--Обновляем информацию для этого контакта в КЛ
+                      //Categories[c].Items[cc]
+                      //--Продолжаем сканирование Ростера
+                      goto il;
+                    end;
+                    //--Размораживаем фэйс
+                    Application.ProcessMessages;
+                  end;
+                  //--Добавляем контакт в эту группу в КЛ
+                  with Categories[c].Items.Add do
+                  begin
+                    Caption := Items[i].SubItems.Strings[0];
+                    UIN := Items[i].Caption;
+                    Status := 9;
+                    ImageIndex := 9;
+                    ImageIndex1 := -1;
+                    ImageIndex2 := -1;
+                    ContactType := 'Icq';
+                  end;
+                  //--Продолжаем сканирование Ростера
+                  goto il;
+                end;
+                //--Размораживаем фэйс
+                Application.ProcessMessages;
+              end;
+            end;
+            il: ;
+            Continue;
+          end
+          //--Добавляем MRA контакты в КЛ
+          else if Items[i].SubItems.Strings[3] = 'Mra' then
           begin
 
           end;

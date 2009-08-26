@@ -1421,6 +1421,8 @@ function GetFullTag(AData: string): string;
     newpos := 0;
     origlen := Length(AData);
     repeat
+      //--Размораживаем фэйс
+      Application.ProcessMessages;
       mybuff := Copy(in_data, lastpos + 1, origlen - newpos);
       newpos := pos(find_data, mybuff);
       if (newpos > 0) then
@@ -1497,6 +1499,8 @@ begin
     le := length(etag);
     r := '';
     repeat
+      //--Размораживаем фэйс
+      Application.ProcessMessages;
       tmps := Copy(sbuff, i, l - i + 1);
       ps := Pos(stag, tmps);
       if (ps > 0) then

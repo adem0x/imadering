@@ -305,7 +305,7 @@ begin
       end;
       //--Заканчиваем добаление записей контактов в Ростер
       RosterForm.RosterJvListView.Items.EndUpdate;
-      //--Запускаем таймер задержки обработки КЛ
+      //--Запускаем обработку Ростера
       RosterForm.UpdateFullCL;
     end;
   finally

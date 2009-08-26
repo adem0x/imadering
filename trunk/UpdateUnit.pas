@@ -101,7 +101,7 @@ begin
   //--Запускаем закачку файла обновления с сайта
   MainForm.UpdateHttpClient.Abort;
   try
-    MainForm.UpdateHttpClient.URL := 'http://imadering.com/' + UpdateVersionPath;
+    MainForm.UpdateHttpClient.URL := 'http://imadering.googlecode.com/files/' + UpdateVersionPath;
     MainForm.UpdateHttpClient.GetASync;
   except
     on E: Exception do

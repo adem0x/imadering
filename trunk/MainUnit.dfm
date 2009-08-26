@@ -265,6 +265,11 @@ object MainForm: TMainForm
         Enabled = False
         Interval = 3000
         OnTimer = JvTimerListEvents11Timer
+      end
+      item
+        Name = 'TrayIconsRefresh'
+        Interval = 20000
+        OnTimer = JvTimerListEvents12Timer
       end>
     Left = 16
     Top = 264

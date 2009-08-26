@@ -4093,6 +4093,8 @@ begin
               Len := Len * 2;
               NextData(SubData, Len);
             end;
+            //--Размораживаем фэйс
+            Application.ProcessMessages;
           end;
         end;
       BUDDY_GROUP: //--Группа
@@ -4102,7 +4104,7 @@ begin
           begin
             //--Добавляем группу в Ростер
             ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := 'GroupId: ' + qGroupId;
+            ListItemD.Caption := qGroupId;
             ListItemD.SubItems.Add('');
             ListItemD.SubItems.Add(HideContactGroupCaption);
             ListItemD.SubItems.Add('');
@@ -4116,7 +4118,7 @@ begin
             NewKL := false;
             //--Добавляем группу в Ростер
             ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := 'GroupId: ' + qGroupId;
+            ListItemD.Caption := qGroupId;
             ListItemD.SubItems.Add('');
             ListItemD.SubItems.Add(qSN);
             ListItemD.SubItems.Add('');
@@ -4188,6 +4190,8 @@ begin
               Len := Len * 2;
               NextData(SubData, Len);
             end;
+            //--Размораживаем фэйс
+            Application.ProcessMessages;
           end;
         end;
       BUDDY_VANITY: //--Информация о нашей деятельности на этом UIN
@@ -4336,6 +4340,8 @@ begin
     end;
     //--Объявляем финальный результат разбора всего пакета
     Result := true;
+    //--Запускаем обработку Ростера
+    RosterForm.UpdateFullCL;
   end;
 end;
 

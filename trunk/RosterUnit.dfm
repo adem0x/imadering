@@ -66,6 +66,18 @@ object RosterForm: TRosterForm
       end
       item
         Caption = 'TimeId'
+      end
+      item
+        Caption = #1048#1089#1090#1086#1088#1080#1103
+      end
+      item
+        Caption = #1048#1089#1093#1086#1076#1103#1097#1077#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
+      end
+      item
+        Caption = #1042#1093#1086#1076#1103#1097#1077#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
+      end
+      item
+        Caption = #1054#1092#1092#1083#1072#1081#1085' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
       end>
     ColumnClick = False
     GridLines = True
@@ -75,9 +87,17 @@ object RosterForm: TRosterForm
     ViewStyle = vsReport
     ColumnsOrder = 
       '0=100,1=100,2=100,3=50,4=50,5=50,6=50,7=50,8=50,9=50,10=50,11=50' +
-      ',12=50,13=50'
+      ',12=50,13=50,14=50,15=50,16=50,17=50'
     Groups = <>
     ExtendedColumns = <
+      item
+      end
+      item
+      end
+      item
+      end
+      item
+      end
       item
       end
       item

@@ -259,6 +259,7 @@ type
     procedure JvTimerListEvents11Timer(Sender: TObject);
     procedure ContactListSelectedItemChange(Sender: TObject;
       const Button: TButtonItem);
+    procedure JvTimerListEvents12Timer(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -1350,6 +1351,8 @@ begin
                                 NextData(SubPkt, Len);
                               end;
                             end;
+                            //--Размораживаем фэйс
+                            Application.ProcessMessages;
                           end;
                         end;
                     end;
@@ -1392,17 +1395,11 @@ begin
                       ICQWSocket.Addr := ICQ_Bos_IP;
                       ICQWSocket.Port := ICQ_Bos_Port;
                     end;
+                    //--Размораживаем фэйс
+                    Application.ProcessMessages;
                     //--Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
                   except
-                    on E: Exception do
-                    begin
-                      //--Если при подключении произошла ошибка, то сообщаем об этом
-                      //E.Message;
-                      DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
-                      //--Активиуем режим оффлайн
-                      ICQ_GoOffline;
-                    end;
                   end;
                 end;
               end
@@ -1440,6 +1437,8 @@ begin
     end;
     //--Если в конце разбора пакета у нас ещё остались данные, то возвращаемся для проверки буфера
     z: ;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
     if Length(ICQ_HexPkt) > 0 then goto x;
   end;
 end;
@@ -1629,6 +1628,8 @@ begin
   //--Буферизируем данные пакетов из сокета и забираем цельные данные
   Jabber_BuffPkt := Jabber_BuffPkt + Pkt;
   repeat
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
     Pkt := GetFullTag(Jabber_BuffPkt);
     if Pkt <> EmptyStr then
     begin
@@ -1713,6 +1714,7 @@ begin
                 finally
                   CloseKey();
                 end;
+                //--Размораживаем фэйс
                 Application.ProcessMessages;
               end;
             end;
@@ -1843,11 +1845,16 @@ end;
 
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
 begin
-
-  //showmessage('1');
-
   //--Обрабатываем Ростер
   RosterForm.UpdateFullCL;
+end;
+
+procedure TMainForm.JvTimerListEvents12Timer(Sender: TObject);
+begin
+  //--Перерисовываем иконки в трэе против глюка в вайн в линукс
+  ICQTrayIcon.Refresh;
+  MRATrayIcon.Refresh;
+  JabberTrayIcon.Refresh;
 end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
@@ -2018,7 +2025,7 @@ begin
   UpdateHttpClient.Tag := 0;
   //--Запускаем проверку обновлений программы на сайте
   try
-    UpdateHttpClient.URL := 'http://imadering.com/version.txt';
+    UpdateHttpClient.URL := 'http://imadering.googlecode.com/files/version.txt';
     UpdateHttpClient.GetASync;
   except
   end;
@@ -2247,7 +2254,7 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   //--Место для запуска тестов
-
+  
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
