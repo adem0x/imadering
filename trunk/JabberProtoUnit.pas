@@ -36,6 +36,7 @@ var
   IqTypeGet: string = '<iq type=''get'' id=''imadering_%d''>';
   FRootTag: string = 'stream:stream';
   Iq_Roster: string = 'jabber:iq:roster';
+  JmessHead: string = '<message type=''chat'' to=''%s'' id=''%d''>';
 
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
 procedure Jabber_GoOffline;
@@ -46,6 +47,7 @@ function Jabber_SetStatus(jStatus: integer): string;
 procedure Jabber_ParseRoster(XmlData: string);
 procedure Jabber_ParseFeatures(XmlData: string);
 procedure Jabber_ParseIQ(XmlData: string);
+procedure Jabber_SendMessage(mJID, Msg: string);
 
 implementation
 
@@ -280,32 +282,31 @@ begin
         CloseKey();
       end;
       //--Разбираем список контктов Jabber
-      with MainForm.ContactList do
+      //--Начинаем добаление записей контактов в Ростер
+      RosterForm.RosterJvListView.Items.BeginUpdate;
+      for i := 0 to cnt - 1 do
       begin
-        //--Начинаем добаление записей контактов в Ростер
-        RosterForm.RosterJvListView.Items.BeginUpdate;
-        for i := 0 to cnt - 1 do
-        begin
-          if OpenKey('query\item', false, i) then
-          try
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := ReadString('jid');
-            ListItemD.SubItems.Add(ReadString('name'));
-            ListItemD.SubItems.Add('');
-            ListItemD.SubItems.Add(ReadString('subscription'));
-            //--Открываем ключ группы
-            OpenKey('group', false, 0);
-            ListItemD.SubItems.Strings[1] := GetKeyText;
-            ListItemD.SubItems.Add('Jabber');
-          finally
-            CloseKey();
-          end;
-          //--Размораживаем фэйс
-          Application.ProcessMessages;
+        if OpenKey('query\item', false, i) then
+        try
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          ListItemD.Caption := ReadString('jid');
+          ListItemD.SubItems.Add(ReadString('name'));
+          ListItemD.SubItems.Add('');
+          ListItemD.SubItems.Add(ReadString('subscription'));
+          //--Открываем ключ группы
+          OpenKey('group', false, 0);
+          ListItemD.SubItems.Strings[1] := GetKeyText;
+          ListItemD.SubItems.Add('Jabber');
+        finally
+          CloseKey();
         end;
-        //--Заканчиваем добаление записей контактов в Ростер
-        RosterForm.RosterJvListView.Items.EndUpdate;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
       end;
+      //--Заканчиваем добаление записей контактов в Ростер
+      RosterForm.RosterJvListView.Items.EndUpdate;
+      //--Запускаем таймер задержки обработки КЛ
+      RosterForm.UpdateFullCL;
     end;
   finally
     Free();
@@ -370,6 +371,17 @@ begin
   finally
     Free();
   end;
+end;
+
+procedure Jabber_SendMessage(mJID, Msg: string);
+var
+  m: string;
+begin
+  //--Отправляем сообщение для jabber контакта
+  m := Format(JmessHead, [mJID, Jabber_Seq]) + '<body>' + Msg + '</body></message>';
+  MainForm.JabberWSocket.SendStr(UTF8Encode(m));
+  //--Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
 end;
 
 end.

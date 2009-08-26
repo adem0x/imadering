@@ -49,6 +49,7 @@ object MainForm: TMainForm
     OnButtonClicked = ContactListButtonClicked
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
+    OnSelectedItemChange = ContactListSelectedItemChange
   end
   object ToolBar2: TToolBar
     Left = 0
@@ -260,6 +261,7 @@ object MainForm: TMainForm
       end
       item
         Name = 'RosterTimer'
+        Cycled = False
         Enabled = False
         Interval = 3000
         OnTimer = JvTimerListEvents11Timer

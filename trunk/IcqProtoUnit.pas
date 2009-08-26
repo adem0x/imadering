@@ -4102,8 +4102,8 @@ begin
           begin
             //--Добавляем группу в Ростер
             ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := qGroupId;
-            ListItemD.SubItems.Add('Group');
+            ListItemD.Caption := 'GroupId: ' + qGroupId;
+            ListItemD.SubItems.Add('');
             ListItemD.SubItems.Add(HideContactGroupCaption);
             ListItemD.SubItems.Add('');
             ListItemD.SubItems.Add('Icq');
@@ -4116,8 +4116,8 @@ begin
             NewKL := false;
             //--Добавляем группу в Ростер
             ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := qGroupId;
-            ListItemD.SubItems.Add('Group');
+            ListItemD.Caption := 'GroupId: ' + qGroupId;
+            ListItemD.SubItems.Add('');
             ListItemD.SubItems.Add(qSN);
             ListItemD.SubItems.Add('');
             ListItemD.SubItems.Add('Icq');

@@ -257,6 +257,8 @@ type
     procedure JvTimerListEvents9Timer(Sender: TObject);
     procedure RosterMainMenuClick(Sender: TObject);
     procedure JvTimerListEvents11Timer(Sender: TObject);
+    procedure ContactListSelectedItemChange(Sender: TObject;
+      const Button: TButtonItem);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -1840,19 +1842,12 @@ begin
 end;
 
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
-var
-  i: integer;
 begin
+
+  //showmessage('1');
+
   //--Обрабатываем Ростер
-  with RosterForm.RosterJvListView do
-  begin
-    for i := 0 to Items.Count - 1 do
-    begin
-      
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
-    end;
-  end;
+  RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
@@ -2326,21 +2321,6 @@ var
   diff: TdateTime;
   Sheet: TTabSheet;
 begin
-  //--Сбрасываем выделение заголовка группы при клике по любому контакту
-  with ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      if Categories[i].GroupSelected = true then
-      begin
-        Categories[i].GroupSelected := false;
-        //--Перерисовываем заголовок группы
-        ShareUpdateCategory(ContactList.Categories[i]);
-        //--Выходим из цикла
-        Break;
-      end;
-    end;
-  end;
   //--Вычитаем время плошлого клика
   diff := now - lastClick;
   //--Запоминаем время текущего клика
@@ -2491,6 +2471,29 @@ begin
   //--При перемещении по кнопкам КЛ запоминаем последнюю
   if Button <> nil then RoasterButton := Button
   else RoasterButton := nil;
+end;
+
+procedure TMainForm.ContactListSelectedItemChange(Sender: TObject;
+  const Button: TButtonItem);
+var
+  i: integer;
+begin
+  //--Сбрасываем выделение заголовка группы при клике по любому контакту
+  with ContactList do
+  begin
+    for i := 0 to Categories.Count - 1 do
+    begin
+      if Categories[i].GroupSelected = true then
+      begin
+        Categories[i].GroupSelected := false;
+        //--Перерисовываем заголовок группы
+        ShareUpdateCategory(ContactList.Categories[i]);
+        //--Выходим из цикла
+        Break;
+      end;
+      Application.ProcessMessages;
+    end;
+  end;
 end;
 
 procedure TMainForm.CopyAccountContactClick(Sender: TObject);
@@ -2691,7 +2694,7 @@ begin
     //--Сохраняем историю сообщений, но уже не в потоке
     ZipHistory;
     //--Делаем текущую локальную копию списка контактов для отображения при запуске программы
-    if ContactList.Categories.Count > 0 then SaveContactList;
+    //if ContactList.Categories.Count > 0 then SaveContactList;
   end;
 end;
 
