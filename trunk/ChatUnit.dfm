@@ -860,4 +860,13 @@ object ChatForm: TChatForm
       OnClick = SendAllClick
     end
   end
+  object alChat: TActionList
+    Left = 272
+    Top = 144
+    object aClose: TAction
+      Caption = 'aClose'
+      ShortCut = 27
+      OnExecute = aCloseExecute
+    end
+  end
 end

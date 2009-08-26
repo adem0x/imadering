@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Htmlview, StrUtils, Menus, ExtCtrls, StdCtrls, Buttons,
   CategoryButtons, VarsUnit, ShellApi, MMsystem, GIFImage, rXML,
-  ComCtrls, CommCtrl, ToolWin;
+  ComCtrls, CommCtrl, ToolWin, ActnList;
 
 type
   TWmMoving = record
@@ -99,6 +99,8 @@ type
     SendPopupMenu: TPopupMenu;
     SendAllOnline: TMenuItem;
     SendAll: TMenuItem;
+    alChat: TActionList;
+    aClose: TAction;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -159,6 +161,7 @@ type
     procedure SendFileSpeedButtonClick(Sender: TObject);
     procedure ContactMenuToolButtonClick(Sender: TObject);
     procedure TypingTextToolButtonClick(Sender: TObject);
+    procedure aCloseExecute(Sender: TObject);
   private
     { Private declarations }
     lastClick: Tdatetime;
@@ -383,6 +386,11 @@ begin
   HTMLMsg.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   HTMLMsg.SelectAll;
   msg := HTMLMsg.SelText;
+end;
+
+procedure TChatForm.aCloseExecute(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TChatForm.AddChatText(Nick_Time, Mess_Text: string; MessIn: boolean = false);
