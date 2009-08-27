@@ -191,7 +191,7 @@ implementation
 
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
-  IcqContactInfoUnit, UtilsUnit, RosterUnit;
+  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit;
 
 function TChatForm.pageIdxAt(x, y: integer): integer;
 var
@@ -512,7 +512,7 @@ label
   x;
 var
   msgD, msg, UIN: string;
-  i, ii: integer;
+  RosterItem: TListItem;
 begin
   //--Если поле идентификатора пользователя пустое, то выходим от сюда (в будущем сделать чтобы закрывалось окно)
   if InfoPanel2.Caption = EmptyStr then Exit;
@@ -589,6 +589,17 @@ begin
         if (ChatPageControl.ActivePage.Tag <> 9) and (UserUtf8Support) then ICQ_SendMessage_0406(UIN, msg, false)
         else ICQ_SendMessage_0406(UIN, msg, true);
       end
+      else if UserType = 'Jabber' then
+      begin
+        //--Если нет подключения к серверу Jabber, то выходим
+        if not Jabber_Work_Phaze then Exit;
+        //--Отправляем сообщение
+        Jabber_SendMessage(UIN, msg);
+      end
+      else if UserType = 'Mra' then
+      begin
+
+      end
       else Exit;
       //--Добавляем сообщение в файл истории и в чат
       msgD := YouAt + ' [' + DateTimeChatMess + ']';
@@ -598,23 +609,14 @@ begin
       CheckMessage_BR(msg);
       DecorateURL(msg);
       //--Записываем историю в этот контакт
-      with MainForm.ContactList do
+      RosterItem := RosterForm.ReqRosterItem(UIN);
+      if RosterItem <> nil then
       begin
-        for I := 0 to Categories.Count - 1 do
-        begin
-          for II := 0 to Categories[I].Items.Count - 1 do
-          begin
-            if Categories[I].Items[II].UIN = UIN then
-            begin
-              Categories[I].Items[II].History := Categories[I].Items[II].History +
-                '<span class=a>' + msgD + '</span><br><span class=c>' + msg + '</span><br><br>' + #13#10;
-              //--Ставим флаг этому контакту, что история изменилась
-              Categories[I].Items[II].HistoryChange := true;
-            end;
-            //--Не замораживаем интерфэйс
-            Application.ProcessMessages;
-          end;
-        end;
+        RosterItem.SubItems[13] := RosterItem.SubItems[13] +
+          '<span class=a>' + msgD + '</span><br><span class=c>' +
+          msg + '</span><br><br>' + #13#10;
+        //--Ставим флаг этому контакту, что история изменилась     
+        RosterItem.SubItems[17] := 'X';
       end;
       //--Если включены графические смайлики, то форматируем сообщение под смайлы
       if not TextSmilies then CheckMessage_Smilies(msg);
@@ -742,11 +744,9 @@ begin
 end;
 
 procedure TChatForm.ChatPageControlChange(Sender: TObject);
-label
-  x;
 var
   UIN, HistoryFile, Doc: string;
-  I, II, N: integer;
+  N: integer;
   CLcItem: TButtonItem;
   RosterItem: TListItem;
 begin
@@ -779,83 +779,51 @@ begin
     with RosterItem do
     begin
       InputMemo.Text := SubItems[14];
-    end;
-  end;
-  
-
-
-  {with MainForm.ContactList do
-  begin
-    for I := 0 to Categories.Count - 1 do
-    begin
-      for II := 0 to Categories[I].Items.Count - 1 do
+      //--Проверяем загружена ли история уже
+      if SubItems[13] = EmptyStr then
       begin
-        if Categories[I].Items[II].UIN = UIN then
+        //--Загружаем файл истории сообщений
+        HistoryFile := MyPath + 'Profile\History\' + UserType + '_' + UIN + '.z';
+        if FileExists(HistoryFile) then
         begin
-          //--Кнопка в КЛ
-          Categories[I].Items[II].Msg := false;
-          Categories[I].Items[II].ImageIndex := Categories[I].Items[II].Status;
-          //--Кнопка во вкладках
-          ChatPageControl.ActivePage.Tag := Categories[I].Items[II].Status;
-          ChatPageControl.ActivePage.ImageIndex := Categories[I].Items[II].Status;
-          InputMemo.Text := Categories[I].Items[II].InputText;
-          UserStatus := Categories[I].Items[II].Status;
-          UserUtf8Support := Categories[I].Items[II].Utf8Supported;
-          UserAvatarHash := Categories[I].Items[II].IconHash;
-          //--Тип контакта
-          UserType := Categories[I].Items[II].ContactType;
-          //--Проверяем загружена ли история уже
-          if Categories[I].Items[II].History = EmptyStr then
-          begin
-            //--Загружаем файл истории сообщений
-            HistoryFile := MyPath + 'Profile\History\' + UserType + '_' + UIN + '.z';
-            if FileExists(HistoryFile) then
-            begin
-              try
-                //--Распаковываем файл с историей
-                UnZip_File(HistoryFile, MyPath + 'Profile\History\');
-                //--Записываем историю в хранилище у этого контакта
-                Categories[I].Items[II].History := ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
-                //--Удаляем уже не нужный распакованный файл с историей
-                if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
-              except
-              end;
-            end;
+          try
+            //--Распаковываем файл с историей
+            UnZip_File(HistoryFile, MyPath + 'Profile\History\');
+            //--Записываем историю в хранилище у этого контакта
+            SubItems[13] := ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
+            //--Удаляем уже не нужный распакованный файл с историей
+            if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
+          except
           end;
-          //--Отображаем историю в чате
-          if Categories[I].Items[II].History <> EmptyStr then
-          begin
-            //--Очищаем чат от другой истории
-            HTMLChatViewer.Clear;
-            //--Добавляем стили
-            Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-            //--Загружаем из файла истории указанное количесво сообщений
-            Doc := Doc + TailLineTail(Categories[I].Items[II].History, 5);
-            if not TextSmilies then CheckMessage_Smilies(Doc);
-            SetLength(Doc, Length(Doc) - 6);
-            Doc := Doc + '<HR>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-            //--Ставим каретку в самый низ текста
-            HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-            HTMLChatViewer.CaretPos := Length(Doc);
-          end
-          else
-          begin
-            //--Очищаем чат от другой истории
-            HTMLChatViewer.Clear;
-            //--Добавляем стили
-            Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-          end;
-          //--Выходим из цыкла если нашли контакт
-          goto x;
         end;
-        //--Не замораживаем интерфэйс
-        Application.ProcessMessages;
+      end;
+      //--Отображаем историю в чате
+      if SubItems[13] <> EmptyStr then
+      begin
+        //--Очищаем чат от другой истории
+        HTMLChatViewer.Clear;
+        //--Добавляем стили
+        Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+        //--Загружаем из файла истории указанное количесво сообщений
+        Doc := Doc + TailLineTail(SubItems[13], 5);
+        if not TextSmilies then CheckMessage_Smilies(Doc);
+        SetLength(Doc, Length(Doc) - 6);
+        Doc := Doc + '<HR>';
+        HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+        //--Ставим каретку в самый низ текста
+        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+        HTMLChatViewer.CaretPos := Length(Doc);
+      end
+      else
+      begin
+        //--Очищаем чат от другой истории
+        HTMLChatViewer.Clear;
+        //--Добавляем стили
+        Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+        HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
       end;
     end;
-  end;}
-  x: ;
+  end;
   //--Ставим флаг о том что непрочитанных сообщений во вкладке нет
   ChatPageControl.ActivePage.Margins.Left := 0;
   //--Ставим имя и фамилию в информационное поле
@@ -1452,55 +1420,43 @@ begin
 end;
 
 procedure TChatForm.ShowAllHistoryClick(Sender: TObject);
-label
-  x;
 var
   Doc: string;
-  I, II: integer;
+  RosterItem: TListItem;
 begin
-  //--Проверяем состояние истории для этого контакта
-  with MainForm.ContactList do
+  //--Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
+  RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
+  if RosterItem <> nil then
   begin
-    for I := 0 to Categories.Count - 1 do
+    with RosterItem do
     begin
-      for II := 0 to Categories[I].Items.Count - 1 do
+      //--Проверяем загружена ли история
+      if SubItems[13] = EmptyStr then Exit
+      //--Отображаем историю в чате
+      else
       begin
-        if Categories[I].Items[II].UIN = InfoPanel2.Caption then
-        begin
-          //--Проверяем загружена ли история уже
-          if Categories[I].Items[II].History = EmptyStr then goto x;
-          //--Отображаем историю в чате
-          if Categories[I].Items[II].History <> EmptyStr then
-          begin
-            //--Очистили компонент истории и выводим надпись, что история загружается
-            Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-            Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-            HTMLChatViewer.Refresh;
-            //--Добавляем стили
-            Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-            //--Загружаем из файла истории указанное количесво сообщений
-            if (Sender as TMenuItem).Tag = 1 then Doc := Doc + Categories[I].Items[II].History
-            else if (Sender as TMenuItem).Tag = 2 then Doc := Doc + TailLineTail(Categories[I].Items[II].History, 100)
-            else if (Sender as TMenuItem).Tag = 3 then Doc := Doc + TailLineTail(Categories[I].Items[II].History, 50)
-            else if (Sender as TMenuItem).Tag = 4 then Doc := Doc + TailLineTail(Categories[I].Items[II].History, 20);
-            if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
-            SetLength(Doc, Length(Doc) - 6);
-            Doc := Doc + '<HR>';
-            HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-            //--Ставим каретку в самый низ текста
-            HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-            HTMLChatViewer.CaretPos := Length(Doc);
-          end;
-          //--Выходим из цыкла если нашли контакт
-          goto x;
-        end;
-        //--Не замораживаем интерфэйс
-        Application.ProcessMessages;
+        //--Очистили компонент истории и выводим надпись, что история загружается
+        Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+        Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+        HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+        HTMLChatViewer.Refresh;
+        //--Добавляем стили
+        Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+        //--Загружаем из истории указанное количесво сообщений
+        if (Sender as TMenuItem).Tag = 1 then Doc := Doc + SubItems[13]
+        else if (Sender as TMenuItem).Tag = 2 then Doc := Doc + TailLineTail(SubItems[13], 100)
+        else if (Sender as TMenuItem).Tag = 3 then Doc := Doc + TailLineTail(SubItems[13], 50)
+        else if (Sender as TMenuItem).Tag = 4 then Doc := Doc + TailLineTail(SubItems[13], 20);
+        if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
+        SetLength(Doc, Length(Doc) - 6);
+        Doc := Doc + '<HR>';
+        HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+        //--Ставим каретку в самый низ текста
+        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+        HTMLChatViewer.CaretPos := Length(Doc);
       end;
     end;
   end;
-  x: ;
 end;
 
 procedure TChatForm.ChatHTMLTextCopyClick(Sender: TObject);

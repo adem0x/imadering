@@ -300,8 +300,8 @@ uses
 
 procedure TMainForm.ZipHistory;
 var
-  i, ii: integer;
   ListF: TStringList;
+  i: integer;
 begin
   //--В цикле проверяем у каких контактов добавилась история сообщений
   //и сжимаем её и сохраняем в файл
@@ -311,31 +311,27 @@ begin
   ListF := TStringList.Create;
   try
     try
-      with ContactList do
+      with RosterForm.RosterJvListView do
       begin
-        for i := 0 to Categories.Count - 1 do
+        for i := 0 to Items.Count - 1 do
         begin
-          for ii := 0 to Categories[i].Items.Count - 1 do
+          if (Items[i].SubItems[17] = 'X') and (Items[i].SubItems[13] <> EmptyStr) then
           begin
-            //--Если история этого контакта менялась и не пустая
-            if (Categories[i].Items[ii].HistoryChange) and (Categories[i].Items[ii].History <> EmptyStr) then
-            begin
-              //--Записываем в лист историю этого контакта
-              ListF.Text := Categories[i].Items[ii].History;
-              //--Сохраняем файл во временный каталог
-              ListF.SaveToFile(MyPath + 'Profile\History\Unzip\Icq_History.htm');
-              //--Очишаем лист
-              ListF.Clear;
-              //--Добавляем в лист путь к файлу
-              ListF.Add(MyPath + 'Profile\History\Unzip\Icq_History.htm');
-              //--Сжимаем этот файл и ложим в эту же директорию
-              Zip_File(ListF, MyPath + 'Profile\History\' + Categories[i].Items[ii].ContactType + '_' + Categories[i].Items[ii].UIN + '.z');
-              //--Удаляем несжатый файл
-              if FileExists(MyPath + 'Profile\History\Unzip\Icq_History.htm') then
-                DeleteFile(MyPath + 'Profile\History\Unzip\Icq_History.htm');
-              //--Снимаем у этого контакта флаг о изменившейся истории
-              Categories[i].Items[ii].HistoryChange := false;
-            end;
+            //--Записываем в лист историю этого контакта
+            ListF.Text := Items[i].SubItems[13];
+            //--Сохраняем файл во временный каталог
+            ListF.SaveToFile(MyPath + 'Profile\History\Unzip\Icq_History.htm');
+            //--Очишаем лист
+            ListF.Clear;
+            //--Добавляем в лист путь к файлу
+            ListF.Add(MyPath + 'Profile\History\Unzip\Icq_History.htm');
+            //--Сжимаем этот файл и ложим в эту же директорию
+            Zip_File(ListF, MyPath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z');
+            //--Удаляем несжатый файл
+            if FileExists(MyPath + 'Profile\History\Unzip\Icq_History.htm') then
+              DeleteFile(MyPath + 'Profile\History\Unzip\Icq_History.htm');
+            //--Снимаем у этого контакта флаг о изменившейся истории
+            Items[i].SubItems[17] := EmptyStr;
           end;
         end;
       end;
@@ -2254,7 +2250,7 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   //--Место для запуска тестов
-  
+
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
