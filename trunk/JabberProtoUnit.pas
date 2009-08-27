@@ -290,27 +290,30 @@ begin
         try
           ListItemD := RosterForm.RosterJvListView.Items.Add;
           ListItemD.Caption := ReadString('jid');
-          ListItemD.SubItems.Add(ReadString('name'));
-          ListItemD.SubItems.Add('');
-          ListItemD.SubItems.Add(ReadString('subscription'));
+          //--Подготавиливаем все значения
+          RosterForm.RosterItemSetFull(ListItemD);
+          //--Обновляем субстроки
+          ListItemD.SubItems[0] := (ReadString('name'));
+          ListItemD.SubItems[1] := ('');
+          ListItemD.SubItems[2] := (ReadString('subscription'));
           //--Открываем ключ группы
           OpenKey('group', false, 0);
-          ListItemD.SubItems.Strings[1] := GetKeyText;
-          ListItemD.SubItems.Add('Jabber');
+          ListItemD.SubItems[1] := GetKeyText;
+          ListItemD.SubItems[3] := ('Jabber');
         finally
           CloseKey();
         end;
         //--Размораживаем фэйс
         Application.ProcessMessages;
       end;
-      //--Заканчиваем добаление записей контактов в Ростер
-      RosterForm.RosterJvListView.Items.EndUpdate;
-      //--Запускаем обработку Ростера
-      RosterForm.UpdateFullCL;
     end;
   finally
     Free();
+    //--Заканчиваем добаление записей контактов в Ростер
+    RosterForm.RosterJvListView.Items.EndUpdate;
   end;
+  //--Запускаем обработку Ростера
+  RosterForm.UpdateFullCL;
 end;
 
 procedure Jabber_ParseFeatures(XmlData: string);

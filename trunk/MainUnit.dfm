@@ -939,9 +939,4 @@ object MainForm: TMainForm
     Left = 112
     Top = 296
   end
-  object HotKeyMain: TJvApplicationHotKey
-    HotKey = 0
-    Left = 160
-    Top = 40
-  end
 end

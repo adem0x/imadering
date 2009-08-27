@@ -15,7 +15,7 @@ uses
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
   rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils,
-  OverbyteIcsMimeUtils, StdCtrls, JvAppHotKey, JvComponentBase, JvWndProcHook;
+  OverbyteIcsMimeUtils, StdCtrls;
 
 type
   TMainForm = class(TForm)
@@ -147,7 +147,6 @@ type
     JabberStatusEvil: TMenuItem;
     JabberStatusFFC: TMenuItem;
     RosterMainMenu: TMenuItem;
-    HotKeyMain: TJvApplicationHotKey;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);

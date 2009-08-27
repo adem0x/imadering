@@ -14,15 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Htmlview, StrUtils, Menus, ExtCtrls, StdCtrls, Buttons,
   CategoryButtons, VarsUnit, ShellApi, MMsystem, GIFImage, rXML,
-  ComCtrls, CommCtrl, ToolWin, ActnList;
-
-type
-  TWmMoving = record
-    Msg: Cardinal;
-    fwSide: Cardinal;
-    lpRect: PRect;
-    Result: Integer;
-  end;
+  ComCtrls, CommCtrl, ToolWin;
 
 type
   TChatForm = class(TForm)
@@ -99,8 +91,6 @@ type
     SendPopupMenu: TPopupMenu;
     SendAllOnline: TMenuItem;
     SendAll: TMenuItem;
-    alChat: TActionList;
-    aClose: TAction;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -161,7 +151,6 @@ type
     procedure SendFileSpeedButtonClick(Sender: TObject);
     procedure ContactMenuToolButtonClick(Sender: TObject);
     procedure TypingTextToolButtonClick(Sender: TObject);
-    procedure aCloseExecute(Sender: TObject);
   private
     { Private declarations }
     lastClick: Tdatetime;
@@ -173,9 +162,7 @@ type
     { Public declarations }
     OutMessIndex: integer;
     ChatButton: TButtonItem;
-    MultiTabForm: boolean;
     UserType: string;
-    UserStatus: integer;
     UserUtf8Support: boolean;
     UserAvatarHash: string;
     procedure TranslateForm;
@@ -204,7 +191,7 @@ implementation
 
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
-  IcqContactInfoUnit, UtilsUnit;
+  IcqContactInfoUnit, UtilsUnit, RosterUnit;
 
 function TChatForm.pageIdxAt(x, y: integer): integer;
 var
@@ -386,11 +373,6 @@ begin
   HTMLMsg.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   HTMLMsg.SelectAll;
   msg := HTMLMsg.SelText;
-end;
-
-procedure TChatForm.aCloseExecute(Sender: TObject);
-begin
-  Close;
 end;
 
 procedure TChatForm.AddChatText(Nick_Time, Mess_Text: string; MessIn: boolean = false);
@@ -604,7 +586,7 @@ begin
         //if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
         //--Если статус пользователя не оффлайн и есть поддержка UTF-8 сообщений, то отправляем сообщение в юникоде.
         //Иначе отправляем сообщение в старом анси формате
-        if (UserStatus <> 9) and (UserUtf8Support) then ICQ_SendMessage_0406(UIN, msg, false)
+        if (ChatPageControl.ActivePage.Tag <> 9) and (UserUtf8Support) then ICQ_SendMessage_0406(UIN, msg, false)
         else ICQ_SendMessage_0406(UIN, msg, true);
       end
       else Exit;
@@ -765,6 +747,8 @@ label
 var
   UIN, HistoryFile, Doc: string;
   I, II, N: integer;
+  CLcItem: TButtonItem;
+  RosterItem: TListItem;
 begin
   //--Если пустая вкладка, то выходим
   if ChatPageControl.ActivePage = nil then Exit;
@@ -772,8 +756,35 @@ begin
   ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;
   //--Получаем учётную запись контакта
   UIN := ChatPageControl.ActivePage.HelpKeyword;
-  //--Помечаем в КЛ, что сообщения от этого контакта прочитаны
-  with MainForm.ContactList do
+  //--Помечаем в КЛ, что сообщения от этого контакта прочитаны и получаем параметры
+  CLcItem := RosterForm.ReqCLContact(UIN);
+  if CLcItem <> nil then
+  begin
+    with CLcItem do
+    begin
+      Msg := false;
+      ImageIndex := Status;
+      ChatPageControl.ActivePage.Tag := Status;
+      ChatPageControl.ActivePage.ImageIndex := Status;
+      ChatPageControl.ActivePage.Hint := Hint;
+      UserUtf8Support := Utf8Supported;
+      UserAvatarHash := IconHash;
+      UserType := ContactType;
+    end;
+  end;
+  //--Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
+  RosterItem := RosterForm.ReqRosterItem(UIN);
+  if RosterItem <> nil then
+  begin
+    with RosterItem do
+    begin
+      InputMemo.Text := SubItems[14];
+    end;
+  end;
+  
+
+
+  {with MainForm.ContactList do
   begin
     for I := 0 to Categories.Count - 1 do
     begin
@@ -843,7 +854,7 @@ begin
         Application.ProcessMessages;
       end;
     end;
-  end;
+  end;}
   x: ;
   //--Ставим флаг о том что непрочитанных сообщений во вкладке нет
   ChatPageControl.ActivePage.Margins.Left := 0;

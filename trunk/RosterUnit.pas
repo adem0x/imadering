@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, JvExComCtrls, JvListView;
+  Dialogs, ComCtrls, JvExComCtrls, JvListView, CategoryButtons;
 
 type
   TRosterForm = class(TForm)
@@ -16,7 +16,9 @@ type
     { Public declarations }
     procedure ClearContacts(cType: string);
     procedure UpdateFullCL;
-    procedure UpdateCL(cId: string);
+    function ReqRosterItem(cId: string): TListItem;
+    function ReqCLContact(cId: string): TButtonItem;
+    procedure RosterItemSetFull(sItem: TListItem);
   end;
 
 var
@@ -28,6 +30,18 @@ implementation
 
 uses
   MainUnit, IcqProtoUnit;
+
+procedure TRosterForm.RosterItemSetFull(sItem: TListItem);
+var
+  i: integer;
+begin
+  for i := 1 to RosterJvListView.Columns.Count - 1 do
+  begin
+    sItem.SubItems.Add('');
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
+  end;
+end;
 
 procedure TRosterForm.UpdateFullCL;
 label
@@ -45,13 +59,13 @@ begin
         with MainForm.ContactList do
         begin
           //--Добавляем Jabber контакты в КЛ
-          if Items[i].SubItems.Strings[3] = 'Jabber' then
+          if Items[i].SubItems[3] = 'Jabber' then
           begin
             //--Ищем группу контакта в КЛ
             for c := 0 to Categories.Count - 1 do
             begin
               //--Если такую группу нашли
-              if (Categories[c].GroupCaption = Items[i].SubItems.Strings[1]) and (Categories[c].GroupType = 'Jabber') then
+              if (Categories[c].GroupCaption = Items[i].SubItems[1]) and (Categories[c].GroupType = 'Jabber') then
               begin
                 //--Начинаем поиск в ней этого контакта
                 for cc := 0 to Categories[c].Items.Count - 1 do
@@ -69,7 +83,7 @@ begin
                 //--Добавляем контакт в эту группу в КЛ
                 with Categories[c].Items.Add do
                 begin
-                  Caption := Items[i].SubItems.Strings[0];
+                  Caption := Items[i].SubItems[0];
                   UIN := Items[i].Caption;
                   Status := 30;
                   ImageIndex := 30;
@@ -87,13 +101,13 @@ begin
             //--Добавляем группу и этот контакт в неё
             with Categories.Add do
             begin
-              Caption := RosterJvListView.Items[i].SubItems.Strings[1];
-              GroupCaption := RosterJvListView.Items[i].SubItems.Strings[1];
+              Caption := RosterJvListView.Items[i].SubItems[1];
+              GroupCaption := RosterJvListView.Items[i].SubItems[1];
               GroupType := 'Jabber';
               //--Добавляем контакт в эту группу в КЛ
               with Items.Add do
               begin
-                Caption := RosterJvListView.Items[i].SubItems.Strings[0];
+                Caption := RosterJvListView.Items[i].SubItems[0];
                 UIN := RosterJvListView.Items[i].Caption;
                 Status := 30;
                 ImageIndex := 30;
@@ -106,9 +120,9 @@ begin
             Continue;
           end
           //--Добавляем ICQ контакты в КЛ
-          else if Items[i].SubItems.Strings[3] = 'Icq' then
+          else if Items[i].SubItems[3] = 'Icq' then
           begin
-            if (Length(Items[i].Caption) = 4) and (Items[i].SubItems.Strings[0] = '') then
+            if (Length(Items[i].Caption) = 4) and (Items[i].SubItems[0] = '') then
             begin //--Группа ICQ
               if (not ICQ_Show_HideContacts) and (Items[i].Caption = '0000') then goto il;
               for c := 0 to Categories.Count - 1 do
@@ -121,8 +135,8 @@ begin
               //--Если такую группу не нашли, то добавляем её
               with Categories.Add do
               begin
-                Caption := RosterJvListView.Items[i].SubItems.Strings[1];
-                GroupCaption := RosterJvListView.Items[i].SubItems.Strings[1];
+                Caption := RosterJvListView.Items[i].SubItems[1];
+                GroupCaption := RosterJvListView.Items[i].SubItems[1];
                 GroupId := RosterJvListView.Items[i].Caption;
                 GroupType := 'Icq';
                 if GroupId = '0000' then Collapsed := true; //--Сворачиваем группу временных контактов
@@ -130,12 +144,12 @@ begin
             end
             else //--Контакт
             begin
-              if (not ICQ_Show_HideContacts) and (Items[i].SubItems.Strings[1] = '0000') then goto il;
+              if (not ICQ_Show_HideContacts) and (Items[i].SubItems[1] = '0000') then goto il;
               //--Ищем группу контакта в КЛ
               for c := 0 to Categories.Count - 1 do
               begin
                 //--Если такую группу нашли
-                if (Categories[c].GroupId = Items[i].SubItems.Strings[1]) and (Categories[c].GroupType = 'Icq') then
+                if (Categories[c].GroupId = Items[i].SubItems[1]) and (Categories[c].GroupType = 'Icq') then
                 begin
                   //--Начинаем поиск в ней этого контакта
                   for cc := 0 to Categories[c].Items.Count - 1 do
@@ -153,7 +167,7 @@ begin
                   //--Добавляем контакт в эту группу в КЛ
                   with Categories[c].Items.Add do
                   begin
-                    Caption := Items[i].SubItems.Strings[0];
+                    Caption := Items[i].SubItems[0];
                     UIN := Items[i].Caption;
                     Status := 9;
                     ImageIndex := 9;
@@ -172,7 +186,7 @@ begin
             Continue;
           end
           //--Добавляем MRA контакты в КЛ
-          else if Items[i].SubItems.Strings[3] = 'Mra' then
+          else if Items[i].SubItems[3] = 'Mra' then
           begin
 
           end;
@@ -184,13 +198,40 @@ begin
   end;
 end;
 
-procedure TRosterForm.UpdateCL(cId: string);
+function TRosterForm.ReqRosterItem(cId: string): TListItem;
 begin
   //--Обрабатываем запись в Ростере
-  if RosterJvListView.FindCaption(0, cId, true, true, false) <> nil then
-  begin
+  Result := RosterJvListView.FindCaption(0, cId, true, true, false);
+end;
 
+function TRosterForm.ReqCLContact(cId: string): TButtonItem;
+label
+  x;
+var
+  i, ii: integer;
+begin
+  Result := nil;
+  //--Ищем контакт в КЛ
+  with MainForm.ContactList do
+  begin
+    for i := 0 to Categories.Count - 1 do
+    begin
+      for ii := 0 to Categories[i].Items.Count - 1 do
+      begin
+        if Categories[i].Items[ii].UIN = cId then
+        begin
+          Result := Categories[i].Items[ii];
+          //--Выходим из циклов
+          goto x;
+        end;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
+      end;
+      //--Размораживаем фэйс
+      Application.ProcessMessages;
+    end;
   end;
+  x: ;
 end;
 
 procedure TRosterForm.FormCreate(Sender: TObject);
@@ -214,8 +255,8 @@ begin
     a: ;
     for i := 0 to Items.Count - 1 do
     begin
-      //--Удаляем все контакты протокола ICQ
-      if Items[i].SubItems.Strings[3] = cType then
+      //--Удаляем все контакты протокола
+      if Items[i].SubItems[3] = cType then
       begin
         Items[i].Delete;
         goto a;
