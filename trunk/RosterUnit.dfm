@@ -81,18 +81,29 @@ object RosterForm: TRosterForm
       end
       item
         Caption = #1048#1089#1090#1086#1088#1080#1103' '#1080#1079#1084#1077#1085#1080#1083#1072#1089#1100
+      end
+      item
+        Caption = #1057#1086#1073#1099#1090#1080#1077' '#1086#1085#1083#1072#1081#1085
+      end
+      item
+        Caption = #1057#1086#1073#1099#1090#1080#1077' '#1086#1092#1092#1083#1072#1081#1085
       end>
     ColumnClick = False
     GridLines = True
+    HideSelection = False
     ReadOnly = True
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
     ColumnsOrder = 
       '0=100,1=100,2=100,3=50,4=50,5=50,6=50,7=50,8=50,9=50,10=50,11=50' +
-      ',12=50,13=50,14=50,15=50,16=50,17=50,18=50'
+      ',12=50,13=50,14=50,15=50,16=50,17=50,18=50,19=50,20=50'
     Groups = <>
     ExtendedColumns = <
+      item
+      end
+      item
+      end
       item
       end
       item

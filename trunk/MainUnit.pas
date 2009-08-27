@@ -1709,6 +1709,19 @@ begin
                   Jabber_ParseIQ(GetKeyXML);
                 finally
                   CloseKey();
+                end
+                //--Парсим пакеты presence
+                else if OpenKey('istream\presence', false, i) then
+                try
+                  Jabber_ParsePresence(GetKeyXML);
+                finally
+                  CloseKey();
+                end
+                else if OpenKey('istream\message', false, i) then
+                try
+                  Jabber_ParseMessage(GetKeyXML);
+                finally
+                  CloseKey();
                 end;
                 //--Размораживаем фэйс
                 Application.ProcessMessages;

@@ -354,6 +354,7 @@ type
     FHistory: string;
     FHistoryChange: boolean;
     FContactType: string;
+    FOnlineEvents: integer;
     //
     FOnClick: TNotifyEvent;
     procedure SetAction(const Value: TBasicAction);
@@ -383,7 +384,8 @@ type
     property Caption: string read FCaption write SetCaption stored IsCaptionStored;
     //--Hint roaster
     property UIN: string read FUIN write FUIN;
-    property Status: Integer read FStatus write FStatus default 2;
+    property Status: Integer read FStatus write FStatus default 0;
+    property OnlineEvents: Integer read FOnlineEvents write FOnlineEvents default 0;
     property Msg: Boolean read FMsg write FMsg default false;
     property Typing: Boolean read FTyping write FTyping default false;
     property GroupId: string read FGroupId write FGroupId;

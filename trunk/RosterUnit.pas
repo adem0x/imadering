@@ -73,7 +73,17 @@ begin
                   if Categories[c].Items[cc].UIN = Items[i].Caption then
                   begin
                     //--Обновляем информацию для этого контакта в КЛ
-                    //Categories[c].Items[cc]
+                    Categories[c].Items[cc].Status := StrToInt(Items[i].SubItems[6]);
+                    Categories[c].Items[cc].ImageIndex := Categories[c].Items[cc].Status;
+                    with Categories[c].Items[cc] do
+                    begin
+                      //--Если статус в сети
+                      if (Status <> 30) and (Status <> 41) and (Status <> 42) then
+                      begin
+                        //--Поднимаем этот контакт в верх группы
+                        Categories[c].Items[cc].Index := 0;
+                      end;
+                    end;
                     //--Продолжаем сканирование Ростера
                     goto jl;
                   end;
@@ -157,7 +167,17 @@ begin
                     if Categories[c].Items[cc].UIN = Items[i].Caption then
                     begin
                       //--Обновляем информацию для этого контакта в КЛ
-                      //Categories[c].Items[cc]
+                      Categories[c].Items[cc].Status := StrToInt(Items[i].SubItems[6]);
+                      Categories[c].Items[cc].ImageIndex := Categories[c].Items[cc].Status;
+                      with Categories[c].Items[cc] do
+                      begin
+                        //--Если статус в сети
+                        if (Status <> 30) and (Status <> 41) and (Status <> 42) then
+                        begin
+                          //--Поднимаем этот контакт в верх группы
+                          Categories[c].Items[cc].Index := 0;
+                        end;
+                      end;
                       //--Продолжаем сканирование Ростера
                       goto il;
                     end;

@@ -47,6 +47,8 @@ function Jabber_SetStatus(jStatus: integer): string;
 procedure Jabber_ParseRoster(XmlData: string);
 procedure Jabber_ParseFeatures(XmlData: string);
 procedure Jabber_ParseIQ(XmlData: string);
+procedure Jabber_ParsePresence(XmlData: string);
+procedure Jabber_ParseMessage(XmlData: string);
 procedure Jabber_SendMessage(mJID, Msg: string);
 
 implementation
@@ -293,13 +295,13 @@ begin
           //--Подготавиливаем все значения
           RosterForm.RosterItemSetFull(ListItemD);
           //--Обновляем субстроки
-          ListItemD.SubItems[0] := (ReadString('name'));
-          ListItemD.SubItems[1] := ('');
-          ListItemD.SubItems[2] := (ReadString('subscription'));
+          ListItemD.SubItems[0] := ReadString('name');
+          ListItemD.SubItems[2] := ReadString('subscription');
           //--Открываем ключ группы
           OpenKey('group', false, 0);
           ListItemD.SubItems[1] := GetKeyText;
-          ListItemD.SubItems[3] := ('Jabber');
+          ListItemD.SubItems[3] := 'Jabber';
+          ListItemD.SubItems[6] := '30';
         finally
           CloseKey();
         end;
@@ -385,6 +387,102 @@ begin
   MainForm.JabberWSocket.SendStr(UTF8Encode(m));
   //--Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
+end;
+
+procedure Jabber_ParsePresence(XmlData: string);
+var
+  pJID: string;
+  RosterItem: TListItem;
+begin
+  //--Инициализируем XML
+  with TrXML.Create() do
+  try
+    begin
+      Text := XmlData;
+      if OpenKey('presence') then
+      try
+        begin
+          pJID := ReadString('from');
+          if pJID <> EmptyStr then
+          begin
+            //--Отделяем ресурс
+            pJID := Parse('/', pJID, 1);
+            //--Ищем эту запись в Ростере
+            RosterItem := RosterForm.ReqRosterItem(pJID);
+            if RosterItem <> nil then
+            begin
+              //--Выставляем параметры этой записи
+              with RosterItem do
+              begin
+                if ReadString('type') = 'unavailable' then
+                begin
+                  SubItems[6] := '30';
+                  SubItems[18] := EmptyStr;
+                  SubItems[19] := '5';
+                end
+                else
+                begin
+                  SubItems[6] := '28';
+                  SubItems[18] := '5';
+                  SubItems[19] := EmptyStr;
+                end;
+                //--Запускаем таймер задержку событий Ростера
+                MainForm.JvTimerList.Events[11].Enabled := false;
+                MainForm.JvTimerList.Events[11].Enabled := true;
+              end;
+            end;
+          end;
+        end;
+      finally
+        CloseKey();
+      end;
+    end;
+  finally
+    Free();
+  end;
+end;
+
+procedure Jabber_ParseMessage(XmlData: string);
+var
+  pJID, InMsg: string;
+  RosterItem: TListItem;
+begin
+  //--Инициализируем XML
+  with TrXML.Create() do
+  try
+    begin
+      Text := XmlData;
+      if OpenKey('message') then
+      try
+        begin
+          pJID := ReadString('from');
+          OpenKey('body', false, 0);
+          InMsg := GetKeyText;
+          if (pJID <> EmptyStr) and (InMsg <> EmptyStr) then
+          begin
+            //--Отделяем ресурс
+            pJID := Parse('/', pJID, 1);
+            //--Ищем эту запись в Ростере
+            RosterItem := RosterForm.ReqRosterItem(pJID);
+            if RosterItem <> nil then
+            begin
+              //--Выставляем параметры сообщения в этой записи
+              with RosterItem do
+              begin
+                //SubItems[13] := SubItems[13] + InMsg;
+                Checked := true;
+                //ShowMessage('JID: ' + pJID + #13#10#13#10 + InMsg);
+              end;
+            end;
+          end;
+        end;
+      finally
+        CloseKey();
+      end;
+    end;
+  finally
+    Free();
+  end;
 end;
 
 end.
