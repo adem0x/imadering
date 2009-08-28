@@ -764,12 +764,12 @@ begin
     begin
       Msg := false;
       ImageIndex := Status;
-      ChatPageControl.ActivePage.Tag := Status;
+      {ChatPageControl.ActivePage.Tag := Status;
       ChatPageControl.ActivePage.ImageIndex := Status;
       ChatPageControl.ActivePage.Hint := Hint;
       UserUtf8Support := Utf8Supported;
       UserAvatarHash := IconHash;
-      UserType := ContactType;
+      UserType := ContactType;}
     end;
   end;
   //--»щем эту запись в –остере и помечаем что сообщени€ прочитаны и получаем параметры

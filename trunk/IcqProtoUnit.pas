@@ -2901,13 +2901,7 @@ begin
     end;
   end;
   //--Играем звук входящего сообщения
-  try
-    if (SoundON) and (SoundIncMsg) then
-    begin
-      if FileExists(SoundIncMsgPath) then sndPlaySound(PChar(SoundIncMsgPath), SND_ASYNC);
-    end;
-  except
-  end;
+  ImPlaySnd(1);
   //--Добавляем сообщение в текущий чат
   with ChatForm do
   begin
@@ -3434,10 +3428,11 @@ procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP,
 label
   x;
 var
-  i, ii, cnt, StatusIcoInd, iXStat, iClient: integer;
+  StatusIcoInd, iXStat, iClient: integer;
   BartID, BartLength, BartSubLen: integer;
   Utf8Sup: boolean;
   iHash, iXText, ChatHint, pClient, iXStatNew: string;
+  RosterItem: TListItem;
 begin
   //--Получаем номер иконки из статуса
   StatusIcoInd := ICQ_StatusCode2ImgId(Status);
@@ -3481,6 +3476,8 @@ begin
         end;
       end;
     end;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
   end;
   //--Ищем доп. статус в капабилитисах (старый способ передачи доп. статусов)
   if BMSearch(0, Caps, XS1) > -1 then iXStat := 1
@@ -3604,75 +3601,58 @@ begin
   end;
   //--Ищем поддержку UTF-8 сообщений
   if (BMSearch(0, Caps, CAP_UTF8) > -1) or (BMSearch(0, CapsId, '134E') > -1) then Utf8Sup := true;
-  //--Обновляем отображение контакта в КЛ
-  with MainForm.ContactList do
+  //--Обновляем отображение контакта в Ростере
+  RosterItem := RosterForm.ReqRosterItem(UIN);
+  if RosterItem <> nil then
   begin
-    for i := 0 to Categories.Count - 1 do
+    with RosterItem do
     begin
-      for ii := 0 to Categories[i].Items.Count - 1 do
+      //--Если контакт не требует авторизации, то назначаем иконку статуса
+      if SubItems[2] = 'both' then SubItems[6] := IntToStr(StatusIcoInd)
+      else
       begin
-        if Categories[i].Items[ii].UIN = UIN then
+        //--Если контакт не авторизован, но пришел его статус, то считаем что он уже авторизован
+        //и назначаем ему иконку статуса
+        if (SubItems[2] = 'none') and (StatusIcoInd <> 9) then
         begin
-          //--Если контакт не требует авторизации, то назначаем иконку статуса
-          if not Categories[i].Items[ii].Auth then
-          begin
-            Categories[i].Items[ii].Status := StatusIcoInd;
-            Categories[i].Items[ii].ImageIndex := StatusIcoInd;
-          end
-          else
-          begin
-            //--Если контакт не авторизован, но пришел его статус, то считаем что он уже авторизован
-            //и назначаем ему иконку статуса
-            if (Categories[i].Items[ii].Auth) and (StatusIcoInd <> 9) then
-            begin
-              Categories[i].Items[ii].Status := StatusIcoInd;
-              Categories[i].Items[ii].ImageIndex := StatusIcoInd;
-              //--Снимаем флаг о необходимости авторизации и иконку предупреждения об этом
-              Categories[i].Items[ii].Auth := false;
-              Categories[i].Items[ii].ImageIndex2 := -1;
-            end;
-          end;
-          //--Присваиваем онлайн переменные контакту
-          Categories[i].Items[ii].UserClass := UserClass;
-          Categories[i].Items[ii].IntIP := IntIP;
-          Categories[i].Items[ii].IntPort := IntPort;
-          Categories[i].Items[ii].ExtIP := ExtIP;
-          Categories[i].Items[ii].ConnFlag := ConnFlag;
-          Categories[i].Items[ii].ProtoVer := ProtoVer;
-          //--Если протокол версия ноль, то отправляем сообщения в старом формате
-          if ProtoVer = '0' then Utf8Sup := false;
-          Categories[i].Items[ii].TimeReg := TimeReg;
-          Categories[i].Items[ii].CapsId := CapsId;
-          Categories[i].Items[ii].Caps := Caps;
-          Categories[i].Items[ii].IconHash := iHash;
-          Categories[i].Items[ii].ConnTime := ConnTime;
-          Categories[i].Items[ii].XText := iXText;
-          Categories[i].Items[ii].Client := pClient;
-          Categories[i].Items[ii].Utf8Supported := Utf8Sup;
-          //--Ставим иконки доп. статуса
-          if iXStat > -1 then Categories[i].Items[ii].ImageIndex1 := iXStat + 44
-          else Categories[i].Items[ii].ImageIndex1 := -1;
-          //--Ставим иконку клиента
-          if iClient > -1 then Categories[i].Items[ii].ImageIndex2 := iClient + 186
-          else Categories[i].Items[ii].ImageIndex2 := -1;
-          //--Создаём всплывающую подсказку для этого контакта
-          Categories[i].Items[ii].Hint := ICQ_CreateHint(Categories[i].Items[ii]);
-          ChatHint := Categories[i].Items[ii].Hint;
-          //--Если статус не оффлайн, то выводим в самый верх этот контакт в группе в КЛ
-          if StatusIcoInd <> 9 then
-            Categories[i].Items[ii].Index := 0
-          else
-            Categories[i].Items[ii].Index := Categories[i].Items.Count - 1;
-          //--Если контакт был найден, то выходим из цыклов
-          goto x;
+          SubItems[6] := IntToStr(StatusIcoInd);
+          //--Снимаем флаг о необходимости авторизации и иконку предупреждения об этом
+          SubItems[2] := 'both';
+          SubItems[8] := '-1';
         end;
-        //--Пока перебираем контакты в цыкле не тормазим фэйс
-        Application.ProcessMessages;
       end;
+      //--Ставим иконки доп. статуса
+      if iXStat > -1 then SubItems[7] := IntToStr(iXStat + 44)
+      else SubItems[7] := '-1';
+      //--Ставим иконку клиента
+      if iClient > -1 then SubItems[8] := IntToStr(iClient + 186)
+      else SubItems[8] := '-1';
+      //--Присваиваем онлайн переменные контакту
+      SubItems[20] := UserClass;
+      SubItems[21] := IntIP;
+      SubItems[22] := IntPort;
+      SubItems[23] := ExtIP;
+      SubItems[24] := ConnFlag;
+      SubItems[25] := ProtoVer;
+      //--Если протокол версия ноль, то отправляем сообщения в старом формате
+      if ProtoVer = '0' then Utf8Sup := false;
+      SubItems[26] := TimeReg;
+      SubItems[27] := CapsId;
+      SubItems[28] := Caps;
+      SubItems[29] := iHash;
+      SubItems[30] := ConnTime;
+      SubItems[31] := iXText;
+      SubItems[32] := pClient;
+      if Utf8Sup then SubItems[33] := 'X'
+      else SubItems[33] := EmptyStr;
+      //--Создаём всплывающую подсказку для этого контакта
+      //SubItems[34] := ICQ_CreateHint(RosterItem);
     end;
   end;
+
+
   x: ;
-  //--Ставим иконку статуса во вкладках окна чата
+  {//--Ставим иконку статуса во вкладках окна чата
   if Assigned(ChatForm) then
   begin
     with ChatForm.ChatPageControl do
@@ -3691,9 +3671,9 @@ begin
         Application.ProcessMessages;
       end;
     end;
-  end;
+  end;}
   //--Вычисляем количесво контактов и количество онлайн-контактов в группах локального КЛ
-  with MainForm.ContactList do
+  {with MainForm.ContactList do
   begin
     for i := 0 to Categories.Count - 1 do
     begin
@@ -3710,7 +3690,7 @@ begin
         Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
       end;
     end;
-  end;
+  end;}
 end;
 
 procedure ICQ_UserUnkStatus_030A(PktData: string);
@@ -3846,6 +3826,8 @@ begin
         NextData(PktData, Len);
       end;
     end;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
   end;
   x: ;
   //--Если это была проверка статуса то выводим сообщение

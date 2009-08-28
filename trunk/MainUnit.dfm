@@ -203,7 +203,7 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents0Timer
       end
       item
-        Name = 'ICQMessagesTimer'
+        Name = 'MessagesTimer'
         Interval = 500
         OnTimer = JvTimerListEvents1Timer
       end

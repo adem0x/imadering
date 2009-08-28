@@ -444,9 +444,11 @@ end;
 
 procedure Jabber_ParseMessage(XmlData: string);
 var
-  pJID, InMsg: string;
+  pJID, InMsg, Nick, Mess, msgD, PopMsg: string;
   RosterItem: TListItem;
 begin
+  //--Если окно сообщений не было создано, то создаём его
+  if not Assigned(ChatForm) then ChatForm := TChatForm.Create(MainForm);
   //--Инициализируем XML
   with TrXML.Create() do
   try
@@ -462,6 +464,14 @@ begin
           begin
             //--Отделяем ресурс
             pJID := Parse('/', pJID, 1);
+            //--Обрабатываем сообщение
+            Mess := InMsg;
+            ChatForm.CheckMessage_BR(Mess);
+            ChatForm.CheckMessage_ClearTag(Mess);
+            PopMsg := Mess;
+            ChatForm.CheckMessage_BR(Mess);
+            DecorateURL(Mess);
+            msgD := Nick + ' [' + DateTimeChatMess + ']';
             //--Ищем эту запись в Ростере
             RosterItem := RosterForm.ReqRosterItem(pJID);
             if RosterItem <> nil then
@@ -469,11 +479,36 @@ begin
               //--Выставляем параметры сообщения в этой записи
               with RosterItem do
               begin
-                //SubItems[13] := SubItems[13] + InMsg;
-                Checked := true;
-                //ShowMessage('JID: ' + pJID + #13#10#13#10 + InMsg);
+                //--Ник контакта из Ростера
+                Nick := SubItems[0];
+                //--Записываем историю в этот контакт если он уже найден в списке контактов
+                SubItems[35] := EmptyStr;
+                SubItems[36] := '0';
+                SubItems[15] := PopMsg;
+                //--Добавляем историю в эту запись
+                RosterForm.AddHistory(RosterItem, msgD, Mess);
               end;
+            end
+            else //--Если такой контакт не найден в Ростере, то добавляем его
+            begin
+
+              {//--Если ник не нашли в КЛ, то ищем его в файле-кэше ников
+              if Nick = EmptyStr then
+              begin
+                try
+                  N := AccountToNick.IndexOf('Icq_' + UIN);
+                  if N = -1 then Nick := UIN
+                  else Nick := AccountToNick.Strings[N + 1];
+                except
+                  Nick := UIN;
+                end;
+              end;
+              //--Если же ник всётаки не найден, то назначем ник как учётную запись
+              if Nick = EmptyStr then Nick := UIN;}
+
             end;
+            //--Играем звук входящего сообщения
+            ImPlaySnd(1);
           end;
         end;
       finally

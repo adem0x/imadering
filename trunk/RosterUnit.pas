@@ -19,6 +19,7 @@ type
     function ReqRosterItem(cId: string): TListItem;
     function ReqCLContact(cId: string): TButtonItem;
     procedure RosterItemSetFull(sItem: TListItem);
+    procedure AddHistory(cItem: TListItem; cMsgD, cMess: string);
   end;
 
 var
@@ -29,7 +30,40 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit;
+  MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit;
+
+procedure TRosterForm.AddHistory(cItem: TListItem; cMsgD, cMess: string);
+var
+  HistoryFile, hFile: string;
+begin
+  with cItem do
+  begin
+    //--Проверяем загружена ли история уже
+    if SubItems[13] = EmptyStr then
+    begin
+      //--Загружаем файл истории сообщений
+      HistoryFile := MyPath + 'Profile\History\' + SubItems[3] + '_' + Caption + '.z';
+      if FileExists(HistoryFile) then
+      begin
+        try
+          //--Распаковываем файл с историей
+          UnZip_File(HistoryFile, MyPath + 'Profile\History\');
+          //--Записываем историю в хранилище у этого контакта
+          hFile := MyPath + 'Profile\History\' + SubItems[3] + '_History.htm';
+          SubItems[13] := ReadFromFile(hFile);
+          //--Удаляем уже не нужный распакованный файл с историей
+          if FileExists(hFile) then DeleteFile(hFile);
+        except
+        end;
+      end;
+    end;
+    //--Добавляем историю в этот контакт
+    SubItems[13] := SubItems[13] + '<span class=b>' + cMsgD +
+      '</span><br><span class=c>' + cMess + '</span><br><br>' + #13#10;
+    //--Ставим флаг этому контакту, что история изменилась
+    Checked := true;
+  end;
+end;
 
 procedure TRosterForm.RosterItemSetFull(sItem: TListItem);
 var

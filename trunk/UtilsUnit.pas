@@ -51,7 +51,7 @@ function exIsValidCharactersDigit(Value: string): Boolean;
 function HexToInt64(Hex: string): int64;
 function CalculateAge(Birthday, CurrentDate: TDate): Integer;
 function SetClipboardText(Wnd: HWND; Value: string): Boolean;
-function Dump(data: string): string;
+//function Dump(data: string): string;
 function chop(i: integer; var s: string): string; overload;
 function chop(i, l: integer; var s: string): string; overload;
 function chop(ss: string; var s: string): string; overload;
@@ -80,6 +80,7 @@ function PacketToHex(Buffer: Pointer; BufLen: Word): string;
 function GetRandomHexBytes(BytesCount: Integer): string;
 function ErrorHttpClient(ErrCode: integer): string;
 function GetFullTag(AData: string): string;
+procedure ImPlaySnd(Snd: integer);
 
 implementation
 
@@ -871,7 +872,7 @@ begin
   Result := inet_ntoa(inaddr);
 end;
 
-function Dump(data: string): string;
+{function Dump(data: string): string;
 const
   cols = 16;
 var
@@ -897,7 +898,7 @@ begin
     result := result + s1 + s2 + #13#10;
     inc(ofs, cols);
   end;
-end;
+end;}
 
 function ICQ_BodySize1: integer;
 var
@@ -1409,6 +1410,7 @@ begin
 end;
 
 //--Thanks Exodus Project
+
 function GetFullTag(AData: string): string;
 
   function RPos(find_data, in_data: string): cardinal;
@@ -1525,6 +1527,23 @@ begin
     until ((pe <= 0) or (ps <= 0) or (tmps = ''));
   end;
   result := r;
+end;
+
+procedure ImPlaySnd(Snd: integer);
+begin
+  //--Играем звуки imadering
+  {
+    1 - Входящее сообщение
+  }
+  try
+    if (SoundON) and (SoundIncMsg) then
+    begin
+      case Snd of
+        1: if FileExists(SoundIncMsgPath) then sndPlaySound(PChar(SoundIncMsgPath), SND_ASYNC);
+      end;
+    end;
+  except
+  end;
 end;
 
 end.

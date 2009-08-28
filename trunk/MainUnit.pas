@@ -302,6 +302,7 @@ procedure TMainForm.ZipHistory;
 var
   ListF: TStringList;
   i: integer;
+  zFile: string;
 begin
   //--В цикле проверяем у каких контактов добавилась история сообщений
   //и сжимаем её и сохраняем в файл
@@ -320,16 +321,16 @@ begin
             //--Записываем в лист историю этого контакта
             ListF.Text := Items[i].SubItems[13];
             //--Сохраняем файл во временный каталог
-            ListF.SaveToFile(MyPath + 'Profile\History\Unzip\Icq_History.htm');
+            zFile := MyPath + 'Profile\History\Unzip\' + Items[i].SubItems[3] + '_History.htm';
+            ListF.SaveToFile(zFile);
             //--Очишаем лист
             ListF.Clear;
             //--Добавляем в лист путь к файлу
-            ListF.Add(MyPath + 'Profile\History\Unzip\Icq_History.htm');
+            ListF.Add(zFile);
             //--Сжимаем этот файл и ложим в эту же директорию
             Zip_File(ListF, MyPath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z');
             //--Удаляем несжатый файл
-            if FileExists(MyPath + 'Profile\History\Unzip\Icq_History.htm') then
-              DeleteFile(MyPath + 'Profile\History\Unzip\Icq_History.htm');
+            if FileExists(zFile) then DeleteFile(zFile);
             //--Снимаем у этого контакта флаг о изменившейся истории
             Items[i].SubItems[17] := EmptyStr;
           end;
@@ -1878,6 +1879,11 @@ begin
   YesMsgJabber := false;
   GroupRoasterMsg := false;
   //--Сканируем и управляем иконками контактов с флагами сообщений
+
+
+
+
+  {//--Сканируем и управляем иконками контактов с флагами сообщений
   with MainForm.ContactList do
   begin
     for i := 0 to Categories.Count - 1 do
@@ -1930,7 +1936,7 @@ begin
         Application.ProcessMessages;
       end;
     end;
-  end;
+  end;}
   //--Мигаем иконками сообщений во вкладках окна чата
   if Assigned(ChatForm) then
   begin
