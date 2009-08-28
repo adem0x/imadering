@@ -81,6 +81,7 @@ function GetRandomHexBytes(BytesCount: Integer): string;
 function ErrorHttpClient(ErrCode: integer): string;
 function GetFullTag(AData: string): string;
 procedure ImPlaySnd(Snd: integer);
+function SearchNickInCash(cType, cId: string): string;
 
 implementation
 
@@ -1533,16 +1534,47 @@ procedure ImPlaySnd(Snd: integer);
 begin
   //--Играем звуки imadering
   {
+    0 - Старт программы
     1 - Входящее сообщение
   }
   try
-    if (SoundON) and (SoundIncMsg) then
+    if SoundON then
     begin
       case Snd of
-        1: if FileExists(SoundIncMsgPath) then sndPlaySound(PChar(SoundIncMsgPath), SND_ASYNC);
+        0: if (SoundStartProg) and (FileExists(SoundStartProgPath)) then sndPlaySound(PChar(SoundStartProgPath), SND_ASYNC);
+        1: if (SoundIncMsg) and (FileExists(SoundIncMsgPath)) then sndPlaySound(PChar(SoundIncMsgPath), SND_ASYNC);
       end;
     end;
   except
+  end;
+end;
+
+function SearchNickInCash(cType, cId: string): string;
+var
+  i: integer;
+begin
+  Result := EmptyStr;
+  try
+    //--Проверяем создан ли список ников
+    if Assigned(AccountToNick) then
+    begin
+      //--Находим ники в списке ников по учётной записи
+      for i := 0 to AccountToNick.Count - 1 do
+      begin
+        if (cType + '_' + cId) = AccountToNick.Strings[i] then
+        begin
+          Result := AccountToNick.Strings[i + 1];
+          //--Выходим из цикла
+          Break;
+        end;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
+      end;
+      if Result = EmptyStr then Result := cId;
+    end;
+  except
+    //--Если ошибка, то ник делаем как учётную запись
+    Result := cId;
   end;
 end;
 

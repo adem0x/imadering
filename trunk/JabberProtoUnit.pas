@@ -471,7 +471,6 @@ begin
             PopMsg := Mess;
             ChatForm.CheckMessage_BR(Mess);
             DecorateURL(Mess);
-            msgD := Nick + ' [' + DateTimeChatMess + ']';
             //--Ищем эту запись в Ростере
             RosterItem := RosterForm.ReqRosterItem(pJID);
             if RosterItem <> nil then
@@ -481,6 +480,8 @@ begin
               begin
                 //--Ник контакта из Ростера
                 Nick := SubItems[0];
+                //--Дата сообщения
+                msgD := Nick + ' [' + DateTimeChatMess + ']';
                 //--Записываем историю в этот контакт если он уже найден в списке контактов
                 SubItems[35] := EmptyStr;
                 SubItems[36] := '0';
@@ -491,22 +492,43 @@ begin
             end
             else //--Если такой контакт не найден в Ростере, то добавляем его
             begin
-
-              {//--Если ник не нашли в КЛ, то ищем его в файле-кэше ников
-              if Nick = EmptyStr then
+              //--Если ник не нашли в Ростере, то ищем его в файле-кэше ников
+              Nick := SearchNickInCash('Jabber', pJID);
+              //--Дата сообщения
+              msgD := Nick + ' [' + DateTimeChatMess + ']';
+              //--Ищем группу "Не в списке" в Ростере
+              RosterItem := RosterForm.ReqRosterItem('NoCL');
+              if RosterItem = nil then //--Если группу не нашли
               begin
-                try
-                  N := AccountToNick.IndexOf('Icq_' + UIN);
-                  if N = -1 then Nick := UIN
-                  else Nick := AccountToNick.Strings[N + 1];
-                except
-                  Nick := UIN;
-                end;
+                //--Добавляем такую группу в Ростер
+                RosterItem := RosterForm.RosterJvListView.Items.Add;
+                RosterItem.Caption := 'NoCL';
+                //--Подготавиливаем все значения
+                RosterForm.RosterItemSetFull(RosterItem);
+                RosterItem.SubItems[1] := NoInListGroupCaption;
               end;
-              //--Если же ник всётаки не найден, то назначем ник как учётную запись
-              if Nick = EmptyStr then Nick := UIN;}
-
+              //--Добавляем этот контакт в Ростер
+              RosterItem := RosterForm.RosterJvListView.Items.Add;
+              with RosterItem do
+              begin
+                Caption := pJID;
+                //--Подготавиливаем все значения
+                RosterForm.RosterItemSetFull(RosterItem);
+                //--Обновляем субстроки
+                SubItems[0] := Nick;
+                SubItems[1] := 'NoCL';
+                SubItems[2] := 'none';
+                SubItems[3] := 'Jabber';
+                SubItems[6] := '30';
+                SubItems[35] := EmptyStr;
+                SubItems[36] := '0';
+                SubItems[15] := PopMsg;
+                //--Добавляем историю в эту запись
+                RosterForm.AddHistory(RosterItem, msgD, Mess);
+              end;
             end;
+            //--Добавляем сообщение в текущий чат
+            ChatForm.AddMessInActiveChat(Nick, PopMsg, pJID, msgD, Mess);
             //--Играем звук входящего сообщения
             ImPlaySnd(1);
           end;

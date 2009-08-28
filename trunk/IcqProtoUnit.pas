@@ -2903,37 +2903,11 @@ begin
   //--Играем звук входящего сообщения
   ImPlaySnd(1);
   //--Добавляем сообщение в текущий чат
-  with ChatForm do
-  begin
-    if Visible then
-    begin
-      //--Если открыт текущий чат с этим контактом
-      if InfoPanel2.Caption = UIN then
-      begin
-        //--Если не включены текстовые смайлы, то форматируем сообщение под смайлы
-        if not TextSmilies then CheckMessage_Smilies(Mess);
-        //--Добавляем сообщение в текущий чат
-        AddChatText(msgD, Mess, true);
-        //--Прокручиваем чат в самый конец
-        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-        //--Если окно сообщений активно, то выходим
-        if ChatForm.Active then Exit;
-      end;
-    end;
-    //--Ищем вкладку с этим контактом чтобы поставить там флаг о непрочитанных сообщениях
-    for i := 0 to ChatForm.ChatPageControl.PageCount - 1 do
-    begin
-      if ChatForm.ChatPageControl.Pages[i].HelpKeyword = UIN then
-      begin
-        ChatForm.ChatPageControl.Pages[i].Margins.Left := 1;
-        Break;
-      end;
-      Application.ProcessMessages;
-    end;
-  end;
+  ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, msgD, Mess);
+
   //--Ставим флаги и параметры входящего сообщения в КЛ
   //--Если контакт уже есть в КЛ, то находим его
-  if not NoCL then
+  {if not NoCL then
   begin
     with MainForm.ContactList do
     begin
@@ -2943,7 +2917,7 @@ begin
       //--Поднимаем контакт в самый верх списка контактов в этой группе
       Categories[G].Items[T].Index := 0;
       //--Отображаем всплывающее сообшение
-      DAShow(Nick, PopMsg, UIN, 165, 1, 0);
+      
       //--Переходим в заключительный этап
       goto x;
     end;
@@ -3011,7 +2985,7 @@ begin
   end;
   x: ;
   //--Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-  if InMessList.IndexOf(UIN) = -1 then InMessList.Add(UIN);
+  if InMessList.IndexOf(UIN) = -1 then InMessList.Add(UIN);}
 end;
 
 procedure ICQ_ReqMessage_0407(PktData: string);
@@ -3967,7 +3941,7 @@ end;
 
 function ICQ_Parse_1306(PktData: string): boolean;
 var
-  Len, Count, I, sn: integer;
+  Len, Count, I: integer;
   CLTimeStamp: DWord;
   SubData, qSN, qGroupId, qID, qType, qTimeId, Rsu, qNick: string;
   dt: TDateTime;
@@ -3976,7 +3950,6 @@ var
   //Gid: string;
   //Colap: boolean;
   ListItemD: TListItem;
-  sNick: string;
 begin
   //--Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
   Result := false;
@@ -4137,31 +4110,8 @@ begin
             //--Подготавиливаем все значения
             RosterForm.RosterItemSetFull(ListItemD);
             //--Обновляем субстроки
-            sNick := EmptyStr;
             //--Делаем поиск ника в кэше ников
-            try
-              //--Проверяем создан ли список ников
-              if Assigned(AccountToNick) then
-              begin
-                //--Находим ники в списке ников по учётной записи
-                for sn := 0 to AccountToNick.Count - 1 do
-                begin
-                  if ('Icq_' + qSN) = AccountToNick.Strings[sn] then
-                  begin
-                    sNick := AccountToNick.Strings[sn + 1];
-                    //--Выходим из цикла
-                    Break;
-                  end;
-                  //--Размораживаем фэйс
-                  Application.ProcessMessages;
-                end;
-                if sNick = EmptyStr then sNick := qSN;
-                ListItemD.SubItems[0] := sNick;
-              end;
-            except
-              //--Если ошибка, то ник делаем как учётную запись
-              ListItemD.SubItems[0] := qSN;
-            end;
+            ListItemD.SubItems[0] := SearchNickInCash('Icq', qSN);
             ListItemD.SubItems[1] := qGroupId;
             ListItemD.SubItems[2] := 'none';
             ListItemD.SubItems[3] := 'Icq';

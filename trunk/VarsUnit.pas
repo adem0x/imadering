@@ -57,6 +57,8 @@ var
 
   //--Переменные звуков
   SoundON: boolean = true;
+  SoundStartProg: boolean = true;
+  SoundStartProgPath: string = '';
   SoundIncMsg: boolean = true;
   SoundIncMsgPath: string = '';
 

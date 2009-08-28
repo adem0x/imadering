@@ -172,6 +172,7 @@ type
     procedure AddChatText(Nick_Time, Mess_Text: string; MessIn: boolean = false);
     procedure CreateFastReplyMenu;
     function pageIdxAt(x, y: integer): integer;
+    procedure AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string);
   end;
 
 var
@@ -192,6 +193,25 @@ implementation
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
   IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit;
+
+procedure TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string);
+begin
+  if Visible then
+  begin
+    //--Если открыт текущий чат с этим контактом
+    if InfoPanel2.Caption = cId then
+    begin
+      //--Если не включены текстовые смайлы, то форматируем сообщение под смайлы
+      if not TextSmilies then CheckMessage_Smilies(cMess);
+      //--Добавляем сообщение в текущий чат
+      AddChatText(cMsgD, cMess, true);
+      //--Прокручиваем чат в самый конец
+      HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+      //--Если окно сообщений не активно, то показываем всплывашку
+      if not ChatForm.Active then DAShow(cNick, cPopMsg, cId, 165, 1, 0);
+    end;
+  end;
+end;
 
 function TChatForm.pageIdxAt(x, y: integer): integer;
 var
@@ -615,7 +635,7 @@ begin
         RosterItem.SubItems[13] := RosterItem.SubItems[13] +
           '<span class=a>' + msgD + '</span><br><span class=c>' +
           msg + '</span><br><br>' + #13#10;
-        //--Ставим флаг этому контакту, что история изменилась     
+        //--Ставим флаг этому контакту, что история изменилась
         RosterItem.SubItems[17] := 'X';
       end;
       //--Если включены графические смайлики, то форматируем сообщение под смайлы
