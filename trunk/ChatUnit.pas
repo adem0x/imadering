@@ -57,7 +57,6 @@ type
     ChatHTMLTextCopy: TMenuItem;
     ChatHTMLAllTextCopy: TMenuItem;
     ChatHTMLQText: TMenuItem;
-    SearchAvatarTimer: TTimer;
     QmessPopupMenu: TPopupMenu;
     ChatPageControl: TPageControl;
     InfoPanel3: TPanel;
@@ -91,6 +90,8 @@ type
     SendPopupMenu: TPopupMenu;
     SendAllOnline: TMenuItem;
     SendAll: TMenuItem;
+    TabPopupMenu: TPopupMenu;
+    CloseChatTabMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -124,7 +125,6 @@ type
     procedure HtmlPopupMenuPopup(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
-    procedure SearchAvatarTimerTimer(Sender: TObject);
     procedure ChatFontToolButtonClick(Sender: TObject);
     procedure HTMLChatViewerHotSpotClick(Sender: TObject; const SRC: string;
       var Handled: Boolean);
@@ -151,12 +151,14 @@ type
     procedure SendFileSpeedButtonClick(Sender: TObject);
     procedure ContactMenuToolButtonClick(Sender: TObject);
     procedure TypingTextToolButtonClick(Sender: TObject);
+    procedure CloseChatTabMenuClick(Sender: TObject);
   private
     { Private declarations }
     lastClick: Tdatetime;
     ButtonInd: integer;
     //Zundo: string;
     HintInd: integer;
+    iTab: integer;
     procedure QuickMessClick(Sender: TObject);
   public
     { Public declarations }
@@ -221,8 +223,7 @@ begin
   while result < ChatPageControl.PageCount do
   begin
     SendMessage(ChatPageControl.Handle, TCM_GETITEMRECT, result, Longint(@R));
-    if ptInRect(R, point(x, y)) then
-      exit;
+    if ptInRect(R, point(x, y)) then Exit;
     inc(result);
   end;
   result := -1;
@@ -236,22 +237,14 @@ end;
 
 procedure TChatForm.QSpeedButtonClick(Sender: TObject);
 var
-  i, ii: integer;
+  RosterItem: TListItem;
 begin
-  //--Достаём из КЛ последнее сообщение от этого контакта
-  with MainForm.ContactList do
+  //--Достаём из Ростера последнее сообщение от этого контакта
+  RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
+  if RosterItem <> nil then
   begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      for ii := 0 to Categories[i].Items.Count - 1 do
-      begin
-        if Categories[i].Items[ii].UIN = InfoPanel2.Caption then
-        begin
-          if Categories[i].Items[ii].QuoteMsg > EmptyStr then
-            InputMemo.Lines.Add('> ' + Categories[i].Items[ii].QuoteMsg);
-        end;
-      end;
-    end;
+    if RosterItem.SubItems[15] <> EmptyStr then
+      InputMemo.Lines.Add('> ' + RosterItem.SubItems[15]);
   end;
 end;
 
@@ -291,6 +284,8 @@ begin
           //--Назначаем иконку для пункта меню
           Items[I].ImageIndex := 157;
         end;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
       end;
     end;
     //--Добавляем быстрые ответы в меню быстрых ответов
@@ -306,6 +301,8 @@ begin
           //--Назначаем иконку для пункта меню
           Items[I].ImageIndex := 157;
         end;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
       end;
     end;
   finally
@@ -323,8 +320,8 @@ begin
   lastClick := now;
   if (diff < dblClickTime) and (ButtonInd = Button.Index) then
   begin
-    ButtonInd := -1;
-    //--В будущем вставка ника в поле ввода для жаббер конференций
+    //--В будущем вставка ника в поле ввода для jabber конференций
+
     Exit;
   end;
   ButtonInd := Button.Index;
@@ -332,15 +329,16 @@ end;
 
 procedure TChatForm.ChatCategoryButtonsContextPopup(Sender: TObject;
   MousePos: TPoint; var Handled: Boolean);
-var
-  FCursor: TPoint;
 begin
   Handled := true;
+  //--Выделяем выбранный контакт
   ChatCategoryButtons.FocusedItem := nil;
   ChatCategoryButtons.SelectedItem := ChatButton;
-  GetCursorPos(FCursor);
-  //if ChatButton <> nil then MainForm.ICQContactPopupMenu.Popup(FCursor.X + 1, FCursor.Y + 1)
-  //else MainForm.RoasterPopupMenu.Popup(FCursor.X + 1, FCursor.Y + 1);
+  if ChatButton <> nil then
+  begin
+    //--Параметры меню контактов в конференции
+
+  end;
 end;
 
 procedure TChatForm.ChatCategoryButtonsHotButton(Sender: TObject;
@@ -373,7 +371,11 @@ begin
       Cod := Parse(',', SmilesList.Strings[I], II);
       if Cod > EmptyStr then msg := AnsiReplaceText(msg, Cod, GenTag(IntToStr(I) + '.gif'))
       else Break;
+      //--Размораживаем фэйс
+      Application.ProcessMessages;
     end;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
   end;
 end;
 
@@ -673,21 +675,20 @@ begin
       //--Сканируем вкладки
       for i := 0 to PageCount - 1 do
       begin
-        //--Если вкладка оффлайн или не авториз. или статус неизвестен, то закрываем её
-        if (Pages[i].ImageIndex = 9) or (Pages[i].ImageIndex = 80) or
-          (Pages[i].ImageIndex = 214) then
-        begin
-          Pages[i].Free;
-          //--Прыгаем на повторение скана
-          goto x;
+        case Pages[i].ImageIndex of
+          9, 23, 25, 30, 41, 42, 214:
+            begin
+              Pages[i].Free;
+              //--Прыгаем на повторение скана
+              goto x;
+            end;
         end;
         //--Не замораживаем интерфейс
         Application.ProcessMessages;
       end;
       //--Если вкладки все закрыты, то закрываем окно чата
       if PageCount = 0 then Close
-      //--Регулируем высоту вкладок для мультилайн режима
-      else Height := ActivePage.Top - 3;
+      else ChatPageControlChange(self);
     end;
   end;
 end;
@@ -706,8 +707,29 @@ begin
       //--Закрываем все остальные вкладки в цикле
       if PageCount > 1 then ActivePageIndex := 1;
       for i := 1 to PageCount - 1 do
+      begin
         if PageCount > 1 then ActivePage.Free;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
+      end;
+      //--Регулируем высоту табов
+      Height := ActivePage.Top - 3;
     end;
+  end;
+end;
+
+procedure TChatForm.CloseChatTabMenuClick(Sender: TObject);
+begin
+  //--Закрываем вкладку над которой было вызвано меню
+  try
+    if (ChatPageControl.Visible) and (ChatPageControl.PageCount > 0) then
+    begin
+      ChatPageControl.Pages[iTab].Free;
+      //--Если вкладок больше нет, то закрываем окно
+      if ChatPageControl.PageCount = 0 then Close
+      else ChatPageControlChange(self);
+    end;
+  except
   end;
 end;
 
@@ -722,7 +744,12 @@ begin
       //--Прячем компонент вкладок чтобы не мерцал
       Visible := false;
       //--Поочередно закрываем все вкладки
-      while PageCount > 0 do ActivePage.Free;
+      while PageCount > 0 do
+      begin
+        ActivePage.Free;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
+      end;
     end;
   end;
   //--Закрываем окно чата
@@ -766,7 +793,6 @@ end;
 procedure TChatForm.ChatPageControlChange(Sender: TObject);
 var
   UIN, HistoryFile, Doc: string;
-  N: integer;
   RosterItem: TListItem;
 begin
   //--Если пустая вкладка, то выходим
@@ -848,11 +874,8 @@ begin
   //--Ставим фокус в поле ввода текста
   if (InputMemo.CanFocus) and (ChatForm.Visible) then InputMemo.SetFocus;
   //--Удаляем отметку о сообщении из списка очереди входящих сообщений
-  try
-    N := InMessList.IndexOf(UIN);
-    if N > -1 then InMessList.Delete(N);
-  except
-  end;
+  RosterForm.DellcIdInMessList(UIN);
+
   //--Загружаем аватар
   {if (Length(UserAvatarHash) = 32) and ((FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
     (FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
@@ -889,16 +912,19 @@ end;
 procedure TChatForm.ChatPageControlMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  i: integer;
   diff: TdateTime;
+  FCursor: TPoint;
 begin
   //--Обрабатываем нажатия кнопок мыши по вкладке
   case button of
     mbRight: //--Если нажали правой клавишей мыши
       begin
-        i := pageIdxAt(x, y);
-        if i < 0 then Exit;
-        //
+        iTab := pageIdxAt(x, y);
+        if iTab < 0 then Exit;
+        //--Вычисляем позицию окна от позиции курсора
+        GetCursorPos(FCursor);
+        //--Отображаем меню этой вкладки
+        TabPopupMenu.Popup(FCursor.X, FCursor.Y);
       end;
     mbLeft: //--Если нажали левой клавишей мыши
       begin
@@ -917,9 +943,10 @@ begin
       end;
     mbMiddle: //--Если нажали средней клавишей мыши
       begin
-        i := pageIdxAt(x, y);
-        if i < 0 then Exit;
-        //
+        iTab := pageIdxAt(x, y);
+        if iTab < 0 then Exit;
+        //--Закрываем эту вкладку
+        CloseChatTabMenuClick(self);
       end;
   end;
 end;
@@ -933,31 +960,6 @@ begin
   ChatPageControl.Hint := ChatPageControl.Pages[pageIdxAt(X, Y)].Hint;
   //--Запоминаем индекс вкладки с подсказкой
   HintInd := pageIdxAt(X, Y);
-end;
-
-procedure TChatForm.SearchAvatarTimerTimer(Sender: TObject);
-begin
-  {//--JPG
-  if (FileExists(Mypath + 'Users\Avatars\' + UserAvatarHash + '.jpg')) then
-  begin
-    self.SearchAvatarTimer.Enabled := false;
-    self.MyAvatarImage.Picture.LoadFromFile(Mypath + 'Users\Avatars\' + UserAvatarHash + '.jpg');
-    Exit;
-  end;
-  //--GIF
-  if (FileExists(Mypath + 'Users\Avatars\' + UserAvatarHash + '.gif')) then
-  begin
-    self.SearchAvatarTimer.Enabled := false;
-    self.MyAvatarImage.Picture.LoadFromFile(Mypath + 'Users\Avatars\' + UserAvatarHash + '.gif');
-    Exit;
-  end;
-  //--BMP
-  if (FileExists(Mypath + 'Users\Avatars\' + UserAvatarHash + '.bmp')) then
-  begin
-    self.SearchAvatarTimer.Enabled := false;
-    self.MyAvatarImage.Picture.LoadFromFile(Mypath + 'Users\Avatars\' + UserAvatarHash + '.bmp');
-    Exit;
-  end;}
 end;
 
 procedure TChatForm.SendAllClick(Sender: TObject);
@@ -1030,7 +1032,7 @@ end;
 
 procedure TChatForm.ChatSplitterMoved(Sender: TObject);
 begin
-  //--
+  //--Перерисовываем компоненты аватара
   MyAvatarPanelSpeedButton.Refresh;
   MyAvatarPanel.Refresh;
 end;
@@ -1046,13 +1048,15 @@ begin
   //--Отображаем окно настроек в разделе окно сообщений
   if Assigned(SettingsForm) then
   begin
-    //--Отображаем окно
-    SettingsForm.Show;
-    //--Активируем раздел
-    SettingsForm.JvPageList1.ActivePageIndex := 2;
-    SettingsForm.SettingButtonGroup.ItemIndex := 2;
-    //--Выводим окно на самый передний план, против глюков в вин и вайн
-    SetForeGroundWindow(SettingsForm.Handle);
+    with SettingsForm do
+    begin
+      //--Отображаем окно
+      if Visible then ShowWindow(Handle, SW_RESTORE);
+      Show;
+      //--Активируем раздел
+      JvPageList1.ActivePageIndex := 2;
+      SettingButtonGroup.ItemIndex := 2;
+    end;
   end;
 end;
 
@@ -1068,42 +1072,18 @@ begin
 end;
 
 procedure TChatForm.FormActivate(Sender: TObject);
-label
-  x;
 var
-  i, ii, N: integer;
+  RosterItem: TListItem;
 begin
-  //--Сбрасываем иконку сообщения в КЛ
-  if Assigned(MainForm) then
-  begin
-    with MainForm.ContactList do
-    begin
-      for i := 0 to Categories.Count - 1 do
-      begin
-        for ii := 0 to Categories[i].Items.Count - 1 do
-        begin
-          if Categories[i].Items[ii].UIN = InfoPanel2.Caption then
-          begin
-            Categories[i].Items[ii].Msg := false;
-            Categories[i].Items[ii].ImageIndex := Categories[i].Items[ii].Status;
-            goto x;
-          end;
-          Application.ProcessMessages;
-        end;
-      end;
-    end;
-    //--Удаляем отметку о сообщении из списка очереди входящих сообщений
-    try
-      N := InMessList.IndexOf(InfoPanel2.Caption);
-      if N > -1 then InMessList.Delete(N);
-    except
-    end;
-  end;
-  x: ;
   //--Сбрасываем иконку в активной вкладке в окне чата
   if ChatPageControl.ActivePage = nil then Exit;
   ChatPageControl.ActivePage.Margins.Left := 0;
   ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
+  //--Сбрасываем иконку сообщения в Ростере
+  RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
+  if RosterItem <> nil then RosterItem.Checked := false;
+  //--Удаляем отметку о сообщении из списка очереди входящих сообщений
+  RosterForm.DellcIdInMessList(InfoPanel2.Caption);
 end;
 
 procedure TChatForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1131,8 +1111,7 @@ begin
         BottomChatFormPanel.Height := ReadInteger('chat-splitter', 130);
         ChatCategoryButtons.Width := ReadInteger('group-splitter', 130);
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do Top := Top - 50;
-        while Left + Width > Screen.Width do Left := Left - 50;
+        MainForm.FormSetInWorkArea(self);
       finally
         CloseKey();
       end;
@@ -1203,7 +1182,6 @@ begin
   OutMessage2 := TMemoryStream.Create;
   if FileExists(MyPath + 'Icons\' + CurrentIcons + '\outmess2.gif') then
     OutMessage2.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\outmess2.gif');
-  //
   OutMessage3 := TMemoryStream.Create;
   if FileExists(MyPath + 'Icons\' + CurrentIcons + '\outmess3.gif') then
     OutMessage3.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\outmess3.gif');
@@ -1229,11 +1207,13 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(MyPath + 'Profile');
   //--Сохраняем настройки положения окна чата в xml
-  with TrXML.Create() do try
+  with TrXML.Create() do
+  try
     if FileExists(MyPath + SettingsFileName) then
       LoadFromFile(MyPath + SettingsFileName);
     //--Сохраняем позицию окна
-    if OpenKey('settings\forms\chatform\position', True) then try
+    if OpenKey('settings\forms\chatform\position', True) then
+    try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);
@@ -1244,36 +1224,35 @@ begin
     finally
       CloseKey();
     end;
-
     //--Сохраняем "отправлять по интер"
-    if OpenKey('settings\forms\chatform\send-enter', True) then try
+    if OpenKey('settings\forms\chatform\send-enter', True) then
+    try
       WriteBool('value', EnterKeyToolButton.Down);
     finally
       CloseKey();
     end;
-
     //--Сохраняем отправлять отчёт о печати текста
-    if OpenKey('settings\forms\chatform\send-typing-notify', True) then try
+    if OpenKey('settings\forms\chatform\send-typing-notify', True) then
+    try
       WriteBool('value', TypingTextToolButton.Down);
     finally
       CloseKey();
     end;
-
     //--Сохраняем "звук нажатия клавиш"
-    if OpenKey('settings\forms\chatform\key-sound', True) then try
+    if OpenKey('settings\forms\chatform\key-sound', True) then
+    try
       WriteBool('value', KeySoundToolButton.Down);
     finally
       CloseKey();
     end;
-
     //--Сохраняем состояние панелей аватар
-    if OpenKey('settings\forms\chatform\avatar-panels', True) then try
+    if OpenKey('settings\forms\chatform\avatar-panels', True) then
+    try
       WriteInteger('contact-avatar', ContactAvatarPanel.Width);
       WriteInteger('my-avatar', MyAvatarPanel.Width);
     finally
       CloseKey();
     end;
-
     //--Записываем сам файл
     SaveToFile(MyPath + SettingsFileName);
   finally
@@ -1310,10 +1289,9 @@ begin
   if not Assigned(HistoryForm) then HistoryForm := THistoryForm.Create(self);
   //--Загружаем файл истории для текущего чата
   HistoryForm.LoadHistoryFromFile(InfoPanel2.Caption);
-  //--Отображаем окно на передний план
-  ShowWindow(HistoryForm.Handle, SW_RESTORE);
+  //--Отображаем окно
+  if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
   HistoryForm.Show;
-  SetForeGroundWindow(HistoryForm.Handle);
 end;
 
 procedure TChatForm.HistorySpeedButtonMouseDown(Sender: TObject;
@@ -1337,9 +1315,7 @@ begin
   //--При нажатии комбинации клавиш контрл + с в истории чата
   //копируем выделенный текст в буфер обмена
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 67) then
-  begin
     HTMLChatViewer.CopyToClipboard;
-  end;
 end;
 
 procedure TChatForm.SmiliesSpeedButtonClick(Sender: TObject);

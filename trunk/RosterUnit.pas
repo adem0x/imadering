@@ -22,6 +22,7 @@ type
     procedure AddHistory(cItem: TListItem; cMsgD, cMess: string);
     procedure OpenChatPage(cId: string);
     procedure ResetGroupSelected;
+    procedure DellcIdInMessList(cId: string);
   end;
 
 var
@@ -33,6 +34,29 @@ implementation
 
 uses
   MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit, ChatUnit;
+
+procedure TRosterForm.DellcIdInMessList(cId: string);
+var
+  i: integer;
+begin
+  //--Удаляем отметку о сообщении из списка очереди входящих сообщений
+  try
+    with InMessList do
+    begin
+      for i := 0 to Count - 1 do
+      begin
+        if Strings[i] = cId then
+        begin
+          Delete(i);
+          Break;
+        end;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
+      end;
+    end;
+  except
+  end;
+end;
 
 procedure TRosterForm.ResetGroupSelected;
 var
@@ -100,23 +124,6 @@ begin
     Show;
     //--Ставим фокус в поле ввода текста
     if (InputMemo.CanFocus) and (Visible) then InputMemo.SetFocus;
-  end;
-  //--Удаляем отметку о сообщении из списка очереди входящих сообщений
-  try
-    with InMessList do
-    begin
-      for i := 0 to Count - 1 do
-      begin
-        if Strings[i] = cId then
-        begin
-          Delete(i);
-          Break;
-        end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
-      end;
-    end;
-  except
   end;
 end;
 
@@ -396,6 +403,10 @@ begin
   //--Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  //--Загружаем копию локальную списка контактов
+  if FileExists(MyPath + 'Profile\ContactList.dat') then
+    RosterJvListView.LoadFromFile(MyPath + 'Profile\ContactList.dat');
+  UpdateFullCL;  
 end;
 
 procedure TRosterForm.ClearContacts(cType: string);

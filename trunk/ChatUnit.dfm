@@ -832,13 +832,6 @@ object ChatForm: TChatForm
       OnClick = ChatHTMLQTextClick
     end
   end
-  object SearchAvatarTimer: TTimer
-    Enabled = False
-    Interval = 10000
-    OnTimer = SearchAvatarTimerTimer
-    Left = 192
-    Top = 112
-  end
   object QmessPopupMenu: TPopupMenu
     Images = MainForm.AllImageList
     Left = 120
@@ -858,6 +851,17 @@ object ChatForm: TChatForm
       Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1074#1089#1077#1084
       ImageIndex = 166
       OnClick = SendAllClick
+    end
+  end
+  object TabPopupMenu: TPopupMenu
+    Alignment = paCenter
+    Images = MainForm.AllImageList
+    Left = 136
+    Top = 336
+    object CloseChatTabMenu: TMenuItem
+      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1082#1083#1072#1076#1082#1091
+      ImageIndex = 158
+      OnClick = CloseChatTabMenuClick
     end
   end
 end

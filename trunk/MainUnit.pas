@@ -120,7 +120,7 @@ type
     DeleteContact: TMenuItem;
     N23: TMenuItem;
     NextContactMenu: TMenuItem;
-    FrandAuthContact: TMenuItem;
+    GrandAuthContact: TMenuItem;
     SendAddContact: TMenuItem;
     DelYourSelfContact: TMenuItem;
     SendInviteContact: TMenuItem;
@@ -212,7 +212,7 @@ type
     procedure AddNewContactCLClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
-    procedure FrandAuthContactClick(Sender: TObject);
+    procedure GrandAuthContactClick(Sender: TObject);
     procedure SendAddContactClick(Sender: TObject);
     procedure DelYourSelfContactClick(Sender: TObject);
     procedure SendInviteContactClick(Sender: TObject);
@@ -263,6 +263,8 @@ type
       const Button: TButtonItem);
     procedure JvTimerListEvents12Timer(Sender: TObject);
     procedure JabberXStatusClick(Sender: TObject);
+    procedure ContactListMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -283,9 +285,8 @@ type
     procedure JabberEnable(OnOff: boolean);
     procedure OpenFromTrayMessage(hUIN: string);
     procedure ZipHistory;
-    procedure LoadContactList;
-    procedure SaveContactList;
     procedure FormShowInWorkArea(xForm: TForm);
+    procedure FormSetInWorkArea(xForm: TForm);
   end;
 
 var
@@ -319,6 +320,20 @@ begin
     if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;
     //--Показываем окно доп. статуса
     Show;
+  end;
+end;
+
+procedure TMainForm.FormSetInWorkArea(xForm: TForm);
+begin
+  with xForm do
+  begin
+    //--Определяем не находится ли окно за пределами экрана
+    if Top < Screen.WorkAreaTop then Top := Screen.WorkAreaTop;
+    if Top + Height > (Screen.WorkAreaTop + Screen.WorkAreaHeight) then
+      Top := (Screen.WorkAreaTop + Screen.WorkAreaHeight) - Height;
+    if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
+      Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
+    if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;  
   end;
 end;
 
@@ -2273,17 +2288,8 @@ begin
     //--Если контакт ICQ
     if ContactList.SelectedItem.ContactType = 'Icq' then
     begin
-      if ICQ_Work_Phaze then ICQ_ReqStatus0215(ContactList.SelectedItem.UIN);
-    end
-    //--Если контакт Jabber
-    else if ContactList.SelectedItem.ContactType = 'Jabber' then
-    begin
-      //if Jabber_Work_Phaze then Exit;
-    end
-    //--Если контакт Mra
-    else if ContactList.SelectedItem.ContactType = 'Mra' then
-    begin
-      //if MRA_Work_Phaze then Exit;
+      if ICQ_Work_Phaze then ICQ_ReqStatus0215(ContactList.SelectedItem.UIN)
+      else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
     end;
   end;
 end;
@@ -2420,7 +2426,30 @@ begin
   if RoasterButton <> nil then
   begin
     //--Активируем или деактивируем нужные для этого контакта пункты меню
-
+    //--Для ICQ
+    if RoasterButton.ContactType = 'Icq' then
+    begin
+      DelYourSelfContact.Visible := true;
+      CheckStatusContact.Visible := true;
+      GrandAuthContact.Visible := true;
+      SendAddContact.Visible := true;
+    end
+    //--Для Jabber
+    else if RoasterButton.ContactType = 'Jabber' then
+    begin
+      DelYourSelfContact.Visible := false;
+      CheckStatusContact.Visible := false;
+      GrandAuthContact.Visible := false;
+      SendAddContact.Visible := false;
+    end
+    //--Для MRA
+    else if RoasterButton.ContactType = 'Mra' then
+    begin
+      DelYourSelfContact.Visible := false;
+      CheckStatusContact.Visible := false;
+      GrandAuthContact.Visible := false;
+      SendAddContact.Visible := false;
+    end;
     //--Отображаем меню
     ContactPopupMenu.Popup(FCursor.X, FCursor.Y);
   end
@@ -2464,6 +2493,20 @@ begin
   else RoasterButton := nil;
 end;
 
+procedure TMainForm.ContactListMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  //--Добавляем событие для средней клавишы мыши
+  if Button = mbMiddle then
+  begin
+    //--Выделяем контакт на котором был правый клик мыши
+    ContactList.FocusedItem := nil;
+    ContactList.SelectedItem := RoasterButton;
+    //--Открываем информацию о контакте
+    AnketaContactClick(self);
+  end;
+end;
+
 procedure TMainForm.ContactListSelectedItemChange(Sender: TObject;
   const Button: TButtonItem);
 begin
@@ -2478,100 +2521,105 @@ begin
 end;
 
 procedure TMainForm.DeleteContactClick(Sender: TObject);
-label
+{label
   x;
 var
-  i, ii, G, z, zz, cnt: integer;
+  i, ii, G, z, zz, cnt: integer;}
 begin
-  //--Если ICQ не подключено к серверу, то выходим
-  if not ICQ_Work_Phaze then Exit;
-  //--Если ничего не активно для удаления, то выходим
-  if ContactList.SelectedItem = nil then Exit;
-  //--Удаляем контакт из списка контактов
-  //--Блокируем всё окно со списком контактов
-  MainForm.Enabled := false;
-  try
-    //--Выводим диалог подтверждения удаления контакта
-    i := MessageBox(Handle, PChar(Format(DellContactL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
-      MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
-    //--Если ответ на вопрос положительный, то начинаем удаление контакта
-    if i = 6 then
-    begin
-      with ContactList do
+  (*//--Если ничего не активно для удаления, то выходим
+  if ContactList.SelectedItem <> nil then
+  begin
+    //--Удаляем контакт из списка контактов
+    //--Блокируем всё окно со списком контактов
+    MainForm.Enabled := false;
+    try
+      //--Выводим диалог подтверждения удаления контакта
+      if MessageBox(Handle, PChar(Format(DellContactL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
+        MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = 6 then
       begin
-        //--Сканируем группы и ищем этот контакт
-        for z := 0 to Categories.Count - 1 do
+
+      end;
+
+
+      {//--Если ответ на вопрос положительный, то начинаем удаление контакта
+      if i = 6 then
+      begin
+        with ContactList do
         begin
-          for zz := 0 to Categories[z].Items.Count - 1 do
+        //--Сканируем группы и ищем этот контакт
+          for z := 0 to Categories.Count - 1 do
           begin
-            //--Если нашли контакт
-            if Categories[z].Items[zz].UIN = ContactList.SelectedItem.UIN then
+            for zz := 0 to Categories[z].Items.Count - 1 do
             begin
+            //--Если нашли контакт
+              if Categories[z].Items[zz].UIN = ContactList.SelectedItem.UIN then
+              begin
               //--Если это контакт из группы временных, то удаляем его как временный
-              if Categories[z].Items[zz].GroupId = '0000' then
-              begin
+                if Categories[z].Items[zz].GroupId = '0000' then
+                begin
                 //--Отправляем пакет для удаления контакта из списка на сервере
-                ICQ_DeleteTempContact(Categories[z].Items[zz].UIN, Categories[z].Items[zz].Idd,
-                  Categories[z].Items[zz].iType, Categories[z].Items[zz].TimeId);
+                  ICQ_DeleteTempContact(Categories[z].Items[zz].UIN, Categories[z].Items[zz].Idd,
+                    Categories[z].Items[zz].iType, Categories[z].Items[zz].TimeId);
                 //--Запоминаем индекс группы
-                G := Categories[z].Items[zz].Category.Index;
+                  G := Categories[z].Items[zz].Category.Index;
                 //--Удаляем контакт локально из списка
-                Categories[z].Items[zz].Destroy;
+                  Categories[z].Items[zz].Destroy;
                 //--Если в группе больше нет контактов, то удаляем её
-                if Categories[G].Items.Count = 0 then Categories[G].Destroy;
-              end
+                  if Categories[G].Items.Count = 0 then Categories[G].Destroy;
+                end
               //--Если контакт из группы "Не в списке"
-              else if Categories[z].Items[zz].GroupId = 'NoCL' then
-              begin
+                else if Categories[z].Items[zz].GroupId = 'NoCL' then
+                begin
                 //--Запоминаем индекс группы
-                G := Categories[z].Items[zz].Category.Index;
+                  G := Categories[z].Items[zz].Category.Index;
                 //--Удаляем контакт локально из списка
-                Categories[z].Items[zz].Destroy;
+                  Categories[z].Items[zz].Destroy;
                 //--Если в группе больше нет контактов, то удаляем её
-                if Categories[G].Items.Count = 0 then Categories[G].Destroy;
-              end
+                  if Categories[G].Items.Count = 0 then Categories[G].Destroy;
+                end
               //--Иначе удаляем контакт как положено
+                else
+                begin
+                //--Отправляем пакет для удаления контакта из списка на сервере
+                  ICQ_DeleteContact(Categories[z].Items[zz].UIN, Categories[z].Items[zz].GroupId,
+                    Categories[z].Items[zz].Idd, Categories[z].Items[zz].Caption,
+                    Categories[z].Items[zz].Mobile, Categories[z].Items[zz].Email,
+                    Categories[z].Items[zz].Note);
+                //--Удаляем контакт локально из списка
+                  Categories[z].Items[zz].Destroy;
+                end;
+              //--Выходим из циклов
+                goto x;
+              end;
+            end;
+          end;
+          x: ;
+        //--Вычисляем оставшееся количество контактов в группах
+          with MainForm.ContactList do
+          begin
+            for i := 0 to Categories.Count - 1 do
+            begin
+              if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
+                (Categories[i].Items.Count = 0) then Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
+                IntToStr(Categories[i].Items.Count)
               else
               begin
-                //--Отправляем пакет для удаления контакта из списка на сервере
-                ICQ_DeleteContact(Categories[z].Items[zz].UIN, Categories[z].Items[zz].GroupId,
-                  Categories[z].Items[zz].Idd, Categories[z].Items[zz].Caption,
-                  Categories[z].Items[zz].Mobile, Categories[z].Items[zz].Email,
-                  Categories[z].Items[zz].Note);
-                //--Удаляем контакт локально из списка
-                Categories[z].Items[zz].Destroy;
+                cnt := Categories[i].Items.Count;
+                for ii := 0 to Categories[i].Items.Count - 1 do
+                  case Categories[i].Items[ii].Status of
+                    9, 80, 214: dec(cnt);
+                  end;
+                Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
               end;
-              //--Выходим из циклов
-              goto x;
             end;
           end;
         end;
-        x: ;
-        //--Вычисляем оставшееся количество контактов в группах
-        with MainForm.ContactList do
-        begin
-          for i := 0 to Categories.Count - 1 do
-          begin
-            if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
-              (Categories[i].Items.Count = 0) then Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
-              IntToStr(Categories[i].Items.Count)
-            else
-            begin
-              cnt := Categories[i].Items.Count;
-              for ii := 0 to Categories[i].Items.Count - 1 do
-                case Categories[i].Items[ii].Status of
-                  9, 80, 214: dec(cnt);
-                end;
-              Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
-            end;
-          end;
-        end;
-      end;
+      end;}
+    finally
+      //--В любом случае разблокировываем окно контактов
+      MainForm.Enabled := true;
     end;
-  finally
-    //--В любом случае разблокировываем окно контактов
-    MainForm.Enabled := true;
-  end;
+  end;*)
 end;
 
 procedure TMainForm.DeleteGroupCLClick(Sender: TObject);
@@ -2580,25 +2628,22 @@ begin
 end;
 
 procedure TMainForm.DelYourSelfContactClick(Sender: TObject);
-var
-  i: integer;
 begin
-  //--Если не подключены к серверу, то выходим
-  if not ICQ_Work_Phaze then Exit;
-  //--Если ничего не выбрано, то выходи
-  if ContactList.SelectedItem = nil then Exit;
-  //--Блокируем окно контактов
-  MainForm.Enabled := false;
-  try
-    //--Выводим вопрос на подтверждение действия
-    i := MessageBox(Handle, PChar(Format(DellYourSelfL,
-      [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
-      MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
-    //--Если ответ положительный, то удаляем себя из списка контакта
-    if i = 6 then ICQ_DellMyFromCL(ContactList.SelectedItem.UIN);
-  finally
-    //--Разблокировываем окно контактов
-    MainForm.Enabled := true;
+  if ContactList.SelectedItem <> nil then
+  begin
+    //--Блокируем окно контактов
+    MainForm.Enabled := false;
+    try
+      //--Выводим вопрос на подтверждение действия
+      if MessageBox(Handle, PChar(Format(DellYourSelfL,
+        [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
+        MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = 6 then
+        if ICQ_Work_Phaze then ICQ_DellMyFromCL(ContactList.SelectedItem.UIN)
+        else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+    finally
+      //--Разблокировываем окно контактов
+      MainForm.Enabled := true;
+    end;
   end;
 end;
 
@@ -2626,9 +2671,6 @@ procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   //--Сохраняем настройки окна
   SaveMainFormSettings;
-  //--Указываем что окно уничтожается полностью при закрытии
-  Action := caFree;
-  MainForm := nil;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -2644,6 +2686,7 @@ begin
     //--Переводим все протоколы в оффлайн
     if not ICQ_Offline_Phaze then ICQ_GoOffline;
     if not Jabber_Offline_Phaze then Jabber_GoOffline;
+    //if not MRA_Offline_Phaze then MRA_GoOffline;
     //--Скрываем окно чтобы небыло ощющения тормазов
     Hide;
     Application.ProcessMessages;
@@ -2666,10 +2709,9 @@ begin
       Sleep(10);
       Application.ProcessMessages;
     end;
-    //--Сохраняем историю сообщений, но уже не в потоке
-    ZipHistory;
     //--Делаем текущую локальную копию списка контактов для отображения при запуске программы
-    //if ContactList.Categories.Count > 0 then SaveContactList;
+    if RosterForm.RosterJvListView.Items.Count > 0 then
+      RosterForm.RosterJvListView.SaveToFile(MyPath + 'Profile\ContactList.dat');
   end;
 end;
 
@@ -2686,15 +2728,17 @@ end;
 procedure TMainForm.AnketaContactClick(Sender: TObject);
 begin
   //--Отображаем информацию о контакте
-  if ContactList.SelectedItem = nil then Exit;
-  if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(self);
-  //--Присваиваем UIN инфу которого хотим смотреть
-  IcqContactInfoForm.ReqUIN := ContactList.SelectedItem.UIN;
-  //--Загружаем информацию о нем
-  IcqContactInfoForm.LoadUserUnfo;
-  //--Отображаем окно
-  if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
-  IcqContactInfoForm.Show;
+  if ContactList.SelectedItem <> nil then
+  begin
+    if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(self);
+    //--Присваиваем UIN инфу которого хотим смотреть
+    IcqContactInfoForm.ReqUIN := ContactList.SelectedItem.UIN;
+    //--Загружаем информацию о нем
+    IcqContactInfoForm.LoadUserUnfo;
+    //--Отображаем окно
+    if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
+    IcqContactInfoForm.Show;
+  end;
 end;
 
 procedure TMainForm.AppActivate(Sender: TObject);
@@ -2708,16 +2752,7 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  l: DWORD;
 begin
-  //--Включаем двойную буферезацию графики окна
-  DoubleBuffered := true;
-  //--Убираем кнопку "свернуть" в заголовке окна
-  l := GetWindowLong(Self.Handle, GWL_STYLE);
-  l := l and not (WS_MINIMIZEBOX);
-  l := l and not (WS_MAXIMIZEBOX);
-  SetWindowLong(Self.Handle, GWL_STYLE, l);
   //--Узнаём путь откуда запущена программа
   MyPath := ExtractFilePath(Application.ExeName);
   //--Временно создаём форму с настройками для применения настроек
@@ -2762,8 +2797,6 @@ begin
   if not SettingsForm.HideInTrayProgramStartCheckBox.Checked then JvTimerList.Events[0].Enabled := true;
   //--В фоне создаём окно смайлов
   MainForm.JvTimerList.Events[7].Enabled := true;
-  //--Загружаем копию локальную списка контактов
-  LoadContactList;
   //--Инициализируем переменную времени начала статистики трафика сессии
   SesDataTraf := now;
 end;
@@ -2778,11 +2811,14 @@ begin
     if SmilesForm.Visible then SmilesForm.Close;
 end;
 
-procedure TMainForm.FrandAuthContactClick(Sender: TObject);
+procedure TMainForm.GrandAuthContactClick(Sender: TObject);
 begin
   //--Позволяем добавить нас без повторения запроса на авторизацию нам
-  if ICQ_Work_Phaze then
-    if ContactList.SelectedItem <> nil then ICQ_SendGrandAuth(ContactList.SelectedItem.UIN);
+  if ContactList.SelectedItem <> nil then
+  begin
+    if ICQ_Work_Phaze then ICQ_SendGrandAuth(ContactList.SelectedItem.UIN)
+    else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+  end;
 end;
 
 procedure TMainForm.LoadMainFormSettings;
@@ -2802,8 +2838,7 @@ begin
         Height := ReadInteger('height');
         Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do Top := Top - 50;
-        while Left + Width > Screen.Width do Left := Left - 50;
+        FormSetInWorkArea(self);
       finally
         CloseKey();
       end;
@@ -2939,8 +2974,11 @@ end;
 procedure TMainForm.SendAddContactClick(Sender: TObject);
 begin
   //--Отправляем пакет "Вас добавили"
-  if ICQ_Work_Phaze then
-    if ContactList.SelectedItem <> nil then ICQ_SendYouAdded(ContactList.SelectedItem.UIN);
+  if ContactList.SelectedItem <> nil then
+  begin
+    if ICQ_Work_Phaze then ICQ_SendYouAdded(ContactList.SelectedItem.UIN)
+    else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+  end;
 end;
 
 procedure TMainForm.SendInviteContactClick(Sender: TObject);
@@ -2951,10 +2989,12 @@ end;
 procedure TMainForm.SendMessageForContactClick(Sender: TObject);
 begin
   //--Вызываем событие клика по кнопке КЛ
-  if ContactList.SelectedItem = nil then Exit;
-  //--Делаем двойной клик по контакту
-  ContactListButtonClicked(self, ContactList.SelectedItem);
-  ContactListButtonClicked(self, ContactList.SelectedItem);
+  if ContactList.SelectedItem <> nil then
+  begin
+    //--Делаем двойной клик по контакту
+    ContactListButtonClicked(self, ContactList.SelectedItem);
+    ContactListButtonClicked(self, ContactList.SelectedItem);
+  end;
 end;
 
 procedure TMainForm.SoundOnOffToolButtonClick(Sender: TObject);
@@ -2993,6 +3033,8 @@ begin
         Items[I].ImageIndex := ICQPopupMenu.Items[I].ImageIndex;
         //--Назначаем выделение для пункта меню
         Items[I].Default := ICQPopupMenu.Items[I].Default;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
       end;
     end;
   end
@@ -3011,6 +3053,8 @@ begin
         Items[I].ImageIndex := MRAPopupMenu.Items[I].ImageIndex;
         //--Назначаем выделение для пункта меню
         Items[I].Default := MRAPopupMenu.Items[I].Default;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
       end;
     end;
   end
@@ -3029,6 +3073,8 @@ begin
         Items[I].ImageIndex := JabberPopupMenu.Items[I].ImageIndex;
         //--Назначаем выделение для пункта меню
         Items[I].Default := JabberPopupMenu.Items[I].Default;
+        //--Размораживаем фэйс
+        Application.ProcessMessages;
       end;
     end;
   end;
@@ -3053,6 +3099,8 @@ begin
   for i := 0 to MainForm.ContactList.Categories.Count - 1 do
   begin
     MainForm.ContactList.Categories[i].Collapsed := false;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
   end;
 end;
 
@@ -3063,123 +3111,6 @@ begin
   //--Отображаем окно
   if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
   HistoryForm.Show;
-end;
-
-procedure TMainForm.LoadContactList;
-var
-  i, k: integer;
-  cnt_group, cnt_contact: integer;
-begin
-  cnt_group := 0;
-  cnt_contact := 0;
-  //--Инициализируем XML
-  with TrXML.Create() do
-  try
-    //--Загружаем файл контакт листа
-    if FileExists(MyPath + 'Profile\ContactList.xml') then
-    begin
-      LoadFromFile(MyPath + 'Profile\ContactList.xml');
-      //--Загружаем группы и контакты в них
-      if OpenKey('settings') then
-      try
-        cnt_group := GetKeyCount('group');
-      finally
-        CloseKey();
-      end;
-      with ContactList do
-        for i := 0 to cnt_group - 1 do
-        begin
-          if OpenKey('settings\group', false, i) then
-          try
-            Categories.Add.Caption := ReadString('caption');
-            Categories[i].GroupId := ReadString('id');
-            Categories[i].GroupCaption := ReadString('name');
-            Categories[i].Collapsed := ReadBool('collapsed');
-            cnt_contact := GetKeyCount('contact');
-          finally
-            CloseKey();
-          end;
-          for k := 0 to cnt_contact - 1 do
-          begin
-            if OpenKey('settings\group', false, i) then
-            try
-              OpenKey('contact', false, k);
-              Categories[i].Items.Add.Caption := ReadString('nick');
-              Categories[i].Items[k].UIN := ReadString('id');
-              Categories[i].Items[k].ContactType := ReadString('type');
-              Categories[i].Items[k].Msg := ReadBool('msg');
-              if Categories[i].GroupId = 'NoCL' then
-              begin
-                Categories[i].Items[k].Status := 214;
-                Categories[i].Items[k].ImageIndex := 214;
-              end
-              else
-              begin
-                Categories[i].Items[k].Status := 9;
-                Categories[i].Items[k].ImageIndex := 9;
-              end;
-              Categories[i].Items[k].ImageIndex1 := -1;
-              Categories[i].Items[k].ImageIndex2 := -1;
-            finally
-              CloseKey();
-            end;
-            //--Растормаживаем фэйс
-            Application.ProcessMessages;
-          end;
-          //--Растормаживаем фэйс
-          Application.ProcessMessages;
-        end;
-    end;
-  finally
-    Free();
-  end;
-end;
-
-procedure TMainForm.SaveContactList;
-var
-  i, k: integer;
-begin
-  //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
-  //--Сохраняем настройки положения главного окна в xml
-  with TrXML.Create() do
-  try
-    //--Сохраняем в цикле все группы и все контакты в них и флаги непрочитанных сообщений
-    with ContactList do
-    begin
-      for i := 0 to Categories.Count - 1 do
-      begin
-        //--Записываем группу
-        if OpenKey('settings\group', True, i) then
-        try
-          WriteString('id', Categories[i].GroupId);
-          WriteString('caption', Categories[i].Caption);
-          WriteString('name', Categories[i].GroupCaption);
-          WriteBool('collapsed', Categories[i].Collapsed);
-        finally
-          CloseKey();
-        end;
-        for k := 0 to Categories[i].Items.Count - 1 do
-        begin
-          //--Записываем контакты в этой группе
-          if OpenKey('settings\group', True, i) then
-          try
-            OpenKey('contact', True, k);
-            WriteString('id', Categories[i].Items[k].UIN);
-            WriteString('nick', Categories[i].Items[k].Caption);
-            WriteString('type', Categories[i].Items[k].ContactType);
-            WriteBool('msg', Categories[i].Items[k].Msg);
-          finally
-            CloseKey();
-          end;
-        end;
-      end;
-    end;
-    //--Записываем сам файл
-    SaveToFile(MyPath + 'Profile\ContactList.xml');
-  finally
-    Free();
-  end;
 end;
 
 procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu, biMinimize]
+  BorderIcons = [biSystemMenu]
   Caption = 'IMadering'
   ClientHeight = 401
   ClientWidth = 197
@@ -49,6 +49,7 @@ object MainForm: TMainForm
     OnButtonClicked = ContactListButtonClicked
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
+    OnMouseDown = ContactListMouseDown
     OnSelectedItemChange = ContactListSelectedItemChange
   end
   object ToolBar2: TToolBar
@@ -867,10 +868,10 @@ object MainForm: TMainForm
     object NextContactMenu: TMenuItem
       Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
       ImageIndex = 222
-      object FrandAuthContact: TMenuItem
+      object GrandAuthContact: TMenuItem
         Caption = #1055#1086#1079#1074#1086#1083#1080#1090#1100' '#1076#1086#1073#1072#1074#1080#1090#1100' '#1074#1072#1089
         ImageIndex = 140
-        OnClick = FrandAuthContactClick
+        OnClick = GrandAuthContactClick
       end
       object SendAddContact: TMenuItem
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' "'#1042#1072#1089' '#1076#1086#1073#1072#1074#1080#1083#1080'"'

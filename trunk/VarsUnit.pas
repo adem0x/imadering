@@ -84,12 +84,9 @@ var
   JabberAccountInfo: string = 'Учётная запись JID:';
   JabberAccountInfo_1: string = 'Перед тем как подключиться к Jabber серверу, сначала укажите в настройках свой JID аккаунт и пароль!';
   PassLabelInfo: string = 'Пароль:';
-  RegPanelInfo_1: string = 'Запущен процесс регистрации ...';
   ParsingPktError: string = 'Неудалось произвести разбор пакета данных полученных от сервера.';
   SocketConnErrorInfo_1: string = 'Соединение не установлено.';
-  ICQRegNewInfo_1: string = 'Извините, в регистрации отказано.';
   RegNewAlert_1: string = 'Укажите пароль для новой учётной записи.';
-  RegNewAlert_2: string = 'Введите слово на картинке.';
   UnknownError: string = 'Неизвестная ошибка';
   AddContactError: string = 'Ошибка при добавлении контакта.';
   AddGroupError: string = 'Ошибка при добавлении группы.';
@@ -183,7 +180,6 @@ var
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
   JabberLoginErrorL: string = 'Неправильный JID или пароль.';
   HttpSocketErrCodeL: string = 'Код ошибки: %d';
-  JabberPktErrorL: string = 'Неправильные XML данные!';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';

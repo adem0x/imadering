@@ -1451,7 +1451,7 @@ begin
   p := Pos('<', sbuff);
   if p <= 0 then
   begin
-    DAShow(ErrorHead, JabberPktErrorL, EmptyStr, 134, 2, 0);
+    DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
     Exit;
   end;
   tmps := Copy(sbuff, p, l - p + 1);
