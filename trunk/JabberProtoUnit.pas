@@ -417,14 +417,14 @@ begin
                 if ReadString('type') = 'unavailable' then
                 begin
                   SubItems[6] := '30';
-                  SubItems[18] := EmptyStr;
+                  SubItems[18] := '0';
                   SubItems[19] := '5';
                 end
                 else
                 begin
                   SubItems[6] := '28';
                   SubItems[18] := '5';
-                  SubItems[19] := EmptyStr;
+                  SubItems[19] := '0';
                 end;
                 //--Запускаем таймер задержку событий Ростера
                 MainForm.JvTimerList.Events[11].Enabled := false;
@@ -483,8 +483,7 @@ begin
                 //--Дата сообщения
                 msgD := Nick + ' [' + DateTimeChatMess + ']';
                 //--Записываем историю в этот контакт если он уже найден в списке контактов
-                SubItems[35] := EmptyStr;
-                SubItems[36] := '0';
+                SubItems[35] := '0';
                 SubItems[15] := PopMsg;
                 //--Добавляем историю в эту запись
                 RosterForm.AddHistory(RosterItem, msgD, Mess);
@@ -519,9 +518,8 @@ begin
                 SubItems[1] := 'NoCL';
                 SubItems[2] := 'none';
                 SubItems[3] := 'Jabber';
-                SubItems[6] := '30';
-                SubItems[35] := EmptyStr;
-                SubItems[36] := '0';
+                SubItems[6] := '214';
+                SubItems[35] := '0';
                 SubItems[15] := PopMsg;
                 //--Добавляем историю в эту запись
                 RosterForm.AddHistory(RosterItem, msgD, Mess);
@@ -529,6 +527,8 @@ begin
             end;
             //--Добавляем сообщение в текущий чат
             ChatForm.AddMessInActiveChat(Nick, PopMsg, pJID, msgD, Mess);
+            //--Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
+            if InMessList.IndexOf(pJID) = -1 then InMessList.Add(pJID);
             //--Играем звук входящего сообщения
             ImPlaySnd(1);
           end;

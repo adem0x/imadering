@@ -147,6 +147,8 @@ type
     JabberStatusEvil: TMenuItem;
     JabberStatusFFC: TMenuItem;
     RosterMainMenu: TMenuItem;
+    UnstableMRAStatus: TMenuItem;
+    UnstableJabberStatus: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -260,6 +262,7 @@ type
     procedure ContactListSelectedItemChange(Sender: TObject;
       const Button: TButtonItem);
     procedure JvTimerListEvents12Timer(Sender: TObject);
+    procedure JabberXStatusClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -282,6 +285,7 @@ type
     procedure ZipHistory;
     procedure LoadContactList;
     procedure SaveContactList;
+    procedure FormShowInWorkArea(xForm: TForm);
   end;
 
 var
@@ -297,6 +301,26 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit;
+
+procedure TMainForm.FormShowInWorkArea(xForm: TForm);
+var
+  FCursor: TPoint;
+begin
+  //--Вычисляем позицию окна от позиции курсора
+  GetCursorPos(FCursor);
+  with xForm do
+  begin
+    Top := FCursor.Y - (Height div 2);
+    Left := FCursor.X - (Width div 2);
+    //--Определяем не находится ли окно за пределами экрана
+    if Top < Screen.WorkAreaTop then Top := Screen.WorkAreaTop;
+    if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
+      Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
+    if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;
+    //--Показываем окно доп. статуса
+    Show;
+  end;
+end;
 
 procedure TMainForm.ZipHistory;
 var
@@ -389,6 +413,11 @@ begin
     TrafRecev := TrafRecev + MRAAvatarHttpClient.RcvdCount;
     AllTrafRecev := AllTrafRecev + MRAAvatarHttpClient.RcvdCount;
     if Assigned(TrafficForm) then OpenTrafficClick(nil);
+    //--Обрабатываем полученую MRA аватару
+
+    //--Высвобождаем блок памяти
+    MRAAvatarHttpClient.RcvdStream.Free;
+    MRAAvatarHttpClient.RcvdStream := nil;
   end;
 end;
 
@@ -874,10 +903,9 @@ procedure TMainForm.OpenFromTrayMessage(hUIN: string);
 label
   x;
 var
-  i, ii: integer;
   mUIN: string;
 begin
-  if hUIN > EmptyStr then
+  if hUIN <> EmptyStr then
   begin
     mUIN := hUIN;
     goto x;
@@ -886,6 +914,8 @@ begin
   if InMessList.Count = 0 then
   begin
     ICQTrayIcon.Tag := 0;
+    MRATrayIcon.Tag := 0;
+    JabberTrayIcon.Tag := 0;
     Exit;
   end;
   //-Получаем учётную запись отправителя сообщения с самого низа списка
@@ -893,26 +923,8 @@ begin
   //--Если она вдруг пустая, то выходим
   if mUIN = EmptyStr then Exit;
   x: ;
-  //--Сканируем КЛ в поисках этого контакта
-  with ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      for ii := 0 to Categories[i].Items.Count - 1 do
-      begin
-        if Categories[i].Items[ii].UIN = mUIN then
-        begin
-          //--Эмулируем двойной клик по кнопке контакта в КЛ
-          ContactListButtonClicked(self, Categories[i].Items[ii]);
-          ContactListButtonClicked(self, Categories[i].Items[ii]);
-          //--Выходим
-          Exit;
-        end;
-        Application.ProcessMessages;
-      end;
-      Application.ProcessMessages;
-    end;
-  end;
+  //--Открываем чат с этим контактом
+  RosterForm.OpenChatPage(mUIN);
 end;
 
 procedure TMainForm.ICQTrayIconClick(Sender: TObject);
@@ -1529,20 +1541,11 @@ begin
 end;
 
 procedure TMainForm.ICQXStatusClick(Sender: TObject);
-var
-  FCursor: TPoint;
 begin
   //--Открываем окно выбора дополнительного статуса
   if not Assigned(IcqXStatusForm) then IcqXStatusForm := TIcqXStatusForm.Create(self);
-  //--Вычисляем позицию окна от позиции курсора
-  GetCursorPos(FCursor);
-  with IcqXStatusForm do
-  begin
-    Top := FCursor.Y - (Height div 2);
-    Left := FCursor.X - (Width div 2);
-    //--Показываем окно доп. статуса
-    Show;
-  end;
+  //--Отображаем окнов рабочей области
+  FormShowInWorkArea(IcqXStatusForm);
 end;
 
 procedure TMainForm.JabberToolButtonClick(Sender: TObject);
@@ -1554,8 +1557,8 @@ end;
 procedure TMainForm.JabberToolButtonContextPopup(Sender: TObject;
   MousePos: TPoint; var Handled: Boolean);
 begin
-  //--Отображаем правильное всплывающее меню
-  JabberToolButtonClick(Sender);
+  //--Открываем меню над этим элементом
+  Popup(JabberToolButton, RightJabberPopupMenu);
 end;
 
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
@@ -1836,6 +1839,14 @@ begin
   end;
 end;
 
+procedure TMainForm.JabberXStatusClick(Sender: TObject);
+begin
+  //--Открываем окно выбора дополнительного статуса
+  if not Assigned(IcqXStatusForm) then IcqXStatusForm := TIcqXStatusForm.Create(self);
+  //--Отображаем окнов рабочей области
+  FormShowInWorkArea(IcqXStatusForm);
+end;
+
 procedure TMainForm.JvTimerListEvents0Timer(Sender: TObject);
 begin
   //--Отображаем главное окно программы
@@ -1868,17 +1879,39 @@ begin
 end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
-var
-  i, ii: integer;
+{var
+  i, t: integer;
   YesMsgICQ, YesMsgJabber, GroupRoasterMsg: boolean;
+  RosterItem: TListItem;}
+
 begin
-  //--Смотрим по таймеру везде все флаги сообщений не прочитанных
+  {//--Смотрим по таймеру везде все флаги сообщений не прочитанных
   //и отображаем иконки мигающих сообщений
   //--Обнуляем местные метки
   YesMsgICQ := false;
   YesMsgJabber := false;
   GroupRoasterMsg := false;
   //--Сканируем и управляем иконками контактов с флагами сообщений
+  if Assigned(RosterForm) then
+  begin
+    with RosterForm.RosterJvListView do
+    begin
+      for i := 0 to Items.Count - 1 do
+      begin
+      //--Если контакт печатает нам сообщение и время печати меньше отбоя печати
+        if Items[i].SubItems[35] <> '0' then
+        begin
+          t := StrToInt(Items[i].SubItems[35]);
+          Dec(t);
+        //Categories[i].Items[ii].ImageIndex := 161;
+          Items[i].SubItems[35] := IntToStr(t);
+        end;
+      //--Не даём замерзать интерфейсу
+        Application.ProcessMessages;
+      end;
+    end;
+
+
 
 
 
@@ -1938,94 +1971,95 @@ begin
     end;
   end;}
   //--Мигаем иконками сообщений во вкладках окна чата
-  if Assigned(ChatForm) then
-  begin
-    with ChatForm.ChatPageControl do
+   { if Assigned(ChatForm) then
     begin
-      for i := 0 to PageCount - 1 do
+      with ChatForm.ChatPageControl do
       begin
+        for i := 0 to PageCount - 1 do
+        begin
         //--Если контакт печатает нам сообщение и время печати меньше отбоя печати
-        if (Pages[i].Margins.Top = 1) and (Pages[i].Margins.Right < 60) then
-        begin
-          //--Если активная вкладка совпадает с UIN
-          if Pages[i].HelpKeyword = ChatForm.InfoPanel2.Caption then
+          if (Pages[i].Margins.Top = 1) and (Pages[i].Margins.Right < 60) then
           begin
+          //--Если активная вкладка совпадает с UIN
+            if Pages[i].HelpKeyword = ChatForm.InfoPanel2.Caption then
+            begin
             //--Ставим сообщение о наборе текста
-            ChatForm.NotifyPanel.Font.Color := clBlue;
-            ChatForm.NotifyPanel.Caption := TypingTextL;
+              ChatForm.NotifyPanel.Font.Color := clBlue;
+              ChatForm.NotifyPanel.Caption := TypingTextL;
+            end
+            else Pages[i].ImageIndex := 161;
+            Pages[i].Margins.Right := Pages[i].Margins.Right + 1;
           end
-          else Pages[i].ImageIndex := 161;
-          Pages[i].Margins.Right := Pages[i].Margins.Right + 1;
-        end
-        else
-        begin
+          else
+          begin
           //--Если не печатает, то обнуляем флаги печати сообщения контактом
-          Pages[i].Margins.Top := 0;
-          Pages[i].Margins.Right := 0;
+            Pages[i].Margins.Top := 0;
+            Pages[i].Margins.Right := 0;
           //--Если активная вкладка совпадает с UIN
-          if Pages[i].HelpKeyword = ChatForm.InfoPanel2.Caption then
-          begin
+            if Pages[i].HelpKeyword = ChatForm.InfoPanel2.Caption then
+            begin
             //--Сбрасываем сообщение о наборе текста
-            ChatForm.NotifyPanel.Font.Color := clWindowText;
-            ChatForm.NotifyPanel.Caption := '...';
-          end;
+              ChatForm.NotifyPanel.Font.Color := clWindowText;
+              ChatForm.NotifyPanel.Caption := '...';
+            end;
           //--Если стоит флаг что есть непрочитанные сообщения от этого контакта
-          if Pages[i].Margins.Left = 1 then
-          begin
+            if Pages[i].Margins.Left = 1 then
+            begin
             //--Если иконка сообщения уже отображается, то меняем её на статус,
             //если наоборот, то на иконку сообщения
-            if Pages[i].ImageIndex = 165 then Pages[i].ImageIndex := Pages[i].Tag
-            else Pages[i].ImageIndex := 165;
+              if Pages[i].ImageIndex = 165 then Pages[i].ImageIndex := Pages[i].Tag
+              else Pages[i].ImageIndex := 165;
             //--Зачемто засыпаем на 1 миллисекунду
-            Sleep(1);
+              Sleep(1);
             //--Если окно чата не активно, то мигаем его кнопкой на панели задач
-            if not ChatForm.Active then FormFlash(ChatForm.Handle);
-          end
+              if not ChatForm.Active then FormFlash(ChatForm.Handle);
+            end
           //--Если флага сообщения нету, то проверяем всё ли нормально
           //с иконкой статуса, если нет, то присваиваем её
-          else if Pages[i].ImageIndex <> Pages[i].Tag then Pages[i].ImageIndex := Pages[i].Tag;
-        end;
+            else if Pages[i].ImageIndex <> Pages[i].Tag then Pages[i].ImageIndex := Pages[i].Tag;
+          end;
         //--Не даём замерзать интерфейсу
-        Application.ProcessMessages;
+          Application.ProcessMessages;
+        end;
       end;
     end;
-  end;
   //--Если не активен таймер иконки соединения, то можно мигать иконками сообщений
-  if not JvTimerList.Events[3].Enabled then
-  begin
-    //--Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-    if (YesMsgICQ) and (InMessList.Count > 0) then
+    if not JvTimerList.Events[3].Enabled then
     begin
+    //--Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
+      if (YesMsgICQ) and (InMessList.Count > 0) then
+      begin
       //--Ставим флаг в трэе, что есть сообщения для открытия
-      ICQTrayIcon.Tag := 1;
+        ICQTrayIcon.Tag := 1;
       //--Если иконка сообщения уже отображается, то меняем её на статус,
       //если наоборот, то на иконку сообщения
-      if ICQTrayIcon.IconIndex = 165 then ICQTrayIcon.IconIndex := ICQ_CurrentStatus
-      else ICQTrayIcon.IconIndex := 165;
-    end
-    else
-    begin
+        if ICQTrayIcon.IconIndex = 165 then ICQTrayIcon.IconIndex := ICQ_CurrentStatus
+        else ICQTrayIcon.IconIndex := 165;
+      end
+      else
+      begin
       //--Сбрасываем отображение иконки сообщений в трэе для ICQ
-      ICQTrayIcon.Tag := 0;
-      ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
-    end;
+        ICQTrayIcon.Tag := 0;
+        ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+      end;
     //--Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-    if (YesMsgJabber) and (InMessList.Count > 0) then
-    begin
+      if (YesMsgJabber) and (InMessList.Count > 0) then
+      begin
       //--Ставим флаг в трэе, что есть сообщения для открытия
-      JabberTrayIcon.Tag := 1;
+        JabberTrayIcon.Tag := 1;
       //--Если иконка сообщения уже отображается, то меняем её на статус,
       //если наоборот, то на иконку сообщения
-      if JabberTrayIcon.IconIndex = 165 then JabberTrayIcon.IconIndex := Jabber_CurrentStatus
-      else JabberTrayIcon.IconIndex := 165;
-    end
-    else
-    begin
+        if JabberTrayIcon.IconIndex = 165 then JabberTrayIcon.IconIndex := Jabber_CurrentStatus
+        else JabberTrayIcon.IconIndex := 165;
+      end
+      else
+      begin
       //--Сбрасываем отображение иконки сообщений в трэе для ICQ
-      JabberTrayIcon.Tag := 0;
-      JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+        JabberTrayIcon.Tag := 0;
+        JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+      end;
     end;
-  end;
+  end;}
 end;
 
 
@@ -2187,6 +2221,7 @@ begin
         img2.Canvas.CopyRect(Rect(0, 0, 16, 16), Img1.Canvas,
           Bounds(i * 16, 0, 16, 16));
         ImgList.AddMasked(img2, clFuchsia);
+        //--Размораживавем фэйс
         Application.ProcessMessages;
       end;
     end;
@@ -2218,32 +2253,39 @@ end;
 procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 begin
-  //--Отображаем правильное всплывающее меню
-  MRAToolButtonClick(Sender);
+  //--Открываем меню над этим элементом
+  Popup(MRAToolButton, RightMRAPopupMenu);
 end;
 
 procedure TMainForm.MRAXStatusClick(Sender: TObject);
-var
-  FCursor: TPoint;
 begin
   //--Открываем окно выбора дополнительного статуса
   if not Assigned(MraXStatusForm) then MraXStatusForm := TMraXStatusForm.Create(self);
-  //--Вычисляем позицию окна от позиции курсора
-  GetCursorPos(FCursor);
-  with MraXStatusForm do
-  begin
-    Top := FCursor.Y - (Height div 2);
-    Left := FCursor.X - (Width div 2);
-    //--Показываем окно доп. статуса
-    Show;
-  end;
+  //--Отображаем окнов рабочей области
+  FormShowInWorkArea(MraXStatusForm);
 end;
 
 procedure TMainForm.CheckStatusContactClick(Sender: TObject);
 begin
   //--Проверяем статус контакта
-  if ICQ_Work_Phaze then
-    if ContactList.SelectedItem <> nil then ICQ_ReqStatus0215(ContactList.SelectedItem.UIN);
+  if ContactList.SelectedItem <> nil then
+  begin
+    //--Если контакт ICQ
+    if ContactList.SelectedItem.ContactType = 'Icq' then
+    begin
+      if ICQ_Work_Phaze then ICQ_ReqStatus0215(ContactList.SelectedItem.UIN);
+    end
+    //--Если контакт Jabber
+    else if ContactList.SelectedItem.ContactType = 'Jabber' then
+    begin
+      //if Jabber_Work_Phaze then Exit;
+    end
+    //--Если контакт Mra
+    else if ContactList.SelectedItem.ContactType = 'Mra' then
+    begin
+      //if MRA_Work_Phaze then Exit;
+    end;
+  end;
 end;
 
 procedure TMainForm.CheckUpdateClick(Sender: TObject);
@@ -2279,11 +2321,13 @@ begin
   begin
     OnlyOnlineContactsToolButton.ImageIndex := 137;
     OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
+    RosterForm.UpdateFullCL;
   end
   else
   begin
     OnlyOnlineContactsToolButton.ImageIndex := 138;
     OnlyOnlineContactsToolButton.Hint := OnlyOnlineOff;
+    RosterForm.UpdateFullCL;
   end;
 end;
 
@@ -2325,6 +2369,8 @@ begin
   for i := 0 to MainForm.ContactList.Categories.Count - 1 do
   begin
     MainForm.ContactList.Categories[i].Collapsed := true;
+    //--Размораживаем фэйс
+    Application.ProcessMessages;
   end;
 end;
 
@@ -2338,10 +2384,7 @@ end;
 procedure TMainForm.ContactListButtonClicked(Sender: TObject;
   const Button: TButtonItem);
 var
-  EnableTab: boolean;
-  i, N: integer;
   diff: TdateTime;
-  Sheet: TTabSheet;
 begin
   //--Вычитаем время плошлого клика
   diff := now - lastClick;
@@ -2350,65 +2393,12 @@ begin
   //--Если по времени произошёл двойной клик, то начинаем открывать окно чата с этим контактом
   if (diff < dblClickTime) and (ButtonInd = Button.Index) then
   begin
-    //--Обнуляем флаг непрочитанных сообщений для этого контакта
-    Button.Msg := false;
     //--Меняем иконку кнопки контакта на его статус
     Button.ImageIndex := Button.Status;
-    //--Если окно чата не создано, то создаём его
-    if not Assigned(ChatForm) then ChatForm := TChatForm.Create(self);
-    //--Показываем компонент табов
-    ChatForm.ChatPageControl.Visible := true;
-    //--Ищем вкладку в табе
-    EnableTab := false;
-    with ChatForm.ChatPageControl do
-    begin
-      for i := 0 to PageCount - 1 do
-      begin
-        if Pages[i].HelpKeyword = Button.UIN then
-        begin
-          Pages[i].ImageIndex := Button.Status;
-          Pages[i].Tag := Button.Status;
-          Pages[i].Caption := Button.Caption;
-          Pages[i].Hint := Button.Hint;
-          ActivePageIndex := Pages[i].PageIndex;
-          EnableTab := true;
-          Break;
-        end;
-        Application.ProcessMessages;
-      end;
-    end;
-    //--Если вкладку не нашли, то создаём её
-    if not EnableTab then
-    begin
-      Sheet := TTabSheet.Create(self);
-      Sheet.Caption := Button.Caption;
-      Sheet.ImageIndex := Button.Status;
-      Sheet.Tag := Button.Status;
-      Sheet.HelpKeyword := Button.UIN;
-      Sheet.Hint := Button.Hint;
-      Sheet.ShowHint := true;
-      Sheet.PageControl := ChatForm.ChatPageControl;
-      ChatForm.ChatPageControl.ActivePageIndex := Sheet.PageIndex;
-    end;
-    //--Активируем чат и применяем параметры в окне чата
-    ChatForm.ChatPageControlChange(self);
-    //--Отображаем окно сообщений
-    if ChatForm.Visible then ShowWindow(ChatForm.Handle, SW_RESTORE);
-    ChatForm.Show;
-    //--Ставим фокус в поле ввода текста
-    if (ChatForm.InputMemo.CanFocus) and (ChatForm.Visible) then ChatForm.InputMemo.SetFocus;
-    //--Запрашиваем анкету неопознанных контактов
-    if (Button.Caption = Button.UIN) and ((Button.Category.GroupId = '0000') or (Button.Category.GroupId = 'NoCL')) then
-    begin
-      if ICQ_Work_Phaze then ICQ_ReqInfo_New_Pkt(Button.UIN);
-    end;
-    //--Удаляем отметку о сообщении из списка очереди входящих сообщений
-    try
-      N := InMessList.IndexOf(Button.UIN);
-      if N > -1 then InMessList.Delete(N);
-    except
-    end;
+    //--Открываем чат с этим контактом
+    RosterForm.OpenChatPage(Button.UIN);
   end;
+  //--Запоминаем индекс кнопки
   ButtonInd := Button.Index;
 end;
 
@@ -2416,7 +2406,6 @@ procedure TMainForm.ContactListContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 var
   FCursor: TPoint;
-  i: integer;
 begin
   //--Отключаем автоменю
   Handled := true;
@@ -2430,12 +2419,6 @@ begin
   //--Если кнопка КЛ, то выводим меню контакта
   if RoasterButton <> nil then
   begin
-    //--Снимаем выделение с заголовка группы
-    if RoasterGroup <> nil then
-    begin
-      RoasterGroup.GroupSelected := false;
-      ContactList.ShareUpdateCategory(RoasterGroup);
-    end;
     //--Активируем или деактивируем нужные для этого контакта пункты меню
 
     //--Отображаем меню
@@ -2451,17 +2434,7 @@ begin
       if RoasterGroup <> nil then
       begin
         //--Сбрасываем подсветку заголовка другой группы
-        for i := 0 to Categories.Count - 1 do
-        begin
-          if Categories[i].GroupSelected = true then
-          begin
-            Categories[i].GroupSelected := false;
-            //--Перерисовываем заголовок группы
-            ShareUpdateCategory(ContactList.Categories[i]);
-            //--Выходим из цикла
-            Break;
-          end;
-        end;
+        RosterForm.ResetGroupSelected;
         //--Подсвечиваем заголовок текущей группы
         RoasterGroup.GroupSelected := true;
         ShareUpdateCategory(RoasterGroup);
@@ -2472,11 +2445,7 @@ begin
       else
       begin
         //--Если клик не по группе, то убираем подсветку со всех заголовков групп
-        for i := 0 to Categories.Count - 1 do
-        begin
-          Categories[i].GroupSelected := false;
-          ShareUpdateCategory(ContactList.Categories[i]);
-        end;
+        RosterForm.ResetGroupSelected;
         //--Управляем пунктами меню для группы
         RenemeGroupCL.Visible := false;
         DeleteGroupCL.Visible := false;
@@ -2497,25 +2466,9 @@ end;
 
 procedure TMainForm.ContactListSelectedItemChange(Sender: TObject;
   const Button: TButtonItem);
-var
-  i: integer;
 begin
   //--Сбрасываем выделение заголовка группы при клике по любому контакту
-  with ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      if Categories[i].GroupSelected = true then
-      begin
-        Categories[i].GroupSelected := false;
-        //--Перерисовываем заголовок группы
-        ShareUpdateCategory(ContactList.Categories[i]);
-        //--Выходим из цикла
-        Break;
-      end;
-      Application.ProcessMessages;
-    end;
-  end;
+  RosterForm.ResetGroupSelected;
 end;
 
 procedure TMainForm.CopyAccountContactClick(Sender: TObject);

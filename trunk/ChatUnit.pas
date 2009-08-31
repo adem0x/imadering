@@ -192,7 +192,7 @@ implementation
 
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
-  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit;
+  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, Code;
 
 procedure TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string);
 begin
@@ -767,7 +767,6 @@ procedure TChatForm.ChatPageControlChange(Sender: TObject);
 var
   UIN, HistoryFile, Doc: string;
   N: integer;
-  CLcItem: TButtonItem;
   RosterItem: TListItem;
 begin
   //--Если пустая вкладка, то выходим
@@ -776,28 +775,21 @@ begin
   ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;
   //--Получаем учётную запись контакта
   UIN := ChatPageControl.ActivePage.HelpKeyword;
-  //--Помечаем в КЛ, что сообщения от этого контакта прочитаны и получаем параметры
-  CLcItem := RosterForm.ReqCLContact(UIN);
-  if CLcItem <> nil then
-  begin
-    with CLcItem do
-    begin
-      Msg := false;
-      ImageIndex := Status;
-      {ChatPageControl.ActivePage.Tag := Status;
-      ChatPageControl.ActivePage.ImageIndex := Status;
-      ChatPageControl.ActivePage.Hint := Hint;
-      UserUtf8Support := Utf8Supported;
-      UserAvatarHash := IconHash;
-      UserType := ContactType;}
-    end;
-  end;
   //--Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
   RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
   begin
     with RosterItem do
     begin
+      //--Выставляем параметры этого контакта
+      Checked := false;
+      ChatPageControl.ActivePage.Tag := StrToInt(SubItems[6]);
+      ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
+      ChatPageControl.ActivePage.Hint := SubItems[34];
+      if SubItems[33] = 'X' then UserUtf8Support := true
+      else UserUtf8Support := false;
+      UserAvatarHash := Hex2Text(SubItems[29]);
+      UserType := SubItems[3];
       InputMemo.Text := SubItems[14];
       //--Проверяем загружена ли история уже
       if SubItems[13] = EmptyStr then

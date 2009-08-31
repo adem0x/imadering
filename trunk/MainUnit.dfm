@@ -728,6 +728,7 @@ object MainForm: TMainForm
     object JabberXStatus: TMenuItem
       Caption = #1044#1086#1087'. '#1057#1090#1072#1090#1091#1089
       ImageIndex = 44
+      OnClick = JabberXStatusClick
     end
     object N4: TMenuItem
       Caption = '-'
@@ -934,9 +935,15 @@ object MainForm: TMainForm
   object RightMRAPopupMenu: TPopupMenu
     Left = 80
     Top = 296
+    object UnstableMRAStatus: TMenuItem
+      Caption = #1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
+    end
   end
   object RightJabberPopupMenu: TPopupMenu
     Left = 112
     Top = 296
+    object UnstableJabberStatus: TMenuItem
+      Caption = #1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
+    end
   end
 end

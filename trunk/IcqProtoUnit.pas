@@ -2808,184 +2808,83 @@ end;
 
 procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP,
   TimeReg, IconHash, ConnTime: string);
-label
-  x, y, a;
 var
-  i, ii, N, G, T: integer;
-  NoCL, NoCLG: boolean;
-  Nick, Mess, msgD, PopMsg, HistoryFile: string;
+  Nick, Mess, msgD, PopMsg: string;
+  RosterItem: TListItem;
 begin
   //--Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then ChatForm := TChatForm.Create(MainForm);
   //--Если сообщение пустое, то выходим
   if Msg = EmptyStr then Exit;
-  //--Ставим начальные значения переменным
-  NoCL := true;
-  NoCLG := false;
-  G := 0;
-  T := 0;
-  //--Ищем ник контакта сначала в КЛ
-  with MainForm.ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      for ii := 0 to Categories[i].Items.Count - 1 do
-      begin
-        if Categories[i].Items[ii].UIN = UIN then
-        begin
-          Nick := Categories[i].Items[ii].Caption;
-          NoCL := false;
-          G := i;
-          T := ii;
-          //--Если ник нашли, то выходим из цыкла
-          goto a;
-        end;
-        Application.ProcessMessages;
-      end;
-      Application.ProcessMessages;
-    end;
-  end;
-  //--Если ник не нашли в КЛ, то ищем его в файле-кэше ников
-  if Nick = EmptyStr then
-  begin
-    try
-      N := AccountToNick.IndexOf('Icq_' + UIN);
-      if N = -1 then Nick := UIN
-      else Nick := AccountToNick.Strings[N + 1];
-    except
-      Nick := UIN;
-    end;
-  end;
-  //--Если же ник всётаки не найден, то назначем ник как учётную запись
-  if Nick = EmptyStr then Nick := UIN;
-  a: ;
-  //--Сохраняем сообщение в файл истории сообщений
+  //--Обрабатываем сообщение
   Mess := Msg;
   ChatForm.CheckMessage_BR(Mess);
   ChatForm.CheckMessage_ClearTag(Mess);
   PopMsg := Mess;
   ChatForm.CheckMessage_BR(Mess);
   DecorateURL(Mess);
-  msgD := Nick + ' [' + DateTimeChatMess + ']';
-  //--Записываем историю в этот контакт если он уже найден в списке контактов
-  with MainForm.ContactList do
+  //--Ищем эту запись в Ростере
+  RosterItem := RosterForm.ReqRosterItem(UIN);
+  if RosterItem <> nil then
   begin
-    if not NoCL then
+    //--Выставляем параметры сообщения в этой записи
+    with RosterItem do
     begin
-      Categories[G].Items[T].Typing := false;
-      Categories[G].Items[T].TypingTime := 0;
-      Categories[G].Items[T].QuoteMsg := PopMsg;
-      //--Проверяем загружена ли история уже
-      if Categories[G].Items[T].History = EmptyStr then
-      begin
-        //--Загружаем файл истории сообщений
-        HistoryFile := MyPath + 'Profile\History\Icq_' + UIN + '.z';
-        if FileExists(HistoryFile) then
-        begin
-          try
-            //--Распаковываем файл с историей
-            UnZip_File(HistoryFile, MyPath + 'Profile\History\');
-            //--Записываем историю в хранилище у этого контакта
-            Categories[G].Items[T].History := ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
-            //--Удаляем уже не нужный распакованный файл с историей
-            if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
-          except
-          end;
-        end;
-      end;
-      //--Добавляем историю в этот контакт
-      Categories[G].Items[T].History := Categories[G].Items[T].History +
-        '<span class=b>' + msgD + '</span><br><span class=c>' + Mess + '</span><br><br>' + #13#10;
-      //--Ставим флаг этому контакту, что история изменилась
-      Categories[G].Items[T].HistoryChange := true;
+      //--Ник контакта из Ростера
+      Nick := SubItems[0];
+      //--Дата сообщения
+      msgD := Nick + ' [' + DateTimeChatMess + ']';
+      //--Записываем историю в этот контакт если он уже найден в списке контактов
+      SubItems[35] := '0';
+      SubItems[15] := PopMsg;
+      //--Добавляем историю в эту запись
+      RosterForm.AddHistory(RosterItem, msgD, Mess);
+    end;
+  end
+  else //--Если такой контакт не найден в Ростере, то добавляем его
+  begin
+    //--Если ник не нашли в Ростере, то ищем его в файле-кэше ников
+    Nick := SearchNickInCash('Icq', UIN);
+    //--Дата сообщения
+    msgD := Nick + ' [' + DateTimeChatMess + ']';
+    //--Ищем группу "Не в списке" в Ростере
+    RosterItem := RosterForm.ReqRosterItem('NoCL');
+    if RosterItem = nil then //--Если группу не нашли
+    begin
+      //--Добавляем такую группу в Ростер
+      RosterItem := RosterForm.RosterJvListView.Items.Add;
+      RosterItem.Caption := 'NoCL';
+      //--Подготавиливаем все значения
+      RosterForm.RosterItemSetFull(RosterItem);
+      RosterItem.SubItems[1] := NoInListGroupCaption;
+    end;
+    //--Добавляем этот контакт в Ростер
+    RosterItem := RosterForm.RosterJvListView.Items.Add;
+    with RosterItem do
+    begin
+      Caption := UIN;
+      //--Подготавиливаем все значения
+      RosterForm.RosterItemSetFull(RosterItem);
+      //--Обновляем субстроки
+      SubItems[0] := Nick;
+      SubItems[1] := 'NoCL';
+      SubItems[2] := 'none';
+      SubItems[3] := 'Icq';
+      SubItems[6] := '214';
+      SubItems[35] := '0';
+      SubItems[15] := PopMsg;
+      //--Добавляем историю в эту запись
+      RosterForm.AddHistory(RosterItem, msgD, Mess);
+      //--Запрашиваем анкету неопознанных контактов
+      if Nick = UIN then if ICQ_Work_Phaze then ICQ_ReqInfo_New_Pkt(UIN);
     end;
   end;
-  //--Играем звук входящего сообщения
-  ImPlaySnd(1);
   //--Добавляем сообщение в текущий чат
   ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, msgD, Mess);
-
-  //--Ставим флаги и параметры входящего сообщения в КЛ
-  //--Если контакт уже есть в КЛ, то находим его
-  {if not NoCL then
-  begin
-    with MainForm.ContactList do
-    begin
-      //--Ставим на кнопку в КЛ параметры имеющегося непрочитанного сообщения
-      Categories[G].Items[T].Msg := true;
-      Categories[G].Items[T].ImageIndex := 165;
-      //--Поднимаем контакт в самый верх списка контактов в этой группе
-      Categories[G].Items[T].Index := 0;
-      //--Отображаем всплывающее сообшение
-      
-      //--Переходим в заключительный этап
-      goto x;
-    end;
-  end;
-  //--Если контакт не из КЛ, то добавляем его в группу не из КЛ
-  if NoCL then
-  begin
-    with MainForm.ContactList do
-    begin
-      //--Ищем группу "не в списке" в локальном КЛ
-      for i := 0 to Categories.Count - 1 do
-      begin
-        if Categories[i].GroupId = 'NoCL' then NoCLG := true;
-      end;
-      //--Если группа не была найдена, то добавляем её в локальный КЛ
-      if not NoCLG then
-      begin
-        Categories.Add.Caption := NoInListGroupCaption;
-        G := Categories.Count - 1;
-        Categories.Items[G].GroupId := 'NoCL';
-        Categories.Items[G].GroupCaption := NoInListGroupCaption;
-      end;
-      //--Ищем группу и добавляем в неё контакт
-      for i := 0 to Categories.Count - 1 do
-      begin
-        if Categories[i].GroupId = 'NoCL' then
-        begin
-          Categories[i].Items.Add.Caption := Nick;
-          T := Categories[i].Items.Count - 1;
-          Categories[i].Items[T].UIN := UIN;
-          Categories[i].Items[T].GroupId := 'NoCL';
-          Categories[i].Items[T].Status := 214;
-          Categories[i].Items[T].ImageIndex := 214;
-          Categories[i].Items[T].ImageIndex1 := -1;
-          Categories[i].Items[T].ImageIndex2 := -1;
-          Categories[i].Items[T].Msg := true;
-          Categories[i].Items[T].Auth := true;
-          //--Загружаем файл истории сообщений
-          HistoryFile := MyPath + 'Profile\History\Icq_' + UIN + '.z';
-          if FileExists(HistoryFile) then
-          begin
-            try
-              //--Распаковываем файл с историей
-              UnZip_File(HistoryFile, MyPath + 'Profile\History\');
-              //--Записываем историю в хранилище у этого контакта
-              Categories[i].Items[T].History := ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
-              //--Удаляем уже не нужный распакованный файл с историей
-              if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
-            except
-            end;
-          end;
-          //--Записываем историю в этот контакт
-          Categories[i].Items[T].History := Categories[i].Items[T].History +
-            '<span class=b>' + msgD + '</span><br><span class=c>' + Mess + '</span><br><br>' + #13#10;
-          //--Ставим флаг этому контакту, что история изменилась
-          Categories[i].Items[T].HistoryChange := true;
-          Categories[i].Items[T].ContactType := 'Icq';
-          Categories[i].Items[T].QuoteMsg := PopMsg;
-          Categories[i].Items[T].Hint := ICQ_CreateHint(Categories[i].Items[T]);
-          //--Поднимаем контакт в самый верх списка контактов в этой группе
-          Categories[i].Items[T].Index := 0;
-        end;
-      end;
-    end;
-  end;
-  x: ;
   //--Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-  if InMessList.IndexOf(UIN) = -1 then InMessList.Add(UIN);}
+  if InMessList.IndexOf(UIN) = -1 then InMessList.Add(UIN);
+  //--Играем звук входящего сообщения
+  ImPlaySnd(1);
 end;
 
 procedure ICQ_ReqMessage_0407(PktData: string);
@@ -3399,13 +3298,11 @@ procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP,
     if BartID = 15 then Result := False;
   end;
 
-label
-  x;
 var
   StatusIcoInd, iXStat, iClient: integer;
   BartID, BartLength, BartSubLen: integer;
   Utf8Sup: boolean;
-  iHash, iXText, ChatHint, pClient, iXStatNew: string;
+  iHash, iXText, {ChatHint,} pClient, iXStatNew: string;
   RosterItem: TListItem;
 begin
   //--Получаем номер иконки из статуса
@@ -3613,7 +3510,7 @@ begin
       SubItems[26] := TimeReg;
       SubItems[27] := CapsId;
       SubItems[28] := Caps;
-      SubItems[29] := iHash;
+      SubItems[29] := Text2Hex(iHash);
       SubItems[30] := ConnTime;
       SubItems[31] := iXText;
       SubItems[32] := pClient;
@@ -3623,9 +3520,10 @@ begin
       //SubItems[34] := ICQ_CreateHint(RosterItem);
     end;
   end;
+  //--Запускаем таймер задержку событий Ростера
+  MainForm.JvTimerList.Events[11].Enabled := false;
+  MainForm.JvTimerList.Events[11].Enabled := true;
 
-
-  x: ;
   {//--Ставим иконку статуса во вкладках окна чата
   if Assigned(ChatForm) then
   begin
@@ -3986,76 +3884,77 @@ begin
           begin
             //--Добавляем контакт в Ростер
             ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := qSN;
-            //--Подготавиливаем все значения
-            RosterForm.RosterItemSetFull(ListItemD);
-            //--Обновляем субстроки
-            ListItemD.SubItems[1] := qGroupId;
-            ListItemD.SubItems[2] := 'both';
-            ListItemD.SubItems[3] := 'Icq';
-            ListItemD.SubItems[4] := qID;
-            ListItemD.SubItems[5] := qType;
-            ListItemD.SubItems[6] := '9';
-            ListItemD.SubItems[7] := '-1';
-            ListItemD.SubItems[8] := '-1';
-            //--Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
-            while Length(SubData) > 0 do
+            with ListItemD do
             begin
-              case HexToInt(NextData(SubData, 4)) of
-                $0131: //--Ник контакта
+              Caption := qSN;
+              //--Подготавиливаем все значения
+              RosterForm.RosterItemSetFull(ListItemD);
+              //--Обновляем субстроки
+              SubItems[1] := qGroupId;
+              SubItems[2] := 'both';
+              SubItems[3] := 'Icq';
+              SubItems[4] := qID;
+              SubItems[5] := qType;
+              SubItems[6] := '9';
+              //--Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
+              while Length(SubData) > 0 do
+              begin
+                case HexToInt(NextData(SubData, 4)) of
+                  $0131: //--Ник контакта
+                    begin
+                      qNick := EmptyStr;
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      qNick := DecodeStr(Hex2Text(NextData(SubData, Len)));
+                      if qNick <> EmptyStr then SubItems[0] := qNick;
+                    end;
+                  $013A: //--Номер сотового телефона
+                    begin
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      SubItems[9] := Hex2Text(NextData(SubData, Len));
+                    end;
+                  $0066: //--Авторизован ли контакт для нашего КЛ
+                    begin
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      NextData(SubData, Len);
+                      //--Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
+                      SubItems.Strings[2] := 'none';
+                      SubItems.Strings[6] := '80';
+                      SubItems.Strings[8] := '220';
+                    end;
+                  $013C: //--Заметка о контакте
+                    begin
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      SubItems[10] := DecodeStr(Hex2Text(NextData(SubData, Len)));
+                    end;
+                  $0137: //--Email контакта
+                    begin
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      SubItems[11] := DecodeStr(Hex2Text(NextData(SubData, Len)));
+                    end;
+                  $006D: //--TimeId
+                    begin
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      qTimeId := NextData(SubData, Len);
+                      SubItems[12] := qTimeId;
+                      //DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                    end
+                else
                   begin
-                    qNick := EmptyStr;
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    qNick := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                    if qNick <> EmptyStr then ListItemD.SubItems[0] := qNick;
-                  end;
-                $013A: //--Номер сотового телефона
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    ListItemD.SubItems[9] := Hex2Text(NextData(SubData, Len));
-                  end;
-                $0066: //--Авторизован ли контакт для нашего КЛ
-                  begin
+                    //--Если пакет содержит другие TLV, то пропускаем их
                     Len := HexToInt(NextData(SubData, 4));
                     Len := Len * 2;
                     NextData(SubData, Len);
-                    //--Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
-                    ListItemD.SubItems.Strings[2] := 'none';
-                    ListItemD.SubItems.Strings[6] := '80';
-                    ListItemD.SubItems.Strings[8] := '220';
                   end;
-                $013C: //--Заметка о контакте
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    ListItemD.SubItems[10] := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                  end;
-                $0137: //--Email контакта
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    ListItemD.SubItems[11] := DecodeStr(Hex2Text(NextData(SubData, Len)));
-                  end;
-                $006D: //--TimeId
-                  begin
-                    Len := HexToInt(NextData(SubData, 4));
-                    Len := Len * 2;
-                    qTimeId := NextData(SubData, Len);
-                    ListItemD.SubItems[12] := qTimeId;
-                    //DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                  end
-              else
-                begin
-                  //--Если пакет содержит другие TLV, то пропускаем их
-                  Len := HexToInt(NextData(SubData, 4));
-                  Len := Len * 2;
-                  NextData(SubData, Len);
                 end;
+                //--Размораживаем фэйс
+                Application.ProcessMessages;
               end;
-              //--Размораживаем фэйс
-              Application.ProcessMessages;
             end;
           end;
         BUDDY_GROUP: //--Группа
@@ -4065,12 +3964,15 @@ begin
             begin
               //--Добавляем группу в Ростер
               ListItemD := RosterForm.RosterJvListView.Items.Add;
-              ListItemD.Caption := qGroupId;
-              //--Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              //--Обновляем субстроки
-              ListItemD.SubItems[1] := HideContactGroupCaption;
-              ListItemD.SubItems[3] := 'Icq';
+              with ListItemD do
+              begin
+                Caption := qGroupId;
+                //--Подготавиливаем все значения
+                RosterForm.RosterItemSetFull(ListItemD);
+                //--Обновляем субстроки
+                SubItems[1] := HideContactGroupCaption;
+                SubItems[3] := 'Icq';
+              end;
             end
             //--Стандартная група
             else if qGroupId <> '0000' then
@@ -4079,12 +3981,15 @@ begin
               NewKL := false;
               //--Добавляем группу в Ростер
               ListItemD := RosterForm.RosterJvListView.Items.Add;
-              ListItemD.Caption := qGroupId;
-              //--Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              //--Обновляем субстроки
-              ListItemD.SubItems[1] := qSN;
-              ListItemD.SubItems[3] := 'Icq';
+              with ListItemD do
+              begin
+                Caption := qGroupId;
+                //--Подготавиливаем все значения
+                RosterForm.RosterItemSetFull(ListItemD);
+                //--Обновляем субстроки
+                SubItems[1] := qSN;
+                SubItems[3] := 'Icq';
+              end;
             end;
           end;
         BUDDY_UPGROUP: //--Код для приватных групп
@@ -4106,43 +4011,44 @@ begin
         BUDDY_DELETE, BUDDY_AUTORIZ: //--Временные контакты из нулевой группы
           begin
             ListItemD := RosterForm.RosterJvListView.Items.Add;
-            ListItemD.Caption := qSN;
-            //--Подготавиливаем все значения
-            RosterForm.RosterItemSetFull(ListItemD);
-            //--Обновляем субстроки
-            //--Делаем поиск ника в кэше ников
-            ListItemD.SubItems[0] := SearchNickInCash('Icq', qSN);
-            ListItemD.SubItems[1] := qGroupId;
-            ListItemD.SubItems[2] := 'none';
-            ListItemD.SubItems[3] := 'Icq';
-            ListItemD.SubItems[4] := qID;
-            ListItemD.SubItems[5] := qType;
-            //--Назначаем такому контакту серый неизвестный статус и иконку
-            ListItemD.SubItems[6] := '214';
-            ListItemD.SubItems[7] := '-1';
-            ListItemD.SubItems[8] := '-1';
-            //--Сканируем пакет на нужные нам TLV
-            while Length(SubData) > 0 do
+            with ListItemD do
             begin
-              case HexToInt(NextData(SubData, 4)) of
-                $006D: //--TimeId
+              Caption := qSN;
+              //--Подготавиливаем все значения
+              RosterForm.RosterItemSetFull(ListItemD);
+              //--Обновляем субстроки
+              //--Делаем поиск ника в кэше ников
+              SubItems[0] := SearchNickInCash('Icq', qSN);
+              SubItems[1] := qGroupId;
+              SubItems[2] := 'none';
+              SubItems[3] := 'Icq';
+              SubItems[4] := qID;
+              SubItems[5] := qType;
+              //--Назначаем такому контакту серый неизвестный статус и иконку
+              SubItems[6] := '214';
+              //--Сканируем пакет на нужные нам TLV
+              while Length(SubData) > 0 do
+              begin
+                case HexToInt(NextData(SubData, 4)) of
+                  $006D: //--TimeId
+                    begin
+                      Len := HexToInt(NextData(SubData, 4));
+                      Len := Len * 2;
+                      qTimeId := NextData(SubData, Len);
+                      SubItems[12] := qTimeId;
+                      //DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                    end
+                else
                   begin
+                    //--Если пакет содержит другие TLV, то пропускаем их
                     Len := HexToInt(NextData(SubData, 4));
                     Len := Len * 2;
-                    qTimeId := NextData(SubData, Len);
-                    ListItemD.SubItems[12] := qTimeId;
-                    //DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                  end
-              else
-                begin
-                  //--Если пакет содержит другие TLV, то пропускаем их
-                  Len := HexToInt(NextData(SubData, 4));
-                  Len := Len * 2;
-                  NextData(SubData, Len);
+                    NextData(SubData, Len);
+                  end;
                 end;
+                //--Размораживаем фэйс
+                Application.ProcessMessages;
               end;
-              //--Размораживаем фэйс
-              Application.ProcessMessages;
             end;
           end;
         BUDDY_VANITY: //--Информация о нашей деятельности на этом UIN
