@@ -68,8 +68,6 @@ begin
             CLSearchListView.Items[CLSearchListView.Items.Count - 1].SubItems.Append(Categories[i].Items[ii].Caption);
             CLSearchListView.Items[CLSearchListView.Items.Count - 1].ImageIndex := Categories[i].Items[ii].ImageIndex;
           end;
-          //--Размораживаем фэйс
-          Application.ProcessMessages;
         end;
       end;
     end;
@@ -99,8 +97,6 @@ begin
             //--Выходим из цыклов
             goto x;
           end;
-          //--Размораживаем фэйс
-          Application.ProcessMessages;
         end;
       end;
     end;
@@ -133,8 +129,6 @@ begin
             //--Выходим из цыклов
             goto x;
           end;
-          //--Размораживаем фэйс
-          Application.ProcessMessages;
         end;
       end;
     end;

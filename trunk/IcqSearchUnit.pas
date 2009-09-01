@@ -1101,7 +1101,6 @@ begin
           RoasterForm.CategoryButtons1ButtonClicked(self, RoasterForm.CategoryButtons1.Categories[i].Items[ii]);
           Exit;
         end;
-        Application.ProcessMessages;
       end;
     end;
     //

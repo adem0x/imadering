@@ -180,8 +180,6 @@ begin
             //--Выходим из цыкла если нашли контакт
             goto x;
           end;
-          //--Не замораживаем интерфэйс
-          Application.ProcessMessages;
         end;
       end;
     end;

@@ -285,6 +285,11 @@ object MainForm: TMainForm
       Visible = False
       OnClick = OpenTestClick
     end
+    object SearchInCLMainMenu: TMenuItem
+      Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1089#1087#1080#1089#1082#1091' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      ImageIndex = 215
+      OnClick = SearchInCLClick
+    end
     object RosterMainMenu: TMenuItem
       Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 1

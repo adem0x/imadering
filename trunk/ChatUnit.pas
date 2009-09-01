@@ -284,8 +284,6 @@ begin
           //--Назначаем иконку для пункта меню
           Items[I].ImageIndex := 157;
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
     //--Добавляем быстрые ответы в меню быстрых ответов
@@ -301,8 +299,6 @@ begin
           //--Назначаем иконку для пункта меню
           Items[I].ImageIndex := 157;
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
   finally
@@ -371,11 +367,7 @@ begin
       Cod := Parse(',', SmilesList.Strings[I], II);
       if Cod > EmptyStr then msg := AnsiReplaceText(msg, Cod, GenTag(IntToStr(I) + '.gif'))
       else Break;
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
     end;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
   end;
 end;
 
@@ -474,10 +466,8 @@ begin
           YesConvert := true;
           Break;
         end;
-        Application.ProcessMessages;
       end;
       if not YesConvert then Outbuf := Outbuf + buf[i];
-      Application.ProcessMessages;
     end;
     //
     list.Free;
@@ -509,10 +499,8 @@ begin
           YesConvert := true;
           Break;
         end;
-        Application.ProcessMessages;
       end;
       if not YesConvert then Outbuf := Outbuf + buf[i];
-      Application.ProcessMessages;
     end;
     //
     list.Free;
@@ -683,8 +671,8 @@ begin
               goto x;
             end;
         end;
-        //--Не замораживаем интерфейс
-        Application.ProcessMessages;
+        //--Прорисовываем интерфейс
+        Update;
       end;
       //--Если вкладки все закрыты, то закрываем окно чата
       if PageCount = 0 then Close
@@ -709,8 +697,8 @@ begin
       for i := 1 to PageCount - 1 do
       begin
         if PageCount > 1 then ActivePage.Free;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
+        //--Прорисовываем интерфэйс
+        Update;
       end;
       //--Регулируем высоту табов
       Height := ActivePage.Top - 3;
@@ -747,8 +735,8 @@ begin
       while PageCount > 0 do
       begin
         ActivePage.Free;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
+        //--Прорисовываем интерфэйс
+        Update;
       end;
     end;
   end;

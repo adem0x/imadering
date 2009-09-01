@@ -10681,7 +10681,6 @@ begin
                   dec(Delay, DelayUsed);
                   // Reset start time for chunk
                   NewDelaySTart := timeGetTime;
-                  // Application.ProcessMessages wannabe
                   while (not (Terminated or DoRestart)) and
                     (PeekMessage(Msg, 0, 0, 0, PM_REMOVE)) do
                   begin
@@ -12351,12 +12350,7 @@ begin
     if (GetCurrentThreadID = MainThreadID) then
       while CheckSynchronize do {loop};
 {$ELSE}
-    // Process Messages to make Synchronize work
-    // (Instead of Application.ProcessMessages)
-//{$IFDEF VER14_PLUS}  // 2001.07.23
-//    Break;  // 2001.07.23
-//    Sleep(0); // Yield  // 2001.07.23
-//{$ELSE}  // 2001.07.23
+
     ThreadWindow := FindWindow('TThreadWindow', nil);
     while PeekMessage(Msg, ThreadWindow, CM_DESTROYWINDOW, CM_EXECPROC, PM_REMOVE) do
     begin
@@ -12490,8 +12484,7 @@ begin
           // Wait for thread to render first frame
           while (FDrawPainter <> nil) and (not FDrawPainter.Terminated) and
             (not FDrawPainter.Started) do
-            // Process Messages to make Synchronize work
-            // (Instead of Application.ProcessMessages)
+
             if PeekMessage(Msg, ThreadWindow, CM_DESTROYWINDOW, CM_EXECPROC, PM_REMOVE) then
             begin
               if (Msg.Message <> WM_QUIT) then
@@ -12639,11 +12632,7 @@ begin
       if (GetCurrentThreadID = MainThreadID) then
         while CheckSynchronize do {loop};
 {$ELSE}
-      // Process Messages to make TThread.Synchronize work
-      // (Instead of Application.ProcessMessages)
-//{$IFDEF VER14_PLUS}  // 2001.07.23
-//      Exit;  // 2001.07.23
-//{$ELSE}  // 2001.07.23
+
       ThreadWindow := FindWindow('TThreadWindow', nil);
       if (ThreadWindow = 0) then
       begin

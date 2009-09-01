@@ -67,7 +67,6 @@ begin
   begin 
     Result := Result + Decode(Copy(SS, 1, 4)); 
     Delete(SS, 1, 4);
-    Application.ProcessMessages;
   end 
 end; 
 
@@ -82,7 +81,6 @@ begin
   begin 
     Result[I] := Char(Byte(Result[I]) xor (Seed shr 8)); 
     Seed := (Byte(S[I]) + Seed) * Word(C1) + Word(C2);
-    Application.ProcessMessages; 
   end 
 end; 
 
@@ -122,8 +120,7 @@ begin
   begin 
     Result := Result + Encode(Copy(SS, 1, 3)); 
     Delete(SS, 1, 3);
-    Application.ProcessMessages;
-  end 
+  end
 end; 
 
 function InternalEncrypt(const S: AnsiString; Key: Word): AnsiString; 
@@ -137,8 +134,7 @@ begin
   begin 
     Result[I] := Char(Byte(Result[I]) xor (Seed shr 8)); 
     Seed := (Byte(Result[I]) + Seed) * Word(C1) + Word(C2);
-    Application.ProcessMessages; 
-  end 
+  end
 end; 
 
 function Encrypt(const S: AnsiString; Key: Word): AnsiString; 

@@ -164,7 +164,7 @@ object HistoryForm: THistoryForm
       OnClick = SaveHistoryAsBitBtnClick
     end
     object DeleteHistoryBitBtn: TBitBtn
-      Left = 286
+      Left = 282
       Top = 7
       Width = 102
       Height = 25
@@ -175,7 +175,7 @@ object HistoryForm: THistoryForm
       OnClick = DeleteHistoryBitBtnClick
     end
     object CloseBitBtn: TBitBtn
-      Left = 407
+      Left = 403
       Top = 7
       Width = 101
       Height = 25

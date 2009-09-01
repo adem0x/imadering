@@ -1,3 +1,11 @@
+{*******************************************************************************
+  Copyright (c) 2004-2009 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+*******************************************************************************}
+
 unit RosterUnit;
 
 interface
@@ -10,6 +18,8 @@ type
   TRosterForm = class(TForm)
     RosterJvListView: TJvListView;
     procedure FormCreate(Sender: TObject);
+    procedure RosterJvListViewChange(Sender: TObject; Item: TListItem;
+      Change: TItemChange);
   private
     { Private declarations }
   public
@@ -18,6 +28,7 @@ type
     procedure UpdateFullCL;
     function ReqRosterItem(cId: string): TListItem;
     function ReqCLContact(cId: string): TButtonItem;
+    function ReqChatPage(cId: string): TTabSheet;
     procedure RosterItemSetFull(sItem: TListItem);
     procedure AddHistory(cItem: TListItem; cMsgD, cMess: string);
     procedure OpenChatPage(cId: string);
@@ -35,6 +46,29 @@ implementation
 uses
   MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit, ChatUnit;
 
+function TRosterForm.ReqChatPage(cId: string): TTabSheet;
+var
+  i: integer;
+begin
+  Result := nil;
+  //--Ищем вкладку в окне чата
+  if Assigned(ChatForm) then
+  begin
+    with ChatForm.ChatPageControl do
+    begin
+      for i := 0 to PageCount - 1 do
+      begin
+        if Pages[i].HelpKeyword = cId then
+        begin
+          Result := Pages[i];
+          //--Выходим из цикла
+          Break;
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TRosterForm.DellcIdInMessList(cId: string);
 var
   i: integer;
@@ -50,8 +84,6 @@ begin
           Delete(i);
           Break;
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
   except
@@ -75,8 +107,6 @@ begin
         //--Выходим из цикла
         Break;
       end;
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
     end;
   end;
 end;
@@ -103,8 +133,6 @@ begin
           //--Выходим из цикла
           goto a;
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
     //--Если вкладку не нашли, то создаём её
@@ -171,9 +199,13 @@ begin
       19, 20, 36: sItem.SubItems.Add('0');
     else sItem.SubItems.Add('');
     end;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
   end;
+end;
+
+procedure TRosterForm.RosterJvListViewChange(Sender: TObject; Item: TListItem;
+  Change: TItemChange);
+begin
+ // showmessage('s');
 end;
 
 procedure TRosterForm.UpdateFullCL;
@@ -223,8 +255,6 @@ begin
                   //--Продолжаем сканирование Ростера
                   goto jl;
                 end;
-                //--Размораживаем фэйс
-                Application.ProcessMessages;
               end;
               //--Добавляем контакт в эту группу в КЛ
               with Categories[c].Items.Add do
@@ -240,8 +270,6 @@ begin
               //--Продолжаем сканирование Ростера
               goto jl;
             end;
-            //--Размораживаем фэйс
-            Application.ProcessMessages;
           end;
           //--Если такую группу не нашли
           //--Добавляем группу и этот контакт в неё
@@ -275,8 +303,6 @@ begin
             begin
               //--Если такую группу нашли
               if (Categories[c].GroupId = Items[i].Caption) and (Categories[c].GroupType = 'Icq') then goto il;
-              //--Размораживаем фэйс
-              Application.ProcessMessages;
             end;
             //--Если такую группу не нашли, то добавляем её
             with Categories.Add do
@@ -324,8 +350,6 @@ begin
                     //--Продолжаем сканирование Ростера
                     goto il;
                   end;
-                  //--Размораживаем фэйс
-                  Application.ProcessMessages;
                 end;
                 //--Добавляем контакт в эту группу в КЛ
                 with Categories[c].Items.Add do
@@ -341,8 +365,6 @@ begin
                 //--Продолжаем сканирование Ростера
                 goto il;
               end;
-              //--Размораживаем фэйс
-              Application.ProcessMessages;
             end;
           end;
           il: ;
@@ -354,8 +376,6 @@ begin
 
         end;
       end;
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
     end;
   end;
 end;
@@ -386,11 +406,7 @@ begin
           //--Выходим из циклов
           goto x;
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
     end;
   end;
   x: ;
@@ -406,15 +422,16 @@ begin
   //--Загружаем копию локальную списка контактов
   if FileExists(MyPath + 'Profile\ContactList.dat') then
     RosterJvListView.LoadFromFile(MyPath + 'Profile\ContactList.dat');
-  UpdateFullCL;  
+  UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearContacts(cType: string);
 label
-  a;
+  a, b;
 var
   i: integer;
 begin
+  //--Удаляем контакты в Ростере
   with RosterJvListView do
   begin
     Items.BeginUpdate;
@@ -427,10 +444,22 @@ begin
         Items[i].Delete;
         goto a;
       end;
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
     end;
     Items.EndUpdate;
+  end;
+  //--Удаляем контакты в КЛ
+  with MainForm.ContactList do
+  begin
+    b: ;
+    for i := 0 to Categories.Count - 1 do
+    begin
+      //--Удаляем группы с контактами протокола
+      if Categories[i].GroupType = cType then
+      begin
+        Categories[i].Free;
+        goto b;
+      end;
+    end;
   end;
 end;
 

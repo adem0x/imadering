@@ -810,8 +810,6 @@ begin
           //--Выходим из цыкла
           goto x;
         end;
-        //--Размораживаем интерфейс
-        Application.ProcessMessages;
       end;
     end;
   end;
@@ -876,8 +874,6 @@ begin
             //--Выходим из цыкла
             goto y;
           end;
-          //--Размораживаем интерфейс
-          Application.ProcessMessages;
         end;
       end;
     end;
@@ -2364,8 +2360,6 @@ begin
                           //--Выходим из цыклов
                           goto y;
                         end;
-                        //--Перерисовываем интерфейс
-                        Application.ProcessMessages;
                       end;
                     end;
                   end;
@@ -2386,8 +2380,6 @@ begin
                           //--Выходим из цыкла
                           Break;
                         end;
-                        //--Перерисовываем интерфейс
-                        Application.ProcessMessages;
                       end;
                     end;
                   end;
@@ -3338,7 +3330,7 @@ begin
           begin
             BartSubLen := HexToInt(NextData(IconHash, 4));
             BartSubLen := BartSubLen * 2;
-            iXText := Hex2Text(NextData(IconHash, BartSubLen));
+            iXText := DecodeStr(Hex2Text(NextData(IconHash, BartSubLen)));
             if BartLength - BartSubLen > 0 then NextData(IconHash, BartLength - BartSubLen); //--Тупые байты
           end;
       else
@@ -3347,8 +3339,6 @@ begin
         end;
       end;
     end;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
   end;
   //--Ищем доп. статус в капабилитисах (старый способ передачи доп. статусов)
   if BMSearch(0, Caps, XS1) > -1 then iXStat := 1
@@ -3540,7 +3530,6 @@ begin
           //--Прерываем
           Break;
         end;
-        Application.ProcessMessages;
       end;
     end;
   end;}
@@ -3698,8 +3687,6 @@ begin
         NextData(PktData, Len);
       end;
     end;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
   end;
   x: ;
   //--Если это была проверка статуса то выводим сообщение
@@ -3890,6 +3877,7 @@ begin
               //--Подготавиливаем все значения
               RosterForm.RosterItemSetFull(ListItemD);
               //--Обновляем субстроки
+              SubItems[0] := qSN;
               SubItems[1] := qGroupId;
               SubItems[2] := 'both';
               SubItems[3] := 'Icq';
@@ -3902,7 +3890,6 @@ begin
                 case HexToInt(NextData(SubData, 4)) of
                   $0131: //--Ник контакта
                     begin
-                      qNick := EmptyStr;
                       Len := HexToInt(NextData(SubData, 4));
                       Len := Len * 2;
                       qNick := DecodeStr(Hex2Text(NextData(SubData, Len)));
@@ -3952,8 +3939,6 @@ begin
                     NextData(SubData, Len);
                   end;
                 end;
-                //--Размораживаем фэйс
-                Application.ProcessMessages;
               end;
             end;
           end;
@@ -4018,7 +4003,8 @@ begin
               RosterForm.RosterItemSetFull(ListItemD);
               //--Обновляем субстроки
               //--Делаем поиск ника в кэше ников
-              SubItems[0] := SearchNickInCash('Icq', qSN);
+              if ICQ_Show_HideContacts then SubItems[0] := SearchNickInCash('Icq', qSN)
+              else SubItems[0] := qSN;
               SubItems[1] := qGroupId;
               SubItems[2] := 'none';
               SubItems[3] := 'Icq';
@@ -4046,8 +4032,6 @@ begin
                     NextData(SubData, Len);
                   end;
                 end;
-                //--Размораживаем фэйс
-                Application.ProcessMessages;
               end;
             end;
           end;
@@ -4116,15 +4100,11 @@ begin
                   NextData(SubData, Len);
                 end;
               end;
-              //--Размораживаем фэйс
-              Application.ProcessMessages;
             end;
             //--Отображаем эти переменные в окне настроек ICQ
             if Assigned(IcqOptionsForm) then IcqOptionsForm.SetOnlineVars;
           end;
       end;
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
     end;
   finally
     //--Заканчиваем добаление записей контактов в Ростер
@@ -4325,9 +4305,7 @@ begin
           //--Если ник нашли, то выходим из цыкла
           goto a;
         end;
-        Application.ProcessMessages;
       end;
-      Application.ProcessMessages;
     end;
   end;
   a: ;
@@ -4378,7 +4356,7 @@ end;
 
 procedure ICQ_GoOffline;
 var
-  i, ii: integer;
+  i: integer;
 begin
   //--Отключаем таймер факстатуса, пингов
   MainForm.UnstableICQStatus.Checked := false;
@@ -4435,54 +4413,16 @@ begin
     //--Подсвечиваем в меню статуса ICQ статус оффлайн
     ICQStatusOffline.Default := true;
   end;
-  //--Сбрасываем иконки контактов в КЛ в оффлайн
-  with MainForm.ContactList do
+  //--Сбрасываем иконки контактов в Ростере в оффлайн
+  with RosterForm.RosterJvListView do
   begin
-    for i := 0 to Categories.Count - 1 do
+    for i := 0 to Items.Count - 1 do
     begin
-      if Categories[i].GroupType = 'Icq' then
+      if (Items[i].SubItems[3] = 'Icq') and (Items[i].SubItems[6] <> '214') then
       begin
-        if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
-          (Categories[i].Items.Count = 0) then Continue;
-        //--Сбросим количесво онлайн-контактов в группах локального КЛ
-        Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
-        //--Сбросим статусы
-        for ii := 0 to Categories[i].Items.Count - 1 do
-        begin
-          if (Categories[i].Items[ii].Status = 9) and
-            (Categories[i].Items[ii].ImageIndex = 9) then Continue
-          else
-          begin
-            Categories[i].Items[ii].Status := 9;
-            Categories[i].Items[ii].ImageIndex := 9;
-          end;
-          Categories[i].Items[ii].ImageIndex1 := -1;
-          //--Не замораживаем интерфейс
-          Application.ProcessMessages;
-        end;
+        Items[i].SubItems[6] := '9';
       end;
     end;
-  end;
-  //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
-  if Assigned(ChatForm) then
-  begin
-    with ChatForm.ChatPageControl do
-    begin
-      if Visible then
-      begin
-        for i := 0 to PageCount - 1 do
-        begin
-          if Pages[i].Tag = 9 then Continue
-          else if (Pages[i].Tag > 6) and (Pages[i].Tag < 21) then
-          begin
-            Pages[i].Tag := 9;
-            Pages[i].ImageIndex := 9;
-          end;
-          //--Не замораживаем интерфейс
-          Application.ProcessMessages;
-        end;
-      end;
-    end
   end;
   //--Сохраняем историю сообщений, но уже не в потоке
   MainForm.ZipHistory;

@@ -1424,8 +1424,6 @@ function GetFullTag(AData: string): string;
     newpos := 0;
     origlen := Length(AData);
     repeat
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
       mybuff := Copy(in_data, lastpos + 1, origlen - newpos);
       newpos := pos(find_data, mybuff);
       if (newpos > 0) then
@@ -1502,8 +1500,6 @@ begin
     le := length(etag);
     r := '';
     repeat
-      //--Размораживаем фэйс
-      Application.ProcessMessages;
       tmps := Copy(sbuff, i, l - i + 1);
       ps := Pos(stag, tmps);
       if (ps > 0) then
@@ -1553,7 +1549,7 @@ function SearchNickInCash(cType, cId: string): string;
 var
   i: integer;
 begin
-  Result := EmptyStr;
+  Result := cId;
   try
     //--Проверяем создан ли список ников
     if Assigned(AccountToNick) then
@@ -1567,14 +1563,9 @@ begin
           //--Выходим из цикла
           Break;
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
-      if Result = EmptyStr then Result := cId;
     end;
   except
-    //--Если ошибка, то ник делаем как учётную запись
-    Result := cId;
   end;
 end;
 

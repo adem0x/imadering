@@ -149,6 +149,7 @@ type
     RosterMainMenu: TMenuItem;
     UnstableMRAStatus: TMenuItem;
     UnstableJabberStatus: TMenuItem;
+    SearchInCLMainMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -333,7 +334,7 @@ begin
       Top := (Screen.WorkAreaTop + Screen.WorkAreaHeight) - Height;
     if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
       Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
-    if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;  
+    if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;
   end;
 end;
 
@@ -606,8 +607,8 @@ begin
         JabberWSocket.Addr := Jabber_ServerAddr;
         JabberWSocket.Port := Jabber_ServerPort;
       end;
-      //--Прорисовываем фэйс
-      Application.ProcessMessages;
+      //--Прорисовываем интерфэйс
+      Update;
       //--Подключаем сокет
       JabberWSocket.Connect;
     except
@@ -872,8 +873,8 @@ begin
         ICQWSocket.Addr := ICQ_LoginServerAddr;
         ICQWSocket.Port := ICQ_LoginServerPort;
       end;
-      //--Прорисовываем фэйс
-      Application.ProcessMessages;
+      //--Прорисовываем интерфэйс
+      Update;
       //--Подключаем сокет
       ICQWSocket.Connect;
     except
@@ -1093,8 +1094,16 @@ begin
                     case HexToInt(NextData(SubPkt, 4)) of
                       $0003:
                         begin
-                          //--Отсылаем серверу пакет с допустимыми для нас фэмили
-                          if ICQ_BosConnect_Phaze then SendFLAP('2', ICQ_CliFamilyPkt);
+                          if ICQ_BosConnect_Phaze then
+                          begin
+                            //--Очищаем группы ICQ в Ростере
+                            RosterForm.ClearContacts('Icq');
+                            //--Пока думаем, что у нас новый (обсолютно чистый) список контактов
+                            NewKL := true;
+                            ICQ_CL_Count := 0;
+                            //--Отсылаем серверу пакет с допустимыми для нас фэмили
+                            SendFLAP('2', ICQ_CliFamilyPkt);
+                          end;
                         end;
                       $0005:
                         begin
@@ -1117,11 +1126,6 @@ begin
                             SendFLAP('2', '00030002000000000002' + '000500020003');
                             SendFLAP('2', '00040004000000000004');
                             SendFLAP('2', '00090002000000000002');
-                            //--Очищаем группы ICQ в Ростере
-                            RosterForm.ClearContacts('Icq');
-                            //--Пока думаем, что у нас новый (обсолютно чистый) список контактов
-                            NewKL := true;
-                            ICQ_CL_Count := 0;
                           end;
                         end;
                       $000F:
@@ -1375,8 +1379,6 @@ begin
                                 NextData(SubPkt, Len);
                               end;
                             end;
-                            //--Размораживаем фэйс
-                            Application.ProcessMessages;
                           end;
                         end;
                     end;
@@ -1419,8 +1421,6 @@ begin
                       ICQWSocket.Addr := ICQ_Bos_IP;
                       ICQWSocket.Port := ICQ_Bos_Port;
                     end;
-                    //--Размораживаем фэйс
-                    Application.ProcessMessages;
                     //--Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
                   except
@@ -1461,8 +1461,6 @@ begin
     end;
     //--Если в конце разбора пакета у нас ещё остались данные, то возвращаемся для проверки буфера
     z: ;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
     if Length(ICQ_HexPkt) > 0 then goto x;
   end;
 end;
@@ -1643,8 +1641,6 @@ begin
   //--Буферизируем данные пакетов из сокета и забираем цельные данные
   Jabber_BuffPkt := Jabber_BuffPkt + Pkt;
   repeat
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
     Pkt := GetFullTag(Jabber_BuffPkt);
     if Pkt <> EmptyStr then
     begin
@@ -1742,8 +1738,6 @@ begin
                 finally
                   CloseKey();
                 end;
-                //--Размораживаем фэйс
-                Application.ProcessMessages;
               end;
             end;
           finally
@@ -1871,10 +1865,10 @@ begin
   //--Если это первый старт программы то запускаем окно первичной настройки протоколов
   if not FirstStart then
   begin
-    FirstStartForm := TFirstStartForm.Create(self);
     //--Даём главному окну нормально прорисоваться
-    Application.ProcessMessages;
+    Update;
     //--Затем показываем окно начальной настройки протоколов
+    FirstStartForm := TFirstStartForm.Create(self);
     FirstStartForm.Show;
   end;
 end;
@@ -1897,34 +1891,80 @@ procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
 {var
   i, t: integer;
   YesMsgICQ, YesMsgJabber, GroupRoasterMsg: boolean;
-  RosterItem: TListItem;}
-
+  RosterItem: TListItem;
+  CLItem: TButtonItem;
+  ChatItem: TTabSheet;}
 begin
-  {//--Смотрим по таймеру везде все флаги сообщений не прочитанных
+  //--Смотрим по таймеру везде все флаги сообщений не прочитанных
   //и отображаем иконки мигающих сообщений
   //--Обнуляем местные метки
-  YesMsgICQ := false;
+  {YesMsgICQ := false;
   YesMsgJabber := false;
-  GroupRoasterMsg := false;
-  //--Сканируем и управляем иконками контактов с флагами сообщений
-  if Assigned(RosterForm) then
+  GroupRoasterMsg := false;}
+  //--Сканируем и управляем иконками контактов с флагами сообщений в КЛ
+  {if Assigned(RosterForm) then
   begin
     with RosterForm.RosterJvListView do
     begin
       for i := 0 to Items.Count - 1 do
       begin
-      //--Если контакт печатает нам сообщение и время печати меньше отбоя печати
-        if Items[i].SubItems[35] <> '0' then
+        //--Ищем такую запись в КЛ
+        CLItem := RosterForm.ReqCLContact(Items[i].Caption);
+        //--Ищем такую запись в чате
+        ChatItem := RosterForm.ReqChatPage(Items[i].Caption);
+        //--Если контакт вышел в онлайн, то отображаем это иконкой двери
+        if Items[i].SubItems[18] <> '0' then
         begin
+          t := StrToInt(Items[i].SubItems[18]);
+          Dec(t);
+          Items[i].SubItems[18] := IntToStr(t);
+          //--Отображаем иконку двери в КЛ
+          if CLItem <> nil then CLItem.ImageIndex := 228;
+          //--Отображаем иконку двери в чате
+          if ChatItem <> nil then ChatItem.ImageIndex := 228;
+        end
+        //--Если контакт вышел в оффлайн, то отображаем это иконкой двери
+        else if Items[i].SubItems[19] <> '0' then
+        begin
+          t := StrToInt(Items[i].SubItems[19]);
+          Dec(t);
+          Items[i].SubItems[19] := IntToStr(t);
+          //--Отображаем иконку двери в КЛ
+          if CLItem <> nil then CLItem.ImageIndex := 229;
+          //--Отображаем иконку двери в чате
+          if ChatItem <> nil then ChatItem.ImageIndex := 229;
+        end
+        //--Если контакт печатает нам сообщение и время печати меньше отбоя печати
+        else if Items[i].SubItems[35] <> '0' then
+        begin
+          //--Уменьшаем значение индикации времени набора сообщения
           t := StrToInt(Items[i].SubItems[35]);
           Dec(t);
-        //Categories[i].Items[ii].ImageIndex := 161;
           Items[i].SubItems[35] := IntToStr(t);
-        end;
-      //--Не даём замерзать интерфейсу
-        Application.ProcessMessages;
+          //--Отображаем иконку печати сообщения в КЛ
+          if CLItem <> nil then CLItem.ImageIndex := 161;
+          //--Отображаем иконку печати сообщения в чате
+          if ChatItem <> nil then ChatItem.ImageIndex := 161;
+        end
+        else
+          begin
+            //--Отображаем иконку статуса в КЛ
+            if CLItem <> nil then
+            begin
+              CLItem.Status := StrToInt(Items[i].SubItems[6]);
+              CLItem.ImageIndex := CLItem.Status;
+            end;
+            //--Отображаем иконку статуса в чате
+            if ChatItem <> nil then
+            begin
+              ChatItem.Tag := StrToInt(Items[i].SubItems[6]);
+              ChatItem.ImageIndex := ChatItem.Tag;
+            end;
+          end;
       end;
     end;
+
+
 
 
 
@@ -1980,8 +2020,6 @@ begin
             if ((not YesMsgICQ) and (not YesMsgJabber)) and (not GroupRoasterMsg) then Categories[i].TextColor := clBlack;
           end;
         end;
-        //--Не даём замерзать интерфейсу
-        Application.ProcessMessages;
       end;
     end;
   end;}
@@ -2033,8 +2071,6 @@ begin
           //с иконкой статуса, если нет, то присваиваем её
             else if Pages[i].ImageIndex <> Pages[i].Tag then Pages[i].ImageIndex := Pages[i].Tag;
           end;
-        //--Не даём замерзать интерфейсу
-          Application.ProcessMessages;
         end;
       end;
     end;
@@ -2073,8 +2109,8 @@ begin
         JabberTrayIcon.Tag := 0;
         JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
       end;
-    end;
-  end;}
+    end;}
+  //end;
 end;
 
 
@@ -2236,8 +2272,6 @@ begin
         img2.Canvas.CopyRect(Rect(0, 0, 16, 16), Img1.Canvas,
           Bounds(i * 16, 0, 16, 16));
         ImgList.AddMasked(img2, clFuchsia);
-        //--Размораживавем фэйс
-        Application.ProcessMessages;
       end;
     end;
   finally
@@ -2373,11 +2407,7 @@ var
 begin
   //--Закрываем все группы в контакт листе
   for i := 0 to MainForm.ContactList.Categories.Count - 1 do
-  begin
     MainForm.ContactList.Categories[i].Collapsed := true;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
-  end;
 end;
 
 procedure TMainForm.CloseProgramClick(Sender: TObject);
@@ -2687,9 +2717,6 @@ begin
     if not ICQ_Offline_Phaze then ICQ_GoOffline;
     if not Jabber_Offline_Phaze then Jabber_GoOffline;
     //if not MRA_Offline_Phaze then MRA_GoOffline;
-    //--Скрываем окно чтобы небыло ощющения тормазов
-    Hide;
-    Application.ProcessMessages;
     //--Отключаем HTTP сокеты
     UpdateHttpClient.Abort;
     MRAAvatarHttpClient.Abort;
@@ -2704,11 +2731,7 @@ begin
     //--Останавливаем таймеры
     JvTimerList.Active := false;
     //--Если поток сжатия истории не остановился ещё, то ждём его остановки
-    while not ZipHistoryThread.Terminated do
-    begin
-      Sleep(10);
-      Application.ProcessMessages;
-    end;
+    while not ZipHistoryThread.Terminated do Sleep(10);
     //--Делаем текущую локальную копию списка контактов для отображения при запуске программы
     if RosterForm.RosterJvListView.Items.Count > 0 then
       RosterForm.RosterJvListView.SaveToFile(MyPath + 'Profile\ContactList.dat');
@@ -3033,8 +3056,6 @@ begin
         Items[I].ImageIndex := ICQPopupMenu.Items[I].ImageIndex;
         //--Назначаем выделение для пункта меню
         Items[I].Default := ICQPopupMenu.Items[I].Default;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
   end
@@ -3053,8 +3074,6 @@ begin
         Items[I].ImageIndex := MRAPopupMenu.Items[I].ImageIndex;
         //--Назначаем выделение для пункта меню
         Items[I].Default := MRAPopupMenu.Items[I].Default;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
   end
@@ -3073,8 +3092,6 @@ begin
         Items[I].ImageIndex := JabberPopupMenu.Items[I].ImageIndex;
         //--Назначаем выделение для пункта меню
         Items[I].Default := JabberPopupMenu.Items[I].Default;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
   end;
@@ -3097,11 +3114,7 @@ var
 begin
   //--Открываем все группы в контакт листе
   for i := 0 to MainForm.ContactList.Categories.Count - 1 do
-  begin
     MainForm.ContactList.Categories[i].Collapsed := false;
-    //--Размораживаем фэйс
-    Application.ProcessMessages;
-  end;
 end;
 
 procedure TMainForm.OpenHistoryClick(Sender: TObject);

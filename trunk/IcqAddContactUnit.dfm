@@ -64,7 +64,7 @@ object IcqAddContactForm: TIcqAddContactForm
     Width = 162
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
+    ItemHeight = 13
     TabOrder = 2
   end
   object Button1: TButton

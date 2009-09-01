@@ -44,7 +44,6 @@ object CLSearchForm: TCLSearchForm
     ViewStyle = vsReport
     OnDblClick = CLSearchListViewDblClick
     OnSelectItem = CLSearchListViewSelectItem
-    ExplicitHeight = 161
   end
   object Panel1: TPanel
     Left = 0

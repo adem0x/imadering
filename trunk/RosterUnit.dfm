@@ -143,6 +143,7 @@ object RosterForm: TRosterForm
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
+    OnChange = RosterJvListViewChange
     ColumnsOrder = 
       '0=100,1=100,2=100,3=50,4=50,5=50,6=50,7=50,8=50,9=50,10=50,11=50' +
       ',12=50,13=50,14=50,15=50,16=50,17=50,18=50,19=50,20=50,21=50,22=' +

@@ -406,8 +406,6 @@ type
     procedure htProgressInit;
     function FullDisplaySize(FormatWidth: integer): TSize;
     function MakeBitmap(YTop, FormatWidth, Width, Height: integer): TBitmap;
-    function MakeMetaFile(YTop, FormatWidth, Width, Height: integer): TMetaFile;
-    function MakePagedMetaFiles(Width, Height: integer): TList;
     procedure ControlMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     function GetCharAtPos(Pos: integer; var Ch: WideChar;
       var Font: TFont): boolean;
@@ -1978,10 +1976,10 @@ begin
         GetCursorPos(Pt);
         Pt := PaintPanel.ScreenToClient(Pt);
       end;
-      Application.ProcessMessages;
-      Application.ProcessMessages;
-      Application.ProcessMessages;
-      Application.ProcessMessages;
+      //A pplication.ProcessMessages;
+      //A pplication.ProcessMessages;
+      //A pplication.ProcessMessages;
+      //A pplication.ProcessMessages;
     end;
   end;
   MouseScrolling := False;
@@ -2876,172 +2874,6 @@ end;
 
 type
   EExcessiveSizeError = class(Exception);
-
-function ThtmlViewer.MakeMetaFile(YTop, FormatWidth, Width, Height: integer): TMetaFile;
-var
-  CopyList: TSectionList;
-  Dummy: integer;
-  Curs: integer;
-  Canvas: TMetaFileCanvas;
-  DocHeight: integer;
-begin
-  Result := nil;
-  if FProcessing or (FSectionList.Count = 0) then
-    Exit;
-  if Height > 4000 then
-    raise EExcessiveSizeError.Create('Vertical Height exceeds 4000');
-  CopyList := TSectionList.CreateCopy(FSectionList);
-  try
-    Result := TMetaFile.Create;
-    Result.Width := Width;
-    Result.Height := Height;
-    Canvas := TMetaFileCanvas.Create(Result, 0);
-    try
-      Curs := 0;
-      DocHeight := CopyList.DoLogic(Canvas, 0, FormatWidth, Height, 0, Dummy, Curs);
-      DoBackground1(Canvas, YTop, Width, Height, DocHeight);
-
-      CopyList.SetYOffset(IntMax(0, YTop));
-      CopyList.Draw(Canvas, Rect(0, 0, Width, Height), MaxHScroll, 0, 0, 0, 0);
-    except
-      Result.Free;
-      Result := nil;
-    end;
-    Canvas.Free;
-  finally
-    CopyList.Free;
-  end;
-end;
-
-function ThtmlViewer.MakePagedMetaFiles(Width, Height: integer): TList;
-var
-  ARect, CRect: TRect;
-  CopyList: TSectionList;
-  HTop, OldTop, Dummy, Curs, I: integer;
-  Done: boolean;
-  VPixels: integer;
-  Canvas: TMetaFileCanvas;
-  MF: TMetaFile;
-  TablePart: TablePartType;
-  SavePageBottom: Integer;
-  hrgnClip1: hRgn;
-
-  procedure PaintBackground(Canvas: TCanvas; Top, Bot: integer);
-  begin
-    Canvas.Brush.Color := CopyList.Background;
-    Canvas.Brush.Style := bsSolid;
-    Canvas.FillRect(Rect(0, Top, Width + 1, Bot));
-  end;
-
-begin
-  Done := False;
-  Result := nil;
-  TablePartRec := nil;
-  if FProcessing or (SectionList.Count = 0) then
-    Exit;
-  CopyList := TSectionList.CreateCopy(SectionList);
-  try
-    CopyList.NoOutput := False;
-    CopyList.Printing := True;
-    CopyList.LinkDrawnEvent := FOnLinkDrawn;
-    Result := TList.Create;
-    try
-      HTop := 0;
-      OldTop := 0;
-      Curs := 0;
-      VPixels := 0;
-      ARect := Rect(0, 0, Width, Height);
-      while not Done do
-      begin
-        MF := TMetaFile.Create;
-        try
-          MF.Width := Width;
-          MF.Height := Height;
-          Canvas := TMetaFileCanvas.Create(MF, 0);
-          try
-            if HTop = 0 then {DoLogic the first time only}
-              VPixels := CopyList.DoLogic(Canvas, 0, Width, Height, 0, Dummy, Curs);
-            CopyList.SetYOffset(HTop);
-            PaintBackground(Canvas, 0, Height);
-
-            repeat
-              if Assigned(TablePartRec) then
-                TablePart := TablePartRec.TablePart
-              else TablePart := Normal;
-              case TablePart of
-                Normal:
-                  begin
-                    CopyList.Draw(Canvas, ARect, Width, 0, 0, 0, 0);
-                    PaintBackground(Canvas, CopyList.PageBottom - HTop, Height + 1);
-                  end;
-                DoHead:
-                  begin
-                    CopyList.SetYOffset(TablePartRec.PartStart);
-                    CRect := ARect;
-                    CRect.Bottom := CRect.Top + TablePartRec.PartHeight;
-                    hrgnClip1 := CreateRectRgn(0, 0, Width + 1, CRect.Bottom);
-                    SelectClipRgn(Canvas.Handle, hrgnClip1);
-                    DeleteObject(hrgnClip1);
-                    CopyList.Draw(Canvas, CRect, Width, 0, 0, 0, 0);
-                  end;
-                DoBody1, DoBody3:
-                  begin
-                    CRect := ARect;
-                    CRect.Top := CopyList.PageBottom - 1 - CopyList.YOff;
-                    CopyList.SetYOffset(TablePartRec.PartStart - CRect.top);
-                    CopyList.Draw(Canvas, CRect, Width, 0 + 3 * Width, 0, 0, 0); {off page}
-
-                    TablePartRec.TablePart := DoBody2;
-                    CRect.Bottom := CopyList.PageBottom - CopyList.YOff + 1;
-                    hrgnClip1 := CreateRectRgn(0, CRect.Top, Width + 1, CRect.Bottom);
-                    SelectClipRgn(Canvas.Handle, hrgnClip1);
-                    DeleteObject(hrgnClip1);
-                    CopyList.Draw(Canvas, CRect, Width, 0, 0, 0, 0); {onpage}
-                    if not Assigned(TablePartRec)
-                      or not (TablePartRec.TablePart in [Normal]) then
-                      PaintBackground(Canvas, CopyList.PageBottom - CopyList.YOff, Height + 1);
-                  end;
-                DoFoot:
-                  begin
-                    SavePageBottom := CopyList.PageBottom;
-                    CRect := ARect;
-                    CRect.Top := CopyList.PageBottom - CopyList.YOff;
-                    CRect.Bottom := CRect.Top + TablePartRec.PartHeight;
-                    hrgnClip1 := CreateRectRgn(0, CRect.Top, Width + 1, CRect.Bottom);
-                    SelectClipRgn(Canvas.Handle, hrgnClip1);
-                    DeleteObject(hrgnClip1);
-                    CopyList.SetYOffset(TablePartRec.PartStart - CRect.top);
-                    CopyList.Draw(Canvas, CRect, Width, 0, 0, 0, 0);
-                    CopyList.PageBottom := SavePageBottom;
-                  end;
-              end;
-            until not Assigned(TablePartRec)
-              or (TablePartRec.TablePart in [Normal, DoHead, DoBody3]);
-          finally
-            Canvas.Free;
-          end;
-        except
-          MF.Free;
-          raise;
-        end;
-        Result.Add(MF);
-        HTop := CopyList.PageBottom;
-        Inc(CopyList.LinkPage);
-        Application.ProcessMessages;
-        if (HTop >= VPixels) or (HTop <= OldTop) then {see if done or endless loop}
-          Done := True;
-        OldTop := HTop;
-      end;
-    except
-      for I := 0 to Result.Count - 1 do
-        TMetaFile(Result.Items[I]).Free;
-      FreeAndNil(Result);
-      raise;
-    end;
-  finally
-    CopyList.Free;
-  end;
-end;
 
 function ThtmlViewer.MakeBitmap(YTop, FormatWidth, Width, Height: integer): TBitmap;
 var

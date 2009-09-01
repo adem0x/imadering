@@ -78,7 +78,6 @@ begin
       for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
       begin
         if newId = RoasterForm.CategoryButtons1.Categories[i].Items[ii].Idd then goto y;
-        Application.ProcessMessages;
       end;
     end;
     //

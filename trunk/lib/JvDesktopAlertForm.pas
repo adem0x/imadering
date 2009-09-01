@@ -600,8 +600,6 @@ begin
               //--Выходим из цикла
               goto a;
             end;
-            //--Не замораживаем интерфэйс
-            Application.ProcessMessages;
           end;
         end;
       end;
@@ -622,8 +620,6 @@ begin
                 //--Выходим из цикла
                 goto b;
               end;
-              //--Не замораживаем интерфэйс
-              Application.ProcessMessages;
             end;
           end;
         end;

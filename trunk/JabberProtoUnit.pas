@@ -1,3 +1,11 @@
+{*******************************************************************************
+  Copyright (c) 2004-2009 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+*******************************************************************************}
+
 unit JabberProtoUnit;
 
 interface
@@ -128,7 +136,7 @@ end;
 
 procedure Jabber_GoOffline;
 var
-  i, ii: integer;
+  i: integer;
 begin
   //--Отключаем таймер пингов
   with MainForm.JvTimerList do
@@ -167,53 +175,16 @@ begin
     //--Подсвечиваем в меню статуса Jabber статус оффлайн
     JabberStatusOffline.Default := true;
   end;
-  //--Сбрасываем иконки контактов в КЛ в оффлайн
-  with MainForm.ContactList do
+  //--Сбрасываем иконки контактов в Ростере в оффлайн
+  with RosterForm.RosterJvListView do
   begin
-    for i := 0 to Categories.Count - 1 do
+    for i := 0 to Items.Count - 1 do
     begin
-      if Categories[i].GroupType = 'Jabber' then
+      if (Items[i].SubItems[3] = 'Jabber') and (Items[i].SubItems[6] <> '42') then
       begin
-        if (Categories[i].GroupId = 'NoCL') or (Categories[i].Items.Count = 0) then Continue;
-        //--Сбросим количесво онлайн-контактов в группах локального КЛ
-        Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
-        //--Сбросим статусы
-        for ii := 0 to Categories[i].Items.Count - 1 do
-        begin
-          if (Categories[i].Items[ii].Status = 30) and
-            (Categories[i].Items[ii].ImageIndex = 30) then Continue
-          else
-          begin
-            Categories[i].Items[ii].Status := 30;
-            Categories[i].Items[ii].ImageIndex := 30;
-          end;
-          Categories[i].Items[ii].ImageIndex1 := -1;
-          //--Не замораживаем интерфейс
-          Application.ProcessMessages;
-        end;
+        Items[i].SubItems[6] := '30';
       end;
     end;
-  end;
-  //--Если окно чата существует, сбрасываем иконки во вкладках в оффлайн
-  if Assigned(ChatForm) then
-  begin
-    with ChatForm.ChatPageControl do
-    begin
-      if Visible then
-      begin
-        for i := 0 to PageCount - 1 do
-        begin
-          if Pages[i].Tag = 30 then Continue
-          else if (Pages[i].Tag > 27) and (Pages[i].Tag < 41) then
-          begin
-            Pages[i].Tag := 30;
-            Pages[i].ImageIndex := 30;
-          end;
-          //--Не замораживаем интерфейс
-          Application.ProcessMessages;
-        end;
-      end;
-    end
   end;
   //--Сохраняем историю сообщений, но уже не в потоке
   MainForm.ZipHistory;
@@ -305,8 +276,6 @@ begin
         finally
           CloseKey();
         end;
-        //--Размораживаем фэйс
-        Application.ProcessMessages;
       end;
     end;
   finally
@@ -418,12 +387,12 @@ begin
                 begin
                   SubItems[6] := '30';
                   SubItems[18] := '0';
-                  SubItems[19] := '5';
+                  SubItems[19] := '20';
                 end
                 else
                 begin
                   SubItems[6] := '28';
-                  SubItems[18] := '5';
+                  SubItems[18] := '20';
                   SubItems[19] := '0';
                 end;
                 //--Запускаем таймер задержку событий Ростера
