@@ -299,7 +299,7 @@ begin
   //--Записываем настройки ICQ протокола в файл
   with TrXML.Create() do
   try
-    if FileExists(MyPath + SettingsFileName) then LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then LoadFromFile(ProfilePath + SettingsFileName);
     if OpenKey('settings\icq\account', True) then
     try
       WriteString('login', ICQUINEdit.Text);
@@ -319,7 +319,7 @@ begin
     finally
       CloseKey();
     end;
-    SaveToFile(MyPath + SettingsFileName);
+    SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
   end;
@@ -340,9 +340,9 @@ begin
   //--Инициализируем XML
   with TrXML.Create() do
   try
-    if FileExists(MyPath + SettingsFileName) then
+    if FileExists(ProfilePath + SettingsFileName) then
     begin
-      LoadFromFile(MyPath + SettingsFileName);
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем данные логина
       if OpenKey('settings\icq\account') then
       try
@@ -484,7 +484,7 @@ begin
     end;
   end;
   //--Сохраняем пакет локально для дальнейшего использования
-  SendCustomICQPacketRichEdit.Lines.SaveToFile(MyPath + 'Profile\IcqPacket.txt');
+  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Profile\IcqPacket.txt');
 end;
 
 procedure TIcqOptionsForm.SendCustomICQPaketTimerEditExit(Sender: TObject);

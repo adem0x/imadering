@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, JvPageList, JvExControls, ExtCtrls, ButtonGroup, StdCtrls, Buttons,
   rXml, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  Registry, ComCtrls;
+  Registry, ComCtrls, JvLabel, Mask, JvExMask, JvToolEdit;
 
 type
   TSettingsForm = class(TForm)
@@ -84,6 +84,9 @@ type
     AddProtoBitBtn: TBitBtn;
     SettingsProtoBitBtn: TBitBtn;
     DeleteProtoBitBtn: TBitBtn;
+    ProfileGroupBox: TGroupBox;
+    jdeProfilePath: TJvDirectoryEdit;
+    jlaPath: TJvLabel;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; Index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -110,6 +113,7 @@ type
       Shift: TShiftState);
     procedure SettingsProtoBitBtnClick(Sender: TObject);
     procedure ProtocolsListViewDblClick(Sender: TObject);
+    procedure jdeProfilePathChange(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -181,11 +185,11 @@ var
   ListItemD: TListItem;
 begin
   //--Считываем настройки из xml файла
-  if FileExists(MyPath + SettingsFileName) then
+  if FileExists(ProfilePath + SettingsFileName) then
   begin
     with TrXML.Create() do
     try
-      LoadFromFile(MyPath + SettingsFileName);
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем и отображаем настройки прокси
       if OpenKey('settings\proxy\address') then
       try
@@ -313,11 +317,14 @@ end;
 
 procedure TSettingsForm.ApplySettings;
 begin
+  //--Изменяем путь
+  ProfilePath := jdeProfilePath.Text;
+
   //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
-  ForceDirectories(MyPath + 'Profile\History');
-  ForceDirectories(MyPath + 'Profile\Avatars');
-  ForceDirectories(MyPath + 'Profile\Contacts');
+  ForceDirectories(ProfilePath + 'Profile');
+  ForceDirectories(ProfilePath + 'Profile\History');
+  ForceDirectories(ProfilePath + 'Profile\Avatars');
+  ForceDirectories(ProfilePath + 'Profile\Contacts');
   //--Применяем настройки прокси
   with MainForm do
   begin
@@ -394,7 +401,7 @@ begin
     begin
       with TrXML.Create() do
       try
-        if FileExists(MyPath + SettingsFileName) then LoadFromFile(MyPath + SettingsFileName);
+        if FileExists(ProfilePath + SettingsFileName) then LoadFromFile(ProfilePath + SettingsFileName);
         //--Записываем настройки прокси
         if OpenKey('settings\proxy\main', True) then
         try
@@ -490,7 +497,7 @@ begin
         finally
           CloseKey();
         end;
-        SaveToFile(MyPath + SettingsFileName);
+        SaveToFile(ProfilePath + SettingsFileName);
       finally
         Free();
       end;
@@ -725,6 +732,8 @@ begin
   TranslateForms;
   //--Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := false;
+  //--Путь к профилю
+  jdeProfilePath.Text := ProfilePath;
 end;
 
 procedure TSettingsForm.FormShow(Sender: TObject);
@@ -746,6 +755,12 @@ begin
   //--Становимся на первую вкладку
   JvPageList1.ActivePageIndex := 0;
   SettingButtonGroup.ItemIndex := 0;
+end;
+
+procedure TSettingsForm.jdeProfilePathChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
 end;
 
 procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;

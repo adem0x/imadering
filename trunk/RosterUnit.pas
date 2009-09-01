@@ -165,14 +165,14 @@ begin
     if SubItems[13] = EmptyStr then
     begin
       //--Загружаем файл истории сообщений
-      HistoryFile := MyPath + 'Profile\History\' + SubItems[3] + '_' + Caption + '.z';
+      HistoryFile := ProfilePath + 'Profile\History\' + SubItems[3] + '_' + Caption + '.z';
       if FileExists(HistoryFile) then
       begin
         try
           //--Распаковываем файл с историей
-          UnZip_File(HistoryFile, MyPath + 'Profile\History\');
+          UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
           //--Записываем историю в хранилище у этого контакта
-          hFile := MyPath + 'Profile\History\' + SubItems[3] + '_History.htm';
+          hFile := ProfilePath + 'Profile\History\' + SubItems[3] + '_History.htm';
           SubItems[13] := ReadFromFile(hFile);
           //--Удаляем уже не нужный распакованный файл с историей
           if FileExists(hFile) then DeleteFile(hFile);
@@ -420,8 +420,8 @@ begin
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   //--Загружаем копию локальную списка контактов
-  if FileExists(MyPath + 'Profile\ContactList.dat') then
-    RosterJvListView.LoadFromFile(MyPath + 'Profile\ContactList.dat');
+  if FileExists(ProfilePath + 'Profile\ContactList.dat') then
+    RosterJvListView.LoadFromFile(ProfilePath + 'Profile\ContactList.dat');
   UpdateFullCL;
 end;
 

@@ -63,7 +63,7 @@ object HistoryForm: THistoryForm
       Height = 21
       Style = csDropDownList
       DropDownCount = 20
-      ItemHeight = 13
+      ItemHeight = 0
       TabOrder = 0
       TabStop = False
       OnChange = ContactsComboBoxChange
@@ -75,7 +75,7 @@ object HistoryForm: THistoryForm
       Height = 21
       Style = csDropDownList
       DropDownCount = 15
-      ItemHeight = 13
+      ItemHeight = 0
       TabOrder = 1
       TabStop = False
     end
@@ -164,7 +164,7 @@ object HistoryForm: THistoryForm
       OnClick = SaveHistoryAsBitBtnClick
     end
     object DeleteHistoryBitBtn: TBitBtn
-      Left = 282
+      Left = 278
       Top = 7
       Width = 102
       Height = 25
@@ -173,9 +173,10 @@ object HistoryForm: THistoryForm
       TabOrder = 2
       TabStop = False
       OnClick = DeleteHistoryBitBtnClick
+      ExplicitLeft = 282
     end
     object CloseBitBtn: TBitBtn
-      Left = 403
+      Left = 399
       Top = 7
       Width = 101
       Height = 25
@@ -183,6 +184,7 @@ object HistoryForm: THistoryForm
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 3
       OnClick = CloseBitBtnClick
+      ExplicitLeft = 403
     end
   end
   object HTMLHistoryViewer: THTMLViewer

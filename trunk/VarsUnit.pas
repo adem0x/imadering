@@ -29,6 +29,7 @@ const
 var
   //--Переменные общие для всей программы
   MyPath: string;
+  ProfilePath: string;
   CurrentIcons: string = 'Imadering';
   CurrentLang: string = '';
   CurrentSmiles: string = 'Imadering';

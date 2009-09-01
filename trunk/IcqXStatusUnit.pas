@@ -103,7 +103,7 @@ end;
 procedure TIcqXStatusForm.XButtonGroupButtonClicked(Sender: TObject;
   Index: Integer);
 begin
-  {Xini := TIniFile.Create(MyPath + 'Users\' + 'IcqXstatuses.ini');
+  {Xini := TIniFile.Create(ProfilePath + 'Profile\Users\' + 'IcqXstatuses.ini');
   //
   if Xindex > 0 then
     Xini.WriteString('XText', IntToStr(Xindex), Encrypt(Memo1.Text, 12345));

@@ -92,18 +92,18 @@ begin
     HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
     HTMLHistoryViewer.Refresh;
     //--Загружаем файл истории сообщений
-    HistoryFile := MyPath + 'Profile\History\' + hUIN + '.z';
+    HistoryFile := ProfilePath + 'Profile\History\' + hUIN + '.z';
     if FileExists(HistoryFile) then
     begin
       try
         //--Распаковываем файл с историей
-        UnZip_File(HistoryFile, MyPath + 'Profile\History\');
+        UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
         //--Добавляем стили
         Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
         //--Записываем историю
-        Doc := Doc + ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
+        Doc := Doc + ReadFromFile(ProfilePath + 'Profile\History\Icq_History.htm');
         //--Удаляем уже не нужный распакованный файл с историей
-        if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
+        if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
         if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
         SetLength(Doc, Length(Doc) - 6);
         Doc := Doc + '<HR>';
@@ -136,16 +136,16 @@ begin
             if Categories[I].Items[II].History = EmptyStr then
             begin
               //--Загружаем файл истории сообщений
-              HistoryFile := MyPath + 'Profile\History\' + ReqCType + '_' + hUIN + '.z';
+              HistoryFile := ProfilePath + 'Profile\History\' + ReqCType + '_' + hUIN + '.z';
               if FileExists(HistoryFile) then
               begin
                 try
                   //--Распаковываем файл с историей
-                  UnZip_File(HistoryFile, MyPath + 'Profile\History\');
+                  UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
                   //--Записываем историю в хранилище у этого контакта
-                  Categories[I].Items[II].History := ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
+                  Categories[I].Items[II].History := ReadFromFile(ProfilePath + 'Profile\History\Icq_History.htm');
                   //--Удаляем уже не нужный распакованный файл с историей
-                  if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
+                  if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
                 except
                 end;
               end;
@@ -275,8 +275,8 @@ begin
   if i = 6 then
   begin
     //--Удаляем файл
-    if FileExists(MyPath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z') then
-      DeleteFile(MyPath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z');
+    if FileExists(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z') then
+      DeleteFile(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z');
     //--Очищаем компонент истории
     HTMLHistoryViewer.Clear;
     Doc := EmptyStr;
@@ -309,8 +309,8 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then begin
-      LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then begin
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
       If OpenKey('settings\forms\historyform\position') then try
         Top := ReadInteger('top');
@@ -339,7 +339,7 @@ begin
   MainForm.AllImageList.GetBitmap(148, DeleteHistoryBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
   //--Создаём список имеющихся файлов истории для выбора
-  ListFileDirHist(MyPath + 'Profile\History', '*.z', '.z', ContactsComboBox.Items);
+  ListFileDirHist(ProfilePath + 'Profile\History', '*.z', '.z', ContactsComboBox.Items);
   //--Делаем окно независимым и ставим его кнопку в панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
@@ -348,11 +348,11 @@ end;
 procedure THistoryForm.FormDestroy(Sender: TObject);
 begin
   //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
+  ForceDirectories(ProfilePath + 'Profile');
   //--Сохраняем настройки положения окна истории в xml
   With TrXML.Create() do try
-    if FileExists(MyPath + SettingsFileName) then
-      LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then
+      LoadFromFile(ProfilePath + SettingsFileName);
     //--Сохраняем позицию окна
     If OpenKey('settings\forms\historyform\position', True) then try
       WriteInteger('top', Top);
@@ -363,7 +363,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + SettingsFileName);
+    SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
   end;

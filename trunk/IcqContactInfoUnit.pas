@@ -102,11 +102,11 @@ begin
   TopHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   BottomHTMLViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   //--Ищем локально файл с информацией
-  if FileExists(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.xml') then
+  if FileExists(ProfilePath + 'Profile\Contacts\Icq_' + ReqUIN + '.xml') then
   begin
     InfoLabel.Caption := InfoOKL;
     //--Распаковываем файл
-    //UnZip_File(MyPath + 'Profile\Contacts\Icq_' + ReqUIN + '.z', MyPath + 'Profile\Contacts\');
+    //UnZip_File(ProfilePath + 'Profile\Contacts\Icq_' + ReqUIN + '.z', ProfilePath + 'Profile\Contacts\');
     //--Запускаем создание суммарного инфо из распакованного файла
     CreateSummery(ReqUIN);
   end
@@ -174,9 +174,9 @@ begin
   with TrXML.Create() do
   try
     //--Загружаем настройки
-    if FileExists(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml') then
+    if FileExists(ProfilePath + 'Profile\Contacts\Icq_' + UIN + '.xml') then
     begin
-      LoadFromFile(MyPath + 'Profile\Contacts\Icq_' + UIN + '.xml');
+      LoadFromFile(ProfilePath + 'Profile\Contacts\Icq_' + UIN + '.xml');
 
       //--Ник, Имя и фамилию
       if OpenKey('settings\name-info') then
@@ -692,16 +692,16 @@ begin
   else HoroImage.Picture.Assign(nil);
   //--Загружаем аватар
   AvatarImage.Picture.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif');
-  {if (Length(UserAvatarHash) = 32) and ((FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
-    (FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
-    (FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
+  {if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
+    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
+    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
   begin
-    if FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg') then
-      ContactImage.Picture.LoadFromFile(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')
-    else if FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif') then
-      ContactImage.Picture.LoadFromFile(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif')
-    else if FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.bmp') then
-      ContactImage.Picture.LoadFromFile(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.bmp');
+    if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg') then
+      ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')
+    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif') then
+      ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')
+    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp') then
+      ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp');
   end
   else
   begin
@@ -723,7 +723,7 @@ begin
     ContactImage.Picture.Assign(NoAvatar.Picture);
   end;}
   //--Удаляем распакованный файл с информацией
-  //if FileExists(MyPath + 'Profile\Contacts\Icq_Info.xml') then DeleteFile(MyPath + 'Profile\Contacts\Icq_Info.xml');
+  //if FileExists(ProfilePath + 'Profile\Contacts\Icq_Info.xml') then DeleteFile(ProfilePath + 'Profile\Contacts\Icq_Info.xml');
 end;
 
 procedure TIcqContactInfoForm.ReqInfoBitBtnClick(Sender: TObject);
@@ -748,9 +748,9 @@ begin
   with TrXML.Create() do
   try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then
+    if FileExists(ProfilePath + SettingsFileName) then
     begin
-      LoadFromFile(MyPath + SettingsFileName);
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
       if OpenKey('settings\forms\contactinfoform\position') then
       try
@@ -779,8 +779,8 @@ begin
   //--Сохраняем настройки положения окна в xml
   with TrXML.Create() do
   try
-    if FileExists(MyPath + SettingsFileName) then
-      LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then
+      LoadFromFile(ProfilePath + SettingsFileName);
     if OpenKey('settings\forms\contactinfoform\position', True) then
     try
       WriteInteger('top', Top);
@@ -789,7 +789,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + SettingsFileName);
+    SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
   end;

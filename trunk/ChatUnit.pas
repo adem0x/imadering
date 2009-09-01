@@ -262,7 +262,7 @@ begin
   //--Создаём временный лист строк
   list := TStringList.Create;
   //--Если файл с быстрыми ответами найден, то загружаем его
-  if FileExists(MyPath + 'Profile\QReply.txt') then list.LoadFromFile(MyPath + 'Profile\QReply.txt')
+  if FileExists(ProfilePath + 'Profile\QReply.txt') then list.LoadFromFile(ProfilePath + 'Profile\QReply.txt')
   else
   begin
     //--Иначе добавляем быстрые ответы по умолчанию
@@ -809,16 +809,16 @@ begin
       if SubItems[13] = EmptyStr then
       begin
         //--Загружаем файл истории сообщений
-        HistoryFile := MyPath + 'Profile\History\' + UserType + '_' + UIN + '.z';
+        HistoryFile := ProfilePath + 'Profile\History\' + UserType + '_' + UIN + '.z';
         if FileExists(HistoryFile) then
         begin
           try
             //--Распаковываем файл с историей
-            UnZip_File(HistoryFile, MyPath + 'Profile\History\');
+            UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
             //--Записываем историю в хранилище у этого контакта
-            SubItems[13] := ReadFromFile(MyPath + 'Profile\History\Icq_History.htm');
+            SubItems[13] := ReadFromFile(ProfilePath + 'Profile\History\Icq_History.htm');
             //--Удаляем уже не нужный распакованный файл с историей
-            if FileExists(MyPath + 'Profile\History\Icq_History.htm') then DeleteFile(MyPath + 'Profile\History\Icq_History.htm');
+            if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
           except
           end;
         end;
@@ -865,16 +865,16 @@ begin
   RosterForm.DellcIdInMessList(UIN);
 
   //--Загружаем аватар
-  {if (Length(UserAvatarHash) = 32) and ((FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
-    (FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
-    (FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
+  {if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
+    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
+    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
   begin
-    if FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg') then
-      ContactImage.Picture.LoadFromFile(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')
-    else if FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif') then
-      ContactImage.Picture.LoadFromFile(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.gif')
-    else if FileExists(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.bmp') then
-      ContactImage.Picture.LoadFromFile(MyPath + 'Profile\Avatars\' + UserAvatarHash + '.bmp');
+    if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg') then
+      ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')
+    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif') then
+      ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')
+    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp') then
+      ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp');
   end
   else
   begin
@@ -1085,9 +1085,9 @@ begin
   //--Инициализируем XML
   with TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then
+    if FileExists(ProfilePath + SettingsFileName) then
     begin
-      LoadFromFile(MyPath + SettingsFileName);
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
       if OpenKey('settings\forms\chatform\position') then
       try
@@ -1193,12 +1193,12 @@ end;
 procedure TChatForm.FormDestroy(Sender: TObject);
 begin
   //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
+  ForceDirectories(ProfilePath + 'Profile');
   //--Сохраняем настройки положения окна чата в xml
   with TrXML.Create() do
   try
-    if FileExists(MyPath + SettingsFileName) then
-      LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then
+      LoadFromFile(ProfilePath + SettingsFileName);
     //--Сохраняем позицию окна
     if OpenKey('settings\forms\chatform\position', True) then
     try
@@ -1242,7 +1242,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + SettingsFileName);
+    SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
   end;

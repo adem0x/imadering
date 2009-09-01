@@ -150,8 +150,8 @@ begin
   //--Инициализируем XML
   With TrXML.Create() do try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then begin
-      LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then begin
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
       if OpenKey('settings\forms\clsearchform\position') then try
         Top := ReadInteger('top');
@@ -182,11 +182,11 @@ end;
 procedure TCLSearchForm.FormDestroy(Sender: TObject);
 begin
   //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
+  ForceDirectories(ProfilePath + 'Profile');
   //--Сохраняем настройки положения окна в xml
   With TrXML.Create() do try
-    if FileExists(MyPath + SettingsFileName) then
-      LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then
+      LoadFromFile(ProfilePath + SettingsFileName);
     //--Сохраняем позицию окна
     if OpenKey('settings\forms\clsearchform\position', True) then try
       WriteInteger('top', Top);
@@ -197,7 +197,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + SettingsFileName);
+    SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
   end;

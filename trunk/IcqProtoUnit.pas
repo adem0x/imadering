@@ -447,11 +447,11 @@ begin
       ImageData.Write(ImageStr[1], Length(ImageStr));
       ImageType := NextData(ImageHex, 4);
       if ImageType = 'FFD8' then
-        ImageData.SaveToFile(MyPath + 'Users\Avatars\' + iHash + '.jpg')
+        ImageData.SaveToFile(ProfilePath + 'Profile\Users\Avatars\' + iHash + '.jpg')
       else if ImageType = '4749' then
-        ImageData.SaveToFile(MyPath + 'Users\Avatars\' + iHash + '.gif')
+        ImageData.SaveToFile(ProfilePath + 'Profile\Users\Avatars\' + iHash + '.gif')
       else if ImageType = '424D' then
-        ImageData.SaveToFile(MyPath + 'Users\Avatars\' + iHash + '.bmp');
+        ImageData.SaveToFile(ProfilePath + 'Profile\Users\Avatars\' + iHash + '.bmp');
     finally
       ImageData.Free;
     end;
@@ -665,9 +665,9 @@ begin
     if Button.Caption <> Button.UIN then Result := Result + '<br><b>' + Button.Caption + '</b>';
     Result := Result + '<br>';
     //--Если есть файл с информацией о контакте, то загружаем из него имя и фамилию
-    if FileExists(MyPath + 'Profile\Contacts\' + Button.UIN + '.inf') then
+    if FileExists(ProfilePath + 'Profile\Contacts\' + Button.UIN + '.inf') then
     begin
-      {Uini := TIniFile.Create(MyPath + 'Profile\Contacts\' + Button.UIN + '.inf');
+      {Uini := TIniFile.Create(ProfilePath + 'Profile\Contacts\' + Button.UIN + '.inf');
       //
       Ln := Uini.ReadString('Info', 'cFirst', EmptyStr);
       Lf := Uini.ReadString('Info', 'cLast', EmptyStr);
@@ -2339,7 +2339,7 @@ begin
                 begin
                   AccountToNick.Add('Icq_' + UIN);
                   AccountToNick.Add(Nick);
-                  AccountToNick.SaveToFile(MyPath + 'Profile\' + 'Nicks.txt');
+                  AccountToNick.SaveToFile(ProfilePath + 'Profile\' + 'Nicks.txt');
                 end;
               end;
               //--Если ник не пустой и ник не равен UIN
@@ -2514,21 +2514,21 @@ begin
               CloseKey();
             end;
             //--Создаём необходимые папки
-            ForceDirectories(MyPath + 'Profile\Contacts');
+            ForceDirectories(ProfilePath + 'Profile\Contacts');
             //--Записываем сам файл
-            SaveToFile(MyPath + Icq_Info + UIN + '.xml');
+            SaveToFile(ProfilePath + Icq_Info + UIN + '.xml');
             //--Сжимаем файл в архив
             //--Создаём временный лист для файла
             {ListF := TStringList.Create;
             try
               //--Добавляем в лист путь к файлу
-              ListF.Add(MyPath + Icq_Info);
+              ListF.Add(ProfilePath + Icq_Info);
               //--Сжимаем этот файл и кладем в эту же директорию
-              Zip_File(ListF, MyPath + 'Profile\Contacts\Icq_' + UIN + '.z');
+              Zip_File(ListF, ProfilePath + 'Profile\Contacts\Icq_' + UIN + '.z');
               //--Удаляем несжатый файл
-              if FileExists(MyPath + Icq_Info) then begin
-                DeleteFile(MyPath + Icq_Info);
-                RemoveDir(MyPath + 'Profile\Contacts\Download');
+              if FileExists(ProfilePath + Icq_Info) then begin
+                DeleteFile(ProfilePath + Icq_Info);
+                RemoveDir(ProfilePath + 'Profile\Contacts\Download');
               end;
             finally
               ListF.Free;
@@ -4144,9 +4144,9 @@ begin
       {with TrXML.Create() do
       try
         //--Загружаем файл контакт листа
-        if FileExists(MyPath + 'Profile\ContactList.xml') then
+        if FileExists(ProfilePath + 'Profile\ContactList.xml') then
         begin
-          LoadFromFile(MyPath + 'Profile\ContactList.xml');
+          LoadFromFile(ProfilePath + 'Profile\ContactList.xml');
           //--Загружаем группы и их флаги
           with MainForm.ContactList do
           begin

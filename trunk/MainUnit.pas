@@ -347,7 +347,7 @@ begin
   //--В цикле проверяем у каких контактов добавилась история сообщений
   //и сжимаем её и сохраняем в файл
   //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile\History\Unzip');
+  ForceDirectories(ProfilePath + 'Profile\History\Unzip');
   //--Создаём временный лист для файла
   ListF := TStringList.Create;
   try
@@ -361,14 +361,14 @@ begin
             //--Записываем в лист историю этого контакта
             ListF.Text := Items[i].SubItems[13];
             //--Сохраняем файл во временный каталог
-            zFile := MyPath + 'Profile\History\Unzip\' + Items[i].SubItems[3] + '_History.htm';
+            zFile := ProfilePath + 'Profile\History\Unzip\' + Items[i].SubItems[3] + '_History.htm';
             ListF.SaveToFile(zFile);
             //--Очишаем лист
             ListF.Clear;
             //--Добавляем в лист путь к файлу
             ListF.Add(zFile);
             //--Сжимаем этот файл и ложим в эту же директорию
-            Zip_File(ListF, MyPath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z');
+            Zip_File(ListF, ProfilePath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z');
             //--Удаляем несжатый файл
             if FileExists(zFile) then DeleteFile(zFile);
             //--Снимаем у этого контакта флаг о изменившейся истории
@@ -382,7 +382,7 @@ begin
     ListF.Free;
   end;
   //--Удаляем директорию хранения временных файлов истории
-  if DirectoryExists(MyPath + 'Profile\History\Unzip') then RemoveDir(MyPath + 'Profile\History\Unzip');
+  if DirectoryExists(ProfilePath + 'Profile\History\Unzip') then RemoveDir(ProfilePath + 'Profile\History\Unzip');
   //--Останавливаем поток после сжатия всех необходимых файлов с историей
   ZipHistoryThread.Stop;
 end;
@@ -2734,7 +2734,7 @@ begin
     while not ZipHistoryThread.Terminated do Sleep(10);
     //--Делаем текущую локальную копию списка контактов для отображения при запуске программы
     if RosterForm.RosterJvListView.Items.Count > 0 then
-      RosterForm.RosterJvListView.SaveToFile(MyPath + 'Profile\ContactList.dat');
+      RosterForm.RosterJvListView.SaveToFile(ProfilePath + 'Profile\ContactList.dat');
   end;
 end;
 
@@ -2775,9 +2775,20 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+ S : string;
+ buf : array[0..$FF] of char;
+ Size : integer;
 begin
   //--Узнаём путь откуда запущена программа
   MyPath := ExtractFilePath(Application.ExeName);
+  ProfilePath := MyPath;
+  //~
+  {
+  s := '%APPDATA%\IMadering\';
+  Size := ExpandEnvironmentStrings(PChar(S), buf, sizeof(buf));
+  ProfilePath := Copy(buf, 1, Size);
+  }
   //--Временно создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(self);
   SettingsForm.ApplySettings;
@@ -2811,7 +2822,7 @@ begin
   AccountToNick := TStringList.Create;
   InMessList := TStringList.Create;
   SmilesList := TStringList.Create;
-  if FileExists(MyPath + 'Profile\' + 'Nicks.txt') then AccountToNick.LoadFromFile(MyPath + 'Profile\' + 'Nicks.txt');
+  if FileExists(ProfilePath + 'Profile\' + 'Nicks.txt') then AccountToNick.LoadFromFile(ProfilePath + 'Profile\' + 'Nicks.txt');
   if FileExists(MyPath + '\Smilies\' + CurrentSmiles + '\smilies.txt') then
     SmilesList.LoadFromFile(MyPath + '\Smilies\' + CurrentSmiles + '\smilies.txt');
   //--Проверяем если ли старый файл после обновления, если есть, то удаляем
@@ -2850,9 +2861,9 @@ begin
   with TrXML.Create() do
   try
     //--Загружаем настройки
-    if FileExists(MyPath + SettingsFileName) then
+    if FileExists(ProfilePath + SettingsFileName) then
     begin
-      LoadFromFile(MyPath + SettingsFileName);
+      LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
       if OpenKey('settings\forms\mainform\position') then
       try
@@ -2923,11 +2934,11 @@ end;
 procedure TMainForm.SaveMainFormSettings;
 begin
   //--Создаём необходимые папки
-  ForceDirectories(MyPath + 'Profile');
+  ForceDirectories(ProfilePath + 'Profile');
   //--Сохраняем настройки положения главного окна в xml
   with TrXML.Create() do
   try
-    if FileExists(MyPath + SettingsFileName) then LoadFromFile(MyPath + SettingsFileName);
+    if FileExists(ProfilePath + SettingsFileName) then LoadFromFile(ProfilePath + SettingsFileName);
     //--Сохраняем позицию окна
     if OpenKey('settings\forms\mainform\position', True) then
     try
@@ -2979,7 +2990,7 @@ begin
       CloseKey();
     end;
     //--Записываем сам файл
-    SaveToFile(MyPath + SettingsFileName);
+    SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
   end;
