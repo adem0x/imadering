@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils,
+  rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils, Registry,
   OverbyteIcsMimeUtils, StdCtrls;
 
 type
@@ -2782,13 +2782,27 @@ var
 begin
   //--Узнаём путь откуда запущена программа
   MyPath := ExtractFilePath(Application.ExeName);
-  ProfilePath := MyPath;
-  //~
-  {
-  s := '%APPDATA%\IMadering\';
-  Size := ExpandEnvironmentStrings(PChar(S), buf, sizeof(buf));
-  ProfilePath := Copy(buf, 1, Size);
-  }
+
+  with TRegistry.Create do try
+    if not OpenKey(ProgramKey, True) then
+      ProfilePath := MyPath
+    else
+      ProfilePath := ReadString(cProfile);
+  finally
+    Free;
+  end;
+
+  if ProfilePath = EmptyStr then
+    ProfilePath := MyPath;
+
+  ProfilePath := AddSlash(ProfilePath);  
+
+  if not DirectoryExists(ProfilePath + 'Profile') then begin
+    s := '%APPDATA%\IMadering\';
+    Size := ExpandEnvironmentStrings(PChar(S), buf, sizeof(buf));
+    ProfilePath := Copy(buf, 1, Size);
+  end;
+
   //--Временно создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(self);
   SettingsForm.ApplySettings;

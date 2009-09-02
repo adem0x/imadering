@@ -30,6 +30,8 @@ var
   //--Переменные общие для всей программы
   MyPath: string;
   ProfilePath: string;
+  ProgramKey: string = '\SoftWare\IMadering';
+  cProfile: string = 'ProfilePath';
   CurrentIcons: string = 'Imadering';
   CurrentLang: string = '';
   CurrentSmiles: string = 'Imadering';
@@ -64,6 +66,7 @@ var
   SoundIncMsgPath: string = '';
 
   //--Переменные для языка
+  DelProfile: string = 'Удалить старый профиль?';
   RestoreFromTrayStr: string = 'Показать IMadering';
   HideInTrayStr: string = 'Скрыть IMadering';
   DevelMess: string = 'Данная функция находится в разработке! Следите за обновлениями проекта.';
@@ -274,12 +277,12 @@ var
   SmilesList: TStringList;
   InMessList: TStringList;
   TextSmilies: boolean = false;
-  YouAt: string = 'I';
+  YouAt: string = 'me';
   ChatFontSize: string = '9';
 
   //--Список для отображения в About
   AboutList: array[1..14] of string = (
-    'Автор проекта и главный программист;Эдуард Толмачёв',
+    'Автор проекта и ведущий программист;Эдуард Толмачёв',
     'Программирование;Максим Нижник',
     'Программирование;Francois PIETTE (Ics components)',
     'Программирование;David Baldwin (HTML components)',

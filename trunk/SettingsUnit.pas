@@ -133,7 +133,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code;
+  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code, UtilsUnit;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -317,9 +317,31 @@ end;
 
 procedure TSettingsForm.ApplySettings;
 begin
-  //--Изменяем путь
-  ProfilePath := jdeProfilePath.Text;
 
+  if AnsiCompareText(ProfilePath, jdeProfilePath.Text) <> 0 then begin
+    try
+      //--Попробуем скопировать
+      if CopyDir(ProfilePath + 'Profile', jdeProfilePath.Text + 'Profile') then begin
+        //--Может удалить?
+        if rMsgBox(DelProfile, MB_YESNO + MB_ICONQUESTION) = mrYes then
+          ClearDir(ProfilePath + 'Profile', True);
+
+        //--Изменяем путь
+        ProfilePath := jdeProfilePath.Text;
+        
+        //--Сохраняем путь к профилю
+        with TRegistry.Create do try
+          if OpenKey(ProgramKey, True) then
+            WriteString(cProfile, ProfilePath);
+        finally
+          Free;
+        end;
+      end;
+    finally
+
+    end;
+  end;
+  
   //--Создаём необходимые папки
   ForceDirectories(ProfilePath + 'Profile');
   ForceDirectories(ProfilePath + 'Profile\History');
@@ -759,8 +781,10 @@ end;
 
 procedure TSettingsForm.jdeProfilePathChange(Sender: TObject);
 begin
+  jdeProfilePath.Text := AddSlash(jdeProfilePath.Text);
   //--Активируем кнопку Применить
-  ApplyBitBtn.Enabled := true;
+  if AnsiCompareText(ProfilePath, jdeProfilePath.Text) <> 0 then
+    ApplyBitBtn.Enabled := true;
 end;
 
 procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;

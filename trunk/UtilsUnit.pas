@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert,
+  Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert, ShellApi,
   JvDesktopAlertForm, StdCtrls, VarsUnit, MainUnit, IcqProtoUnit, JvTrayIcon,
   WinSock, OverbyteIcsWSocket, CategoryButtons, JvZLibMultiple, JabberProtoUnit;
 
@@ -82,6 +82,12 @@ function ErrorHttpClient(ErrCode: integer): string;
 function GetFullTag(AData: string): string;
 procedure ImPlaySnd(Snd: integer);
 function SearchNickInCash(cType, cId: string): string;
+function CopyDir(const fromDir, toDir: string): Boolean;
+function DirExists(Name: string): Boolean;
+function NormalDir(const DirName: string): string;
+function ClearDir(const Path: string; Delete: Boolean): Boolean;
+function rMsgBox(Text: string; Flags: Longint): Integer;
+function AddSlash(Path: string): string;
 
 implementation
 
@@ -1567,6 +1573,87 @@ begin
     end;
   except
   end;
+end;
+
+function CopyDir(const fromDir, toDir: string): Boolean;
+var
+  fos: TSHFileOpStruct;
+begin
+  ZeroMemory(@fos, SizeOf(fos));
+  with fos do begin
+    wFunc  := FO_COPY;
+    fFlags := FOF_FILESONLY;
+    pFrom  := PChar(fromDir + #0);
+    pTo    := PChar(toDir)
+  end;
+  Result := (0 = ShFileOperation(fos));
+end;
+
+function ClearDir(const Path: string; Delete: Boolean): Boolean;
+const
+  FileNotFound = 18;
+var
+  FileInfo: TSearchRec;
+  DosCode: Integer;
+begin
+  Result := DirExists(Path);
+  if not Result then Exit;
+  DosCode := FindFirst(NormalDir(Path) + '*.*', faAnyFile, FileInfo);
+  try
+    while DosCode = 0 do begin
+      if (FileInfo.Name[1] <> '.'){ and (FileInfo.Attr <> faVolumeID)} then
+      begin
+        if (FileInfo.Attr and faDirectory = faDirectory) then
+          Result := ClearDir(NormalDir(Path) + FileInfo.Name, Delete) and Result
+        else {if (FileInfo.Attr and faVolumeID <> faVolumeID) then} begin
+          if (FileInfo.Attr and faReadOnly = faReadOnly) then
+            FileSetAttr(NormalDir(Path) + FileInfo.Name, faArchive);
+          Result := DeleteFile(NormalDir(Path) + FileInfo.Name) and Result;
+        end;
+      end;
+      DosCode := FindNext(FileInfo);
+    end;
+  finally
+    FindClose(FileInfo);
+  end;
+  if Delete and Result and (DosCode = FileNotFound) and
+    not ((Length(Path) = 2) and (Path[2] = ':')) then
+  begin
+    RmDir(Path);
+    Result := (IOResult = 0) and Result;
+  end;
+end;
+
+function rMsgBox(Text: string; Flags: Longint): Integer;
+begin
+  Result := Application.MessageBox(PChar(Text),PChar(Application.Title),Flags);
+end;
+
+function NormalDir(const DirName: string): string;
+begin
+  Result := DirName;
+  if (Result <> '') and
+    not (AnsiLastChar(Result)^ in [':', '\']) then
+  begin
+    if (Length(Result) = 1) and (UpCase(Result[1]) in ['A'..'Z']) then
+      Result := Result + ':\'
+    else Result := Result + '\';
+  end;
+end;
+
+function DirExists(Name: string): Boolean;
+var
+  Code: Integer;
+begin
+  Code := GetFileAttributes(PChar(Name));
+  Result := (Code <> -1) and (FILE_ATTRIBUTE_DIRECTORY and Code <> 0);
+end;
+
+function AddSlash(Path: string): string;
+begin
+  Result := Path;
+  if (Path <> EmptyStr) and (Pos(Copy(Path, Length(Path), 1), DriveDelim + PathDelim) = 0) then
+    Result := Result + PathDelim;
 end;
 
 end.
