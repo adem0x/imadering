@@ -307,21 +307,21 @@ end;
 procedure THistoryForm.FormCreate(Sender: TObject);
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Загружаем настройки
-    if FileExists(ProfilePath + SettingsFileName) then begin
+    if FileExists(ProfilePath + SettingsFileName) then
+    begin
       LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
-      If OpenKey('settings\forms\historyform\position') then try
+      if OpenKey('settings\forms\historyform\position') then
+      try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
         Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do
-          Top := Top - 50;
-        while Left + Width > Screen.Width do
-          Left := Left - 50;
+        MainForm.FormSetInWorkArea(self);;
       finally
         CloseKey();
       end;
@@ -350,11 +350,13 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(ProfilePath + 'Profile');
   //--Сохраняем настройки положения окна истории в xml
-  With TrXML.Create() do try
+  with TrXML.Create() do
+  try
     if FileExists(ProfilePath + SettingsFileName) then
       LoadFromFile(ProfilePath + SettingsFileName);
     //--Сохраняем позицию окна
-    If OpenKey('settings\forms\historyform\position', True) then try
+    if OpenKey('settings\forms\historyform\position', True) then
+    try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);

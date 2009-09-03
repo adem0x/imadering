@@ -104,7 +104,7 @@ begin
   //
   if Invite then
   begin
-    Sini := TIniFile.Create(MyPath + 'Config.ini');
+    Sini := TIniFile.Create(Mypath + 'Config.ini');
     Sini.WriteString('ICQ', 'Invite', Encrypt(Memo1.Text, 12345));
     Sini.Free;
     //

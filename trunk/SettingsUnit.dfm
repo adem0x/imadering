@@ -113,10 +113,10 @@ object SettingsForm: TSettingsForm
         Height = 359
         Caption = 'JvStandardPage1'
         object GeneralOptionGroupBox: TGroupBox
-          Left = 0
-          Top = 0
-          Width = 432
-          Height = 100
+          Left = 3
+          Top = 3
+          Width = 426
+          Height = 99
           Caption = #1054#1073#1097#1080#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -171,11 +171,11 @@ object SettingsForm: TSettingsForm
             OnClick = ProxyAddressEditChange
           end
         end
-        object ProfileGroupBox: TGroupBox
-          Left = 0
-          Top = 103
-          Width = 432
-          Height = 256
+        object GroupBox10: TGroupBox
+          Left = 3
+          Top = 108
+          Width = 426
+          Height = 248
           Caption = #1055#1088#1086#1092#1080#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -184,10 +184,10 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 1
-          object jlaPath: TJvLabel
-            Left = 14
-            Top = 22
-            Width = 90
+          object ProfilePathLabel: TLabel
+            Left = 15
+            Top = 21
+            Width = 88
             Height = 13
             Caption = #1055#1091#1090#1100' '#1082' '#1087#1088#1086#1092#1080#1083#1102':'
             Font.Charset = DEFAULT_CHARSET
@@ -196,29 +196,30 @@ object SettingsForm: TSettingsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            Transparent = True
-            HotTrackFont.Charset = DEFAULT_CHARSET
-            HotTrackFont.Color = clWindowText
-            HotTrackFont.Height = -11
-            HotTrackFont.Name = 'Tahoma'
-            HotTrackFont.Style = []
           end
-          object jdeProfilePath: TJvDirectoryEdit
+          object ProfilePathSpeedButton: TSpeedButton
+            Left = 388
+            Top = 40
+            Width = 23
+            Height = 22
+            Flat = True
+            OnClick = ProfilePathSpeedButtonClick
+          end
+          object ProfilePathEdit: TEdit
             Left = 14
-            Top = 43
-            Width = 404
+            Top = 40
+            Width = 370
             Height = 21
-            DialogKind = dkWin32
-            Color = clMenuBar
+            Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
+            ReadOnly = True
             TabOrder = 0
-            Text = 'C:\bestIM'
-            OnChange = jdeProfilePathChange
+            Text = 'C:\Imadering\'
           end
         end
       end

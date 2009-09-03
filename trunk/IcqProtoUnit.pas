@@ -447,11 +447,11 @@ begin
       ImageData.Write(ImageStr[1], Length(ImageStr));
       ImageType := NextData(ImageHex, 4);
       if ImageType = 'FFD8' then
-        ImageData.SaveToFile(ProfilePath + 'Profile\Users\Avatars\' + iHash + '.jpg')
+        ImageData.SaveToFile(MyPath + 'Users\Avatars\' + iHash + '.jpg')
       else if ImageType = '4749' then
-        ImageData.SaveToFile(ProfilePath + 'Profile\Users\Avatars\' + iHash + '.gif')
+        ImageData.SaveToFile(MyPath + 'Users\Avatars\' + iHash + '.gif')
       else if ImageType = '424D' then
-        ImageData.SaveToFile(ProfilePath + 'Profile\Users\Avatars\' + iHash + '.bmp');
+        ImageData.SaveToFile(MyPath + 'Users\Avatars\' + iHash + '.bmp');
     finally
       ImageData.Free;
     end;
@@ -2516,18 +2516,18 @@ begin
             //--Создаём необходимые папки
             ForceDirectories(ProfilePath + 'Profile\Contacts');
             //--Записываем сам файл
-            SaveToFile(ProfilePath + Icq_Info + UIN + '.xml');
+            SaveToFile(MyPath + Icq_Info + UIN + '.xml');
             //--Сжимаем файл в архив
             //--Создаём временный лист для файла
             {ListF := TStringList.Create;
             try
               //--Добавляем в лист путь к файлу
-              ListF.Add(ProfilePath + Icq_Info);
+              ListF.Add(MyPath + Icq_Info);
               //--Сжимаем этот файл и кладем в эту же директорию
               Zip_File(ListF, ProfilePath + 'Profile\Contacts\Icq_' + UIN + '.z');
               //--Удаляем несжатый файл
-              if FileExists(ProfilePath + Icq_Info) then begin
-                DeleteFile(ProfilePath + Icq_Info);
+              if FileExists(MyPath + Icq_Info) then begin
+                DeleteFile(MyPath + Icq_Info);
                 RemoveDir(ProfilePath + 'Profile\Contacts\Download');
               end;
             finally
@@ -4413,19 +4413,32 @@ begin
     //--Подсвечиваем в меню статуса ICQ статус оффлайн
     ICQStatusOffline.Default := true;
   end;
-  //--Сбрасываем иконки контактов в Ростере в оффлайн
+  //--Активируем флаг остановки потока сжатия истории
+  ZipThreadStop := true;
+  //--Если поток сжатия истории не остановился ещё, то ждём его остановки
+  while not MainForm.ZipHistoryThread.Terminated do Sleep(10);
+  //--Сохраняем историю сообщений, но уже не в потоке
+  ZipThreadStop := false;
+  MainForm.ZipHistory;
+  //--Обнуляем события и переменные в Ростере
   with RosterForm.RosterJvListView do
   begin
     for i := 0 to Items.Count - 1 do
     begin
-      if (Items[i].SubItems[3] = 'Icq') and (Items[i].SubItems[6] <> '214') then
+      if Items[i].SubItems[3] = 'Icq' then
       begin
-        Items[i].SubItems[6] := '9';
+        if Items[i].SubItems[6] <> '214' then Items[i].SubItems[6] := '9';
+        Items[i].SubItems[7] := '-1';
+        Items[i].SubItems[8] := '-1';
+        Items[i].SubItems[13] := '';
+        Items[i].SubItems[15] := '';
+        Items[i].SubItems[16] := '';
+        Items[i].SubItems[18] := '0';
+        Items[i].SubItems[19] := '0';
+        Items[i].SubItems[35] := '0';
       end;
     end;
   end;
-  //--Сохраняем историю сообщений, но уже не в потоке
-  MainForm.ZipHistory;
 end;
 
 function ICQ_GenerateClientCaps(ClientName, CVer: string): string;

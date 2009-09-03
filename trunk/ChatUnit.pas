@@ -780,7 +780,7 @@ end;
 
 procedure TChatForm.ChatPageControlChange(Sender: TObject);
 var
-  UIN, HistoryFile, Doc: string;
+  UIN, HistoryFile, Doc, HFile: string;
   RosterItem: TListItem;
 begin
   //--Если пустая вкладка, то выходим
@@ -796,7 +796,7 @@ begin
     with RosterItem do
     begin
       //--Выставляем параметры этого контакта
-      Checked := false;
+      SubItems[36] := EmptyStr;
       ChatPageControl.ActivePage.Tag := StrToInt(SubItems[6]);
       ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
       ChatPageControl.ActivePage.Hint := SubItems[34];
@@ -815,10 +815,11 @@ begin
           try
             //--Распаковываем файл с историей
             UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
+            HFile := ProfilePath + 'Profile\History\' + UserType + '_History.htm';
             //--Записываем историю в хранилище у этого контакта
-            SubItems[13] := ReadFromFile(ProfilePath + 'Profile\History\Icq_History.htm');
+            SubItems[13] := ReadFromFile(HFile);
             //--Удаляем уже не нужный распакованный файл с историей
-            if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
+            if FileExists(HFile) then DeleteFile(HFile);
           except
           end;
         end;

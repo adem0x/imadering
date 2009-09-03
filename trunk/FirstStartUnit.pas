@@ -85,7 +85,8 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqOptionsUnit;
+  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqOptionsUnit,
+  JabberOptionsUnit;
 
 procedure TFirstStartForm.CheckSelectProtocols;
 begin
@@ -126,14 +127,24 @@ begin
           //--Применяем и сохраняем настройки логина ICQ
           IcqOptionsForm.ApplySettings;
         end;
-        //--Переключаем на MRA страницу
+        //--Переключаем на Jabber страницу
         JvPageList1.ActivePageIndex := 1;
         //--Активируем клавишу возврата
         PrevButton.Enabled := true;
       end;
     1:
       begin
-        //--Переключаем на Jabber страницу
+        //--Применяем и сохраняем логин и пароль Jabber
+        if Assigned(JabberOptionsForm) then
+        begin
+          //--Присваиваем логин
+          JabberOptionsForm.JabberJIDEdit.Text := JabberIDEdit.Text;
+          JabberOptionsForm.PassEdit.Text := JabberPassEdit.Text;
+          JabberOptionsForm.SavePassCheckBox.Checked := JabberSavePassCheckBox.Checked;
+          //--Применяем и сохраняем настройки логина ICQ
+          JabberOptionsForm.ApplySettings;
+        end;
+        //--Переключаем на MRA страницу
         JvPageList1.ActivePageIndex := 2;
         //--Устанавливаем текст на кнопке управления
         NextButton.Caption := 'OK';

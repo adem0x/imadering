@@ -18,9 +18,10 @@ uses
 
 var
   Jabber_BuffPkt: string = '';
+  Jabber_JID: string = '';
   Jabber_LoginUIN: string = '';
   Jabber_LoginPassword: string = '';
-  Jabber_ServerAddr: string = 'jabber.ru';
+  Jabber_ServerAddr: string = '';
   Jabber_ServerPort: string = '5222';
   Jabber_Reconnect: boolean = false;
   Jabber_KeepAlive: boolean = true;
@@ -175,19 +176,32 @@ begin
     //--Подсвечиваем в меню статуса Jabber статус оффлайн
     JabberStatusOffline.Default := true;
   end;
-  //--Сбрасываем иконки контактов в Ростере в оффлайн
+  //--Активируем флаг остановки потока сжатия истории
+  ZipThreadStop := true;
+  //--Если поток сжатия истории не остановился ещё, то ждём его остановки
+  while not MainForm.ZipHistoryThread.Terminated do Sleep(10);
+  //--Сохраняем историю сообщений, но уже не в потоке
+  ZipThreadStop := false;
+  MainForm.ZipHistory;
+  //--Обнуляем события и переменные в Ростере
   with RosterForm.RosterJvListView do
   begin
     for i := 0 to Items.Count - 1 do
     begin
-      if (Items[i].SubItems[3] = 'Jabber') and (Items[i].SubItems[6] <> '42') then
+      if Items[i].SubItems[3] = 'Jabber' then
       begin
-        Items[i].SubItems[6] := '30';
+        if Items[i].SubItems[6] <> '42' then Items[i].SubItems[6] := '30';
+        Items[i].SubItems[7] := '-1';
+        Items[i].SubItems[8] := '-1';
+        Items[i].SubItems[13] := '';
+        Items[i].SubItems[15] := '';
+        Items[i].SubItems[16] := '';
+        Items[i].SubItems[18] := '0';
+        Items[i].SubItems[19] := '0';
+        Items[i].SubItems[35] := '0';
       end;
     end;
   end;
-  //--Сохраняем историю сообщений, но уже не в потоке
-  MainForm.ZipHistory;
 end;
 
 function Jabber_SetBind: string;
@@ -385,15 +399,18 @@ begin
               begin
                 if ReadString('type') = 'unavailable' then
                 begin
-                  SubItems[6] := '30';
                   SubItems[18] := '0';
-                  SubItems[19] := '20';
+                  if (SubItems[6] <> '30') and (SubItems[6] <> '41') and
+                    (SubItems[6] <> '42') then SubItems[19] := '20'
+                  else SubItems[19] := '0';
+                  SubItems[6] := '30';
                 end
                 else
                 begin
-                  SubItems[6] := '28';
-                  SubItems[18] := '20';
+                  if SubItems[6] = '30' then SubItems[18] := '20'
+                  else SubItems[18] := '0';
                   SubItems[19] := '0';
+                  SubItems[6] := '28';
                 end;
                 //--Запускаем таймер задержку событий Ростера
                 MainForm.JvTimerList.Events[11].Enabled := false;
@@ -452,6 +469,7 @@ begin
                 //--Дата сообщения
                 msgD := Nick + ' [' + DateTimeChatMess + ']';
                 //--Записываем историю в этот контакт если он уже найден в списке контактов
+                SubItems[17] := 'X';
                 SubItems[35] := '0';
                 SubItems[15] := PopMsg;
                 //--Добавляем историю в эту запись
@@ -488,6 +506,7 @@ begin
                 SubItems[2] := 'none';
                 SubItems[3] := 'Jabber';
                 SubItems[6] := '214';
+                SubItems[17] := 'X';
                 SubItems[35] := '0';
                 SubItems[15] := PopMsg;
                 //--Добавляем историю в эту запись

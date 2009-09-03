@@ -64,18 +64,21 @@ end;
 
 procedure TSmilesForm.FormCreate(Sender: TObject);
 begin
-  //--Создаём окно подсказок
-  HintWindow := THintWindow.Create(Self);
-  HintWindow.Color := clInfoBk;
-  //--Вычисляем размер окна смайлов
-  if SmilesList.Count > 0 then
-  begin
-    Height := StrToInt(IsolateTextString(SmilesList.Strings[0], '<height>', '</height>'));
-    Width := StrToInt(IsolateTextString(SmilesList.Strings[0], '<width>', '</width>'));
+  try
+    //--Создаём окно подсказок
+    HintWindow := THintWindow.Create(Self);
+    HintWindow.Color := clInfoBk;
+    //--Вычисляем размер окна смайлов
+    if SmilesList.Count > 0 then
+    begin
+      Height := StrToInt(IsolateTextString(SmilesList.Strings[0], '<height>', '</height>'));
+      Width := StrToInt(IsolateTextString(SmilesList.Strings[0], '<width>', '</width>'));
+    end;
+    //--Загружаем смайлы из смайлпака
+    if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm') then
+      SmiliesHTMLViewer.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm');
+  except
   end;
-  //--Загружаем смайлы из смайлпака
-  if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm') then
-    SmiliesHTMLViewer.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm');
 end;
 
 procedure TSmilesForm.FormDeactivate(Sender: TObject);

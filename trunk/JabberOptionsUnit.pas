@@ -80,7 +80,7 @@ begin
   //--Обновляем данные логина в протоколе
   if JabberJIDEdit.Enabled then
   begin
-    Jabber_LoginUIN := JabberJIDEdit.Text;
+    Jabber_JID := JabberJIDEdit.Text;
     if PassEdit.Text <> '----------------------' then
     begin
       PassEdit.Hint := PassEdit.Text;
@@ -126,7 +126,7 @@ begin
       if OpenKey('settings\jabber\account') then
       try
         JabberJIDEdit.Text := ReadString('login');
-        if JabberJIDEdit.Text <> EmptyStr then Jabber_LoginUIN := JabberJIDEdit.Text;
+        if JabberJIDEdit.Text <> EmptyStr then Jabber_JID := JabberJIDEdit.Text;
         SavePassCheckBox.Checked := ReadBool('save-password');
         PassEdit.Text := ReadString('password');
         if PassEdit.Text <> EmptyStr then

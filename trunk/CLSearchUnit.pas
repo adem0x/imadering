@@ -12,21 +12,24 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ComCtrls, ExtCtrls, VarsUnit, rXML;
+  Dialogs, StdCtrls, Buttons, VarsUnit, rXML, JvExComCtrls, JvListView,
+  CategoryButtons, ComCtrls, ExtCtrls;
 
 type
   TCLSearchForm = class(TForm)
-    CLSearchListView: TListView;
     Panel1: TPanel;
     Label1: TLabel;
     CLSearchEdit: TEdit;
+    CLSearchJvListView: TJvListView;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CLSearchEditChange(Sender: TObject);
-    procedure CLSearchListViewSelectItem(Sender: TObject; Item: TListItem;
+    procedure CLSearchJvListViewSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
-    procedure CLSearchListViewDblClick(Sender: TObject);
+    procedure CLSearchJvListViewDblClick(Sender: TObject);
+    procedure CLSearchJvListViewColumnClick(Sender: TObject;
+      Column: TListColumn);
   private
     { Private declarations }
   public
@@ -42,98 +45,75 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, UtilsUnit;
+  MainUnit, UtilsUnit, RosterUnit;
 
 procedure TCLSearchForm.CLSearchEditChange(Sender: TObject);
 var
-  i, ii: integer;
+  i: integer;
 begin
   //--Делаем поиск совпадений введенных символов в учётных записях и никах
   //контактов в списке
   //--Очищаем список контактов от предыдущего поиска
-  CLSearchListView.Clear;
+  CLSearchJvListView.Clear;
   if CLSearchEdit.Text <> '' then
   begin
-    with MainForm.ContactList do
+    with RosterForm.RosterJvListView do
     begin
-      for i := 0 to Categories.Count - 1 do
+      for i := 0 to Items.Count - 1 do
       begin
-        for ii := 0 to Categories[i].Items.Count - 1 do
+        //--Если нашли текст в учётной записи или нике
+        if (BMSearch(0, UpperCase(Items[i].Caption, loUserLocale), UpperCase(CLSearchEdit.Text, loUserLocale)) > -1) or
+          (BMSearch(0, UpperCase(Items[i].SubItems[0], loUserLocale), UpperCase(CLSearchEdit.Text, loUserLocale)) > -1) then
         begin
-          //--Если нашли текст в учётной записи или нике
-          if (BMSearch(0, UpperCase(Categories[i].Items[ii].UIN, loUserLocale), UpperCase(CLSearchEdit.Text, loUserLocale)) > -1) or
-            (BMSearch(0, UpperCase(Categories[i].Items[ii].Caption, loUserLocale), UpperCase(CLSearchEdit.Text, loUserLocale)) > -1) then
-          begin
-            CLSearchListView.Items.Add.Caption := Categories[i].Items[ii].UIN;
-            CLSearchListView.Items[CLSearchListView.Items.Count - 1].SubItems.Append(Categories[i].Items[ii].Caption);
-            CLSearchListView.Items[CLSearchListView.Items.Count - 1].ImageIndex := Categories[i].Items[ii].ImageIndex;
-          end;
+          CLSearchJvListView.Items.Add.Caption := Items[i].Caption;
+          CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Items[i].SubItems[0]);
+          CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Items[i].SubItems[6]);
         end;
       end;
     end;
   end;
 end;
 
-procedure TCLSearchForm.CLSearchListViewDblClick(Sender: TObject);
-label
-  x;
+procedure TCLSearchForm.CLSearchJvListViewColumnClick(Sender: TObject;
+  Column: TListColumn);
 var
-  i, ii: integer;
+  i: integer;
+begin
+  //--Выставляем стрелочку сортировки
+  if Column.ImageIndex <> 5 then Column.ImageIndex := 5
+  else Column.ImageIndex := 4;
+  //--Сбрасываем стрелочки сортировки в других столбцах
+  for i := 0 to CLSearchJvListView.Columns.Count - 1 do
+    if CLSearchJvListView.Columns[i] <> Column then CLSearchJvListView.Columns[i].ImageIndex := -1;
+end;
+
+procedure TCLSearchForm.CLSearchJvListViewDblClick(Sender: TObject);
 begin
   //--Если выделили контакт, то выделяем его и в КЛ
-  if CLSearchListView.Selected <> nil then
+  if CLSearchJvListView.Selected <> nil then
   begin
-    with MainForm.ContactList do
-    begin
-      for i := 0 to Categories.Count - 1 do
-      begin
-        for ii := 0 to Categories[i].Items.Count - 1 do
-        begin
-          if CLSearchListView.Selected.Caption = Categories[i].Items[ii].UIN then
-          begin
-            //--Делаем синхронный двойной клик на этом контакте в КЛ
-            MainForm.ContactListButtonClicked(self, Categories[i].Items[ii]);
-            MainForm.ContactListButtonClicked(self, Categories[i].Items[ii]);
-            //--Выходим из цыклов
-            goto x;
-          end;
-        end;
-      end;
-    end;
+    //--Открываем чат с этим контактом
+    RosterForm.OpenChatPage(CLSearchJvListView.Selected.Caption);
   end;
-  x: ;
 end;
 
-procedure TCLSearchForm.CLSearchListViewSelectItem(Sender: TObject;
+procedure TCLSearchForm.CLSearchJvListViewSelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
-label
-  x;
 var
-  i, ii: integer;
+  CLItem: TButtonItem;
 begin
   //--Если выделили контакт, то выделяем его и в КЛ
   if Selected then
   begin
-    with MainForm.ContactList do
+    CLItem := RosterForm.ReqCLContact(Item.Caption);
+    if CLItem <> nil then
     begin
-      for i := 0 to Categories.Count - 1 do
-      begin
-        for ii := 0 to Categories[i].Items.Count - 1 do
-        begin
-          if Item.Caption = Categories[i].Items[ii].UIN then
-          begin
-            //--Выделяем этот контакт в КЛ
-            MainForm.ContactList.SelectedItem := Categories[i].Items[ii];
-            if Categories[i].Items[ii].Category.Collapsed then Categories[i].Items[ii].Category.Collapsed := false;
-            MainForm.ContactList.ScrollIntoView(Categories[i].Items[ii]);
-            //--Выходим из цыклов
-            goto x;
-          end;
-        end;
-      end;
+      //--Выделяем этот контакт в КЛ
+      MainForm.ContactList.SelectedItem := CLItem;
+      if CLItem.Category.Collapsed then CLItem.Category.Collapsed := false;
+      MainForm.ContactList.ScrollIntoView(CLItem);
     end;
   end;
-  x: ;
 end;
 
 procedure TCLSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -148,21 +128,21 @@ end;
 procedure TCLSearchForm.FormCreate(Sender: TObject);
 begin
   //--Инициализируем XML
-  With TrXML.Create() do try
+  with TrXML.Create() do
+  try
     //--Загружаем настройки
-    if FileExists(ProfilePath + SettingsFileName) then begin
+    if FileExists(ProfilePath + SettingsFileName) then
+    begin
       LoadFromFile(ProfilePath + SettingsFileName);
       //--Загружаем позицию окна
-      if OpenKey('settings\forms\clsearchform\position') then try
+      if OpenKey('settings\forms\clsearchform\position') then
+      try
         Top := ReadInteger('top');
         Left := ReadInteger('left');
         Height := ReadInteger('height');
         Width := ReadInteger('width');
         //--Определяем не находится ли окно за пределами экрана
-        while Top + Height > Screen.Height do
-          Top := Top - 50;
-        while Left + Width > Screen.Width do
-          Left := Left - 50;
+        MainForm.FormSetInWorkArea(self);
       finally
         CloseKey();
       end;
@@ -184,11 +164,12 @@ begin
   //--Создаём необходимые папки
   ForceDirectories(ProfilePath + 'Profile');
   //--Сохраняем настройки положения окна в xml
-  With TrXML.Create() do try
-    if FileExists(ProfilePath + SettingsFileName) then
-      LoadFromFile(ProfilePath + SettingsFileName);
+  with TrXML.Create() do
+  try
+    if FileExists(ProfilePath + SettingsFileName) then LoadFromFile(ProfilePath + SettingsFileName);
     //--Сохраняем позицию окна
-    if OpenKey('settings\forms\clsearchform\position', True) then try
+    if OpenKey('settings\forms\clsearchform\position', True) then
+    try
       WriteInteger('top', Top);
       WriteInteger('left', Left);
       WriteInteger('height', Height);

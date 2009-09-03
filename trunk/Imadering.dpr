@@ -40,7 +40,6 @@ begin
   Application.Title := 'IMadering';
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TRosterForm, RosterForm);
   ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

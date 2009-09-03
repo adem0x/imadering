@@ -144,7 +144,6 @@ object MainForm: TMainForm
   object ICQTrayIcon: TTrayIcon
     Hint = 'IMadering ICQ'
     Icons = AllImageList
-    IconIndex = 1
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
     OnMouseDown = ICQTrayIconMouseDown

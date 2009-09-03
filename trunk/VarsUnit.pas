@@ -49,6 +49,7 @@ var
   UpdateVersionPath: string = 'Update_%s_%s.z';
   UpdateFile: TMemoryStream;
   NoReSave: boolean = true;
+  ZipThreadStop: boolean = false;
 
   //--Статистика трафика
   TrafSend: real;
@@ -66,7 +67,6 @@ var
   SoundIncMsgPath: string = '';
 
   //--Переменные для языка
-  DelProfile: string = 'Удалить старый профиль?';
   RestoreFromTrayStr: string = 'Показать IMadering';
   HideInTrayStr: string = 'Скрыть IMadering';
   DevelMess: string = 'Данная функция находится в разработке! Следите за обновлениями проекта.';
@@ -184,6 +184,8 @@ var
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
   JabberLoginErrorL: string = 'Неправильный JID или пароль.';
   HttpSocketErrCodeL: string = 'Код ошибки: %d';
+  SelectDirL: string = 'Выберите папку для хранения вашего профиля';
+  DelProfile: string = 'Удалить старый профиль?';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
@@ -277,7 +279,7 @@ var
   SmilesList: TStringList;
   InMessList: TStringList;
   TextSmilies: boolean = false;
-  YouAt: string = 'me';
+  YouAt: string = 'Я';
   ChatFontSize: string = '9';
 
   //--Список для отображения в About

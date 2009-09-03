@@ -19,32 +19,6 @@ object CLSearchForm: TCLSearchForm
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object CLSearchListView: TListView
-    Left = 0
-    Top = 57
-    Width = 413
-    Height = 201
-    Align = alClient
-    Columns = <
-      item
-        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
-        Width = 180
-      end
-      item
-        Caption = #1053#1080#1082
-        Width = 225
-      end>
-    ColumnClick = False
-    HideSelection = False
-    ReadOnly = True
-    RowSelect = True
-    SmallImages = MainForm.AllImageList
-    TabOrder = 0
-    TabStop = False
-    ViewStyle = vsReport
-    OnDblClick = CLSearchListViewDblClick
-    OnSelectItem = CLSearchListViewSelectItem
-  end
   object Panel1: TPanel
     Left = 0
     Top = 0
@@ -52,7 +26,7 @@ object CLSearchForm: TCLSearchForm
     Height = 57
     Align = alTop
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
     object Label1: TLabel
       Left = 11
       Top = 9
@@ -68,5 +42,47 @@ object CLSearchForm: TCLSearchForm
       TabOrder = 0
       OnChange = CLSearchEditChange
     end
+  end
+  object CLSearchJvListView: TJvListView
+    Left = 0
+    Top = 57
+    Width = 413
+    Height = 201
+    Align = alClient
+    Columns = <
+      item
+        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
+        Width = 180
+      end
+      item
+        Caption = #1053#1080#1082
+        Width = 225
+      end>
+    HideSelection = False
+    ReadOnly = True
+    RowSelect = True
+    SmallImages = MainForm.AllImageList
+    TabOrder = 1
+    ViewStyle = vsReport
+    OnColumnClick = CLSearchJvListViewColumnClick
+    OnDblClick = CLSearchJvListViewDblClick
+    OnSelectItem = CLSearchJvListViewSelectItem
+    ColumnsOrder = '0=180,1=225'
+    HeaderImagePosition = hipRight
+    HeaderImages = MainForm.AllImageList
+    Groups = <>
+    ExtendedColumns = <
+      item
+        HeaderImagePosition = hipRight
+        UseParentHeaderImagePosition = False
+      end
+      item
+        HeaderImagePosition = hipRight
+        UseParentHeaderImagePosition = False
+      end>
+    ExplicitLeft = 8
+    ExplicitTop = 63
+    ExplicitWidth = 397
+    ExplicitHeight = 107
   end
 end

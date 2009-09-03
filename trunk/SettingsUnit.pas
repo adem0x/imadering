@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, JvPageList, JvExControls, ExtCtrls, ButtonGroup, StdCtrls, Buttons,
   rXml, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  Registry, ComCtrls, JvLabel, Mask, JvExMask, JvToolEdit;
+  Registry, ComCtrls;
 
 type
   TSettingsForm = class(TForm)
@@ -84,9 +84,10 @@ type
     AddProtoBitBtn: TBitBtn;
     SettingsProtoBitBtn: TBitBtn;
     DeleteProtoBitBtn: TBitBtn;
-    ProfileGroupBox: TGroupBox;
-    jdeProfilePath: TJvDirectoryEdit;
-    jlaPath: TJvLabel;
+    GroupBox10: TGroupBox;
+    ProfilePathEdit: TEdit;
+    ProfilePathLabel: TLabel;
+    ProfilePathSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; Index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -113,7 +114,7 @@ type
       Shift: TShiftState);
     procedure SettingsProtoBitBtnClick(Sender: TObject);
     procedure ProtocolsListViewDblClick(Sender: TObject);
-    procedure jdeProfilePathChange(Sender: TObject);
+    procedure ProfilePathSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -133,7 +134,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code, UtilsUnit;
+  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code, JvBrowseFolder, UtilsUnit;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -317,31 +318,29 @@ end;
 
 procedure TSettingsForm.ApplySettings;
 begin
-
-  if AnsiCompareText(ProfilePath, jdeProfilePath.Text) <> 0 then begin
+  //--Применяем настройки профиля
+  if AnsiCompareText(ProfilePath, ProfilePathEdit.Text) <> 0 then begin
     try
       //--Попробуем скопировать
-      if CopyDir(ProfilePath + 'Profile', jdeProfilePath.Text + 'Profile') then begin
-        //--Может удалить?
-        if rMsgBox(DelProfile, MB_YESNO + MB_ICONQUESTION) = mrYes then
+      if CopyDir(ProfilePath + 'Profile', ProfilePathEdit.Text + 'Profile') then
+      begin
+        //--Спрашиваем удалять профиль или нет
+        if MessageBox(Handle, PChar(DelProfile), PChar('IMadering'),
+          MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
           ClearDir(ProfilePath + 'Profile', True);
-
         //--Изменяем путь
-        ProfilePath := jdeProfilePath.Text;
-        
+        ProfilePath := ProfilePathEdit.Text;
         //--Сохраняем путь к профилю
-        with TRegistry.Create do try
-          if OpenKey(ProgramKey, True) then
-            WriteString(cProfile, ProfilePath);
+        with TRegistry.Create do
+        try
+          if OpenKey(ProgramKey, True) then WriteString(cProfile, ProfilePath);
         finally
           Free;
         end;
       end;
-    finally
-
+    except
     end;
   end;
-  
   //--Создаём необходимые папки
   ForceDirectories(ProfilePath + 'Profile');
   ForceDirectories(ProfilePath + 'Profile\History');
@@ -599,6 +598,19 @@ begin
   else if ProtocolsListView.Selected.Index = 2 then MainForm.JabberSettingsClick(self);
 end;
 
+procedure TSettingsForm.ProfilePathSpeedButtonClick(Sender: TObject);
+var
+  DDir: string;
+begin
+  DDir := ProfilePathEdit.Text;
+  //--Открываем диалог выбора папки
+  if BrowseForFolder(SelectDirL, true, DDir) then
+  begin
+    ProfilePathEdit.Text := DDir + '\';
+    ProxyAddressEditChange(self);
+  end;
+end;
+
 procedure TSettingsForm.ProtocolsListViewClick(Sender: TObject);
 begin
   //--Управляем включением и отключением протоколов
@@ -608,10 +620,10 @@ begin
   else if (ProtocolsListView.Items[0].Checked) and (not MainForm.ICQToolButton.Visible) then
     MainForm.ICQEnable(true);
   //--MRA
-  if (not ProtocolsListView.Items[1].Checked) and (MainForm.MRAToolButton.Visible) then
+  {if (not ProtocolsListView.Items[1].Checked) and (MainForm.MRAToolButton.Visible) then
     MainForm.MRAEnable(false)
   else if (ProtocolsListView.Items[1].Checked) and (not MainForm.MRAToolButton.Visible) then
-    MainForm.MRAEnable(true);
+    MainForm.MRAEnable(true);}
   //--Jabber
   if (not ProtocolsListView.Items[2].Checked) and (MainForm.JabberToolButton.Visible) then
     MainForm.JabberEnable(false)
@@ -752,10 +764,10 @@ begin
   ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
   //--Устанавливаем перевод
   TranslateForms;
+  //--Путь к профилю
+  ProfilePathEdit.Text := ProfilePath;
   //--Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := false;
-  //--Путь к профилю
-  jdeProfilePath.Text := ProfilePath;
 end;
 
 procedure TSettingsForm.FormShow(Sender: TObject);
@@ -769,6 +781,7 @@ begin
   MainForm.AllImageList.GetBitmap(186, AddProtoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(2, SettingsProtoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(139, DeleteProtoBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(227, ProfilePathSpeedButton.Glyph);
   //--Востанавливаем прежние сохранённые настройки
   LoadSettings;
   ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
@@ -777,14 +790,6 @@ begin
   //--Становимся на первую вкладку
   JvPageList1.ActivePageIndex := 0;
   SettingButtonGroup.ItemIndex := 0;
-end;
-
-procedure TSettingsForm.jdeProfilePathChange(Sender: TObject);
-begin
-  jdeProfilePath.Text := AddSlash(jdeProfilePath.Text);
-  //--Активируем кнопку Применить
-  if AnsiCompareText(ProfilePath, jdeProfilePath.Text) <> 0 then
-    ApplyBitBtn.Enabled := true;
 end;
 
 procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
@@ -1031,7 +1036,7 @@ begin
       SocksAuthentication := socksNoAuthentication;
       SocksUsercode := EmptyStr;
       SocksPassword := EmptyStr;
-    end;  
+    end;
   end;
 end;
 
