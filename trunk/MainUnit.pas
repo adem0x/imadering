@@ -2522,6 +2522,8 @@ end;
 procedure TMainForm.ContactListMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
+  //--Сбрасываем подсветку заголовка другой группы
+  RosterForm.ResetGroupSelected;
   //--Добавляем событие для средней клавишы мыши
   if Button = mbMiddle then
   begin
