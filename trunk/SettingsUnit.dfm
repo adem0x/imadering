@@ -15,6 +15,7 @@ object SettingsForm: TSettingsForm
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -96,22 +97,22 @@ object SettingsForm: TSettingsForm
     BevelKind = bkTile
     BevelOuter = bvNone
     TabOrder = 1
-    object JvPageList1: TJvPageList
+    object jplSettings: TJvPageList
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 432
       Height = 359
-      ActivePage = JvStandardPage1
+      ActivePage = jspCL
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
-      object JvStandardPage1: TJvStandardPage
+      object jspMain: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage1'
+        Caption = 'jspMain'
         object GeneralOptionGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -223,12 +224,12 @@ object SettingsForm: TSettingsForm
           end
         end
       end
-      object JvStandardPage2: TJvStandardPage
+      object jspCL: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage2'
+        Caption = 'jspCL'
         object CLWindowGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -313,6 +314,7 @@ object SettingsForm: TSettingsForm
             PositionToolTip = ptTop
             ShowSelRange = False
             TabOrder = 0
+            TickMarks = tmBoth
             TickStyle = tsNone
             OnChange = TransparentTrackBarChange
           end
@@ -374,14 +376,29 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 3
+          object cbHideEmptyGroups: TCheckBox
+            Left = 12
+            Top = 16
+            Width = 277
+            Height = 17
+            Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1087#1091#1089#1090#1099#1077' '#1075#1088#1091#1087#1087#1099
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnClick = cbHideEmptyGroupsClick
+          end
         end
       end
-      object JvStandardPage3: TJvStandardPage
+      object jspChatWindow: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage3'
+        Caption = 'jspChatWindow'
         object ChatFormGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -397,12 +414,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage4: TJvStandardPage
+      object jspEvent: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage4'
+        Caption = 'jspEvent'
         object EventsGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -418,12 +435,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage6: TJvStandardPage
+      object jspHistory: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage6'
+        Caption = 'jspHistory'
         object GroupBox1: TGroupBox
           Left = 0
           Top = 0
@@ -439,12 +456,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage7: TJvStandardPage
+      object jspStatus: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage7'
+        Caption = 'jspStatus'
         object GroupBox2: TGroupBox
           Left = 0
           Top = 0
@@ -460,12 +477,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage8: TJvStandardPage
+      object jspAntiSpam: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage8'
+        Caption = 'jspAntiSpam'
         object GroupBox3: TGroupBox
           Left = 0
           Top = 0
@@ -481,12 +498,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage9: TJvStandardPage
+      object jspSound: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage9'
+        Caption = 'jspSound'
         object GroupBox4: TGroupBox
           Left = 0
           Top = 0
@@ -502,12 +519,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage10: TJvStandardPage
+      object jpsInterface: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage10'
+        Caption = 'jpsInterface'
         object GroupBox7: TGroupBox
           Left = 0
           Top = 0
@@ -523,12 +540,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage11: TJvStandardPage
+      object jspHotKey: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage11'
+        Caption = 'jspHotKey'
         object GroupBox8: TGroupBox
           Left = 0
           Top = 0
@@ -544,12 +561,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage12: TJvStandardPage
+      object jspPlugins: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage12'
+        Caption = 'jspPlugins'
         object GroupBox9: TGroupBox
           Left = 0
           Top = 0
@@ -565,12 +582,12 @@ object SettingsForm: TSettingsForm
           TabOrder = 0
         end
       end
-      object JvStandardPage5: TJvStandardPage
+      object jspConnect: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage5'
+        Caption = 'jspConnect'
         object GroupBox5: TGroupBox
           Left = 0
           Top = 0
@@ -878,12 +895,12 @@ object SettingsForm: TSettingsForm
           end
         end
       end
-      object JvStandardPage13: TJvStandardPage
+      object jspProto: TJvStandardPage
         Left = 0
         Top = 0
         Width = 432
         Height = 359
-        Caption = 'JvStandardPage13'
+        Caption = 'jspProto'
         object ProtocolsGroupBox: TGroupBox
           Left = 0
           Top = 0

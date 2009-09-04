@@ -1043,7 +1043,7 @@ begin
       if Visible then ShowWindow(Handle, SW_RESTORE);
       Show;
       //--Активируем раздел
-      JvPageList1.ActivePageIndex := 2;
+      jplSettings.ActivePageIndex := 2;
       SettingButtonGroup.ItemIndex := 2;
     end;
   end;

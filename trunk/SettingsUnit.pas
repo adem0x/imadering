@@ -20,12 +20,12 @@ type
   TSettingsForm = class(TForm)
     SettingButtonGroup: TButtonGroup;
     PagesPanel: TPanel;
-    JvPageList1: TJvPageList;
-    JvStandardPage1: TJvStandardPage;
-    JvStandardPage2: TJvStandardPage;
-    JvStandardPage3: TJvStandardPage;
-    JvStandardPage4: TJvStandardPage;
-    JvStandardPage5: TJvStandardPage;
+    jplSettings: TJvPageList;
+    jspMain: TJvStandardPage;
+    jspCL: TJvStandardPage;
+    jspChatWindow: TJvStandardPage;
+    jspEvent: TJvStandardPage;
+    jspConnect: TJvStandardPage;
     CancelBitBtn: TBitBtn;
     OKBitBtn: TBitBtn;
     ApplyBitBtn: TBitBtn;
@@ -64,14 +64,14 @@ type
     AutoHideCLCheckBox: TCheckBox;
     AutoHideClEdit: TEdit;
     HeaderTextEdit: TEdit;
-    JvStandardPage6: TJvStandardPage;
-    JvStandardPage7: TJvStandardPage;
-    JvStandardPage8: TJvStandardPage;
-    JvStandardPage9: TJvStandardPage;
-    JvStandardPage10: TJvStandardPage;
-    JvStandardPage11: TJvStandardPage;
-    JvStandardPage12: TJvStandardPage;
-    JvStandardPage13: TJvStandardPage;
+    jspHistory: TJvStandardPage;
+    jspStatus: TJvStandardPage;
+    jspAntiSpam: TJvStandardPage;
+    jspSound: TJvStandardPage;
+    jpsInterface: TJvStandardPage;
+    jspHotKey: TJvStandardPage;
+    jspPlugins: TJvStandardPage;
+    jspProto: TJvStandardPage;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
@@ -88,6 +88,7 @@ type
     ProfilePathEdit: TEdit;
     ProfilePathLabel: TLabel;
     ProfilePathSpeedButton: TSpeedButton;
+    cbHideEmptyGroups: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; Index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -115,6 +116,8 @@ type
     procedure SettingsProtoBitBtnClick(Sender: TObject);
     procedure ProtocolsListViewDblClick(Sender: TObject);
     procedure ProfilePathSpeedButtonClick(Sender: TObject);
+    procedure cbHideEmptyGroupsClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -134,7 +137,8 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code, JvBrowseFolder, UtilsUnit;
+  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code, JvBrowseFolder, UtilsUnit,
+  RosterUnit;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -414,6 +418,12 @@ begin
   MainForm.JvTimerList.Events[6].Interval := (StrToInt(AutoHideCLEdit.Text) * 1000);
   //--Применяем настройку залоговка окна списка контактов
   MainForm.Caption := HeaderTextEdit.Text;
+  //--Управляем режимом скрывать пустые группы
+  if MainForm.HideEmptyGroups.Checked <> cbHideEmptyGroups.Checked then begin
+    MainForm.HideEmptyGroups.Checked := cbHideEmptyGroups.Checked;
+    //--Запускаем обработку Ростера
+    RosterForm.UpdateFullCL;
+  end;
   //----------------------------------------------------------------------------
   //--Записываем настройки
   if ApplyBitBtn.Enabled then
@@ -518,6 +528,13 @@ begin
         finally
           CloseKey();
         end;
+        //--Сохраняем пункты меню
+        if OpenKey('settings\forms\mainform\hide-empty-group', True) then
+        try
+          WriteBool('value', MainForm.HideEmptyGroups.Checked);
+        finally
+          CloseKey();
+        end;
         SaveToFile(ProfilePath + SettingsFileName);
       finally
         Free();
@@ -546,6 +563,12 @@ procedure TSettingsForm.CancelBitBtnClick(Sender: TObject);
 begin
   //--Закрываем окно настроек
   Close;
+end;
+
+procedure TSettingsForm.cbHideEmptyGroupsClick(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
 end;
 
 procedure TSettingsForm.DeleteProtoBitBtnClick(Sender: TObject);
@@ -580,14 +603,14 @@ procedure TSettingsForm.SettingButtonGroupButtonClicked(Sender: TObject;
   Index: Integer);
 begin
   //--Выбираем страницу настроек соответсвенно выбранной вкладке
-  if Index <= JvPageList1.PageCount then JvPageList1.ActivePageIndex := Index;
+  if Index <= jplSettings.PageCount then jplSettings.ActivePageIndex := Index;
 end;
 
 procedure TSettingsForm.SettingButtonGroupKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   //--Выбираем страницу настроек соответсвенно выбранной вкладке
-  if SettingButtonGroup.ItemIndex <= JvPageList1.PageCount then JvPageList1.ActivePageIndex := SettingButtonGroup.ItemIndex;
+  if SettingButtonGroup.ItemIndex <= jplSettings.PageCount then jplSettings.ActivePageIndex := SettingButtonGroup.ItemIndex;
 end;
 
 procedure TSettingsForm.SettingsProtoBitBtnClick(Sender: TObject);
@@ -747,6 +770,12 @@ begin
   end;
 end;
 
+procedure TSettingsForm.FormActivate(Sender: TObject);
+begin
+  //--Скрывать пустые группы
+  cbHideEmptyGroups.Checked := MainForm.HideEmptyGroups.Checked;
+end;
+
 procedure TSettingsForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   //--Возвращаем действующее значение прозрачности списку контактов
@@ -788,7 +817,7 @@ begin
   //--Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := false;
   //--Становимся на первую вкладку
-  JvPageList1.ActivePageIndex := 0;
+  jplSettings.ActivePageIndex := 0;
   SettingButtonGroup.ItemIndex := 0;
 end;
 
