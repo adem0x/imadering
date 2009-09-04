@@ -274,7 +274,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, SettingsUnit, UtilsUnit;
+  MainUnit, IcqProtoUnit, Code, SettingsUnit, UtilsUnit, RosterUnit;
 
 //--APPLY SETTINGS--------------------------------------------------------------
 
@@ -316,6 +316,8 @@ begin
     try
       WriteBool('value', ShowHideContactsCheckBox.Checked);
       ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
+      //--Запускаем обработку Ростера
+      RosterForm.UpdateFullCL;
     finally
       CloseKey();
     end;

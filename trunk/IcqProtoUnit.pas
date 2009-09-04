@@ -3533,25 +3533,6 @@ begin
       end;
     end;
   end;}
-  //--Вычисляем количесво контактов и количество онлайн-контактов в группах локального КЛ
-  {with MainForm.ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
-        (Categories[i].Items.Count = 0) then Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
-        IntToStr(Categories[i].Items.Count)
-      else
-      begin
-        cnt := Categories[i].Items.Count;
-        for ii := 0 to Categories[i].Items.Count - 1 do
-          case Categories[i].Items[ii].Status of
-            9, 80, 214: dec(cnt);
-          end;
-        Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
-      end;
-    end;
-  end;}
 end;
 
 procedure ICQ_UserUnkStatus_030A(PktData: string);
@@ -4439,6 +4420,8 @@ begin
       end;
     end;
   end;
+  //--Запускаем обработку Ростера
+  RosterForm.UpdateFullCL;
 end;
 
 function ICQ_GenerateClientCaps(ClientName, CVer: string): string;

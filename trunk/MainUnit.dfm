@@ -158,7 +158,7 @@ object MainForm: TMainForm
     object HideInTrayTray: TMenuItem
       Caption = #1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4
-      OnClick = ICQTrayIconClick
+      OnClick = HideInTrayClick
     end
     object N19: TMenuItem
       Caption = '-'
@@ -320,7 +320,7 @@ object MainForm: TMainForm
     object HideInTray: TMenuItem
       Caption = #1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4
-      OnClick = ICQTrayIconClick
+      OnClick = HideInTrayClick
     end
     object CloseProgram: TMenuItem
       Caption = #1042#1099#1081#1090#1080' '#1080#1079' IMadering'
@@ -512,6 +512,7 @@ object MainForm: TMainForm
   object ContactListPopupMenu: TPopupMenu
     Alignment = paCenter
     Images = AllImageList
+    OnPopup = ContactListPopupMenuPopup
     Left = 16
     Top = 232
     object OpenGroupsCL: TMenuItem
@@ -523,6 +524,10 @@ object MainForm: TMainForm
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
       ImageIndex = 152
       OnClick = CloseGroupsCLClick
+    end
+    object HideEmptyGroups: TMenuItem
+      Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1087#1091#1089#1090#1099#1077' '#1075#1088#1091#1087#1087#1099
+      OnClick = HideEmptyGroupsClick
     end
     object N5: TMenuItem
       Caption = '-'
@@ -896,6 +901,7 @@ object MainForm: TMainForm
   object RightICQPopupMenu: TPopupMenu
     AutoPopup = False
     Images = AllImageList
+    OnPopup = RightICQPopupMenuPopup
     Left = 48
     Top = 296
     object UnstableICQStatus: TMenuItem

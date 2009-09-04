@@ -202,6 +202,8 @@ begin
       end;
     end;
   end;
+  //--Запускаем обработку Ростера
+  RosterForm.UpdateFullCL;
 end;
 
 function Jabber_SetBind: string;

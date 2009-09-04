@@ -251,5 +251,10 @@ object RosterForm: TRosterForm
       Caption = #1057#1090#1077#1088#1077#1090#1100' Jabber '#1082#1086#1085#1090#1072#1082#1090#1099
       OnClick = ClearJabberClick
     end
+    object ClearMRA: TMenuItem
+      Caption = #1057#1090#1077#1088#1077#1090#1100' MRA '#1082#1086#1085#1090#1072#1082#1090#1099
+      Enabled = False
+      OnClick = ClearMRAClick
+    end
   end
 end

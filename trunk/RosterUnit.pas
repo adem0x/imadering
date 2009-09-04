@@ -20,10 +20,12 @@ type
     RosterPopupMenu: TPopupMenu;
     ClearICQ: TMenuItem;
     ClearJabber: TMenuItem;
+    ClearMRA: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClearICQClick(Sender: TObject);
     procedure ClearJabberClick(Sender: TObject);
     procedure RosterJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
+    procedure ClearMRAClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -213,14 +215,15 @@ procedure TRosterForm.RosterJvListViewGetImageIndex(Sender: TObject;
   Item: TListItem);
 begin
   //--Выставляем иконки в Ростере
-  if Item.SubItems[3] = 'Icq' then Item.ImageIndex := 81
+  if (Item.SubItems[3] = 'Icq') and (Length(Item.Caption) = 4) then Item.ImageIndex := 227
+  else if Item.SubItems[3] = 'Icq' then Item.ImageIndex := 81
   else if Item.SubItems[3] = 'Jabber' then Item.ImageIndex := 43
   else if Item.Caption = 'NoCL' then Item.ImageIndex := 227;
 end;
 
 procedure TRosterForm.UpdateFullCL;
 label
-  x;
+  x, a;
 var
   i, c, cc, s: integer;
 begin
@@ -316,13 +319,18 @@ begin
         begin
           if (Length(Items[i].Caption) = 4) and (Items[i].SubItems[0] = '') then
           begin //--Группа ICQ
-            if (not ICQ_Show_HideContacts) and (Items[i].Caption = '0000') then goto x;
             for c := 0 to Categories.Count - 1 do
             begin
               //--Если такую группу нашли
+              if (not ICQ_Show_HideContacts) and (Categories[c].GroupId = '0000') then
+              begin
+                Categories[c].Free;
+                goto x;
+              end;
               if (Categories[c].GroupId = Items[i].Caption) and (Categories[c].GroupType = 'Icq') then goto x;
             end;
             //--Если такую группу не нашли, то добавляем её
+            if (not ICQ_Show_HideContacts) and (Items[i].Caption = '0000') then goto x;
             with Categories.Add do
             begin
               Caption := RosterJvListView.Items[i].SubItems[1];
@@ -399,6 +407,34 @@ begin
         end;
         x: ;
       end;
+      //--Если активен режим "Скрывать пустые группы"
+      if MainForm.HideEmptyGroups.Checked then
+      begin
+        //--Сканируем КЛ и удаляем пустые группы
+        a: ;
+        for i := 0 to Categories.Count - 1 do
+          if Categories[i].Items.Count = 0 then
+          begin
+            Categories[i].Free;
+            goto a;
+          end;
+      end;
+      //--Вычисляем количесво контактов и количество онлайн-контактов в группах локального КЛ
+      for c := 0 to Categories.Count - 1 do
+      begin
+        if (Categories[c].GroupId = '0000') or (Categories[c].GroupId = 'NoCL') or
+          (Categories[c].Items.Count = 0) or (MainForm.OnlyOnlineContactsToolButton.Down) then
+            Categories[c].Caption := Categories[c].GroupCaption + ' - ' + IntToStr(Categories[c].Items.Count)
+        else
+        begin
+          i := Categories[c].Items.Count;
+          for cc := 0 to Categories[c].Items.Count - 1 do
+            case Categories[c].Items[cc].Status of
+              9, 30, 41, 42, 80, 214: dec(i);
+            end;
+          Categories[c].Caption := Categories[c].GroupCaption + ' - ' + IntToStr(i) + GroupInv + IntToStr(Categories[c].Items.Count);
+        end;
+      end;
     end;
   end;
 end;
@@ -445,7 +481,6 @@ begin
   //--Загружаем копию локальную списка контактов
   if FileExists(ProfilePath + 'Profile\ContactList.dat') then
     RosterJvListView.LoadFromFile(ProfilePath + 'Profile\ContactList.dat');
-  UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearContacts(cType: string);
@@ -498,6 +533,14 @@ procedure TRosterForm.ClearJabberClick(Sender: TObject);
 begin
   //--Стираем в Ростере все Jabber контакты
   ClearContacts('Jabber');
+  //--Запускаем обработку Ростера
+  UpdateFullCL;
+end;
+
+procedure TRosterForm.ClearMRAClick(Sender: TObject);
+begin
+  //--Стираем в Ростере все MRA контакты
+  ClearContacts('Mra');
   //--Запускаем обработку Ростера
   UpdateFullCL;
 end;

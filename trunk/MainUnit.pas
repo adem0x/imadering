@@ -150,6 +150,7 @@ type
     UnstableMRAStatus: TMenuItem;
     UnstableJabberStatus: TMenuItem;
     SearchInCLMainMenu: TMenuItem;
+    HideEmptyGroups: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -266,6 +267,10 @@ type
     procedure JabberXStatusClick(Sender: TObject);
     procedure ContactListMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure ContactListPopupMenuPopup(Sender: TObject);
+    procedure HideEmptyGroupsClick(Sender: TObject);
+    procedure RightICQPopupMenuPopup(Sender: TObject);
+    procedure HideInTrayClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -630,6 +635,24 @@ begin
   //--Отсылаем пакет со статусом
   if (not Jabber_Connect_Phaze) and (not Jabber_Offline_Phaze) then
     JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
+end;
+
+procedure TMainForm.HideEmptyGroupsClick(Sender: TObject);
+begin
+  //--Управляем режимом скрывать пустые группы
+  with HideEmptyGroups do
+  begin
+    if Checked then Checked := false
+    else Checked := true;
+  end;
+  //--Запускаем обработку Ростера
+  RosterForm.UpdateFullCL;
+end;
+
+procedure TMainForm.HideInTrayClick(Sender: TObject);
+begin
+  //--Скрываем окно в трэй или наоборот
+  MainFormHideInTray;
 end;
 
 procedure TMainForm.HintMaxTime(Sender: TObject);
@@ -2183,6 +2206,8 @@ procedure TMainForm.JvTimerListEvents7Timer(Sender: TObject);
 begin
   //--Создаём форму со смайликами через секунду после создания окна чата
   if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(nil);
+  //--Запускаем обработку Ростера
+  RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.JvTimerListEvents8Timer(Sender: TObject);
@@ -2346,6 +2371,16 @@ begin
   ShowMessage(DevelMess);
 end;
 
+procedure TMainForm.RightICQPopupMenuPopup(Sender: TObject);
+begin
+  //--Управляем иконками доп. меню ICQ
+  with UnstableICQStatus do
+  begin
+    if Checked then ImageIndex := 140
+    else ImageIndex := -1;
+  end;
+end;
+
 procedure TMainForm.RosterMainMenuClick(Sender: TObject);
 begin
   //--Открываем окно списка контактов
@@ -2495,6 +2530,16 @@ begin
     ContactList.SelectedItem := RoasterButton;
     //--Открываем информацию о контакте
     AnketaContactClick(self);
+  end;
+end;
+
+procedure TMainForm.ContactListPopupMenuPopup(Sender: TObject);
+begin
+  //--Управляем иконками в пунктах меню
+  with HideEmptyGroups do
+  begin
+    if Checked then ImageIndex := 140
+    else ImageIndex := -1;
   end;
 end;
 
@@ -2902,6 +2947,13 @@ begin
       finally
         CloseKey();
       end;
+      //--Загружаем пункты меню
+      if OpenKey('settings\forms\mainform\hide-empty-group') then
+      try
+        HideEmptyGroups.Checked := ReadBool('value');
+      finally
+        CloseKey();
+      end;
     end;
   finally
     Free();
@@ -2963,6 +3015,13 @@ begin
       WriteFloat('send', AllTrafSend);
       WriteFloat('recev', AllTrafRecev);
       WriteString('start-date', AllSesDataTraf);
+    finally
+      CloseKey();
+    end;
+    //--Сохраняем пункты меню
+    if OpenKey('settings\forms\mainform\hide-empty-group', True) then
+    try
+      WriteBool('value', HideEmptyGroups.Checked);
     finally
       CloseKey();
     end;
