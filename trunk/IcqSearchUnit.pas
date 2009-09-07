@@ -12,181 +12,101 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, ExtCtrls, StdCtrls, Buttons, Menus, VarsUnit;
+  Dialogs, ComCtrls, ExtCtrls, StdCtrls, Buttons, Menus, VarsUnit, JvExComCtrls,
+  JvListView, rXML;
 
 type
   TIcqSearchForm = class(TForm)
-    PageControl1: TPageControl;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
-    TabSheet4: TTabSheet;
     Panel1: TPanel;
     Panel2: TPanel;
-    ListView1: TListView;
-    TabSheet5: TTabSheet;
-    TabSheet6: TTabSheet;
-    Panel3: TPanel;
-    Edit1: TEdit;
-    CheckBox1: TCheckBox;
-    Panel4: TPanel;
-    Edit2: TEdit;
-    CheckBox2: TCheckBox;
-    Panel5: TPanel;
-    Edit3: TEdit;
-    CheckBox3: TCheckBox;
-    CheckBox4: TCheckBox;
-    CheckBox5: TCheckBox;
-    BitBtn1: TBitBtn;
-    Panel6: TPanel;
-    Panel7: TPanel;
-    SpeedButton1: TSpeedButton;
-    Edit4: TEdit;
-    SpeedButton2: TSpeedButton;
-    Panel8: TPanel;
-    Edit5: TEdit;
-    CheckBox6: TCheckBox;
-    Panel9: TPanel;
-    Edit6: TEdit;
-    CheckBox7: TCheckBox;
-    Panel10: TPanel;
-    Edit7: TEdit;
-    Label1: TLabel;
-    Edit8: TEdit;
-    Edit9: TEdit;
-    Label2: TLabel;
-    Label3: TLabel;
-    Panel11: TPanel;
+    NotPreviousClearCheckBox: TCheckBox;
+    OnlyOnlineCheckBox: TCheckBox;
+    SearchBitBtn: TBitBtn;
+    StatusPanel: TPanel;
+    ResultPanel: TPanel;
+    ResultClearSpeedButton: TSpeedButton;
+    QMessageEdit: TEdit;
+    SendQMessageSpeedButton: TSpeedButton;
+    SearchResultPopupMenu: TPopupMenu;
+    ICQStatusCheckSM: TMenuItem;
+    AccountNameCopySM: TMenuItem;
+    SendMessageSM: TMenuItem;
+    SearchNextPageBitBtn: TBitBtn;
+    ContactInfoSM: TMenuItem;
+    AddContactInCLSM: TMenuItem;
+    SearchResultJvListView: TJvListView;
     Panel12: TPanel;
-    ComboBox1: TComboBox;
-    Edit10: TEdit;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    ComboBox2: TComboBox;
-    ComboBox3: TComboBox;
-    ComboBox4: TComboBox;
-    ComboBox5: TComboBox;
-    ComboBox6: TComboBox;
-    ComboBox7: TComboBox;
-    ComboBox8: TComboBox;
-    Edit11: TEdit;
-    Edit12: TEdit;
-    Edit13: TEdit;
-    Edit14: TEdit;
-    Edit15: TEdit;
-    ComboBox9: TComboBox;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    Label17: TLabel;
-    Label18: TLabel;
-    Edit16: TEdit;
-    Edit17: TEdit;
-    Edit18: TEdit;
-    ComboBox10: TComboBox;
-    Bevel3: TBevel;
-    Bevel4: TBevel;
-    ComboBox11: TComboBox;
-    ComboBox12: TComboBox;
-    ComboBox13: TComboBox;
-    Edit19: TEdit;
-    ComboBox14: TComboBox;
-    ComboBox15: TComboBox;
-    ComboBox16: TComboBox;
-    Edit20: TEdit;
-    Label19: TLabel;
-    Label20: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
-    Label23: TLabel;
-    Label24: TLabel;
+    GlobalSearchGroupBox: TGroupBox;
+    NickLabel: TLabel;
+    NickEdit: TEdit;
+    NameLabel: TLabel;
+    NameEdit: TEdit;
+    FamilyLabel: TLabel;
+    FamilyEdit: TEdit;
+    GenderLabel: TLabel;
+    GenderComboBox: TComboBox;
+    AgeLabel: TLabel;
+    AgeComboBox: TComboBox;
+    MaritalLabel: TLabel;
+    MaritalComboBox: TComboBox;
     Label25: TLabel;
-    Label26: TLabel;
-    Label27: TLabel;
-    Label28: TLabel;
-    Label29: TLabel;
-    Label30: TLabel;
-    Panel13: TPanel;
-    Edit21: TEdit;
-    CheckBox8: TCheckBox;
-    Panel14: TPanel;
-    CheckBox9: TCheckBox;
-    Panel15: TPanel;
-    Edit23: TEdit;
-    BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
-    Label31: TLabel;
-    Label32: TLabel;
-    PopupMenu1: TPopupMenu;
-    N11: TMenuItem;
-    N21: TMenuItem;
-    N31: TMenuItem;
-    ComboBox17: TComboBox;
-    BitBtn4: TBitBtn;
-    AutoSendTimer: TTimer;
-    N41: TMenuItem;
-    N51: TMenuItem;
+    CountryComboBox: TComboBox;
+    CityLabel: TLabel;
+    CityEdit: TEdit;
+    LangLabel: TLabel;
+    LangComboBox: TComboBox;
+    ProfLabel: TLabel;
+    ProfComboBox: TComboBox;
+    InterestLabel: TLabel;
+    InterestComboBox: TComboBox;
+    KeyWordLabel: TLabel;
+    KeyWordEdit: TEdit;
+    Bevel3: TBevel;
+    GlobalSearchCheckBox: TCheckBox;
+    UINSearchGroupBox: TGroupBox;
+    GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
+    UINSearchCheckBox: TCheckBox;
+    Edit1: TEdit;
+    EmailSearchCheckBox: TCheckBox;
+    Edit2: TEdit;
+    KeyWordSearchCheckBox: TCheckBox;
+    Edit3: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure PageControl1Change(Sender: TObject);
-    procedure FormResize(Sender: TObject);
-    procedure Edit4Enter(Sender: TObject);
-    procedure Edit4Exit(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
-    procedure Edit1KeyPress(Sender: TObject; var Key: Char);
-    procedure Edit2KeyPress(Sender: TObject; var Key: Char);
-    procedure Edit3KeyPress(Sender: TObject; var Key: Char);
-    procedure Edit5KeyPress(Sender: TObject; var Key: Char);
-    procedure Edit6KeyPress(Sender: TObject; var Key: Char);
-    procedure SpeedButton1Click(Sender: TObject);
-    procedure ListView1Changing(Sender: TObject; Item: TListItem;
-      Change: TItemChange; var AllowChange: Boolean);
-    procedure ListView1ContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure ListView1GetSubItemImage(Sender: TObject; Item: TListItem;
-      SubItem: Integer; var ImageIndex: Integer);
-    procedure SpeedButton2Click(Sender: TObject);
-    procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure ComboBox17Change(Sender: TObject);
-    procedure Edit21KeyPress(Sender: TObject; var Key: Char);
-    procedure BitBtn4Click(Sender: TObject);
+    procedure QMessageEditEnter(Sender: TObject);
+    procedure QMessageEditExit(Sender: TObject);
+    procedure SearchBitBtnClick(Sender: TObject);
+    procedure ResultClearSpeedButtonClick(Sender: TObject);
+    procedure SendQMessageSpeedButtonClick(Sender: TObject);
+    procedure SearchNextPageBitBtnClick(Sender: TObject);
     procedure Edit23KeyPress(Sender: TObject; var Key: Char);
     procedure AutoSendTimerTimer(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
-    procedure Edit23Change(Sender: TObject);
-    procedure ListView1ColumnClick(Sender: TObject; Column: TListColumn);
-    procedure ListView1DblClick(Sender: TObject);
-    procedure N11Click(Sender: TObject);
-    procedure N21Click(Sender: TObject);
-    procedure N31Click(Sender: TObject);
-    procedure N51Click(Sender: TObject);
-    procedure N41Click(Sender: TObject);
-    procedure CheckBox8Click(Sender: TObject);
-    procedure CheckBox9Click(Sender: TObject);
-    procedure CheckBox6Click(Sender: TObject);
-    procedure CheckBox7Click(Sender: TObject);
-    procedure CheckBox1Click(Sender: TObject);
-    procedure CheckBox2Click(Sender: TObject);
-    procedure CheckBox3Click(Sender: TObject);
+    procedure ICQStatusCheckSMClick(Sender: TObject);
+    procedure AccountNameCopySMClick(Sender: TObject);
+    procedure SendMessageSMClick(Sender: TObject);
+    procedure AddContactInCLSMClick(Sender: TObject);
+    procedure ContactInfoSMClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure SearchResultJvListViewMouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure SearchResultJvListViewChanging(Sender: TObject; Item: TListItem;
+      Change: TItemChange; var AllowChange: Boolean);
+    procedure SearchResultJvListViewContextPopup(Sender: TObject;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure SearchResultJvListViewGetSubItemImage(Sender: TObject;
+      Item: TListItem; SubItem: Integer; var ImageIndex: Integer);
+    procedure SearchResultJvListViewColumnClick(Sender: TObject;
+      Column: TListColumn);
+    procedure SearchResultJvListViewGetImageIndex(Sender: TObject;
+      Item: TListItem);
   private
     { Private declarations }
     QmessT: string;
-    sPage: word;
+    //sPage: word;
     sPageInc: boolean;
-    autosendind: integer;
+    //autosendind: integer;
   public
     { Public declarations }
     SP1, SP2, SP3, SP4: string;
@@ -200,268 +120,44 @@ var
 
 implementation
 
-uses MainUnit, IcqProtoUnit, UtilsUnit, IcqAddContactUnit, IcqContactInfoUnit;
+uses MainUnit, IcqProtoUnit, UtilsUnit, IcqAddContactUnit, IcqContactInfoUnit,
+  IcqOptionsUnit;
 
 {$R *.dfm}
 
 procedure TIcqSearchForm.TranslateForm;
-//var
-//  i, ItemWidth, CWidth: integer;
 begin
-  {Lini := TIniFile.Create(MyPath + 'Langs\' + CurrentLang + '\General.txt');
-  //
-  Caption := Lini.ReadString('IcqSearch', '1', EmptyStr);
-  PageControl1.Pages[0].Caption := Lini.ReadString('IcqSearch', '2', EmptyStr);
-  PageControl1.Pages[1].Caption := Lini.ReadString('IcqSearch', '3', EmptyStr);
-  PageControl1.Pages[2].Caption := Lini.ReadString('IcqSearch', '4', EmptyStr);
-  PageControl1.Pages[3].Caption := Lini.ReadString('IcqSearch', '5', EmptyStr);
-  PageControl1.Pages[4].Caption := Lini.ReadString('IcqSearch', '6', EmptyStr);
-  PageControl1.Pages[5].Caption := Lini.ReadString('IcqSearch', '7', EmptyStr);
-  CheckBox1.Caption := Lini.ReadString('IcqSearch', '8', EmptyStr);
-  CheckBox2.Caption := Lini.ReadString('IcqSearch', '9', EmptyStr);
-  CheckBox3.Caption := Lini.ReadString('IcqSearch', '10', EmptyStr);
-  CheckBox4.Caption := Lini.ReadString('IcqSearch', '14', EmptyStr);
-  CheckBox5.Caption := Lini.ReadString('IcqSearch', '15', EmptyStr);
-  BitBtn1.Caption := Lini.ReadString('IcqSearch', '16', EmptyStr);
-  ListView1.Column[0].Caption := Lini.ReadString('IcqSearch', '17', EmptyStr);
-  ListView1.Column[1].Caption := Lini.ReadString('IcqSearch', '11', EmptyStr);
-  ListView1.Column[2].Caption := Lini.ReadString('IcqSearch', '12', EmptyStr);
-  ListView1.Column[3].Caption := Lini.ReadString('IcqSearch', '13', EmptyStr);
-  ListView1.Column[4].Caption := Lini.ReadString('IcqSearch', '18', EmptyStr);
-  ListView1.Column[5].Caption := Lini.ReadString('IcqSearch', '19', EmptyStr);
-  ListView1.Column[7].Caption := Lini.ReadString('IcqSearch', '20', EmptyStr);
-  CheckBox6.Caption := Lini.ReadString('IcqSearch', '8', EmptyStr);
-  CheckBox7.Caption := Lini.ReadString('IcqSearch', '9', EmptyStr);
-  Label1.Caption := Lini.ReadString('IcqSearch', '11', EmptyStr) + ':';
-  Label2.Caption := Lini.ReadString('IcqSearch', '12', EmptyStr) + ':';
-  Label3.Caption := Lini.ReadString('IcqSearch', '13', EmptyStr) + ':';
-  Panel6.Caption := Lini.ReadString('IcqSearch', '21', EmptyStr);
-  SP1 := Panel6.Caption;
-  SP2 := Lini.ReadString('IcqSearch', '22', EmptyStr);
-  SP3 := Lini.ReadString('IcqSearch', '23', EmptyStr);
-  SP4 := Lini.ReadString('IcqSearch', '24', EmptyStr);
-  SpeedButton1.Hint := Lini.ReadString('IcqSearch', '25', EmptyStr);
-  SpeedButton2.Hint := Lini.ReadString('IcqSearch', '26', EmptyStr);
-  Edit4.Text := ' ' + Lini.ReadString('IcqSearch', '27', EmptyStr);
-  QmessT := Edit4.Text;
-  //
-  Label4.Caption := Lini.ReadString('IcqSearch', '28', EmptyStr);
-  Label5.Caption := Lini.ReadString('IcqSearch', '29', EmptyStr);
-  Label6.Caption := Lini.ReadString('IcqSearch', '30', EmptyStr);
-  Label7.Caption := Lini.ReadString('IcqSearch', '31', EmptyStr);
-  Label8.Caption := Lini.ReadString('IcqSearch', '32', EmptyStr);
-  Label9.Caption := Lini.ReadString('IcqSearch', '33', EmptyStr);
-  Label10.Caption := Lini.ReadString('IcqSearch', '34', EmptyStr);
-  Label11.Caption := Lini.ReadString('IcqSearch', '35', EmptyStr);
-  Label12.Caption := Lini.ReadString('IcqSearch', '36', EmptyStr);
-  Label13.Caption := Lini.ReadString('IcqSearch', '37', EmptyStr);
-  Label14.Caption := Lini.ReadString('IcqSearch', '11', EmptyStr) + ':';
-  Label15.Caption := Lini.ReadString('IcqSearch', '12', EmptyStr) + ':';
-  Label16.Caption := Lini.ReadString('IcqSearch', '13', EmptyStr) + ':';
-  Label17.Caption := Lini.ReadString('IcqSearch', '20', EmptyStr) + ':';
-  Label18.Caption := Lini.ReadString('IcqSearch', '38', EmptyStr);
-  //
-  Label19.Caption := Lini.ReadString('IcqSearch', '11', EmptyStr) + ':';
-  Label20.Caption := Lini.ReadString('IcqSearch', '12', EmptyStr) + ':';
-  Label21.Caption := Lini.ReadString('IcqSearch', '13', EmptyStr) + ':';
-  Label22.Caption := Lini.ReadString('IcqSearch', '28', EmptyStr);
-  Label23.Caption := Lini.ReadString('IcqSearch', '29', EmptyStr);
-  Label24.Caption := Lini.ReadString('IcqSearch', '32', EmptyStr);
-  Label25.Caption := Lini.ReadString('IcqSearch', '30', EmptyStr);
-  Label26.Caption := Lini.ReadString('IcqSearch', '31', EmptyStr);
-  Label27.Caption := Lini.ReadString('IcqSearch', '38', EmptyStr);
-  Label28.Caption := Lini.ReadString('IcqSearch', '33', EmptyStr);
-  Label29.Caption := Lini.ReadString('IcqSearch', '36', EmptyStr);
-  Label30.Caption := Lini.ReadString('IcqSearch', '37', EmptyStr);
-  //
-  CheckBox8.Caption := Lini.ReadString('IcqSearch', '39', EmptyStr);
-  CheckBox9.Caption := Lini.ReadString('IcqSearch', '40', EmptyStr);
-  Label31.Caption := Lini.ReadString('IcqSearch', '41', EmptyStr);
-  Label32.Caption := Lini.ReadString('IcqSearch', '42', EmptyStr);
-  BitBtn2.Caption := Lini.ReadString('IcqSearch', '43', EmptyStr);
-  BitBtn3.Caption := Lini.ReadString('IcqSearch', '44', EmptyStr);
-  BitBtn4.Caption := Lini.ReadString('IcqSearch', '49', EmptyStr);
-  //
-  G1 := Lini.ReadString('IcqSearch', '45', EmptyStr);
-  G2 := Lini.ReadString('IcqSearch', '46', EmptyStr);
-  A1 := Lini.ReadString('IcqSearch', '47', EmptyStr);
-  A2 := Lini.ReadString('IcqSearch', '48', EmptyStr);
-  //
-  ComboBox1.Clear;
-  ComboBox1.Items.Add(EmptyStr);
-  ComboBox1.Items.Add(Lini.ReadString('Gender', '1', EmptyStr));
-  ComboBox1.Items.Add(Lini.ReadString('Gender', '2', EmptyStr));
-  ComboBox1.ItemIndex := 0;
-  ComboBox10.Items.Assign(ComboBox1.Items);
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries.txt') then
+  //--Присваиваем списки комбобоксам
+  if Assigned(IcqOptionsForm) then
   begin
-    ComboBox3.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries.txt');
-    ComboBox13.Items.Assign(ComboBox3.Items);
-    ComboBox3.ItemIndex := 0;
-    ComboBox13.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox3 do
+    with IcqOptionsForm do
     begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-    Combobox13.Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus.txt') then
-  begin
-    ComboBox4.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus.txt');
-    ComboBox12.Items.Assign(ComboBox4.Items);
-    ComboBox4.ItemIndex := 0;
-    ComboBox12.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox4 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-    Combobox12.Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Occupation.txt') then
-  begin
-    ComboBox5.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Occupation.txt');
-    ComboBox5.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox5 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
+      //--Присваиваем Брак
+      MaritalComboBox.Items.Assign(PersonalMaritalInfoComboBox.Items);
+      SetCustomWidthComboBox(MaritalComboBox);
+      //--Присваиваем Страну
+      CountryComboBox.Items.Assign(CountryInfoComboBox.Items);
+      SetCustomWidthComboBox(CountryComboBox);
+      //--Присваиваем Язык
+      LangComboBox.Items.Assign(Lang1InfoComboBox.Items);
+      SetCustomWidthComboBox(LangComboBox);
+      //--Присваиваем Профессию
+      ProfComboBox.Items.Assign(CompanyProfInfoComboBox.Items);
+      SetCustomWidthComboBox(ProfComboBox);
+      //--Присваиваем Интересы
+      InterestComboBox.Items.Assign(Interest1InfoComboBox.Items);
+      SetCustomWidthComboBox(InterestComboBox);
     end;
   end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Industry.txt') then
-  begin
-    ComboBox15.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Industry.txt');
-    ComboBox15.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox15 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Organization.txt') then
-  begin
-    ComboBox6.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Organization.txt');
-    ComboBox6.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox6 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Past.txt') then
-  begin
-    ComboBox7.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Past.txt');
-    ComboBox7.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox7 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Interests.txt') then
-  begin
-    ComboBox8.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Interests.txt');
-    ComboBox16.Items.Assign(ComboBox8.Items);
-    ComboBox8.ItemIndex := 0;
-    ComboBox16.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox8 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-    Combobox16.Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages.txt') then
-  begin
-    ComboBox9.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages.txt');
-    ComboBox14.Items.Assign(ComboBox9.Items);
-    ComboBox9.ItemIndex := 0;
-    ComboBox14.ItemIndex := 0;
-    ItemWidth := 0;
-    with Combobox9 do
-    begin
-      for i := 0 to Items.Count - 1 do
-      begin
-        CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
-        if CWidth > ItemWidth then ItemWidth := CWidth;
-      end;
-      Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-    end;
-    Combobox14.Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0);
-  end;
-  //
-  if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_RandGroups.txt') then
-  begin
-    ComboBox17.Items.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_RandGroups.txt');
-    ComboBox17.ItemIndex := 0;
-  end;
-  //
-  for i := 0 to PopupMenu1.Items.Count - 1 do
-  begin
-    if PopupMenu1.Items[i].Tag = 1 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '15', EmptyStr)
-    else if PopupMenu1.Items[i].Tag = 2 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '18', EmptyStr)
-    else if PopupMenu1.Items[i].Tag = 3 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '14', EmptyStr)
-    else if PopupMenu1.Items[i].Tag = 4 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '16', EmptyStr)
-    else if PopupMenu1.Items[i].Tag = 5 then
-      PopupMenu1.Items[i].Caption := Lini.ReadString('Menus', '43', EmptyStr);
-  end;
-  //
-  Lini.Free;}
+  //--Переводим форму на другие языки
+  
 end;
 
 procedure TIcqSearchForm.AutoSendTimerTimer(Sender: TObject);
-label
-  x, y;
+//label
+  //x, y;
 begin
-  if ListView1.Items.Count > 0 then
+  {if ListView1.Items.Count > 0 then
   begin
     x: ;
     ListView1.ItemIndex := autosendind;
@@ -486,15 +182,15 @@ begin
     BitBtn2.Enabled := true;
     BitBtn3.Enabled := false;
     //DAShow(false, '4', '34', EmptyStr, 157, 3, 10000);
-  end;
+  end;}
 end;
 
-procedure TIcqSearchForm.BitBtn1Click(Sender: TObject);
-var
-  CodeList: TStringList;
-  CountryInd, LangInd, OccupInd, IntInd, PastInd, MaritalInd, OrganInd: integer;
+procedure TIcqSearchForm.SearchBitBtnClick(Sender: TObject);
+//var
+  //CodeList: TStringList;
+  //CountryInd, LangInd, OccupInd, IntInd, PastInd, MaritalInd, OrganInd: integer;
 begin
-  if not CheckBox4.Checked then
+  {if not CheckBox4.Checked then
   begin
     ListView1.Clear;
     Panel7.Caption := '0';
@@ -786,12 +482,12 @@ begin
           end;
         end;
       end;
-  end;
+  end;}
 end;
 
 procedure TIcqSearchForm.BitBtn2Click(Sender: TObject);
 begin
-  if ListView1.Items.Count > 0 then
+  {if ListView1.Items.Count > 0 then
   begin
     autosendind := 0;
     if (Edit23.Text = EmptyStr) or (Edit23.Text = '0') then Edit23.Text := '60';
@@ -804,93 +500,13 @@ begin
   else
   begin
     AutoSendTimer.Enabled := false;
-  end;
+  end;}
 end;
 
-procedure TIcqSearchForm.BitBtn3Click(Sender: TObject);
-begin
-  AutoSendTimer.Enabled := false;
-  //
-  BitBtn2.Enabled := true;
-  BitBtn3.Enabled := false;
-end;
-
-procedure TIcqSearchForm.BitBtn4Click(Sender: TObject);
+procedure TIcqSearchForm.SearchNextPageBitBtnClick(Sender: TObject);
 begin
   sPageInc := true;
-  BitBtn1Click(self);
-end;
-
-procedure TIcqSearchForm.CheckBox1Click(Sender: TObject);
-begin
-  if CheckBox1.Checked then
-  begin
-    CheckBox2.Checked := false;
-    CheckBox3.Checked := false;
-  end;
-end;
-
-procedure TIcqSearchForm.CheckBox2Click(Sender: TObject);
-begin
-  if CheckBox2.Checked then
-  begin
-    CheckBox1.Checked := false;
-    CheckBox3.Checked := false;
-  end;
-end;
-
-procedure TIcqSearchForm.CheckBox3Click(Sender: TObject);
-begin
-  if CheckBox3.Checked then
-  begin
-    CheckBox1.Checked := false;
-    CheckBox2.Checked := false;
-  end;
-end;
-
-procedure TIcqSearchForm.CheckBox6Click(Sender: TObject);
-begin
-  if CheckBox6.Checked then CheckBox7.Checked := false;
-end;
-
-procedure TIcqSearchForm.CheckBox7Click(Sender: TObject);
-begin
-  if CheckBox7.Checked then CheckBox6.Checked := false;
-end;
-
-procedure TIcqSearchForm.CheckBox8Click(Sender: TObject);
-begin
-  if CheckBox8.Checked then CheckBox9.Checked := false;
-end;
-
-procedure TIcqSearchForm.CheckBox9Click(Sender: TObject);
-begin
-  if CheckBox9.Checked then CheckBox8.Checked := false;
-end;
-
-procedure TIcqSearchForm.ComboBox17Change(Sender: TObject);
-begin
-  CheckBox8.Checked := false;
-  CheckBox9.Checked := true;
-end;
-
-procedure TIcqSearchForm.Edit1KeyPress(Sender: TObject; var Key: Char);
-begin
-  CheckBox1.Checked := true;
-  CheckBox2.Checked := false;
-  CheckBox3.Checked := false;
-end;
-
-procedure TIcqSearchForm.Edit21KeyPress(Sender: TObject; var Key: Char);
-begin
-  CheckBox8.Checked := true;
-  CheckBox9.Checked := false;
-end;
-
-procedure TIcqSearchForm.Edit23Change(Sender: TObject);
-begin
-  if (Edit23.Text = EmptyStr) or (Edit23.Text = '0') then Edit23.Text := '60';
-  AutoSendTimer.Interval := StrToInt(Edit23.Text) * 1000;
+  SearchBitBtnClick(self);
 end;
 
 procedure TIcqSearchForm.Edit23KeyPress(Sender: TObject; var Key: Char);
@@ -900,188 +516,121 @@ begin
   if (not (Key in ValidAsciiChars)) and (Key <> #8) then Key := #0;
 end;
 
-procedure TIcqSearchForm.Edit2KeyPress(Sender: TObject; var Key: Char);
-begin
-  CheckBox1.Checked := false;
-  CheckBox2.Checked := true;
-  CheckBox3.Checked := false;
-end;
-
-procedure TIcqSearchForm.Edit3KeyPress(Sender: TObject; var Key: Char);
-begin
-  CheckBox1.Checked := false;
-  CheckBox2.Checked := false;
-  CheckBox3.Checked := true;
-end;
-
-procedure TIcqSearchForm.Edit4Enter(Sender: TObject);
+procedure TIcqSearchForm.QMessageEditEnter(Sender: TObject);
 var
   FOptions: TFontStyles;
 begin
-  if Edit4.Tag = 1 then
+  //--Сбрасываем текст в поле быстрых сообщений
+  with QMessageEdit do
   begin
-    Edit4.Clear;
-    FOptions := [];
-    Edit4.Font.Style := FOptions;
-    Edit4.Tag := 0;
-  end;
-end;
-
-procedure TIcqSearchForm.Edit4Exit(Sender: TObject);
-var
-  FOptions: TFontStyles;
-begin
-  if Edit4.Text = EmptyStr then
-  begin
-    FOptions := [];
-    Include(FOptions, fsBold);
-    Edit4.Font.Style := FOptions;
-    Edit4.Text := ' ' + QmessT;
-    Edit4.Tag := 1;
-  end;
-end;
-
-procedure TIcqSearchForm.Edit5KeyPress(Sender: TObject; var Key: Char);
-begin
-  CheckBox6.Checked := true;
-  CheckBox7.Checked := false;
-end;
-
-procedure TIcqSearchForm.Edit6KeyPress(Sender: TObject; var Key: Char);
-begin
-  CheckBox6.Checked := false;
-  CheckBox7.Checked := true;
-end;
-
-procedure TIcqSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  //BringWindowToTop(RoasterForm.Handle);
-end;
-
-procedure TIcqSearchForm.FormCreate(Sender: TObject);
-begin
-  {Sini := TIniFile.Create(Mypath + 'Config.ini');
-  //
-  Left := Sini.ReadInteger('General', 'IcqSearchLeft', 30);
-  Top := Sini.ReadInteger('General', 'IcqSearchTop', 30);
-  Height := Sini.ReadInteger('General', 'IcqSearchHeight', 482);
-  Width := Sini.ReadInteger('General', 'IcqSearchWidth', 542);
-  //
-  Sini.Free;}
-  //
-  TranslateForm;
-  //
-  MainForm.AllImageList.GetIcon(46, Icon);
-  MainForm.AllImageList.GetBitmap(49, BitBtn1.Glyph);
-  MainForm.AllImageList.GetBitmap(45, BitBtn2.Glyph);
-  MainForm.AllImageList.GetBitmap(33, BitBtn3.Glyph);
-  MainForm.AllImageList.GetBitmap(128, SpeedButton1.Glyph);
-  MainForm.AllImageList.GetBitmap(133, SpeedButton2.Glyph);
-  MainForm.AllImageList.GetBitmap(183, BitBtn4.Glyph);
-  //
-  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
-end;
-
-procedure TIcqSearchForm.FormDestroy(Sender: TObject);
-begin
-  //--Sohranyaem razmery
-  {Sini := TIniFile.Create(Mypath + 'Config.ini');
-  //
-  Sini.WriteInteger('General', 'IcqSearchLeft', Left);
-  Sini.WriteInteger('General', 'IcqSearchTop', Top);
-  Sini.WriteInteger('General', 'IcqSearchHeight', Height);
-  Sini.WriteInteger('General', 'IcqSearchWidth', Width);
-  //
-  Sini.Free;}
-end;
-
-procedure TIcqSearchForm.FormResize(Sender: TObject);
-begin
-  case PageControl1.ActivePageIndex of
-    0: PageControl1.Height := PageControl1.ActivePage.Top + Panel3.Height + 10;
-    1: PageControl1.Height := PageControl1.ActivePage.Top + Panel8.Height + 10;
-    2: PageControl1.Height := PageControl1.ActivePage.Top + Panel10.Height + 10;
-    3: PageControl1.Height := PageControl1.ActivePage.Top + Panel11.Height + 10;
-    4: PageControl1.Height := PageControl1.ActivePage.Top + Panel12.Height + 10;
-    5: PageControl1.Height := PageControl1.ActivePage.Top + Panel15.Top + Panel15.Height + 7;
-  end;
-end;
-
-procedure TIcqSearchForm.ListView1Changing(Sender: TObject; Item: TListItem;
-  Change: TItemChange; var AllowChange: Boolean);
-begin
-  Panel7.Caption := IntToStr(ListView1.Items.Count);
-end;
-
-procedure TIcqSearchForm.ListView1ColumnClick(Sender: TObject;
-  Column: TListColumn);
-begin
-  if ListView1.SortType = stNone then ListView1.SortType := stText
-  else ListView1.SortType := stNone;
-end;
-
-procedure TIcqSearchForm.ListView1ContextPopup(Sender: TObject;
-  MousePos: TPoint; var Handled: Boolean);
-begin
-  if ListView1.Selected <> nil then
-  begin
-    Handled := false;
-  end
-  else
-  begin
-    Handled := true;
-  end;
-end;
-
-procedure TIcqSearchForm.ListView1DblClick(Sender: TObject);
-begin
-  N51Click(self);
-end;
-
-procedure TIcqSearchForm.ListView1GetSubItemImage(Sender: TObject;
-  Item: TListItem; SubItem: Integer; var ImageIndex: Integer);
-begin
-  if Item.Checked then
-  begin
-    if SubItem = 5 then ImageIndex := 134;
-  end
-  else
-  begin
-    if SubItem = 5 then ImageIndex := 133;
-  end;
-end;
-
-procedure TIcqSearchForm.ListView1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  ocw, fcw: integer;
-begin
-  if Button = mbLeft then
-  begin
-    if ListView1.Selected <> nil then
+    if Tag = 1 then
     begin
-      ocw := ListView1.Column[0].Width + ListView1.Column[1].Width + ListView1.Column[2].Width +
-        ListView1.Column[3].Width + ListView1.Column[4].Width + ListView1.Column[5].Width;
-      fcw := ocw + ListView1.Column[6].Width;
-      if (X > ocw) and (X < fcw) then SpeedButton2Click(Self);
+      Clear;
+      FOptions := [];
+      Font.Style := FOptions;
+      Tag := 0;
     end;
   end;
 end;
 
-procedure TIcqSearchForm.N11Click(Sender: TObject);
+procedure TIcqSearchForm.QMessageEditExit(Sender: TObject);
+var
+  FOptions: TFontStyles;
 begin
-  if ListView1.Selected <> nil then
-    ICQ_ReqStatus0215(ListView1.Selected.Caption);
+  //--
+  with QMessageEdit do
+  begin
+    if Text = EmptyStr then
+    begin
+      FOptions := [];
+      Include(FOptions, fsBold);
+      Font.Style := FOptions;
+      Text := ' ' + QmessT;
+      Tag := 1;
+    end;
+  end;
 end;
 
-procedure TIcqSearchForm.N21Click(Sender: TObject);
+procedure TIcqSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if ListView1.Selected <> nil then
-    SetClipboardText(Handle, ListView1.Selected.Caption);
+  //--Выводим окно списка контактов на передний план
+  BringWindowToTop(MainForm.Handle);
 end;
 
-procedure TIcqSearchForm.N31Click(Sender: TObject);
+procedure TIcqSearchForm.FormCreate(Sender: TObject);
+begin
+  //--Инициализируем XML
+  with TrXML.Create() do
+  try
+    //--Загружаем настройки
+    if FileExists(ProfilePath + SettingsFileName) then
+    begin
+      LoadFromFile(ProfilePath + SettingsFileName);
+      //--Загружаем позицию окна
+      if OpenKey('settings\forms\icqsearchform\position') then
+      try
+        Top := ReadInteger('top');
+        Left := ReadInteger('left');
+        //--Определяем не находится ли окно за пределами экрана
+        MainForm.FormSetInWorkArea(self);
+      finally
+        CloseKey();
+      end;
+    end;
+  finally
+    Free();
+  end;
+  //--Переводим форму на другие языки
+  TranslateForm;
+  //--Устанавливаем иконки на форму и кнопки
+  MainForm.AllImageList.GetIcon(235, Icon);
+  MainForm.AllImageList.GetBitmap(221, SearchBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(159, ResultClearSpeedButton.Glyph);
+  MainForm.AllImageList.GetBitmap(239, SendQMessageSpeedButton.Glyph);
+  MainForm.AllImageList.GetBitmap(166, SearchNextPageBitBtn.Glyph);
+  //--Делаем окно независимым и помещаем его кнопку на панель задач
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  //--Делаем окно прилипающим к краям экрана
+  ScreenSnap := true;
+end;
+
+procedure TIcqSearchForm.FormDestroy(Sender: TObject);
+begin
+  //--Создаём необходимые папки
+  ForceDirectories(ProfilePath + 'Profile');
+  //--Сохраняем настройки положения окна в xml
+  with TrXML.Create() do
+  try
+    if FileExists(ProfilePath + SettingsFileName) then LoadFromFile(ProfilePath + SettingsFileName);
+    //--Сохраняем позицию окна
+    if OpenKey('settings\forms\icqsearchform\position', True) then
+    try
+      WriteInteger('top', Top);
+      WriteInteger('left', Left);
+    finally
+      CloseKey();
+    end;
+    //--Записываем сам файл
+    SaveToFile(ProfilePath + SettingsFileName);
+  finally
+    Free();
+  end;
+end;
+
+procedure TIcqSearchForm.ICQStatusCheckSMClick(Sender: TObject);
+begin
+  //if ListView1.Selected <> nil then
+  //  ICQ_ReqStatus0215(ListView1.Selected.Caption);
+end;
+
+procedure TIcqSearchForm.AccountNameCopySMClick(Sender: TObject);
+begin
+  //if ListView1.Selected <> nil then
+  //  SetClipboardText(Handle, ListView1.Selected.Caption);
+end;
+
+procedure TIcqSearchForm.SendMessageSMClick(Sender: TObject);
 {var
   i, ii, G, T: integer;
   NoCLG: boolean;
@@ -1142,7 +691,7 @@ begin
   end;}
 end;
 
-procedure TIcqSearchForm.N41Click(Sender: TObject);
+procedure TIcqSearchForm.ContactInfoSMClick(Sender: TObject);
 begin
   {if ListView1.Selected <> nil then
   begin
@@ -1168,7 +717,7 @@ begin
   end;}
 end;
 
-procedure TIcqSearchForm.N51Click(Sender: TObject);
+procedure TIcqSearchForm.AddContactInCLSMClick(Sender: TObject);
 //var
   //i: integer;
   //frmAddCnt: TIcqAddContactForm;
@@ -1190,32 +739,79 @@ begin
   end;}
 end;
 
-procedure TIcqSearchForm.PageControl1Change(Sender: TObject);
+procedure TIcqSearchForm.SearchResultJvListViewChanging(Sender: TObject;
+  Item: TListItem; Change: TItemChange; var AllowChange: Boolean);
 begin
-  BitBtn4.Enabled := false;
-  case PageControl1.ActivePageIndex of
-    0: PageControl1.Height := PageControl1.ActivePage.Top + Panel3.Height + 10;
-    1: PageControl1.Height := PageControl1.ActivePage.Top + Panel8.Height + 10;
-    2: PageControl1.Height := PageControl1.ActivePage.Top + Panel10.Height + 10;
-    3: PageControl1.Height := PageControl1.ActivePage.Top + Panel11.Height + 10;
-    4:
-      begin
-        PageControl1.Height := PageControl1.ActivePage.Top + Panel12.Height + 10;
-        BitBtn4.Enabled := true;
-      end;
-    5: PageControl1.Height := PageControl1.ActivePage.Top + Panel15.Top + Panel15.Height + 7;
+  //Panel7.Caption := IntToStr(ListView1.Items.Count);
+end;
+
+procedure TIcqSearchForm.SearchResultJvListViewColumnClick(Sender: TObject;
+  Column: TListColumn);
+var
+  i: integer;
+begin
+  //--Сбрасываем стрелочки сортировки в других столбцах
+  for i := 0 to SearchResultJvListView.Columns.Count - 1 do
+    SearchResultJvListView.Columns[i].ImageIndex := -1;
+  if (Column.Index = 0) or (Column.Index = 1) or (Column.Index = 8) then Exit;
+  //--Выставляем стрелочку сортировки
+  if Column.ImageIndex <> 234 then Column.ImageIndex := 234
+  else Column.ImageIndex := 233;
+end;
+
+procedure TIcqSearchForm.SearchResultJvListViewContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  if SearchResultJvListView.Selected <> nil then Handled := false
+  else Handled := true;
+end;
+
+procedure TIcqSearchForm.SearchResultJvListViewGetImageIndex(Sender: TObject;
+  Item: TListItem);
+begin
+  Item.ImageIndex := 237;
+end;
+
+procedure TIcqSearchForm.SearchResultJvListViewGetSubItemImage(Sender: TObject;
+  Item: TListItem; SubItem: Integer; var ImageIndex: Integer);
+begin
+  if SubItem = 0 then ImageIndex := 238;
+  if Item.Checked then
+  begin
+    if SubItem = 7 then ImageIndex := 240;
+  end
+  else
+  begin
+    if SubItem = 7 then ImageIndex := 239;
   end;
 end;
 
-procedure TIcqSearchForm.SpeedButton1Click(Sender: TObject);
+procedure TIcqSearchForm.SearchResultJvListViewMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+//var
+//  ocw, fcw: integer;
 begin
-  ListView1.Clear;
-  Panel7.Caption := '0';
+  {if Button = mbLeft then
+  begin
+    if ListView1.Selected <> nil then
+    begin
+      ocw := ListView1.Column[0].Width + ListView1.Column[1].Width + ListView1.Column[2].Width +
+        ListView1.Column[3].Width + ListView1.Column[4].Width + ListView1.Column[5].Width;
+      fcw := ocw + ListView1.Column[6].Width;
+      if (X > ocw) and (X < fcw) then SpeedButton2Click(Self);
+    end;
+  end;    }
 end;
 
-procedure TIcqSearchForm.SpeedButton2Click(Sender: TObject);
+procedure TIcqSearchForm.ResultClearSpeedButtonClick(Sender: TObject);
 begin
-  if ListView1.Selected <> nil then
+  //ListView1.Clear;
+  //Panel7.Caption := '0';
+end;
+
+procedure TIcqSearchForm.SendQMessageSpeedButtonClick(Sender: TObject);
+begin
+  {if ListView1.Selected <> nil then
   begin
     if ListView1.Selected.Checked then Exit;
     if (Edit4.Tag = 1) or (Edit4.Text = EmptyStr) then Exit;
@@ -1224,7 +820,7 @@ begin
       ICQ_SendMessage_0406(ListView1.Selected.Caption, Edit4.Text, true);
       ListView1.Selected.Checked := true;
     end;
-  end;
+  end;}
 end;
 
 end.

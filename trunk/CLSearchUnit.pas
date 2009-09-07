@@ -55,12 +55,19 @@ begin
   //контактов в списке
   //--Очищаем список контактов от предыдущего поиска
   CLSearchJvListView.Clear;
+  //--Сбрасываем стрелочки сортировки в других столбцах
+  for i := 0 to CLSearchJvListView.Columns.Count - 1 do
+    CLSearchJvListView.Columns[i].ImageIndex := -1;
+  //--Делаем поиск текста
   if CLSearchEdit.Text <> '' then
   begin
     with RosterForm.RosterJvListView do
     begin
       for i := 0 to Items.Count - 1 do
       begin
+        //--Если это группы ICQ или NoCL, то пропускаем
+        if ((Length(Items[i].Caption) = 4) and (Items[i].SubItems[3] = 'Icq')) or
+          (Items[i].Caption = 'NoCL') then Continue;
         //--Если нашли текст в учётной записи или нике
         if (BMSearch(0, UpperCase(Items[i].Caption, loUserLocale), UpperCase(CLSearchEdit.Text, loUserLocale)) > -1) or
           (BMSearch(0, UpperCase(Items[i].SubItems[0], loUserLocale), UpperCase(CLSearchEdit.Text, loUserLocale)) > -1) then
@@ -71,7 +78,7 @@ begin
         end;
       end;
     end;
-  end;
+  end;  
 end;
 
 procedure TCLSearchForm.CLSearchJvListViewColumnClick(Sender: TObject;
@@ -80,8 +87,8 @@ var
   i: integer;
 begin
   //--Выставляем стрелочку сортировки
-  if Column.ImageIndex <> 5 then Column.ImageIndex := 5
-  else Column.ImageIndex := 4;
+  if Column.ImageIndex <> 234 then Column.ImageIndex := 234
+  else Column.ImageIndex := 233;
   //--Сбрасываем стрелочки сортировки в других столбцах
   for i := 0 to CLSearchJvListView.Columns.Count - 1 do
     if CLSearchJvListView.Columns[i] <> Column then CLSearchJvListView.Columns[i].ImageIndex := -1;
@@ -120,9 +127,6 @@ procedure TCLSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   //--Выводим окно списка контактов на передний план
   BringWindowToTop(MainForm.Handle);
-  //--Указываем текущему окну уничтожиться после закрытия
-  Action := caFree;
-  CLSearchForm := nil;
 end;
 
 procedure TCLSearchForm.FormCreate(Sender: TObject);

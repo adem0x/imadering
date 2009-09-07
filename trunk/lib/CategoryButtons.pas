@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Controls, ImgList, Forms, Messages,
-  Graphics, StdCtrls, GraphUtil, ActnList;
+  Graphics, StdCtrls, GraphUtil, ActnList, VarsUnit;
 
 {const
   crDragCopy = TCursor(-23); { New cursor, with a plus for copying }
@@ -3571,18 +3571,12 @@ begin
 end;
 
 constructor TButtonCategory.Create(Collection: TCollection);
-const
-  cMaxPresets = 4;
-  cPresetColors: array[0..cMaxPresets - 1] of TColor = ($00FFEAFF, $00FFEAEA, $00FFEAFF, $00FFEAEA);
 begin
   inherited Create(Collection);
   FGradientColor := clNone;
   FTextColor := clWindowText;
   FItems := TButtonCollection.Create(Self);
-  with TButtonCategories(Collection).ButtonGroup do
-    FColor := cPresetColors[GLastPreset];
-  Inc(GLastPreset);
-  if GLastPreset >= cMaxPresets then GLastPreset := 0;
+  with TButtonCategories(Collection).ButtonGroup do FColor := GroupHeaderColor;
 end;
 
 destructor TButtonCategory.Destroy;

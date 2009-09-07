@@ -1668,12 +1668,12 @@ end;
 
 procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge,
   AEmail: string; AGender, AStatus: integer; AAuth, AEndSearch: boolean);
-var
-  ListItemD: TListItem;
-  Gend: string;
-  i: integer;
+//var
+//  ListItemD: TListItem;
+//  Gend: string;
+//  i: integer;
 begin
-  if Assigned(IcqSearchForm) then
+  {if Assigned(IcqSearchForm) then
   begin
     if (AUIN = EmptyStr) and (AEndSearch) then
     begin
@@ -1713,7 +1713,7 @@ begin
     ListItemD.SubItems.Add(EmptyStr);
     ListItemD.SubItems.Add(AEmail);
     ICQSearchForm.ListView1.Items.EndUpdate;
-  end;
+  end;}
 end;
 
 procedure ICQ_Parse_SNAC_1503(PktData: string);

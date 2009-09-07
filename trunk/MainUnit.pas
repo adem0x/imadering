@@ -151,6 +151,12 @@ type
     UnstableJabberStatus: TMenuItem;
     SearchInCLMainMenu: TMenuItem;
     HideEmptyGroups: TMenuItem;
+    GroupOnOffToolButton: TToolButton;
+    ICQSearchNewContact: TMenuItem;
+    CheckUpdateMainMenu: TMenuItem;
+    N29: TMenuItem;
+    PrivatListMenu: TMenuItem;
+    JabberSearchNewContact: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -186,8 +192,6 @@ type
     procedure MRASettingsClick(Sender: TObject);
     procedure JabberSettingsClick(Sender: TObject);
     procedure CheckUpdateClick(Sender: TObject);
-    procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
     procedure ICQToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
     procedure MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
@@ -271,6 +275,12 @@ type
     procedure HideEmptyGroupsClick(Sender: TObject);
     procedure RightICQPopupMenuPopup(Sender: TObject);
     procedure HideInTrayClick(Sender: TObject);
+    procedure GroupOnOffToolButtonClick(Sender: TObject);
+    procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
+    procedure PrivatListMenuClick(Sender: TObject);
+    procedure JabberSearchNewContactClick(Sender: TObject);
+    procedure ICQSearchNewContactClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -307,7 +317,7 @@ uses
   MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit,
-  JabberProtoUnit, MraProtoUnit, RosterUnit;
+  JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit;
 
 procedure TMainForm.FormShowInWorkArea(xForm: TForm);
 var
@@ -325,7 +335,7 @@ begin
       Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
     if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;
     //--Показываем окно доп. статуса
-    Show;
+    xShowForm(xForm);
   end;
 end;
 
@@ -512,8 +522,7 @@ begin
   //--Открываем настройки сети MRA протокола
   if not Assigned(MraOptionsForm) then MraOptionsForm := TMraOptionsForm.Create(self);
   //--Отображаем окно
-  if MraOptionsForm.Visible then ShowWindow(MraOptionsForm.Handle, SW_RESTORE);
-  MraOptionsForm.Show;
+  xShowForm(MraOptionsForm);
 end;
 
 procedure TMainForm.JabberEnable(OnOff: boolean);
@@ -538,13 +547,17 @@ begin
   end;
 end;
 
+procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
+begin
+  ShowMessage(DevelMess);
+end;
+
 procedure TMainForm.JabberSettingsClick(Sender: TObject);
 begin
   //--Открываем настройки сети Jabber протокола
   if not Assigned(JabberOptionsForm) then JabberOptionsForm := TJabberOptionsForm.Create(self);
   //--Отображаем окно
-  if JabberOptionsForm.Visible then ShowWindow(JabberOptionsForm.Handle, SW_RESTORE);
-  JabberOptionsForm.Show;
+  xShowForm(JabberOptionsForm);
 end;
 
 procedure TMainForm.JabberStatusOfflineClick(Sender: TObject);
@@ -668,8 +681,7 @@ begin
   //--Загружаем файл истории для текущего чата
   HistoryForm.LoadHistoryFromFile(ContactList.SelectedItem.UIN);
   //--Отображаем окно
-  if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
-  HistoryForm.Show;
+  xShowForm(HistoryForm);
 end;
 
 procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
@@ -716,9 +728,7 @@ var
     //--Делаем запрос в форме на обновление программы
     IcqReqAuthForm.UpDateVersion(mess);
     //--Отображаем окно
-    IcqReqAuthForm.Show;
-    //--Выводим окно на самый передний план, против глюков в вин и вайн
-    SetForeGroundWindow(IcqReqAuthForm.Handle);
+    xShowForm(IcqReqAuthForm);
   end;
 
 begin
@@ -818,13 +828,20 @@ begin
   end;
 end;
 
+procedure TMainForm.ICQSearchNewContactClick(Sender: TObject);
+begin
+  //--Открываем окно поиска новых контактов
+  if not Assigned(IcqSearchForm) then IcqSearchForm := TIcqSearchForm.Create(self);
+  //--Открываем окно
+  xShowForm(IcqSearchForm);
+end;
+
 procedure TMainForm.ICQSettingsClick(Sender: TObject);
 begin
   //--Открываем окно настроек ICQ протокола
   if not Assigned(IcqOptionsForm) then IcqOptionsForm := TIcqOptionsForm.Create(self);
   //--Отображаем окно
-  if IcqOptionsForm.Visible then ShowWindow(IcqOptionsForm.Handle, SW_RESTORE);
-  IcqOptionsForm.Show;
+  xShowForm(IcqOptionsForm);
 end;
 
 procedure TMainForm.ICQStatusOfflineClick(Sender: TObject);
@@ -2275,8 +2292,8 @@ end;
 procedure TMainForm.MainToolButtonContextPopup(Sender: TObject;
   MousePos: TPoint; var Handled: Boolean);
 begin
-  //--Отображаем правильное всплывающее меню
-  MainToolButtonClick(Sender);
+  //--Открываем меню над этим элементом
+  Popup(MainToolButton, MainPopupMenu);
 end;
 
 procedure TMainForm.MRAToolButtonClick(Sender: TObject);
@@ -2331,7 +2348,12 @@ begin
   TrafficForm.Edit2.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3) + ' Мб | ' +
     FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' Мб | ' + AllSesDataTraf;
   //--Отображаем окно
-  if not TrafficForm.Visible then TrafficForm.Show;
+  xShowForm(TrafficForm);
+end;
+
+procedure TMainForm.PrivatListMenuClick(Sender: TObject);
+begin
+  ShowMessage(DevelMess);
 end;
 
 procedure TMainForm.OpenTestClick(Sender: TObject);
@@ -2362,8 +2384,7 @@ begin
   //--Открываем окно с настройками программы
   if not Assigned(SettingsForm) then SettingsForm := TSettingsForm.Create(self);
   //--Отображаем окно
-  if SettingsForm.Visible then ShowWindow(SettingsForm.Handle, SW_RESTORE);
-  SettingsForm.Show;
+  xShowForm(SettingsForm);
 end;
 
 procedure TMainForm.RenemeGroupCLClick(Sender: TObject);
@@ -2377,15 +2398,14 @@ begin
   with UnstableICQStatus do
   begin
     if Checked then ImageIndex := 140
-    else ImageIndex := -1;
+    else ImageIndex := 230;
   end;
 end;
 
 procedure TMainForm.RosterMainMenuClick(Sender: TObject);
 begin
   //--Открываем окно списка контактов
-  if RosterForm.Visible then ShowWindow(RosterForm.Handle, SW_RESTORE);
-  RosterForm.Show;
+  xShowForm(RosterForm);
 end;
 
 procedure TMainForm.AboutIMaderingClick(Sender: TObject);
@@ -2393,8 +2413,7 @@ begin
   //--Открываем окно о программе
   if not Assigned(AboutForm) then AboutForm := TAboutForm.Create(self);
   //--Отображаем окно
-  if AboutForm.Visible then ShowWindow(AboutForm.Handle, SW_RESTORE);
-  AboutForm.Show;
+  xShowForm(AboutForm);
 end;
 
 procedure TMainForm.CloseGroupsCLClick(Sender: TObject);
@@ -2522,7 +2541,7 @@ end;
 procedure TMainForm.ContactListMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  //--Сбрасываем подсветку заголовка другой группы
+  //--Сбрасываем выделение заголовка группы
   RosterForm.ResetGroupSelected;
   //--Добавляем событие для средней клавишы мыши
   if Button = mbMiddle then
@@ -2541,7 +2560,7 @@ begin
   with HideEmptyGroups do
   begin
     if Checked then ImageIndex := 140
-    else ImageIndex := -1;
+    else ImageIndex := 230;
   end;
 end;
 
@@ -2772,8 +2791,7 @@ begin
     //--Загружаем информацию о нем
     IcqContactInfoForm.LoadUserUnfo;
     //--Отображаем окно
-    if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
-    IcqContactInfoForm.Show;
+    xShowForm(IcqContactInfoForm);
   end;
 end;
 
@@ -2876,6 +2894,21 @@ begin
   begin
     if ICQ_Work_Phaze then ICQ_SendGrandAuth(ContactList.SelectedItem.UIN)
     else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+  end;
+end;
+
+procedure TMainForm.GroupOnOffToolButtonClick(Sender: TObject);
+begin
+  //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. групп
+  if GroupOnOffToolButton.Down then
+  begin
+    GroupOnOffToolButton.ImageIndex := 232;
+    RosterForm.UpdateFullCL;
+  end
+  else
+  begin
+    GroupOnOffToolButton.ImageIndex := 231;
+    RosterForm.UpdateFullCL;
   end;
 end;
 
@@ -2994,6 +3027,13 @@ begin
     finally
       CloseKey();
     end;
+    //--Сохраняем отображать группы вкл. выкл.
+    if OpenKey('settings\forms\mainform\group-on-off', True) then
+    try
+      WriteBool('value', GroupOnOffToolButton.Down);
+    finally
+      CloseKey();
+    end;
     //--Записываем что первый запуск программы уже состоялся и показывать
     //окно настройки протоколов больше не будем при запуске
     if OpenKey('settings\forms\mainform\first-start', True) then
@@ -3039,8 +3079,7 @@ begin
   //--Открываем окно поиска контактов в контактном листе
   if not Assigned(CLSearchForm) then CLSearchForm := TCLSearchForm.Create(self);
   //--Отображаем окно
-  if CLSearchForm.Visible then ShowWindow(CLSearchForm.Handle, SW_RESTORE);
-  CLSearchForm.Show;
+  xShowForm(CLSearchForm);
 end;
 
 procedure TMainForm.SendAddContactClick(Sender: TObject);
@@ -3171,8 +3210,7 @@ begin
   //--Открываем пустое окно истории сообщений
   if not Assigned(HistoryForm) then HistoryForm := THistoryForm.Create(self);
   //--Отображаем окно
-  if HistoryForm.Visible then ShowWindow(HistoryForm.Handle, SW_RESTORE);
-  HistoryForm.Show;
+  xShowForm(HistoryForm);
 end;
 
 procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);

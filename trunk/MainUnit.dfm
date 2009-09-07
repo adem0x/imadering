@@ -140,6 +140,16 @@ object MainForm: TMainForm
       Style = tbsCheck
       OnClick = OnlyOnlineContactsToolButtonClick
     end
+    object GroupOnOffToolButton: TToolButton
+      Left = 138
+      Top = 0
+      Hint = '<b>'#1056#1077#1078#1080#1084' '#1086#1090#1086#1073#1088#1072#1078#1077#1085#1080#1103' '#1075#1088#1091#1087#1087'</b>'
+      ImageIndex = 231
+      ParentShowHint = False
+      ShowHint = True
+      Style = tbsCheck
+      OnClick = GroupOnOffToolButtonClick
+    end
   end
   object ICQTrayIcon: TTrayIcon
     Hint = 'IMadering ICQ'
@@ -280,19 +290,24 @@ object MainForm: TMainForm
     Left = 16
     Top = 328
     object OpenTest: TMenuItem
-      Caption = #1058#1077#1089#1090'!'
+      Caption = #1058#1077#1089#1090
       Visible = False
       OnClick = OpenTestClick
+    end
+    object RosterMainMenu: TMenuItem
+      Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      Visible = False
+      OnClick = RosterMainMenuClick
+    end
+    object PrivatListMenu: TMenuItem
+      Caption = #1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080
+      ImageIndex = 236
+      OnClick = PrivatListMenuClick
     end
     object SearchInCLMainMenu: TMenuItem
       Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1089#1087#1080#1089#1082#1091' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 215
       OnClick = SearchInCLClick
-    end
-    object RosterMainMenu: TMenuItem
-      Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
-      ImageIndex = 1
-      OnClick = RosterMainMenuClick
     end
     object OpenTraffic: TMenuItem
       Caption = #1058#1088#1072#1092#1080#1082
@@ -308,6 +323,14 @@ object MainForm: TMainForm
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
       OnClick = OpenSettingsClick
+    end
+    object N29: TMenuItem
+      Caption = '-'
+    end
+    object CheckUpdateMainMenu: TMenuItem
+      Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077
+      ImageIndex = 6
+      OnClick = CheckUpdateClick
     end
     object AboutIMadering: TMenuItem
       Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
@@ -527,6 +550,7 @@ object MainForm: TMainForm
     end
     object HideEmptyGroups: TMenuItem
       Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1087#1091#1089#1090#1099#1077' '#1075#1088#1091#1087#1087#1099
+      ImageIndex = 230
       OnClick = HideEmptyGroupsClick
     end
     object N5: TMenuItem
@@ -573,6 +597,11 @@ object MainForm: TMainForm
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1089#1077#1090#1080
       ImageIndex = 160
       OnClick = ICQSettingsClick
+    end
+    object ICQSearchNewContact: TMenuItem
+      Caption = #1055#1086#1080#1089#1082' '#1085#1086#1074#1099#1093' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      ImageIndex = 235
+      OnClick = ICQSearchNewContactClick
     end
     object N9: TMenuItem
       Caption = '-'
@@ -731,6 +760,11 @@ object MainForm: TMainForm
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1089#1077#1090#1080
       ImageIndex = 160
       OnClick = JabberSettingsClick
+    end
+    object JabberSearchNewContact: TMenuItem
+      Caption = #1055#1086#1080#1089#1082' '#1085#1086#1074#1099#1093' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      ImageIndex = 235
+      OnClick = JabberSearchNewContactClick
     end
     object N25: TMenuItem
       Caption = '-'
@@ -906,6 +940,7 @@ object MainForm: TMainForm
     Top = 296
     object UnstableICQStatus: TMenuItem
       Caption = #1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
+      ImageIndex = 230
       OnClick = UnstableICQStatusClick
     end
   end
@@ -944,17 +979,21 @@ object MainForm: TMainForm
     Top = 48
   end
   object RightMRAPopupMenu: TPopupMenu
+    Images = AllImageList
     Left = 80
     Top = 296
     object UnstableMRAStatus: TMenuItem
       Caption = #1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
+      ImageIndex = 230
     end
   end
   object RightJabberPopupMenu: TPopupMenu
+    Images = AllImageList
     Left = 112
     Top = 296
     object UnstableJabberStatus: TMenuItem
       Caption = #1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
+      ImageIndex = 230
     end
   end
 end

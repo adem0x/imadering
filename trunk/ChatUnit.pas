@@ -92,6 +92,9 @@ type
     SendAll: TMenuItem;
     TabPopupMenu: TPopupMenu;
     CloseChatTabMenu: TMenuItem;
+    ConfPopupMenu: TPopupMenu;
+    ChatUserPopupMenu: TPopupMenu;
+    CloseLastChatMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -149,9 +152,11 @@ type
     procedure SendAllOnlineClick(Sender: TObject);
     procedure SendAllClick(Sender: TObject);
     procedure SendFileSpeedButtonClick(Sender: TObject);
-    procedure ContactMenuToolButtonClick(Sender: TObject);
     procedure TypingTextToolButtonClick(Sender: TObject);
     procedure CloseChatTabMenuClick(Sender: TObject);
+    procedure ContactMenuToolButtonClick(Sender: TObject);
+    procedure ContactMenuToolButtonContextPopup(Sender: TObject;
+      MousePos: TPoint; var Handled: Boolean);
   private
     { Private declarations }
     lastClick: Tdatetime;
@@ -1008,9 +1013,7 @@ begin
   //--Загружаем информацию о нем
   IcqContactInfoForm.LoadUserUnfo;
   //--Отображаем окно на передний план
-  if IcqContactInfoForm.Visible then ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
-  IcqContactInfoForm.Show;
-  SetForeGroundWindow(IcqContactInfoForm.Handle);
+  xShowForm(IcqContactInfoForm);
 end;
 
 procedure TChatForm.EditContactSpeedButtonClick(Sender: TObject);
@@ -1043,7 +1046,7 @@ begin
       if Visible then ShowWindow(Handle, SW_RESTORE);
       Show;
       //--Активируем раздел
-      jplSettings.ActivePageIndex := 2;
+      JvPageList1.ActivePageIndex := 2;
       SettingButtonGroup.ItemIndex := 2;
     end;
   end;
@@ -1365,7 +1368,15 @@ end;
 
 procedure TChatForm.ContactMenuToolButtonClick(Sender: TObject);
 begin
-  ShowMessage(DevelMess);
+  //--Открываем меню над этим элементом
+  Popup(ContactMenuToolButton, ChatUserPopupMenu);
+end;
+
+procedure TChatForm.ContactMenuToolButtonContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  //--Открываем меню над этим элементом
+  Popup(ContactMenuToolButton, ChatUserPopupMenu);
 end;
 
 procedure TChatForm.ClearChatSpeedButtonClick(Sender: TObject);

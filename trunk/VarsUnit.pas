@@ -11,7 +11,7 @@ unit VarsUnit;
 interface
 
 uses
-  SysUtils, Classes, ExtCtrls, JvDesktopAlert;
+  SysUtils, Classes, ExtCtrls, JvDesktopAlert, Graphics;
 
 const
   Bild_Version = '5.0.0 alpha';
@@ -50,6 +50,7 @@ var
   UpdateFile: TMemoryStream;
   NoReSave: boolean = true;
   ZipThreadStop: boolean = false;
+  GroupHeaderColor: TColor = $00FFEAFF;
 
   //--Статистика трафика
   TrafSend: real;

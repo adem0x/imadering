@@ -91,9 +91,7 @@ begin
     //--Открываем окно автообновления
     if not Assigned(UpdateForm) then UpdateForm := TUpdateForm.Create(MainForm);
     //--Отображаем окно на передний план
-    if UpdateForm.Visible then ShowWindow(UpdateForm.Handle, SW_RESTORE);
-    UpdateForm.Show;
-    SetForeGroundWindow(UpdateForm.Handle);
+    xShowForm(UpdateForm);
     //--Запускаем процесс получения информации для обновления
     UpdateForm.StartBitBtnClick(nil);
     //--Закрываем это окно

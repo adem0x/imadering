@@ -244,6 +244,7 @@ object ChatForm: TChatForm
           Top = 0
           ImageIndex = 218
           OnClick = ContactMenuToolButtonClick
+          OnContextPopup = ContactMenuToolButtonContextPopup
         end
         object ChatSettingsToolButton: TToolButton
           Left = 46
@@ -856,12 +857,27 @@ object ChatForm: TChatForm
   object TabPopupMenu: TPopupMenu
     Alignment = paCenter
     Images = MainForm.AllImageList
-    Left = 136
-    Top = 336
+    Left = 232
+    Top = 80
     object CloseChatTabMenu: TMenuItem
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1082#1083#1072#1076#1082#1091
       ImageIndex = 158
       OnClick = CloseChatTabMenuClick
+    end
+  end
+  object ConfPopupMenu: TPopupMenu
+    Images = MainForm.AllImageList
+    Left = 416
+    Top = 136
+  end
+  object ChatUserPopupMenu: TPopupMenu
+    Images = MainForm.AllImageList
+    Left = 136
+    Top = 344
+    object CloseLastChatMenu: TMenuItem
+      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1101#1090#1086#1090' '#1095#1072#1090
+      ImageIndex = 158
+      OnClick = CloseTabBitBtnClick
     end
   end
 end

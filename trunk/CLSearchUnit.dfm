@@ -67,6 +67,7 @@ object CLSearchForm: TCLSearchForm
     OnColumnClick = CLSearchJvListViewColumnClick
     OnDblClick = CLSearchJvListViewDblClick
     OnSelectItem = CLSearchJvListViewSelectItem
+    AutoSelect = False
     ColumnsOrder = '0=180,1=225'
     HeaderImagePosition = hipRight
     HeaderImages = MainForm.AllImageList

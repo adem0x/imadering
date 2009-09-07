@@ -157,8 +157,7 @@ begin
     //--Активируем чат и применяем параметры в окне чата
     ChatPageControlChange(self);
     //--Отображаем окно сообщений
-    if Visible then ShowWindow(ChatForm.Handle, SW_RESTORE);
-    Show;
+    xShowForm(ChatForm);
     //--Ставим фокус в поле ввода текста
     if (InputMemo.CanFocus) and (Visible) then InputMemo.SetFocus;
   end;

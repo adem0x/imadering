@@ -85,8 +85,18 @@ function SearchNickInCash(cType, cId: string): string;
 function CopyDir(const FromDir, ToDir: string): Boolean;
 function NormalDir(const DirName: string): string;
 function ClearDir(const Path: string; Delete: Boolean): Boolean;
+procedure SetCustomWidthComboBox(CB: TComboBox);
+procedure xShowForm(xForm: TForm);
 
 implementation
+
+procedure xShowForm(xForm: TForm);
+begin
+  //--јвтоматизируем показ окон
+  if xForm.Visible then ShowWindow(xForm.Handle, SW_RESTORE);
+  xForm.Show;
+  SetForeGroundWindow(xForm.Handle);
+end;
 
 function GetFileSize(FileName: string): Longint;
 var
@@ -749,6 +759,8 @@ var
   Pos, lp, i: Integer;
   BMT: TBMTable;
 begin
+  Result := -1;
+  if (S = EmptyStr) or (P = EmptyStr) then Exit;
   for i := 0 to 255 do
     BMT[i] := Length(P);
   for i := Length(P) downto 1 do
@@ -1638,6 +1650,24 @@ begin
 end;
 
 {$WARNINGS ON}
+
+procedure SetCustomWidthComboBox(CB: TComboBox);
+var
+  i, ItemWidth, CWidth: integer;
+begin
+  //--¬ыравниваем ширину списка по самой длинной строке
+  ItemWidth := 0;
+  with CB do
+  begin
+    for i := 0 to Items.Count - 1 do
+    begin
+      CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[i]);
+      if CWidth > ItemWidth then ItemWidth := CWidth;
+    end;
+    if Items.Count > DropDownCount then Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0)
+    else Perform(CB_SETDROPPEDWIDTH, ItemWidth + 8, 0);
+  end;
+end;
 
 end.
 
