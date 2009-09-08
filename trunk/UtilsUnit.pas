@@ -989,7 +989,7 @@ end;
 function DateTimeChatMess: string;
 begin
   //YYYYMMDDHHNNSS
-  Result := FormatDateTime('HH:NN:SS', Time) + ' ' + FormatDateTime('DD:MM:YYYY', Date);
+  Result := FormatDateTime('HH:NN:SS', Time) + ' ' + FormatDateTime('DD.MM.YYYY', Date);
 end;
 
 {$HINTS OFF}

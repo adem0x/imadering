@@ -105,8 +105,6 @@ begin
   if FileExists(ProfilePath + 'Profile\Contacts\Icq_' + ReqUIN + '.xml') then
   begin
     InfoLabel.Caption := InfoOKL;
-    //--Распаковываем файл
-    //UnZip_File(ProfilePath + 'Profile\Contacts\Icq_' + ReqUIN + '.z', ProfilePath + 'Profile\Contacts\');
     //--Запускаем создание суммарного инфо из распакованного файла
     CreateSummery(ReqUIN);
   end

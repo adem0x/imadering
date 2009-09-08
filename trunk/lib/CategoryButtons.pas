@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Controls, ImgList, Forms, Messages,
-  Graphics, StdCtrls, GraphUtil, ActnList, VarsUnit;
+  Graphics, StdCtrls, GraphUtil, ActnList;
 
 {const
   crDragCopy = TCursor(-23); { New cursor, with a plus for copying }
@@ -552,7 +552,7 @@ type
 
 implementation
 
-uses Themes, ExtCtrls, Types;
+uses Themes, ExtCtrls, Types, VarsUnit;
 
 //{$R CategoryButtons.res} { Contains the Copy DragCursor }
 

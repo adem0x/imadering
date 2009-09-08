@@ -157,6 +157,8 @@ type
     procedure ContactMenuToolButtonClick(Sender: TObject);
     procedure ContactMenuToolButtonContextPopup(Sender: TObject;
       MousePos: TPoint; var Handled: Boolean);
+    procedure HTMLChatViewerMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
     lastClick: Tdatetime;
@@ -179,7 +181,7 @@ type
     procedure AddChatText(Nick_Time, Mess_Text: string; MessIn: boolean = false);
     procedure CreateFastReplyMenu;
     function pageIdxAt(x, y: integer): integer;
-    procedure AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string);
+    function AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string): boolean;
   end;
 
 var
@@ -201,8 +203,9 @@ uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
   IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, Code;
 
-procedure TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string);
+function TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string): boolean;
 begin
+  Result := false;
   if Visible then
   begin
     //--Если открыт текущий чат с этим контактом
@@ -214,10 +217,20 @@ begin
       AddChatText(cMsgD, cMess, true);
       //--Прокручиваем чат в самый конец
       HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-      //--Если окно сообщений не активно, то показываем всплывашку
-      if not ChatForm.Active then DAShow(cNick, cPopMsg, cId, 165, 1, 0);
+      //--Если окно сообщений активно, то выходим
+      if ChatForm.Active then
+      begin
+        Result := true;
+        Exit;
+      end;
     end;
   end;
+  //--Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
+  if InMessList.IndexOf(cId) = -1 then InMessList.Add(cId);
+  //--Играем звук входящего сообщения
+  ImPlaySnd(1);
+  //--Показываем всплывашку с сообщением
+  DAShow(cNick, cPopMsg, cId, 165, 1, 0);
 end;
 
 function TChatForm.pageIdxAt(x, y: integer): integer;
@@ -802,6 +815,7 @@ begin
     begin
       //--Выставляем параметры этого контакта
       SubItems[36] := EmptyStr;
+      ChatPageControl.ActivePage.Caption := SubItems[0];
       ChatPageControl.ActivePage.Tag := StrToInt(SubItems[6]);
       ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
       ChatPageControl.ActivePage.Hint := SubItems[34];
@@ -856,8 +870,6 @@ begin
       end;
     end;
   end;
-  //--Ставим флаг о том что непрочитанных сообщений во вкладке нет
-  ChatPageControl.ActivePage.Margins.Left := 0;
   //--Ставим имя и фамилию в информационное поле
   InfoPanel1.Caption := NameAndLast(UIN);
   if InfoPanel1.Caption = EmptyStr then InfoPanel1.Caption := ChatPageControl.ActivePage.Caption;
@@ -1069,11 +1081,10 @@ var
 begin
   //--Сбрасываем иконку в активной вкладке в окне чата
   if ChatPageControl.ActivePage = nil then Exit;
-  ChatPageControl.ActivePage.Margins.Left := 0;
   ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
   //--Сбрасываем иконку сообщения в Ростере
   RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
-  if RosterItem <> nil then RosterItem.Checked := false;
+  if RosterItem <> nil then RosterItem.SubItems[36] := EmptyStr;
   //--Удаляем отметку о сообщении из списка очереди входящих сообщений
   RosterForm.DellcIdInMessList(InfoPanel2.Caption);
 end;
@@ -1308,6 +1319,13 @@ begin
   //копируем выделенный текст в буфер обмена
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 67) then
     HTMLChatViewer.CopyToClipboard;
+end;
+
+procedure TChatForm.HTMLChatViewerMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //--Сбрасываем выделение текста в чате по клику левой клавишей мыши
+  if Button = mbLeft then HTMLChatViewer.SelLength := 0;
 end;
 
 procedure TChatForm.SmiliesSpeedButtonClick(Sender: TObject);

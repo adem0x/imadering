@@ -15,7 +15,7 @@ uses
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
   rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils,
-  OverbyteIcsMimeUtils, StdCtrls, Registry;
+  OverbyteIcsMimeUtils, StdCtrls, Registry, ActnList;
 
 type
   TMainForm = class(TForm)
@@ -157,6 +157,9 @@ type
     N29: TMenuItem;
     PrivatListMenu: TMenuItem;
     JabberSearchNewContact: TMenuItem;
+    MainActionList: TActionList;
+    CloseActiveFormAction: TAction;
+    ChatTabCloseAction: TAction;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -281,6 +284,8 @@ type
     procedure PrivatListMenuClick(Sender: TObject);
     procedure JabberSearchNewContactClick(Sender: TObject);
     procedure ICQSearchNewContactClick(Sender: TObject);
+    procedure CloseActiveFormActionExecute(Sender: TObject);
+    procedure ChatTabCloseActionExecute(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -2317,6 +2322,13 @@ begin
   FormShowInWorkArea(MraXStatusForm);
 end;
 
+procedure TMainForm.ChatTabCloseActionExecute(Sender: TObject);
+begin
+  //--Закрываем активную вкладку чата по нажатию Alt + F4
+  if Application.ActiveFormHandle = ChatForm.Handle then
+    ChatForm.CloseTabBitBtnClick(self);
+end;
+
 procedure TMainForm.CheckStatusContactClick(Sender: TObject);
 begin
   //--Проверяем статус контакта
@@ -2414,6 +2426,13 @@ begin
   if not Assigned(AboutForm) then AboutForm := TAboutForm.Create(self);
   //--Отображаем окно
   xShowForm(AboutForm);
+end;
+
+procedure TMainForm.CloseActiveFormActionExecute(Sender: TObject);
+begin
+  //--Закрываем активное окно по нажатию на Esc
+  if Application.ActiveFormHandle = Handle then MainFormHideInTray
+  else ShowWindow(Application.ActiveFormHandle, SW_HIDE);
 end;
 
 procedure TMainForm.CloseGroupsCLClick(Sender: TObject);
@@ -2829,8 +2848,6 @@ begin
     Size := ExpandEnvironmentStrings(PChar(S), buf, sizeof(buf));
     ProfilePath := Copy(buf, 1, Size);
   end;
-  //--Создаём окно Ростера
-  RosterForm := TRosterForm.Create(self);
   //--Временно создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(self);
   SettingsForm.ApplySettings;
@@ -2841,6 +2858,8 @@ begin
   //--Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  //--Создаём окно Ростера
+  RosterForm := TRosterForm.Create(self);
   //--Делаем всплывающие подсказки неисчезающими
   Application.HintHidePause := MaxInt;
   Application.OnHint := HintMaxTime;

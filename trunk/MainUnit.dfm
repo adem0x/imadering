@@ -996,4 +996,18 @@ object MainForm: TMainForm
       ImageIndex = 230
     end
   end
+  object MainActionList: TActionList
+    Left = 16
+    Top = 200
+    object CloseActiveFormAction: TAction
+      Caption = 'CloseActiveFormAction'
+      ShortCut = 27
+      OnExecute = CloseActiveFormActionExecute
+    end
+    object ChatTabCloseAction: TAction
+      Caption = 'ChatTabCloseAction'
+      ShortCut = 32883
+      OnExecute = ChatTabCloseActionExecute
+    end
+  end
 end

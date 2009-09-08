@@ -3,7 +3,7 @@ unit rXML;
 interface
 
 uses
-  Windows, Classes, SysUtils, SimpleXML, XMLStand;
+  Windows, Classes, SysUtils, SimpleXML, XMLStand, Dialogs;
 
 // Идентификатор служебного тега
 const ServiceTag = '<?xml version';
@@ -428,7 +428,6 @@ begin
 end;
 
 procedure TrXML.SaveToFile(const FileName: string);
-//Var aFile: TFileStream;
 var
   f: file;
   S: string;
@@ -441,14 +440,6 @@ begin
   finally
     CloseFile(f);
   end;
-  (*
-  aFile := TFileStream.Create(FileName, fmCreate, fmShareDenyWrite);
-  try
-    SaveToStream(aFile);
-  finally
-    aFile.Free
-  end
-  *)
 end;
 
 procedure TrXML.SaveToStream(Stream: TStream);

@@ -191,7 +191,8 @@ begin
     //--Добавляем историю в этот контакт
     SubItems[13] := SubItems[13] + '<span class=b>' + cMsgD +
       '</span><br><span class=c>' + cMess + '</span><br><br>' + #13#10;
-    //--Ставим флаг этому контакту, что история изменилась
+    //--Ставим флаг этому контакту, что есть непрочитанные сообщения
+    SubItems[17] := 'X';
     SubItems[36] := 'X';
   end;
 end;
@@ -217,7 +218,7 @@ begin
   if (Item.SubItems[3] = 'Icq') and (Length(Item.Caption) = 4) then Item.ImageIndex := 227
   else if Item.SubItems[3] = 'Icq' then Item.ImageIndex := 81
   else if Item.SubItems[3] = 'Jabber' then Item.ImageIndex := 43
-  else if Item.Caption = 'NoCL' then Item.ImageIndex := 227;
+  else if Item.Caption = 'NoCL' then Item.ImageIndex := 227;       
 end;
 
 procedure TRosterForm.UpdateFullCL;

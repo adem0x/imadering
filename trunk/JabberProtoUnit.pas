@@ -16,6 +16,9 @@ uses
   Code, VarsUnit, Graphics, CategoryButtons, rXML, JvZLibMultiple,
   OverbyteIcsMD5, OverbyteIcsMimeUtils, JabberOptionsUnit, RosterUnit;
 
+//const
+  //Jabber_Info: string = 'Profile\Contacts\Jabber_';
+
 var
   Jabber_BuffPkt: string = '';
   Jabber_JID: string = '';
@@ -451,7 +454,7 @@ begin
           if (pJID <> EmptyStr) and (InMsg <> EmptyStr) then
           begin
             //--Отделяем ресурс
-            pJID := Parse('/', pJID, 1);
+            if BMSearch(0, pJID, '/') > -1 then pJID := Parse('/', pJID, 1);
             //--Обрабатываем сообщение
             Mess := InMsg;
             ChatForm.CheckMessage_BR(Mess);
@@ -471,9 +474,9 @@ begin
                 //--Дата сообщения
                 msgD := Nick + ' [' + DateTimeChatMess + ']';
                 //--Записываем историю в этот контакт если он уже найден в списке контактов
+                SubItems[15] := PopMsg;
                 SubItems[17] := 'X';
                 SubItems[35] := '0';
-                SubItems[15] := PopMsg;
                 //--Добавляем историю в эту запись
                 RosterForm.AddHistory(RosterItem, msgD, Mess);
               end;
@@ -508,19 +511,16 @@ begin
                 SubItems[2] := 'none';
                 SubItems[3] := 'Jabber';
                 SubItems[6] := '214';
+                SubItems[15] := PopMsg;
                 SubItems[17] := 'X';
                 SubItems[35] := '0';
-                SubItems[15] := PopMsg;
                 //--Добавляем историю в эту запись
                 RosterForm.AddHistory(RosterItem, msgD, Mess);
               end;
             end;
             //--Добавляем сообщение в текущий чат
-            ChatForm.AddMessInActiveChat(Nick, PopMsg, pJID, msgD, Mess);
-            //--Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-            if InMessList.IndexOf(pJID) = -1 then InMessList.Add(pJID);
-            //--Играем звук входящего сообщения
-            ImPlaySnd(1);
+            if ChatForm.AddMessInActiveChat(Nick, PopMsg, pJID, msgD, Mess) then
+              RosterItem.SubItems[36] := EmptyStr;
           end;
         end;
       finally

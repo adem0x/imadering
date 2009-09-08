@@ -112,6 +112,7 @@ object ChatForm: TChatForm
         PrintMarginTop = 2.000000000000000000
         PrintMarginBottom = 2.000000000000000000
         PrintScale = 1.000000000000000000
+        OnMouseDown = HTMLChatViewerMouseDown
         OnKeyDown = HTMLChatViewerKeyDown
       end
     end

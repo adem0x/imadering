@@ -606,7 +606,11 @@ begin
   //--Открываем диалог выбора папки
   if BrowseForFolder(SelectDirL, true, DDir) then
   begin
-    ProfilePathEdit.Text := DDir + '\';
+    //--Если выбрана не папка, то выходим
+    if BMSearch(0, DDir, ':\') = -1 then Exit;
+    //--Правим слэш для выбранной папки
+    if Length(DDir) > 3 then ProfilePathEdit.Text := DDir + '\'
+    else ProfilePathEdit.Text := DDir;
     ProxyAddressEditChange(self);
   end;
 end;

@@ -416,12 +416,12 @@ begin
 end;
 
 procedure ICQ_Parse_UserAvatar(PktData: string);
-var
+{var
   aUIN, ImageStr, ImageHex, iHash, ImageType: string;
   Len: integer;
-  ImageData: TMemoryStream;
+  ImageData: TMemoryStream;}
 begin
-  Len := HexToInt(NextData(PktData, 2));
+ { Len := HexToInt(NextData(PktData, 2));
   Len := Len * 2;
   aUIN := Hex2Text(NextData(PktData, Len));
   NextData(PktData, 4); //--skip 0001
@@ -455,7 +455,7 @@ begin
     finally
       ImageData.Free;
     end;
-  end;
+  end;}
 end;
 
 procedure ICQ_GetAvatarImage(aUIN, aHash: string);
@@ -1733,7 +1733,6 @@ var
   Date64: Int64;
   sDate64: TDateTime absolute Date64;
   SubPkt, LastUpdateInfo: string;
-  ListF: TStringList;
 begin
   EndSearch := false;
   //--Сканируем тело пакета на нужные нам TLV
@@ -2516,23 +2515,7 @@ begin
             //--Создаём необходимые папки
             ForceDirectories(ProfilePath + 'Profile\Contacts');
             //--Записываем сам файл
-            SaveToFile(MyPath + Icq_Info + UIN + '.xml');
-            //--Сжимаем файл в архив
-            //--Создаём временный лист для файла
-            {ListF := TStringList.Create;
-            try
-              //--Добавляем в лист путь к файлу
-              ListF.Add(MyPath + Icq_Info);
-              //--Сжимаем этот файл и кладем в эту же директорию
-              Zip_File(ListF, ProfilePath + 'Profile\Contacts\Icq_' + UIN + '.z');
-              //--Удаляем несжатый файл
-              if FileExists(MyPath + Icq_Info) then begin
-                DeleteFile(MyPath + Icq_Info);
-                RemoveDir(ProfilePath + 'Profile\Contacts\Download');
-              end;
-            finally
-              ListF.Free;
-            end;}
+            SaveToFile(ProfilePath + Icq_Info + UIN + '.xml');
           finally
             Free();
           end;
@@ -2827,8 +2810,8 @@ begin
       //--Дата сообщения
       msgD := Nick + ' [' + DateTimeChatMess + ']';
       //--Записываем историю в этот контакт если он уже найден в списке контактов
-      SubItems[35] := '0';
       SubItems[15] := PopMsg;
+      SubItems[35] := '0';
       //--Добавляем историю в эту запись
       RosterForm.AddHistory(RosterItem, msgD, Mess);
     end;
@@ -2863,20 +2846,17 @@ begin
       SubItems[2] := 'none';
       SubItems[3] := 'Icq';
       SubItems[6] := '214';
-      SubItems[35] := '0';
       SubItems[15] := PopMsg;
+      SubItems[35] := '0';
       //--Добавляем историю в эту запись
       RosterForm.AddHistory(RosterItem, msgD, Mess);
       //--Запрашиваем анкету неопознанных контактов
-      if Nick = UIN then if ICQ_Work_Phaze then ICQ_ReqInfo_New_Pkt(UIN);
+      //if Nick = UIN then if ICQ_Work_Phaze then ICQ_ReqInfo_New_Pkt(UIN);
     end;
   end;
   //--Добавляем сообщение в текущий чат
-  ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, msgD, Mess);
-  //--Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-  if InMessList.IndexOf(UIN) = -1 then InMessList.Add(UIN);
-  //--Играем звук входящего сообщения
-  ImPlaySnd(1);
+  if ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, msgD, Mess) then
+    RosterItem.SubItems[36] := EmptyStr;
 end;
 
 procedure ICQ_ReqMessage_0407(PktData: string);
@@ -4107,58 +4087,6 @@ begin
       ICQ_Add_Group_Phaze := true;
       ICQ_SSI_Phaze := true;
       ICQ_AddGroup('General', ICQ_Add_GroupId);
-    end;
-    //--Вычисляем количесво контактов в группах локального КЛ
-    if not NewKL then
-    begin
-      {with MainForm.ContactList do
-      begin
-        for i := 0 to Categories.Count - 1 do
-        begin
-          if (Categories[i].GroupId = '0000') or (Categories[i].Items.Count = 0) then
-            Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(Categories[i].Items.Count)
-          else Categories[i].Caption := Categories[i].GroupCaption + ' - ' + '0' + GroupInv + IntToStr(Categories[i].Items.Count);
-        end;
-      end;}
-      //--Считываем и применям файл с флагами открытых и свёрнутых групп
-      //--Инициализируем XML
-      {with TrXML.Create() do
-      try
-        //--Загружаем файл контакт листа
-        if FileExists(ProfilePath + 'Profile\ContactList.xml') then
-        begin
-          LoadFromFile(ProfilePath + 'Profile\ContactList.xml');
-          //--Загружаем группы и их флаги
-          with MainForm.ContactList do
-          begin
-            cnt := 0;
-            if OpenKey('settings') then
-            try
-              cnt := GetKeyCount('group');
-            finally
-              CloseKey();
-            end;
-            for z := 0 to cnt - 1 do
-            begin
-              if OpenKey('settings\group', false, z) then
-              try
-                Gid := ReadString('id');
-                Colap := ReadBool('collapsed');
-                for zz := 0 to Categories.Count - 1 do
-                begin
-                  //--Если идентификатор группы совпадает, то присваиваем ей флаг
-                  if Categories[zz].GroupId = Gid then
-                    Categories[zz].Collapsed := Colap;
-                end;
-              finally
-                CloseKey;
-              end;
-            end;
-          end;
-        end;
-      finally
-        Free();
-      end;}
     end;
     //--Объявляем финальный результат разбора всего пакета
     Result := true;

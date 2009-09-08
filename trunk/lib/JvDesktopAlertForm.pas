@@ -40,7 +40,8 @@ uses
 {$ENDIF UNITVERSIONING}
   Windows, Messages, Classes, Graphics, Controls, Forms, StdCtrls, ExtCtrls,
   ImgList, ActnList,
-  JvButton, JvLabel, JvComponent, JvConsts, JvExForms, Dialogs;
+  JvButton, JvLabel, JvComponent, JvConsts, JvExForms, Dialogs, ComCtrls,
+  RosterUnit;
 
 const
   JVDESKTOPALERT_AUTOFREE = WM_USER + 1001;
@@ -570,11 +571,10 @@ end;
 
 procedure TJvFormDesktopAlert.DoMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-label
-  a, b, c;
 var
-  i, ii, Z: integer;
+  N: integer;
   zUIN: string;
+  RosterItem: TListItem;
 begin
   //--Копируем юин из хинта, ибо потом он пропадает! O_o
   zUIN := Hint;
@@ -586,60 +586,20 @@ begin
     //--Если учётная запись контакта не пустая
     if zUIN <> '' then
     begin
-      //--Сбрасываем иконку сообщения в КЛ
-      with MainForm.ContactList do
-      begin
-        for i := 0 to Categories.Count - 1 do
-        begin
-          for ii := 0 to Categories[i].Items.Count - 1 do
-          begin
-            if Categories[i].Items[ii].UIN = zUIN then
-            begin
-              Categories[i].Items[ii].Msg := false;
-              Categories[i].Items[ii].ImageIndex := Categories[i].Items[ii].Status;
-              //--Выходим из цикла
-              goto a;
-            end;
-          end;
-        end;
-      end;
-      a: ;
-      //--Сбрасываем иконку сообщения в окне чата
-      if Assigned(ChatForm) then
-      begin
-        with ChatForm.ChatPageControl do
-        begin
-          if (Visible) and (ActivePage <> nil) then
-          begin
-            for I := 0 to PageCount - 1 do
-            begin
-              if Pages[i].HelpKeyword = zUIN then
-              begin
-                Pages[i].Margins.Left := 0;
-                Pages[i].ImageIndex := Pages[i].Tag;
-                //--Выходим из цикла
-                goto b;
-              end;
-            end;
-          end;
-        end;
-      end;
-      b: ;
+      //--Сбрасываем иконку сообщения в Ростере
+      RosterItem := RosterForm.ReqRosterItem(zUIN);
+      if RosterItem <> nil then RosterItem.SubItems[36] := EmptyStr;
       //--Tray Msg list
       try
-        Z := InMessList.IndexOf(zUIN);
-        if Z > -1 then InMessList.Delete(Z);
+        N := InMessList.IndexOf(zUIN);
+        if N > -1 then InMessList.Delete(N);
       except
       end;
     end;
   end
-  else
-  begin
-    if Button = mbLeft then if zUIN <> '' then MainForm.OpenFromTrayMessage(zUIN)
-    else if Button = mbMiddle then goto c;
-  end;
-  //--При клике на сообщение любой клавищей мыши закрываем окно
-  c: ;
+  //--Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
+  else if Button = mbLeft then if zUIN <> '' then MainForm.OpenFromTrayMessage(zUIN);
+  //--Закрываем всплывающее окно
   Close;
 end;
 
