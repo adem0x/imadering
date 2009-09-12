@@ -67,11 +67,11 @@ type
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     UINSearchCheckBox: TCheckBox;
-    Edit1: TEdit;
+    UINSearchEdit: TEdit;
     EmailSearchCheckBox: TCheckBox;
-    Edit2: TEdit;
+    EmailSearchEdit: TEdit;
     KeyWordSearchCheckBox: TCheckBox;
-    Edit3: TEdit;
+    KeyWordSearchEdit: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure QMessageEditEnter(Sender: TObject);
@@ -150,7 +150,7 @@ begin
     end;
   end;
   //--Переводим форму на другие языки
-  
+
 end;
 
 procedure TIcqSearchForm.AutoSendTimerTimer(Sender: TObject);
@@ -186,181 +186,65 @@ begin
 end;
 
 procedure TIcqSearchForm.SearchBitBtnClick(Sender: TObject);
-//var
-  //CodeList: TStringList;
-  //CountryInd, LangInd, OccupInd, IntInd, PastInd, MaritalInd, OrganInd: integer;
+var
+  CountryInd, LangInd, OccupInd, IntInd, MaritalInd: integer;
 begin
-  {if not CheckBox4.Checked then
+  //--Если не стоит галочка "Не очищать предыдущие резульаты", то стираем их
+  if not NotPreviousClearCheckBox.Checked then
   begin
-    ListView1.Clear;
-    Panel7.Caption := '0';
+    SearchResultJvListView.Clear;
+    ResultPanel.Caption := '0';
   end;
-  //
-  case PageControl1.ActivePageIndex of
-    0:
-      begin
-        if (Edit1.Text > EmptyStr) and (CheckBox1.Checked) then
-        begin
-          Edit1.Text := exNormalizeScreenName(Edit1.Text);
-          Edit1.Text := exNormalizeIcqNumber(Edit1.Text);
-          if not exIsValidCharactersDigit(Edit1.Text) then
-          begin
-            Edit1.Clear;
-            Exit;
-          end;
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoUIN_old_1(Edit1.Text);
-          end;
-        end;
-        //
-        if (Edit2.Text > EmptyStr) and (CheckBox2.Checked) then
-        begin
-          Edit2.Text := exNormalizeScreenName(Edit2.Text);
-          Edit2.Text := exNormalizeIcqNumber(Edit2.Text);
-          if not exIsValidCharactersDigit(Edit2.Text) then
-          begin
-            Edit2.Clear;
-            Exit;
-          end;
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoUIN_old_2(Edit2.Text);
-          end;
-        end;
-        //
-        if (Edit3.Text > EmptyStr) and (CheckBox3.Checked) then
-        begin
-          Edit3.Text := exNormalizeScreenName(Edit3.Text);
-          Edit3.Text := exNormalizeIcqNumber(Edit3.Text);
-          if not exIsValidCharactersDigit(Edit3.Text) then
-          begin
-            Edit3.Clear;
-            Exit;
-          end;
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoUIN_new(Edit3.Text);
-          end;
-        end;
-      end;
-    1:
-      begin
-        if (Edit5.Text > EmptyStr) and (CheckBox6.Checked) then
-        begin
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoEmail_old(Edit5.Text, CheckBox5.Checked);
-          end;
-        end;
-        //
-        if (Edit6.Text > EmptyStr) and (CheckBox7.Checked) then
-        begin
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoEmail_new(Edit6.Text);
-          end;
-        end;
-      end;
-    2:
-      begin
-        if (Edit7.Text > EmptyStr) or (Edit8.Text > EmptyStr) or (Edit9.Text > EmptyStr) then
-        begin
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoNick_First_Last(Edit7.Text, Edit8.Text, Edit9.Text, CheckBox5.Checked);
-          end;
-        end;
-      end;
-    3:
-      begin
-        if not ICQ_Work_Phaze then Exit;
-        if IsNotNull([Edit12.Text, Edit13.Text, Edit14.Text, Edit10.Text, Edit11.Text,
-          ComboBox1.Text, ComboBox2.Text, ComboBox4.Text, ComboBox3.Text,
-            ComboBox9.Text, ComboBox5.Text, ComboBox8.Text, Edit15.Text,
-            ComboBox6.Text, ComboBox7.Text]) then
-        begin
-          CodeList := TStringList.Create;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries_codes.txt');
-          try
-            CountryInd := StrToInt(CodeList.Strings[ComboBox3.ItemIndex]);
-          except
-            CountryInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages_codes.txt');
-          try
-            LangInd := StrToInt(CodeList.Strings[ComboBox9.ItemIndex]);
-          except
-            LangInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Interests_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Interests_codes.txt');
-          try
-            IntInd := StrToInt(CodeList.Strings[ComboBox8.ItemIndex]);
-          except
-            IntInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus_codes.txt');
-          try
-            MaritalInd := StrToInt(CodeList.Strings[ComboBox4.ItemIndex]);
-          except
-            MaritalInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Occupation_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Occupation_codes.txt');
-          try
-            OccupInd := StrToInt(CodeList.Strings[ComboBox5.ItemIndex]);
-          except
-            OccupInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Organization_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Organization_codes.txt');
-          try
-            OrganInd := StrToInt(CodeList.Strings[ComboBox6.ItemIndex]);
-          except
-            OrganInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Past_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Past_codes.txt');
-          try
-            PastInd := StrToInt(CodeList.Strings[ComboBox7.ItemIndex]);
-          except
-            PastInd := 0;
-          end;
-          CodeList.Free;
-          //
-          Panel6.Caption := SP2;
-          ICQ_SearchByPersonalInfo(Edit12.Text, Edit13.Text, Edit14.Text, Edit10.Text, Edit11.Text,
-            ComboBox1.ItemIndex, ComboBox2.ItemIndex, MaritalInd, CountryInd,
-            LangInd, OccupInd, IntInd, CheckBox5.Checked,
-            Edit15.Text, OrganInd, PastInd);
-        end;
-      end;
+  //--Ищем по ICQ UIN
+  if (UINSearchCheckBox.Checked) and (UINSearchEdit.Text <> EmptyStr) then
+  begin
+    //--Нормализуем UIN
+    UINSearchEdit.Text := exNormalizeScreenName(UINSearchEdit.Text);
+    UINSearchEdit.Text := exNormalizeIcqNumber(UINSearchEdit.Text);
+    if not exIsValidCharactersDigit(UINSearchEdit.Text) then
+    begin
+      UINSearchEdit.Clear;
+      Exit;
+    end;
+    if ICQ_Work_Phaze then
+    begin
+      StatusPanel.Caption := SearchInfoGoL;
+      ICQ_SearchPoUIN_new(UINSearchEdit.Text);
+    end;
+  end
+  //--Ищем по Email
+  else if (EmailSearchCheckBox.Checked) and (EmailSearchEdit.Text <> EmptyStr) then
+  begin
+    if ICQ_Work_Phaze then
+    begin
+      StatusPanel.Caption := SearchInfoGoL;
+      ICQ_SearchPoEmail_new(EmailSearchEdit.Text);
+    end;
+  end
+  //--Ищем по ключевым словам
+  else if (KeyWordSearchCheckBox.Checked) and (KeyWordSearchEdit.Text <> EmptyStr) then
+  begin
+    if ICQ_Work_Phaze then
+    begin
+      StatusPanel.Caption := SearchInfoGoL;
+      ICQ_SearchPoText(KeyWordSearchEdit.Text, OnlyOnlineCheckBox.Checked);
+    end;
+  end
+  //--Ищем по расширенным параметрам
+  else if GlobalSearchCheckBox.Checked then
+  begin
+    if ICQ_Work_Phaze then
+    begin
+
+    end;
+  end;
+
+
+
+{
     4:
       begin
-        if not ICQ_Work_Phaze then Exit;
+
         if IsNotNull([ComboBox15.Text, ComboBox16.Text]) then
         begin
           // interest or work

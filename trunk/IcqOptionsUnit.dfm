@@ -26,13 +26,17 @@ object IcqOptionsForm: TIcqOptionsForm
     Height = 366
     BevelKind = bkTile
     BorderStyle = bsNone
-    ButtonHeight = 27
+    ButtonHeight = 25
     ButtonOptions = [gboFullSize, gboGroupStyle, gboShowCaptions]
     Images = MainForm.AllImageList
     Items = <
       item
         Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         ImageIndex = 81
+      end
+      item
+        Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+        ImageIndex = 162
       end
       item
         Caption = #1055#1088#1080#1074#1072#1090#1085#1086#1089#1090#1100
@@ -85,7 +89,6 @@ object IcqOptionsForm: TIcqOptionsForm
     ItemIndex = 0
     TabOrder = 0
     OnButtonClicked = ICQOptionButtonGroupButtonClicked
-    OnKeyDown = ICQOptionButtonGroupKeyDown
   end
   object GeneralPanel: TPanel
     Left = 151
@@ -101,16 +104,16 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = JvStandardPage1
+      ActivePage = AccountPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
-      object JvStandardPage1: TJvStandardPage
+      object AccountPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage1'
+        Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -274,12 +277,19 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage2: TJvStandardPage
+      object ConnectPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage2'
+        Caption = 'ConnectPage'
+      end
+      object PrivatPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'PrivatPage'
         object OtherOptionsGroupBox: TGroupBox
           Left = 3
           Top = 215
@@ -449,12 +459,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage3: TJvStandardPage
+      object BonusPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage3'
+        Caption = 'BonusPage'
         object CheckBox5: TCheckBox
           Left = 16
           Top = 377
@@ -617,12 +627,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage4: TJvStandardPage
+      object IDClientPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage4'
+        Caption = 'IDClientPage'
         object ClientIDGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -801,12 +811,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage5: TJvStandardPage
+      object PassChangePage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage5'
+        Caption = 'PassChangePage'
         object PassChangeGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -972,12 +982,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage6: TJvStandardPage
+      object AnketaPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage6'
+        Caption = 'AnketaPage'
         object MyInfoNameGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -1358,12 +1368,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage7: TJvStandardPage
+      object HomePage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage7'
+        Caption = 'HomePage'
         object OriginalInfoGroupBox: TGroupBox
           Left = 3
           Top = 232
@@ -2202,12 +2212,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage8: TJvStandardPage
+      object WorkPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage8'
+        Caption = 'WorkPage'
         object WorkInfoGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -2615,12 +2625,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage9: TJvStandardPage
+      object PersonalPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage9'
+        Caption = 'PersonalPage'
         object PersonalInfoGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -3285,12 +3295,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage10: TJvStandardPage
+      object InterestsPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage10'
+        Caption = 'InterestsPage'
         object LangsInfoGroupBox: TGroupBox
           Left = 3
           Top = 142
@@ -3764,12 +3774,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage11: TJvStandardPage
+      object AboutPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage11'
+        Caption = 'AboutPage'
         object AboutInfoGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -3801,12 +3811,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage12: TJvStandardPage
+      object AvatarPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage12'
+        Caption = 'AvatarPage'
         object AvatarInfoGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -3843,12 +3853,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object JvStandardPage13: TJvStandardPage
+      object ParamsPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage13'
+        Caption = 'ParamsPage'
         object ParamInfoGroupBox: TGroupBox
           Left = 3
           Top = 3

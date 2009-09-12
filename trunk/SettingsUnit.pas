@@ -118,7 +118,7 @@ type
   private
     { Private declarations }
     procedure LoadSettings;
-    procedure TranslateForms;
+    procedure TranslateForm;
   public
     { Public declarations }
     procedure ApplySettings;
@@ -134,7 +134,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, TypInfo, IcqOptionsUnit, Code, JvBrowseFolder, UtilsUnit;
+  MainUnit, VarsUnit, IcqOptionsUnit, Code, JvBrowseFolder, UtilsUnit;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -624,10 +624,10 @@ begin
   else if (ProtocolsListView.Items[0].Checked) and (not MainForm.ICQToolButton.Visible) then
     MainForm.ICQEnable(true);
   //--MRA
-  {if (not ProtocolsListView.Items[1].Checked) and (MainForm.MRAToolButton.Visible) then
+  if (not ProtocolsListView.Items[1].Checked) and (MainForm.MRAToolButton.Visible) then
     MainForm.MRAEnable(false)
   else if (ProtocolsListView.Items[1].Checked) and (not MainForm.MRAToolButton.Visible) then
-    MainForm.MRAEnable(true);}
+    MainForm.MRAEnable(true);
   //--Jabber
   if (not ProtocolsListView.Items[2].Checked) and (MainForm.JabberToolButton.Visible) then
     MainForm.JabberEnable(false)
@@ -767,7 +767,7 @@ begin
   LoadSettings;
   ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
   //--Устанавливаем перевод
-  TranslateForms;
+  TranslateForm;
   //--Путь к профилю
   ProfilePathEdit.Text := ProfilePath;
   //--Деактивируем кнопку применения настроек
@@ -796,21 +796,6 @@ begin
   SettingButtonGroup.ItemIndex := 0;
 end;
 
-procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
-  AValue: string);
-var
-  PropInfo: PPropInfo;
-  TK: TTypeKind;
-begin
-  PropInfo := GetPropInfo(AComp.ClassInfo, APropName);
-  if PropInfo <> nil then
-  begin
-    TK := PropInfo^.PropType^.Kind;
-    if (TK = tkString) or (TK = tkLString) or (TK = tkWString) then
-      SetStrProp(AComp, PropInfo, AValue);
-  end;
-end;
-
 procedure TSettingsForm.TransparentTrackBarChange(Sender: TObject);
 begin
   //--Активируем кнопку Применить
@@ -820,31 +805,10 @@ begin
   MainForm.AlphaBlendValue := 255 - TransparentTrackBar.Position;
 end;
 
-procedure TSettingsForm.TranslateForms;
-var
-  i: integer;
+procedure TSettingsForm.TranslateForm;
 begin
-  //--Загружаем перевод интерфейса программы
-  if CurrentLang <> EmptyStr then
-  begin
-    if FileExists(MyPath + 'Langs\' + CurrentLang + '.xml') then begin
+  //--Переводим форму на другие языки
 
-      with TrXML.Create() do try
-
-        LoadFromFile(MyPath + 'Langs\' + CurrentLang + '.xml');
-        //--Переводим главное окно
-        for i := 0 to MainForm.ComponentCount - 1 do begin
-          if OpenKey('settings\main-form\' + MainForm.Components[i].Name) then try
-            SetStringPropertyIfExists(MainForm.Components[i], 'Hint', '<b>' + ReadString('hint') + '</b>');
-          finally
-            CloseKey();
-          end;
-        end;
-      finally
-        Free();
-      end;
-    end;
-  end;
 end;
 
 procedure TSettingsForm.ApplyProxyHttpClient(HttpClient: THttpCli);

@@ -37,6 +37,7 @@ object MraOptionsForm: TMraOptionsForm
     Enabled = False
     TabOrder = 1
     TabStop = False
+    OnClick = ApplyButtonClick
   end
   object OKButton: TBitBtn
     Left = 482
@@ -47,6 +48,7 @@ object MraOptionsForm: TMraOptionsForm
     Default = True
     TabOrder = 2
     TabStop = False
+    OnClick = OKButtonClick
   end
   object MRAOptionButtonGroup: TButtonGroup
     Left = 8
@@ -61,12 +63,25 @@ object MraOptionsForm: TMraOptionsForm
     Items = <
       item
         Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
-        ImageIndex = 81
+        ImageIndex = 66
+      end
+      item
+        Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+        ImageIndex = 162
+      end
+      item
+        Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
+        ImageIndex = 171
+      end
+      item
+        Caption = 'ID '#1082#1083#1080#1077#1085#1090#1072
+        ImageIndex = 172
       end>
     ItemIndex = 0
     TabOrder = 3
+    OnButtonClicked = MRAOptionButtonGroupButtonClicked
   end
-  object Panel1: TPanel
+  object OptionPanel: TPanel
     Left = 151
     Top = 8
     Width = 438
@@ -74,27 +89,27 @@ object MraOptionsForm: TMraOptionsForm
     BevelKind = bkTile
     BevelOuter = bvNone
     TabOrder = 4
-    object JvPageList1: TJvPageList
+    object OptionJvPageList: TJvPageList
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = JvStandardPage1
+      ActivePage = AccountPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
-      object JvStandardPage1: TJvStandardPage
+      object AccountPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage1'
+        Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
           Left = 3
           Top = 3
           Width = 422
-          Height = 350
+          Height = 230
           Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -116,6 +131,7 @@ object MraOptionsForm: TMraOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+            OnClick = ReqPassLabelClick
             OnMouseEnter = MRAonserverLabelMouseEnter
             OnMouseLeave = MRAonserverLabelMouseLeave
           end
@@ -145,36 +161,20 @@ object MraOptionsForm: TMraOptionsForm
             Font.Style = [fsBold]
             ParentFont = False
           end
-          object MRAonserverLabel: TLabel
-            Left = 263
-            Top = 70
-            Width = 88
-            Height = 13
-            Cursor = crHandPoint
-            Alignment = taRightJustify
-            Caption = #1053#1072#1089#1090#1088#1086#1080#1090#1100' '#1085#1072'...'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clNavy
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            OnMouseEnter = MRAonserverLabelMouseEnter
-            OnMouseLeave = MRAonserverLabelMouseLeave
-          end
           object RegNewEmailLabel: TLabel
-            Left = 48
-            Top = 229
-            Width = 327
+            Left = 80
+            Top = 199
+            Width = 248
             Height = 13
             Cursor = crHandPoint
-            Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1091#1095#1105#1090#1085#1091#1102' '#1079#1072#1087#1080#1089#1100' '#1085#1072' '#1074#1077#1073'-'#1089#1072#1081#1090#1077
+            Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1091#1095#1105#1090#1085#1091#1102' '#1079#1072#1087#1080#1089#1100
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clNavy
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+            OnClick = RegNewEmailLabelClick
             OnMouseEnter = MRAonserverLabelMouseEnter
             OnMouseLeave = MRAonserverLabelMouseLeave
           end
@@ -190,6 +190,7 @@ object MraOptionsForm: TMraOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            OnChange = MRAEmailEditChange
           end
           object PassEdit: TEdit
             Left = 78
@@ -204,11 +205,13 @@ object MraOptionsForm: TMraOptionsForm
             ParentFont = False
             PasswordChar = '*'
             TabOrder = 1
+            OnChange = MRAEmailEditChange
+            OnClick = PassEditClick
           end
           object ShowPassCheckBox: TCheckBox
             Left = 78
             Top = 123
-            Width = 341
+            Width = 336
             Height = 17
             Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
             Enabled = False
@@ -219,11 +222,12 @@ object MraOptionsForm: TMraOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 2
+            OnClick = ShowPassCheckBoxClick
           end
           object SavePassCheckBox: TCheckBox
             Left = 78
             Top = 146
-            Width = 341
+            Width = 336
             Height = 17
             Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
             Font.Charset = DEFAULT_CHARSET
@@ -235,6 +239,117 @@ object MraOptionsForm: TMraOptionsForm
             TabOrder = 3
           end
         end
+        object OptionGroupBox: TGroupBox
+          Left = 3
+          Top = 239
+          Width = 422
+          Height = 114
+          Caption = #1054#1087#1094#1080#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 1
+        end
+      end
+      object ConnectPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'ConnectPage'
+        object GroupBox1: TGroupBox
+          Left = 3
+          Top = 3
+          Width = 422
+          Height = 86
+          Caption = #1057#1077#1088#1074#1077#1088
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+          object MraLoginServerLabel: TLabel
+            Left = 58
+            Top = 24
+            Width = 35
+            Height = 13
+            Alignment = taRightJustify
+            Caption = #1040#1076#1088#1077#1089':'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object MraLoginServerPortLabel: TLabel
+            Left = 64
+            Top = 51
+            Width = 29
+            Height = 13
+            Alignment = taRightJustify
+            Caption = #1055#1086#1088#1090':'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object MraLoginServerComboBox: TComboBox
+            Left = 99
+            Top = 21
+            Width = 278
+            Height = 21
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ItemHeight = 13
+            ItemIndex = 0
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            Text = 'mrim.mail.ru'
+            Items.Strings = (
+              'mrim.mail.ru')
+          end
+          object MraLoginServerPortEdit: TEdit
+            Left = 99
+            Top = 48
+            Width = 121
+            Height = 21
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            Text = '2042'
+          end
+        end
+      end
+      object OptionsPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'OptionsPage'
+      end
+      object IDClientPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'IDClientPage'
       end
     end
   end

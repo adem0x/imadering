@@ -14,7 +14,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert, ShellApi,
   JvDesktopAlertForm, StdCtrls, VarsUnit, MainUnit, IcqProtoUnit, JvTrayIcon,
-  WinSock, OverbyteIcsWSocket, CategoryButtons, JvZLibMultiple, JabberProtoUnit;
+  WinSock, OverbyteIcsWSocket, CategoryButtons, JvZLibMultiple, JabberProtoUnit,
+  Registry, TypInfo;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileDirHist(Path, Ext, Eext: string; FileList: TStrings);
@@ -65,7 +66,6 @@ function InitMixer: HMixer;
 function UnicodeCharCode2ANSIString(aCode: Word): string;
 function ICQ_BodySize1: integer;
 function ICQ_BodySize2: integer;
-function ICQ_BodySize3: integer;
 function IsNotNull(StringsArr: array of string): boolean;
 procedure DecorateURL(var Text: string);
 function NameAndLast(UIN: string): string;
@@ -87,6 +87,9 @@ function NormalDir(const DirName: string): string;
 function ClearDir(const Path: string; Delete: Boolean): Boolean;
 procedure SetCustomWidthComboBox(CB: TComboBox);
 procedure xShowForm(xForm: TForm);
+procedure OpenURL(Url: string);
+procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
+  AValue: string);
 
 implementation
 
@@ -928,14 +931,6 @@ function ICQ_BodySize2: integer;
 var
   Header: string;
 begin
-  Header := ICQ_RegUIN_HexPkt[9] + ICQ_RegUIN_HexPkt[10] + ICQ_RegUIN_HexPkt[11] + ICQ_RegUIN_HexPkt[12];
-  Result := HexToInt(Header) * 2;
-end;
-
-function ICQ_BodySize3: integer;
-var
-  Header: string;
-begin
   Header := ICQ_Avatar_HexPkt[9] + ICQ_Avatar_HexPkt[10] + ICQ_Avatar_HexPkt[11] + ICQ_Avatar_HexPkt[12];
   Result := HexToInt(Header) * 2;
 end;
@@ -1666,6 +1661,48 @@ begin
     end;
     if Items.Count > DropDownCount then Perform(CB_SETDROPPEDWIDTH, ItemWidth + 25, 0)
     else Perform(CB_SETDROPPEDWIDTH, ItemWidth + 8, 0);
+  end;
+end;
+
+procedure OpenURL(Url: string);
+var
+  ts: string;
+begin
+  with TRegistry.Create do
+  try
+    rootkey := HKEY_CLASSES_ROOT;
+    OpenKey('\http\shell\open\command', False);
+    try
+      ts := ReadString('');
+    except
+      ts := '';
+    end;
+    CloseKey;
+  finally
+    Free;
+  end;
+  if ts = '' then
+  begin
+   SetClipboardText(Application.Handle, Url);
+   DAShow(ErrorHead, URLOpenErrL, EmptyStr, 134, 2, 0);
+   Exit;
+  end;
+  if BMSearch(0, ts, '"') > -1 then ts := ISOLateTextString(ts, '"', '"');
+  ShellExecute(0, 'open', PChar(ts), PChar(url), nil, SW_SHOW);
+end;
+
+procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
+  AValue: string);
+var
+  PropInfo: PPropInfo;
+  TK: TTypeKind;
+begin
+  PropInfo := GetPropInfo(AComp.ClassInfo, APropName);
+  if PropInfo <> nil then
+  begin
+    TK := PropInfo^.PropType^.Kind;
+    if (TK = tkString) or (TK = tkLString) or (TK = tkWString) then
+      SetStrProp(AComp, PropInfo, AValue);
   end;
 end;
 

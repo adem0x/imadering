@@ -20,16 +20,16 @@ type
     ICQOptionButtonGroup: TButtonGroup;
     GeneralPanel: TPanel;
     ICQOptionsJvPageList: TJvPageList;
-    JvStandardPage1: TJvStandardPage;
-    JvStandardPage2: TJvStandardPage;
-    JvStandardPage3: TJvStandardPage;
-    JvStandardPage4: TJvStandardPage;
+    AccountPage: TJvStandardPage;
+    PrivatPage: TJvStandardPage;
+    BonusPage: TJvStandardPage;
+    IDClientPage: TJvStandardPage;
     ApplyButton: TBitBtn;
     CancelButton: TBitBtn;
     OKButton: TBitBtn;
     CheckBox5: TCheckBox;
-    JvStandardPage5: TJvStandardPage;
-    JvStandardPage6: TJvStandardPage;
+    PassChangePage: TJvStandardPage;
+    AnketaPage: TJvStandardPage;
     ClientIDGroupBox: TGroupBox;
     ClientIDInfoMemo: TMemo;
     ClientIDComboBox: TComboBox;
@@ -50,12 +50,12 @@ type
     PassEdit: TEdit;
     ShowPassCheckBox: TCheckBox;
     SavePassCheckBox: TCheckBox;
-    JvStandardPage7: TJvStandardPage;
-    JvStandardPage8: TJvStandardPage;
-    JvStandardPage9: TJvStandardPage;
-    JvStandardPage10: TJvStandardPage;
-    JvStandardPage11: TJvStandardPage;
-    JvStandardPage12: TJvStandardPage;
+    HomePage: TJvStandardPage;
+    WorkPage: TJvStandardPage;
+    PersonalPage: TJvStandardPage;
+    InterestsPage: TJvStandardPage;
+    AboutPage: TJvStandardPage;
+    AvatarPage: TJvStandardPage;
     AuthAndWebStatusGroupBox: TGroupBox;
     NoAutoAuthRadioButton: TRadioButton;
     YesAutoAuthRadioButton: TRadioButton;
@@ -165,7 +165,7 @@ type
     CompanyProfInfoComboBox: TComboBox;
     CompanyMasteInfoEdit: TEdit;
     CompanySiteInfoEdit: TEdit;
-    JvStandardPage13: TJvStandardPage;
+    ParamsPage: TJvStandardPage;
     PersonalInfoGroupBox: TGroupBox;
     PersonalGenderInfoLabel: TLabel;
     PersonalMaritalInfoLabel: TLabel;
@@ -232,6 +232,7 @@ type
     GroupBox1: TGroupBox;
     ShowHideContactsCheckBox: TCheckBox;
     RegNewUINLabel: TLabel;
+    ConnectPage: TJvStandardPage;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -245,8 +246,6 @@ type
     procedure ShowPassChangeCheckBoxClick(Sender: TObject);
     procedure ChangePassButtonClick(Sender: TObject);
     procedure WebAwareTestButtonClick(Sender: TObject);
-    procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure PassEditClick(Sender: TObject);
     procedure ClientIDInfoMemoMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -304,7 +303,7 @@ begin
     try
       WriteString('login', ICQUINEdit.Text);
       WriteBool('save-password', SavePassCheckBox.Checked);
-      if SavePassCheckBox.Checked then
+      if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
         WriteString('password', Encrypt(PassEdit.Hint, PassKey))
       else WriteString('password', EmptyStr);
       //--Маскируем пароль
@@ -334,7 +333,7 @@ end;
 procedure TIcqOptionsForm.RegNewUINLabelClick(Sender: TObject);
 begin
   //--Открываем регистрацию на веб сайте ICQ
-  ShellExecute(Application.Handle, 'open', PChar('http://www.icq.com/register'), nil, nil, SW_SHOWNORMAL);
+  OpenURL('http://www.icq.com/register');
 end;
 
 procedure TIcqOptionsForm.LoadSettings;
@@ -378,7 +377,7 @@ end;
 procedure TIcqOptionsForm.ReqPassLabelClick(Sender: TObject);
 begin
   //--Открываем сайт ICQ для восстановления пароля
-  ShellExecute(Application.Handle, 'open', PChar('http://www.icq.com/password'), nil, nil, SW_SHOWNORMAL);
+  OpenURL('http://www.icq.com/password');
 end;
 
 procedure TIcqOptionsForm.ReqPassLabelMouseEnter(Sender: TObject);
@@ -520,13 +519,6 @@ begin
   if Index <= ICQOptionsJvPageList.PageCount then ICQOptionsJvPageList.ActivePageIndex := Index;
 end;
 
-procedure TIcqOptionsForm.ICQOptionButtonGroupKeyDown(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
-begin
-  //--Выбираем страницу настроек соответсвенно выбранной вкладке
-  if ICQOptionButtonGroup.ItemIndex <= ICQOptionsJvPageList.PageCount then ICQOptionsJvPageList.ActivePageIndex := ICQOptionButtonGroup.ItemIndex;
-end;
-
 procedure TIcqOptionsForm.ShowPassCheckBoxClick(Sender: TObject);
 begin
   //--Отменяем событие изменения поля пароля
@@ -584,7 +576,7 @@ procedure TIcqOptionsForm.WebAwareTestButtonClick(Sender: TObject);
 begin
   //--Открываем браузер для проверки веб-статуса на сайте ICQ
   if ICQ_LoginUIN <> EmptyStr then
-    ShellExecute(Application.Handle, 'open', PChar('http://status.icq.com/online.gif?icq=' + ICQ_LoginUIN + '&img=5'), nil, nil, SW_SHOWNORMAL);
+    OpenURL('http://status.icq.com/online.gif?icq=' + ICQ_LoginUIN + '&img=5');
 end;
 
 procedure TIcqOptionsForm.SetOnlineVars;

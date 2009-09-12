@@ -21,9 +21,9 @@ type
     ApplyButton: TBitBtn;
     OKButton: TBitBtn;
     JabberOptionButtonGroup: TButtonGroup;
-    Panel1: TPanel;
-    JvPageList1: TJvPageList;
-    JvStandardPage1: TJvStandardPage;
+    OptionPanel: TPanel;
+    OptionJvPageList: TJvPageList;
+    AccountPage: TJvStandardPage;
     AccountGroupBox: TGroupBox;
     RegNewAccountLabel: TLabel;
     ICQUINLabel: TLabel;
@@ -35,6 +35,15 @@ type
     DeleteAccountLabel: TLabel;
     JIDonserverLabel: TLabel;
     GroupBox1: TGroupBox;
+    ServerPage: TJvStandardPage;
+    ProxyPage: TJvStandardPage;
+    OptionPage: TJvStandardPage;
+    RosterPage: TJvStandardPage;
+    AnketaPage: TJvStandardPage;
+    HomePage: TJvStandardPage;
+    WorkPage: TJvStandardPage;
+    PersonalPage: TJvStandardPage;
+    ParamsPage: TJvStandardPage;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);
@@ -44,6 +53,8 @@ type
     procedure ShowPassCheckBoxClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure ApplyButtonClick(Sender: TObject);
+    procedure JabberOptionButtonGroupButtonClicked(Sender: TObject;
+      Index: Integer);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -96,7 +107,7 @@ begin
     try
       WriteString('login', JabberJIDEdit.Text);
       WriteBool('save-password', SavePassCheckBox.Checked);
-      if SavePassCheckBox.Checked then
+      if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
         WriteString('password', Encrypt(PassEdit.Hint, PassKey))
       else WriteString('password', EmptyStr);
       //--Маскируем пароль
@@ -178,6 +189,13 @@ procedure TJabberOptionsForm.JabberJIDEditChange(Sender: TObject);
 begin
   //--Активируем кнопку применения настроек
   ApplyButton.Enabled := true;
+end;
+
+procedure TJabberOptionsForm.JabberOptionButtonGroupButtonClicked(
+  Sender: TObject; Index: Integer);
+begin
+  //--Выбираем страницу настроек соответсвенно выбранной вкладке
+  if Index <= OptionJvPageList.PageCount then OptionJvPageList.ActivePageIndex := Index;
 end;
 
 procedure TJabberOptionsForm.JIDonserverLabelMouseEnter(Sender: TObject);

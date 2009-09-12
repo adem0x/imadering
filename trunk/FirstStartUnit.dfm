@@ -20,7 +20,7 @@ object FirstStartForm: TFirstStartForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
+  object BottomPanel: TPanel
     Left = 0
     Top = 207
     Width = 329
@@ -67,7 +67,7 @@ object FirstStartForm: TFirstStartForm
       OnClick = PrevButtonClick
     end
   end
-  object JvPageList1: TJvPageList
+  object ProtoJvPageList: TJvPageList
     Left = 0
     Top = 0
     Width = 329
@@ -385,7 +385,6 @@ object FirstStartForm: TFirstStartForm
         Height = 17
         TabStop = False
         Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1087#1086#1076#1076#1077#1088#1078#1082#1091' MRA '#1087#1088#1086#1090#1086#1082#1086#1083#1072
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11

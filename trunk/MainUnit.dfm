@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu]
   Caption = 'IMadering'
   ClientHeight = 401
-  ClientWidth = 197
+  ClientWidth = 283
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,9 +23,9 @@ object MainForm: TMainForm
   object ContactList: TCategoryButtons
     AlignWithMargins = True
     Left = 0
-    Top = 1
-    Width = 197
-    Height = 375
+    Top = 26
+    Width = 283
+    Height = 350
     Margins.Left = 0
     Margins.Top = 1
     Margins.Right = 0
@@ -45,30 +45,27 @@ object MainForm: TMainForm
     RegularButtonColor = clWhite
     SelectedButtonColor = 15717318
     ShowHint = True
-    TabOrder = 0
+    TabOrder = 1
     OnButtonClicked = ContactListButtonClicked
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
     OnMouseDown = ContactListMouseDown
     OnSelectedItemChange = ContactListSelectedItemChange
   end
-  object ToolBar2: TToolBar
+  object BottomToolBar: TToolBar
     Left = 0
     Top = 376
-    Width = 197
+    Width = 283
     Height = 25
-    Margins.Left = 1
-    Margins.Top = 0
-    Margins.Right = 1
-    Margins.Bottom = 0
     Align = alBottom
     Color = clBtnFace
     EdgeBorders = [ebTop]
     Images = AllImageList
     ParentColor = False
-    TabOrder = 1
+    TabOrder = 0
     Transparent = False
     Wrapable = False
+    OnMouseDown = BottomToolBarMouseDown
     object MainToolButton: TToolButton
       Tag = 1
       Left = 0
@@ -120,35 +117,192 @@ object MainForm: TMainForm
       OnClick = JabberToolButtonClick
       OnContextPopup = JabberToolButtonContextPopup
     end
-    object SoundOnOffToolButton: TToolButton
+    object OnlyOnlineContactsToolButton: TToolButton
       Left = 92
       Top = 0
-      Hint = '<b>'#1054#1090#1082#1083#1102#1095#1080#1090#1100' '#1079#1074#1091#1082#1080'</b>'
-      ImageIndex = 135
-      ParentShowHint = False
-      ShowHint = True
-      Style = tbsCheck
-      OnClick = SoundOnOffToolButtonClick
-    end
-    object OnlyOnlineContactsToolButton: TToolButton
-      Left = 115
-      Top = 0
-      Hint = '<b>'#1057#1082#1088#1099#1090#1100' '#1086#1092#1092#1083#1072#1081#1085' '#1082#1086#1085#1090#1072#1082#1090#1099'</b>'
       ImageIndex = 138
       ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Style = tbsCheck
+      Visible = False
       OnClick = OnlyOnlineContactsToolButtonClick
     end
     object GroupOnOffToolButton: TToolButton
-      Left = 138
+      Left = 115
       Top = 0
-      Hint = '<b>'#1056#1077#1078#1080#1084' '#1086#1090#1086#1073#1088#1072#1078#1077#1085#1080#1103' '#1075#1088#1091#1087#1087'</b>'
+      Down = True
       ImageIndex = 231
       ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Style = tbsCheck
+      Visible = False
       OnClick = GroupOnOffToolButtonClick
+    end
+    object SoundOnOffToolButton: TToolButton
+      Left = 138
+      Top = 0
+      ImageIndex = 135
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Style = tbsCheck
+      Visible = False
+      OnClick = SoundOnOffToolButtonClick
+    end
+    object PrivatToolButton: TToolButton
+      Left = 161
+      Top = 0
+      Hint = '<b>'#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080'</b>'
+      Caption = 'PrivatToolButton'
+      ImageIndex = 236
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = PrivatListMenuClick
+    end
+    object HistoryToolButton: TToolButton
+      Left = 184
+      Top = 0
+      Hint = '<b>'#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081'</b>'
+      ImageIndex = 147
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = OpenHistoryClick
+    end
+    object SettingsToolButton: TToolButton
+      Left = 207
+      Top = 0
+      Hint = '<b>'#1053#1072#1089#1090#1088#1086#1081#1082#1080'</b>'
+      Caption = 'SettingsToolButton'
+      ImageIndex = 2
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = OpenSettingsClick
+    end
+    object TrafficToolButton: TToolButton
+      Left = 230
+      Top = 0
+      Hint = '<b>'#1058#1088#1072#1092#1080#1082'</b>'
+      ImageIndex = 226
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = OpenTrafficClick
+    end
+    object TopPanelToolButton: TToolButton
+      Left = 253
+      Top = 0
+      Down = True
+      ImageIndex = 244
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Style = tbsCheck
+      OnClick = TopPanelToolButtonClick
+    end
+  end
+  object TopToolBar: TToolBar
+    Left = 0
+    Top = 0
+    Width = 283
+    Height = 25
+    Color = clBtnFace
+    EdgeBorders = [ebBottom]
+    Images = AllImageList
+    ParentColor = False
+    TabOrder = 2
+    Transparent = False
+    Wrapable = False
+    OnMouseDown = TopToolBarMouseDown
+    object MainToolTopButton: TToolButton
+      Left = 0
+      Top = 0
+      Hint = '<b>'#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102'</b>'
+      ImageIndex = 0
+      ParentShowHint = False
+      PopupMenu = MainPopupMenu
+      ShowHint = True
+      OnClick = MainToolTopButtonClick
+      OnContextPopup = MainToolTopButtonContextPopup
+    end
+    object OnlyOnlineContactsTopButton: TToolButton
+      Left = 23
+      Top = 0
+      ImageIndex = 138
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      Style = tbsCheck
+      OnClick = OnlyOnlineContactsTopButtonClick
+    end
+    object GroupOnOffToolTopButton: TToolButton
+      Left = 46
+      Top = 0
+      Down = True
+      ImageIndex = 231
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      Style = tbsCheck
+      OnClick = GroupOnOffToolTopButtonClick
+    end
+    object SoundOnOffToolTopButton: TToolButton
+      Left = 69
+      Top = 0
+      ImageIndex = 135
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      Style = tbsCheck
+      OnClick = SoundOnOffToolTopButtonClick
+    end
+    object PrivatTopToolButton: TToolButton
+      Left = 92
+      Top = 0
+      Hint = '<b>'#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080'</b>'
+      ImageIndex = 236
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      OnClick = PrivatListMenuClick
+    end
+    object HistoryTopToolButton: TToolButton
+      Left = 115
+      Top = 0
+      Hint = '<b>'#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081'</b>'
+      ImageIndex = 147
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      OnClick = OpenHistoryClick
+    end
+    object SettingsTopToolButton: TToolButton
+      Left = 138
+      Top = 0
+      Hint = '<b>'#1053#1072#1089#1090#1088#1086#1081#1082#1080'</b>'
+      ImageIndex = 2
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      OnClick = OpenSettingsClick
+    end
+    object TrafficTopToolButton: TToolButton
+      Left = 161
+      Top = 0
+      Hint = '<b>'#1058#1088#1072#1092#1080#1082'</b>'
+      ImageIndex = 226
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      OnClick = OpenTrafficClick
     end
   end
   object ICQTrayIcon: TTrayIcon
@@ -158,13 +312,13 @@ object MainForm: TMainForm
     OnClick = ICQTrayIconClick
     OnMouseDown = ICQTrayIconMouseDown
     Left = 16
-    Top = 16
+    Top = 32
   end
   object TrayPopupMenu: TPopupMenu
     Images = AllImageList
     OnPopup = TrayPopupMenuPopup
     Left = 16
-    Top = 112
+    Top = 128
     object HideInTrayTray: TMenuItem
       Caption = #1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4
@@ -248,7 +402,7 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents6Timer
       end
       item
-        Name = 'CreateSmiliesFormTimer'
+        Name = 'CSFandBRTimer'
         Cycled = False
         Enabled = False
         OnTimer = JvTimerListEvents7Timer
@@ -290,12 +444,12 @@ object MainForm: TMainForm
     Left = 16
     Top = 328
     object OpenTest: TMenuItem
-      Caption = #1058#1077#1089#1090
+      Caption = '_'#1058#1077#1089#1090'_'
       Visible = False
       OnClick = OpenTestClick
     end
     object RosterMainMenu: TMenuItem
-      Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      Caption = '_'#1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074'_'
       Visible = False
       OnClick = RosterMainMenuClick
     end
@@ -358,7 +512,7 @@ object MainForm: TMainForm
     OnClick = ICQTrayIconClick
     OnMouseDown = ICQTrayIconMouseDown
     Left = 16
-    Top = 48
+    Top = 64
   end
   object JabberTrayIcon: TTrayIcon
     Hint = 'IMadering Jabber'
@@ -367,7 +521,7 @@ object MainForm: TMainForm
     OnClick = ICQTrayIconClick
     OnMouseDown = ICQTrayIconMouseDown
     Left = 16
-    Top = 80
+    Top = 96
   end
   object ICQWSocket: TWSocket
     LineMode = False
@@ -405,7 +559,7 @@ object MainForm: TMainForm
     OnError = ICQWSocketError
     OnSocksError = ICQWSocketSocksError
     Left = 48
-    Top = 16
+    Top = 32
   end
   object MRAWSocket: TWSocket
     LineMode = False
@@ -435,7 +589,7 @@ object MainForm: TMainForm
     ReqVerLow = 1
     ReqVerHigh = 1
     Left = 48
-    Top = 48
+    Top = 64
   end
   object JabberWSocket: TWSocket
     LineMode = False
@@ -473,7 +627,7 @@ object MainForm: TMainForm
     OnError = JabberWSocketError
     OnSocksError = JabberWSocketSocksError
     Left = 48
-    Top = 80
+    Top = 96
   end
   object ICQAvatarWSocket: TWSocket
     LineMode = False
@@ -503,7 +657,7 @@ object MainForm: TMainForm
     ReqVerLow = 1
     ReqVerHigh = 1
     Left = 80
-    Top = 16
+    Top = 32
   end
   object UpdateHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
@@ -530,7 +684,7 @@ object MainForm: TMainForm
     OnSocksConnected = UpdateHttpClientSocksConnected
     OnSocksError = UpdateHttpClientSocksError
     Left = 48
-    Top = 112
+    Top = 128
   end
   object ContactListPopupMenu: TPopupMenu
     Alignment = paCenter
@@ -737,6 +891,7 @@ object MainForm: TMainForm
     object MRAStatusOnline: TMenuItem
       Caption = #1042' '#1089#1077#1090#1080
       ImageIndex = 24
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusInvisible: TMenuItem
       Caption = #1053#1077#1074#1080#1076#1080#1084#1099#1081
@@ -950,8 +1105,8 @@ object MainForm: TMainForm
     Priority = tpNormal
     StopMode = smTerminate
     OnRun = ZipHistoryThreadRun
-    Left = 16
-    Top = 144
+    Left = 48
+    Top = 200
   end
   object MRAAvatarHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
@@ -976,7 +1131,7 @@ object MainForm: TMainForm
     OnSocksConnected = MRAAvatarHttpClientSocksConnected
     OnSocksError = MRAAvatarHttpClientSocksError
     Left = 80
-    Top = 48
+    Top = 64
   end
   object RightMRAPopupMenu: TPopupMenu
     Images = AllImageList
@@ -1008,6 +1163,113 @@ object MainForm: TMainForm
       Caption = 'ChatTabCloseAction'
       ShortCut = 32883
       OnExecute = ChatTabCloseActionExecute
+    end
+  end
+  object TopPanelPopupMenu: TPopupMenu
+    Alignment = paRight
+    Images = AllImageList
+    OnPopup = BottomPanelPopupMenuPopup
+    Left = 160
+    Top = 144
+    object TopMainButtonONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102
+      ImageIndex = 230
+      OnClick = TopMainButtonONMenuClick
+    end
+    object TopOnlyOnlineONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1086#1092#1092#1083#1072#1081#1085' '#1082#1086#1085#1090#1072#1082#1090#1099
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopOnlyOnlineONMenuClick
+    end
+    object TopGroupONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopGroupONMenuClick
+    end
+    object TopSoundsONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1047#1074#1091#1082#1080
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopSoundsONMenuClick
+    end
+    object TopPrivatONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopPrivatONMenuClick
+    end
+    object TopHistoryONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopHistoryONMenuClick
+    end
+    object TopSettingsONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1053#1072#1089#1090#1088#1086#1081#1082#1080
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopSettingsONMenuClick
+    end
+    object TopTrafficONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1058#1088#1072#1092#1080#1082
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopTrafficONMenuClick
+    end
+  end
+  object BottomPanelPopupMenu: TPopupMenu
+    Images = AllImageList
+    OnPopup = BottomPanelPopupMenuPopup
+    Left = 160
+    Top = 176
+    object MainButtonONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102
+      Checked = True
+      ImageIndex = 140
+      OnClick = MainButtonONMenuClick
+    end
+    object OnlyOnlineONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1086#1092#1092#1083#1072#1081#1085' '#1082#1086#1085#1090#1072#1082#1090#1099
+      ImageIndex = 230
+      OnClick = OnlyOnlineONMenuClick
+    end
+    object GroupONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
+      ImageIndex = 230
+      OnClick = GroupONMenuClick
+    end
+    object SoundsONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1047#1074#1091#1082#1080
+      ImageIndex = 230
+      OnClick = SoundsONMenuClick
+    end
+    object PrivatONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080
+      ImageIndex = 230
+      OnClick = PrivatONMenuClick
+    end
+    object HistoryONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
+      ImageIndex = 230
+      OnClick = HistoryONMenuClick
+    end
+    object SettingsONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1053#1072#1089#1090#1088#1086#1081#1082#1080
+      ImageIndex = 230
+      OnClick = SettingsONMenuClick
+    end
+    object TrafficONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1058#1088#1072#1092#1080#1082
+      ImageIndex = 230
+      OnClick = TrafficONMenuClick
+    end
+    object TopPanelONMenu: TMenuItem
+      Caption = #1050#1085#1086#1087#1082#1072' - '#1042#1077#1088#1093#1085#1103#1103' '#1087#1072#1085#1077#1083#1100
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopPanelONMenuClick
     end
   end
 end

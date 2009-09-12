@@ -145,6 +145,42 @@ object AboutForm: TAboutForm
     Transparent = False
     Layout = tlCenter
   end
+  object Label1: TLabel
+    Left = 229
+    Top = 27
+    Width = 48
+    Height = 13
+    Cursor = crHandPoint
+    Alignment = taRightJustify
+    Caption = #1048#1089#1090#1086#1088#1080#1103
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    OnClick = Label1Click
+    OnMouseEnter = URLLabelMouseEnter
+    OnMouseLeave = URLLabelMouseLeave
+  end
+  object Label2: TLabel
+    Left = 222
+    Top = 46
+    Width = 55
+    Height = 13
+    Cursor = crHandPoint
+    Alignment = taRightJustify
+    Caption = #1051#1080#1094#1077#1085#1079#1080#1103
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    OnClick = Label2Click
+    OnMouseEnter = URLLabelMouseEnter
+    OnMouseLeave = URLLabelMouseLeave
+  end
   object InfoAboutMemo: TMemo
     Left = 8
     Top = 96

@@ -32,6 +32,8 @@ type
     HeadJvBehaviorLabel: TJvBehaviorLabel;
     SubJvBehaviorLabel: TJvBehaviorLabel;
     AboutListTimer: TTimer;
+    Label1: TLabel;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure URLLabelMouseEnter(Sender: TObject);
@@ -45,6 +47,8 @@ type
     procedure SubJvBehaviorLabelStart(Sender: TObject);
     procedure SubJvBehaviorLabelStop(Sender: TObject);
     procedure AboutListTimerTimer(Sender: TObject);
+    procedure Label1Click(Sender: TObject);
+    procedure Label2Click(Sender: TObject);
   private
     { Private declarations }
     AboutLen: integer;
@@ -99,17 +103,17 @@ end;
 procedure TAboutForm.URLLabelClick(Sender: TObject);
 begin
   //--Открываем сайт в браузере по умолчанию
-  ShellExecute(Application.Handle, 'open', PChar('http://imadering.com'), nil, nil, SW_SHOWNORMAL);
+  OpenURL('http://imadering.com');
 end;
 
 procedure TAboutForm.URLLabelMouseEnter(Sender: TObject);
 begin
-  URLLabel.Font.Color := clBlue;
+  (Sender as Tlabel).Font.Color := clBlue;
 end;
 
 procedure TAboutForm.URLLabelMouseLeave(Sender: TObject);
 begin
-  URLLabel.Font.Color := clNavy;
+  (Sender as Tlabel).Font.Color := clNavy;
 end;
 
 procedure TAboutForm.AboutListTimerTimer(Sender: TObject);
@@ -183,6 +187,18 @@ procedure TAboutForm.HeadJvBehaviorLabelStop(Sender: TObject);
 begin
   //--Стартуем вторую строку титров
   SubJvBehaviorLabel.BehaviorOptions.Active := true;
+end;
+
+procedure TAboutForm.Label1Click(Sender: TObject);
+begin
+  //--Открываем на просмотр файл истории изменений
+  OpenURL(MyPath + 'Changes.txt');
+end;
+
+procedure TAboutForm.Label2Click(Sender: TObject);
+begin
+  //--Открываем на просмотр файл лицензии
+  OpenURL(MyPath + 'GPL_ru.txt');
 end;
 
 end.

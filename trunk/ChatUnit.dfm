@@ -134,8 +134,6 @@ object ChatForm: TChatForm
       Height = 31
       Align = alBottom
       BevelOuter = bvNone
-      ParentShowHint = False
-      ShowHint = True
       TabOrder = 0
       DesignSize = (
         498
@@ -472,6 +470,7 @@ object ChatForm: TChatForm
         Height = 22
         Flat = True
         OnClick = QRepSpeedButtonClick
+        OnMouseDown = QRepSpeedButtonMouseDown
       end
       object Bevel2: TBevel
         Left = 147
@@ -513,6 +512,7 @@ object ChatForm: TChatForm
         Height = 22
         Flat = True
         OnClick = SendFileSpeedButtonClick
+        OnMouseDown = SendFileSpeedButtonMouseDown
       end
       object TextLenPanel: TPanel
         AlignWithMargins = True
@@ -879,6 +879,17 @@ object ChatForm: TChatForm
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1101#1090#1086#1090' '#1095#1072#1090
       ImageIndex = 158
       OnClick = CloseTabBitBtnClick
+    end
+  end
+  object FileTransferPopupMenu: TPopupMenu
+    Images = MainForm.AllImageList
+    Left = 200
+    Top = 192
+    object UpWapru1: TMenuItem
+      Tag = 1
+      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1095#1077#1088#1077#1079' UpWap.ru'
+      ImageIndex = 149
+      OnClick = UpWapru1Click
     end
   end
 end

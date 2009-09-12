@@ -33,7 +33,7 @@ var
   ProgramKey: string = '\SoftWare\IMadering';
   cProfile: string = 'ProfilePath';
   CurrentIcons: string = 'Imadering';
-  CurrentLang: string = '';
+  CurrentLang: string = 'Russian';
   CurrentSmiles: string = 'Imadering';
   CurrentSounds: string = 'Imadering';
   ProgramCloseCommand: boolean = false;
@@ -51,6 +51,7 @@ var
   NoReSave: boolean = true;
   ZipThreadStop: boolean = false;
   GroupHeaderColor: TColor = $00FFEAFF;
+  RoasterReady: boolean = false;
 
   //--Статистика трафика
   TrafSend: real;
@@ -75,11 +76,16 @@ var
   SoundOffHint: string = '<b>Отключить звуки</b>';
   OnlyOnlineOn: string = '<b>Показать оффлайн контакты</b>';
   OnlyOnlineOff: string = '<b>Скрыть оффлайн контакты</b>';
+  GroupCLOn: string = '<b>Показывать группы контактов</b>';
+  GroupCLOff: string = '<b>Скрывать группы контактов</b>';
+  TopPanelOn: string = '<b>Показать верхнюю панель</b>';
+  TopPanelOff: string = '<b>Скрыть верхнюю панель</b>';
   FirstStartNextButton: string = 'Далее';
   FirstStartProtoSelectAlert: string = 'Не выбран ни один протокол! В таком случае протокол ICQ будет выбран автоматически.';
   NewVersionIMaderingYES1: string = 'Доступна новая версия IMadering.' + #13#10 + #13#10 + 'Для ознакомления зайдите на сайт www.imadering.com';
   NewVersionIMaderingYES2: string = 'Доступна новая сборка IMadering.' + #13#10 + #13#10 + 'Для ознакомления зайдите на сайт www.imadering.com';
   NewVersionIMaderingNO: string = 'Новой версии не обнаружено.';
+  NewVersionIMaderingErr: string = 'Ошибка получения данных о новой версии.';
   InformationHead: string = 'Информация';
   ErrorHead: string = 'Ошибка';
   AlertHead: string = 'Действие невозможно';
@@ -187,6 +193,8 @@ var
   HttpSocketErrCodeL: string = 'Код ошибки: %d';
   SelectDirL: string = 'Выберите папку для хранения вашего профиля';
   DelProfile: string = 'Удалить старый профиль?';
+  URLOpenErrL: string = 'Браузер для открытия ссылки не найден.' + #13#10 + 'Ссылка скопирована в буфер обмена.';
+  SearchInfoGoL: string = 'Идёт поиск ...';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';

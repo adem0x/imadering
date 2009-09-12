@@ -517,7 +517,7 @@ object IcqSearchForm: TIcqSearchForm
         ParentFont = False
         TabOrder = 0
       end
-      object Edit1: TEdit
+      object UINSearchEdit: TEdit
         Left = 9
         Top = 30
         Width = 196
@@ -545,7 +545,7 @@ object IcqSearchForm: TIcqSearchForm
         ParentFont = False
         TabOrder = 0
       end
-      object Edit2: TEdit
+      object EmailSearchEdit: TEdit
         Left = 9
         Top = 31
         Width = 196
@@ -573,7 +573,7 @@ object IcqSearchForm: TIcqSearchForm
         ParentFont = False
         TabOrder = 0
       end
-      object Edit3: TEdit
+      object KeyWordSearchEdit: TEdit
         Left = 9
         Top = 32
         Width = 196

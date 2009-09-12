@@ -28,7 +28,8 @@ uses
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
   UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
   TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
-  RosterUnit in 'RosterUnit.pas' {RosterForm};
+  RosterUnit in 'RosterUnit.pas' {RosterForm},
+  FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm};
 
 {$R *.res}
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or

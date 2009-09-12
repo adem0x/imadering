@@ -16,9 +16,9 @@ uses
 
 type
   TFirstStartForm = class(TForm)
-    Panel1: TPanel;
+    BottomPanel: TPanel;
     CancelButton: TBitBtn;
-    JvPageList1: TJvPageList;
+    ProtoJvPageList: TJvPageList;
     Jabber_Page: TJvStandardPage;
     MRA_Page: TJvStandardPage;
     ICQ_Page: TJvStandardPage;
@@ -114,7 +114,7 @@ end;
 procedure TFirstStartForm.NextButtonClick(Sender: TObject);
 begin
   //--Переключаем страницы
-  case JvPageList1.ActivePageIndex of
+  case ProtoJvPageList.ActivePageIndex of
     0:
       begin
         //--Применяем и сохраняем логин и пароль ICQ
@@ -128,7 +128,7 @@ begin
           IcqOptionsForm.ApplySettings;
         end;
         //--Переключаем на Jabber страницу
-        JvPageList1.ActivePageIndex := 1;
+        ProtoJvPageList.ActivePageIndex := 1;
         //--Активируем клавишу возврата
         PrevButton.Enabled := true;
       end;
@@ -145,7 +145,7 @@ begin
           JabberOptionsForm.ApplySettings;
         end;
         //--Переключаем на MRA страницу
-        JvPageList1.ActivePageIndex := 2;
+        ProtoJvPageList.ActivePageIndex := 2;
         //--Устанавливаем текст на кнопке управления
         NextButton.Caption := 'OK';
         //--Активируем клавишу возврата
@@ -166,13 +166,16 @@ end;
 procedure TFirstStartForm.PrevButtonClick(Sender: TObject);
 begin
   //--Возврат на предыдущую страницу
-  if JvPageList1.ActivePageIndex = 0 then Exit
-  else
+  with ProtoJvPageList do
   begin
-    //--Листаем страницу назад
-    JvPageList1.ActivePageIndex := JvPageList1.ActivePageIndex - 1;
-    //--Деактивируем клавишу возврата если первая страница
-    if JvPageList1.ActivePageIndex = 0 then PrevButton.Enabled := false;
+    if ActivePageIndex = 0 then Exit
+    else
+    begin
+      //--Листаем страницу назад
+      ActivePageIndex := ActivePageIndex - 1;
+      //--Деактивируем клавишу возврата если первая страница
+      if ActivePageIndex = 0 then PrevButton.Enabled := false;
+    end;
   end;
   //--Устанавливаем текст на кнопке управления
   NextButton.Caption := FirstStartNextButton;
@@ -208,7 +211,7 @@ end;
 procedure TFirstStartForm.RegNewUINLabelClick(Sender: TObject);
 begin
   //--Открываем регистрацию на веб сайте ICQ
-  ShellExecute(Application.Handle, 'open', PChar('http://www.icq.com/register'), nil, nil, SW_SHOWNORMAL);
+  OpenURL('http://www.icq.com/register');
 end;
 
 procedure TFirstStartForm.ICQEnableCheckBoxClick(Sender: TObject);
@@ -247,7 +250,7 @@ end;
 procedure TFirstStartForm.MRARegNewEmailLabelClick(Sender: TObject);
 begin
   //--Открываем регистрацию на веб сайте mail.ru
-  ShellExecute(Application.Handle, 'open', PChar('http://win.mail.ru/cgi-bin/signup'), nil, nil, SW_SHOWNORMAL);
+  OpenURL('http://win.mail.ru/cgi-bin/signup');
 end;
 
 procedure TFirstStartForm.MRARegNewEmailLabelMouseEnter(Sender: TObject);

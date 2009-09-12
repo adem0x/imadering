@@ -236,7 +236,7 @@ var
   ICQ_LoginServerAddr: string = 'login.icq.com';
   ICQ_LoginServerPort: string = '5190';
   ICQ_HexPkt: string;
-  ICQ_RegUIN_HexPkt: string;
+  //ICQ_RegUIN_HexPkt: string;
   ICQ_Avatar_HexPkt: string;
   ICQ_LoginUIN: string = '';
   ICQ_LoginPassword: string = '';
@@ -313,14 +313,10 @@ procedure ICQ_ReqMessage_0407(PktData: string);
 procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP,
   TimeReg, IconHash, ConnTime: string);
 //procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
-procedure ICQ_SearchPoUIN_old_1(sUIN: string);
-procedure ICQ_SearchPoUIN_old_2(sUIN: string);
 procedure ICQ_SearchPoUIN_new(sUIN: string);
-procedure ICQ_SearchPoEmail_old(sEmail: string; OnlyOn: boolean);
 procedure ICQ_SearchPoEmail_new(sEmail: string);
 procedure ICQ_SearchPoNick_First_Last(sNick, sFirst, sLast: string; OnlyOn: boolean);
 procedure ICQ_SearchPoText(sText: string; OnlyOn: boolean);
-procedure ICQ_SearchPoChatGroup(ChatGid: integer);
 procedure ICQ_Parse_SNAC_1503(PktData: string);
 procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge,
   AEmail: string; AGender, AStatus: integer; AAuth, AEndSearch: boolean);
@@ -1756,77 +1752,6 @@ begin
           Exit;
         end;
       end;
-    $6603: //--Данные из поиска по чатгруппам
-      begin
-        if HexToInt(NextData(PktData, 2)) <> $0A then
-        begin
-          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
-          Exit;
-        end;
-        ICQ_SearchPoUIN_old_1(IntToStr(Swap32(HexToInt(NextData(PktData, 8)))));
-      end;
-    $AE01: //--Конец поиска контактов
-      begin
-        EndSearch := true;
-        goto x;
-      end;
-    $9A01: //--Конец поиска альтернативным способом
-      begin
-        EndSearch := true;
-        goto x;
-      end;
-    $A401: //--Данные с результатом поиска контатов
-      begin
-        x: ;
-        //--Проверяем метку о наличие положительных данных
-        if HexToInt(NextData(PktData, 2)) <> $0A then
-        begin
-          //--Заканчиваем поиск
-          EndSearch := true;
-          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
-          Exit;
-        end;
-        //--Сбрасываем флаг об авторизации
-        Auth := false;
-        //--Получаем UIN найденного контакта
-        NextData(PktData, 4);
-        UIN := IntToStr(Swap32(HexToInt(NextData(PktData, 8))));
-        //--Получаем Ник найденного контакта
-        MsgLen := Swap16(HexToInt(NextData(PktData, 4)));
-        Dec(MsgLen);
-        MsgLen := MsgLen * 2;
-        Nick := DecodeStr(Hex2Text(NextData(PktData, MsgLen)));
-        //--Получаем Имя найденного контакта
-        NextData(PktData, 2);
-        MsgLen := Swap16(HexToInt(NextData(PktData, 4)));
-        Dec(MsgLen);
-        MsgLen := MsgLen * 2;
-        First := DecodeStr(Hex2Text(NextData(PktData, MsgLen)));
-        //--Получаем Фамилию найденного контакта
-        NextData(PktData, 2);
-        MsgLen := Swap16(HexToInt(NextData(PktData, 4)));
-        Dec(MsgLen);
-        MsgLen := MsgLen * 2;
-        Last := DecodeStr(Hex2Text(NextData(PktData, MsgLen)));
-        //--Получаем Email адрес найденного контакта
-        NextData(PktData, 2);
-        MsgLen := Swap16(HexToInt(NextData(PktData, 4)));
-        Dec(MsgLen);
-        MsgLen := MsgLen * 2;
-        Email := DecodeStr(Hex2Text(NextData(PktData, MsgLen)));
-        //--Получаем флаг авторизации найденного контакта
-        NextData(PktData, 2);
-        if HexToInt(NextData(PktData, 2)) = $00 then Auth := true;
-        //--Получаем Статус в поиске найденного контакта
-        MsgLen := Swap16(HexToInt(NextData(PktData, 4)));
-        sStatus := MsgLen;
-        //--Получаем Пол и Возраст найденного контакта
-        Gender := HexToInt(NextData(PktData, 2));
-        MsgLen := Swap16(HexToInt(NextData(PktData, 4)));
-        Age := MsgLen;
-        //--Отправляем данные для отображения в окне поиска
-        ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, Gender, sStatus, Auth, EndSearch);
-      end;
     $B40F, $AA0F: //--Большая информация о контакте и в поиске тоже она же
       begin
         //--Проверяем метку о наличие положительных данных 1
@@ -2550,19 +2475,6 @@ begin
   end;
 end;
 
-procedure ICQ_SearchPoChatGroup(ChatGid: integer);
-var
-  Len: integer;
-  Pkt, Pkt1: string;
-begin
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) +
-    '4e07' + IntToHex(Swap16(ChatGid), 4);
-  Len := Length(Hex2Text(Pkt1));
-  Pkt := '00150002000000003601' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt1;
-  //
-  SendFLAP('2', Pkt);
-end;
-
 procedure ICQ_SearchPoText(sText: string; OnlyOn: boolean);
 var
   Len1, Len2: integer;
@@ -2624,30 +2536,12 @@ begin
   SendFLAP('2', Pkt);
 end;
 
-procedure ICQ_SearchPoEmail_old(sEmail: string; OnlyOn: boolean);
-var
-  Len1, Len2: integer;
-  Pkt, Pkt1, Pkt2: string;
-  Online: string;
-begin
-  if OnlyOn then Online := '01'
-  else Online := '00';
-  Len2 := Length(sEmail);
-  Pkt2 := '5e01' + IntToHex(Swap16(Len2 + 3), 4) + IntToHex(Swap16(Len2 + 1), 4) + Text2Hex(sEmail) +
-    '00' + '30020100' + Online;
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) +
-    '5f05' + Pkt2;
-  Len1 := Length(Hex2Text(Pkt1));
-  Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //
-  SendFLAP('2', Pkt);
-end;
-
 procedure ICQ_SearchPoUIN_new(sUIN: string);
 var
   Len1, Len2, Len3: integer;
   Pkt, Pkt1, Pkt2, Pkt3: string;
 begin
+  //--Делаем поиск контакта по UIN
   Pkt3 := '0032' + IntToHex(Length(sUIN), 4) + Text2Hex(sUIN);
   Len3 := Length(Hex2Text(Pkt3));
   Pkt2 := '05B90FA0000000000000000004E300000002000200000001' + IntToHex(Len3, 4) + Pkt3;
@@ -2656,35 +2550,8 @@ begin
     'A00F' + IntToHex(Swap16(Len2), 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //
+  //--Обнуляем флаг запроса анкеты контакта
   ICQ_ReqInfo_UIN := EmptyStr;
-  SendFLAP('2', Pkt);
-end;
-
-procedure ICQ_SearchPoUIN_old_2(sUIN: string);
-var
-  Len: integer;
-  Pkt, Pkt1: string;
-begin
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) +
-    '1f05' + IntToHex(Swap32(StrToInt(sUIN)), 8);
-  Len := Length(Hex2Text(Pkt1));
-  Pkt := '00150002000000000002' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt1;
-  //
-  SendFLAP('2', Pkt);
-end;
-
-procedure ICQ_SearchPoUIN_old_1(sUIN: string);
-var
-  Len: integer;
-  Pkt, Pkt1, Pkt2: string;
-begin
-  Pkt2 := '36010400' + IntToHex(Swap32(StrToInt(sUIN)), 8);
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) +
-    '6905' + Pkt2;
-  Len := Length(Hex2Text(Pkt1));
-  Pkt := '00150002000000003601' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt1;
-  //
   SendFLAP('2', Pkt);
 end;
 

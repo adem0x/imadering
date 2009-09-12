@@ -1976,15 +1976,11 @@ begin
         GetCursorPos(Pt);
         Pt := PaintPanel.ScreenToClient(Pt);
       end;
-      //A pplication.ProcessMessages;
-      //A pplication.ProcessMessages;
-      //A pplication.ProcessMessages;
-      //A pplication.ProcessMessages;
+      Application.ProcessMessages;
     end;
   end;
   MouseScrolling := False;
-  if MiddleScrollOn then
-    PaintPanel.Cursor := UpDownCursor;
+  if MiddleScrollOn then PaintPanel.Cursor := UpDownCursor;
 end;
 
 function ThtmlViewer.PositionTo(Dest: string): boolean;

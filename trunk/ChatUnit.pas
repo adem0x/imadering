@@ -95,6 +95,8 @@ type
     ConfPopupMenu: TPopupMenu;
     ChatUserPopupMenu: TPopupMenu;
     CloseLastChatMenu: TMenuItem;
+    FileTransferPopupMenu: TPopupMenu;
+    UpWapru1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -139,7 +141,6 @@ type
       Y: Integer);
     procedure SmiliesSpeedButtonClick(Sender: TObject);
     procedure QSpeedButtonClick(Sender: TObject);
-    procedure QRepSpeedButtonClick(Sender: TObject);
     procedure HistorySpeedButtonClick(Sender: TObject);
     procedure HistorySpeedButtonMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -159,6 +160,12 @@ type
       MousePos: TPoint; var Handled: Boolean);
     procedure HTMLChatViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure SendFileSpeedButtonMouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure QRepSpeedButtonClick(Sender: TObject);
+    procedure QRepSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure UpWapru1Click(Sender: TObject);
   private
     { Private declarations }
     lastClick: Tdatetime;
@@ -201,7 +208,8 @@ implementation
 
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
-  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, Code;
+  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, Code,
+  FileTransferUnit;
 
 function TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string): boolean;
 begin
@@ -251,6 +259,13 @@ procedure TChatForm.QRepSpeedButtonClick(Sender: TObject);
 begin
   //--Открываем меню над этим элементом
   Popup(QRepSpeedButton, QMessPopupMenu);
+end;
+
+procedure TChatForm.QRepSpeedButtonMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //--Открываем меню над этим элементом
+  if Button = mbRight then Popup(QRepSpeedButton, QMessPopupMenu);
 end;
 
 procedure TChatForm.QSpeedButtonClick(Sender: TObject);
@@ -982,7 +997,15 @@ end;
 
 procedure TChatForm.SendFileSpeedButtonClick(Sender: TObject);
 begin
-  ShowMessage(DevelMess);
+  //--Открываем меню над этим элементом
+  Popup(SendFileSpeedButton, FileTransferPopupMenu);
+end;
+
+procedure TChatForm.SendFileSpeedButtonMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //--Открываем меню над этим элементом
+  if Button = mbRight then Popup(SendFileSpeedButton, FileTransferPopupMenu);
 end;
 
 procedure TChatForm.SendMessageBitBtnClick(Sender: TObject);
@@ -1073,6 +1096,16 @@ end;
 procedure TChatForm.TypingTextToolButtonClick(Sender: TObject);
 begin
   ShowMessage(DevelMess);
+end;
+
+procedure TChatForm.UpWapru1Click(Sender: TObject);
+begin
+  //--Открываем форму отправки файлов
+  if not Assigned(FileTransferForm) then FileTransferForm := TFileTransferForm.Create(self);
+  //--Присваиваем переменную способа передачи
+  FileTransferForm.Tag := (Sender as TMenuItem).Tag;
+  //--Отображаем окно
+  xShowForm(FileTransferForm);
 end;
 
 procedure TChatForm.FormActivate(Sender: TObject);
@@ -1309,7 +1342,7 @@ procedure TChatForm.HTMLChatViewerHotSpotClick(Sender: TObject; const SRC: strin
 begin
   Handled := true;
   //--Открываем ссылку из чата во внешнем браузере
-  ShellExecute(Application.Handle, 'open', PChar(SRC), nil, nil, SW_SHOWNORMAL);
+  OpenURL(SRC);
 end;
 
 procedure TChatForm.HTMLChatViewerKeyDown(Sender: TObject; var Key: Word;
@@ -1403,7 +1436,8 @@ var
 begin
   //--Очищаем окно чата от истории сообщений
   HTMLChatViewer.Clear;
-  Doc := EmptyStr;
+  //--Добавляем стили
+  Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
   HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
 end;
 

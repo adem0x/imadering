@@ -30,7 +30,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    procedure ClearContacts(cType: string);
+    function ClearContacts(cType: string): boolean;
     procedure UpdateFullCL;
     function ReqRosterItem(cId: string): TListItem;
     function ReqCLContact(cId: string): TButtonItem;
@@ -483,12 +483,13 @@ begin
     RosterJvListView.LoadFromFile(ProfilePath + 'Profile\ContactList.dat');
 end;
 
-procedure TRosterForm.ClearContacts(cType: string);
+function TRosterForm.ClearContacts(cType: string): boolean;
 label
   a, b;
 var
   i: integer;
 begin
+  Result := false;
   //--Удаляем контакты в Ростере
   with RosterJvListView do
   begin
@@ -499,50 +500,31 @@ begin
       //--Удаляем все контакты протокола
       if Items[i].SubItems[3] = cType then
       begin
+        Result := true;
         Items[i].Delete;
         goto a;
       end;
     end;
     Items.EndUpdate;
   end;
-  //--Удаляем контакты в КЛ
-  with MainForm.ContactList do
-  begin
-    b: ;
-    for i := 0 to Categories.Count - 1 do
-    begin
-      //--Удаляем группы с контактами протокола
-      if Categories[i].GroupType = cType then
-      begin
-        Categories[i].Free;
-        goto b;
-      end;
-    end;
-  end;
 end;
 
 procedure TRosterForm.ClearICQClick(Sender: TObject);
 begin
   //--Стираем в Ростере все ICQ контакты
-  ClearContacts('Icq');
-  //--Запускаем обработку Ростера
-  UpdateFullCL;
+  if ClearContacts('Icq') then if RoasterReady then RosterForm.UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearJabberClick(Sender: TObject);
 begin
   //--Стираем в Ростере все Jabber контакты
-  ClearContacts('Jabber');
-  //--Запускаем обработку Ростера
-  UpdateFullCL;
+  if ClearContacts('Jabber') then if RoasterReady then RosterForm.UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearMRAClick(Sender: TObject);
 begin
   //--Стираем в Ростере все MRA контакты
-  ClearContacts('Mra');
-  //--Запускаем обработку Ростера
-  UpdateFullCL;
+  if ClearContacts('Mra') then if RoasterReady then RosterForm.UpdateFullCL;
 end;
 
 end.

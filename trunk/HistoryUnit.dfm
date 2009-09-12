@@ -25,7 +25,8 @@ object HistoryForm: THistoryForm
     Width = 521
     Height = 103
     Align = alTop
-    BevelKind = bkFlat
+    BevelEdges = [beBottom]
+    BevelKind = bkTile
     BevelOuter = bvNone
     TabOrder = 0
     object Bevel1: TBevel
@@ -133,19 +134,17 @@ object HistoryForm: THistoryForm
   end
   object BottomPanel: TPanel
     Left = 0
-    Top = 386
+    Top = 392
     Width = 521
-    Height = 41
+    Height = 35
     Align = alBottom
-    BevelKind = bkFlat
+    BevelEdges = [beTop]
+    BevelKind = bkTile
     BevelOuter = bvNone
     TabOrder = 1
-    DesignSize = (
-      517
-      37)
     object ReloadHistoryBitBtn: TBitBtn
-      Left = 11
-      Top = 7
+      Left = 7
+      Top = 4
       Width = 109
       Height = 25
       Caption = #1054#1073#1085#1086#1074#1080#1090#1100
@@ -154,8 +153,8 @@ object HistoryForm: THistoryForm
       OnClick = ReloadHistoryBitBtnClick
     end
     object SaveHistoryAsBitBtn: TBitBtn
-      Left = 126
-      Top = 7
+      Left = 122
+      Top = 4
       Width = 139
       Height = 25
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082' ...'
@@ -164,32 +163,36 @@ object HistoryForm: THistoryForm
       OnClick = SaveHistoryAsBitBtnClick
     end
     object DeleteHistoryBitBtn: TBitBtn
-      Left = 278
-      Top = 7
+      Left = 287
+      Top = 4
       Width = 102
       Height = 25
-      Anchors = [akTop, akRight]
       Caption = #1059#1076#1072#1083#1080#1090#1100
       TabOrder = 2
       TabStop = False
       OnClick = DeleteHistoryBitBtnClick
     end
     object CloseBitBtn: TBitBtn
-      Left = 399
-      Top = 7
+      AlignWithMargins = True
+      Left = 413
+      Top = 4
       Width = 101
       Height = 25
-      Anchors = [akTop, akRight]
+      Margins.Top = 4
+      Margins.Right = 7
+      Margins.Bottom = 4
+      Align = alRight
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 3
       OnClick = CloseBitBtnClick
+      ExplicitLeft = 414
     end
   end
   object HTMLHistoryViewer: THTMLViewer
     Left = 0
     Top = 103
     Width = 521
-    Height = 283
+    Height = 289
     Cursor = crDefault
     TabOrder = 2
     Align = alClient
@@ -208,6 +211,7 @@ object HistoryForm: THistoryForm
     PrintMarginBottom = 2.000000000000000000
     PrintScale = 1.000000000000000000
     OnKeyDown = HTMLHistoryViewerKeyDown
+    ExplicitHeight = 283
   end
   object HistoryPopupMenu: TPopupMenu
     Images = MainForm.AllImageList

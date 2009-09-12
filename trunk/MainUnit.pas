@@ -20,7 +20,7 @@ uses
 type
   TMainForm = class(TForm)
     ContactList: TCategoryButtons;
-    ToolBar2: TToolBar;
+    BottomToolBar: TToolBar;
     MainToolButton: TToolButton;
     ICQToolButton: TToolButton;
     ICQTrayIcon: TTrayIcon;
@@ -160,6 +160,39 @@ type
     MainActionList: TActionList;
     CloseActiveFormAction: TAction;
     ChatTabCloseAction: TAction;
+    TopPanelPopupMenu: TPopupMenu;
+    BottomPanelPopupMenu: TPopupMenu;
+    MainButtonONMenu: TMenuItem;
+    TopSettingsONMenu: TMenuItem;
+    TopToolBar: TToolBar;
+    SettingsTopToolButton: TToolButton;
+    TopPanelToolButton: TToolButton;
+    SoundsONMenu: TMenuItem;
+    OnlyOnlineONMenu: TMenuItem;
+    GroupONMenu: TMenuItem;
+    TopPanelONMenu: TMenuItem;
+    OnlyOnlineContactsTopButton: TToolButton;
+    GroupOnOffToolTopButton: TToolButton;
+    SoundOnOffToolTopButton: TToolButton;
+    PrivatTopToolButton: TToolButton;
+    HistoryTopToolButton: TToolButton;
+    PrivatToolButton: TToolButton;
+    HistoryToolButton: TToolButton;
+    SettingsToolButton: TToolButton;
+    PrivatONMenu: TMenuItem;
+    HistoryONMenu: TMenuItem;
+    SettingsONMenu: TMenuItem;
+    MainToolTopButton: TToolButton;
+    TrafficTopToolButton: TToolButton;
+    TrafficToolButton: TToolButton;
+    TrafficONMenu: TMenuItem;
+    TopMainButtonONMenu: TMenuItem;
+    TopOnlyOnlineONMenu: TMenuItem;
+    TopGroupONMenu: TMenuItem;
+    TopSoundsONMenu: TMenuItem;
+    TopPrivatONMenu: TMenuItem;
+    TopHistoryONMenu: TMenuItem;
+    TopTrafficONMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -286,6 +319,36 @@ type
     procedure ICQSearchNewContactClick(Sender: TObject);
     procedure CloseActiveFormActionExecute(Sender: TObject);
     procedure ChatTabCloseActionExecute(Sender: TObject);
+    procedure BottomPanelPopupMenuPopup(Sender: TObject);
+    procedure TopPanelToolButtonClick(Sender: TObject);
+    procedure MRAStatusOnlineClick(Sender: TObject);
+    procedure MainButtonONMenuClick(Sender: TObject);
+    procedure SoundsONMenuClick(Sender: TObject);
+    procedure OnlyOnlineONMenuClick(Sender: TObject);
+    procedure GroupONMenuClick(Sender: TObject);
+    procedure TopPanelONMenuClick(Sender: TObject);
+    procedure MainToolTopButtonClick(Sender: TObject);
+    procedure BottomToolBarMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure TopToolBarMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure MainToolTopButtonContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
+    procedure GroupOnOffToolTopButtonClick(Sender: TObject);
+    procedure OnlyOnlineContactsTopButtonClick(Sender: TObject);
+    procedure SoundOnOffToolTopButtonClick(Sender: TObject);
+    procedure PrivatONMenuClick(Sender: TObject);
+    procedure HistoryONMenuClick(Sender: TObject);
+    procedure SettingsONMenuClick(Sender: TObject);
+    procedure TrafficONMenuClick(Sender: TObject);
+    procedure TopMainButtonONMenuClick(Sender: TObject);
+    procedure TopOnlyOnlineONMenuClick(Sender: TObject);
+    procedure TopGroupONMenuClick(Sender: TObject);
+    procedure TopSoundsONMenuClick(Sender: TObject);
+    procedure TopPrivatONMenuClick(Sender: TObject);
+    procedure TopHistoryONMenuClick(Sender: TObject);
+    procedure TopSettingsONMenuClick(Sender: TObject);
+    procedure TopTrafficONMenuClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -300,6 +363,7 @@ type
     { Public declarations }
     RoasterGroup: TButtonCategory;
     RoasterButton: TButtonItem;
+    procedure TranslateForm;
     procedure SaveMainFormSettings;
     procedure ICQEnable(OnOff: boolean);
     procedure MRAEnable(OnOff: boolean);
@@ -323,6 +387,49 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit;
+
+procedure TMainForm.TrafficONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку трафик на нижней панели
+  TrafficONMenu.Checked := not TrafficONMenu.Checked;
+  TrafficToolButton.Visible := not TrafficToolButton.Visible;
+end;
+
+procedure TMainForm.TranslateForm;
+var
+  i: integer;
+begin
+  //--Выставляем основные переменные
+  OnlyOnlineContactsTopButton.Hint := OnlyOnlineOff;
+  OnlyOnlineContactsToolButton.Hint := OnlyOnlineOff;
+  GroupOnOffToolTopButton.Hint := GroupCLOff;
+  GroupOnOffToolButton.Hint := GroupCLOff;
+  SoundOnOffToolTopButton.Hint := SoundOffHint;
+  SoundOnOffToolButton.Hint := SoundOffHint;
+  TopPanelToolButton.Hint := TopPanelOff;
+  //--Переводим окно на другие языки
+  {//--Загружаем перевод интерфейса программы
+  if CurrentLang <> EmptyStr then
+  begin
+    if FileExists(MyPath + 'Langs\' + CurrentLang + '.xml') then begin
+
+      with TrXML.Create() do try
+
+        LoadFromFile(MyPath + 'Langs\' + CurrentLang + '.xml');
+        //--Переводим главное окно
+        for i := 0 to MainForm.ComponentCount - 1 do begin
+          if OpenKey('settings\main-form\' + MainForm.Components[i].Name) then try
+            SetStringPropertyIfExists(MainForm.Components[i], 'Hint', '<b>' + ReadString('hint') + '</b>');
+          finally
+            CloseKey();
+          end;
+        end;
+      finally
+        Free();
+      end;
+    end;
+  end;}
+end;
 
 procedure TMainForm.FormShowInWorkArea(xForm: TForm);
 var
@@ -530,6 +637,92 @@ begin
   xShowForm(MraOptionsForm);
 end;
 
+procedure TMainForm.MRAStatusOnlineClick(Sender: TObject);
+begin
+  //--Если логин ICQ или пароль пустые, то выводим окно настроек для их ввода
+  if (MRA_LoginUIN = EmptyStr) or (MRA_LoginPassword = EmptyStr) then
+  begin
+    //--Показываем сообщение об этой ошибке
+    DAShow(InformationHead, ICQAccountInfo_1, EmptyStr, 133, 3, 0);
+    //--Открываем настройки ICQ
+    MRASettingsClick(self);
+    //--Ставим фокусы в поле ввода логина или пароля
+    with MraOptionsForm do
+    begin
+      if (MRAEmailEdit.CanFocus) and (MRAEmailEdit.Text = EmptyStr) then MRAEmailEdit.SetFocus
+      else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then PassEdit.SetFocus;
+    end;
+    //--Выходим от сюда
+    Exit;
+  end;
+  {//--Делаем выбранный статус в меню выделенным
+  TMenuItem(Sender).Default := true;
+  //--Ставим статус для протокола
+  ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
+  //--Ставим запасное значение статуса для протокола
+  ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
+  //--Ставим иконки статусов в окне и в трэе
+  if not ICQ_Offline_Phaze then
+  begin
+    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    ICQToolButton.ImageIndex := ICQ_CurrentStatus;
+  end;
+  //--Отключаем статус Нестабильный если он включен
+  if JvTimerList.Events[4].Enabled then
+  begin
+    JvTimerList.Events[4].Enabled := false;
+    UnstableICQStatus.Checked := false;
+  end;
+  //--Подключаемся к ICQ серверу
+  if ICQ_Offline_Phaze then
+  begin
+    try
+      //--Ставим иконки подключения в окне и в трэе
+      ICQTrayIcon.IconIndex := 168;
+      ICQToolButton.ImageIndex := 168;
+      //--Блокируем контролы логина и пароля ICQ
+      if Assigned(IcqOptionsForm) then
+      begin
+        with IcqOptionsForm do
+        begin
+          ICQUINEdit.Enabled := false;
+          ICQUINEdit.Color := clBtnFace;
+          PassEdit.Enabled := false;
+          PassEdit.Color := clBtnFace;
+        end;
+      end;
+      //--Активируем фазу коннекта к серверу ICQ
+      ICQ_Connect_Phaze := true;
+      ICQ_HTTP_Connect_Phaze := false;
+      ICQ_BosConnect_Phaze := false;
+      ICQ_Work_Phaze := false;
+      ICQ_Offline_Phaze := false;
+      //--Запускаем показ иконки коннекта ICQ
+      JvTimerList.Events[3].Enabled := true;
+      //--Устанавливаем параметры сокета
+      ICQWSocket.Proto := 'tcp';
+      //--Устанавливаем настройки прокси
+      if HttpProxy_Enable then
+      begin
+        ICQWSocket.Addr := HttpProxy_Address;
+        ICQWSocket.Port := HttpProxy_Port;
+      end
+      else
+      begin
+        ICQWSocket.Addr := ICQ_LoginServerAddr;
+        ICQWSocket.Port := ICQ_LoginServerPort;
+      end;
+      //--Прорисовываем интерфэйс
+      Update;
+      //--Подключаем сокет
+      ICQWSocket.Connect;
+    except
+    end;
+  end;
+  if (not ICQ_Connect_Phaze) and (not ICQ_BosConnect_Phaze) and (not ICQ_Offline_Phaze) then
+    SendFLAP('2', ICQ_CreateShortStatusPkt);}
+end;
+
 procedure TMainForm.JabberEnable(OnOff: boolean);
 begin
   if OnOff then
@@ -664,7 +857,7 @@ begin
     else Checked := true;
   end;
   //--Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  if RoasterReady then RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.HideInTrayClick(Sender: TObject);
@@ -687,6 +880,13 @@ begin
   HistoryForm.LoadHistoryFromFile(ContactList.SelectedItem.UIN);
   //--Отображаем окно
   xShowForm(HistoryForm);
+end;
+
+procedure TMainForm.HistoryONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку истории сообщений на нижней панели
+  HistoryONMenu.Checked := not HistoryONMenu.Checked;
+  HistoryToolButton.Visible := not HistoryToolButton.Visible;
 end;
 
 procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
@@ -781,7 +981,7 @@ begin
                   end
                   else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
                 end
-                else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
+                else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingErr, EmptyStr, 134, 2, 0);
               end;
             except
             end;
@@ -955,6 +1155,13 @@ begin
   Popup(ICQToolButton, RightICQPopupMenu);
 end;
 
+procedure TMainForm.MainButtonONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку главного меню на нижней панели
+  MainButtonONMenu.Checked := not MainButtonONMenu.Checked;
+  MainToolButton.Visible := not MainToolButton.Visible;
+end;
+
 procedure TMainForm.MainFormHideInTray;
 begin
   //--Показываем или сворачиваем главное окно
@@ -1012,7 +1219,9 @@ procedure TMainForm.ICQTrayIconMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   //--Определяем какой протокол вызвал меню в трэе
-  if Button = mbRight then TrayProtoClickMenu := LowerCase((Sender as TTrayIcon).Name);
+  if Button = mbRight then TrayProtoClickMenu := LowerCase((Sender as TTrayIcon).Name)
+  //--Выводим список контактов на передний план если нажали средней клавишей мыши
+  else if Button = mbMiddle then SetForeGroundWindow(Handle);
 end;
 
 procedure TMainForm.ICQWSocketDataAvailable(Sender: TObject; ErrCode: Word);
@@ -1934,7 +2143,7 @@ end;
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
 begin
   //--Обрабатываем Ростер
-  RosterForm.UpdateFullCL;
+  if RoasterReady then RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.JvTimerListEvents12Timer(Sender: TObject);
@@ -2229,6 +2438,7 @@ begin
   //--Создаём форму со смайликами через секунду после создания окна чата
   if not Assigned(SmilesForm) then SmilesForm := TSmilesForm.Create(nil);
   //--Запускаем обработку Ростера
+  RoasterReady := true;
   RosterForm.UpdateFullCL;
 end;
 
@@ -2291,6 +2501,7 @@ end;
 procedure TMainForm.MainToolButtonClick(Sender: TObject);
 begin
   //--Открываем меню над этим элементом
+  MainPopupMenu.Alignment := paLeft;
   Popup(MainToolButton, MainPopupMenu);
 end;
 
@@ -2298,7 +2509,23 @@ procedure TMainForm.MainToolButtonContextPopup(Sender: TObject;
   MousePos: TPoint; var Handled: Boolean);
 begin
   //--Открываем меню над этим элементом
+  MainPopupMenu.Alignment := paLeft;
   Popup(MainToolButton, MainPopupMenu);
+end;
+
+procedure TMainForm.MainToolTopButtonClick(Sender: TObject);
+begin
+  //--Открываем меню над этим элементом
+  MainPopupMenu.Alignment := paRight;
+  Popup_down(MainToolTopButton, MainPopupMenu);
+end;
+
+procedure TMainForm.MainToolTopButtonContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  //--Открываем меню над этим элементом
+  MainPopupMenu.Alignment := paRight;
+  Popup_down(MainToolTopButton, MainPopupMenu);
 end;
 
 procedure TMainForm.MRAToolButtonClick(Sender: TObject);
@@ -2320,6 +2547,13 @@ begin
   if not Assigned(MraXStatusForm) then MraXStatusForm := TMraXStatusForm.Create(self);
   //--Отображаем окнов рабочей области
   FormShowInWorkArea(MraXStatusForm);
+end;
+
+procedure TMainForm.SoundsONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку звуков на нижней панели
+  SoundsONMenu.Checked := not SoundsONMenu.Checked;
+  SoundOnOffToolButton.Visible := not SoundOnOffToolButton.Visible;
 end;
 
 procedure TMainForm.ChatTabCloseActionExecute(Sender: TObject);
@@ -2368,10 +2602,18 @@ begin
   ShowMessage(DevelMess);
 end;
 
+procedure TMainForm.PrivatONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку приватных списков на нижней панели
+  PrivatONMenu.Checked := not PrivatONMenu.Checked;
+  PrivatToolButton.Visible := not PrivatToolButton.Visible;
+end;
+
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   //--Место для запуска тестов
-
+  OnlyOnlineContactsToolButton.Down := true;
+  OnlyOnlineContactsToolButtonClick(self);
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -2379,16 +2621,36 @@ begin
   //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. оффлайн контактов
   if OnlyOnlineContactsToolButton.Down then
   begin
+    OnlyOnlineContactsTopButton.Down := true;
     OnlyOnlineContactsToolButton.ImageIndex := 137;
+    OnlyOnlineContactsTopButton.ImageIndex := 137;
     OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
-    RosterForm.UpdateFullCL;
+    OnlyOnlineContactsTopButton.Hint := OnlyOnlineOn;
   end
   else
   begin
+    OnlyOnlineContactsTopButton.Down := false;
     OnlyOnlineContactsToolButton.ImageIndex := 138;
+    OnlyOnlineContactsTopButton.ImageIndex := 138;
     OnlyOnlineContactsToolButton.Hint := OnlyOnlineOff;
-    RosterForm.UpdateFullCL;
+    OnlyOnlineContactsTopButton.Hint := OnlyOnlineOff;
   end;
+  //--Запускаем обработку Ростера
+  if RoasterReady then RosterForm.UpdateFullCL;
+end;
+
+procedure TMainForm.OnlyOnlineContactsTopButtonClick(Sender: TObject);
+begin
+  //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. оффлайн контактов
+  OnlyOnlineContactsToolButton.Down := not OnlyOnlineContactsToolButton.Down;
+  OnlyOnlineContactsToolButtonClick(self);
+end;
+
+procedure TMainForm.OnlyOnlineONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку скрыть оффлайн контакты на нижней панели
+  OnlyOnlineONMenu.Checked := not OnlyOnlineONMenu.Checked;
+  OnlyOnlineContactsToolButton.Visible := not OnlyOnlineContactsToolButton.Visible;
 end;
 
 procedure TMainForm.OpenSettingsClick(Sender: TObject);
@@ -2824,12 +3086,42 @@ begin
   FormDeactivate(self);
 end;
 
+procedure TMainForm.BottomPanelPopupMenuPopup(Sender: TObject);
+var
+  i: integer;
+begin
+  //--Выстявляем иконки активности пунктов меню
+  with (Sender as TPopupMenu) do
+  begin
+    for i := 0 to Items.Count - 1 do
+    begin
+      if Items[i].Checked then Items[i].ImageIndex := 140
+      else Items[i].ImageIndex := 230;
+    end;
+  end;
+end;
+
+procedure TMainForm.BottomToolBarMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  FCursor: TPoint;
+begin
+  //--Вызываем меню нижней панели в позиции курсора
+  if Button = mbRight then
+  begin
+    GetCursorPos(FCursor);
+    BottomPanelPopupMenu.Popup(FCursor.X, FCursor.Y);
+  end;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   S: string;
   buf: array[0..$FF] of char;
   Size: integer;
 begin
+  //--Устанавливаем начальное значение ширины окна КЛ
+  Width := 199;
   //--Узнаём путь откуда запущена программа
   MyPath := ExtractFilePath(Application.ExeName);
   //--Смотрим в реестре путь к профилю
@@ -2851,6 +3143,8 @@ begin
   //--Временно создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(self);
   SettingsForm.ApplySettings;
+  //--Устанавливаем языковые подписи
+  TranslateForm;
   //--Загрузка иконок для программы
   LoadImageList(AllImageList, MyPath + 'Icons\' + CurrentIcons + '\icons.bmp');
   //--Устанавливаем иконку окна
@@ -2858,8 +3152,6 @@ begin
   //--Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
-  //--Создаём окно Ростера
-  RosterForm := TRosterForm.Create(self);
   //--Делаем всплывающие подсказки неисчезающими
   Application.HintHidePause := MaxInt;
   Application.OnHint := HintMaxTime;
@@ -2867,6 +3159,8 @@ begin
   AllImageList.GetIcon(9, ICQTrayIcon.Icon);
   AllImageList.GetIcon(23, MRATrayIcon.Icon);
   AllImageList.GetIcon(30, JabberTrayIcon.Icon);
+  //--Создаём окно Ростера
+  RosterForm := TRosterForm.Create(self);
   //--Загружаем настройки окна
   LoadMainFormSettings;
   if AllSesDataTraf = EmptyStr then AllSesDataTraf := DateTimeToStr(now);
@@ -2884,8 +3178,8 @@ begin
   InMessList := TStringList.Create;
   SmilesList := TStringList.Create;
   if FileExists(ProfilePath + 'Profile\' + 'Nicks.txt') then AccountToNick.LoadFromFile(ProfilePath + 'Profile\' + 'Nicks.txt');
-  if FileExists(MyPath + '\Smilies\' + CurrentSmiles + '\smilies.txt') then
-    SmilesList.LoadFromFile(MyPath + '\Smilies\' + CurrentSmiles + '\smilies.txt');
+  if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt') then
+    SmilesList.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt');
   //--Проверяем если ли старый файл после обновления, если есть, то удаляем
   if FileExists(MyPath + 'Imadering.old') then DeleteFile(MyPath + 'Imadering.old');
   //--Если не активно запускаться свёрнутой в трэй то показываем клавное окно
@@ -2916,19 +3210,41 @@ begin
   end;
 end;
 
+procedure TMainForm.GroupONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку скрыть группы на нижней панели
+  GroupONMenu.Checked := not GroupONMenu.Checked;
+  GroupOnOffToolButton.Visible := not GroupOnOffToolButton.Visible;
+end;
+
 procedure TMainForm.GroupOnOffToolButtonClick(Sender: TObject);
 begin
   //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. групп
   if GroupOnOffToolButton.Down then
   begin
-    GroupOnOffToolButton.ImageIndex := 232;
-    RosterForm.UpdateFullCL;
+    GroupOnOffToolTopButton.Down := true;
+    GroupOnOffToolButton.ImageIndex := 231;
+    GroupOnOffToolTopButton.ImageIndex := 231;
+    GroupOnOffToolButton.Hint := GroupCLOff;
+    GroupOnOffToolTopButton.Hint := GroupCLOff;
   end
   else
   begin
-    GroupOnOffToolButton.ImageIndex := 231;
-    RosterForm.UpdateFullCL;
+    GroupOnOffToolTopButton.Down := false;
+    GroupOnOffToolButton.ImageIndex := 232;
+    GroupOnOffToolTopButton.ImageIndex := 232;
+    GroupOnOffToolButton.Hint := GroupCLOn;
+    GroupOnOffToolTopButton.Hint := GroupCLOn;
   end;
+  //--Запускаем обработку Ростера
+  if RoasterReady then RosterForm.UpdateFullCL;
+end;
+
+procedure TMainForm.GroupOnOffToolTopButtonClick(Sender: TObject);
+begin
+  //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. групп
+  GroupOnOffToolButton.Down := not GroupOnOffToolButton.Down;
+  GroupOnOffToolButtonClick(self);
 end;
 
 procedure TMainForm.LoadMainFormSettings;
@@ -2957,9 +3273,8 @@ begin
       try
         if ReadBool('value') then
         begin
-          SoundOnOffToolButton.ImageIndex := 136;
           SoundOnOffToolButton.Down := true;
-          SoundOnOffToolButton.Hint := SoundOnHint;
+          SoundOnOffToolButtonClick(self);
         end;
       finally
         CloseKey();
@@ -2969,9 +3284,19 @@ begin
       try
         if ReadBool('value') then
         begin
-          OnlyOnlineContactsToolButton.ImageIndex := 137;
           OnlyOnlineContactsToolButton.Down := true;
-          OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
+          OnlyOnlineContactsToolButtonClick(self);
+        end;
+      finally
+        CloseKey();
+      end;
+      //--Загружаем состояние кнопки отображения групп
+      if OpenKey('settings\forms\mainform\group-on-off') then
+      try
+        if not ReadBool('value') then
+        begin
+          GroupOnOffToolButton.Down := false;
+          GroupOnOffToolButtonClick(self);
         end;
       finally
         CloseKey();
@@ -3008,13 +3333,84 @@ begin
       finally
         CloseKey();
       end;
-    end;
+      //--Загружаем состояние верхней панели
+      if OpenKey('settings\forms\mainform\top-panel') then
+      try
+        if not ReadBool('value') then
+        begin
+          TopPanelToolButton.Down := false;
+          TopPanelToolButton.Hint := TopPanelOn;
+          TopToolBar.Visible := false;
+        end;
+        //--Загружаем состояние кнопок
+        MainToolTopButton.Visible := ReadBool('b0');
+        TopMainButtonONMenu.Checked := MainToolTopButton.Visible;
+        //
+        OnlyOnlineContactsTopButton.Visible := ReadBool('b1');
+        TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
+        //
+        GroupOnOffToolTopButton.Visible := ReadBool('b2');
+        TopGroupONMenu.Checked := GroupOnOffToolTopButton.Visible;
+        //
+        SoundOnOffToolTopButton.Visible := ReadBool('b3');
+        TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
+        //
+        PrivatTopToolButton.Visible := ReadBool('b4');
+        TopPrivatONMenu.Checked := PrivatTopToolButton.Visible;
+        //
+        HistoryTopToolButton.Visible := ReadBool('b5');
+        TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
+        //
+        SettingsTopToolButton.Visible := ReadBool('b6');
+        TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
+        //
+        TrafficTopToolButton.Visible := ReadBool('b7');
+        TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
+      finally
+        CloseKey();
+      end;
+      //--Загружаем состояние верхней панели
+      if OpenKey('settings\forms\mainform\bottom-panel') then
+      try
+        //--Загружаем состояние кнопок
+        MainToolButton.Visible := ReadBool('b0');
+        MainButtonONMenu.Checked := MainToolButton.Visible;
+        //
+        OnlyOnlineContactsToolButton.Visible := ReadBool('b1');
+        OnlyOnlineONMenu.Checked := OnlyOnlineContactsToolButton.Visible;
+        //
+        GroupOnOffToolButton.Visible := ReadBool('b2');
+        GroupONMenu.Checked := GroupOnOffToolButton.Visible;
+        //
+        SoundOnOffToolButton.Visible := ReadBool('b3');
+        SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
+        //
+        PrivatToolButton.Visible := ReadBool('b4');
+        PrivatONMenu.Checked := PrivatToolButton.Visible;
+        //
+        HistoryToolButton.Visible := ReadBool('b5');
+        HistoryONMenu.Checked := HistoryToolButton.Visible;
+        //
+        SettingsToolButton.Visible := ReadBool('b6');
+        SettingsONMenu.Checked := SettingsToolButton.Visible;
+        //
+        TrafficToolButton.Visible := ReadBool('b7');
+        TrafficONMenu.Checked := TrafficToolButton.Visible;
+        //
+        TopPanelToolButton.Visible := ReadBool('b8');
+        TopPanelONMenu.Checked := TopPanelToolButton.Visible;
+      finally
+        CloseKey();
+      end;
+    end else MainToolTopButton.Visible := false;
   finally
     Free();
   end;
 end;
 
 procedure TMainForm.SaveMainFormSettings;
+var
+  i: integer;
 begin
   //--Создаём необходимые папки
   ForceDirectories(ProfilePath + 'Profile');
@@ -3086,6 +3482,23 @@ begin
     finally
       CloseKey();
     end;
+    //--Сохраняем состояние верхней панели
+    if OpenKey('settings\forms\mainform\top-panel', True) then
+    try
+      WriteBool('value', TopPanelToolButton.Down);
+      for i := 0 to TopPanelPopupMenu.Items.Count - 1 do
+        WriteBool('b' + IntToStr(i), TopPanelPopupMenu.Items[i].Checked);
+    finally
+      CloseKey();
+    end;
+    //--Сохраняем состояние нижней панели
+    if OpenKey('settings\forms\mainform\bottom-panel', True) then
+    try
+      for i := 0 to BottomPanelPopupMenu.Items.Count - 1 do
+        WriteBool('b' + IntToStr(i), BottomPanelPopupMenu.Items[i].Checked);
+    finally
+      CloseKey();
+    end;
     //--Записываем сам файл
     SaveToFile(ProfilePath + SettingsFileName);
   finally
@@ -3127,19 +3540,130 @@ begin
   end;
 end;
 
+procedure TMainForm.SettingsONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку настройки на нижней панели
+  SettingsONMenu.Checked := not SettingsONMenu.Checked;
+  SettingsToolButton.Visible := not SettingsToolButton.Visible;
+end;
+
 procedure TMainForm.SoundOnOffToolButtonClick(Sender: TObject);
 begin
   //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. звуков
   if SoundOnOffToolButton.Down then
   begin
+    SoundOnOffToolTopButton.Down := true;
     SoundOnOffToolButton.ImageIndex := 136;
+    SoundOnOffToolTopButton.ImageIndex := 136;
     SoundOnOffToolButton.Hint := SoundOnHint;
+    SoundOnOffToolTopButton.Hint := SoundOnHint;
   end
   else
   begin
+    SoundOnOffToolTopButton.Down := false;
     SoundOnOffToolButton.ImageIndex := 135;
+    SoundOnOffToolTopButton.ImageIndex := 135;
     SoundOnOffToolButton.Hint := SoundOffHint;
+    SoundOnOffToolTopButton.Hint := SoundOffHint;
   end;
+end;
+
+procedure TMainForm.SoundOnOffToolTopButtonClick(Sender: TObject);
+begin
+  //--Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. звуков
+  SoundOnOffToolButton.Down := not SoundOnOffToolButton.Down;
+  SoundOnOffToolButtonClick(self);
+end;
+
+procedure TMainForm.TopGroupONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку отображать группы на верхней панели
+  TopGroupONMenu.Checked := not TopGroupONMenu.Checked;
+  GroupOnOffToolTopButton.Visible := not GroupOnOffToolTopButton.Visible;
+end;
+
+procedure TMainForm.TopHistoryONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку история сообщений на верхней панели
+  TopHistoryONMenu.Checked := not TopHistoryONMenu.Checked;
+  HistoryTopToolButton.Visible := not HistoryTopToolButton.Visible;
+end;
+
+procedure TMainForm.TopMainButtonONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку главного меню на верхней панели
+  TopMainButtonONMenu.Checked := not TopMainButtonONMenu.Checked;
+  MainToolTopButton.Visible := not MainToolTopButton.Visible;
+end;
+
+procedure TMainForm.TopOnlyOnlineONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку только онлайн на верхней панели
+  TopOnlyOnlineONMenu.Checked := not TopOnlyOnlineONMenu.Checked;
+  OnlyOnlineContactsTopButton.Visible := not OnlyOnlineContactsTopButton.Visible;
+end;
+
+procedure TMainForm.TopPanelONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку скрыть группы на нижней панели
+  TopPanelONMenu.Checked := not TopPanelONMenu.Checked;
+  TopPanelToolButton.Visible := not TopPanelToolButton.Visible;
+end;
+
+procedure TMainForm.TopPanelToolButtonClick(Sender: TObject);
+begin
+  //--Включаем или отключаем отображение верхней панели
+  if TopPanelToolButton.Down then
+  begin
+    TopToolBar.Visible := true;
+    TopPanelToolButton.Hint := TopPanelOff;
+  end
+  else
+  begin
+    TopToolBar.Visible := false;
+    TopPanelToolButton.Hint := TopPanelOn;
+  end;
+end;
+
+procedure TMainForm.TopPrivatONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку приватные списки на верхней панели
+  TopPrivatONMenu.Checked := not TopPrivatONMenu.Checked;
+  PrivatTopToolButton.Visible := not PrivatTopToolButton.Visible;
+end;
+
+procedure TMainForm.TopSettingsONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку настройки на верхней панели
+  TopSettingsONMenu.Checked := not TopSettingsONMenu.Checked;
+  SettingsTopToolButton.Visible := not SettingsTopToolButton.Visible;
+end;
+
+procedure TMainForm.TopSoundsONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку звуки на верхней панели
+  TopSoundsONMenu.Checked := not TopSoundsONMenu.Checked;
+  SoundOnOffToolTopButton.Visible := not SoundOnOffToolTopButton.Visible;
+end;
+
+procedure TMainForm.TopToolBarMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  FCursor: TPoint;
+begin
+  //--Вызываем меню верхней панели в позиции курсора
+  if Button = mbRight then
+  begin
+    GetCursorPos(FCursor);
+    TopPanelPopupMenu.Popup(FCursor.X, FCursor.Y);
+  end;
+end;
+
+procedure TMainForm.TopTrafficONMenuClick(Sender: TObject);
+begin
+  //--Скрываем кнопку трафик на верхней панели
+  TopTrafficONMenu.Checked := not TopTrafficONMenu.Checked;
+  TrafficTopToolButton.Visible := not TrafficTopToolButton.Visible;
 end;
 
 procedure TMainForm.TrayPopupMenuPopup(Sender: TObject);

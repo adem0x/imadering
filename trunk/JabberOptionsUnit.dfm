@@ -64,11 +64,40 @@ object JabberOptionsForm: TJabberOptionsForm
       item
         Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         ImageIndex = 41
+      end
+      item
+        Caption = #1057#1077#1088#1074#1077#1088
+      end
+      item
+        Caption = #1055#1088#1086#1082#1089#1080
+        ImageIndex = 162
+      end
+      item
+        Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
+      end
+      item
+        Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077' '#1088#1086#1089#1090#1077#1088#1086#1084
+      end
+      item
+        Caption = #1052#1086#1103' '#1072#1085#1082#1077#1090#1072
+      end
+      item
+        Caption = #1044#1086#1084
+      end
+      item
+        Caption = #1056#1072#1073#1086#1090#1072
+      end
+      item
+        Caption = #1051#1080#1095#1085#1086#1077
+      end
+      item
+        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
       end>
     ItemIndex = 0
     TabOrder = 3
+    OnButtonClicked = JabberOptionButtonGroupButtonClicked
   end
-  object Panel1: TPanel
+  object OptionPanel: TPanel
     Left = 151
     Top = 8
     Width = 438
@@ -76,22 +105,22 @@ object JabberOptionsForm: TJabberOptionsForm
     BevelKind = bkTile
     BevelOuter = bvNone
     TabOrder = 4
-    object JvPageList1: TJvPageList
+    object OptionJvPageList: TJvPageList
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = JvStandardPage1
+      ActivePage = AccountPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
-      object JvStandardPage1: TJvStandardPage
+      object AccountPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'JvStandardPage1'
+        Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
           Left = 3
           Top = 3
@@ -255,6 +284,69 @@ object JabberOptionsForm: TJabberOptionsForm
           ParentFont = False
           TabOrder = 1
         end
+      end
+      object ServerPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'ServerPage'
+      end
+      object ProxyPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'ProxyPage'
+      end
+      object OptionPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'OptionPage'
+      end
+      object RosterPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'RosterPage'
+      end
+      object AnketaPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'AnketaPage'
+      end
+      object HomePage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'HomePage'
+      end
+      object WorkPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'WorkPage'
+      end
+      object PersonalPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'PersonalPage'
+      end
+      object ParamsPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'ParamsPage'
       end
     end
   end
