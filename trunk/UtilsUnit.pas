@@ -90,6 +90,8 @@ procedure xShowForm(xForm: TForm);
 procedure OpenURL(Url: string);
 procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
   AValue: string);
+function ChangeSpaces(const Value: string): string;
+function ChangeSlash(const Value: string): string;
 
 implementation
 
@@ -230,7 +232,7 @@ begin
   Result := True;
   for i := Low(StringsArr) to High(StringsArr) do
   begin
-    if Trim(StringsArr[i]) <> '' then Exit;
+    if Trim(StringsArr[i]) <> EmptyStr then Exit;
   end;
   Result := False;
 end;
@@ -1032,25 +1034,28 @@ begin
   Result := DeleteDashes(SN);
 end;
 
-function exNormalizeScreenName(SN: string): string;
-
-  function DeleteSpaces(const Value: string): string;
-  var
-    Counter, i: integer;
-  begin
-    Counter := 0;
-    SetLength(Result, Length(Value));
-    for i := 1 to Length(Value) do
-      if Value[i] <> ' ' then
-      begin
-        Inc(Counter);
-        Result[Counter] := Value[i];
-      end;
-    SetLength(Result, Counter);
-  end;
-
+function ChangeSpaces(const Value: string): string;
+var
+  i: integer;
 begin
-  Result := AnsiLowerCase(DeleteSpaces(SN));
+  Result := EmptyStr;
+  for i := 1 to Length(Value) do
+  begin
+    if Value[i] = ' ' then Result := Result + '%20'
+    else Result := Result + Value[i];
+  end;
+end;
+
+function ChangeSlash(const Value: string): string;
+var
+  i: integer;
+begin
+  Result := EmptyStr;
+  for i := 1 to Length(Value) do
+  begin
+    if Value[i] = '\' then Result := Result + '/'
+    else Result := Result + Value[i];
+  end;
 end;
 
 function DeleteSpaces(const Value: string): string;
@@ -1066,6 +1071,11 @@ begin
       Result[Counter] := Value[i];
     end;
   SetLength(Result, Counter);
+end;
+
+function exNormalizeScreenName(SN: string): string;
+begin
+  Result := LowerCase(DeleteSpaces(SN));
 end;
 
 function NormalizeCellularNumber(const Value: string): string;
@@ -1668,6 +1678,7 @@ procedure OpenURL(Url: string);
 var
   ts: string;
 begin
+  //--Ищем в реестре браузер по умолчанию
   with TRegistry.Create do
   try
     rootkey := HKEY_CLASSES_ROOT;
@@ -1683,12 +1694,20 @@ begin
   end;
   if ts = '' then
   begin
-   SetClipboardText(Application.Handle, Url);
-   DAShow(ErrorHead, URLOpenErrL, EmptyStr, 134, 2, 0);
-   Exit;
+    SetClipboardText(Application.Handle, Url);
+    DAShow(ErrorHead, URLOpenErrL, EmptyStr, 134, 2, 0);
+    Exit;
   end;
-  if BMSearch(0, ts, '"') > -1 then ts := ISOLateTextString(ts, '"', '"');
-  ShellExecute(0, 'open', PChar(ts), PChar(url), nil, SW_SHOW);
+  if BMSearch(0, ts, '"') > -1 then ts := Parse('"', ts, 2);
+  //--Проверяем под wine запущена программа или нет
+  if BMSearch(0, ts, 'winebrowser.exe') = -1 then
+    Url := ChangeSpaces(Url) //--Преобразуем пробелы в %20
+  else
+  begin
+    if BMSearch(0, Url, ':\') > -1 then
+      Url := '"' + ChangeSlash(Url) + '"'; //--Для открытия в winebrowser
+  end;
+  ShellExecute(0, 'open', PChar(ts), PChar(Url), nil, SW_SHOW);
 end;
 
 procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;

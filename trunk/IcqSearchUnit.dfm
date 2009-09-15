@@ -137,10 +137,10 @@ object IcqSearchForm: TIcqSearchForm
     Align = alClient
     Columns = <
       item
-        Width = 20
+        Width = 22
       end
       item
-        Width = 20
+        Width = 18
       end
       item
         Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
@@ -164,9 +164,10 @@ object IcqSearchForm: TIcqSearchForm
       end
       item
         Caption = #1040#1074#1090#1086#1088#1080#1079#1072#1094#1080#1103
+        Width = 80
       end
       item
-        Width = 20
+        Width = 18
       end
       item
         Caption = #1057#1090#1088#1072#1085#1072
@@ -194,7 +195,7 @@ object IcqSearchForm: TIcqSearchForm
     OnGetSubItemImage = SearchResultJvListViewGetSubItemImage
     OnMouseDown = SearchResultJvListViewMouseDown
     AutoSelect = False
-    ColumnsOrder = '0=20,1=20,2=115,3=80,4=80,5=80,6=80,7=50,8=20,9=80,10=80,11=80'
+    ColumnsOrder = '0=22,1=18,2=115,3=80,4=80,5=80,6=80,7=80,8=18,9=80,10=80,11=80'
     HeaderImagePosition = hipRight
     HeaderImages = MainForm.AllImageList
     Groups = <>
@@ -372,6 +373,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 101
         Height = 21
         TabOrder = 0
+        OnChange = NickEditChange
       end
       object NameEdit: TEdit
         Left = 62
@@ -379,6 +381,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 101
         Height = 21
         TabOrder = 1
+        OnChange = NickEditChange
       end
       object FamilyEdit: TEdit
         Left = 62
@@ -386,6 +389,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 101
         Height = 21
         TabOrder = 2
+        OnChange = NickEditChange
       end
       object GenderComboBox: TComboBox
         Left = 62
@@ -395,6 +399,7 @@ object IcqSearchForm: TIcqSearchForm
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 3
+        OnChange = NickEditChange
         Items.Strings = (
           ''
           #1046#1077#1085#1089#1082#1080#1081
@@ -408,6 +413,7 @@ object IcqSearchForm: TIcqSearchForm
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 4
+        OnChange = NickEditChange
         Items.Strings = (
           ''
           '13-17'
@@ -427,6 +433,7 @@ object IcqSearchForm: TIcqSearchForm
         DropDownCount = 20
         ItemHeight = 13
         TabOrder = 5
+        OnChange = NickEditChange
       end
       object CountryComboBox: TComboBox
         Left = 252
@@ -437,6 +444,7 @@ object IcqSearchForm: TIcqSearchForm
         DropDownCount = 20
         ItemHeight = 13
         TabOrder = 6
+        OnChange = NickEditChange
       end
       object CityEdit: TEdit
         Left = 252
@@ -444,6 +452,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 101
         Height = 21
         TabOrder = 7
+        OnChange = NickEditChange
       end
       object LangComboBox: TComboBox
         Left = 252
@@ -454,6 +463,7 @@ object IcqSearchForm: TIcqSearchForm
         DropDownCount = 20
         ItemHeight = 13
         TabOrder = 8
+        OnChange = NickEditChange
       end
       object ProfComboBox: TComboBox
         Left = 252
@@ -464,6 +474,7 @@ object IcqSearchForm: TIcqSearchForm
         DropDownCount = 20
         ItemHeight = 13
         TabOrder = 9
+        OnChange = NickEditChange
       end
       object InterestComboBox: TComboBox
         Left = 252
@@ -474,6 +485,7 @@ object IcqSearchForm: TIcqSearchForm
         DropDownCount = 20
         ItemHeight = 13
         TabOrder = 10
+        OnChange = NickEditChange
       end
       object KeyWordEdit: TEdit
         Left = 252
@@ -481,6 +493,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 101
         Height = 21
         TabOrder = 11
+        OnChange = NickEditChange
       end
       object GlobalSearchCheckBox: TCheckBox
         Left = 11
@@ -495,6 +508,7 @@ object IcqSearchForm: TIcqSearchForm
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 12
+        OnClick = GlobalSearchCheckBoxClick
       end
     end
     object UINSearchGroupBox: TGroupBox
@@ -509,13 +523,16 @@ object IcqSearchForm: TIcqSearchForm
         Width = 196
         Height = 17
         Caption = #1048#1089#1082#1072#1090#1100' '#1087#1086' ICQ#'
+        Checked = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
+        State = cbChecked
         TabOrder = 0
+        OnClick = UINSearchCheckBoxClick
       end
       object UINSearchEdit: TEdit
         Left = 9
@@ -523,6 +540,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 196
         Height = 21
         TabOrder = 1
+        OnChange = UINSearchEditChange
       end
     end
     object GroupBox1: TGroupBox
@@ -544,6 +562,7 @@ object IcqSearchForm: TIcqSearchForm
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 0
+        OnClick = EmailSearchCheckBoxClick
       end
       object EmailSearchEdit: TEdit
         Left = 9
@@ -551,6 +570,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 196
         Height = 21
         TabOrder = 1
+        OnChange = EmailSearchEditChange
       end
     end
     object GroupBox2: TGroupBox
@@ -572,6 +592,7 @@ object IcqSearchForm: TIcqSearchForm
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 0
+        OnClick = KeyWordSearchCheckBoxClick
       end
       object KeyWordSearchEdit: TEdit
         Left = 9
@@ -579,6 +600,7 @@ object IcqSearchForm: TIcqSearchForm
         Width = 196
         Height = 21
         TabOrder = 1
+        OnChange = KeyWordSearchEditChange
       end
     end
   end

@@ -72,7 +72,8 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, JabberProtoUnit, Code, SettingsUnit, UtilsUnit, VarsUnit;
+  MainUnit, JabberProtoUnit, Code, SettingsUnit, UtilsUnit, VarsUnit,
+  RosterUnit;
 
 procedure TJabberOptionsForm.ApplyButtonClick(Sender: TObject);
 begin
@@ -91,6 +92,7 @@ begin
   //--Обновляем данные логина в протоколе
   if JabberJIDEdit.Enabled then
   begin
+    if JabberJIDEdit.Text <> Jabber_JID then RosterForm.ClearJabberClick(self); //--Очищаем контакты
     Jabber_JID := JabberJIDEdit.Text;
     if PassEdit.Text <> '----------------------' then
     begin

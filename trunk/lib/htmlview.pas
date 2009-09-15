@@ -1241,8 +1241,7 @@ begin
   if not DontDraw then
   begin
     ARect := Rect(0, 1, PaintPanel.Width, PaintPanel.Height);
-    FSectionList.Draw(PaintPanel.Canvas2, ARect, MaxHScroll,
-      -HScrollBar.Position, 0, 0, 0);
+    FSectionList.Draw(PaintPanel.Canvas2, ARect, MaxHScroll, HScrollBar.Position, 0, 0, 0);
   end;
 end;
 

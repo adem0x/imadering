@@ -368,7 +368,7 @@ object MainForm: TMainForm
       end
       item
         Name = 'MessagesTimer'
-        Interval = 500
+        Interval = 700
         OnTimer = JvTimerListEvents1Timer
       end
       item
@@ -588,6 +588,14 @@ object MainForm: TMainForm
     ListenBacklog = 5
     ReqVerLow = 1
     ReqVerHigh = 1
+    OnDataAvailable = MRAWSocketDataAvailable
+    OnSendData = MRAWSocketSendData
+    OnSessionClosed = MRAWSocketSessionClosed
+    OnSessionAvailable = MRAWSocketSessionAvailable
+    OnSessionConnected = MRAWSocketSessionConnected
+    OnSocksConnected = MRAWSocketSocksConnected
+    OnError = MRAWSocketError
+    OnSocksError = MRAWSocketSocksError
     Left = 48
     Top = 64
   end
@@ -873,6 +881,7 @@ object MainForm: TMainForm
     object MRAStatusFFC: TMenuItem
       Caption = #1043#1086#1090#1086#1074' '#1087#1086#1073#1086#1083#1090#1072#1090#1100
       ImageIndex = 26
+      OnClick = MRAStatusOnlineClick
     end
     object N14: TMenuItem
       Caption = '-'
@@ -880,10 +889,12 @@ object MainForm: TMainForm
     object MRAStatusAway: TMenuItem
       Caption = #1054#1090#1086#1096#1105#1083
       ImageIndex = 22
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusDND: TMenuItem
       Caption = #1053#1077' '#1073#1077#1089#1087#1086#1082#1086#1080#1090#1100
       ImageIndex = 27
+      OnClick = MRAStatusOnlineClick
     end
     object N13: TMenuItem
       Caption = '-'
@@ -896,6 +907,7 @@ object MainForm: TMainForm
     object MRAStatusInvisible: TMenuItem
       Caption = #1053#1077#1074#1080#1076#1080#1084#1099#1081
       ImageIndex = 21
+      OnClick = MRAStatusOnlineClick
     end
     object N10: TMenuItem
       Caption = '-'
@@ -904,6 +916,7 @@ object MainForm: TMainForm
       Caption = #1053#1077' '#1074' '#1089#1077#1090#1080
       Default = True
       ImageIndex = 23
+      OnClick = MRAStatusOfflineClick
     end
   end
   object JabberPopupMenu: TPopupMenu

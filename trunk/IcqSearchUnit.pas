@@ -80,9 +80,6 @@ type
     procedure ResultClearSpeedButtonClick(Sender: TObject);
     procedure SendQMessageSpeedButtonClick(Sender: TObject);
     procedure SearchNextPageBitBtnClick(Sender: TObject);
-    procedure Edit23KeyPress(Sender: TObject; var Key: Char);
-    procedure AutoSendTimerTimer(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
     procedure ICQStatusCheckSMClick(Sender: TObject);
     procedure AccountNameCopySMClick(Sender: TObject);
     procedure SendMessageSMClick(Sender: TObject);
@@ -101,17 +98,25 @@ type
       Column: TListColumn);
     procedure SearchResultJvListViewGetImageIndex(Sender: TObject;
       Item: TListItem);
+    procedure UINSearchEditChange(Sender: TObject);
+    procedure EmailSearchEditChange(Sender: TObject);
+    procedure KeyWordSearchEditChange(Sender: TObject);
+    procedure NickEditChange(Sender: TObject);
+    procedure UINSearchCheckBoxClick(Sender: TObject);
+    procedure EmailSearchCheckBoxClick(Sender: TObject);
+    procedure KeyWordSearchCheckBoxClick(Sender: TObject);
+    procedure GlobalSearchCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
     QmessT: string;
     //sPage: word;
     sPageInc: boolean;
     //autosendind: integer;
+    function GetColimnAtX(X: integer): integer;
+    procedure OpenAnketa;
+    procedure OpenChatResult;
   public
     { Public declarations }
-    SP1, SP2, SP3, SP4: string;
-    G1, G2: string;
-    A1, A2: string;
     procedure TranslateForm;
   end;
 
@@ -121,9 +126,54 @@ var
 implementation
 
 uses MainUnit, IcqProtoUnit, UtilsUnit, IcqAddContactUnit, IcqContactInfoUnit,
-  IcqOptionsUnit;
+  IcqOptionsUnit, RosterUnit;
 
 {$R *.dfm}
+
+procedure TIcqSearchForm.OpenAnketa;
+begin
+  if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(self);
+  //--Присваиваем UIN инфу которого хотим смотреть
+  IcqContactInfoForm.ReqUIN := SearchResultJvListView.Selected.SubItems[1];
+  //--Загружаем информацию о нем
+  IcqContactInfoForm.LoadUserUnfo;
+  //--Отображаем окно
+  xShowForm(IcqContactInfoForm);
+end;
+
+procedure TIcqSearchForm.OpenChatResult;
+var
+  RosterItem: TListItem;
+begin
+  //--Ищем группу "Не в списке" в Ростере
+  RosterItem := RosterForm.ReqRosterItem('NoCL');
+  if RosterItem = nil then //--Если группу не нашли
+  begin
+    //--Добавляем такую группу в Ростер
+    RosterItem := RosterForm.RosterJvListView.Items.Add;
+    RosterItem.Caption := 'NoCL';
+    //--Подготавиливаем все значения
+    RosterForm.RosterItemSetFull(RosterItem);
+    RosterItem.SubItems[1] := NoInListGroupCaption;
+  end;
+  //--Добавляем этот контакт в Ростер
+  RosterItem := RosterForm.RosterJvListView.Items.Add;
+  with RosterItem do
+  begin
+    Caption := SearchResultJvListView.Selected.SubItems[1];
+    //--Подготавиливаем все значения
+    RosterForm.RosterItemSetFull(RosterItem);
+    //--Обновляем субстроки
+    SubItems[0] := SearchResultJvListView.Selected.SubItems[2];
+    SubItems[1] := 'NoCL';
+    SubItems[2] := 'none';
+    SubItems[3] := 'Icq';
+    SubItems[6] := '214';
+    SubItems[35] := '0';
+  end;
+  //--Открываем чат с этим контактом
+  RosterForm.OpenChatPage(SearchResultJvListView.Selected.SubItems[1]);
+end;
 
 procedure TIcqSearchForm.TranslateForm;
 begin
@@ -153,42 +203,36 @@ begin
 
 end;
 
-procedure TIcqSearchForm.AutoSendTimerTimer(Sender: TObject);
-//label
-  //x, y;
+procedure TIcqSearchForm.UINSearchCheckBoxClick(Sender: TObject);
 begin
-  {if ListView1.Items.Count > 0 then
+  //--Активируем поиск по UIN
+  if UINSearchCheckBox.Checked then
   begin
-    x: ;
-    ListView1.ItemIndex := autosendind;
-    if ListView1.Selected <> nil then
-    begin
-      if ListView1.Selected.Checked then
-      begin
-        if autosendind = ListView1.Items.Count - 1 then goto y;
-        Inc(autosendind);
-        goto x;
-      end;
-      SpeedButton2Click(self);
-      if autosendind = ListView1.Items.Count - 1 then goto y;
-      Inc(autosendind);
-    end;
-  end
-  else
+    EmailSearchCheckBox.Checked := false;
+    KeyWordSearchCheckBox.Checked := false;
+    GlobalSearchCheckBox.Checked := false;
+  end;
+end;
+
+procedure TIcqSearchForm.UINSearchEditChange(Sender: TObject);
+begin
+  //--Активируем поиск по UIN
+  if not UINSearchCheckBox.Checked then
   begin
-    y: ;
-    AutoSendTimer.Enabled := false;
-    //
-    BitBtn2.Enabled := true;
-    BitBtn3.Enabled := false;
-    //DAShow(false, '4', '34', EmptyStr, 157, 3, 10000);
-  end;}
+    UINSearchCheckBox.Checked := true;
+    EmailSearchCheckBox.Checked := false;
+    KeyWordSearchCheckBox.Checked := false;
+    GlobalSearchCheckBox.Checked := false;
+  end;
 end;
 
 procedure TIcqSearchForm.SearchBitBtnClick(Sender: TObject);
 var
-  CountryInd, LangInd, OccupInd, IntInd, MaritalInd: integer;
+  i, CountryInd, LangInd, OccupInd, IntInd, MaritalInd: integer;
 begin
+  //--Сбрасываем стрелочки сортировки во всех столбцах
+  for i := 0 to SearchResultJvListView.Columns.Count - 1 do
+    SearchResultJvListView.Columns[i].ImageIndex := -1;
   //--Если не стоит галочка "Не очищать предыдущие резульаты", то стираем их
   if not NotPreviousClearCheckBox.Checked then
   begin
@@ -227,7 +271,7 @@ begin
     if ICQ_Work_Phaze then
     begin
       StatusPanel.Caption := SearchInfoGoL;
-      ICQ_SearchPoText(KeyWordSearchEdit.Text, OnlyOnlineCheckBox.Checked);
+      ICQ_SearchPoText_new(KeyWordSearchEdit.Text, OnlyOnlineCheckBox.Checked);
     end;
   end
   //--Ищем по расширенным параметрам
@@ -235,7 +279,18 @@ begin
   begin
     if ICQ_Work_Phaze then
     begin
+      //--Ищем старым способом если выбрана провессия или интересы
+      if IsNotNull([ProfComboBox.Text, InterestComboBox.Text]) then
+      begin
 
+      end
+      //--Ищем новым способом
+      else if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text,
+        KeyWordEdit.Text, GenderComboBox.Text, AgeComboBox.Text, MaritalComboBox.Text,
+          CountryComboBox.Text, LangComboBox.Text]) then
+      begin
+
+      end;
     end;
   end;
 
@@ -346,44 +401,6 @@ begin
           end;
         end;
       end;
-    5:
-      begin
-        if (Edit21.Text > EmptyStr) and (CheckBox8.Checked) then
-        begin
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoText(Edit21.Text, CheckBox5.Checked);
-          end;
-        end;
-        //
-        if CheckBox9.Checked then
-        begin
-          if ICQ_Work_Phaze then
-          begin
-            Panel6.Caption := SP2;
-            ICQ_SearchPoChatGroup(ComboBox17.ItemIndex + 1);
-          end;
-        end;
-      end;
-  end;}
-end;
-
-procedure TIcqSearchForm.BitBtn2Click(Sender: TObject);
-begin
-  {if ListView1.Items.Count > 0 then
-  begin
-    autosendind := 0;
-    if (Edit23.Text = EmptyStr) or (Edit23.Text = '0') then Edit23.Text := '60';
-    AutoSendTimer.Interval := StrToInt(Edit23.Text) * 1000;
-    AutoSendTimer.Enabled := true;
-    //
-    BitBtn2.Enabled := false;
-    BitBtn3.Enabled := true;
-  end
-  else
-  begin
-    AutoSendTimer.Enabled := false;
   end;}
 end;
 
@@ -393,11 +410,27 @@ begin
   SearchBitBtnClick(self);
 end;
 
-procedure TIcqSearchForm.Edit23KeyPress(Sender: TObject; var Key: Char);
-const
-  ValidAsciiChars = ['0'..'9'];
+procedure TIcqSearchForm.EmailSearchCheckBoxClick(Sender: TObject);
 begin
-  if (not (Key in ValidAsciiChars)) and (Key <> #8) then Key := #0;
+  //--Активируем поиск по Email
+  if EmailSearchCheckBox.Checked then
+  begin
+    UINSearchCheckBox.Checked := false;
+    KeyWordSearchCheckBox.Checked := false;
+    GlobalSearchCheckBox.Checked := false;
+  end;
+end;
+
+procedure TIcqSearchForm.EmailSearchEditChange(Sender: TObject);
+begin
+  //--Активируем поиск по Email
+  if not EmailSearchCheckBox.Checked then
+  begin
+    UINSearchCheckBox.Checked := false;
+    EmailSearchCheckBox.Checked := true;
+    KeyWordSearchCheckBox.Checked := false;
+    GlobalSearchCheckBox.Checked := false;
+  end;
 end;
 
 procedure TIcqSearchForm.QMessageEditEnter(Sender: TObject);
@@ -439,6 +472,10 @@ procedure TIcqSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   //--Выводим окно списка контактов на передний план
   BringWindowToTop(MainForm.Handle);
+  //--Уничтожаем окно
+  SearchResultJvListView.HeaderImages := nil;
+  Action := caFree;
+  IcqSearchForm := nil;
 end;
 
 procedure TIcqSearchForm.FormCreate(Sender: TObject);
@@ -502,103 +539,76 @@ begin
   end;
 end;
 
+procedure TIcqSearchForm.GlobalSearchCheckBoxClick(Sender: TObject);
+begin
+  //--Активируем глобальный поиск
+  if GlobalSearchCheckBox.Checked then
+  begin
+    UINSearchCheckBox.Checked := false;
+    EmailSearchCheckBox.Checked := false;
+    KeyWordSearchCheckBox.Checked := false;
+  end;
+end;
+
 procedure TIcqSearchForm.ICQStatusCheckSMClick(Sender: TObject);
 begin
-  //if ListView1.Selected <> nil then
-  //  ICQ_ReqStatus0215(ListView1.Selected.Caption);
+  //--Проверяем статус
+  if SearchResultJvListView.Selected <> nil then
+    ICQ_ReqStatus0215(SearchResultJvListView.Selected.SubItems[1]);
+end;
+
+procedure TIcqSearchForm.KeyWordSearchCheckBoxClick(Sender: TObject);
+begin
+  //--Активируем поиск по ключ. словам
+  if KeyWordSearchCheckBox.Checked then
+  begin
+    UINSearchCheckBox.Checked := false;
+    EmailSearchCheckBox.Checked := false;
+    GlobalSearchCheckBox.Checked := false;
+  end;
+end;
+
+procedure TIcqSearchForm.KeyWordSearchEditChange(Sender: TObject);
+begin
+  //--Активируем поиск по ключ. словам
+  if not KeyWordSearchCheckBox.Checked then
+  begin
+    UINSearchCheckBox.Checked := false;
+    EmailSearchCheckBox.Checked := false;
+    KeyWordSearchCheckBox.Checked := true;
+    GlobalSearchCheckBox.Checked := false;
+  end;
+end;
+
+procedure TIcqSearchForm.NickEditChange(Sender: TObject);
+begin
+  //--Активируем глобальный поиск
+  if not GlobalSearchCheckBox.Checked then
+  begin
+    UINSearchCheckBox.Checked := false;
+    EmailSearchCheckBox.Checked := false;
+    KeyWordSearchCheckBox.Checked := false;
+    GlobalSearchCheckBox.Checked := true;
+  end;
 end;
 
 procedure TIcqSearchForm.AccountNameCopySMClick(Sender: TObject);
 begin
-  //if ListView1.Selected <> nil then
-  //  SetClipboardText(Handle, ListView1.Selected.Caption);
+  //--Копируем имя учётной записи в буфер обмена
+  if SearchResultJvListView.Selected <> nil then
+    SetClipboardText(Handle, SearchResultJvListView.Selected.SubItems[1]);
 end;
 
 procedure TIcqSearchForm.SendMessageSMClick(Sender: TObject);
-{var
-  i, ii, G, T: integer;
-  NoCLG: boolean;
-  Nick: string;}
 begin
-  {if ListView1.Selected <> nil then
-  begin
-    NoCLG := false;
-    //
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-    begin
-      for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
-      begin
-        if RoasterForm.CategoryButtons1.Categories[i].Items[ii].UIN = ListView1.Selected.Caption then
-        begin
-          RoasterForm.CategoryButtons1ButtonClicked(self, RoasterForm.CategoryButtons1.Categories[i].Items[ii]);
-          RoasterForm.CategoryButtons1ButtonClicked(self, RoasterForm.CategoryButtons1.Categories[i].Items[ii]);
-          Exit;
-        end;
-      end;
-    end;
-    //
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-    begin
-      if RoasterForm.CategoryButtons1.Categories[i].GroupId = 'NoCL' then NoCLG := true;
-    end;
-    if not NoCLG then
-    begin
-      RoasterForm.CategoryButtons1.Categories.Add.Caption := RoasterForm.NoInListGroupCaption;
-      G := RoasterForm.CategoryButtons1.Categories.Count - 1;
-      RoasterForm.CategoryButtons1.Categories.Items[G].GroupId := 'NoCL';
-      RoasterForm.CategoryButtons1.Categories.Items[G].GroupCaption := RoasterForm.NoInListGroupCaption;
-    end;
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-    begin
-      if RoasterForm.CategoryButtons1.Categories[i].GroupId = 'NoCL' then
-      begin
-        Nick := ListView1.Selected.SubItems.Strings[0];
-        if Nick = EmptyStr then Nick := ListView1.Selected.Caption;
-        RoasterForm.CategoryButtons1.Categories[i].Items.Add.Caption := Nick;
-        T := RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].UIN := ListView1.Selected.Caption;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].GroupId := 'NoCL';
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].Hint := '<b>' + ListView1.Selected.Caption + '</b>';
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].Status := 34;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex := 34;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex1 := -1;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex2 := -1;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].Msg := false;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].Auth := true;
-        RoasterForm.CategoryButtons1.Categories[i].Items[T].QuoteMsg := EmptyStr;
-        //RoasterForm.CategoryButtons1.Categories[i].Items[T].Index := 0;
-        //
-        RoasterForm.CategoryButtons1ButtonClicked(self, RoasterForm.CategoryButtons1.Categories[i].Items[T]);
-        RoasterForm.CategoryButtons1ButtonClicked(self, RoasterForm.CategoryButtons1.Categories[i].Items[T]);
-      end;
-    end;
-  end;}
+  //--Открываем чат с выбранным контактом
+  if SearchResultJvListView.Selected <> nil then OpenChatResult;
 end;
 
 procedure TIcqSearchForm.ContactInfoSMClick(Sender: TObject);
 begin
-  {if ListView1.Selected <> nil then
-  begin
-    if Assigned(IcqContactInfoForm) then
-    begin
-      if IcqContactInfoForm.ReqUIN <> ListView1.Selected.Caption then
-      begin
-        IcqContactInfoForm.ReqUIN := ListView1.Selected.Caption;
-        IcqContactInfoForm.LoadUserUnfo();
-      end;
-      ShowWindow(IcqContactInfoForm.Handle, SW_RESTORE);
-      IcqContactInfoForm.Show;
-      IcqContactInfoForm.ButtonGroup1.ItemIndex := 0;
-      IcqContactInfoForm.JvPageList1.ActivePageIndex := 0;
-    end
-    else
-    begin
-      IcqContactInfoForm := TIcqContactInfoForm.Create(self);
-      IcqContactInfoForm.ReqUIN := ListView1.Selected.Caption;
-      IcqContactInfoForm.LoadUserUnfo();
-      IcqContactInfoForm.Show;
-    end;
-  end;}
+  //--Открываем анкету
+  if SearchResultJvListView.Selected <> nil then OpenAnketa;
 end;
 
 procedure TIcqSearchForm.AddContactInCLSMClick(Sender: TObject);
@@ -626,7 +636,8 @@ end;
 procedure TIcqSearchForm.SearchResultJvListViewChanging(Sender: TObject;
   Item: TListItem; Change: TItemChange; var AllowChange: Boolean);
 begin
-  //Panel7.Caption := IntToStr(ListView1.Items.Count);
+  //--Заносим количество найденных в панель
+  ResultPanel.Caption := IntToStr(SearchResultJvListView.Items.Count);
 end;
 
 procedure TIcqSearchForm.SearchResultJvListViewColumnClick(Sender: TObject;
@@ -634,13 +645,19 @@ procedure TIcqSearchForm.SearchResultJvListViewColumnClick(Sender: TObject;
 var
   i: integer;
 begin
-  //--Сбрасываем стрелочки сортировки в других столбцах
-  for i := 0 to SearchResultJvListView.Columns.Count - 1 do
-    SearchResultJvListView.Columns[i].ImageIndex := -1;
-  if (Column.Index = 0) or (Column.Index = 1) or (Column.Index = 8) then Exit;
+  if (Column.Index = 0) or (Column.Index = 1) or (Column.Index = 8) then
+  begin
+    //--Сбрасываем стрелочки сортировки во всех столбцах
+    for i := 0 to SearchResultJvListView.Columns.Count - 1 do
+      SearchResultJvListView.Columns[i].ImageIndex := -1;
+    Exit;
+  end;
   //--Выставляем стрелочку сортировки
   if Column.ImageIndex <> 234 then Column.ImageIndex := 234
   else Column.ImageIndex := 233;
+  //--Сбрасываем стрелочки сортировки в других столбцах
+  for i := 0 to SearchResultJvListView.Columns.Count - 1 do
+    if SearchResultJvListView.Columns[i] <> Column then SearchResultJvListView.Columns[i].ImageIndex := -1;
 end;
 
 procedure TIcqSearchForm.SearchResultJvListViewContextPopup(Sender: TObject;
@@ -670,41 +687,70 @@ begin
   end;
 end;
 
+function TIcqSearchForm.GetColimnAtX(X: integer): integer;
+var
+  i, RelativeX, ColStartX: Integer;
+begin
+  Result := 0;
+  with SearchResultJvListView do
+  begin
+    //--Теперь попробуем найти колонку
+    RelativeX := X - Selected.Position.X - BorderWidth;
+    ColStartX := Columns[0].Width;
+    for i := 1 to Columns.Count - 1 do
+    begin
+      if RelativeX < ColStartX then Break;
+      if RelativeX <= ColStartX + Columns[i].Width then
+      begin
+        Result := i;
+        Break;
+      end;
+      Inc(ColStartX, Columns[i].Width);
+    end;
+  end;
+end;
+
 procedure TIcqSearchForm.SearchResultJvListViewMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-//var
-//  ocw, fcw: integer;
 begin
-  {if Button = mbLeft then
+  if Button = mbLeft then
   begin
-    if ListView1.Selected <> nil then
+    with SearchResultJvListView do
     begin
-      ocw := ListView1.Column[0].Width + ListView1.Column[1].Width + ListView1.Column[2].Width +
-        ListView1.Column[3].Width + ListView1.Column[4].Width + ListView1.Column[5].Width;
-      fcw := ocw + ListView1.Column[6].Width;
-      if (X > ocw) and (X < fcw) then SpeedButton2Click(Self);
+      if Selected <> nil then
+      begin
+        case GetColimnAtX(X) of
+          0: OpenAnketa; //--Открываем анкету этого контакта
+          1: OpenChatResult; //--Открываем чат с этим контактом
+          8: SendQMessageSpeedButtonClick(Self);
+        end;
+      end;
     end;
-  end;    }
+  end;
 end;
 
 procedure TIcqSearchForm.ResultClearSpeedButtonClick(Sender: TObject);
 begin
-  //ListView1.Clear;
-  //Panel7.Caption := '0';
+  //--Очищаем список от результатов
+  SearchResultJvListView.Clear;
+  ResultPanel.Caption := '0';
 end;
 
 procedure TIcqSearchForm.SendQMessageSpeedButtonClick(Sender: TObject);
 begin
-  {if ListView1.Selected <> nil then
+  with SearchResultJvListView do
   begin
-    if ListView1.Selected.Checked then Exit;
+    if Selected <> nil then
+    begin
+    {if ListView1.Selected.Checked then Exit;
     if (Edit4.Tag = 1) or (Edit4.Text = EmptyStr) then Exit;
     if ICQ_Work_Phaze then
     begin
       ICQ_SendMessage_0406(ListView1.Selected.Caption, Edit4.Text, true);
       ListView1.Selected.Checked := true;
+    end;}
     end;
-  end;}
+  end;
 end;
 
 end.

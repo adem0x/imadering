@@ -195,6 +195,10 @@ var
   DelProfile: string = 'Удалить старый профиль?';
   URLOpenErrL: string = 'Браузер для открытия ссылки не найден.' + #13#10 + 'Ссылка скопирована в буфер обмена.';
   SearchInfoGoL: string = 'Идёт поиск ...';
+  SearchInfoEndL: string = 'Поиск завершён';
+  SearchInfoNoL: string = 'Не найден';
+  SearchInfoAuthL: string = 'Авторизация';
+  SearchInfoAuthNoL: string = 'Не нужна';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';

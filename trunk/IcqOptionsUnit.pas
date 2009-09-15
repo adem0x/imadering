@@ -287,6 +287,7 @@ begin
   //--Обновляем данные логина в протоколе
   if ICQUINEdit.Enabled then
   begin
+    if ICQUINEdit.Text <> ICQ_LoginUIN then RosterForm.ClearICQClick(self); //--Очищаем контакты
     ICQ_LoginUIN := ICQUINEdit.Text;
     if PassEdit.Text <> '----------------------' then
     begin

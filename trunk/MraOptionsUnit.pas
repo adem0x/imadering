@@ -72,7 +72,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, UtilsUnit, VarsUnit, MraProtoUnit, Code;
+  MainUnit, UtilsUnit, VarsUnit, MraProtoUnit, Code, RosterUnit;
 
 procedure TMraOptionsForm.ApplyButtonClick(Sender: TObject);
 begin
@@ -84,13 +84,14 @@ end;
 
 procedure TMraOptionsForm.ApplySettings;
 begin
-  //--Применяем настройки Jabber протокола
-  //--Нормализуем Jabber логин
+  //--Применяем настройки MRA протокола
+  //--Нормализуем MRA логин
   MRAEmailEdit.Text := Trim(MRAEmailEdit.Text);
   MRAEmailEdit.Text := exNormalizeScreenName(MRAEmailEdit.Text);
   //--Обновляем данные логина в протоколе
   if MRAEmailEdit.Enabled then
   begin
+    if MRAEmailEdit.Text <> MRA_LoginUIN then RosterForm.ClearMRAClick(self); //--Очищаем контакты
     MRA_LoginUIN := MRAEmailEdit.Text;
     if PassEdit.Text <> '----------------------' then
     begin
@@ -98,11 +99,15 @@ begin
       MRA_LoginPassword := PassEdit.Hint;
     end;
   end;
+  //--Обновляем данные сервера подключения
+  MRA_LoginServerAddr := MraLoginServerComboBox.Text;
+  MRA_LoginServerPort := MraLoginServerPortEdit.Text;
   //----------------------------------------------------------------------------
-  //--Записываем настройки Jabber протокола в файл
+  //--Записываем настройки MRA протокола в файл
   with TrXML.Create() do
   try
     if FileExists(ProfilePath + SettingsFileName) then LoadFromFile(ProfilePath + SettingsFileName);
+    //--Данные логина
     if OpenKey('settings\mra\account', True) then
     try
       WriteString('login', MRAEmailEdit.Text);
@@ -115,6 +120,15 @@ begin
     finally
       CloseKey();
     end;
+    //--Данные сервера подключения
+    if OpenKey('settings\mra\server', True) then
+    try
+      WriteString('login-server', MraLoginServerComboBox.Text);
+      WriteString('login-port', MraLoginServerPortEdit.Text);
+    finally
+      CloseKey();
+    end;
+    //--Сохраняем файл настроек
     SaveToFile(ProfilePath + SettingsFileName);
   finally
     Free();
@@ -146,6 +160,14 @@ begin
           MRA_LoginPassword := PassEdit.Hint;
           PassEdit.Text := '----------------------';
         end;
+      finally
+        CloseKey();
+      end;
+      //--Загружаем данные сервера подключения
+      if OpenKey('settings\mra\server') then
+      try
+        MraLoginServerComboBox.Text := ReadString('login-server');
+        MraLoginServerPortEdit.Text := ReadString('login-port');
       finally
         CloseKey();
       end;
@@ -245,3 +267,4 @@ begin
 end;
 
 end.
+

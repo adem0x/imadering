@@ -127,6 +127,10 @@ procedure TCLSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   //--Выводим окно списка контактов на передний план
   BringWindowToTop(MainForm.Handle);
+  //--Уничтожаем окно
+  CLSearchJvListView.HeaderImages := nil;
+  Action := caFree;
+  CLSearchForm := nil;
 end;
 
 procedure TCLSearchForm.FormCreate(Sender: TObject);

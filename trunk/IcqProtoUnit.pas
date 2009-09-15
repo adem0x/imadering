@@ -315,11 +315,10 @@ procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP,
 //procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
 procedure ICQ_SearchPoUIN_new(sUIN: string);
 procedure ICQ_SearchPoEmail_new(sEmail: string);
-procedure ICQ_SearchPoNick_First_Last(sNick, sFirst, sLast: string; OnlyOn: boolean);
-procedure ICQ_SearchPoText(sText: string; OnlyOn: boolean);
+procedure ICQ_SearchPoText_new(sText: string; OnlyOn: boolean);
 procedure ICQ_Parse_SNAC_1503(PktData: string);
 procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge,
-  AEmail: string; AGender, AStatus: integer; AAuth, AEndSearch: boolean);
+  AEmail, ACountry, ACity: string; AGender, AStatus: integer; AAuth, AEndSearch: boolean);
 procedure ICQ_ReqStatus0215(UIN: string);
 procedure ICQ_SetInfoP;
 procedure ICQ_SetStatusXText(XText, XCode: string);
@@ -1663,53 +1662,66 @@ begin
 end;
 
 procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge,
-  AEmail: string; AGender, AStatus: integer; AAuth, AEndSearch: boolean);
-//var
-//  ListItemD: TListItem;
-//  Gend: string;
-//  i: integer;
+  AEmail, ACountry, ACity: string; AGender, AStatus: integer; AAuth, AEndSearch: boolean);
+var
+  ListItemD: TListItem;
+  Gend: string;
+  i: integer;
 begin
-  {if Assigned(IcqSearchForm) then
+  if Assigned(IcqSearchForm) then
   begin
-    if (AUIN = EmptyStr) and (AEndSearch) then
+    with IcqSearchForm do
     begin
-      IcqSearchForm.Panel6.Caption := IcqSearchForm.SP4;
-      Exit;
+      //--Если UIN пустой и конец поиска, то сообщаем, что не найден
+      if (AUIN = EmptyStr) and (AEndSearch) then
+      begin
+        StatusPanel.Caption := SearchInfoNoL;
+        Exit;
+      end;
+      //--Если конец поиска, то сообщаем, что поиск завершён
+      if AEndSearch then StatusPanel.Caption := SearchInfoEndL;
+      //--Проверяем есть ли уже такой контакт в списке найденных
+      for i := 0 to SearchResultJvListView.Items.Count - 1 do
+      begin
+        //--Если нашли, то выходим
+        if SearchResultJvListView.Items[i].SubItems[1] = AUIN then Exit;
+      end;
+      //--Начинаем добавление записи в список найденных
+      SearchResultJvListView.Items.BeginUpdate;
+      ListItemD := SearchResultJvListView.Items.Add;
+      with ListItemD do
+      begin
+        Checked := false;
+        Caption := EmptyStr; //--Иконка анкеты
+        SubItems.Add(EmptyStr); //--Иконка чата
+        SubItems.Add(AUIN);
+        case AStatus of
+          0: SubItemImages[1] := 241;
+          1: SubItemImages[1] := 242;
+          2: SubItemImages[1] := 243
+        else SubItemImages[1] := 243;
+        end;
+        SubItems.Add(ANick);
+        SubItems.Add(AFirst);
+        SubItems.Add(ALast);
+        case AGender of
+          0: Gend := EmptyStr;
+          1: Gend := GenderComboBox.Items.Strings[1];
+          2: Gend := GenderComboBox.Items.Strings[2];
+        end;
+        if (Gend <> EmptyStr) and (AAge <> '0') then Gend := Gend + ' - ' + AAge
+        else if AAge <> '0' then Gend := AAge;
+        SubItems.Add(Gend);
+        if AAuth then SubItems.Add(SearchInfoAuthL)
+        else SubItems.Add(SearchInfoAuthNoL);
+        SubItems.Add(EmptyStr); //--Иконка быстрых сообщений
+        SubItems.Add(ACountry);
+        SubItems.Add(ACity);
+        SubItems.Add(AEmail);
+      end;
+      SearchResultJvListView.Items.EndUpdate;
     end;
-    if AEndSearch then IcqSearchForm.Panel6.Caption := IcqSearchForm.SP3;
-    //
-    for i := 0 to IcqSearchForm.ListView1.Items.Count - 1 do
-    begin
-      if IcqSearchForm.ListView1.Items[i].Caption = AUIN then Exit;
-    end;
-    //
-    ICQSearchForm.ListView1.Items.BeginUpdate;
-    ListItemD := ICQSearchForm.ListView1.Items.Add;
-    ListItemD.Checked := false;
-    case AStatus of
-      0: ListItemD.ImageIndex := 142;
-      1: ListItemD.ImageIndex := 141;
-      2: ListItemD.ImageIndex := 143
-    else ListItemD.ImageIndex := 143;
-    end;
-    ListItemD.Caption := AUIN;
-    ListItemD.SubItems.Add(ANick);
-    ListItemD.SubItems.Add(AFirst);
-    ListItemD.SubItems.Add(ALast);
-    case AGender of
-      0: Gend := EmptyStr;
-      1: Gend := ICQSearchForm.G1;
-      2: Gend := ICQSearchForm.G2;
-    end;
-    if (Gend <> EmptyStr) and (AAge <> '0') then Gend := Gend + ' - ' + AAge
-    else if AAge <> '0' then Gend := AAge;
-    ListItemD.SubItems.Add(Gend);
-    if AAuth then ListItemD.SubItems.Add(ICQSearchForm.A1)
-    else ListItemD.SubItems.Add(ICQSearchForm.A2);
-    ListItemD.SubItems.Add(EmptyStr);
-    ListItemD.SubItems.Add(AEmail);
-    ICQSearchForm.ListView1.Items.EndUpdate;
-  end;}
+  end;
 end;
 
 procedure ICQ_Parse_SNAC_1503(PktData: string);
@@ -1728,7 +1740,7 @@ var
   Auth, EndSearch, WebAware: boolean;
   Date64: Int64;
   sDate64: TDateTime absolute Date64;
-  SubPkt, LastUpdateInfo: string;
+  SubPkt, LastUpdateInfo, ACountry: string;
 begin
   EndSearch := false;
   //--Сканируем тело пакета на нужные нам TLV
@@ -1759,7 +1771,7 @@ begin
         begin
           //--Заканчиваем поиск
           EndSearch := true;
-          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
           Exit;
         end;
         //--Сбрасываем флаг об авторизации
@@ -1769,12 +1781,15 @@ begin
         begin
           //--Заканчиваем поиск
           EndSearch := true;
-          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, false, EndSearch);
           Exit;
         end;
         //--Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := BMSearch(0, PktData, '003200');
         if BMRes > -1 then NextData(PktData, BMRes - 1) else Exit;
+
+     
+
         //--Сбрасываем все переменные
         Age := 0;
         Gender := 0;
@@ -2469,52 +2484,36 @@ begin
         end
         else
         begin
-          ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, Gender, sStatus, Auth, true);
+          //--Получаем текст страны из кода
+          if Assigned(IcqOptionsForm) then
+            ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(IntToStr(Country))];
+          //--Обрабатываем результаты поиска
+          ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, ACountry, City, Gender, sStatus, Auth, true);
         end;
       end;
   end;
 end;
 
-procedure ICQ_SearchPoText(sText: string; OnlyOn: boolean);
+procedure ICQ_SearchPoText_new(sText: string; OnlyOn: boolean);
 var
-  Len1, Len2: integer;
-  Pkt, Pkt1, Pkt2: string;
+  Len1, Len2, Len3: integer;
+  Pkt, Pkt1, Pkt2, Pkt3: string;
   Online: string;
 begin
-  if OnlyOn then Online := '01'
-  else Online := '00';
-  Len2 := Length(sText);
-  Pkt2 := '2b02' + IntToHex(Swap16(Len2 + 3), 4) + IntToHex(Swap16(Len2 + 1), 4) + Text2Hex(sText) +
-    '00' + '30020100' + Online;
+  {0136-0002-0001} //--Добавочный к пакету TLV "только в сети"
+  //--Формируем пакет поиска по ключевым словам
+  if OnlyOn then Online := '013600020001'
+  else Online := EmptyStr;
+  Pkt3 := '017c' + IntToHex(Length(sText), 4) + Text2Hex(sText) + Online;
+  Len3 := Length(Hex2Text(Pkt3));
+  Pkt2 := '05b90fa0000000000000000004e300000002000200000001' + IntToHex(Len3, 4) + Pkt3;
+  Len2 := Length(Hex2Text(Pkt2));
   Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) +
-    '5f05' + Pkt2;
+    'a00f' + IntToHex(Swap16(Len2), 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //
-  SendFLAP('2', Pkt);
-end;
-
-procedure ICQ_SearchPoNick_First_Last(sNick, sFirst, sLast: string; OnlyOn: boolean);
-var
-  Len1, Len2, Len3, Len4: integer;
-  Pkt, Pkt1, Pkt2: string;
-  Online: string;
-begin
-  if OnlyOn then Online := '01'
-  else Online := '00';
-  Len2 := Length(sNick);
-  Len3 := Length(sFirst);
-  Len4 := Length(sLast);
-  Pkt2 := EmptyStr;
-  if Len2 > 0 then Pkt2 := Pkt2 + '5401' + IntToHex(Swap16(Len2 + 3), 4) + IntToHex(Swap16(Len2 + 1), 4) + Text2Hex(sNick) + '00';
-  if Len3 > 0 then Pkt2 := Pkt2 + '4001' + IntToHex(Swap16(Len3 + 3), 4) + IntToHex(Swap16(Len3 + 1), 4) + Text2Hex(sFirst) + '00';
-  if Len4 > 0 then Pkt2 := Pkt2 + '4a01' + IntToHex(Swap16(Len4 + 3), 4) + IntToHex(Swap16(Len4 + 1), 4) + Text2Hex(sLast) + '00';
-  Pkt2 := Pkt2 + '30020100' + Online;
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) +
-    '5f05' + Pkt2;
-  Len1 := Length(Hex2Text(Pkt1));
-  Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //
+  //--Обнуляем флаг запроса анкеты контакта
+  ICQ_ReqInfo_UIN := EmptyStr;
   SendFLAP('2', Pkt);
 end;
 
@@ -2523,6 +2522,7 @@ var
   Len1, Len2, Len3: integer;
   Pkt, Pkt1, Pkt2, Pkt3: string;
 begin
+  //--Формируем пакет поиска по Email
   Pkt3 := '0050' + IntToHex(Length(sEmail), 4) + Text2Hex(sEmail);
   Len3 := Length(Hex2Text(Pkt3));
   Pkt2 := '05b90fa0000000000000000004e300000002000200000001' + IntToHex(Len3, 4) + Pkt3;
@@ -2531,7 +2531,7 @@ begin
     'a00f' + IntToHex(Swap16(Len2), 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00150002000000000000' + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //
+  //--Обнуляем флаг запроса анкеты контакта
   ICQ_ReqInfo_UIN := EmptyStr;
   SendFLAP('2', Pkt);
 end;

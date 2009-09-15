@@ -143,6 +143,7 @@ var
   i: integer;
 begin
   //--Отключаем таймер пингов
+  MainForm.UnstableJabberStatus.Checked := false;
   with MainForm.JvTimerList do
   begin
     Events[9].Enabled := false;

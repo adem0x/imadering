@@ -218,7 +218,7 @@ begin
   if (Item.SubItems[3] = 'Icq') and (Length(Item.Caption) = 4) then Item.ImageIndex := 227
   else if Item.SubItems[3] = 'Icq' then Item.ImageIndex := 81
   else if Item.SubItems[3] = 'Jabber' then Item.ImageIndex := 43
-  else if Item.Caption = 'NoCL' then Item.ImageIndex := 227;       
+  else if Item.Caption = 'NoCL' then Item.ImageIndex := 227;
 end;
 
 procedure TRosterForm.UpdateFullCL;
@@ -424,7 +424,7 @@ begin
       begin
         if (Categories[c].GroupId = '0000') or (Categories[c].GroupId = 'NoCL') or
           (Categories[c].Items.Count = 0) or (MainForm.OnlyOnlineContactsToolButton.Down) then
-            Categories[c].Caption := Categories[c].GroupCaption + ' - ' + IntToStr(Categories[c].Items.Count)
+          Categories[c].Caption := Categories[c].GroupCaption + ' - ' + IntToStr(Categories[c].Items.Count)
         else
         begin
           i := Categories[c].Items.Count;
@@ -506,6 +506,23 @@ begin
       end;
     end;
     Items.EndUpdate;
+  end;
+  //--Удаляем контакты в КЛ
+  if Result then
+  begin
+    with MainForm.ContactList do
+    begin
+      b: ;
+      for i := 0 to Categories.Count - 1 do
+      begin
+        //--Удаляем все группы протокола
+        if Categories[i].GroupType = cType then
+        begin
+          Categories[i].Free;
+          goto b;
+        end;
+      end;
+    end;
   end;
 end;
 
