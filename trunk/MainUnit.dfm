@@ -449,8 +449,8 @@ object MainForm: TMainForm
       OnClick = OpenTestClick
     end
     object RosterMainMenu: TMenuItem
-      Caption = '_'#1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074'_'
-      Visible = False
+      Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      ImageIndex = 1
       OnClick = RosterMainMenuClick
     end
     object PrivatListMenu: TMenuItem
@@ -718,18 +718,36 @@ object MainForm: TMainForm
     object N5: TMenuItem
       Caption = '-'
     end
-    object AddNewGroupCL: TMenuItem
-      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
+    object AddNewGroupICQ: TMenuItem
+      Tag = 1
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091' ICQ'
+      Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 153
-      OnClick = AddNewGroupCLClick
+      OnClick = AddNewGroupICQClick
+    end
+    object AddNewGroupJabber: TMenuItem
+      Tag = 2
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091' Jabber'
+      Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
+      ImageIndex = 153
+      OnClick = AddNewGroupICQClick
+    end
+    object AddNewGroupMRA: TMenuItem
+      Tag = 3
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091' MRA'
+      Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
+      ImageIndex = 153
+      OnClick = AddNewGroupICQClick
     end
     object RenemeGroupCL: TMenuItem
       Caption = #1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100' '#1075#1088#1091#1087#1087#1091
+      Hint = #1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 154
       OnClick = RenemeGroupCLClick
     end
     object DeleteGroupCL: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1075#1088#1091#1087#1087#1091
+      Hint = #1059#1076#1072#1083#1080#1090#1100' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 155
       OnClick = DeleteGroupCLClick
     end
@@ -1057,10 +1075,11 @@ object MainForm: TMainForm
     object N22: TMenuItem
       Caption = '-'
     end
-    object N24: TMenuItem
+    object AddNewContact: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' '#1074' '#1089#1087#1080#1089#1086#1082
       ImageIndex = 143
       Visible = False
+      OnClick = AddNewContactClick
     end
     object EditContact: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1082#1086#1085#1090#1072#1082#1090

@@ -1,4 +1,4 @@
-<height>245</height><width>290</width>
+<height>245</height><width>340</width>
 O:-),O=)
 :-),:),=)
 :-(,:(,;(
@@ -39,3 +39,5 @@ O:-),O=)
 *WALL*,*DASH*
 *WRITE*,*MAIL*
 *SCRATCH*
+@=
+*IMADERING*

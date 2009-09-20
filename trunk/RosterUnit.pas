@@ -317,7 +317,7 @@ begin
         //--Добавляем ICQ контакты в КЛ
         else if Items[i].SubItems[3] = 'Icq' then
         begin
-          if (Length(Items[i].Caption) = 4) and (Items[i].SubItems[0] = '') then
+          if (Length(Items[i].Caption) = 4) and (Items[i].SubItems[0] = EmptyStr) then
           begin //--Группа ICQ
             for c := 0 to Categories.Count - 1 do
             begin
@@ -327,7 +327,11 @@ begin
                 Categories[c].Free;
                 goto x;
               end;
-              if (Categories[c].GroupId = Items[i].Caption) and (Categories[c].GroupType = 'Icq') then goto x;
+              if (Categories[c].GroupId = Items[i].Caption) and (Categories[c].GroupType = 'Icq') then
+              begin
+                Categories[c].GroupCaption := Items[i].SubItems[1];
+                goto x;
+              end;
             end;
             //--Если такую группу не нашли, то добавляем её
             if (not ICQ_Show_HideContacts) and (Items[i].Caption = '0000') then goto x;

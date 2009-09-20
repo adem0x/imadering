@@ -102,7 +102,7 @@ type
     OpenGroupsCL: TMenuItem;
     CloseGroupsCL: TMenuItem;
     N5: TMenuItem;
-    AddNewGroupCL: TMenuItem;
+    AddNewGroupICQ: TMenuItem;
     RenemeGroupCL: TMenuItem;
     DeleteGroupCL: TMenuItem;
     N20: TMenuItem;
@@ -124,7 +124,7 @@ type
     SendAddContact: TMenuItem;
     DelYourSelfContact: TMenuItem;
     SendInviteContact: TMenuItem;
-    N24: TMenuItem;
+    AddNewContact: TMenuItem;
     ZipHistoryThread: TIdThreadComponent;
     OpenHistory: TMenuItem;
     OpenTraffic: TMenuItem;
@@ -193,6 +193,8 @@ type
     TopPrivatONMenu: TMenuItem;
     TopHistoryONMenu: TMenuItem;
     TopTrafficONMenu: TMenuItem;
+    AddNewGroupJabber: TMenuItem;
+    AddNewGroupMRA: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -247,7 +249,7 @@ type
     procedure CopyAccountContactClick(Sender: TObject);
     procedure OpenGroupsCLClick(Sender: TObject);
     procedure CloseGroupsCLClick(Sender: TObject);
-    procedure AddNewGroupCLClick(Sender: TObject);
+    procedure AddNewGroupICQClick(Sender: TObject);
     procedure RenemeGroupCLClick(Sender: TObject);
     procedure DeleteGroupCLClick(Sender: TObject);
     procedure SearchInCLClick(Sender: TObject);
@@ -359,6 +361,7 @@ type
     procedure MRAWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure MRAWSocketSocksError(Sender: TObject; Error: Integer;
       Msg: string);
+    procedure AddNewContactClick(Sender: TObject);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -395,8 +398,8 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit,
-  JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit;
+  HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
+  JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit;
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -406,8 +409,8 @@ begin
 end;
 
 procedure TMainForm.TranslateForm;
-var
-  i: integer;
+//var
+  //i: integer;
 begin
   //--Выставляем основные переменные
   OnlyOnlineContactsTopButton.Hint := OnlyOnlineOff;
@@ -1240,7 +1243,7 @@ label
   x, z;
 var
   Pkt, HexPkt, SubPkt: string;
-  PktLen, Len, ProxyErr: integer;
+  PktLen, Len, ProxyErr, PktSize: integer;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := ICQWSocket.ReceiveStr;
@@ -1314,12 +1317,13 @@ begin
   //--Если пакет был разобран, но в буфере есть ещё данные, то возвращаемся сюда
   //для проверки этих данные на наличие слудующего целого пакета данных
   x: ;
+  PktSize := ICQ_BodySize;
   //--Проверяем если ли в буфере хоть один целый пакет
-  if (Length(ICQ_HexPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_HexPkt) >= ICQ_FLAP_HEAD_SIZE + ICQ_BodySize1) or
-    ((HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) = $04) and (ICQ_BodySize1 = 0)) then
+  if (Length(ICQ_HexPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_HexPkt) >= ICQ_FLAP_HEAD_SIZE + PktSize) or
+    ((HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) = $04) and (PktSize = 0)) then
   begin
     //--Забираем из буфера один целый пакет
-    HexPkt := NextData(ICQ_HexPkt, ICQ_FLAP_HEAD_SIZE + ICQ_BodySize1);
+    HexPkt := NextData(ICQ_HexPkt, ICQ_FLAP_HEAD_SIZE + PktSize);
     //--Разбираем пакет данных если его длинна больше нуля
     if Length(HexPkt) > 0 then
     begin
@@ -1639,9 +1643,9 @@ begin
                                 begin
                                   Len := HexToInt(NextData(SubPkt, 4));
                                   Len := Len * 2;
-                                  Bos_Addr := Hex2Text(NextData(SubPkt, Len));
-                                  ICQ_Bos_IP := Parse(':', Bos_Addr, 1);
-                                  ICQ_Bos_Port := Parse(':', Bos_Addr, 2);
+                                  ICQ_Bos_Addr := Hex2Text(NextData(SubPkt, Len));
+                                  ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
+                                  ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                 end;
                               $0006: //--TLV с куком для коннекта к основному серверу
                                 begin
@@ -1687,6 +1691,8 @@ begin
                     ICQ_Connect_Phaze := false;
                     ICQ_BosConnect_Phaze := true;
                     ICQ_HTTP_Connect_Phaze := false;
+                    ICQ_myBeautifulSocketBuffer := EmptyStr;
+                    ICQ_HexPkt := EmptyStr;
                     //--Устанавливаем параметры
                     ICQWSocket.Proto := 'tcp';
                     if HttpProxy_Enable then
@@ -1703,6 +1709,8 @@ begin
                     ICQWSocket.Connect;
                   except
                   end;
+                  //--Выходим от сюда
+                  Exit;
                 end;
               end
               else
@@ -2557,7 +2565,7 @@ label
   x, z;
 var
   Pkt, HexPkt, SubPkt: string;
-  PktLen, Len, ProxyErr: integer;
+  PktLen, Len, ProxyErr, PktSize: integer;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := MRAWSocket.ReceiveStr;
@@ -2585,6 +2593,13 @@ begin
       or AnsiStartsStr('HTTP/1.0 200', pkt) or AnsiStartsStr('HTTP/1.1 200', pkt) then
     begin
       MRA_HTTP_Connect_Phaze := true;
+      //--Если уже подключились в Bos серверу
+      if MRA_BosConnect_Phaze then
+      begin
+        //--Отсылаем первый пакет логина
+        MRA_Login_1;
+        Exit;
+      end;
     end
     else
       //--Сообщаем об ошибках прокси
@@ -2618,26 +2633,63 @@ begin
   //--Преобразуем данные из бинарного формата в HEX формат и прибавляем
   //их к специальному буферу накопления таких преобразованных данных
   MRA_HexPkt := MRA_HexPkt + Text2Hex(Pkt);
+  //--Если фаза первого подключания к серверу MRA
+  if MRA_Connect_Phaze then
+  begin
+    MRA_Bos_Addr := Hex2Text(MRA_HexPkt);
+    //--Получаем адрес Bos сервера для подключения
+    MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
+    MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
+    //--Закрываем сокет и ждём пока он закроется
+    MRAWSocket.Close;
+    MRAWSocket.WaitForClose;
+    //--Подключаемся к Bos серверу
+    try
+      //--Активируем фазу коннекта к основному серверу
+      MRA_Connect_Phaze := false;
+      MRA_BosConnect_Phaze := true;
+      MRA_HTTP_Connect_Phaze := false;
+      MRA_myBeautifulSocketBuffer := EmptyStr;
+      MRA_HexPkt := EmptyStr;
+      //--Устанавливаем параметры
+      MRAWSocket.Proto := 'tcp';
+      if HttpProxy_Enable then
+      begin
+        MRAWSocket.Addr := HttpProxy_Address;
+        MRAWSocket.Port := HttpProxy_Port;
+      end
+      else
+      begin
+        MRAWSocket.Addr := MRA_Bos_IP;
+        MRAWSocket.Port := MRA_Bos_Port;
+      end;
+      //--Начинаем подключение к основному серверу
+      MRAWSocket.Connect;
+    except
+    end;
+    Exit;
+  end;
   //--Ищем ошибки в буфере пакетов
-  if ((ICQ_HexPkt > EmptyStr) and (HexToInt(LeftStr(ICQ_HexPkt, 2)) <> $2A)) or
-    ((Length(ICQ_HexPkt) > 2) and ((HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) = $0)
-    or (HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) > $05))) then
+  if ((MRA_HexPkt > EmptyStr) and ((LeftStr(MRA_HexPkt, 8)) <> MRA_MagKey)) or
+    ((Length(MRA_HexPkt) > 2) and ((HexToInt(MRA_HexPkt[3] + MRA_HexPkt[4]) = $0))) then
   begin
     //--Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
     DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
     MRA_GoOffline;
     Exit;
   end;
+
   //--Если пакет был разобран, но в буфере есть ещё данные, то возвращаемся сюда
   //для проверки этих данные на наличие слудующего целого пакета данных
   x: ;
+  PktSize := MRA_BodySize;
   //--Проверяем если ли в буфере хоть один целый пакет
-  if (Length(ICQ_HexPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_HexPkt) >= ICQ_FLAP_HEAD_SIZE + ICQ_BodySize1) or
-    ((HexToInt(ICQ_HexPkt[3] + ICQ_HexPkt[4]) = $04) and (ICQ_BodySize1 = 0)) then
+  if (Length(MRA_HexPkt) >= MRA_FLAP_HEAD_SIZE) and (Length(MRA_HexPkt) >= MRA_FLAP_HEAD_SIZE + PktSize) then
   begin
     //--Забираем из буфера один целый пакет
-    HexPkt := NextData(ICQ_HexPkt, ICQ_FLAP_HEAD_SIZE + ICQ_BodySize1);
-    //--Разбираем пакет данных если его длинна больше нуля
+    HexPkt := NextData(MRA_HexPkt, MRA_FLAP_HEAD_SIZE + PktSize);
+
+    {//--Разбираем пакет данных если его длинна больше нуля
     if Length(HexPkt) > 0 then
     begin
       //--Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
@@ -3056,7 +3108,7 @@ begin
     end;
     //--Если в конце разбора пакета у нас ещё остались данные, то возвращаемся для проверки буфера
     z: ;
-    if Length(ICQ_HexPkt) > 0 then goto x;
+    if Length(ICQ_HexPkt) > 0 then goto x;}
   end;
 end;
 
@@ -3066,6 +3118,32 @@ begin
   if not Assigned(MraXStatusForm) then MraXStatusForm := TMraXStatusForm.Create(self);
   //--Отображаем окнов рабочей области
   FormShowInWorkArea(MraXStatusForm);
+end;
+
+procedure TMainForm.AddNewContactClick(Sender: TObject);
+var
+  frmAddCnt: TIcqAddContactForm;
+begin
+  //--Создаём окно добавления контакта в КЛ
+  frmAddCnt := TIcqAddContactForm.Create(self);
+  try
+    {//--Составляем список групп из Ростера
+    frmAddCnt.BuildGroupList('Icq');
+    //--Заносим имя учётной записи
+    frmAddCnt.AccountEdit.Text := SearchResultJvListView.Selected.SubItems[1];
+    frmAddCnt.AccountEdit.ReadOnly := true;
+    frmAddCnt.AccountEdit.Color := clBtnFace;
+    //--Заносим имя учётной записи
+    if SearchResultJvListView.Selected.SubItems[2] = EmptyStr then
+      frmAddCnt.NameEdit.Text := SearchResultJvListView.Selected.SubItems[1]
+    else frmAddCnt.NameEdit.Text := SearchResultJvListView.Selected.SubItems[2];
+    //--Заполняем протокол контакта
+    frmAddCnt.ContactType := 'Icq';
+    //--Отображаем окно модально
+    frmAddCnt.ShowModal;}
+  finally
+    FreeAndNil(frmAddCnt);
+  end;
 end;
 
 procedure TMainForm.SoundsONMenuClick(Sender: TObject);
@@ -3181,8 +3259,38 @@ begin
 end;
 
 procedure TMainForm.RenemeGroupCLClick(Sender: TObject);
+var
+  frmAddGroup: TIcqGroupManagerForm;
+  i: integer;
 begin
-  ShowMessage(DevelMess);
+  //--Выводим форму добавления новой группы
+  frmAddGroup := TIcqGroupManagerForm.Create(self);
+  try
+    with frmAddGroup do
+    begin
+      //--Присваиваем иконку окну
+      AllImageList.GetIcon((Sender as TMenuItem).ImageIndex, Icon);
+      Caption := (Sender as TMenuItem).Hint;
+      Create_Group := false;
+      //--Вставляем название группы которую хотим переименовать
+      for i := 0 to ContactList.Categories.Count - 1 do
+      begin
+        if ContactList.Categories[i].GroupSelected then
+        begin
+          GNameEdit.Text := ContactList.Categories[i].GroupCaption;
+          Name_Group := ContactList.Categories[i].GroupCaption;
+          //--Флаги протокола
+          GroupType := ContactList.Categories[i].GroupType;
+          Id_Group := ContactList.Categories[i].GroupId;
+          Break;
+        end;
+      end;
+      //--Отображаем окно модально
+      ShowModal;
+    end;
+  finally
+    FreeAndNil(frmAddGroup);
+  end;
 end;
 
 procedure TMainForm.RightICQPopupMenuPopup(Sender: TObject);
@@ -3315,6 +3423,25 @@ begin
         //--Управляем пунктами меню для группы
         RenemeGroupCL.Visible := true;
         DeleteGroupCL.Visible := true;
+        //--Управляем протоколами групп
+        if RoasterGroup.GroupType = 'Icq' then
+        begin
+          AddNewGroupICQ.Visible := true;
+          AddNewGroupJabber.Visible := false;
+          AddNewGroupMRA.Visible := false;
+        end
+        else if RoasterGroup.GroupType = 'Jabber' then
+        begin
+          AddNewGroupICQ.Visible := false;
+          AddNewGroupJabber.Visible := true;
+          AddNewGroupMRA.Visible := false;
+        end
+        else if RoasterGroup.GroupType = 'Mra' then
+        begin
+          AddNewGroupICQ.Visible := false;
+          AddNewGroupJabber.Visible := false;
+          AddNewGroupMRA.Visible := true;
+        end;
       end
       else
       begin
@@ -3323,6 +3450,10 @@ begin
         //--Управляем пунктами меню для группы
         RenemeGroupCL.Visible := false;
         DeleteGroupCL.Visible := false;
+        //--Управляем протоколами групп
+        AddNewGroupICQ.Visible := true;
+        AddNewGroupJabber.Visible := true;
+        AddNewGroupMRA.Visible := true;
       end;
     end;
     //--Отображаем меню
@@ -3378,12 +3509,10 @@ begin
 end;
 
 procedure TMainForm.DeleteContactClick(Sender: TObject);
-{label
-  x;
 var
-  i, ii, G, z, zz, cnt: integer;}
+  RosterItem: TListItem;
 begin
-  (*//--Если ничего не активно для удаления, то выходим
+  //--Если ничего не активно для удаления, то выходим
   if ContactList.SelectedItem <> nil then
   begin
     //--Удаляем контакт из списка контактов
@@ -3392,91 +3521,63 @@ begin
     try
       //--Выводим диалог подтверждения удаления контакта
       if MessageBox(Handle, PChar(Format(DellContactL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
-        MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = 6 then
-      begin
-
-      end;
-
-
-      {//--Если ответ на вопрос положительный, то начинаем удаление контакта
-      if i = 6 then
+        MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
       begin
         with ContactList do
         begin
-        //--Сканируем группы и ищем этот контакт
-          for z := 0 to Categories.Count - 1 do
+          //--Сканируем Ростер и ищем этот контакт
+          RosterItem := RosterForm.ReqRosterItem(SelectedItem.UIN);
+          //--Удаляем эту кнопку с контактом из КЛ
+          SelectedItem.Free;
+          if RosterItem <> nil then
           begin
-            for zz := 0 to Categories[z].Items.Count - 1 do
+            //--Смотрим какой протокол у удаляемого контакта
+            if RosterItem.SubItems[3] = 'Icq' then
             begin
-            //--Если нашли контакт
-              if Categories[z].Items[zz].UIN = ContactList.SelectedItem.UIN then
+              //--Смотрим из какой группы этот контакт
+              if RosterItem.SubItems[1] = '0000' then
               begin
-              //--Если это контакт из группы временных, то удаляем его как временный
-                if Categories[z].Items[zz].GroupId = '0000' then
-                begin
+                //--Если это контакт из группы временных, то удаляем его как временный
                 //--Отправляем пакет для удаления контакта из списка на сервере
-                  ICQ_DeleteTempContact(Categories[z].Items[zz].UIN, Categories[z].Items[zz].Idd,
-                    Categories[z].Items[zz].iType, Categories[z].Items[zz].TimeId);
-                //--Запоминаем индекс группы
-                  G := Categories[z].Items[zz].Category.Index;
-                //--Удаляем контакт локально из списка
-                  Categories[z].Items[zz].Destroy;
-                //--Если в группе больше нет контактов, то удаляем её
-                  if Categories[G].Items.Count = 0 then Categories[G].Destroy;
-                end
-              //--Если контакт из группы "Не в списке"
-                else if Categories[z].Items[zz].GroupId = 'NoCL' then
-                begin
-                //--Запоминаем индекс группы
-                  G := Categories[z].Items[zz].Category.Index;
-                //--Удаляем контакт локально из списка
-                  Categories[z].Items[zz].Destroy;
-                //--Если в группе больше нет контактов, то удаляем её
-                  if Categories[G].Items.Count = 0 then Categories[G].Destroy;
-                end
-              //--Иначе удаляем контакт как положено
-                else
-                begin
-                //--Отправляем пакет для удаления контакта из списка на сервере
-                  ICQ_DeleteContact(Categories[z].Items[zz].UIN, Categories[z].Items[zz].GroupId,
-                    Categories[z].Items[zz].Idd, Categories[z].Items[zz].Caption,
-                    Categories[z].Items[zz].Mobile, Categories[z].Items[zz].Email,
-                    Categories[z].Items[zz].Note);
-                //--Удаляем контакт локально из списка
-                  Categories[z].Items[zz].Destroy;
-                end;
-              //--Выходим из циклов
-                goto x;
-              end;
-            end;
-          end;
-          x: ;
-        //--Вычисляем оставшееся количество контактов в группах
-          with MainForm.ContactList do
-          begin
-            for i := 0 to Categories.Count - 1 do
-            begin
-              if (Categories[i].GroupId = '0000') or (Categories[i].GroupId = 'NoCL') or
-                (Categories[i].Items.Count = 0) then Categories[i].Caption := Categories[i].GroupCaption + ' - ' +
-                IntToStr(Categories[i].Items.Count)
+                ICQ_DeleteTempContact(RosterItem.Caption, RosterItem.SubItems[4],
+                  RosterItem.SubItems[5], RosterItem.SubItems[12]);
+                RosterItem.Delete;
+              end
+              else if RosterItem.SubItems[1] = 'NoCL' then
+              begin
+                //--Если контакт из группы "Не в списке"
+                RosterItem.Delete;
+              end
               else
               begin
-                cnt := Categories[i].Items.Count;
-                for ii := 0 to Categories[i].Items.Count - 1 do
-                  case Categories[i].Items[ii].Status of
-                    9, 80, 214: dec(cnt);
-                  end;
-                Categories[i].Caption := Categories[i].GroupCaption + ' - ' + IntToStr(cnt) + GroupInv + IntToStr(Categories[i].Items.Count);
+                //--Иначе удаляем контакт как положено
+                ICQ_DeleteContact(RosterItem.Caption, RosterItem.SubItems[1],
+                  RosterItem.SubItems[4], RosterItem.SubItems[0],
+                  RosterItem.SubItems[9], RosterItem.SubItems[11],
+                  RosterItem.SubItems[10]);
+                RosterItem.Delete;
               end;
+            end
+            //--Удаляем по протоколу Jabber
+            else if RosterItem.SubItems[3] = 'Jabber' then
+            begin
+
+            end
+            //--Удаляем по протоколу Mra
+            else if RosterItem.SubItems[3] = 'Mra' then
+            begin
+
             end;
+            //--Обновляем КЛ
+            RosterForm.UpdateFullCL;
           end;
         end;
-      end;}
+      end;
     finally
       //--В любом случае разблокировываем окно контактов
       MainForm.Enabled := true;
     end;
-  end;*)
+  end;
 end;
 
 procedure TMainForm.DeleteGroupCLClick(Sender: TObject);
@@ -3575,9 +3676,34 @@ begin
   ShowMessage(DevelMess);
 end;
 
-procedure TMainForm.AddNewGroupCLClick(Sender: TObject);
+procedure TMainForm.AddNewGroupICQClick(Sender: TObject);
+var
+  frmAddGroup: TIcqGroupManagerForm;
 begin
-  ShowMessage(DevelMess);
+  //--Выводим форму добавления новой группы
+  frmAddGroup := TIcqGroupManagerForm.Create(self);
+  try
+    with frmAddGroup do
+    begin
+      //--Присваиваем иконку окну
+      AllImageList.GetIcon((Sender as TMenuItem).ImageIndex, Icon);
+      Caption := (Sender as TMenuItem).Hint;
+      //--Добавляем название группы по умолчанию
+      GNameEdit.Text := AddNewGroupL;
+      //--Ставим флаг, что это добавление новой группы
+      Create_Group := true;
+      //--Ставим флаг какой протокол
+      case (Sender as TMenuItem).Tag of
+        1: GroupType := 'Icq';
+        2: GroupType := 'Jabber';
+        3: GroupType := 'Mra';
+      end;
+      //--Отображаем окно модально
+      ShowModal;
+    end;
+  finally
+    FreeAndNil(frmAddGroup);
+  end;
 end;
 
 procedure TMainForm.AnketaContactClick(Sender: TObject);

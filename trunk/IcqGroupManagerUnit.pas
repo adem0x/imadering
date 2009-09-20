@@ -12,23 +12,26 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, VarsUnit;
+  Dialogs, StdCtrls, VarsUnit, ComCtrls;
 
 type
   TIcqGroupManagerForm = class(TForm)
-    Label1: TLabel;
-    Edit1: TEdit;
-    Button1: TButton;
-    Button2: TButton;
-    procedure Button1Click(Sender: TObject);
+    GNameLabel: TLabel;
+    GNameEdit: TEdit;
+    OKButton: TButton;
+    CancelButton: TButton;
+    procedure OKButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
-    Create_Group: boolean;
     Name_Group: string;
+    GroupType: string;
+    Create_Group: boolean;
     Id_Group: string;
+    procedure TranslateForm;
   end;
 
 var
@@ -39,100 +42,140 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit;
+  MainUnit, IcqProtoUnit, UtilsUnit, RosterUnit;
 
-procedure TIcqGroupManagerForm.Button1Click(Sender: TObject);
-{label
+procedure TIcqGroupManagerForm.TranslateForm;
+begin
+  //--Переводим форму на другие языки
+
+end;
+
+procedure TIcqGroupManagerForm.OKButtonClick(Sender: TObject);
+label
   x, y;
 var
   iClId: TStringList;
-  i, ii: integer;
-  newId: string;}
+  i: integer;
+  newId: string;
 begin
-  {//
-  if ICQ_SSI_Phaze then
+  //--Управляем группой по протоколу ICQ
+  if GroupType = 'Icq' then
   begin
-    DAShow(false, '2', '25', EmptyStr, 157, 3, DATimeShow);
-    Exit;
-  end;
-  //
-  if Create_Group then
-  begin
-    if Edit1.Text = EmptyStr then goto x;
-    //
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
+    //--Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+    if ICQ_SSI_Phaze then
     begin
-      if RoasterForm.CategoryButtons1.Categories[i].GroupCaption = Edit1.Text then
-      begin
-        DAShow(false, '2', '29', EmptyStr, 157, 0, DATimeShow);
-        goto x;
-      end;
+      DAShow(WarningHead, AddContactErr2, EmptyStr, 134, 2, 0);
+      Exit;
     end;
-    //
-    y: ;
-    Randomize;
-    newId := IntToHex(Random($7FFF), 4);
-    //
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
+    //--Если это добавление новой групы
+    if Create_Group then
     begin
-      for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
+      //--Если название группы пустое, то выходим
+      if GNameEdit.Text = EmptyStr then goto y;
+      //--Ищем есть ли такая группа уже в Ростере
+      with RosterForm.RosterJvListView do
       begin
-        if newId = RoasterForm.CategoryButtons1.Categories[i].Items[ii].Idd then goto y;
-      end;
-    end;
-    //
-    ICQ_Add_Nick := Edit1.Text;
-    ICQ_Add_GroupId := newId;
-    ICQ_Add_Group_Phaze := true;
-    ICQ_SSI_Phaze := true;
-    ICQ_AddGroup(Edit1.Text, newId);
-  end
-  else
-  begin
-    if Edit1.Text = EmptyStr then goto x;
-    if Edit1.Text = Name_Group then goto x;
-    if (Id_Group = EmptyStr) or (Id_Group = 'NoCL') then goto x;
-    //
-    ICQ_Add_Nick := Edit1.Text;
-    ICQ_Add_GroupId := Id_Group;
-    //
-    iClId := TStringList.Create;
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-    begin
-      if RoasterForm.CategoryButtons1.Categories[i].GroupId = ICQ_Add_GroupId then
-      begin
-        RoasterForm.CategoryButtons1.Categories[i].GroupCaption := Edit1.Text;
-        for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
+        for i := 0 to Items.Count - 1 do
         begin
-          iClId.Add(RoasterForm.CategoryButtons1.Categories[i].Items[ii].Idd);
+          if (Items[i].SubItems[3] = 'Icq') and
+            (LowerCase(GNameEdit.Text, loUserLocale) = LowerCase(Items[i].SubItems[1], loUserLocale)) then
+          begin
+            DAShow(WarningHead, AddNewGroupErr1, EmptyStr, 133, 0, 0);
+            Exit;
+          end;
         end;
-        Break;
+      end;
+      //--Генерируем идентификатор для этой группы
+      x: ;
+      Randomize;
+      newId := IntToHex(Random($7FFF), 4);
+      //--Ищем нет ли уже такого идентификатора в списке контактов
+      with RosterForm.RosterJvListView do
+      begin
+        for i := 0 to Items.Count - 1 do
+        begin
+          if newId = Items[i].SubItems[4] then goto x;
+        end;
+      end;
+      //--Открываем сессию и добавляем группу
+      ICQ_Add_Nick := GNameEdit.Text;
+      ICQ_Add_GroupId := newId;
+      ICQ_Add_Group_Phaze := true;
+      ICQ_SSI_Phaze := true;
+      ICQ_AddGroup(GNameEdit.Text, newId);
+    end
+    //--Переименовывание группы
+    else
+    begin
+      //--Если это нередактируемые группы, то выходим
+      if (GNameEdit.Text = EmptyStr) or (GNameEdit.Text = Name_Group) or
+        (Id_Group = EmptyStr) or (Id_Group = 'NoCL') or
+        (Id_Group = '0000') or (Id_Group = '0001') then goto y;
+      //--Запоминаем переменные для группы
+      ICQ_Add_Nick := GNameEdit.Text;
+      ICQ_Add_GroupId := Id_Group;
+      //--Создаём список для идентификаторов групп
+      iClId := TStringList.Create;
+      try
+        //--Заносим в список идентификаторы групп
+        with RosterForm.RosterJvListView do
+        begin
+          for i := 0 to Items.Count - 1 do
+          begin
+            //--Добавляем идентификаторы групп в список
+            if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') then Continue;
+            if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) then iClId.Add(Items[i].Caption);
+          end;
+        end;
+        //--Обновляем имя группы на сервере
+        ICQ_UpdateGroup_AddContact(GNameEdit.Text, Id_Group, iClId);
+        //--Переименовываем группу в локальном КЛ
+        with RosterForm.RosterJvListView do
+        begin
+          for i := 0 to Items.Count - 1 do
+          begin
+            //--Ищем в Ростере эту группу
+            if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') or
+              (Items[i].Caption = '0001') then Continue;
+            if (Items[i].SubItems[3] = 'Icq') and (Items[i].Caption = Id_Group) then
+            begin
+              Items[i].SubItems[1] := GNameEdit.Text;
+              //--Строим локальный КЛ
+              RosterForm.UpdateFullCL;
+              Break;
+            end;
+          end;
+        end;
+      finally
+        iClId.Free;
       end;
     end;
-    //
-    ICQ_UpdateGroup_AddContact(Edit1.Text, Id_Group, iClId);
-    iClId.Free;
-    //--Calculate contacts count in group
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-    begin
-      RoasterForm.CategoryButtons1.Categories[i].Caption := RoasterForm.CategoryButtons1.Categories[i].GroupCaption +
-        ' - ' + IntToStr(RoasterForm.CategoryButtons1.Categories[i].Items.Count);
-    end;
-    //
-    if (OnlyOnlineUsersCL) or (NoGroupModeCL) then
-    begin
-      OnlyOnlineUsersCL := not OnlyOnlineUsersCL;
-      RoasterForm.ToolButton9Click(self);
-    end;
+  end
+  //--Управляем группой по протоколу Jabber
+  else if GroupType = 'Jabber' then
+  begin
+
+  end
+  //--Управляем группой по протоколу MRA
+  else if GroupType = 'Mra' then
+  begin
+
   end;
-  //
-  x: ;
-  ModalResult := mrOk;}
+  //--Выходим и закрываем модальное окно
+  y: ;
+  ModalResult := mrOk;
+end;
+
+procedure TIcqGroupManagerForm.FormCreate(Sender: TObject);
+begin
+  //--Переводим форму на другие языки
+  TranslateForm;
 end;
 
 procedure TIcqGroupManagerForm.FormShow(Sender: TObject);
 begin
-  if Edit1.CanFocus then Edit1.SetFocus;
+  //--Ставим фокус в поле имени группы
+  if GNameEdit.CanFocus then GNameEdit.SetFocus;
 end;
 
 end.

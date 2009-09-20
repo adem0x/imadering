@@ -12,25 +12,27 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, VarsUnit;
+  Dialogs, StdCtrls, VarsUnit, ComCtrls;
 
 type
   TIcqAddContactForm = class(TForm)
-    Edit1: TEdit;
-    Edit2: TEdit;
-    ComboBox1: TComboBox;
-    Button1: TButton;
-    Button2: TButton;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
+    AccountEdit: TEdit;
+    NameEdit: TEdit;
+    GroupComboBox: TComboBox;
+    CancelButton: TButton;
+    AddContactButton: TButton;
+    AccountLabel: TLabel;
+    NameLabel: TLabel;
+    GroupLabel: TLabel;
     procedure FormCreate(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure AddContactButtonClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
+    ContactType: string;
     procedure TranslateForm;
+    procedure BuildGroupList(gProto: string);
   end;
 
 var
@@ -38,89 +40,139 @@ var
 
 implementation
 
-uses MainUnit, IcqProtoUnit, UtilsUnit;
+uses MainUnit, IcqProtoUnit, UtilsUnit, RosterUnit;
 
 {$R *.dfm}
 
-procedure TIcqAddContactForm.TranslateForm;
+procedure TIcqAddContactForm.BuildGroupList(gProto: string);
+var
+  i: integer;
 begin
-  //--
-  
+  //--Составляем список групп из Ростера
+  with RosterForm.RosterJvListView do
+  begin
+    //--Список для ICQ
+    if gProto = 'Icq' then
+    begin
+      for i := 0 to Items.Count - 1 do
+      begin
+        if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) then
+        begin
+          if Items[i].Caption = '0000' then Continue; //--Группа временных контактов
+          if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0001') then Continue; //--Группа "Не в списке"
+          GroupComboBox.Items.Add(Items[i].SubItems[1]);
+        end;
+      end;
+    end
+    //--Список для Jabber
+    else if gProto = 'Jabber' then
+    begin
+
+    end
+    //--Список для Mra
+    else if gProto = 'Mra' then
+    begin
+
+    end;
+  end;
+  //--Выставляем по умолчанию первую группу в списке выбора групп
+  if GroupComboBox.Items.Count > 0 then GroupComboBox.ItemIndex := 0;
 end;
 
-procedure TIcqAddContactForm.Button2Click(Sender: TObject);
-{label
+procedure TIcqAddContactForm.TranslateForm;
+begin
+  //--Переводим форму на другие языки
+
+end;
+
+procedure TIcqAddContactForm.AddContactButtonClick(Sender: TObject);
+label
   x, y;
 var
-  i, ii: integer;
-  newId, iGpId, iNick: string;}
+  RosterItem: TListItem;
+  newId, iGpId: string;
+  i: integer;
 begin
-  {if (Edit1.Text = EmptyStr) or (Length(Edit1.Text) < 5) or (not ICQ_Work_Phaze) then goto y;
-  //
-  if ComboBox1.ItemIndex = -1 then
+  //--Добавляем контакты по протоколу ICQ
+  if ContactType = 'Icq' then
   begin
-    DAShow(false, '3', '31', EmptyStr, 157, 2, DATimeShow);
-    goto y;
-  end;
-  //
-  Edit1.Text := exNormalizeScreenName(Edit1.Text);
-  Edit1.Text := exNormalizeIcqNumber(Edit1.Text);
-  if Trim(Edit2.Text) = EmptyStr then iNick := Edit1.Text
-  else iNick := Edit2.Text;
-  //
-  for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-  begin
-    if RoasterForm.CategoryButtons1.Categories.Items[i].GroupId = '0000' then Continue;
-    if RoasterForm.CategoryButtons1.Categories.Items[i].GroupId = 'NoCL' then Continue;
-    for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
+    if ICQ_Work_Phaze then
     begin
-      if RoasterForm.CategoryButtons1.Categories[i].Items[ii].UIN = Edit1.Text then
+      if (AccountEdit.Text <> EmptyStr) and (Length(AccountEdit.Text) > 4) then
       begin
-        DAShow(false, '2', '24', EmptyStr, 157, 0, DATimeShow);
-        Exit;
+        //--Нормализуем ICQ номер
+        AccountEdit.Text := exNormalizeScreenName(AccountEdit.Text);
+        AccountEdit.Text := exNormalizeIcqNumber(AccountEdit.Text);
+        if Trim(NameEdit.Text) = EmptyStr then NameEdit.Text := AccountEdit.Text;
+        //--Ищем такой контакт в Ростере
+        RosterItem := RosterForm.ReqRosterItem(AccountEdit.Text);
+        if RosterItem <> nil then //--Если такой контакт уже добавлен в список, то сообщаем об этом
+        begin
+          DAShow(WarningHead, AddContactErr1, EmptyStr, 133, 0, 0);
+          Exit;
+        end;
+        //--Если фаза добавления контакта ещё активна, то ждём её окончания
+        if ICQ_SSI_Phaze then
+        begin
+          DAShow(WarningHead, AddContactErr2, EmptyStr, 134, 2, 0);
+          Exit;
+        end;
+        //--Если группа не выбрана
+        if GroupComboBox.ItemIndex = -1 then
+        begin
+          DAShow(AlertHead, AddContactErr3, EmptyStr, 134, 2, 0);
+          goto y;
+        end;
+        //--Генерируем идентификатор для этого контакта
+        x: ;
+        Randomize;
+        newId := IntToHex(Random($7FFF), 4);
+        //--Ищем нет ли уже такого идентификатора в списке контактов
+        with RosterForm.RosterJvListView do
+        begin
+          for i := 0 to Items.Count - 1 do
+          begin
+            if newId = Items[i].SubItems[4] then goto x;
+          end;
+          //--Ищем идентификатор выбранной группы
+          for i := 0 to Items.Count - 1 do
+          begin
+            if (Items[i].SubItems[1] = GroupComboBox.Text) and (Items[i].SubItems[3] = 'Icq') then
+            begin
+              iGpId := Items[i].SubItems[4];
+              Break;
+            end;
+          end;
+        end;
+        //--Открываем сессию и добавляем контакт
+        ICQ_Add_Contact_Phaze := true;
+        ICQ_SSI_Phaze := true;
+        ICQ_AddContact(AccountEdit.Text, iGpId, newId, NameEdit.Text, false);
       end;
     end;
-  end;
-  //
-  if ICQ_SSI_Phaze then
+  end
+  //--Добавляем контакты по протоколу Jabber
+  else if ContactType = 'Jabber' then
   begin
-    DAShow(false, '2', '25', EmptyStr, 157, 3, DATimeShow);
-    Exit;
-  end;
-  //
-  x: ;
-  Randomize;
-  newId := IntToHex(Random($7FFF), 4);
-  //
-  for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
+
+  end
+  //--Добавляем контакты по протоколу Mra
+  else if ContactType = 'Mra' then
   begin
-    for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
-    begin
-      if newId = RoasterForm.CategoryButtons1.Categories[i].Items[ii].Idd then goto x;
-    end;
+
   end;
-  for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-  begin
-    if RoasterForm.CategoryButtons1.Categories[i].GroupCaption = ComboBox1.Text then
-    begin
-      iGpId := RoasterForm.CategoryButtons1.Categories[i].GroupId;
-      Break;
-    end;
-  end;
-  //
-  ICQ_Add_Contact_Phaze := true;
-  ICQ_SSI_Phaze := true;
-  ICQ_AddContact(Edit1.Text, iGpId, newId, iNick, false);
-  //
+  //--Выходим и закрываем модальное окно
   y: ;
-  ModalResult := mrOk;}
+  ModalResult := mrOk;
 end;
 
 procedure TIcqAddContactForm.FormCreate(Sender: TObject);
 begin
+  //--Переводим форму на другие языки
   TranslateForm;
-  //
-  MainForm.AllImageList.GetIcon(160, Icon);
+  //--Присваиваем иконку окну
+  MainForm.AllImageList.GetIcon(143, Icon);
 end;
 
 end.
+

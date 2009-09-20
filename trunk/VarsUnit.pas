@@ -199,6 +199,18 @@ var
   SearchInfoNoL: string = 'Не найден';
   SearchInfoAuthL: string = 'Авторизация';
   SearchInfoAuthNoL: string = 'Не нужна';
+  SearchNextPage1: string = 'Далее';
+  SearchNextPage2: string = 'Страница - %d';
+  SearchQMessL: string = 'Быстрое сообщение';
+  AddContactErr1: string = 'Такой контакт уже существует в вашем списке контактов.';
+  AddContactErr2: string = 'Пожалуйста, дождитесь окончания предыдущей операции с серверным списком контактов.';
+  AddContactErr3: string = 'Сначала создайте хоть одну группу';
+  AddContactErr4: string = 'Ошибка при добавлении контакта.';
+  AddContactOKL: string = 'Контакт успешно добавлен в ваш список контактов!';
+  AddNewGroupL: string = 'Новая группа';
+  AddNewGroupErr1: string = 'Такая группа уже существует в вашем списке контактов.';
+  AddNewGroupErr2: string = 'Ошибка при добавлении группы.';
+  AddNewGroupOKL: string = 'Группа успешно добавлена в ваш список контактов!';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
@@ -296,8 +308,9 @@ var
   ChatFontSize: string = '9';
 
   //--Список для отображения в About
-  AboutList: array[1..14] of string = (
+  AboutList: array[1..15] of string = (
     'Автор проекта и ведущий программист;Эдуард Толмачёв',
+    'Программирование;Sergey Melnikov',
     'Программирование;Максим Нижник',
     'Программирование;Francois PIETTE (Ics components)',
     'Программирование;David Baldwin (HTML components)',

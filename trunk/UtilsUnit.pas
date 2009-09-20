@@ -15,7 +15,7 @@ uses
   Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert, ShellApi,
   JvDesktopAlertForm, StdCtrls, VarsUnit, MainUnit, IcqProtoUnit, JvTrayIcon,
   WinSock, OverbyteIcsWSocket, CategoryButtons, JvZLibMultiple, JabberProtoUnit,
-  Registry, TypInfo;
+  Registry, TypInfo, MraProtoUnit;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileDirHist(Path, Ext, Eext: string; FileList: TStrings);
@@ -64,8 +64,9 @@ function TranslitRus2Lat(const Str: string): string;
 procedure DAShow(DAHead, DAText, DAID: string; DAIco, DAColor, DAVisible: integer);
 function InitMixer: HMixer;
 function UnicodeCharCode2ANSIString(aCode: Word): string;
-function ICQ_BodySize1: integer;
-function ICQ_BodySize2: integer;
+function ICQ_BodySize: integer;
+function ICQ_BodySize_Avatar: integer;
+function MRA_BodySize: integer;
 function IsNotNull(StringsArr: array of string): boolean;
 procedure DecorateURL(var Text: string);
 function NameAndLast(UIN: string): string;
@@ -92,6 +93,7 @@ procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
   AValue: string);
 function ChangeSpaces(const Value: string): string;
 function ChangeSlash(const Value: string): string;
+function SendFLAP_MRA(PktType, Data: string; NoLen: boolean = false): boolean;
 
 implementation
 
@@ -921,7 +923,7 @@ begin
   end;
 end;}
 
-function ICQ_BodySize1: integer;
+function ICQ_BodySize: integer;
 var
   Header: string;
 begin
@@ -929,11 +931,19 @@ begin
   Result := HexToInt(Header) * 2;
 end;
 
-function ICQ_BodySize2: integer;
+function ICQ_BodySize_Avatar: integer;
 var
   Header: string;
 begin
   Header := ICQ_Avatar_HexPkt[9] + ICQ_Avatar_HexPkt[10] + ICQ_Avatar_HexPkt[11] + ICQ_Avatar_HexPkt[12];
+  Result := HexToInt(Header) * 2;
+end;
+
+function MRA_BodySize: integer;
+var
+  Header: string;
+begin
+  Header := MRA_HexPkt[35] + MRA_HexPkt[36] + MRA_HexPkt[33] + MRA_HexPkt[34];
   Result := HexToInt(Header) * 2;
 end;
 
@@ -955,7 +965,7 @@ begin
     ICQ_LastSendedFlap1 := now;
     Inc(ICQ_Seq1);
   except
-    //
+    Exit;
   end;
   Result := true;
 end;
@@ -978,7 +988,32 @@ begin
     ICQ_LastSendedFlap2 := now;
     Inc(ICQ_Seq2);
   except
-    //
+    Exit;
+  end;
+  Result := true;
+end;
+
+function SendFLAP_MRA(PktType, Data: string; NoLen: boolean = false): boolean;
+var
+  Str: string;
+  Len: integer;
+begin
+  Result := false;
+  if not NoLen then Len := Length(Hex2Text(Data))
+  else Len := 0;
+  if MainForm.MRAWSocket.State <> wsConnected then Exit;
+  Str := Hex2Text(MRA_MagKey + MRA_ProtoVer + IntToHex(Swap32(MRA_Seq), 8) +
+    PktType + IntToHex(Swap32(Len), 8) + Data);
+  try
+    while abs(now - ICQ_LastSendedFlap1) < DT2100miliseconds do
+    begin
+      //--делаем нано паузу :)
+    end;
+    MainForm.MRAWSocket.SendStr(Str);
+    MRA_LastSendedFlap := now;
+    Inc(MRA_Seq);
+  except
+    Exit;
   end;
   Result := true;
 end;

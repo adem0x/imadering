@@ -19,9 +19,9 @@ object IcqSearchForm: TIcqSearchForm
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
+  object CenterPanel: TPanel
     Left = 0
-    Top = 214
+    Top = 188
     Width = 593
     Height = 35
     Align = alTop
@@ -30,21 +30,21 @@ object IcqSearchForm: TIcqSearchForm
     object NotPreviousClearCheckBox: TCheckBox
       Left = 12
       Top = 7
-      Width = 216
+      Width = 231
       Height = 17
       Caption = #1053#1077' '#1086#1095#1080#1097#1072#1090#1100' '#1087#1088#1077#1076#1099#1076#1091#1097#1080#1077' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1099
       TabOrder = 0
     end
     object OnlyOnlineCheckBox: TCheckBox
-      Left = 250
+      Left = 249
       Top = 7
-      Width = 123
+      Width = 113
       Height = 17
       Caption = #1058#1086#1083#1100#1082#1086' "'#1042' '#1089#1077#1090#1080'"'
       TabOrder = 1
     end
     object SearchBitBtn: TBitBtn
-      Left = 388
+      Left = 368
       Top = 3
       Width = 94
       Height = 25
@@ -54,17 +54,16 @@ object IcqSearchForm: TIcqSearchForm
       OnClick = SearchBitBtnClick
     end
     object SearchNextPageBitBtn: TBitBtn
-      Left = 488
+      Left = 468
       Top = 3
-      Width = 93
+      Width = 117
       Height = 25
       Caption = #1044#1072#1083#1077#1077
-      Enabled = False
       TabOrder = 3
       OnClick = SearchNextPageBitBtnClick
     end
   end
-  object Panel2: TPanel
+  object BottomPanel: TPanel
     Left = 0
     Top = 494
     Width = 593
@@ -77,6 +76,7 @@ object IcqSearchForm: TIcqSearchForm
       Top = 6
       Width = 23
       Height = 22
+      Hint = '<b>'#1054#1095#1080#1089#1090#1080#1090#1100' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1099' '#1087#1086#1080#1089#1082#1072'</b>'
       Flat = True
       ParentShowHint = False
       ShowHint = True
@@ -87,6 +87,7 @@ object IcqSearchForm: TIcqSearchForm
       Top = 6
       Width = 23
       Height = 22
+      Hint = '<b>'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1073#1099#1089#1090#1088#1086#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077' '#1074#1099#1076#1077#1083#1077#1085#1085#1086#1084#1091' '#1082#1086#1085#1090#1072#1082#1090#1091'</b>'
       Flat = True
       ParentShowHint = False
       ShowHint = True
@@ -125,15 +126,16 @@ object IcqSearchForm: TIcqSearchForm
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 2
+      Text = ' '#1041#1099#1089#1090#1088#1086#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
       OnEnter = QMessageEditEnter
       OnExit = QMessageEditExit
     end
   end
   object SearchResultJvListView: TJvListView
     Left = 0
-    Top = 249
+    Top = 223
     Width = 593
-    Height = 245
+    Height = 271
     Align = alClient
     Columns = <
       item
@@ -191,6 +193,7 @@ object IcqSearchForm: TIcqSearchForm
     OnChanging = SearchResultJvListViewChanging
     OnColumnClick = SearchResultJvListViewColumnClick
     OnContextPopup = SearchResultJvListViewContextPopup
+    OnDblClick = SearchResultJvListViewDblClick
     OnGetImageIndex = SearchResultJvListViewGetImageIndex
     OnGetSubItemImage = SearchResultJvListViewGetSubItemImage
     OnMouseDown = SearchResultJvListViewMouseDown
@@ -249,11 +252,11 @@ object IcqSearchForm: TIcqSearchForm
         UseParentHeaderImagePosition = False
       end>
   end
-  object Panel12: TPanel
+  object TopPanel: TPanel
     Left = 0
     Top = 0
     Width = 593
-    Height = 214
+    Height = 188
     Margins.Bottom = 0
     Align = alTop
     BevelOuter = bvNone
@@ -262,7 +265,7 @@ object IcqSearchForm: TIcqSearchForm
       Left = 225
       Top = 5
       Width = 363
-      Height = 205
+      Height = 179
       TabOrder = 0
       object NickLabel: TLabel
         Left = 33
@@ -305,8 +308,8 @@ object IcqSearchForm: TIcqSearchForm
         Caption = #1042#1086#1079#1088#1072#1089#1090':'
       end
       object MaritalLabel: TLabel
-        Left = 28
-        Top = 174
+        Left = 218
+        Top = 120
         Width = 28
         Height = 13
         Alignment = taRightJustify
@@ -336,25 +339,9 @@ object IcqSearchForm: TIcqSearchForm
         Alignment = taRightJustify
         Caption = #1071#1079#1099#1082':'
       end
-      object ProfLabel: TLabel
-        Left = 187
-        Top = 120
-        Width = 59
-        Height = 13
-        Alignment = taRightJustify
-        Caption = #1055#1088#1086#1092#1077#1089#1089#1080#1103':'
-      end
-      object InterestLabel: TLabel
-        Left = 192
-        Top = 147
-        Width = 54
-        Height = 13
-        Alignment = taRightJustify
-        Caption = #1048#1085#1090#1077#1088#1077#1089#1099':'
-      end
       object KeyWordLabel: TLabel
         Left = 178
-        Top = 175
+        Top = 147
         Width = 68
         Height = 13
         Alignment = taRightJustify
@@ -364,7 +351,7 @@ object IcqSearchForm: TIcqSearchForm
         Left = 169
         Top = 34
         Width = 3
-        Height = 162
+        Height = 134
         Shape = bsLeftLine
       end
       object NickEdit: TEdit
@@ -416,17 +403,17 @@ object IcqSearchForm: TIcqSearchForm
         OnChange = NickEditChange
         Items.Strings = (
           ''
-          '13-17'
-          '18-22'
-          '23-29'
-          '30-39'
-          '40-49'
-          '50-59'
+          '13-18'
+          '18-23'
+          '23-30'
+          '30-40'
+          '40-50'
+          '50-60'
           '60 ...')
       end
       object MaritalComboBox: TComboBox
-        Left = 62
-        Top = 171
+        Left = 252
+        Top = 117
         Width = 101
         Height = 21
         Style = csDropDownList
@@ -465,34 +452,12 @@ object IcqSearchForm: TIcqSearchForm
         TabOrder = 8
         OnChange = NickEditChange
       end
-      object ProfComboBox: TComboBox
-        Left = 252
-        Top = 117
-        Width = 101
-        Height = 21
-        Style = csDropDownList
-        DropDownCount = 20
-        ItemHeight = 13
-        TabOrder = 9
-        OnChange = NickEditChange
-      end
-      object InterestComboBox: TComboBox
+      object KeyWordEdit: TEdit
         Left = 252
         Top = 144
         Width = 101
         Height = 21
-        Style = csDropDownList
-        DropDownCount = 20
-        ItemHeight = 13
-        TabOrder = 10
-        OnChange = NickEditChange
-      end
-      object KeyWordEdit: TEdit
-        Left = 252
-        Top = 172
-        Width = 101
-        Height = 21
-        TabOrder = 11
+        TabOrder = 9
         OnChange = NickEditChange
       end
       object GlobalSearchCheckBox: TCheckBox
@@ -507,7 +472,7 @@ object IcqSearchForm: TIcqSearchForm
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        TabOrder = 12
+        TabOrder = 10
         OnClick = GlobalSearchCheckBoxClick
       end
     end
@@ -515,11 +480,11 @@ object IcqSearchForm: TIcqSearchForm
       Left = 5
       Top = 5
       Width = 214
-      Height = 64
+      Height = 55
       TabOrder = 1
       object UINSearchCheckBox: TCheckBox
         Left = 9
-        Top = 7
+        Top = 5
         Width = 196
         Height = 17
         Caption = #1048#1089#1082#1072#1090#1100' '#1087#1086' ICQ#'
@@ -536,7 +501,7 @@ object IcqSearchForm: TIcqSearchForm
       end
       object UINSearchEdit: TEdit
         Left = 9
-        Top = 30
+        Top = 28
         Width = 196
         Height = 21
         TabOrder = 1
@@ -545,13 +510,13 @@ object IcqSearchForm: TIcqSearchForm
     end
     object GroupBox1: TGroupBox
       Left = 5
-      Top = 75
+      Top = 66
       Width = 214
-      Height = 64
+      Height = 56
       TabOrder = 2
       object EmailSearchCheckBox: TCheckBox
         Left = 9
-        Top = 8
+        Top = 6
         Width = 196
         Height = 17
         Caption = #1048#1089#1082#1072#1090#1100' '#1087#1086' E-mail'
@@ -566,7 +531,7 @@ object IcqSearchForm: TIcqSearchForm
       end
       object EmailSearchEdit: TEdit
         Left = 9
-        Top = 31
+        Top = 29
         Width = 196
         Height = 21
         TabOrder = 1
@@ -575,13 +540,13 @@ object IcqSearchForm: TIcqSearchForm
     end
     object GroupBox2: TGroupBox
       Left = 5
-      Top = 145
+      Top = 128
       Width = 214
-      Height = 65
+      Height = 56
       TabOrder = 3
       object KeyWordSearchCheckBox: TCheckBox
         Left = 9
-        Top = 9
+        Top = 5
         Width = 196
         Height = 17
         Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1083#1102#1095'. '#1089#1083#1086#1074#1091
@@ -596,7 +561,7 @@ object IcqSearchForm: TIcqSearchForm
       end
       object KeyWordSearchEdit: TEdit
         Left = 9
-        Top = 32
+        Top = 28
         Width = 196
         Height = 21
         TabOrder = 1

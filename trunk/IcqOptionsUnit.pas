@@ -597,7 +597,7 @@ begin
   if ICQ_CollSince <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo1L + ': ' + ICQ_CollSince);
   if ICQ_OnlineTime <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo2L + ': ' + ICQ_OnlineTime);
   if ICQ_AwayMess <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo3L + ': ' + ICQ_AwayMess);
-  if Bos_Addr <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo5L + ': ' + Bos_Addr);
+  if ICQ_Bos_Addr <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo5L + ': ' + ICQ_Bos_Addr);
   if ICQ_MyIcon_Hash <> EmptyStr then ParamInfoRichEdit.Lines.Add(OnlineInfo6L + ': ' + ICQ_MyIcon_Hash);
   if ICQ_CL_Count > 0 then ParamInfoRichEdit.Lines.Add(OnlineInfo7L + ': ' + IntToStr(ICQ_CL_Count));
   //--Заканчиваем заполнение строк

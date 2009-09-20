@@ -17,8 +17,8 @@ uses
 
 type
   TIcqSearchForm = class(TForm)
-    Panel1: TPanel;
-    Panel2: TPanel;
+    CenterPanel: TPanel;
+    BottomPanel: TPanel;
     NotPreviousClearCheckBox: TCheckBox;
     OnlyOnlineCheckBox: TCheckBox;
     SearchBitBtn: TBitBtn;
@@ -35,7 +35,7 @@ type
     ContactInfoSM: TMenuItem;
     AddContactInCLSM: TMenuItem;
     SearchResultJvListView: TJvListView;
-    Panel12: TPanel;
+    TopPanel: TPanel;
     GlobalSearchGroupBox: TGroupBox;
     NickLabel: TLabel;
     NickEdit: TEdit;
@@ -55,10 +55,6 @@ type
     CityEdit: TEdit;
     LangLabel: TLabel;
     LangComboBox: TComboBox;
-    ProfLabel: TLabel;
-    ProfComboBox: TComboBox;
-    InterestLabel: TLabel;
-    InterestComboBox: TComboBox;
     KeyWordLabel: TLabel;
     KeyWordEdit: TEdit;
     Bevel3: TBevel;
@@ -106,15 +102,15 @@ type
     procedure EmailSearchCheckBoxClick(Sender: TObject);
     procedure KeyWordSearchCheckBoxClick(Sender: TObject);
     procedure GlobalSearchCheckBoxClick(Sender: TObject);
+    procedure SearchResultJvListViewDblClick(Sender: TObject);
   private
     { Private declarations }
-    QmessT: string;
-    //sPage: word;
+    sPage: word;
     sPageInc: boolean;
-    //autosendind: integer;
     function GetColimnAtX(X: integer): integer;
     procedure OpenAnketa;
     procedure OpenChatResult;
+    procedure GlobalSearch;
   public
     { Public declarations }
     procedure TranslateForm;
@@ -129,6 +125,49 @@ uses MainUnit, IcqProtoUnit, UtilsUnit, IcqAddContactUnit, IcqContactInfoUnit,
   IcqOptionsUnit, RosterUnit;
 
 {$R *.dfm}
+
+procedure TIcqSearchForm.GlobalSearch;
+var
+  CountryInd, LangInd, MaritalInd: integer;
+begin
+  //--Ищем новым способом
+  if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text,
+    KeyWordEdit.Text, GenderComboBox.Text, AgeComboBox.Text, MaritalComboBox.Text,
+      CountryComboBox.Text, LangComboBox.Text]) then
+  begin
+    //--Управляем счётчиком страниц
+    if sPageInc then
+    begin
+      Inc(sPage);
+      SearchNextPageBitBtn.Caption := Format(SearchNextPage2, [sPage]);
+    end else sPage := 0;
+    //--Получаем коды из текста
+    CountryInd := -1;
+    LangInd := -1;
+    MaritalInd := -1;
+    if Assigned(IcqOptionsForm) then
+    begin
+      with IcqOptionsForm do
+      begin
+        //--Страна
+        if CountryComboBox.ItemIndex > 0 then
+          CountryInd := StrToInt(CountryCodesComboBox.Items.Strings[CountryInfoComboBox.Items.IndexOf(CountryComboBox.Text)]);
+        //--Язык
+        if LangComboBox.ItemIndex > 0 then
+          LangInd := StrToInt(LangsCodeComboBox.Items.Strings[Lang1InfoComboBox.Items.IndexOf(LangComboBox.Text)]);
+        //--Брак
+        if MaritalComboBox.ItemIndex > 0 then
+          MaritalInd := StrToInt(MaritalCodesComboBox.Items.Strings[PersonalMaritalInfoComboBox.Items.IndexOf(MaritalComboBox.Text)]);
+      end;
+    end;
+    //--Начинаем поиск
+    StatusPanel.Caption := SearchInfoGoL;
+    ICQ_SearchNewBase(NickEdit.Text, NameEdit.Text, FamilyEdit.Text,
+      CityEdit.Text, KeyWordEdit.Text, GenderComboBox.ItemIndex,
+      AgeComboBox.ItemIndex, MaritalInd, CountryInd, LangInd, sPage,
+      OnlyOnlineCheckBox.Checked);
+  end;
+end;
 
 procedure TIcqSearchForm.OpenAnketa;
 begin
@@ -191,12 +230,6 @@ begin
       //--Присваиваем Язык
       LangComboBox.Items.Assign(Lang1InfoComboBox.Items);
       SetCustomWidthComboBox(LangComboBox);
-      //--Присваиваем Профессию
-      ProfComboBox.Items.Assign(CompanyProfInfoComboBox.Items);
-      SetCustomWidthComboBox(ProfComboBox);
-      //--Присваиваем Интересы
-      InterestComboBox.Items.Assign(Interest1InfoComboBox.Items);
-      SetCustomWidthComboBox(InterestComboBox);
     end;
   end;
   //--Переводим форму на другие языки
@@ -228,7 +261,7 @@ end;
 
 procedure TIcqSearchForm.SearchBitBtnClick(Sender: TObject);
 var
-  i, CountryInd, LangInd, OccupInd, IntInd, MaritalInd: integer;
+  i: integer;
 begin
   //--Сбрасываем стрелочки сортировки во всех столбцах
   for i := 0 to SearchResultJvListView.Columns.Count - 1 do
@@ -279,135 +312,20 @@ begin
   begin
     if ICQ_Work_Phaze then
     begin
-      //--Ищем старым способом если выбрана провессия или интересы
-      if IsNotNull([ProfComboBox.Text, InterestComboBox.Text]) then
-      begin
-
-      end
-      //--Ищем новым способом
-      else if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text,
-        KeyWordEdit.Text, GenderComboBox.Text, AgeComboBox.Text, MaritalComboBox.Text,
-          CountryComboBox.Text, LangComboBox.Text]) then
-      begin
-
-      end;
+      //--Сбрасываем кнопку листания страниц в результатов
+      sPageInc := false;
+      SearchNextPageBitBtn.Caption := SearchNextPage1;
+      //--Ищем
+      GlobalSearch;
     end;
   end;
-
-
-
-{
-    4:
-      begin
-
-        if IsNotNull([ComboBox15.Text, ComboBox16.Text]) then
-        begin
-          // interest or work
-          CodeList := TStringList.Create;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries_codes.txt');
-          try
-            CountryInd := StrToInt(CodeList.Strings[ComboBox13.ItemIndex]);
-          except
-            CountryInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages_codes.txt');
-          try
-            LangInd := StrToInt(CodeList.Strings[ComboBox14.ItemIndex]);
-          except
-            LangInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Interests_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Interests_codes.txt');
-          try
-            IntInd := StrToInt(CodeList.Strings[ComboBox16.ItemIndex]);
-          except
-            IntInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus_codes.txt');
-          try
-            MaritalInd := StrToInt(CodeList.Strings[ComboBox12.ItemIndex]);
-          except
-            MaritalInd := 0;
-          end;
-          CodeList.Clear;
-          //
-          if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Industry_codes.txt') then
-            CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Industry_codes.txt');
-          try
-            OccupInd := StrToInt(CodeList.Strings[ComboBox15.ItemIndex]);
-          except
-            OccupInd := 0;
-          end;
-          CodeList.Free;
-          //
-          Panel6.Caption := SP2;
-          ICQ_SearchByPersonalInfo(Edit16.Text, Edit17.Text, Edit18.Text, Edit19.Text, Edit20.Text, ComboBox10.ItemIndex,
-            ComboBox11.ItemIndex, MaritalInd, CountryInd, LangInd,
-            OccupInd, IntInd, CheckBox5.Checked);
-        end
-        else
-        begin
-          if IsNotNull([Edit16.Text, Edit17.Text, Edit18.Text, Edit19.Text,
-            Edit20.Text, ComboBox10.Text, ComboBox11.Text, ComboBox12.Text,
-              ComboBox13.Text, ComboBox14.Text]) then
-          begin
-            if sPageInc then Inc(sPage)
-            else sPage := 0;
-            //
-            CodeList := TStringList.Create;
-            //
-            if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries_codes.txt') then
-              CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Countries_codes.txt');
-            try
-              CountryInd := StrToInt(CodeList.Strings[ComboBox13.ItemIndex]);
-            except
-              CountryInd := 0;
-            end;
-            CodeList.Clear;
-            //
-            if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages_codes.txt') then
-              CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_Languages_codes.txt');
-            try
-              LangInd := StrToInt(CodeList.Strings[ComboBox14.ItemIndex]);
-            except
-              LangInd := 0;
-            end;
-            CodeList.Clear;
-            //
-            if FileExists(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus_codes.txt') then
-              CodeList.LoadFromFile(MyPath + 'Langs\' + CurrentLang + '\Icq_MaritalStatus_codes.txt');
-            try
-              MaritalInd := StrToInt(CodeList.Strings[ComboBox12.ItemIndex]);
-            except
-              MaritalInd := 0;
-            end;
-            CodeList.Clear;
-            //
-            Panel6.Caption := SP2;
-            ICQ_SearchNewBase(Edit16.Text, Edit17.Text, Edit18.Text, Edit19.Text, Edit20.Text, ComboBox10.ItemIndex,
-              ComboBox11.ItemIndex, MaritalInd, CountryInd, LangInd, sPage,
-              CheckBox5.Checked);
-            sPageInc := false;
-          end;
-        end;
-      end;
-  end;}
 end;
 
 procedure TIcqSearchForm.SearchNextPageBitBtnClick(Sender: TObject);
 begin
+  //--Начинаем листать страницы
   sPageInc := true;
-  SearchBitBtnClick(self);
+  GlobalSearch;
 end;
 
 procedure TIcqSearchForm.EmailSearchCheckBoxClick(Sender: TObject);
@@ -454,7 +372,7 @@ procedure TIcqSearchForm.QMessageEditExit(Sender: TObject);
 var
   FOptions: TFontStyles;
 begin
-  //--
+  //--Восстанавливаем
   with QMessageEdit do
   begin
     if Text = EmptyStr then
@@ -462,7 +380,7 @@ begin
       FOptions := [];
       Include(FOptions, fsBold);
       Font.Style := FOptions;
-      Text := ' ' + QmessT;
+      Text := ' ' + SearchQMessL;
       Tag := 1;
     end;
   end;
@@ -612,25 +530,32 @@ begin
 end;
 
 procedure TIcqSearchForm.AddContactInCLSMClick(Sender: TObject);
-//var
-  //i: integer;
-  //frmAddCnt: TIcqAddContactForm;
+var
+  frmAddCnt: TIcqAddContactForm;
 begin
-  {frmAddCnt := TIcqAddContactForm.Create(nil);
+  //--Создаём окно добавления контакта в КЛ
+  frmAddCnt := TIcqAddContactForm.Create(self);
   try
-    for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
+    with frmAddCnt do
     begin
-      if RoasterForm.CategoryButtons1.Categories.Items[i].GroupId = '0000' then Continue;
-      if RoasterForm.CategoryButtons1.Categories.Items[i].GroupId = 'NoCL' then Continue;
-      frmAddCnt.ComboBox1.Items.Add(RoasterForm.CategoryButtons1.Categories.Items[i].GroupCaption);
+      //--Составляем список групп из Ростера
+      BuildGroupList('Icq');
+      //--Заносим имя учётной записи
+      AccountEdit.Text := SearchResultJvListView.Selected.SubItems[1];
+      AccountEdit.ReadOnly := true;
+      AccountEdit.Color := clBtnFace;
+      //--Заносим имя учётной записи
+      if SearchResultJvListView.Selected.SubItems[2] = EmptyStr then
+        NameEdit.Text := SearchResultJvListView.Selected.SubItems[1]
+      else NameEdit.Text := SearchResultJvListView.Selected.SubItems[2];
+      //--Заполняем протокол контакта
+      ContactType := 'Icq';
+      //--Отображаем окно модально
+      ShowModal;
     end;
-    if frmAddCnt.ComboBox1.Items.Count > 0 then frmAddCnt.ComboBox1.ItemIndex := 0;
-    frmAddCnt.Edit1.Text := ListView1.Selected.Caption;
-    frmAddCnt.Edit2.Text := ListView1.Selected.SubItems.Strings[0];
-    frmAddCnt.ShowModal;
   finally
     FreeAndNil(frmAddCnt);
-  end;}
+  end;
 end;
 
 procedure TIcqSearchForm.SearchResultJvListViewChanging(Sender: TObject;
@@ -667,16 +592,25 @@ begin
   else Handled := true;
 end;
 
+procedure TIcqSearchForm.SearchResultJvListViewDblClick(Sender: TObject);
+begin
+  //--Выводим диалог добавления контакта в список контактов
+  AddContactInCLSMClick(self);
+end;
+
 procedure TIcqSearchForm.SearchResultJvListViewGetImageIndex(Sender: TObject;
   Item: TListItem);
 begin
+  //--Ставим иконку просмотра анкеты о контакте
   Item.ImageIndex := 237;
 end;
 
 procedure TIcqSearchForm.SearchResultJvListViewGetSubItemImage(Sender: TObject;
   Item: TListItem; SubItem: Integer; var ImageIndex: Integer);
 begin
+  //--Ставим иконку открытия чата с этим контактом
   if SubItem = 0 then ImageIndex := 238;
+  //--Ставим иконки отправки быстрых сообщений
   if Item.Checked then
   begin
     if SubItem = 7 then ImageIndex := 240;
@@ -742,13 +676,14 @@ begin
   begin
     if Selected <> nil then
     begin
-    {if ListView1.Selected.Checked then Exit;
-    if (Edit4.Tag = 1) or (Edit4.Text = EmptyStr) then Exit;
-    if ICQ_Work_Phaze then
-    begin
-      ICQ_SendMessage_0406(ListView1.Selected.Caption, Edit4.Text, true);
-      ListView1.Selected.Checked := true;
-    end;}
+      //--Если уже отправляли сообщение или оно пустое, то выходим
+      if (Selected.Checked) or (QMessageEdit.Tag = 1) or (QMessageEdit.Text = EmptyStr) then Exit;
+      //--Отправляем быстрое сообщение этому контакту
+      if ICQ_Work_Phaze then
+      begin
+        ICQ_SendMessage_0406(Selected.SubItems[1], QMessageEdit.Text, true);
+        Selected.Checked := true;
+      end;
     end;
   end;
 end;

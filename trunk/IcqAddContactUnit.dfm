@@ -3,7 +3,7 @@ object IcqAddContactForm: TIcqAddContactForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'IcqAddContactForm'
+  Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
   ClientHeight = 129
   ClientWidth = 281
   Color = clBtnFace
@@ -18,47 +18,49 @@ object IcqAddContactForm: TIcqAddContactForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 74
+  object AccountLabel: TLabel
+    Left = 21
     Top = 11
-    Width = 31
+    Width = 84
     Height = 13
     Alignment = taRightJustify
-    Caption = 'Label1'
+    Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100':'
   end
-  object Label2: TLabel
-    Left = 74
+  object NameLabel: TLabel
+    Left = 31
     Top = 38
-    Width = 31
+    Width = 74
     Height = 13
     Alignment = taRightJustify
-    Caption = 'Label1'
+    Caption = #1048#1084#1103' '#1082#1086#1085#1090#1072#1082#1090#1072':'
   end
-  object Label3: TLabel
-    Left = 74
+  object GroupLabel: TLabel
+    Left = 65
     Top = 65
-    Width = 31
+    Width = 40
     Height = 13
     Alignment = taRightJustify
-    Caption = 'Label1'
+    Caption = #1043#1088#1091#1087#1087#1072':'
   end
-  object Edit1: TEdit
+  object AccountEdit: TEdit
     Left = 111
     Top = 8
     Width = 162
     Height = 21
+    TabStop = False
     MaxLength = 40
     TabOrder = 0
   end
-  object Edit2: TEdit
+  object NameEdit: TEdit
     Left = 111
     Top = 35
     Width = 162
     Height = 21
+    TabStop = False
     MaxLength = 40
     TabOrder = 1
   end
-  object ComboBox1: TComboBox
+  object GroupComboBox: TComboBox
     Left = 111
     Top = 62
     Width = 162
@@ -66,24 +68,25 @@ object IcqAddContactForm: TIcqAddContactForm
     Style = csDropDownList
     ItemHeight = 13
     TabOrder = 2
+    TabStop = False
   end
-  object Button1: TButton
-    Left = 184
+  object CancelButton: TButton
+    Left = 8
     Top = 96
     Width = 89
     Height = 25
-    Caption = 'Button1'
+    Caption = #1054#1090#1084#1077#1085#1072
     ModalResult = 2
     TabOrder = 3
   end
-  object Button2: TButton
-    Left = 8
+  object AddContactButton: TButton
+    Left = 176
     Top = 96
     Width = 97
     Height = 25
-    Caption = 'Button2'
+    Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     Default = True
     TabOrder = 4
-    OnClick = Button2Click
+    OnClick = AddContactButtonClick
   end
 end

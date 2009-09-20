@@ -283,7 +283,7 @@ var
   ICQ_UpdatePrivateGroup_Code: string;
   MyConnTime: string;
   NewKL: boolean;
-  Bos_Addr: string = '';
+  ICQ_Bos_Addr: string = '';
   ICQ_CL_Count: integer = 0;
 
 function ICQ_NotifyConnectError(ErrCode: integer): string;
@@ -339,7 +339,7 @@ procedure ICQ_RenameAndEditContact(UIN, GroupId, Id, Nick, Cell, Email, Zametka:
 procedure ICQ_DeleteTempContactMulti(TCList: TStringList);
 procedure ICQ_ReqAuthSend(UIN, Mess: string);
 procedure ICQ_ReqInfo_New_Pkt(sUIN: string);
-procedure ICQ_ReqInfo_New_Pkt_1(sUIN: string);
+//procedure ICQ_ReqInfo_New_Pkt_1(sUIN: string);
 procedure ICQ_SaveNew_InfoPkt(cUIN, cNick, cFirst, cLast, cGender, cAddress,
   cCity, cState, cZip, oCity, oState, Phone1, Phone2, Phone3, Phone4,
   Phone5, cHomePage, wCity, wState, wZip, wAddress, wCorp, wDep, wProf,
@@ -353,11 +353,9 @@ procedure ICQ_SRV_MSGACK_ADVANCED(PktData: string; ClientOk: boolean);
 procedure ICQ_Send_SMS(cNumber, smstext: string);
 function ICQ_StatusCode2String(StatusCode: string): string;
 function ICQ_ClientCap2String(ClientCap: string): string;
-procedure ICQ_SearchByPersonalInfo(NickName, FirstName, LastName, City, Keywords: string;
-  Gender, AgeRange, Marital, Country, Language, WorkOccupation, Interests: integer;
-  OnlineOnly: boolean; Email: string = ''; Org: integer = 0; Past: integer = 0);
 procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string;
-  Gender, AgeRange, Marital, Country, Language, PageIndex: integer; OnlineOnly: boolean);
+  Gender, AgeRange, Marital, Country, Language,
+  PageIndex: integer; OnlineOnly: boolean);
 procedure ICQ_GetAvatarBosServer;
 procedure ICQ_Parse_0105(PktData: string);
 procedure ICQ_GetAvatarImage(aUIN, aHash: string);
@@ -454,22 +452,22 @@ begin
 end;
 
 procedure ICQ_GetAvatarImage(aUIN, aHash: string);
-var
-  Pkt: string;
+{var
+  Pkt: string;}
 begin
-  //--Собираем пакет запроса аватара контакта
+  {//--Собираем пакет запроса аватара контакта
   Pkt := '00100006000050000006' + IntToHex(Length(aUIN), 2) + Text2Hex(aUIN) +
     '0100010010' + aHash;
   //--Отсылаем пакет
-  SendFLAP_Avatar('2', Pkt);
+  SendFLAP_Avatar('2', Pkt);}
 end;
 
 procedure ICQ_Parse_0105(PktData: string);
-var
+{var
   Len: integer;
-  BosIP: string;
+  BosIP: string;}
 begin
-  NextData(PktData, 16);
+  {NextData(PktData, 16);
   while Length(PktData) > 0 do
   begin
     case HexToInt(NextData(PktData, 4)) of
@@ -506,92 +504,60 @@ begin
       MainForm.ICQAvatarWSocket.Connect;
     except
     end;
-  end;
+  end;}
 end;
 
 procedure ICQ_GetAvatarBosServer;
 begin
   //--Отсылаем запрос адреса сервера аватар
-  SendFLAP('2', '00010004000048C40004' + '0010');
+  //SendFLAP('2', '00010004000048C40004' + '0010');
 end;
 
-procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language, PageIndex: integer; OnlineOnly: boolean);
+procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string;
+  Gender, AgeRange, Marital, Country, Language,
+  PageIndex: integer; OnlineOnly: boolean);
 var
   Pkt, PktSub, Utf8_Nick, Utf8_First, Utf8_Last, Utf8_City, Utf8_Key: string;
   Len: integer;
 begin
+  //--Преобразуем строки в UTF-8
   Utf8_Nick := StrToUtf8(NickName);
   Utf8_First := StrToUtf8(FirstName);
   Utf8_Last := StrToUtf8(LastName);
   Utf8_City := StrToUtf8(City);
   Utf8_Key := StrToUtf8(Keywords);
-  //
-  Pkt := EmptyStr; PktSub := EmptyStr;
+  //--Обнуляем переменные
+  Pkt := EmptyStr;
+  PktSub := EmptyStr;
+  //--Формируем код возраста
   case AgeRange of
-    0: PktSub := '0011000D';
-    1: PktSub := '00160012';
-    2: PktSub := '001D0017';
-    3: PktSub := '0027001E';
-    4: PktSub := '00310028';
-    5: PktSub := '003B0032';
-    6: PktSub := '0078003C';
+    1: PktSub := '0011000D';
+    2: PktSub := '00160012';
+    3: PktSub := '001D0017';
+    4: PktSub := '0027001E';
+    5: PktSub := '00310028';
+    6: PktSub := '003B0032';
+    7: PktSub := '0078003C';
   end;
   if PktSub <> EmptyStr then PktSub := '01540004' + PktSub;
+  //--Формируем основной пакет
   if NickName <> EmptyStr then Pkt := '0078' + IntToHex(Length(Utf8_Nick), 4) + Text2Hex(Utf8_Nick);
   if FirstName <> EmptyStr then Pkt := Pkt + '0064' + IntToHex(Length(Utf8_First), 4) + Text2Hex(Utf8_First);
   if LastName <> EmptyStr then Pkt := Pkt + '006E' + IntToHex(Length(Utf8_Last), 4) + Text2Hex(Utf8_Last);
   if City <> EmptyStr then Pkt := Pkt + '00A0' + IntToHex(Length(Utf8_City), 4) + Text2Hex(Utf8_City);
-  if Gender <> -1 then Pkt := Pkt + '00820001' + IntToHex(Gender, 2);
-  if Marital <> -1 then Pkt := Pkt + '012C0002' + IntToHex(Marital, 4);
-  if Country <> -1 then Pkt := Pkt + '00BE0004' + IntToHex(Country, 8);
+  if Gender > -1 then Pkt := Pkt + '00820001' + IntToHex(Gender, 2);
+  if Marital > -1 then Pkt := Pkt + '012C0002' + IntToHex(Marital, 4);
+  if Country > -1 then Pkt := Pkt + '00BE0004' + IntToHex(Country, 8);
   Pkt := Pkt + PktSub;
-  if Language <> -1 then Pkt := Pkt + '00FA0002' + IntToHex(Language, 4);
+  if Language > -1 then Pkt := Pkt + '00FA0002' + IntToHex(Language, 4);
   if OnlineOnly then Pkt := Pkt + '013600020001';
   if Keywords <> EmptyStr then Pkt := Pkt + '017C' + IntToHex(Length(Utf8_Key), 4) + Text2Hex(Utf8_Key);
   Pkt := '05B90FA0000000000000000004E3000000020002' + IntToHex(PageIndex, 4) + '0001' + IntToHex(Length(Hex2Text(Pkt)), 4) + Pkt;
   Pkt := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) + 'A00F' + IntToHex(Length(Hex2Text(Pkt)), 4) + Pkt;
   Len := Length(Hex2Text(Pkt));
   Pkt := '00150002000000000002' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt;
-  //
+  //--Отправляем пакет
   ICQ_ReqInfo_UIN := EmptyStr;
-  SendFLAP('2', Pkt);
-end;
-
-procedure ICQ_SearchByPersonalInfo(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language, WorkOccupation, Interests: integer; OnlineOnly: boolean; Email: string = ''; Org: integer = 0; Past: integer = 0);
-var
-  Pkt, PktSub: string;
-  Len: integer;
-begin
-  Pkt := EmptyStr; PktSub := EmptyStr;
-  case AgeRange of
-    0: PktSub := '0011000D';
-    1: PktSub := '00160012';
-    2: PktSub := '001D0017';
-    3: PktSub := '0027001E';
-    4: PktSub := '00310028';
-    5: PktSub := '003B0032';
-    6: PktSub := '00781027';
-  end;
-  if PktSub <> EmptyStr then PktSub := '68010400' + PktSub;
-  if NickName <> EmptyStr then Pkt := '5401' + IntToHex(Swap16(Length(NickName) + 3), 4) + IntToHex(Swap16(Length(NickName) + 1), 4) + Text2Hex(NickName) + '00';
-  if FirstName <> EmptyStr then Pkt := Pkt + '4001' + IntToHex(Swap16(Length(FirstName) + 3), 4) + IntToHex(Swap16(Length(FirstName) + 1), 4) + Text2Hex(FirstName) + '00';
-  if LastName <> EmptyStr then Pkt := Pkt + '4A01' + IntToHex(Swap16(Length(LastName) + 3), 4) + IntToHex(Swap16(Length(LastName) + 1), 4) + Text2Hex(LastName) + '00';
-  if City <> EmptyStr then Pkt := Pkt + '9001' + IntToHex(Swap16(Length(City) + 3), 4) + IntToHex(Swap16(Length(City) + 1), 4) + Text2Hex(City) + '00';
-  if Keywords <> EmptyStr then Pkt := Pkt + '2B02' + IntToHex(Swap16(Length(Keywords) + 3), 4) + IntToHex(Swap16(Length(Keywords) + 1), 4) + Text2Hex(Keywords) + '00';
-  if Gender <> -1 then Pkt := Pkt + '7C010100' + IntToHex(Gender, 2);
-  if Marital <> -1 then Pkt := Pkt + '3E030200' + IntToHex(Marital, 4);
-  if Country <> -1 then Pkt := Pkt + 'A4010400' + IntToHex(Country, 8);
-  if WorkOccupation <> -1 then Pkt := Pkt + 'CC010200' + IntToHex(WorkOccupation, 4);
-  if Interests <> -1 then Pkt := Pkt + 'EA01' + IntToHex(Swap16(Length(Keywords)) + 5, 4) + IntToHex(Interests, 4) + IntToHex(Swap16(Length(Keywords) + 1), 4) + Text2Hex(Keywords) + '00';
-  if Org <> -1 then Pkt := Pkt + 'D601' + IntToHex(Swap16(Length(Keywords)) + 5, 4) + IntToHex(Org, 4) + IntToHex(Swap16(Length(Keywords) + 1), 4) + Text2Hex(Keywords) + '00';
-  if Past <> -1 then Pkt := Pkt + 'FE01' + IntToHex(Swap16(Length(Keywords)) + 5, 4) + IntToHex(Past, 4) + IntToHex(Swap16(Length(Keywords) + 1), 4) + Text2Hex(Keywords) + '00';
-  Pkt := Pkt + PktSub;
-  if Language <> -1 then Pkt := Pkt + '86010200' + IntToHex(Language, 4);
-  if OnlineOnly then Pkt := Pkt + '3002010001';
-  Pkt := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) + '5F05' + Pkt;
-  Len := Length(Hex2Text(Pkt));
-  Pkt := '00150002000000000002' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt;
-  //
   SendFLAP('2', Pkt);
 end;
 
@@ -708,12 +674,12 @@ begin
 end;
 
 procedure ICQ_Send_SMS(cNumber, smstext: string);
-var
+{var
   Pkt: string;
   Utf8Mess: string;
-  CoocId: string;
+  CoocId: string;}
 begin
-  //--Собираем пакет для отправки SMS (в россии перехватывает рамблер)
+  {//--Собираем пакет для отправки SMS (в россии перехватывает рамблер)
   Utf8Mess := StrToUtf8(smstext);
   Randomize;
   CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) +
@@ -722,7 +688,7 @@ begin
     '0001' + IntToHex(Length(cNumber), 2) + Text2Hex(cNumber) + '0002' + IntToHex((Length(Utf8Mess) + 13), 4) + '05010001010101' +
     IntToHex((Length(Utf8Mess) + 4), 4) + '00000000' + Text2Hex(Utf8Mess) + '0003000000060000';
   //--Отсылаем пакет
-  SendFLAP('2', Pkt);
+  SendFLAP('2', Pkt);}
 end;
 
 procedure ICQ_SRV_MSGACK_ADVANCED(PktData: string; ClientOk: boolean);
@@ -754,14 +720,14 @@ begin
 end;
 
 procedure ICQ_UserSentTyping_0414(PktData: string);
-label
+{label
   x, y;
 var
   UIN, Doc: string;
   Typing, CloseW: boolean;
-  Len, i, ii: integer;
+  Len, i, ii: integer;}
 begin
-  Typing := false;
+  {Typing := false;
   CloseW := false;
   //--Пропускаем кукисы 16 символов и канал 4 символа
   NextData(PktData, 20);
@@ -875,7 +841,7 @@ begin
   end;
   y: ;
   //--Выводим нотификации о печати и закрытии окна чата всплывающими сообщениями
-
+    }
 end;
 
 procedure ICQ_SaveNew_InfoPkt(cUIN, cNick, cFirst, cLast, cGender, cAddress,
@@ -886,7 +852,7 @@ procedure ICQ_SaveNew_InfoPkt(cUIN, cNick, cFirst, cLast, cGender, cAddress,
   cCountry, oCountry, Lang1, Lang2, Lang3, wCountry,
   wOccup, Int_id1, Int_id2, Int_id3, Int_id4, cMarital, cSexual,
   cHeight, cRelig, cSmok, cHair, cChildren: integer);
-var
+{var
   Pkt, Pkt1, Pkt2, Pkt3: string;
   Len, Len1, Len2: integer;
 
@@ -1108,10 +1074,10 @@ var
     iLen := Length(Hex2Text(iPkt1));
     iPkt := '008C' + IntToHex(iLen, 4) + iPkt1;
     Result := iPkt;
-  end;
+  end;}
 
 begin
-  Randomize;
+{  Randomize;
   Pkt3 := Nick_First_Last + Gender_Addres + Original_Address + Langs + Phones +
     HomePage + Works + Interest + Marital_About + Birg + Emails +
     Sexual_Height_Relig_Smok_Hair_Children + '01F900020000';
@@ -1123,7 +1089,7 @@ begin
   Len := Length(Hex2Text(Pkt1));
   Pkt := '00150002000000000004' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt1;
   //
-  SendFLAP('2', Pkt);
+  SendFLAP('2', Pkt); }
 end;
 
 procedure ICQ_ReqInfo_New_Pkt(sUIN: string);
@@ -1140,13 +1106,13 @@ begin
     'A00F' + IntToHex(Swap16(Len2), 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '001500020000' + IntToHex(StrToInt(sUIN), 8) + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //--Запоминаем инфу накого UIN мы запрашивали
+  //--Запоминаем UIN кого мы запрашивали
   ICQ_ReqInfo_UIN := sUIN;
   //--Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
 
-procedure ICQ_ReqInfo_New_Pkt_1(sUIN: string);
+{procedure ICQ_ReqInfo_New_Pkt_1(sUIN: string);
 var
   Len1, Len2, Len3: integer;
   Pkt, Pkt1, Pkt2, Pkt3: string;
@@ -1160,11 +1126,11 @@ begin
     'A00F' + IntToHex(Swap16(Len2), 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '001500020000' + IntToHex(StrToInt(sUIN), 8) + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
-  //--Запоминаем инфу накого UIN мы запрашивали
+  //--Запоминаем UIN кого мы запрашивали
   ICQ_ReqInfo_UIN := sUIN;
   //--Отсылаем пакет
   SendFLAP('2', Pkt);
-end;
+end;}
 
 procedure ICQ_ReqAuthSend(UIN, Mess: string);
 var
@@ -1227,13 +1193,16 @@ var
 begin
   zTCL := TStringList.Create;
   //
-  zTCL.Assign(TCList);
-  while zTCL.Count > 0 do
-  begin
-    SendFLAP('2', CreateDelTempContsPkt);
-  end;
+  try
+    zTCL.Assign(TCList);
+    while zTCL.Count > 0 do
+    begin
+      SendFLAP('2', CreateDelTempContsPkt);
+    end;
   //
-  zTCL.Free;
+  finally
+    zTCL.Free;
+  end;
 end;
 
 procedure ICQ_DellMyFromCL(UIN: string);
@@ -1276,11 +1245,13 @@ end;
 
 procedure ICQ_AddStart;
 begin
+  //--Открываем сессию работы с серверным КЛ
   SendFLAP('2', '00130011000000000011');
 end;
 
 procedure ICQ_AddEnd;
 begin
+  //--Закрываем сессию работы с серверным КЛ
   SendFLAP('2', '00130012000000000012');
 end;
 
@@ -1290,6 +1261,7 @@ var
   Pkt, Pkt1, Pkt2: string;
   Utf8Capt: string;
 begin
+  //--Обновляем группу при добавлении контакта в серверном КЛ
   Utf8Capt := StrToUtf8(GrCaption);
   for i := 0 to CiDlist.Count - 1 do
   begin
@@ -1300,7 +1272,7 @@ begin
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00130009000000000009' + IntToHex(Length(Utf8Capt), 4) + Text2Hex(Utf8Capt) + iGroupId +
     '00000001' + IntToHex(Len1, 4) + Pkt1;
-  //
+  //--Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1309,11 +1281,13 @@ var
   Pkt: string;
   Utf8Name: string;
 begin
+  //--Формируем пакет удаления группы
   Utf8Name := StrToUtf8(gName);
   Pkt := '0013000A00000000000A' + IntToHex(Length(Utf8Name), 4) + Text2Hex(Utf8Name) + gId +
     '00000001000400C80000';
-  //
+  //--Открываем сессию
   ICQ_AddStart;
+  //--Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1322,6 +1296,7 @@ var
   i, Len1, Len2: integer;
   Pkt, Pkt1, Pkt2: string;
 begin
+  //--Обновляем группу при добавлении группы в серверном КЛ
   for i := 0 to GiDlist.Count - 1 do
   begin
     Pkt2 := Pkt2 + GiDlist.Strings[i];
@@ -1331,7 +1306,7 @@ begin
   Pkt1 := '00c8' + IntToHex(Len2, 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
   Pkt := '00130009000000000009' + '0000000000000001' + IntToHex(Len1, 4) + Pkt1;
-   //
+  //--Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1340,11 +1315,13 @@ var
   Pkt: string;
   Utf8Name: string;
 begin
+  //--Формируем пакет добавления группы в серверный КЛ
   Utf8Name := StrToUtf8(gName);
   Pkt := '00130008000000000008' + IntToHex(Length(Utf8Name), 4) + Text2Hex(Utf8Name) + gId +
     '00000001000400C80000';
-  //
+  //--Открываем сессию
   ICQ_AddStart;
+  //--Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1354,10 +1331,12 @@ var
   Pkt, Pkt1: string;
   Utf8Nick, Utf8Cell, Utf8Email, Utf8Zametka: string;
 begin
+  //--Переводим в UTF-8
   Utf8Nick := StrToUtf8(Nick);
   Utf8Cell := StrToUtf8(Cell);
   Utf8Email := StrToUtf8(Email);
   Utf8Zametka := StrToUtf8(Zametka);
+  //--Формируем пакет
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) +
     '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell) + '013C' +
     IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' +
@@ -1365,171 +1344,203 @@ begin
   Len := Length(Hex2Text(Pkt1));
   Pkt := '00130009000000000009' + IntToHex(Length(UIN), 4) + Text2Hex(UIN) + GroupId + Id +
     '0000' + IntToHex(Len, 4) + Pkt1;
-  //
+  //--Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
 
 procedure ICQ_Parse_130E_UpdateAck(PktData: string);
-{var
-  i, ii, T: integer;
+var
+  i: integer;
   CliDL: TStringList;
-  GrCap: string;}
+  GrCap: string;
+  ListItemD: TListItem;
 begin
-{  if not ICQ_SSI_Phaze then Exit;
+  //--Если это не фаза работы с серверным КЛ, то выходим
+  if not ICQ_SSI_Phaze then Exit;
+  //--Пропускаем ненужные значения
   NextData(PktData, 18);
-  //--Add Contact Ack
+  //--Если это фаза добавления контакта
   if ICQ_Add_Contact_Phaze then
   begin
+    //--Смотрим на ответ сервера
     case HexToInt(NextData(PktData, 2)) of
       $00:
         begin
+          //--Создаём список для занесения в него всех идентификаторов контактов
           CliDL := TStringList.Create;
-          for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-          begin
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = ICQ_Add_GroupId then
+          try
+            //--Заносим в список все идентификаторы контактов из этой группы
+            with RosterForm.RosterJvListView do
             begin
-              for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
+              for i := 0 to Items.Count - 1 do
               begin
-                CliDL.Add(RoasterForm.CategoryButtons1.Categories[i].Items[ii].Idd);
+                //--Если идентификатор группы в которую добавляем новый контакт совпадает
+                //с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
+                if (Items[i].SubItems[1] = ICQ_Add_GroupId) and
+                  (Items[i].SubItems[3] = 'Icq') then CliDL.Add(Items[i].SubItems[4]);
+                //--Получаем название группы в которую добавляем контакт
+                if Items[i].Caption = ICQ_Add_GroupId then GrCap := Items[i].SubItems[1];
               end;
-              GrCap := RoasterForm.CategoryButtons1.Categories[i].GroupCaption;
-              Break;
             end;
+            //--Добавляем в список новый идентификатор контакта
+            CliDL.Add(ICQ_Add_cId);
+            //--Обновляем группу в серверном КЛ
+            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+          finally
+            CliDL.Free;
           end;
-          CliDL.Add(ICQ_Add_cId);
-          ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-          CliDL.Free;
+          //--Закрываем сессию добавления контакта
           ICQ_AddEnd;
           ICQ_Add_Contact_Phaze := false;
           ICQ_SSI_Phaze := false;
-          //
-          for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
+          //--Успешно добавляем контакт в локальный список контактов
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          with ListItemD do
           begin
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = ICQ_Add_GroupId then
-            begin
-              RoasterForm.CategoryButtons1.Categories[i].Items.Add.Caption := ICQ_Add_Nick;
-              T := RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].UIN := ICQ_Add_UIN;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].GroupId := ICQ_Add_GroupId;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Idd := ICQ_Add_cId;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].iType := '0000';
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex := 20;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex1 := -1;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex2 := -1;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Status := 20;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Auth := false;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Hint := ICQ_CreateHint(RoasterForm.CategoryButtons1.Categories[i].Items[T]);
-            end;
+            Caption := ICQ_Add_UIN;
+            //--Подготавиливаем все значения
+            RosterForm.RosterItemSetFull(ListItemD);
+            //--Обновляем субстроки
+            SubItems[0] := ICQ_Add_Nick;
+            SubItems[1] := ICQ_Add_GroupId;
+            SubItems[2] := 'both';
+            SubItems[3] := 'Icq';
+            SubItems[4] := ICQ_Add_cId;
+            SubItems[5] := '0000';
+            SubItems[6] := '9';
           end;
-          //
-          if (OnlyOnlineUsersCL) or (NoGroupModeCL) then
-          begin
-            OnlyOnlineUsersCL := not OnlyOnlineUsersCL;
-            RoasterForm.ToolButton9Click(nil);
-          end;
+          //--Строим локальный КЛ
+          RosterForm.UpdateFullCL;
+          //--Сообщаем об успешном добавлении контакта
+          DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
         end;
       $0E:
         begin
+          //--Создаём список для занесения в него всех идентификаторов контактов
           CliDL := TStringList.Create;
-          for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-          begin
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = ICQ_Add_GroupId then
+          try
+            //--Заносим в список все идентификаторы контактов из этой группы
+            with RosterForm.RosterJvListView do
             begin
-              for ii := 0 to RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1 do
+              for i := 0 to Items.Count - 1 do
               begin
-                CliDL.Add(RoasterForm.CategoryButtons1.Categories[i].Items[ii].Idd);
+                //--Если идентификатор группы в которую добавляем новый контакт совпадает
+                //с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
+                if (Items[i].SubItems[1] = ICQ_Add_GroupId) and
+                  (Items[i].SubItems[3] = 'Icq') then CliDL.Add(Items[i].SubItems[4]);
+                //--Получаем название группы в которую добавляем контакт
+                if Items[i].Caption = ICQ_Add_GroupId then GrCap := Items[i].SubItems[1];
               end;
-              GrCap := RoasterForm.CategoryButtons1.Categories[i].GroupCaption;
-              Break;
             end;
+            //--Обновляем группу в серверном КЛ
+            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+            //--Закрываем сессию
+            ICQ_AddEnd;
+            //--Добавляем контакт уже как неавторизованный
+            ICQ_AddContact(ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, true);
+            //--Добавляем в список новый идентификатор контакта
+            CliDL.Add(ICQ_Add_cId);
+            //--Обновляем группу в серверном КЛ
+            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+          finally
+            CliDL.Free;
           end;
-          ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-          ICQ_AddEnd;
-          ICQ_AddContact(ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, true);
-          CliDL.Add(ICQ_Add_cId);
-          ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-          CliDL.Free;
+          //--Закрываем сессию добавления контакта
           ICQ_AddEnd;
           ICQ_Add_Contact_Phaze := false;
           ICQ_SSI_Phaze := false;
-          //
-          for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
+          //--Успешно добавляем контакт в локальный список контактов
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          with ListItemD do
           begin
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = ICQ_Add_GroupId then
-            begin
-              RoasterForm.CategoryButtons1.Categories[i].Items.Add.Caption := ICQ_Add_Nick;
-              T := RoasterForm.CategoryButtons1.Categories[i].Items.Count - 1;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].UIN := ICQ_Add_UIN;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].GroupId := ICQ_Add_GroupId;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Idd := ICQ_Add_cId;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].iType := '0000';
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex := 35;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex1 := -1;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].ImageIndex2 := -1;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Status := 35;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Auth := true;
-              RoasterForm.CategoryButtons1.Categories[i].Items[T].Hint := ICQ_CreateHint(RoasterForm.CategoryButtons1.Categories[i].Items[T]);
-            end;
+            Caption := ICQ_Add_UIN;
+            //--Подготавиливаем все значения
+            RosterForm.RosterItemSetFull(ListItemD);
+            //--Обновляем субстроки
+            SubItems[0] := ICQ_Add_Nick;
+            SubItems[1] := ICQ_Add_GroupId;
+            SubItems[2] := 'none';
+            SubItems[3] := 'Icq';
+            SubItems[4] := ICQ_Add_cId;
+            SubItems[5] := '0000';
+            SubItems[6] := '80';
+            SubItems[8] := '220';
           end;
-          //
-          if (OnlyOnlineUsersCL) or (NoGroupModeCL) then
-          begin
-            OnlyOnlineUsersCL := not OnlyOnlineUsersCL;
-            RoasterForm.ToolButton9Click(nil);
-          end;
+          //--Строим локальный КЛ
+          RosterForm.UpdateFullCL;
+          //--Сообщаем об успешном добавлении контакта
+          DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
         end
     else
       begin
+        //--Закрываем сессию добавления контакта
         ICQ_AddEnd;
         ICQ_Add_Contact_Phaze := false;
         ICQ_SSI_Phaze := false;
-        DAShow(false, '2', '26', EmptyStr, 156, 2, DATimeShow);
+        //--Сообщаем об ошибке добавления нового контакта в серверный КЛ
+        DAShow(ErrorHead, AddContactErr4, EmptyStr, 134, 2, 0);
       end;
     end;
-  end;
-  //--Group Add Ack
-  if ICQ_Add_Group_Phaze then
+  end
+  //--Если это фаза добавления группы
+  else if ICQ_Add_Group_Phaze then
   begin
     case HexToInt(NextData(PktData, 2)) of
       $00:
         begin
+          //--Создаём список для занесения в него идентификаторов групп
           CliDL := TStringList.Create;
-          for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-          begin
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = '0000' then Continue;
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = 'NoCL' then Continue;
-            CliDL.Add(RoasterForm.CategoryButtons1.Categories[i].GroupId);
+          try
+            //--Заносим в список идентификаторы групп
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
+              begin
+                //--Добавляем идентификаторы групп в список
+                if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') then Continue;
+                if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) then CliDL.Add(Items[i].Caption);
+              end;
+            end;
+            //--Обновляем группы на сервере и закрываем сессию
+            ICQ_UpdateGroup_AddGroup(CliDL);
+            ICQ_AddEnd;
+            ICQ_Add_Group_Phaze := false;
+            ICQ_SSI_Phaze := false;
+          finally
+            CliDL.Free;
           end;
-          ICQ_UpdateGroup_AddGroup(CliDL);
-          ICQ_AddEnd;
-          CliDL.Free;
-          //
-          RoasterForm.CategoryButtons1.Categories.Add.Caption := ICQ_Add_Nick + ' - 0';
-          RoasterForm.CategoryButtons1.Categories[RoasterForm.CategoryButtons1.Categories.Count - 1].GroupCaption := ICQ_Add_Nick;
-          RoasterForm.CategoryButtons1.Categories[RoasterForm.CategoryButtons1.Categories.Count - 1].GroupId := ICQ_Add_GroupId;
-          //
-          ICQ_Add_Group_Phaze := false;
-          ICQ_SSI_Phaze := false;
-          //
-          if (OnlyOnlineUsersCL) or (NoGroupModeCL) then
+          //--Добавляем группу в локальный КЛ
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          with ListItemD do
           begin
-            OnlyOnlineUsersCL := not OnlyOnlineUsersCL;
-            RoasterForm.ToolButton9Click(nil);
+            Caption := ICQ_Add_GroupId;
+            //--Подготавиливаем все значения
+            RosterForm.RosterItemSetFull(ListItemD);
+            //--Обновляем субстроки
+            SubItems[1] := ICQ_Add_Nick;
+            SubItems[3] := 'Icq';
+            SubItems[4] := ICQ_Add_GroupId;
           end;
+          //--Строим локальный КЛ
+          RosterForm.UpdateFullCL;
+          //--Сообщаем об успешном добавлении контакта
+          DAShow(InformationHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
         end
     else
       begin
+        //--Закрываем сессию добавления группы
         ICQ_AddEnd;
         ICQ_Add_Group_Phaze := false;
         ICQ_SSI_Phaze := false;
-        DAShow(false, '2', '30', EmptyStr, 156, 2, DATimeShow);
+        //--Сообщаем об ошибке добавления новой группы в серверный КЛ
+        DAShow(ErrorHead, AddNewGroupErr2, EmptyStr, 134, 2, 0);
       end;
     end;
-  end;
-  //--Delete Group Ack
-  if ICQ_Group_Delete_Phaze then
+  end
+  //--Если это фаза удаления группы
+  else if ICQ_Group_Delete_Phaze then
   begin
-    case HexToInt(NextData(PktData, 2)) of
+    {case HexToInt(NextData(PktData, 2)) of
       $00:
         begin
           CliDL := TStringList.Create;
@@ -1552,8 +1563,8 @@ begin
         ICQ_SSI_Phaze := false;
         DAShow(false, '2', '27', EmptyStr, 156, 2, DATimeShow);
       end;
-    end;
-  end;}
+    end;}
+  end;
 end;
 
 procedure ICQ_AddContact(UIN, GroupId, cId, Nick: string; NoAuth: boolean);
@@ -1562,6 +1573,7 @@ var
   Pkt, Pkt1: string;
   Utf8Nick: string;
 begin
+  //--Формируем пакет для добавления нового контакта в серверный КЛ
   Utf8Nick := StrToUtf8(Nick);
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) +
     '013A0000013C000001370000';
@@ -1569,13 +1581,14 @@ begin
   Len := Length(Hex2Text(Pkt1));
   Pkt := '00130008000000000008' + IntToHex(Length(UIN), 4) + Text2Hex(UIN) + GroupId + cId +
     '0000' + IntToHex(Len, 4) + Pkt1;
-  //
+  //--Запоминаем переменные нового контакта
   ICQ_Add_UIN := UIN;
   ICQ_Add_GroupId := GroupId;
   ICQ_Add_cId := cId;
   ICQ_Add_Nick := Nick;
-  //
+  //--Открываем сессию
   ICQ_AddStart;
+  //--Отправляем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1627,6 +1640,7 @@ var
   Pkt, Pkt1: string;
   Utf8XText: string;
 begin
+  //--Формируем пакет установки доп. статуса и подписи к нему
   if XText <> EmptyStr then
   begin
     Utf8XText := StrToUtf8(XText);
@@ -1638,7 +1652,7 @@ begin
     Pkt1 := '00020000000E0000';
   Len := Length(Hex2Text(Pkt1));
   Pkt := '0001001e00000000001e' + '001D' + IntToHex(Len, 4) + Pkt1;
-  //
+  //--Отправляем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1647,7 +1661,7 @@ var
   Pkt: string;
 begin
   Pkt := '00020004000000000004' + '00040000';
-  //
+  //--Отправляем пакет
   SendFLAP('2', Pkt);
 end;
 
@@ -1688,38 +1702,41 @@ begin
       end;
       //--Начинаем добавление записи в список найденных
       SearchResultJvListView.Items.BeginUpdate;
-      ListItemD := SearchResultJvListView.Items.Add;
-      with ListItemD do
-      begin
-        Checked := false;
-        Caption := EmptyStr; //--Иконка анкеты
-        SubItems.Add(EmptyStr); //--Иконка чата
-        SubItems.Add(AUIN);
-        case AStatus of
-          0: SubItemImages[1] := 241;
-          1: SubItemImages[1] := 242;
-          2: SubItemImages[1] := 243
-        else SubItemImages[1] := 243;
+      try
+        ListItemD := SearchResultJvListView.Items.Add;
+        with ListItemD do
+        begin
+          Checked := false;
+          Caption := EmptyStr; //--Иконка анкеты
+          SubItems.Add(EmptyStr); //--Иконка чата
+          SubItems.Add(AUIN);
+          case AStatus of
+            0: SubItemImages[1] := 241;
+            1: SubItemImages[1] := 242;
+            2: SubItemImages[1] := 243
+          else SubItemImages[1] := 243;
+          end;
+          SubItems.Add(ANick);
+          SubItems.Add(AFirst);
+          SubItems.Add(ALast);
+          case AGender of
+            0: Gend := EmptyStr;
+            1: Gend := GenderComboBox.Items.Strings[1];
+            2: Gend := GenderComboBox.Items.Strings[2];
+          end;
+          if (Gend <> EmptyStr) and (AAge <> '0') then Gend := Gend + ' - ' + AAge
+          else if AAge <> '0' then Gend := AAge;
+          SubItems.Add(Gend);
+          if AAuth then SubItems.Add(SearchInfoAuthL)
+          else SubItems.Add(SearchInfoAuthNoL);
+          SubItems.Add(EmptyStr); //--Иконка быстрых сообщений
+          SubItems.Add(ACountry);
+          SubItems.Add(ACity);
+          SubItems.Add(AEmail);
         end;
-        SubItems.Add(ANick);
-        SubItems.Add(AFirst);
-        SubItems.Add(ALast);
-        case AGender of
-          0: Gend := EmptyStr;
-          1: Gend := GenderComboBox.Items.Strings[1];
-          2: Gend := GenderComboBox.Items.Strings[2];
-        end;
-        if (Gend <> EmptyStr) and (AAge <> '0') then Gend := Gend + ' - ' + AAge
-        else if AAge <> '0' then Gend := AAge;
-        SubItems.Add(Gend);
-        if AAuth then SubItems.Add(SearchInfoAuthL)
-        else SubItems.Add(SearchInfoAuthNoL);
-        SubItems.Add(EmptyStr); //--Иконка быстрых сообщений
-        SubItems.Add(ACountry);
-        SubItems.Add(ACity);
-        SubItems.Add(AEmail);
+      finally
+        SearchResultJvListView.Items.EndUpdate;
       end;
-      SearchResultJvListView.Items.EndUpdate;
     end;
   end;
 end;
@@ -1742,7 +1759,6 @@ var
   sDate64: TDateTime absolute Date64;
   SubPkt, LastUpdateInfo, ACountry: string;
 begin
-  EndSearch := false;
   //--Сканируем тело пакета на нужные нам TLV
   case HexToInt(NextData(PktData, 4)) of
     $AA00: //--Пароль на учётную запись успешно изменён
@@ -1787,9 +1803,6 @@ begin
         //--Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := BMSearch(0, PktData, '003200');
         if BMRes > -1 then NextData(PktData, BMRes - 1) else Exit;
-
-     
-
         //--Сбрасываем все переменные
         Age := 0;
         Gender := 0;
@@ -2464,23 +2477,24 @@ begin
           begin
             if IcqContactInfoForm.ReqUIN = UIN then IcqContactInfoForm.LoadUserUnfo;
           end;
-          //
-          {if Assigned(IcqOptionsForm) then
+          //--Отображаем параметры настройки Авторизации и Вебаваре статуса в настройках ICQ
+          if Assigned(IcqOptionsForm) then
           begin
             if UIN = ICQ_LoginUIN then
             begin
-              IcqOptionsForm.RadioButton1.Checked := Auth;
-              if not IcqOptionsForm.RadioButton1.Checked then IcqOptionsForm.RadioButton2.Checked := true;
-              IcqOptionsForm.CheckBox3.Checked := WebAware;
+              IcqOptionsForm.NoAutoAuthRadioButton.Checked := Auth;
+              if not IcqOptionsForm.NoAutoAuthRadioButton.Checked then
+                IcqOptionsForm.YesAutoAuthRadioButton.Checked := true;
+              IcqOptionsForm.ShowWebAwareCheckBox.Checked := WebAware;
             end;
           end;
-          //--Set WebAware Status
+          //--Активируем статус Вебаваре если он включён
           if UIN = ICQ_LoginUIN then
           begin
             if WebAware then ICQ_WebAware_Enabled := true
             else ICQ_WebAware_Enabled := false;
             SendFLAP('2', ICQ_CreateShortStatusPkt);
-          end;}
+          end;
         end
         else
         begin
@@ -2500,7 +2514,7 @@ var
   Pkt, Pkt1, Pkt2, Pkt3: string;
   Online: string;
 begin
-  {0136-0002-0001} //--Добавочный к пакету TLV "только в сети"
+  {0136-0002-0001}//--Добавочный к пакету TLV "только в сети"
   //--Формируем пакет поиска по ключевым словам
   if OnlyOn then Online := '013600020001'
   else Online := EmptyStr;
@@ -3360,26 +3374,6 @@ begin
   //--Запускаем таймер задержку событий Ростера
   MainForm.JvTimerList.Events[11].Enabled := false;
   MainForm.JvTimerList.Events[11].Enabled := true;
-
-  {//--Ставим иконку статуса во вкладках окна чата
-  if Assigned(ChatForm) then
-  begin
-    with ChatForm.ChatPageControl do
-    begin
-      //--Ищем вкладку по UIN
-      for i := 0 to PageCount - 1 do
-      begin
-        if Pages[i].HelpKeyword = UIN then
-        begin
-          //--Если нашли вкладку, то ставим в ней иконку статуса контакта
-          Pages[i].ImageIndex := StatusIcoInd;
-          Pages[i].Tag := StatusIcoInd;
-          //--Прерываем
-          Break;
-        end;
-      end;
-    end;
-  end;}
 end;
 
 procedure ICQ_UserUnkStatus_030A(PktData: string);
@@ -3659,9 +3653,6 @@ var
   SubData, qSN, qGroupId, qID, qType, qTimeId, Rsu, qNick: string;
   dt: TDateTime;
   Hour, Min, Sec, MSec: Word;
-  //z, zz, cnt: integer;
-  //Gid: string;
-  //Colap: boolean;
   ListItemD: TListItem;
 begin
   //--Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
@@ -3785,6 +3776,7 @@ begin
                 //--Обновляем субстроки
                 SubItems[1] := HideContactGroupCaption;
                 SubItems[3] := 'Icq';
+                SubItems[4] := qGroupId;
               end;
             end
             //--Стандартная група
@@ -3802,6 +3794,7 @@ begin
                 //--Обновляем субстроки
                 SubItems[1] := qSN;
                 SubItems[3] := 'Icq';
+                SubItems[4] := qGroupId;
               end;
             end;
           end;
@@ -4062,34 +4055,19 @@ begin
 end;
 
 procedure ICQ_NotifyUserStatus(UIN, iStatus, iClient: string; iColor: integer);
-label
-  a;
 var
-  clz, cnz: string;
-  i, ii: integer;
+  client, nick: string;
+  RosterItem: TListItem;
 begin
   //--Ищем ник этой учётной записи в КЛ
-  with MainForm.ContactList do
-  begin
-    for i := 0 to Categories.Count - 1 do
-    begin
-      for ii := 0 to Categories[i].Items.Count - 1 do
-      begin
-        if Categories[i].Items[ii].UIN = UIN then
-        begin
-          cnz := Categories[i].Items[ii].Caption;
-          //--Если ник нашли, то выходим из цыкла
-          goto a;
-        end;
-      end;
-    end;
-  end;
-  a: ;
+  RosterItem := RosterForm.ReqRosterItem(UIN);
+  if RosterItem <> nil then nick := RosterItem.SubItems[0];
+  if nick > EmptyStr then nick := InfoNickL + ' ' + nick;
+  if iClient > EmptyStr then client := ClientL + ' ' + iClient;
   //--Отображаем всплывающим сообщением статус контакта
-  if iClient > EmptyStr then clz := ClientL + ' ' + iClient;
-  DAShow(InformationHead, InfoNickL + ' ' + cnz + #13#10 +
+  DAShow(InformationHead, nick + #13#10 +
     'ICQ#: ' + UIN + #13#10 + StatusL + ' ' +
-    iStatus + #13#10 + clz, EmptyStr, 133, iColor, 0);
+    iStatus + #13#10 + client, EmptyStr, 133, iColor, 0);
 end;
 
 function ICQ_NotifyAuthCookieError(ErrCode: string): string;
@@ -4189,6 +4167,9 @@ begin
     //--Подсвечиваем в меню статуса ICQ статус оффлайн
     ICQStatusOffline.Default := true;
   end;
+  //--Обнуляем счётчики пакетов
+  ICQ_Seq1 := $1000;
+  ICQ_Seq2 := $2000;
   //--Активируем флаг остановки потока сжатия истории
   ZipThreadStop := true;
   //--Если поток сжатия истории не остановился ещё, то ждём его остановки
@@ -4225,7 +4206,6 @@ begin
     CAP_AIM2 +
     CAP_AIM_ISICQ +
     CAP_AIM_SERVERRELAY;
-  //
   if ClientName = 'IMadering' then
   begin
     Result := CAP_AIM_INTEROPERATE +
@@ -4235,10 +4215,8 @@ begin
       CAP_UTF8 +
       CAP_TYPING_NOTIFICATION +
       CAP_IMadering;
-    Exit;
-  end;
-  //
-  if ClientName = 'QIP 2005' then
+  end
+  else if ClientName = 'QIP 2005' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4250,10 +4228,8 @@ begin
       CAP_ICQDEVILS +
       CAP_QIP_PROTECTMSG +
       CAP_ICQ_XTRAZ_SUPPORT;
-    Exit;
-  end;
-  //
-  if ClientName = 'Miranda' then
+  end
+  else if ClientName = 'Miranda' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4262,39 +4238,31 @@ begin
       CAP_UTF8 +
       CAP_TYPING_NOTIFICATION +
       CAP_MIRANDA;
-    Exit;
-  end;
-  //
-  if ClientName = '&RQ' then
+  end
+  else if ClientName = '&RQ' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY +
       CAP_ANDRQ;
-    Exit;
-  end;
-  //
-  if ClientName = 'R&Q' then
+  end
+  else if ClientName = 'R&Q' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY +
       CAP_RNQ;
-    Exit;
-  end;
-  //
-  if ClientName = 'AIM' then
+  end
+  else if ClientName = 'AIM' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY;
-    Exit;
-  end;
-  //
-  if ClientName = 'Compad' then
+  end
+  else if ClientName = 'Compad' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4302,28 +4270,22 @@ begin
       CAP_AIM_SERVERRELAY +
       CAP_UTF8 +
       CAP_TYPING_NOTIFICATION;
-    Exit;
-  end;
-  //
-  if ClientName = 'QIP mobile' then
+  end
+  else if ClientName = 'QIP mobile' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY;
-    Exit;
-  end;
-  //
-  if ClientName = 'ICQ 6.0' then
+  end
+  else if ClientName = 'ICQ 6.0' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY;
-    Exit;
-  end;
-  //
-  if ClientName = 'MacICQ' then
+  end
+  else if ClientName = 'MacICQ' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4331,38 +4293,30 @@ begin
       CAP_AIM_SERVERRELAY +
       CAP_UTF8 +
       CAP_MACICQ;
-    Exit;
-  end;
-  //
-  if ClientName = 'Pidgin' then
+  end
+  else if ClientName = 'Pidgin' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY;
-    Exit;
-  end;
-  //
-  if ClientName = 'ICQKX' then
+  end
+  else if ClientName = 'ICQKX' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY +
       CAP_KXICQ;
-    Exit;
-  end;
-  //
-  if ClientName = 'ICQ 2001' then
+  end
+  else if ClientName = 'ICQ 2001' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY;
-    Exit;
-  end;
-  //
-  if ClientName = 'ICQ 5.1' then
+  end
+  else if ClientName = 'ICQ 5.1' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4373,20 +4327,16 @@ begin
       CAP_PUSH2TALK +
       CAP_ICQDEVILS +
       CAP_ICQ_XTRAZ_SUPPORT;
-    Exit;
-  end;
-  //
-  if ClientName = 'ICQ lite' then
+  end
+  else if ClientName = 'ICQ lite' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY +
       CAP_ICQLITE;
-    Exit;
-  end;
-  //
-  if ClientName = 'ICQnet' then
+  end
+  else if ClientName = 'ICQnet' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4398,10 +4348,8 @@ begin
       CAP_MULTI_USER +
       CAP_ICQ_XTRAZ_SUPPORT +
       CAP_NETVIGATOR;
-    Exit;
-  end;
-  //
-  if ClientName = 'icq2go' then
+  end
+  else if ClientName = 'icq2go' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4409,10 +4357,8 @@ begin
       CAP_AIM_SERVERRELAY +
       CAP_UTF8 +
       CAP_TYPING_NOTIFICATION;
-    Exit;
-  end;
-  //
-  if ClientName = 'ImPlus' then
+  end
+  else if ClientName = 'ImPlus' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4421,10 +4367,8 @@ begin
       CAP_UTF8 +
       CAP_IS_WEB +
       CAP_IMPLUS;
-    Exit;
-  end;
-  //
-  if ClientName = 'jimm' then
+  end
+  else if ClientName = 'jimm' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4433,10 +4377,8 @@ begin
       CAP_UTF8 +
       CAP_JIMM +
       CAP_TYPING_NOTIFICATION;
-    Exit;
-  end;
-  //
-  if ClientName = 'Kopete' then
+  end
+  else if ClientName = 'Kopete' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4445,20 +4387,16 @@ begin
       CAP_UTF8 +
       CAP_ICQ_XTRAZ_SUPPORT +
       CAP_KOPETE;
-    Exit;
-  end;
-  //
-  if ClientName = 'Licq' then
+  end
+  else if ClientName = 'Licq' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY +
       CAP_LICQ2;
-    Exit;
-  end;
-  //
-  if ClientName = 'mChat' then
+  end
+  else if ClientName = 'mChat' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4466,10 +4404,8 @@ begin
       CAP_AIM_SERVERRELAY +
       CAP_UTF8 +
       CAP_MCHAT;
-    Exit;
-  end;
-  //
-  if ClientName = 'Rambler ICQ' then
+  end
+  else if ClientName = 'Rambler ICQ' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4480,10 +4416,8 @@ begin
       CAP_RAMBLER_RU +
       CAP_ICQDEVILS +
       CAP_ICQ_XTRAZ_SUPPORT;
-    Exit;
-  end;
-  //
-  if ClientName = 'SIM' then
+  end
+  else if ClientName = 'SIM' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4491,10 +4425,8 @@ begin
       CAP_AIM_SERVERRELAY +
       CAP_UTF8 +
       CAP_SIM;
-    Exit;
-  end;
-  //
-  if ClientName = 'Trillian' then
+  end
+  else if ClientName = 'Trillian' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
@@ -4502,17 +4434,14 @@ begin
       CAP_AIM_SERVERRELAY +
       CAP_TRILL_UNK +
       CAP_TRILL_CRYPT;
-    Exit;
-  end;
-  //
-  if ClientName = 'QIP infium' then
+  end
+  else if ClientName = 'QIP infium' then
   begin
     Result := CAP_AIM_INTEROPERATE +
       CAP_AIM2 +
       CAP_AIM_ISICQ +
       CAP_AIM_SERVERRELAY +
       CAP_QIP_INFIUM;
-    Exit;
   end;
 end;
 
