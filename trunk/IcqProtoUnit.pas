@@ -14,7 +14,7 @@ uses
   Windows, MainUnit, IcqOptionsUnit, SysUtils, JvTrayIcon, OSCARMd5,
   Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms, IcqSearchUnit,
   ComCtrls, Messages, Classes, IcqContactInfoUnit, UnitCrypto, VarsUnit,
-  Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit;
+  Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit, UnitLogger;
 
 const
   DT2100miliseconds = 1 / (SecsPerDay * 10);
@@ -503,6 +503,8 @@ begin
       //
       MainForm.ICQAvatarWSocket.Connect;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
   end;}
 end;
@@ -1889,6 +1891,8 @@ begin
                     DecodeDate(sDate64, iYear, iMonth, iDay);
                   end;
                 except
+                  on E: Exception do
+                    TLogger.Instance.WriteMessage(E);
                 end;
               end;
             $0096: //--Получаем суб TLV с инфой о месте жительства
@@ -2262,6 +2266,8 @@ begin
                     LastUpdateInfo := DateTimeToStr(sDate64);
                   end;
                 except
+                  on E: Exception do
+                    TLogger.Instance.WriteMessage(E);
                 end;
               end
           else
@@ -2339,6 +2345,8 @@ begin
               end;
             end;
           except
+            on E: Exception do
+              TLogger.Instance.WriteMessage(E);
           end;
           //--Сохраняем полученные данные в локальный файл инфы о контакте
           with TrXML.Create() do
@@ -3893,6 +3901,8 @@ begin
                       Delete(rsu, Length(rsu) - 1, 2);
                       ICQ_OnlineTime := rsu;
                     except
+                      on E: Exception do
+                        TLogger.Instance.WriteMessage(E);
                     end;
                   end;
                 $0152: //--Всего отправлено Away сообщений

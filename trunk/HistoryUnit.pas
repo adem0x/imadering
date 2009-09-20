@@ -72,7 +72,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, ChatUnit, UtilsUnit;
+  MainUnit, ChatUnit, UtilsUnit, UnitLogger;
 
 procedure THistoryForm.LoadHistoryFromFile(hUIN: string; fullpath: boolean = false);
 label
@@ -112,6 +112,8 @@ begin
         HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
         HTMLHistoryViewer.CaretPos := Length(Doc);
       except
+        on E: Exception do
+          TLogger.Instance.WriteMessage(E);
       end;
     end;
   end
@@ -147,6 +149,8 @@ begin
                   //--Удаляем уже не нужный распакованный файл с историей
                   if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
                 except
+                  on E: Exception do
+                    TLogger.Instance.WriteMessage(E);
                 end;
               end;
             end;

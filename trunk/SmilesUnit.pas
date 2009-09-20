@@ -44,7 +44,7 @@ var
 implementation
 
 uses
-  MainUnit, ChatUnit, UtilsUnit;
+  MainUnit, ChatUnit, UtilsUnit, UnitLogger;
 
 {$R *.dfm}
 
@@ -78,6 +78,8 @@ begin
     if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm') then
       SmiliesHTMLViewer.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm');
   except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(E);
   end;
 end;
 

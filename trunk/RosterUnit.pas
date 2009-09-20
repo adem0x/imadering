@@ -50,7 +50,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit, ChatUnit;
+  MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit, ChatUnit, UnitLogger;
 
 function TRosterForm.ReqChatPage(cId: string): TTabSheet;
 var
@@ -95,6 +95,8 @@ begin
         end;
       end;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
   end;
 end;
@@ -185,6 +187,8 @@ begin
           //--Удаляем уже не нужный распакованный файл с историей
           if FileExists(hFile) then DeleteFile(hFile);
         except
+          on E: Exception do
+            TLogger.Instance.WriteMessage(E);
         end;
       end;
     end;

@@ -209,7 +209,7 @@ implementation
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
   IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, UnitCrypto,
-  FileTransferUnit;
+  FileTransferUnit, UnitLogger;
 
 function TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string): boolean;
 begin
@@ -433,6 +433,8 @@ begin
     Doc := Doc + '<span class=c>' + Mess_Text + '</span><br><br>';
     HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(E);
   end;
 end;
 
@@ -580,6 +582,8 @@ begin
           end;
         end;
       except
+        on E: Exception do
+          TLogger.Instance.WriteMessage(E);
       end;
     end;
     //--Если нажата кнопка отправки оповещения о печати текста
@@ -614,6 +618,8 @@ begin
           if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav') then
             sndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav'), SND_ASYNC);
         except
+          on E: Exception do
+            TLogger.Instance.WriteMessage(E);
         end;
       end;
       //--Узнаём Идентификатор пользователя
@@ -751,6 +757,8 @@ begin
       else ChatPageControlChange(self);
     end;
   except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(E);
   end;
 end;
 
@@ -855,6 +863,8 @@ begin
             //--Удаляем уже не нужный распакованный файл с историей
             if FileExists(HFile) then DeleteFile(HFile);
           except
+            on E: Exception do
+              TLogger.Instance.WriteMessage(E);
           end;
         end;
       end;

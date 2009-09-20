@@ -64,7 +64,7 @@ object HistoryForm: THistoryForm
       Height = 21
       Style = csDropDownList
       DropDownCount = 20
-      ItemHeight = 13
+      ItemHeight = 0
       TabOrder = 0
       TabStop = False
       OnChange = ContactsComboBoxChange
@@ -76,7 +76,7 @@ object HistoryForm: THistoryForm
       Height = 21
       Style = csDropDownList
       DropDownCount = 15
-      ItemHeight = 13
+      ItemHeight = 0
       TabOrder = 1
       TabStop = False
     end

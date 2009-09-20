@@ -533,6 +533,8 @@ begin
         end;
       end;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
   finally
     ListF.Free;
@@ -743,6 +745,8 @@ begin
       //--Подключаем сокет
       MRAWSocket.Connect;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
   end;
   //--Отправляем статус
@@ -792,7 +796,14 @@ begin
 end;
 
 procedure TMainForm.JabberStatusOnlineClick(Sender: TObject);
+var
+  t: pInteger;
 begin
+
+  t := nil;
+
+  Self.Width := T^;
+
   //--Если логин Jabber или пароль пустые, то выводим окно настроек для их ввода
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
   begin
@@ -1165,6 +1176,8 @@ begin
       //--Подключаем сокет
       ICQWSocket.Connect;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
   end;
   //--Отправляем статус
@@ -1723,6 +1736,8 @@ begin
                     //--Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
                   except
+                    on E: Exception do
+                      TLogger.Instance.WriteMessage(E);
                   end;
                   //--Выходим от сюда
                   Exit;
@@ -2395,6 +2410,8 @@ begin
     UpdateHttpClient.URL := 'http://imadering.googlecode.com/files/version.txt';
     UpdateHttpClient.GetASync;
   except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(E);
   end;
 end;
 
@@ -2703,6 +2720,8 @@ begin
       //--Начинаем подключение к основному серверу
       MRAWSocket.Connect;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
     Exit;
   end;
@@ -3108,6 +3127,8 @@ begin
                     //--Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
                   except
+                    on E: Exception do
+                      TLogger.Instance.WriteMessage(E);
                   end;
                 end;
               end

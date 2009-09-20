@@ -13,7 +13,7 @@ interface
   uses SysUtils, classes, SyncObjs;
 
   const
-    LogFileName = 'IMadeRing.log';
+    LogFileName = 'Profile\IMadeRing.log';
 
   type
     ///  <summary>Уровень логирования</summary>
@@ -87,7 +87,7 @@ interface
 
 implementation
 
-uses DateUtils, windows, JCLDebug;
+uses DateUtils, windows, JCLDebug, VarsUnit;
 
 { TLogger }
 
@@ -98,7 +98,7 @@ begin
   CSection := TCriticalSection.Create;
   LogFile := nil;
   //FFullLogPath := IncludeTrailingPathDelimiter(GetCurrentDir) + LogFileName;
-  FFullLogPath := LogFileName;
+  FFullLogPath := ProfilePath + LogFileName;
 end;
 
 destructor TLogger.Destroy;
@@ -135,7 +135,7 @@ var
 begin
   CSection.Enter;
 
-  OutputDebugString(PAnsiChar(Text));
+  //OutputDebugString(PAnsiChar(Text));
 
   try
     try

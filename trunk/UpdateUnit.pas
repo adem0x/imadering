@@ -44,7 +44,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, UtilsUnit, VarsUnit;
+  MainUnit, UtilsUnit, VarsUnit, UnitLogger;
 
 procedure TUpdateForm.AbortBitBtnClick(Sender: TObject);
 begin

@@ -58,7 +58,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, UnitCrypto;
+  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, UnitCrypto, UnitLogger;
 
 procedure TIcqContactInfoForm.TranslateForm;
 begin
@@ -86,6 +86,8 @@ begin
     if ClearIt then Doc := Text;
     ToWhere.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
   except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(E);
   end;
 end;
 

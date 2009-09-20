@@ -134,7 +134,8 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, IcqOptionsUnit, UnitCrypto, JvBrowseFolder, UtilsUnit;
+  MainUnit, VarsUnit, IcqOptionsUnit, UnitCrypto, JvBrowseFolder, UtilsUnit,
+  UnitLogger;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -339,6 +340,8 @@ begin
         end;
       end;
     except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(E);
     end;
   end;
   //--Создаём необходимые папки
