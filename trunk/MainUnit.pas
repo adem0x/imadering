@@ -39,7 +39,7 @@ type
     JabberTrayIcon: TTrayIcon;
     ICQWSocket: TWSocket;
     MRAWSocket: TWSocket;
-    JabberWSocket: TWSocket;
+    JabberWSocket: TSslWSocket;
     ICQAvatarWSocket: TWSocket;
     UpdateHttpClient: THttpCli;
     MRAToolButton: TToolButton;
@@ -195,6 +195,7 @@ type
     TopTrafficONMenu: TMenuItem;
     AddNewGroupJabber: TMenuItem;
     AddNewGroupMRA: TMenuItem;
+    SslContext: TSslContext;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -362,6 +363,8 @@ type
     procedure MRAWSocketSocksError(Sender: TObject; Error: Integer;
       Msg: string);
     procedure AddNewContactClick(Sender: TObject);
+    procedure JabberWSocketSslVerifyPeer(Sender: TObject; var Ok: Integer;
+      Cert: TX509Base);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -398,8 +401,9 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, UnitCtypro, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
-  JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit;
+  HistoryUnit, UnitCrypto, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
+  JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit,
+  UnitLogger, FormShowCert, EncdDecd;
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
