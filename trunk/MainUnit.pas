@@ -796,14 +796,7 @@ begin
 end;
 
 procedure TMainForm.JabberStatusOnlineClick(Sender: TObject);
-var
-  t: pInteger;
 begin
-
-  t := nil;
-
-  Self.Width := T^;
-
   //--Если логин Jabber или пароль пустые, то выводим окно настроек для их ввода
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
   begin
