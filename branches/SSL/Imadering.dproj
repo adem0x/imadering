@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{c593aa1a-db5a-422b-934f-d474cec721d5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>Imadering\Imadering.exe</DCC_DependencyCheckOutputName>
+    <MainSource>Imadering.dpr</MainSource>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_ExeOutput>Imadering</DCC_ExeOutput>
+    <DCC_DcuOutput>dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>dcu</DCC_ObjOutput>
+    <DCC_HppOutput>dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>lib</DCC_UnitSearchPath>
+    <DCC_ResourcePath>lib</DCC_ResourcePath>
+    <DCC_ObjPath>lib</DCC_ObjPath>
+    <DCC_IncludePath>lib</DCC_IncludePath>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">True</VersionInfo><VersionInfo Name="MajorVer">0</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">366</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1033</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">0.0.0.366</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName">IMadering</VersionInfoKeys><VersionInfoKeys Name="ProductVersion">5.0.0 alpha</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Excluded_Packages /><Source><Source Name="MainSource">Imadering.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="Imadering.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="AboutUnit.pas">
+      <Form>AboutForm</Form>
+    </DCCReference>
+    <DCCReference Include="ChatUnit.pas">
+      <Form>ChatForm</Form>
+    </DCCReference>
+    <DCCReference Include="CLSearchUnit.pas">
+      <Form>CLSearchForm</Form>
+    </DCCReference>
+    <DCCReference Include="FileTransferUnit.pas">
+      <Form>FileTransferForm</Form>
+    </DCCReference>
+    <DCCReference Include="FirstStartUnit.pas">
+      <Form>FirstStartForm</Form>
+    </DCCReference>
+    <DCCReference Include="FloatingUnit.pas">
+      <Form>FloatingForm</Form>
+    </DCCReference>
+    <DCCReference Include="HistoryUnit.pas">
+      <Form>HistoryForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqAddContactUnit.pas">
+      <Form>IcqAddContactForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqContactInfoUnit.pas">
+      <Form>IcqContactInfoForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqEditContactUnit.pas">
+      <Form>IcqEditContactForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqGroupManagerUnit.pas">
+      <Form>IcqGroupManagerForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqOptionsUnit.pas">
+      <Form>IcqOptionsForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqProtoUnit.pas" />
+    <DCCReference Include="IcqReqAuthUnit.pas">
+      <Form>IcqReqAuthForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqSearchUnit.pas">
+      <Form>IcqSearchForm</Form>
+    </DCCReference>
+    <DCCReference Include="IcqXStatusUnit.pas">
+      <Form>IcqXStatusForm</Form>
+    </DCCReference>
+    <DCCReference Include="JabberOptionsUnit.pas">
+      <Form>JabberOptionsForm</Form>
+    </DCCReference>
+    <DCCReference Include="JabberProtoUnit.pas" />
+    <DCCReference Include="MainUnit.pas">
+      <Form>MainForm</Form>
+    </DCCReference>
+    <DCCReference Include="MraOptionsUnit.pas">
+      <Form>MraOptionsForm</Form>
+    </DCCReference>
+    <DCCReference Include="MraProtoUnit.pas" />
+    <DCCReference Include="MraXStatusUnit.pas">
+      <Form>MraXStatusForm</Form>
+    </DCCReference>
+    <DCCReference Include="RosterUnit.pas">
+      <Form>RosterForm</Form>
+    </DCCReference>
+    <DCCReference Include="SettingsUnit.pas">
+      <Form>SettingsForm</Form>
+    </DCCReference>
+    <DCCReference Include="SmilesUnit.pas">
+      <Form>SmilesForm</Form>
+    </DCCReference>
+    <DCCReference Include="SMSsendUnit.pas">
+      <Form>SMSsendForm</Form>
+    </DCCReference>
+    <DCCReference Include="TrafficUnit.pas">
+      <Form>TrafficForm</Form>
+    </DCCReference>
+    <DCCReference Include="UpdateUnit.pas">
+      <Form>UpdateForm</Form>
+    </DCCReference>
+    <DCCReference Include="VarsUnit.pas" />
+  </ItemGroup>
+</Project>
