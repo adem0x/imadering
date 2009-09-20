@@ -599,7 +599,7 @@ object MainForm: TMainForm
     Left = 48
     Top = 64
   end
-  object JabberWSocket: TWSocket
+  object JabberWSocket: TSslWSocket
     LineMode = False
     LineLimit = 65536
     LineEnd = #13#10
@@ -634,6 +634,10 @@ object MainForm: TMainForm
     OnSocksConnected = JabberWSocketSocksConnected
     OnError = JabberWSocketError
     OnSocksError = JabberWSocketSocksError
+    SslContext = SslContext
+    SslEnable = False
+    SslMode = sslModeClient
+    OnSslVerifyPeer = JabberWSocketSslVerifyPeer
     Left = 48
     Top = 96
   end
@@ -1303,5 +1307,18 @@ object MainForm: TMainForm
       ImageIndex = 140
       OnClick = TopPanelONMenuClick
     end
+  end
+  object SslContext: TSslContext
+    SslVerifyPeer = True
+    SslVerifyDepth = 9
+    SslOptions = []
+    SslVerifyPeerModes = [SslVerifyMode_PEER]
+    SslSessionCacheModes = []
+    SslCipherList = 'ALL:!ADH:RC4+RSA:+SSLv2:@STRENGTH'
+    SslVersionMethod = sslV23
+    SslSessionTimeout = 0
+    SslSessionCacheSize = 20480
+    Left = 80
+    Top = 96
   end
 end

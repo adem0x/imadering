@@ -16,6 +16,7 @@ object JabberOptionsForm: TJabberOptionsForm
   Position = poDesktopCenter
   Scaled = False
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object CancelButton: TBitBtn
@@ -111,7 +112,7 @@ object JabberOptionsForm: TJabberOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = AccountPage
+      ActivePage = ServerPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -221,7 +222,7 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            OnChange = JabberJIDEditChange
+            OnChange = JabberSomeEditChange
           end
           object PassEdit: TEdit
             Left = 78
@@ -236,7 +237,7 @@ object JabberOptionsForm: TJabberOptionsForm
             ParentFont = False
             PasswordChar = '*'
             TabOrder = 1
-            OnChange = JabberJIDEditChange
+            OnChange = JabberSomeEditChange
             OnClick = PassEditClick
           end
           object ShowPassCheckBox: TCheckBox
@@ -270,7 +271,7 @@ object JabberOptionsForm: TJabberOptionsForm
             TabOrder = 3
           end
         end
-        object GroupBox1: TGroupBox
+        object AccountOptionGroupBox: TGroupBox
           Left = 3
           Top = 241
           Width = 422
@@ -291,6 +292,112 @@ object JabberOptionsForm: TJabberOptionsForm
         Width = 428
         Height = 356
         Caption = 'ServerPage'
+        object ConnectionGroupBox: TGroupBox
+          Left = 3
+          Top = 3
+          Width = 422
+          Height = 232
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+          object JCustomServerHostEdit: TLabeledEdit
+            Left = 80
+            Top = 84
+            Width = 225
+            Height = 21
+            EditLabel.Width = 79
+            EditLabel.Height = 13
+            EditLabel.Caption = #1040#1076#1088#1077#1089' '#1089#1077#1088#1074#1077#1088#1072':'
+            EditLabel.Font.Charset = DEFAULT_CHARSET
+            EditLabel.Font.Color = clWindowText
+            EditLabel.Font.Height = -11
+            EditLabel.Font.Name = 'Tahoma'
+            EditLabel.Font.Style = []
+            EditLabel.ParentFont = False
+            Enabled = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnChange = JabberSomeEditChange
+          end
+          object JCustomServerPortEdit: TLabeledEdit
+            Left = 80
+            Top = 127
+            Width = 225
+            Height = 21
+            EditLabel.Width = 73
+            EditLabel.Height = 13
+            EditLabel.Caption = #1055#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072':'
+            EditLabel.Font.Charset = DEFAULT_CHARSET
+            EditLabel.Font.Color = clWindowText
+            EditLabel.Font.Height = -11
+            EditLabel.Font.Name = 'Tahoma'
+            EditLabel.Font.Style = []
+            EditLabel.ParentFont = False
+            Enabled = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            OnChange = JabberSomeEditChange
+          end
+          object JUseCustomServerSettingsCheckBox: TCheckBox
+            Left = 80
+            Top = 33
+            Width = 225
+            Height = 17
+            Caption = #1042#1088#1091#1095#1085#1091#1102' '#1079#1072#1076#1072#1090#1100' '#1072#1076#1088#1077#1089' '#1080' '#1087#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            OnClick = JUseCustomServerSettingsCheckBoxClick
+          end
+        end
+        object ConnectionOptionGroupBox: TGroupBox
+          Left = 3
+          Top = 241
+          Width = 422
+          Height = 112
+          Caption = #1054#1087#1094#1080#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 1
+          object JUseSSLCheckBox: TCheckBox
+            Left = 80
+            Top = 32
+            Width = 225
+            Height = 17
+            Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' SSL'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnClick = JabberSomeEditChange
+          end
+        end
       end
       object ProxyPage: TJvStandardPage
         Left = 0

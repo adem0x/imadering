@@ -43,7 +43,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, UtilsUnit;
+  MainUnit, IcqProtoUnit, UnitCrypto, UtilsUnit;
 
 procedure TIcqXStatusForm.FormCreate(Sender: TObject);
 begin

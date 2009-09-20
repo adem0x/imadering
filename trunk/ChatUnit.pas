@@ -208,7 +208,7 @@ implementation
 
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
-  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, Code,
+  IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, UnitCrypto,
   FileTransferUnit;
 
 function TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string): boolean;

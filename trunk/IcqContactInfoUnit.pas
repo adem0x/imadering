@@ -58,7 +58,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, Code;
+  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, UnitCrypto;
 
 procedure TIcqContactInfoForm.TranslateForm;
 begin
@@ -649,7 +649,7 @@ begin
       //--О себе
       if OpenKey('settings\about-info') then
       try
-        About := Decrypt(ReadString('info'), 12345);
+        About := DecryptString(ReadString('info'), PasswordByMac);
         if Trim(About) <> EmptyStr then
         begin
           AddHTML(BottomHTMLViewer, InfoAboutL + ' ', 'cbold');

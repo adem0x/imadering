@@ -85,7 +85,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, Code, IcqOptionsUnit,
+  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, UnitCrypto, IcqOptionsUnit,
   JabberOptionsUnit;
 
 procedure TFirstStartForm.CheckSelectProtocols;

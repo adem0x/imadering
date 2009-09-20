@@ -29,7 +29,10 @@ uses
   UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
   TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
   RosterUnit in 'RosterUnit.pas' {RosterForm},
-  FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm};
+  FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
+  FormShowCert in 'FormShowCert.pas' {ShowCert},
+  UnitCrypto in 'lib\UnitCrypto.pas',
+  UnitLogger in 'lib\UnitLogger.pas';
 
 {$R *.res}
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or

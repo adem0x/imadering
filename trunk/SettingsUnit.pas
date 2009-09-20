@@ -134,7 +134,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, IcqOptionsUnit, Code, JvBrowseFolder, UtilsUnit;
+  MainUnit, VarsUnit, IcqOptionsUnit, UnitCrypto, JvBrowseFolder, UtilsUnit;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -210,7 +210,7 @@ begin
       try
         ProxyAuthCheckBox.Checked := ReadBool('auth-enable');
         ProxyLoginEdit.Text := ReadString('login');
-        ProxyPasswordEdit.Text := Decrypt(ReadString('password'), PassKey);
+        ProxyPasswordEdit.Text := DecryptString(ReadString('password'), UnitCrypto.PasswordByMac);
         NTLMCheckBox.Checked := ReadBool('ntlm-auth');
       finally
         CloseKey();
@@ -450,7 +450,7 @@ begin
         try
           WriteBool('auth-enable', ProxyAuthCheckBox.Checked);
           WriteString('login', ProxyLoginEdit.Text);
-          WriteString('password', Encrypt(ProxyPasswordEdit.Text, PassKey));
+          WriteString('password', EncryptString(ProxyPasswordEdit.Text, PasswordByMac));
           WriteBool('ntlm-auth', NTLMCheckBox.Checked);
         finally
           CloseKey();

@@ -398,7 +398,7 @@ uses
   VarsUnit, SettingsUnit, AboutUnit, UtilsUnit, IcqOptionsUnit, IcqXStatusUnit,
   MraXStatusUnit, FirstStartUnit, IcqProtoUnit, IcqContactInfoUnit,
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
-  HistoryUnit, Code, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
+  HistoryUnit, UnitCtypro, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit;
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
@@ -409,8 +409,6 @@ begin
 end;
 
 procedure TMainForm.TranslateForm;
-//var
-  //i: integer;
 begin
   //--Выставляем основные переменные
   OnlyOnlineContactsTopButton.Hint := OnlyOnlineOff;
@@ -483,6 +481,15 @@ var
   ListF: TStringList;
   i: integer;
   zFile: string;
+  //на случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
+  function RafinePath(const Path: string): string;
+  begin
+    result := Path;
+    result := ReplaceStr(result, '*', '_');
+    result := ReplaceStr(result, '?', '_');
+    result := ReplaceStr(result, '/', '_');
+    result := ReplaceStr(result, '|', '_');
+  end;
 begin
   //--В цикле проверяем у каких контактов добавилась история сообщений
   //и сжимаем её и сохраняем в файл
@@ -502,13 +509,14 @@ begin
             ListF.Text := Items[i].SubItems[13];
             //--Сохраняем файл во временный каталог
             zFile := ProfilePath + 'Profile\History\Unzip\' + Items[i].SubItems[3] + '_History.htm';
+            zFile := RafinePath(zFile);
             ListF.SaveToFile(zFile);
             //--Очишаем лист
             ListF.Clear;
             //--Добавляем в лист путь к файлу
             ListF.Add(zFile);
             //--Сжимаем этот файл и ложим в эту же директорию
-            Zip_File(ListF, ProfilePath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z');
+            Zip_File(ListF, RafinePath(ProfilePath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z'));
             //--Удаляем несжатый файл
             if FileExists(zFile) then DeleteFile(zFile);
             //--Снимаем у этого контакта флаг о изменившейся истории
@@ -852,9 +860,12 @@ begin
       end;
       //--Прорисовываем интерфэйс
       Update;
+      JabberWSocket.SslEnable := false;
       //--Подключаем сокет
       JabberWSocket.Connect;
     except
+      on E:Exception do
+        UnitLogger.TLogger.Instance.WriteMessage(e);
     end;
   end;
   //--Отсылаем пакет со статусом
@@ -2107,6 +2118,9 @@ begin
     //--Отсылаем запрос для прокси
     JabberWSocket.sendStr(http_data);
   end;
+
+  JabberWSocket.SslEnable := Jabber_UseSSL;
+
   //--Отсылаем строку начала сессии с сервером
   JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
 end;
@@ -2132,6 +2146,25 @@ begin
     //--Активируем режим оффлайн
     Jabber_GoOffline;
   end;
+end;
+
+procedure TMainForm.JabberWSocketSslVerifyPeer(Sender: TObject; var Ok: Integer;
+  Cert: TX509Base);
+var
+  FormCertShow: TShowCert;
+begin
+  //показываем форму принятия сертификата
+  FormCertShow := TShowCert.Create(Cert);
+  //вдруг, уже принимали этот сертификат
+  if not FormCertShow.CheckAccepted(EncodeString(Cert.Sha1Hash)) then begin
+    //показываем диалог
+    FormCertShow.ShowModal;
+    OK := Integer(FormCertShow.CertAccepted);
+  end else begin
+    OK := Integer(true);
+  end;
+  //убиваем форму
+  FreeAndNil(FormCertShow);
 end;
 
 procedure TMainForm.JabberXStatusClick(Sender: TObject);
