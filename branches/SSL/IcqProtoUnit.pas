@@ -13,7 +13,7 @@ interface
 uses
   Windows, MainUnit, IcqOptionsUnit, SysUtils, JvTrayIcon, OSCARMd5,
   Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms, IcqSearchUnit,
-  ComCtrls, Messages, Classes, IcqContactInfoUnit, Code, VarsUnit,
+  ComCtrls, Messages, Classes, IcqContactInfoUnit, UnitCrypto, VarsUnit,
   Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit;
 
 const
@@ -2410,7 +2410,7 @@ begin
             end;
             if OpenKey('settings\about-info', True) then
             try
-              WriteString('info', Encrypt(About, 12345));
+              WriteString('info', EncryptString(About, PasswordByMac));
             finally
               CloseKey();
             end;

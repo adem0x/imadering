@@ -41,7 +41,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, VarsUnit, UtilsUnit, UpdateUnit;
+  MainUnit, IcqProtoUnit, UnitCrypto, VarsUnit, UtilsUnit, UpdateUnit;
 
 procedure TIcqReqAuthForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin

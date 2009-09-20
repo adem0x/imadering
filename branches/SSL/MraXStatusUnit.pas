@@ -42,7 +42,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, UtilsUnit;
+  MainUnit, IcqProtoUnit, UnitCrypto, UtilsUnit;
 
 procedure TMraXStatusForm.FormCreate(Sender: TObject);
 begin

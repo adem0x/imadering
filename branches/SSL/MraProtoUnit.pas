@@ -5,7 +5,7 @@ interface
 uses
   Windows, MainUnit, MraOptionsUnit, SysUtils, JvTrayIcon,
   Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms,
-  ComCtrls, Messages, Classes, IcqContactInfoUnit, Code, VarsUnit,
+  ComCtrls, Messages, Classes, IcqContactInfoUnit, UnitCrypto, VarsUnit,
   Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit;
 
 var

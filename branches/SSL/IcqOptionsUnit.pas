@@ -273,7 +273,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, Code, SettingsUnit, UtilsUnit, RosterUnit;
+  MainUnit, IcqProtoUnit, UnitCrypto, SettingsUnit, UtilsUnit, RosterUnit;
 
 //--APPLY SETTINGS--------------------------------------------------------------
 
@@ -305,7 +305,7 @@ begin
       WriteString('login', ICQUINEdit.Text);
       WriteBool('save-password', SavePassCheckBox.Checked);
       if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
-        WriteString('password', Encrypt(PassEdit.Hint, PassKey))
+        WriteString('password', EncryptString(PassEdit.Hint, PasswordByMac))
       else WriteString('password', EmptyStr);
       //--Маскируем пароль
       if PassEdit.Text <> EmptyStr then PassEdit.Text := '----------------------';
@@ -354,7 +354,7 @@ begin
         PassEdit.Text := ReadString('password');
         if PassEdit.Text <> EmptyStr then
         begin
-          PassEdit.Hint := Decrypt(PassEdit.Text, PassKey);
+          PassEdit.Hint := DecryptString(PassEdit.Text, PasswordByMac);
           ICQ_LoginPassword := PassEdit.Hint;
           PassEdit.Text := '----------------------';
         end;

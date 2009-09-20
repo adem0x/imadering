@@ -72,7 +72,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, UtilsUnit, VarsUnit, MraProtoUnit, Code, RosterUnit;
+  MainUnit, UtilsUnit, VarsUnit, MraProtoUnit, UnitCrypto, RosterUnit;
 
 procedure TMraOptionsForm.ApplyButtonClick(Sender: TObject);
 begin
@@ -113,7 +113,7 @@ begin
       WriteString('login', MRAEmailEdit.Text);
       WriteBool('save-password', SavePassCheckBox.Checked);
       if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
-        WriteString('password', Encrypt(PassEdit.Hint, PassKey))
+        WriteString('password', EncryptString(PassEdit.Hint, PasswordByMac))
       else WriteString('password', EmptyStr);
       //--Маскируем пароль
       if PassEdit.Text <> EmptyStr then PassEdit.Text := '----------------------';
@@ -156,7 +156,7 @@ begin
         PassEdit.Text := ReadString('password');
         if PassEdit.Text <> EmptyStr then
         begin
-          PassEdit.Hint := Decrypt(PassEdit.Text, PassKey);
+          PassEdit.Hint := DecryptString(PassEdit.Text, PasswordByMac);
           MRA_LoginPassword := PassEdit.Hint;
           PassEdit.Text := '----------------------';
         end;
