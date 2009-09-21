@@ -320,7 +320,8 @@ end;
 procedure TSettingsForm.ApplySettings;
 begin
   //--Применяем настройки профиля
-  if AnsiCompareText(ProfilePath, ProfilePathEdit.Text) <> 0 then begin
+  if AnsiCompareText(ProfilePath, ProfilePathEdit.Text) <> 0 then
+  begin
     try
       //--Попробуем скопировать
       if CopyDir(ProfilePath + 'Profile', ProfilePathEdit.Text + 'Profile') then

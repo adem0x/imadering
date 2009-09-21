@@ -1,4 +1,4 @@
-unit FormShowCert;
+unit ShowCertUnit;
 
 interface
 
@@ -7,15 +7,15 @@ uses
   Dialogs, StdCtrls, ExtCtrls, OverbyteIcsWSocket;
 
 const
-  AcceptedCertsFile = 'Profile\AcceptedCerts.lst';
+  AcceptedCertsFile = 'Profile\AcceptedCerts.txt';
 
 type
-  /// <summary>Визуализирует сертификат. Пользователь может его  принять или отвергнуть</summay> 
-  TShowCert = class(TForm)
+  /// <summary>Визуализирует сертификат. Пользователь может его  принять или отвергнуть</summay>
+  TShowCertForm = class(TForm)
     AcceptCertButton: TButton;
     RefuseCertButton: TButton;
-    GroupBox1: TGroupBox;
-    Panel1: TPanel;
+    CertGroupBox: TGroupBox;
+    BottomPanel: TPanel;
     LblIssuer: TLabel;
     LblSubject: TLabel;
     LblSerial: TLabel;
@@ -25,6 +25,7 @@ type
     LblCertExpired: TLabel;
     procedure AcceptCertButtonClick(Sender: TObject);
     procedure RefuseCertButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     FCertAccepted: Boolean;
@@ -37,9 +38,13 @@ type
     ///  <summary>Проверить, вдруг этот сертификат уже принимали</summary>
     function CheckAccepted(Hash: string): boolean;
 
+{$WARNINGS OFF}
+
     /// <param name="Cert">Сертификат, информацию о котором нужно отобразить</param>
     constructor Create(const Cert: TX509Base);
   end;
+
+{$WARNINGS ON}
 
 implementation
 
@@ -49,7 +54,7 @@ uses MainUnit, EncdDecd, UnitLogger, VarsUnit, UnitCrypto;
 
 { TShowCert }
 
-procedure TShowCert.AcceptCertButtonClick(Sender: TObject);
+procedure TShowCertForm.AcceptCertButtonClick(Sender: TObject);
 begin
   FAcceptedCertsList.Add(FCertHash);
   SaveAcceptedCertsList;
@@ -58,12 +63,12 @@ begin
   Close;
 end;
 
-procedure TShowCert.RefuseCertButtonClick(Sender: TObject);
+procedure TShowCertForm.RefuseCertButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
-function TShowCert.CheckAccepted(Hash: string): boolean;
+function TShowCertForm.CheckAccepted(Hash: string): boolean;
 var
   EncryptedDataStream: TFileStream;
   DecryptedDataStream: TStream;
@@ -73,13 +78,13 @@ begin
   if FAcceptedCertsList <> nil then begin
     SaveAcceptedCertsList;
     FreeAndNil(FAcceptedCertsList);
-  end;  
+  end;
 
   FAcceptedCertsList := TStringList.Create;
 
   if not FileExists(ProfilePath + AcceptedCertsFile) then
     exit;
-  
+
   try
     EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
     try
@@ -102,31 +107,42 @@ begin
   end;
 end;
 
-constructor TShowCert.Create(const Cert: TX509Base);
+constructor TShowCertForm.Create(const Cert: TX509Base);
 begin
   inherited Create(nil);
-  
+
   FAcceptedCertsList := nil;
 
   //заполняем поля формы
-  with Cert do begin
+  with Cert do
+  begin
     FCertHash := EncodeString(Sha1Hash);
     LblIssuer.Caption := LblIssuer.Caption + IssuerOneLine;
     LblSubject.Caption := LblSubject.Caption + SubjectCName;
     LblSerial.Caption := LblSerial.Caption + IntToStr(SerialNum);
-    lblValidAfter.Caption := lblValidAfter.Caption + DateToStr(ValidNotBefore);
-    LblValidBefore.Caption := LblValidBefore.Caption + DateToStr(ValidNotAfter);
+    lblValidAfter.Caption := lblValidAfter.Caption + DateToStr(ValidNotAfter);
+    LblValidBefore.Caption := LblValidBefore.Caption + DateToStr(ValidNotBefore);
     LblShaHash.Caption := LblShaHash.Caption + FCerthash;
     LblCertExpired.Visible := HasExpired;
   end;
 end;
 
-procedure TShowCert.SaveAcceptedCertsList;
+procedure TShowCertForm.FormCreate(Sender: TObject);
+begin
+  //--Присваиваем иконку окну и кнопке
+  MainForm.AllImageList.GetIcon(173, Icon);
+  //MainForm.AllImageList.GetBitmap(6, RefuseCertButton.Glyph);
+  //MainForm.AllImageList.GetBitmap(185, AcceptCertButton.Glyph);
+  //--Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+end;
+
+procedure TShowCertForm.SaveAcceptedCertsList;
 var
   EncryptedFileStream: TFileStream;
   DecryptedDataStream: TMemoryStream;
   EncryptedDataStream: TStream;
-  buf: String;
 begin
   try
     DecryptedDataStream := TMemoryStream.Create;
@@ -141,7 +157,7 @@ begin
 
         if not DirectoryExists(ExtractFilePath(ProfilePath + AcceptedCertsFile)) then
           ForceDirectories(ProfilePath + AcceptedCertsFile);
-          
+
         EncryptedFileStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmCreate);
         try
           EncryptedFileStream.CopyFrom(EncryptedDataStream, EncryptedDataStream.Size);
@@ -162,3 +178,4 @@ begin
 end;
 
 end.
+

@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Htmlview, ExtCtrls, VarsUnit;
+  Dialogs, Htmlview, ExtCtrls;
 
 type
   TSmilesForm = class(TForm)
@@ -44,7 +44,7 @@ var
 implementation
 
 uses
-  MainUnit, ChatUnit, UtilsUnit, UnitLogger;
+  MainUnit, ChatUnit, UtilsUnit, UnitLogger, VarsUnit;
 
 {$R *.dfm}
 

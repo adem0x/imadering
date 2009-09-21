@@ -1755,7 +1755,7 @@ var
   Email, Email1, Email2, Email3, wSite, wAddress, wCity, wState, wZip: string;
   Smok, Height, Hair: word;
   iYear, iMonth, iDay: word;
-  i, ii, N, MsgLen, count, Age, sStatus, BMRes: integer;
+  i, ii, MsgLen, count, Age, sStatus, BMRes: integer;
   Auth, EndSearch, WebAware: boolean;
   Date64: Int64;
   sDate64: TDateTime absolute Date64;
@@ -2288,9 +2288,8 @@ begin
             //--Добавляем ник контакта в список ников
             if Assigned(AccountToNick) then
             begin
-              N := AccountToNick.IndexOf('Icq_' + UIN);
               //--Если такого контакта ещё нет в списке ников, то добавляем его ник
-              if N = -1 then
+              if AccountToNick.IndexOf('Icq_' + UIN) = -1 then
               begin
                 //--Если ник не пустой и ник не равен UIN
                 if (Nick > EmptyStr) and (Nick <> UIN) then

@@ -12,8 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Htmlview, ExtCtrls, Buttons, Menus, VarsUnit,
-  ExtDlgs, rXML;
+  Dialogs, StdCtrls, Htmlview, ExtCtrls, Buttons, Menus, ExtDlgs;
 
 type
   THistoryForm = class(TForm)
@@ -72,7 +71,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, ChatUnit, UtilsUnit, UnitLogger;
+  MainUnit, ChatUnit, UtilsUnit, VarsUnit, UnitLogger, rXML;
 
 procedure THistoryForm.LoadHistoryFromFile(hUIN: string; fullpath: boolean = false);
 label

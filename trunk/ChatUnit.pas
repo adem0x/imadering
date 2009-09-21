@@ -13,8 +13,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Htmlview, StrUtils, Menus, ExtCtrls, StdCtrls, Buttons,
-  CategoryButtons, VarsUnit, ShellApi, MMsystem, GIFImage, rXML,
-  ComCtrls, CommCtrl, ToolWin;
+  CategoryButtons, VarsUnit, ShellApi, MMsystem, GIFImage, ComCtrls, CommCtrl,
+  ToolWin;
 
 type
   TChatForm = class(TForm)
@@ -209,7 +209,7 @@ implementation
 uses
   MainUnit, SmilesUnit, SettingsUnit, IcqProtoUnit, HistoryUnit,
   IcqContactInfoUnit, UtilsUnit, RosterUnit, JabberProtoUnit, UnitCrypto,
-  FileTransferUnit, UnitLogger;
+  FileTransferUnit, UnitLogger, rXML;
 
 function TChatForm.AddMessInActiveChat(cNick, cPopMsg, cId, cMsgD, cMess: string): boolean;
 begin

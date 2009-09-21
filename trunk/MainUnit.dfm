@@ -634,7 +634,7 @@ object MainForm: TMainForm
     OnSocksConnected = JabberWSocketSocksConnected
     OnError = JabberWSocketError
     OnSocksError = JabberWSocketSocksError
-    SslContext = SslContext
+    SslContext = JabberSslContext
     SslEnable = False
     SslMode = sslModeClient
     OnSslVerifyPeer = JabberWSocketSslVerifyPeer
@@ -1308,7 +1308,7 @@ object MainForm: TMainForm
       OnClick = TopPanelONMenuClick
     end
   end
-  object SslContext: TSslContext
+  object JabberSslContext: TSslContext
     SslVerifyPeer = True
     SslVerifyDepth = 9
     SslOptions = []

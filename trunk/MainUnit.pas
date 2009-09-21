@@ -195,7 +195,7 @@ type
     TopTrafficONMenu: TMenuItem;
     AddNewGroupJabber: TMenuItem;
     AddNewGroupMRA: TMenuItem;
-    SslContext: TSslContext;
+    JabberSslContext: TSslContext;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -403,7 +403,7 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, UnitCrypto, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit,
-  UnitLogger, FormShowCert, EncdDecd;
+  UnitLogger, EncdDecd, ShowCertUnit;
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -485,15 +485,18 @@ var
   ListF: TStringList;
   i: integer;
   zFile: string;
-  //на случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
+
+  //--На случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
   function RafinePath(const Path: string): string;
   begin
-    result := Path;
-    result := ReplaceStr(result, '*', '_');
-    result := ReplaceStr(result, '?', '_');
-    result := ReplaceStr(result, '/', '_');
-    result := ReplaceStr(result, '|', '_');
+    Result := Path;
+    Result := ReplaceStr(Result, '*', '_');
+    Result := ReplaceStr(Result, '?', '_');
+    Result := ReplaceStr(Result, '/', '_');
+    Result := ReplaceStr(Result, '\', '_');
+    Result := ReplaceStr(Result, '|', '_');
   end;
+
 begin
   //--В цикле проверяем у каких контактов добавилась история сообщений
   //и сжимаем её и сохраняем в файл
@@ -872,7 +875,7 @@ begin
       //--Подключаем сокет
       JabberWSocket.Connect;
     except
-      on E:Exception do
+      on E: Exception do
         UnitLogger.TLogger.Instance.WriteMessage(e);
     end;
   end;
@@ -2163,20 +2166,22 @@ end;
 procedure TMainForm.JabberWSocketSslVerifyPeer(Sender: TObject; var Ok: Integer;
   Cert: TX509Base);
 var
-  FormCertShow: TShowCert;
+  frmShowCert: TShowCertForm;
 begin
-  //показываем форму принятия сертификата
-  FormCertShow := TShowCert.Create(Cert);
-  //вдруг, уже принимали этот сертификат
-  if not FormCertShow.CheckAccepted(EncodeString(Cert.Sha1Hash)) then begin
-    //показываем диалог
-    FormCertShow.ShowModal;
-    OK := Integer(FormCertShow.CertAccepted);
-  end else begin
-    OK := Integer(true);
+  //--Показываем форму принятия сертификата
+  frmShowCert := TShowCertForm.Create(Cert);
+  try
+    //--Вдруг, уже принимали этот сертификат
+    if not frmShowCert.CheckAccepted(EncodeString(Cert.Sha1Hash)) then
+    begin
+      //--Показываем диалог
+      frmShowCert.ShowModal;
+      OK := Integer(frmShowCert.CertAccepted);
+    end
+    else OK := Integer(true);
+  finally
+    FreeAndNil(frmShowCert);
   end;
-  //убиваем форму
-  FreeAndNil(FormCertShow);
 end;
 
 procedure TMainForm.JabberXStatusClick(Sender: TObject);
@@ -2611,8 +2616,8 @@ procedure TMainForm.MRAWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 label
   x, z;
 var
-  Pkt, HexPkt, SubPkt: string;
-  PktLen, Len, ProxyErr, PktSize: integer;
+  Pkt, HexPkt {, SubPkt}: string;
+  {PktLen, Len, }ProxyErr, PktSize: integer;
 begin
   //--Получаем пришедшие от сервера данные с сокета
   Pkt := MRAWSocket.ReceiveStr;
@@ -3260,8 +3265,7 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   //--Место для запуска тестов
-  OnlyOnlineContactsToolButton.Down := true;
-  OnlyOnlineContactsToolButtonClick(self);
+
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);

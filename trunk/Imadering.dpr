@@ -30,7 +30,7 @@ uses
   TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
   RosterUnit in 'RosterUnit.pas' {RosterForm},
   FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
-  FormShowCert in 'FormShowCert.pas' {ShowCert},
+  ShowCertUnit in 'ShowCertUnit.pas' {ShowCertForm},
   UnitCrypto in 'lib\UnitCrypto.pas',
   UnitLogger in 'lib\UnitLogger.pas';
 

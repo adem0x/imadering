@@ -12,7 +12,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, Htmlview, ShellApi, StrUtils, VarsUnit, rXML;
+  Dialogs, StdCtrls, Buttons, ExtCtrls, Htmlview, ShellApi, StrUtils, VarsUnit,
+  rXML, UnitLogger;
 
 type
   TIcqContactInfoForm = class(TForm)
@@ -58,7 +59,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, UnitCrypto, UnitLogger;
+  MainUnit, IcqProtoUnit, UtilsUnit, IcqOptionsUnit, UnitCrypto;
 
 procedure TIcqContactInfoForm.TranslateForm;
 begin
@@ -74,14 +75,8 @@ var
 begin
   try
     Doc := ToWhere.DocumentSource;
-    if StupidInsert then
-    begin
-      Doc := Doc + Text;
-    end
-    else
-    begin
-      Doc := Doc + '<span class="' + TextClass + '">' + Text + '</span>';
-    end;
+    if StupidInsert then Doc := Doc + Text
+    else Doc := Doc + '<span class="' + TextClass + '">' + Text + '</span>';
     if InsertBR then Doc := Doc + '<br>';
     if ClearIt then Doc := Text;
     ToWhere.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
