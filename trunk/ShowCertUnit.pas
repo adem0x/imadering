@@ -10,7 +10,7 @@ const
   AcceptedCertsFile = 'Profile\AcceptedCerts.txt';
 
 type
-  /// <summary>Визуализирует сертификат. Пользователь может его  принять или отвергнуть</summay>
+  /// <summary>Визуализирует сертификат. Пользователь может его  принять или отвергнуть</summary>
   TShowCertForm = class(TForm)
     AcceptCertButton: TBitBtn;
     RefuseCertButton: TBitBtn;
@@ -79,15 +79,14 @@ begin
     SaveAcceptedCertsList;
     FreeAndNil(FAcceptedCertsList);
   end;
-  //--Создаём лист
-  FAcceptedCertsList := TStringList.Create;
-  //--Если файл сертификата не найден, то выходим
+  //--Если файл списка сертификатов не найден, то выходим
   if not FileExists(ProfilePath + AcceptedCertsFile) then Exit;
-  //--Загружаем сертификат из файла
+  //--Загружаем список принятых сертификатов из файла
   try
     try
       EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
       try
+        //--расшифровываем
         DecryptedDataStream := DecryptStream(EncryptedDataStream, UnitCrypto.PasswordByMac);
         try
           FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
@@ -139,15 +138,16 @@ var
   DecryptedDataStream: TMemoryStream;
   EncryptedDataStream: TStream;
 begin
-  //--Сохраняем сертификат в файл
+  //--Сохраняем список принятых сертификатов в файл
   try
     DecryptedDataStream := TMemoryStream.Create;
     try
       EncryptedDataStream := TMemoryStream.Create;
       try
         FAcceptedCertsList.SaveToStream(DecryptedDataStream);
+        //--Шифруем
         EncryptedDataStream := EncryptStream(DecryptedDataStream, UnitCrypto.PasswordByMac);
-        //--Если уже есть какой-то файл сертификата, то удаляем его
+        //--Если уже есть какой-то файл списка, то удаляем его
         if FileExists(ProfilePath + AcceptedCertsFile) then
           DeleteFile(ProfilePath + AcceptedCertsFile);
         //--Создаём папку профиля

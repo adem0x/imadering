@@ -3,6 +3,7 @@ program Imadering;
 uses
   RtlVclOptimize,
   VCLFixPack,
+  SysUtils,
   Windows,
   Forms,
   MainUnit in 'MainUnit.pas' {MainForm},
@@ -32,13 +33,18 @@ uses
   FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
   ShowCertUnit in 'ShowCertUnit.pas' {ShowCertForm},
   UnitCrypto in 'lib\UnitCrypto.pas',
-  UnitLogger in 'lib\UnitLogger.pas';
+  UnitLogger in 'lib\UnitLogger.pas',
+  UnitPluginInterface in 'UnitPluginInterface.pas',
+  UnitPluginObserver in 'UnitPluginObserver.pas',
+  UnitCustomExceptions in 'UnitCustomExceptions.pas',
+  PluginLoaderUnit in 'PluginLoaderUnit.pas';
 
 {$R *.res}
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or
   IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP}
 
 begin
+
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'IMadering';

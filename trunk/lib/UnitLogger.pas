@@ -72,19 +72,20 @@ type
   protected
     constructor Create();
     destructor Destroy; override;
+    procedure UpdateFullPath();
   public
-  ///summary>Singleton. Точка доступа</summary>
-  class var Instance: ILogger;
+    ///summary>Singleton. Точка доступа</summary>
+    class var Instance: ILogger;
 
-procedure WriteMessage(const Text: string; Level: TLogLevel = lWarning; const PrintStack: Boolean = false); overload;
-procedure WriteMessage(const ClassName, Text: string; level: TLogLevel = lWarning; const PrintStack: Boolean = false); overload;
-procedure WriteMessage(const Error: Exception); overload;
-procedure WriteMessage(const Format: string; const Args: array of const; level: TLogLevel = lWarning; const PrintStack: Boolean = false); overload;
+    procedure WriteMessage(const Text: string; Level: TLogLevel = lWarning; const PrintStack: Boolean = false); overload;
+    procedure WriteMessage(const ClassName, Text: string; level: TLogLevel = lWarning; const PrintStack: Boolean = false); overload;
+    procedure WriteMessage(const Error: Exception); overload;
+    procedure WriteMessage(const Format: string; const Args: array of const; level: TLogLevel = lWarning; const PrintStack: Boolean = false); overload;
 
-///<summary>Выставляет неодходимый уровень логирования</summary>
-property LogLevel: TLogLevel read FLogLevel write FLogLevel default lInfo;
+    ///<summary>Выставляет неодходимый уровень логирования</summary>
+    property LogLevel: TLogLevel read FLogLevel write FLogLevel default lInfo;
 
-    end;
+  end;
 
 {$HINTS ON}
 
@@ -123,6 +124,11 @@ begin
   end;
 end;
 
+procedure TLogger.UpdateFullPath;
+begin
+  FFullLogPath := ProfilePath + LogFileName;
+end;
+
 procedure TLogger.WriteMessage(const Text: string; Level: TLogLevel; const PrintStack: Boolean);
 var
   StrList: TStringList;
@@ -130,6 +136,7 @@ var
 begin
   CSection.Enter;
   //OutputDebugString(PAnsiChar(Text));
+  UpdateFullPath;
   try
     try
       if LogFile = nil then
