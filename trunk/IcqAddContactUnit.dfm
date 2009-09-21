@@ -16,6 +16,7 @@ object IcqAddContactForm: TIcqAddContactForm
   Position = poDesktopCenter
   Scaled = False
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object AccountLabel: TLabel

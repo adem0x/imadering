@@ -3485,18 +3485,30 @@ begin
           AddNewGroupICQ.Visible := true;
           AddNewGroupJabber.Visible := false;
           AddNewGroupMRA.Visible := false;
+          //
+          AddNewContactICQ.Visible := true;
+          AddNewContactJabber.Visible := false;
+          AddNewContactMRA.Visible := false;
         end
         else if RoasterGroup.GroupType = 'Jabber' then
         begin
           AddNewGroupICQ.Visible := false;
           AddNewGroupJabber.Visible := true;
           AddNewGroupMRA.Visible := false;
+          //
+          AddNewContactICQ.Visible := false;
+          AddNewContactJabber.Visible := true;
+          AddNewContactMRA.Visible := false;
         end
         else if RoasterGroup.GroupType = 'Mra' then
         begin
           AddNewGroupICQ.Visible := false;
           AddNewGroupJabber.Visible := false;
           AddNewGroupMRA.Visible := true;
+          //
+          AddNewContactICQ.Visible := false;
+          AddNewContactJabber.Visible := false;
+          AddNewContactMRA.Visible := true;
         end;
       end
       else
@@ -3510,6 +3522,10 @@ begin
         AddNewGroupICQ.Visible := true;
         AddNewGroupJabber.Visible := true;
         AddNewGroupMRA.Visible := true;
+        //--Добавление контактов в протоколы
+        AddNewContactICQ.Visible := true;
+        AddNewContactJabber.Visible := true;
+        AddNewContactMRA.Visible := true;
       end;
     end;
     //--Отображаем меню
@@ -3846,19 +3862,14 @@ begin
   try
     with frmAddContact do
     begin
-     { //--Присваиваем иконку окну
-      AllImageList.GetIcon((Sender as TMenuItem).ImageIndex, Icon);
-      Caption := (Sender as TMenuItem).Hint;
-      //--Добавляем название группы по умолчанию
-      GNameEdit.Text := AddNewGroupL;
-      //--Ставим флаг, что это добавление новой группы
-      Create_Group := true;
       //--Ставим флаг какой протокол
       case (Sender as TMenuItem).Tag of
-        1: GroupType := 'Icq';
-        2: GroupType := 'Jabber';
-        3: GroupType := 'Mra';
-      end;                         }
+        1: ContactType := 'Icq';
+        2: ContactType := 'Jabber';
+        3: ContactType := 'Mra';
+      end;
+      //--Строим список групп этого протокола
+      BuildGroupList(ContactType);
       //--Отображаем окно модально
       ShowModal;
     end;

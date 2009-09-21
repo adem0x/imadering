@@ -26,6 +26,7 @@ type
     GroupLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure AddContactButtonClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -172,6 +173,12 @@ begin
   TranslateForm;
   //--Присваиваем иконку окну
   MainForm.AllImageList.GetIcon(143, Icon);
+end;
+
+procedure TIcqAddContactForm.FormShow(Sender: TObject);
+begin
+  //--Ставим фокус в поле ввода учётной записи если она пустая
+  if (AccountEdit.CanFocus) and (AccountEdit.Text = EmptyStr) then AccountEdit.SetFocus;
 end;
 
 end.
