@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, OverbyteIcsWSocket;
+  Dialogs, StdCtrls, ExtCtrls, OverbyteIcsWSocket, Buttons;
 
 const
   AcceptedCertsFile = 'Profile\AcceptedCerts.txt';
@@ -12,8 +12,8 @@ const
 type
   /// <summary>Визуализирует сертификат. Пользователь может его  принять или отвергнуть</summay>
   TShowCertForm = class(TForm)
-    AcceptCertButton: TButton;
-    RefuseCertButton: TButton;
+    AcceptCertButton: TBitBtn;
+    RefuseCertButton: TBitBtn;
     CertGroupBox: TGroupBox;
     BottomPanel: TPanel;
     LblIssuer: TLabel;
@@ -23,8 +23,8 @@ type
     LblValidBefore: TLabel;
     LblShaHash: TLabel;
     LblCertExpired: TLabel;
+    LblIssuerMemo: TMemo;
     procedure AcceptCertButtonClick(Sender: TObject);
-    procedure RefuseCertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -52,20 +52,14 @@ uses MainUnit, EncdDecd, UnitLogger, VarsUnit, UnitCrypto;
 
 {$R *.dfm}
 
-{ TShowCert }
-
 procedure TShowCertForm.AcceptCertButtonClick(Sender: TObject);
 begin
+  //--Принимаем и сохраняем в файл сертификат
   FAcceptedCertsList.Add(FCertHash);
   SaveAcceptedCertsList;
-
   FCertAccepted := true;
-  Close;
-end;
-
-procedure TShowCertForm.RefuseCertButtonClick(Sender: TObject);
-begin
-  Close;
+  //--Закрываем модальное окно
+  ModalResult := mrOk;
 end;
 
 function TShowCertForm.CheckAccepted(Hash: string): boolean;
@@ -73,51 +67,50 @@ var
   EncryptedDataStream: TFileStream;
   DecryptedDataStream: TStream;
 begin
-  result := false;
-
-  if FAcceptedCertsList <> nil then begin
+  Result := false;
+  //--Сохраняем сертификат если он принят
+  if FAcceptedCertsList <> nil then
+  begin
     SaveAcceptedCertsList;
     FreeAndNil(FAcceptedCertsList);
   end;
-
+  //--Если файл сертификата не найден, то выходим
+  if not FileExists(ProfilePath + AcceptedCertsFile) then Exit;
+  //--Создаём лист
   FAcceptedCertsList := TStringList.Create;
-
-  if not FileExists(ProfilePath + AcceptedCertsFile) then
-    exit;
-
+  //--Загружаем сертификат из файла
   try
-    EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
     try
-      DecryptedDataStream := DecryptStream(EncryptedDataStream, UnitCrypto.PasswordByMac);
+      EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
       try
-        FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
-        if FAcceptedCertsList.IndexOf(hash) >= 0 then begin
-          result := true;
-          FreeAndNil(FAcceptedCertsList);
+        DecryptedDataStream := DecryptStream(EncryptedDataStream, UnitCrypto.PasswordByMac);
+        try
+          FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
+          if FAcceptedCertsList.IndexOf(hash) >= 0 then Result := true;
+        finally
+          FreeAndNil(DecryptedDataStream);
         end;
       finally
-        FreeAndNil(DecryptedDataStream);
+        FreeAndNil(EncryptedDataStream);
       end;
-    finally
-      FreeAndNil(EncryptedDataStream);
+    except
+      on E: Exception do
+        TLogger.Instance.WriteMessage(e);
     end;
-  except
-    on E: Exception do
-      TLogger.Instance.WriteMessage(e);
+  finally
+    FreeAndNil(FAcceptedCertsList);
   end;
 end;
 
 constructor TShowCertForm.Create(const Cert: TX509Base);
 begin
   inherited Create(nil);
-
   FAcceptedCertsList := nil;
-
-  //заполняем поля формы
+  //--Заполняем поля формы
   with Cert do
   begin
     FCertHash := EncodeString(Sha1Hash);
-    LblIssuer.Caption := LblIssuer.Caption + IssuerOneLine;
+    LblIssuerMemo.Text := IssuerOneLine;
     LblSubject.Caption := LblSubject.Caption + SubjectCName;
     LblSerial.Caption := LblSerial.Caption + IntToStr(SerialNum);
     lblValidAfter.Caption := lblValidAfter.Caption + DateToStr(ValidNotAfter);
@@ -131,11 +124,8 @@ procedure TShowCertForm.FormCreate(Sender: TObject);
 begin
   //--Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetIcon(173, Icon);
-  //MainForm.AllImageList.GetBitmap(6, RefuseCertButton.Glyph);
-  //MainForm.AllImageList.GetBitmap(185, AcceptCertButton.Glyph);
-  //--Помещаем кнопку формы в таскбар и делаем независимой
-  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  MainForm.AllImageList.GetBitmap(139, RefuseCertButton.Glyph);
+  MainForm.AllImageList.GetBitmap(140, AcceptCertButton.Glyph);
 end;
 
 procedure TShowCertForm.SaveAcceptedCertsList;
@@ -144,6 +134,7 @@ var
   DecryptedDataStream: TMemoryStream;
   EncryptedDataStream: TStream;
 begin
+  //--Сохраняем сертификат в файл
   try
     DecryptedDataStream := TMemoryStream.Create;
     try
@@ -151,13 +142,13 @@ begin
       try
         FAcceptedCertsList.SaveToStream(DecryptedDataStream);
         EncryptedDataStream := EncryptStream(DecryptedDataStream, UnitCrypto.PasswordByMac);
-
+        //--Если уже есть какой-то файл сертификата, то удаляем его
         if FileExists(ProfilePath + AcceptedCertsFile) then
           DeleteFile(ProfilePath + AcceptedCertsFile);
-
+        //--Создаём папку профиля
         if not DirectoryExists(ExtractFilePath(ProfilePath + AcceptedCertsFile)) then
           ForceDirectories(ProfilePath + AcceptedCertsFile);
-
+        //--Записываем в файл из памяти
         EncryptedFileStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmCreate);
         try
           EncryptedFileStream.CopyFrom(EncryptedDataStream, EncryptedDataStream.Size);
