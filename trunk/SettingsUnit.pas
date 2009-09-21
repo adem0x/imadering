@@ -346,10 +346,10 @@ begin
     end;
   end;
   //--Создаём необходимые папки
-  ForceDirectories(ProfilePath + 'Profile');
-  ForceDirectories(ProfilePath + 'Profile\History');
-  ForceDirectories(ProfilePath + 'Profile\Avatars');
-  ForceDirectories(ProfilePath + 'Profile\Contacts');
+  ForceDirectories(ProfilePath + 'Profile\');
+  ForceDirectories(ProfilePath + HistoryFileName);
+  ForceDirectories(ProfilePath + AvatarFileName);
+  ForceDirectories(ProfilePath + AnketaFileName);
   //--Применяем настройки прокси
   with MainForm do
   begin

@@ -2639,7 +2639,7 @@ begin
     else if (CurrentCat <> nil) then
     begin
       if not Handled then
-        HintStr := '<b>' + CurrentCat.Caption + '</b>';
+        HintStr := '<b>' + CurrentCat.GroupCaption + '</b>';
 
       //--Добавляем свои параметры во всплывающие подсказки у группы
       if CurrentCat.GroupId > EmptyStr then

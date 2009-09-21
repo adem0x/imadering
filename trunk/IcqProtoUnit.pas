@@ -14,7 +14,8 @@ uses
   Windows, MainUnit, IcqOptionsUnit, SysUtils, JvTrayIcon, OSCARMd5,
   Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms, IcqSearchUnit,
   ComCtrls, Messages, Classes, IcqContactInfoUnit, UnitCrypto, VarsUnit,
-  Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit, UnitLogger;
+  Graphics, CategoryButtons, rXML, JvZLibMultiple, RosterUnit, UnitLogger,
+  OverbyteIcsMimeUtils;
 
 const
   DT2100miliseconds = 1 / (SecsPerDay * 10);
@@ -227,8 +228,6 @@ const
 
   ICQ_FLAP_HEAD_SIZE = 12;
 
-  Icq_Info: string = 'Profile\Contacts\Icq_';
-
 var
   ICQ_Bos_IP: string;
   ICQ_Bos_Port: string;
@@ -363,7 +362,7 @@ procedure ICQ_Parse_UserAvatar(PktData: string);
 procedure ICQ_SaveInfo_Auth_WebAvare(iAuth, iWebAvare: boolean);
 procedure ICQ_UpdatePrivate_Group(InvizStatus: string);
 procedure ICQ_PassChange(Pass: string);
-function ICQ_CreateHint(Button: TButtonItem): string;
+function ICQ_CreateHint(RosterItem: TListItem): string;
 
 implementation
 
@@ -617,61 +616,57 @@ begin
   else if ShortStatus = ICQ_Status_UNK then Result := LStatus15;
 end;
 
-function ICQ_CreateHint(Button: TButtonItem): string;
-//var
-  //Ln, Lf: string;
+function ICQ_CreateHint(RosterItem: TListItem): string;
+var
+  LnLf: string;
 begin
-  if Button <> nil then
+  //--Формируем всплывающую подсказку для контакта ICQ
+  if RosterItem <> nil then
   begin
-    //--Учётная запись пользователя, имя и фамилия
-    Result := '<b>UIN: ' + Button.UIN + '</b>';
-    if Button.Caption <> Button.UIN then Result := Result + '<br><b>' + Button.Caption + '</b>';
+    //--Учётная запись
+    Result := '<b>UIN: ' + RosterItem.Caption + '</b>';
+    //--Ник
+    if RosterItem.SubItems[0] <> RosterItem.Caption then Result := Result + '<br><b>' + RosterItem.SubItems[0] + '</b>';
     Result := Result + '<br>';
-    //--Если есть файл с информацией о контакте, то загружаем из него имя и фамилию
-    if FileExists(ProfilePath + 'Profile\Contacts\' + Button.UIN + '.inf') then
-    begin
-      {Uini := TIniFile.Create(ProfilePath + 'Profile\Contacts\' + Button.UIN + '.inf');
-      //
-      Ln := Uini.ReadString('Info', 'cFirst', EmptyStr);
-      Lf := Uini.ReadString('Info', 'cLast', EmptyStr);
-      if IsNotNull([Ln, Lf]) then
-      begin
-        Result := Result + '<b>';
-        if Ln > EmptyStr then Result := Result + Ln;
-        if (Ln > EmptyStr) and (Lf > EmptyStr) then Result := Result + ' ' + Lf
-        else if (Ln = EmptyStr) and (Lf > EmptyStr) then Result := Result + Lf;
-        Result := Result + '</b><hr=1>';
-      end;
-      //
-      Uini.Free;}
-    end;
+    //--Имя и Фамилия
+    LnLf := NameAndLast(RosterItem.Caption, RosterItem.SubItems[3]);
+    if LnLf <> EmptyStr then Result := Result + '<b>' + LnLf + '</b><br>';
     //--Если стасут оффлайн или неизвестный, то пишем "Не в сети"
-    if (Button.Status = 9) or (Button.Status = 214) then
+    if (RosterItem.SubItems[6] = '9') or (RosterItem.SubItems[6] = '214') then
       Result := Result + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
     //--Если статус требует авторизации, то пишем об этом
-    else if Button.Status = 80 then Result := Result + '<font color=clred>' + LStatus17
+    else if RosterItem.SubItems[6] = '80' then Result := Result + '<font color=clred>' + LStatus17
     //--Определяем статус и пишем его словами
-    else Result := Result + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(Button.Status));
+    else Result := Result + '<font color=clblue>' +
+      ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
     Result := Result + '</font>';
-    //--Если доп. статус имеется, то пишем его
-    if Button.XStatus > EmptyStr then Result := Result + '<br>' + Button.XStatus;
-    //--Пищем в подсказку другие параметры контакта
-    if Button.ConnTime > EmptyStr then
-      Result := Result + '<br>' + ConnTimeL + ' ' + Button.ConnTime;
-    if Button.TimeReg > EmptyStr then
-      Result := Result + '<br>' + RegDateL + ' ' + Button.TimeReg;
-    if Button.Time > EmptyStr then
-      Result := Result + '<br>' + ChatDateL + ' ' + Button.Time;
-    if Button.ProtoVer > EmptyStr then
-      Result := Result + '<br>' + ProtoVerL + ' ' + Button.ProtoVer;
-    if Button.Client > EmptyStr then
-      Result := Result + '<br>' + ClientVariableL + ' ' + Button.Client;
-    if Button.Mobile > EmptyStr then
-      Result := Result + '<br>' + CellularPhoneL + ' ' + Button.Mobile;
-    if Button.Note > EmptyStr then
-      Result := Result + '<br>' + NoteL + ' ' + Button.Note;
-    if Button.Email > EmptyStr then
-      Result := Result + '<br>' + EmailL + ' ' + Button.Email;
+    //--Если есть текст доп. статуса, то пишем его
+    if RosterItem.SubItems[31] <> EmptyStr then Result := Result + '<br>' + RosterItem.SubItems[31];
+    //--Время подключения
+    if RosterItem.SubItems[30] <> EmptyStr then
+      Result := Result + '<br>' + ConnTimeL + ' ' + RosterItem.SubItems[30];
+    //--Дата регистрации UIN
+    if RosterItem.SubItems[26] <> EmptyStr then
+      Result := Result + '<br>' + RegDateL + ' ' + RosterItem.SubItems[26];
+    //--Версия протокола
+    if RosterItem.SubItems[25] <> EmptyStr then
+      Result := Result + '<br>' + ProtoVerL + ' ' + RosterItem.SubItems[25];
+    //--Клиент
+    if RosterItem.SubItems[32] <> EmptyStr then
+      Result := Result + '<br>' + ClientVariableL + ' ' + RosterItem.SubItems[32];
+    //--Телефон
+    if RosterItem.SubItems[9] <> EmptyStr then
+      Result := Result + '<br>' + CellularPhoneL + ' ' + RosterItem.SubItems[9];
+    //--Заметка
+    if RosterItem.SubItems[10] <> EmptyStr then
+      Result := Result + '<br>' + NoteL + ' ' + RosterItem.SubItems[10];
+    //--Email
+    if RosterItem.SubItems[11] <> EmptyStr then
+      Result := Result + '<br>' + EmailL + ' ' + RosterItem.SubItems[11];
+    //--Флаг подключения
+    if RosterItem.SubItems[24] <> EmptyStr then
+      Result := Result + '<br>' + ConnectFlagL + ' ' +
+        RosterItem.SubItems[20] + ' ' + RosterItem.SubItems[24];
   end;
 end;
 
@@ -2311,44 +2306,44 @@ begin
                   AccountToNick.SaveToFile(ProfilePath + 'Profile\' + 'Nicks.txt');
                 end;
               end;
-              //--Если ник не пустой и ник не равен UIN
-              if (Nick > EmptyStr) and (Nick <> UIN) then
+            end;
+            //--Если ник не пустой и ник не равен UIN
+            if (Nick > EmptyStr) and (Nick <> UIN) then
+            begin
+              //--Присваиваем этот ник контакту не из нашего КЛ
+              with MainForm.ContactList do
               begin
-                //--Присваиваем этот ник контакту не из нашего КЛ
-                with MainForm.ContactList do
+                for i := 0 to Categories.Count - 1 do
                 begin
-                  for i := 0 to Categories.Count - 1 do
+                  if (Categories.Items[i].GroupId = '0000') or (Categories.Items[i].GroupId = 'NoCL') then
                   begin
-                    if (Categories.Items[i].GroupId = '0000') or (Categories.Items[i].GroupId = 'NoCL') then
+                    for ii := 0 to Categories[i].Items.Count - 1 do
                     begin
-                      for ii := 0 to Categories[i].Items.Count - 1 do
+                      if Categories[i].Items[ii].UIN = UIN then
                       begin
-                        if Categories[i].Items[ii].UIN = UIN then
-                        begin
-                          Categories[i].Items[ii].Caption := Nick;
-                          //--Выходим из цыклов
-                          goto y;
-                        end;
+                        Categories[i].Items[ii].Caption := Nick;
+                        //--Выходим из цыклов
+                        goto y;
                       end;
                     end;
                   end;
                 end;
-                y: ;
-                //--Ищем вкладку в окне чата и ей присваиваем Ник
-                if Assigned(ChatForm) then
+              end;
+              y: ;
+              //--Ищем вкладку в окне чата и ей присваиваем Ник
+              if Assigned(ChatForm) then
+              begin
+                with ChatForm.ChatPageControl do
                 begin
-                  with ChatForm.ChatPageControl do
+                  if Visible then
                   begin
-                    if Visible then
+                    for i := 0 to PageCount - 1 do
                     begin
-                      for i := 0 to PageCount - 1 do
+                      if Pages[i].HelpKeyword = UIN then
                       begin
-                        if Pages[i].HelpKeyword = UIN then
-                        begin
-                          Pages[i].Caption := Nick;
-                          //--Выходим из цыкла
-                          Break;
-                        end;
+                        Pages[i].Caption := Nick;
+                        //--Выходим из цыкла
+                        Break;
                       end;
                     end;
                   end;
@@ -2362,7 +2357,7 @@ begin
           //--Сохраняем полученные данные в локальный файл инфы о контакте
           with TrXML.Create() do
           try
-            if OpenKey('settings\name-info', True) then
+            if OpenKey('profile\name-info', True) then
             try
               WriteString('nick', Nick);
               WriteString('first', First);
@@ -2370,7 +2365,7 @@ begin
             finally
               CloseKey;
             end;
-            if OpenKey('settings\personal-info', True) then
+            if OpenKey('profile\personal-info', True) then
             try
               WriteInteger('gender', Gender);
               WriteBool('auth', Auth);
@@ -2380,7 +2375,7 @@ begin
             finally
               CloseKey;
             end;
-            if OpenKey('settings\home-info', True) then
+            if OpenKey('profile\home-info', True) then
             try
               WriteString('address', Address);
               WriteString('city', City);
@@ -2390,7 +2385,7 @@ begin
             finally
               CloseKey;
             end;
-            if OpenKey('settings\orig-home-info', True) then
+            if OpenKey('profile\orig-home-info', True) then
             try
               WriteInteger('country', oCountry);
               WriteString('city', oCity);
@@ -2398,7 +2393,7 @@ begin
             finally
               CloseKey;
             end;
-            if OpenKey('settings\lang-info', True) then
+            if OpenKey('profile\lang-info', True) then
             try
               WriteInteger('lang1', Lang1);
               WriteInteger('lang2', Lang2);
@@ -2406,7 +2401,7 @@ begin
             finally
               CloseKey;
             end;
-            if OpenKey('settings\phone-info', True) then
+            if OpenKey('profile\phone-info', True) then
             try
               WriteString('phone1', Phone);
               WriteString('phone2', Fax);
@@ -2416,7 +2411,7 @@ begin
             finally
               CloseKey();
             end;
-            if OpenKey('settings\work-info', True) then
+            if OpenKey('profile\work-info', True) then
             try
               WriteString('city', wCity);
               WriteString('state', wState);
@@ -2431,7 +2426,7 @@ begin
             finally
               CloseKey();
             end;
-            if OpenKey('settings\interests-info', True) then
+            if OpenKey('profile\interests-info', True) then
             try
               WriteString('int1', Int1);
               WriteString('int2', Int2);
@@ -2440,13 +2435,13 @@ begin
             finally
               CloseKey();
             end;
-            if OpenKey('settings\about-info', True) then
+            if OpenKey('profile\about-info', True) then
             try
-              WriteString('info', EncryptString(About, PasswordByMac));
+              WriteString('info', Base64Encode(About));
             finally
               CloseKey();
             end;
-            if OpenKey('settings\age-info', True) then
+            if OpenKey('profile\age-info', True) then
             try
               WriteInteger('age', Age);
               WriteInteger('day', iDay);
@@ -2455,7 +2450,7 @@ begin
             finally
               CloseKey();
             end;
-            if OpenKey('settings\emails-info', True) then
+            if OpenKey('profile\emails-info', True) then
             try
               WriteString('email1', Email1);
               WriteString('email2', Email2);
@@ -2463,7 +2458,7 @@ begin
             finally
               CloseKey();
             end;
-            if OpenKey('settings\interests-id-info', True) then
+            if OpenKey('profile\interests-id-info', True) then
             try
               WriteInteger('int_id1', I1);
               WriteInteger('int_id2', I2);
@@ -2472,7 +2467,7 @@ begin
             finally
               CloseKey();
             end;
-            if OpenKey('settings\personal-x-info', True) then
+            if OpenKey('profile\personal-x-info', True) then
             try
               WriteInteger('marital', Marital);
               WriteInteger('sexual', Sexual);
@@ -2485,9 +2480,9 @@ begin
               CloseKey();
             end;
             //--Создаём необходимые папки
-            ForceDirectories(ProfilePath + 'Profile\Contacts');
+            ForceDirectories(ProfilePath + AnketaFileName);
             //--Записываем сам файл
-            SaveToFile(ProfilePath + Icq_Info + UIN + '.xml');
+            SaveToFile(ProfilePath + AnketaFileName + 'Icq_' + UIN + '.xml');
           finally
             Free();
           end;
@@ -4213,6 +4208,12 @@ begin
         Items[i].SubItems[16] := '';
         Items[i].SubItems[18] := '0';
         Items[i].SubItems[19] := '0';
+        Items[i].SubItems[20] := '';
+        Items[i].SubItems[24] := '';
+        Items[i].SubItems[25] := '';
+        Items[i].SubItems[30] := '';
+        Items[i].SubItems[31] := '';
+        Items[i].SubItems[32] := '';
         Items[i].SubItems[35] := '0';
       end;
     end;

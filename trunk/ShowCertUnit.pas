@@ -55,9 +55,14 @@ uses MainUnit, EncdDecd, UnitLogger, VarsUnit, UnitCrypto;
 procedure TShowCertForm.AcceptCertButtonClick(Sender: TObject);
 begin
   //--Принимаем и сохраняем в файл сертификат
-  FAcceptedCertsList.Add(FCertHash);
-  SaveAcceptedCertsList;
-  FCertAccepted := true;
+  try
+    FAcceptedCertsList.Add(FCertHash);
+    SaveAcceptedCertsList;
+    FCertAccepted := true;
+  except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(e);
+  end;
   //--Закрываем модальное окно
   ModalResult := mrOk;
 end;
@@ -74,10 +79,10 @@ begin
     SaveAcceptedCertsList;
     FreeAndNil(FAcceptedCertsList);
   end;
-  //--Если файл сертификата не найден, то выходим
-  if not FileExists(ProfilePath + AcceptedCertsFile) then Exit;
   //--Создаём лист
   FAcceptedCertsList := TStringList.Create;
+  //--Если файл сертификата не найден, то выходим
+  if not FileExists(ProfilePath + AcceptedCertsFile) then Exit;
   //--Загружаем сертификат из файла
   try
     try

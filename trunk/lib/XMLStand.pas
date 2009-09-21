@@ -4,8 +4,6 @@ interface
 
 uses SysUtils;
 
-// == RxStrUtils ==
-
 type
 {$IFNDEF RX_D4}
   TSysCharSet = set of Char;
@@ -17,17 +15,15 @@ function WordCount(const S: string; const WordDelims: TCharSet): Integer;
 function ExtractWord(N: Integer; const S: string;
   const WordDelims: TCharSet): string;
 
-// == rUtils ==
-
 const
   DateSeparatorFix: Char = '.';
   TimeSeparatorFix: Char = ':';
   ShortDateFormatFix = 'dd.mm.yyyy';
   ShortTimeFormatFix = 'hh:nn:ss';
 
-function IIF(Switch: Boolean; Var1,Var2: Variant): Variant;
+function IIF(Switch: Boolean; Var1, Var2: Variant): Variant;
 {$IFDEF POLARIS_D4}overload;
-function IIF(Switch: Boolean; Var1,Var2: string): string; overload;
+function IIF(Switch: Boolean; Var1, Var2: string): string; overload;
 {$ENDIF}
 
 function StrToDateFix(const S: string): TDateTime;
@@ -69,7 +65,7 @@ begin
   while I <= SLen do begin
     while (I <= SLen) and (S[I] in WordDelims) do Inc(I);
     if I <= SLen then Inc(Result);
-    while (I <= SLen) and not(S[I] in WordDelims) do Inc(I);
+    while (I <= SLen) and not (S[I] in WordDelims) do Inc(I);
   end;
 end;
 
@@ -83,7 +79,7 @@ begin
   I := WordPosition(N, S, WordDelims);
   if I <> 0 then
     { find the end of the current word }
-    while (I <= Length(S)) and not(S[I] in WordDelims) do begin
+    while (I <= Length(S)) and not (S[I] in WordDelims) do begin
       { add the I'th character to result }
       Inc(Len);
       SetLength(Result, Len);
@@ -93,13 +89,14 @@ begin
   SetLength(Result, Len);
 end;
 
-function IIF(Switch: Boolean; Var1,Var2: Variant): Variant;
-{$IFDEF POLARIS_D4}overload;{$ENDIF}
+function IIF(Switch: Boolean; Var1, Var2: Variant): Variant;
+{$IFDEF POLARIS_D4} overload; {$ENDIF}
 begin
   if Switch then Result := Var1 else Result := Var2;
 end;
 {$IFDEF POLARIS_D4}
-function IIF(Switch: Boolean; Var1,Var2: String): String; overload;
+
+function IIF(Switch: Boolean; Var1, Var2: string): string; overload;
 begin
   if Switch then Result := Var1 else Result := Var2;
 end;
@@ -216,7 +213,7 @@ begin
     ShortDateFormat := oldFormat1;
     TimeSeparator := oldSep2;
     ShortTimeFormat := oldFormat2;
-  end;  
+  end;
 end;
 
 end.

@@ -502,7 +502,7 @@ begin
   //--В цикле проверяем у каких контактов добавилась история сообщений
   //и сжимаем её и сохраняем в файл
   //--Создаём необходимые папки
-  ForceDirectories(ProfilePath + 'Profile\History\Unzip');
+  ForceDirectories(ProfilePath + HistoryFileName + 'Unzip');
   //--Создаём временный лист для файла
   ListF := TStringList.Create;
   try
@@ -516,7 +516,7 @@ begin
             //--Записываем в лист историю этого контакта
             ListF.Text := Items[i].SubItems[13];
             //--Сохраняем файл во временный каталог
-            zFile := ProfilePath + 'Profile\History\Unzip\' + Items[i].SubItems[3] + '_History.htm';
+            zFile := ProfilePath + HistoryFileName + 'Unzip\' + Items[i].SubItems[3] + '_History.htm';
             zFile := RafinePath(zFile);
             ListF.SaveToFile(zFile);
             //--Очишаем лист
@@ -524,7 +524,7 @@ begin
             //--Добавляем в лист путь к файлу
             ListF.Add(zFile);
             //--Сжимаем этот файл и ложим в эту же директорию
-            Zip_File(ListF, RafinePath(ProfilePath + 'Profile\History\' + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z'));
+            Zip_File(ListF, RafinePath(ProfilePath + HistoryFileName + Items[i].SubItems[3] + '_' + Items[i].Caption + '.z'));
             //--Удаляем несжатый файл
             if FileExists(zFile) then DeleteFile(zFile);
             //--Снимаем у этого контакта флаг о изменившейся истории
@@ -544,7 +544,7 @@ begin
     ListF.Free;
   end;
   //--Удаляем директорию хранения временных файлов истории
-  if DirectoryExists(ProfilePath + 'Profile\History\Unzip') then RemoveDir(ProfilePath + 'Profile\History\Unzip');
+  if DirectoryExists(ProfilePath + HistoryFileName + 'Unzip') then RemoveDir(ProfilePath + HistoryFileName + 'Unzip');
   //--Останавливаем поток после сжатия всех необходимых файлов с историей
   ZipHistoryThread.Stop;
 end;
@@ -3916,6 +3916,7 @@ begin
     if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(self);
     //--Присваиваем UIN инфу которого хотим смотреть
     IcqContactInfoForm.ReqUIN := ContactList.SelectedItem.UIN;
+    IcqContactInfoForm.ReqProto := ContactList.SelectedItem.ContactType;
     //--Загружаем информацию о нем
     IcqContactInfoForm.LoadUserUnfo;
     //--Отображаем окно
@@ -4262,7 +4263,7 @@ var
   i: integer;
 begin
   //--Создаём необходимые папки
-  ForceDirectories(ProfilePath + 'Profile');
+  ForceDirectories(ProfilePath + 'Profile\');
   //--Сохраняем настройки положения главного окна в xml
   with TrXML.Create() do
   try

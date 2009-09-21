@@ -26,12 +26,17 @@ const
   DTseconds = 1 / (SecsPerDay);
   dblClickTime = 0.6 * DTseconds;
 
+  ProgramKey: string = '\SoftWare\IMadering';
+  cProfile: string = 'ProfilePath';
+  SettingsFileName: string = 'Profile\Settings.xml';
+  AnketaFileName: string = 'Profile\Contacts\';
+  AvatarFileName: string = 'Profile\Avatars\';
+  HistoryFileName: string = 'Profile\History\';
+
 var
   //--Переменные общие для всей программы
   MyPath: string;
   ProfilePath: string;
-  ProgramKey: string = '\SoftWare\IMadering';
-  cProfile: string = 'ProfilePath';
   CurrentIcons: string = 'Imadering';
   CurrentLang: string = 'Russian';
   CurrentSmiles: string = 'Imadering';
@@ -45,7 +50,6 @@ var
   AccountToNick: TStringList;
   AvatarServiceDisable: boolean = false;
   UpdateAuto: boolean = true;
-  SettingsFileName: string = 'Profile\IMadeSettings.xml';
   UpdateVersionPath: string = 'Update_%s_%s.z';
   UpdateFile: TMemoryStream;
   NoReSave: boolean = true;
@@ -116,6 +120,7 @@ var
   CellularPhoneL: string = 'Сотовый:';
   NoteL: string = 'Заметка:';
   EmailL: string = 'Email:';
+  ConnectFlagL: string = 'Флаг подключения:';
   UpDate1L: string = 'Обновить версию автоматически?';
   UpDate2L: string = 'На официальном сайте www.imadering.com доступно обновление программы IMadering';
   UpDate3L: string = 'Обновление';
@@ -309,6 +314,8 @@ var
   TextSmilies: boolean = false;
   YouAt: string = 'Я';
   ChatFontSize: string = '9';
+  GetCityPanel: string;
+  GetAgePanel: string;
 
   //--Список для отображения в About
   AboutList: array[1..15] of string = (

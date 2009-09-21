@@ -350,6 +350,8 @@ begin
           end
           else //--Контакт
           begin
+            //--Создаём подсказку для этого контакта
+            Items[i].SubItems[34] := ICQ_CreateHint(Items[i]);
             if (not ICQ_Show_HideContacts) and (Items[i].SubItems[1] = '0000') then goto x;
             //--Ищем группу контакта в КЛ
             for c := 0 to Categories.Count - 1 do
@@ -369,6 +371,7 @@ begin
                       ImageIndex := s;
                       ImageIndex1 := StrToInt(Items[i].SubItems[7]);
                       ImageIndex2 := StrToInt(Items[i].SubItems[8]);
+                      Hint := Items[i].SubItems[34];
                       //--Если статус в сети
                       if (Status <> 9) and (Status <> 80) and (Status <> 214) then
                       begin
@@ -401,6 +404,7 @@ begin
                   ImageIndex1 := -1;
                   ImageIndex2 := -1;
                   ContactType := 'Icq';
+                  Hint := Items[i].SubItems[34];
                 end;
                 //--Продолжаем сканирование Ростера
                 goto x;

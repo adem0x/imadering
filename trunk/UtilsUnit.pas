@@ -15,7 +15,7 @@ uses
   Dialogs, ImgList, Menus, MMSystem, StrUtils, JvDesktopAlert, ShellApi,
   JvDesktopAlertForm, StdCtrls, VarsUnit, MainUnit, IcqProtoUnit, JvTrayIcon,
   WinSock, OverbyteIcsWSocket, CategoryButtons, JvZLibMultiple, JabberProtoUnit,
-  Registry, TypInfo, MraProtoUnit;
+  Registry, TypInfo, MraProtoUnit, rXML;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileDirHist(Path, Ext, Eext: string; FileList: TStrings);
@@ -69,7 +69,7 @@ function ICQ_BodySize_Avatar: integer;
 function MRA_BodySize: integer;
 function IsNotNull(StringsArr: array of string): boolean;
 procedure DecorateURL(var Text: string);
-function NameAndLast(UIN: string): string;
+function NameAndLast(cId, cProto: string): string;
 procedure Popup(Compon: TComponent; pm: TPopupMenu);
 procedure Popup_down(Compon: TComponent; pm: TPopupMenu);
 function InitBuildInfo: string;
@@ -118,26 +118,50 @@ begin
   end;
 end;
 
-function NameAndLast(UIN: string): string;
-//var
-  //Ln, Lf: string;
+function NameAndLast(cId, cProto: string): string;
+var
+  Ln, Lf: string;
 begin
-  {Result := '';
-  if FileExists(MyPath + 'Users\Details\' + UIN + '.inf') then
+  Result := EmptyStr;
+  GetCityPanel := EmptyStr;
+  GetAgePanel := EmptyStr;
+  //--Ищем файл с анкетой этого контакта
+  if FileExists(ProfilePath + AnketaFileName + cProto + '_' + cId + '.xml') then
   begin
-    Uini := TIniFile.Create(MyPath + 'Users\Details\' + UIN + '.inf');
-    //
-    Ln := Uini.ReadString('Info', 'cFirst', '');
-    Lf := Uini.ReadString('Info', 'cLast', '');
-    if IsNotNull([Ln, Lf]) then
-    begin
-      if Ln > '' then Result := Result + Ln;
-      if (Ln > '') and (Lf > '') then Result := Result + ' ' + Lf
-      else if (Ln = '') and (Lf > '') then Result := Result + Lf;
+    //--Инициализируем XML
+    with TrXML.Create() do
+    try
+      LoadFromFile(ProfilePath + AnketaFileName + cProto + '_' + cId + '.xml');
+      //--Загружаем Имя и Фамилию
+      if OpenKey('profile\name-info') then
+      try
+        Ln := ReadString('first');
+        Lf := ReadString('last');
+      finally
+        CloseKey;
+      end;
+      //--Загружаем Город
+      if OpenKey('profile\home-info') then
+      try
+        GetCityPanel := ReadString('city');
+      finally
+        CloseKey;
+      end;
+      //--Загружаем Возраст
+      if OpenKey('profile\age-info') then
+      try
+        GetAgePanel := InfoAgeL + ' ' + ReadString('age');
+      finally
+        CloseKey;
+      end;
+    finally
+      Free();
     end;
-    //
-    Uini.Free;
-  end;}
+    //--Формируем строку
+    if Ln > '' then Result := Result + Ln;
+    if (Ln > '') and (Lf > '') then Result := Result + ' ' + Lf
+    else if (Ln = '') and (Lf > '') then Result := Result + Lf;
+  end;
 end;
 
 procedure DecorateURL(var Text: string);

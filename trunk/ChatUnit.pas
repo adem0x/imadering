@@ -893,10 +893,20 @@ begin
         Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
         HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
       end;
+      //--Ставим имя и фамилию в информационное поле
+      InfoPanel1.Caption := NameAndLast(UIN, UserType);
+      //--Ставим город и возраст в информационное поле
+      InfoPanel3.Caption := GetCityPanel;
+      InfoPanel4.Caption := GetAgePanel;
+      //--Ставим клиент в информационное поле
+      if SubItems[32] <> EmptyStr then
+      begin
+        NotifyPanel.Caption := SubItems[32];
+        NotifyPanel.Hint := SubItems[32];
+      end
+      else NotifyPanel.Caption := '...';
     end;
   end;
-  //--Ставим имя и фамилию в информационное поле
-  InfoPanel1.Caption := NameAndLast(UIN);
   if InfoPanel1.Caption = EmptyStr then InfoPanel1.Caption := ChatPageControl.ActivePage.Caption;
   //--Ставим учётную запись контакта в информационное поле
   InfoPanel2.Caption := UIN;
@@ -1055,6 +1065,7 @@ begin
   if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(MainForm);
   //--Присваиваем UIN инфу которого хотим смотреть
   IcqContactInfoForm.ReqUIN := InfoPanel2.Caption;
+  IcqContactInfoForm.ReqProto := UserType;
   //--Загружаем информацию о нем
   IcqContactInfoForm.LoadUserUnfo;
   //--Отображаем окно на передний план
