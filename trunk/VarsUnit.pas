@@ -177,6 +177,7 @@ var
   InfoChildrenL2: string = 'Более, чем 8';
   InfoChildrenL3: string = 'Нет';
   DellContactL: string = 'Контакт "%s" будет удалён. Вы уверены?';
+  DellGroupL: string = 'Группа "%s" будет удалёна. Вы уверены?';
   DellYourSelfL: string = 'Удалить себя из списка контакта: %s. Вы уверены?';
   HistoryNotFileL: string = 'История сообщений с этим контактом отсутствует';
   GroupInv: string = ' из ';
@@ -210,6 +211,8 @@ var
   AddNewGroupL: string = 'Новая группа';
   AddNewGroupErr1: string = 'Такая группа уже существует в вашем списке контактов.';
   AddNewGroupErr2: string = 'Ошибка при добавлении группы.';
+  DellGroupErrL: string = 'Ошибка при удалении группы.';
+  DellGroupOKL: string = 'Группа успешно удалена из вашего списка контактов!';
   AddNewGroupOKL: string = 'Группа успешно добавлена в ваш список контактов!';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';

@@ -766,10 +766,23 @@ object MainForm: TMainForm
     object N18: TMenuItem
       Caption = '-'
     end
-    object AddNewContactCL: TMenuItem
-      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
+    object AddNewContactICQ: TMenuItem
+      Tag = 1
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' ICQ'
       ImageIndex = 143
-      OnClick = AddNewContactCLClick
+      OnClick = AddNewContactICQClick
+    end
+    object AddNewContactJabber: TMenuItem
+      Tag = 2
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' Jabber'
+      ImageIndex = 143
+      OnClick = AddNewContactICQClick
+    end
+    object AddNewContactMRA: TMenuItem
+      Tag = 3
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' MRA'
+      ImageIndex = 143
+      OnClick = AddNewContactICQClick
     end
   end
   object ICQPopupMenu: TPopupMenu

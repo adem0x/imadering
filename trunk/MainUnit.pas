@@ -108,7 +108,7 @@ type
     N20: TMenuItem;
     SearchInCL: TMenuItem;
     N18: TMenuItem;
-    AddNewContactCL: TMenuItem;
+    AddNewContactICQ: TMenuItem;
     SendMessageForContact: TMenuItem;
     CheckStatusContact: TMenuItem;
     N21: TMenuItem;
@@ -196,6 +196,8 @@ type
     AddNewGroupJabber: TMenuItem;
     AddNewGroupMRA: TMenuItem;
     JabberSslContext: TSslContext;
+    AddNewContactJabber: TMenuItem;
+    AddNewContactMRA: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -254,7 +256,7 @@ type
     procedure RenemeGroupCLClick(Sender: TObject);
     procedure DeleteGroupCLClick(Sender: TObject);
     procedure SearchInCLClick(Sender: TObject);
-    procedure AddNewContactCLClick(Sender: TObject);
+    procedure AddNewContactICQClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
     procedure GrandAuthContactClick(Sender: TObject);
@@ -493,7 +495,6 @@ var
     Result := ReplaceStr(Result, '*', '_');
     Result := ReplaceStr(Result, '?', '_');
     Result := ReplaceStr(Result, '/', '_');
-    Result := ReplaceStr(Result, '\', '_');
     Result := ReplaceStr(Result, '|', '_');
   end;
 
@@ -3636,8 +3637,118 @@ begin
 end;
 
 procedure TMainForm.DeleteGroupCLClick(Sender: TObject);
+label
+  x;
+var
+  GroupProto, GroupId, GroupName: string;
+  i: integer;
+  TCL: TStringList;
 begin
-  ShowMessage(DevelMess);
+  //--Блокируем всё окно со списком контактов
+  MainForm.Enabled := false;
+  try
+    //--Смотрим какого это протокола группа
+    for i := 0 to ContactList.Categories.Count - 1 do
+    begin
+      if ContactList.Categories[i].GroupSelected then
+      begin
+        GroupProto := ContactList.Categories[i].GroupType;
+        GroupId := ContactList.Categories[i].GroupId;
+        GroupName := ContactList.Categories[i].GroupCaption;
+        Break;
+      end;
+    end;
+    //--Выводим диалог подтверждения удаления контакта
+    if MessageBox(Handle, PChar(Format(DellGroupL, [GroupName])), PChar((Sender as TMenuItem).Hint),
+      MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
+    begin
+      //--Удаляем группу вместе с контактами из локального КЛ
+      for i := 0 to ContactList.Categories.Count - 1 do
+      begin
+        if ContactList.Categories[i].GroupSelected then
+        begin
+          ContactList.Categories[i].Free;
+          Break;
+        end;
+      end;
+      //--Если это группа "Не в списке"
+      if GroupId = 'NoCL' then
+      begin
+        //
+        Exit;
+      end;
+      //--Удаляем выбранную группу ICQ
+      if GroupProto = 'Icq' then
+      begin
+        //--Удаляем группу временных контактов
+        if GroupId = '0000' then
+        begin
+          //--Создаём список для идентификаторов временных контактов
+          TCL := TStringList.Create;
+          try
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
+              begin
+                if (Items[i].SubItems[3] = 'Icq') and (Items[i].SubItems[1] = '0000') then
+                begin
+                  TCL.Add(Items[i].Caption + ';' + Items[i].SubItems[4] + ';' +
+                    Items[i].SubItems[5] + ';' + Items[i].SubItems[12]);
+                end;
+              end;
+            end;
+            //--Начинаем удаление временных контактов на сервере
+            if TCL.Count > 0 then ICQ_DeleteTempContactMulti(TCL);
+          finally
+            TCL.Free;
+          end;
+        end
+        else
+        begin
+          //--Открываем фазу удаления группы с сервера
+          ICQ_DeleteGroup(GroupName, GroupId);
+          ICQ_Group_Delete_Phaze := true;
+          ICQ_SSI_Phaze := true;
+        end;
+        //--Удаляем группу в локальном Ростере
+        with RosterForm.RosterJvListView do
+        begin
+          for i := 0 to Items.Count - 1 do
+          begin
+            if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) and
+              (Items[i].Caption = GroupId) then
+            begin
+              Items[i].Delete;
+              Break;
+            end;
+          end;
+          //--Удаляем все контакты из локального Ростера что были в этой группе
+          x: ;
+          for i := 0 to Items.Count - 1 do
+          begin
+            if (Items[i].SubItems[3] = 'Icq') and (Items[i].SubItems[1] = GroupId) then
+            begin
+              Items[i].Delete;
+              goto x;
+            end;
+          end;
+        end;
+      end
+      //--Удаляем выбранную группу Jabber
+      else if GroupProto = 'Jabber' then
+      begin
+
+      end
+      //--Удаляем выбранную группу Mra
+      else if GroupProto = 'Mra' then
+      begin
+
+      end;
+    end;
+  finally
+     //--В любом случае разблокировываем окно контактов
+    MainForm.Enabled := true;
+  end;
 end;
 
 procedure TMainForm.DelYourSelfContactClick(Sender: TObject);
@@ -3726,9 +3837,34 @@ begin
   end;
 end;
 
-procedure TMainForm.AddNewContactCLClick(Sender: TObject);
+procedure TMainForm.AddNewContactICQClick(Sender: TObject);
+var
+  frmAddContact: TIcqAddContactForm;
 begin
-  ShowMessage(DevelMess);
+  //--Выводим форму добавления новой группы
+  frmAddContact := TIcqAddContactForm.Create(self);
+  try
+    with frmAddContact do
+    begin
+     { //--Присваиваем иконку окну
+      AllImageList.GetIcon((Sender as TMenuItem).ImageIndex, Icon);
+      Caption := (Sender as TMenuItem).Hint;
+      //--Добавляем название группы по умолчанию
+      GNameEdit.Text := AddNewGroupL;
+      //--Ставим флаг, что это добавление новой группы
+      Create_Group := true;
+      //--Ставим флаг какой протокол
+      case (Sender as TMenuItem).Tag of
+        1: GroupType := 'Icq';
+        2: GroupType := 'Jabber';
+        3: GroupType := 'Mra';
+      end;                         }
+      //--Отображаем окно модально
+      ShowModal;
+    end;
+  finally
+    FreeAndNil(frmAddContact);
+  end;
 end;
 
 procedure TMainForm.AddNewGroupICQClick(Sender: TObject);

@@ -1525,7 +1525,7 @@ begin
           end;
           //--Строим локальный КЛ
           RosterForm.UpdateFullCL;
-          //--Сообщаем об успешном добавлении контакта
+          //--Сообщаем об успешном добавлении группы
           DAShow(InformationHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
         end
     else
@@ -1542,30 +1542,42 @@ begin
   //--Если это фаза удаления группы
   else if ICQ_Group_Delete_Phaze then
   begin
-    {case HexToInt(NextData(PktData, 2)) of
+    case HexToInt(NextData(PktData, 2)) of
       $00:
         begin
           CliDL := TStringList.Create;
-          for i := 0 to RoasterForm.CategoryButtons1.Categories.Count - 1 do
-          begin
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = '0000' then Continue;
-            if RoasterForm.CategoryButtons1.Categories[i].GroupId = 'NoCL' then Continue;
-            CliDL.Add(RoasterForm.CategoryButtons1.Categories[i].GroupId);
+          try
+            //--Заносим в список идентификаторы групп
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
+              begin
+                //--Добавляем идентификаторы групп в список
+                if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') then Continue;
+                if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) then CliDL.Add(Items[i].Caption);
+              end;
+            end;
+            //--Обновляем группы на сервере
+            ICQ_UpdateGroup_AddGroup(CliDL);
+            ICQ_AddEnd;
+          finally
+            CliDL.Free;
           end;
-          ICQ_UpdateGroup_AddGroup(CliDL);
-          ICQ_AddEnd;
-          CliDL.Free;
+          //--Закрываем сесиию удаления группы
           ICQ_Group_Delete_Phaze := false;
           ICQ_SSI_Phaze := false;
+          //--Сообщаем об успешном добавлении группы
+          DAShow(InformationHead, DellGroupOKL, EmptyStr, 133, 3, 0);
         end
     else
       begin
+        //--Закрываем сессию удаления группы
         ICQ_AddEnd;
         ICQ_Group_Delete_Phaze := false;
         ICQ_SSI_Phaze := false;
-        DAShow(false, '2', '27', EmptyStr, 156, 2, DATimeShow);
+        DAShow(ErrorHead, DellGroupErrL, EmptyStr, 134, 2, 0);
       end;
-    end;}
+    end;
   end;
 end;
 
