@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ButtonGroup, ExtCtrls, ComCtrls, JvPageList,
-  JvExControls, rXML;
+  JvExControls, rXML, Mask, JvExMask, JvSpin;
 
 type
   TJabberOptionsForm = class(TForm)
@@ -47,9 +47,14 @@ type
     JCustomServerHostEdit: TLabeledEdit;
     JCustomServerPortEdit: TLabeledEdit;
     JUseCustomServerSettingsCheckBox: TCheckBox;
-    JUseSSLCheckBox: TCheckBox;
     ConnectionGroupBox: TGroupBox;
-    ConnectionOptionGroupBox: TGroupBox;
+    Bevel1: TBevel;
+    JUseSSLCheckBox: TCheckBox;
+    CheckBox1: TCheckBox;
+    ResursLabel: TLabel;
+    ResursComboBox: TComboBox;
+    PrioritetJvSpinEdit: TJvSpinEdit;
+    PrioritetLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);
@@ -63,6 +68,7 @@ type
       Index: Integer);
     procedure JUseCustomServerSettingsCheckBoxClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure PassEditChange(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -112,20 +118,18 @@ procedure TJabberOptionsForm.ApplySettings;
 var
   SettingsXml: TrXML;
 begin
-
   //--Применяем настройки Jabber протокола
   UpdateJabberSettings;
   //----------------------------------------------------------------------------
   SettingsXml := TrXML.Create;
   //--Записываем настройки Jabber протокола в файл
-  //with TrXML.Create() do
   try
-    if FileExists(ProfilePath + SettingsFileName) then SettingsXml.LoadFromFile(ProfilePath + SettingsFileName);
-
-    //сохраняем настройки
+    if FileExists(ProfilePath + SettingsFileName) then
+      SettingsXml.LoadFromFile(ProfilePath + SettingsFileName);
+    //--Сохраняем настройки
     SaveSettingsJabberAccount(SettingsXml);
     SaveSettingsJabberConnection(SettingsXml);
-
+    //--Записываем файл
     SettingsXml.SaveToFile(ProfilePath + SettingsFileName);
   finally
     FreeAndNil(SettingsXml);
@@ -146,11 +150,9 @@ begin
     if FileExists(ProfilePath + SettingsFileName) then
     begin
       SettingsXml.LoadFromFile(ProfilePath + SettingsFileName);
-
       //--Загружаем данные логина
       LoadAccountSettings(SettingsXml);
-
-      //загружаем настройки подключения
+      //--Загружаем настройки подключения
       LoadConnectionSettings(SettingsXml);
     end;
   finally
@@ -167,7 +169,7 @@ end;
 procedure TJabberOptionsForm.SaveSettingsJabberConnection(SettingsXml: TrXML);
 begin
   with SettingsXml do
-  if OpenKey(StrSettingsJabberConnection, true) then
+    if OpenKey(StrSettingsJabberConnection, true) then
     try
       WriteBool(StrKeyUseCustomServerSettings, JUseCustomServerSettingsCheckBox.Checked);
       WriteBool(StrKeyUseSSL, JUseSSLCheckBox.Checked);
@@ -181,11 +183,11 @@ end;
 procedure TJabberOptionsForm.SaveSettingsJabberAccount(SettingsXml: TrXML);
 begin
   with SettingsXml do
-  if OpenKey(StrSettingsJabberAccount, True) then
+    if OpenKey(StrSettingsJabberAccount, True) then
     try
       WriteString(StrKeyLogin, JabberJIDEdit.Text);
       WriteBool(StrKeySavePassword, SavePassCheckBox.Checked);
-      if (SavePassCheckBox.Checked) and (PassEdit.Text <> StrPassMask) then
+      if SavePassCheckBox.Checked then
         WriteString(StrKeyPassword, EncryptString(PassEdit.Hint, PasswordByMac))
       else WriteString(StrKeyPassword, EmptyStr);
       //--Маскируем пароль
@@ -210,17 +212,13 @@ begin
   //--Обновляем данные логина в протоколе
   if JabberJIDEdit.Enabled then
   begin
-    if JabberJIDEdit.Text <> Jabber_JID then
-      RosterForm.ClearJabberClick(self);
-    //--Очищаем контакты
+    //--Если логин поменялся, то стираем контакты предыдущего логина.
+    if JabberJIDEdit.Text <> Jabber_JID then RosterForm.ClearJabberClick(self);
+    //--Логин и пароль обновляем
     Jabber_JID := JabberJIDEdit.Text;
-    if PassEdit.Text <> StrPassMask then
-    begin
-      PassEdit.Hint := PassEdit.Text;
-      Jabber_LoginPassword := PassEdit.Hint;
-    end;
+    Jabber_LoginPassword := PassEdit.Hint;
   end;
-  //обновляем настройки соединения
+  //--Обновляем настройки соединения
   Jabber_UseSSL := JUseSSLCheckBox.Checked;
   if JUseSSLCheckBox.Checked then
   begin
@@ -228,18 +226,12 @@ begin
   end else begin
     Jabber_ServerPort := CONST_Jabber_DefaultServerNoSecurePort;
   end;
-
-  if JUseCustomServerSettingsCheckBox.Checked then
-  begin
-    Jabber_ServerAddr := JCustomServerHostEdit.Text;
-    Jabber_ServerPort := JCustomServerPortEdit.Text;
-  end;
 end;
 
 procedure TJabberOptionsForm.LoadConnectionSettings(SettingsXml: TrXML);
 begin
   with SettingsXml do
-  if OpenKey(StrSettingsJabberConnection) then
+    if OpenKey(StrSettingsJabberConnection) then
     try
       JUseCustomServerSettingsCheckBox.Checked := ReadBool(StrKeyUseCustomServerSettings);
       JUseSSLCheckBox.Checked := ReadBool(StrKeyUseSSL);
@@ -253,11 +245,13 @@ end;
 procedure TJabberOptionsForm.LoadAccountSettings(SettingsXml: TrXML);
 begin
   with SettingsXml do
-  if OpenKey(StrSettingsJabberAccount) then
+    if OpenKey(StrSettingsJabberAccount) then
     try
       JabberJIDEdit.Text := ReadString(StrKeyLogin);
       if JabberJIDEdit.Text <> EmptyStr then Jabber_JID := JabberJIDEdit.Text;
       SavePassCheckBox.Checked := ReadBool(StrKeySavePassword);
+      //--Загружаем пароль
+      PassEdit.OnChange := nil;
       PassEdit.Text := ReadString(StrKeyPassword);
       if PassEdit.Text <> EmptyStr then
       begin
@@ -265,6 +259,7 @@ begin
         Jabber_LoginPassword := PassEdit.Hint;
         PassEdit.Text := StrPassMask;
       end;
+      PassEdit.OnChange := PassEditChange;
     finally
       CloseKey;
     end;
@@ -298,8 +293,8 @@ end;
 
 procedure TJabberOptionsForm.FormShow(Sender: TObject);
 begin
- OptionJvPageList.ActivePage := AccountPage;
- JabberOptionButtonGroup.ItemIndex := 0;
+  OptionJvPageList.ActivePage := AccountPage;
+  JabberOptionButtonGroup.ItemIndex := 0;
 end;
 
 procedure TJabberOptionsForm.JabberSomeEditChange(Sender: TObject);
@@ -339,6 +334,13 @@ begin
   Close;
 end;
 
+procedure TJabberOptionsForm.PassEditChange(Sender: TObject);
+begin
+  PassEdit.Hint := PassEdit.Text;
+  //--Активируем кнопку применения настроек
+  ApplyButton.Enabled := true;
+end;
+
 procedure TJabberOptionsForm.PassEditClick(Sender: TObject);
 begin
   //--Если уже заменитель пароля, то очищаем поле ввода пароля
@@ -353,7 +355,8 @@ begin
   if ShowPassCheckBox.Checked then PassEdit.PasswordChar := #0
   else PassEdit.PasswordChar := '*';
   //--Восстанавливаем событие изменения поля пароля
-  PassEdit.OnChange := JabberSomeEditChange;
+  PassEdit.OnChange := PassEditChange;
 end;
 
 end.
+

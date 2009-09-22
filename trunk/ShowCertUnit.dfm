@@ -24,10 +24,11 @@ object ShowCertForm: TShowCertForm
     Width = 486
     Height = 40
     Align = alBottom
+    BevelOuter = bvNone
     TabOrder = 0
     object AcceptCertButton: TBitBtn
-      Left = 352
-      Top = 8
+      Left = 351
+      Top = 6
       Width = 121
       Height = 25
       Caption = #1055#1088#1080#1085#1103#1090#1100
@@ -37,8 +38,8 @@ object ShowCertForm: TShowCertForm
       OnClick = AcceptCertButtonClick
     end
     object RefuseCertButton: TBitBtn
-      Left = 12
-      Top = 8
+      Left = 14
+      Top = 6
       Width = 121
       Height = 25
       Caption = #1054#1090#1074#1077#1088#1075#1085#1091#1090#1100

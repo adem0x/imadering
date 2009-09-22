@@ -120,7 +120,7 @@ end;
 
 function NameAndLast(cId, cProto: string): string;
 var
-  Ln, Lf: string;
+  Ln, Lf, La: string;
 begin
   Result := EmptyStr;
   GetCityPanel := EmptyStr;
@@ -150,7 +150,8 @@ begin
       //--Загружаем Возраст
       if OpenKey('profile\age-info') then
       try
-        GetAgePanel := InfoAgeL + ' ' + ReadString('age');
+        La := ReadString('age');
+        if La <> '0' then GetAgePanel := InfoAgeL + ' ' + La;
       finally
         CloseKey;
       end;

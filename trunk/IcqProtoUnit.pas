@@ -641,7 +641,8 @@ begin
       ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
     Result := Result + '</font>';
     //--Если есть текст доп. статуса, то пишем его
-    if RosterItem.SubItems[31] <> EmptyStr then Result := Result + '<br>' + RosterItem.SubItems[31];
+    if RosterItem.SubItems[31] <> EmptyStr then Result := Result +
+      '<br><font color=clred>' + RosterItem.SubItems[31] + '</font>';
     //--Время подключения
     if RosterItem.SubItems[30] <> EmptyStr then
       Result := Result + '<br>' + ConnTimeL + ' ' + RosterItem.SubItems[30];

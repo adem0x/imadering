@@ -16,9 +16,6 @@ uses
   UnitCrypto, VarsUnit, Graphics, CategoryButtons, rXML, JvZLibMultiple,
   OverbyteIcsMD5, OverbyteIcsMimeUtils, JabberOptionsUnit, RosterUnit;
 
-//const
-  //Jabber_Info: string = 'Profile\Contacts\Jabber_';
-
 const
   CONST_Jabber_DefaultServerSSLPort: string = '5223';
   CONST_Jabber_DefaultServerNoSecurePort: string = '5222';

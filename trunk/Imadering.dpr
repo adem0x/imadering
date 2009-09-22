@@ -44,7 +44,6 @@ uses
   IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP}
 
 begin
-
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'IMadering';

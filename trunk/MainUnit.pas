@@ -836,6 +836,14 @@ begin
       //--Разбираем JID на логин и сервер
       Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
       Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
+      //--Если сервер и порт указаны вручную
+      with JabberOptionsForm do
+        if JUseCustomServerSettingsCheckBox.Checked then
+        begin
+          //Jabber_LoginUIN := Jabber_JID;
+          Jabber_ServerAddr := JCustomServerHostEdit.Text;
+          Jabber_ServerPort := JCustomServerPortEdit.Text;
+        end;
       //--Ставим иконки статуса в окне и в трэе
       JabberToolButton.ImageIndex := 168;
       JabberTrayIcon.IconIndex := 168;
@@ -2134,9 +2142,8 @@ begin
     //--Отсылаем запрос для прокси
     JabberWSocket.sendStr(http_data);
   end;
-
+  //--Если активно SSL
   JabberWSocket.SslEnable := Jabber_UseSSL;
-
   //--Отсылаем строку начала сессии с сервером
   JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
 end;

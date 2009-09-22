@@ -43,7 +43,7 @@ type
 
     /// <param name="Cert">Сертификат, информацию о котором нужно отобразить</param>
     constructor Create(const Cert: TX509Base);
-    destructor Destory(); override;
+    destructor Destroy; override;
   end;
 
 {$WARNINGS ON}
@@ -58,7 +58,9 @@ procedure TShowCertForm.AcceptCertButtonClick(Sender: TObject);
 begin
   //--Принимаем и сохраняем в файл сертификат
   try
+    //--Добавляем в лист хэш сертификата
     FAcceptedCertsList.Add(FCertHash);
+    //--Сохраняем лист сертификатов в файл
     SaveAcceptedCertsList;
     FCertAccepted := true;
   except
@@ -72,28 +74,32 @@ end;
 function TShowCertForm.CheckAccepted(Hash: string): boolean;
 begin
   Result := false;
-  if FAcceptedCertsList <> nil then 
+  if FAcceptedCertsList <> nil then
   begin
-    if FAcceptedCertsList.IndexOf(hash) >= 0 then 
+    //--Если нашли в листе сертификатов этот хэш, то ОК
+    if FAcceptedCertsList.IndexOf(hash) > -1 then
       Result := true;
   end;
 end;
-    
-destructor TShowCertForm.Destory(); override;
-    
+
+destructor TShowCertForm.Destroy;
 begin
-  if FAcceptedCertsList <> nil then begin
+  if FAcceptedCertsList <> nil then
+  begin
+    //--Сохраняем сертификаты
     SaveAcceptedCertsList;
+    //--Уничтожаем лист сертификатов
     FreeAndNil(FAcceptedCertsList);
   end;
-    
-  inherited Destory();
+  inherited Destroy;
 end;
 
 constructor TShowCertForm.Create(const Cert: TX509Base);
 begin
   inherited Create(nil);
+  //--Создаём лист для загрузки хэшей сертификатов
   FAcceptedCertsList := TStringList.Create;
+  //--Загружаем файл сертификатов
   LoadAcceptedCertsList;
   //--Заполняем поля формы
   with Cert do
@@ -105,6 +111,7 @@ begin
     lblValidAfter.Caption := lblValidAfter.Caption + DateToStr(ValidNotAfter);
     LblValidBefore.Caption := LblValidBefore.Caption + DateToStr(ValidNotBefore);
     LblShaHash.Caption := LblShaHash.Caption + FCerthash;
+    //--Отображаем сообщение если сертификат просрочен
     LblCertExpired.Visible := HasExpired;
   end;
 end;
@@ -122,14 +129,11 @@ var
   EncryptedDataStream: TFileStream;
   DecryptedDataStream: TStream;
 begin
-  
-  if not FileExists(ProfilePath + AcceptedCertsFile) then 
-    Exit;
-  
+  if not FileExists(ProfilePath + AcceptedCertsFile) then Exit;
   try
     EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
     try
-      //--расшифровываем
+      //--Расшифровываем
       DecryptedDataStream := DecryptStream(EncryptedDataStream, UnitCrypto.PasswordByMac);
       try
         FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
@@ -143,9 +147,8 @@ begin
     on E: Exception do
       TLogger.Instance.WriteMessage(e);
   end;
-
 end;
-  
+
 procedure TShowCertForm.SaveAcceptedCertsList;
 var
   EncryptedFileStream: TFileStream;
