@@ -32,6 +32,7 @@ type
     FAcceptedCertsList: TStringList;
     FCertHash: string;
     procedure SaveAcceptedCertsList;
+    procedure LoadAcceptedCertsList;
   public
     ///  <summary>Принял ли пользователь сертификат</summary>
     property CertAccepted: boolean read FCertAccepted default false;
@@ -42,6 +43,7 @@ type
 
     /// <param name="Cert">Сертификат, информацию о котором нужно отобразить</param>
     constructor Create(const Cert: TX509Base);
+    destructor Destory(); override;
   end;
 
 {$WARNINGS ON}
@@ -68,48 +70,31 @@ begin
 end;
 
 function TShowCertForm.CheckAccepted(Hash: string): boolean;
-var
-  EncryptedDataStream: TFileStream;
-  DecryptedDataStream: TStream;
 begin
   Result := false;
-  //--Сохраняем сертификат если он принят
-  if FAcceptedCertsList <> nil then
+  if FAcceptedCertsList <> nil then 
   begin
+    if FAcceptedCertsList.IndexOf(hash) >= 0 then 
+      Result := true;
+  end;
+end;
+    
+destructor TShowCertForm.Destory(); override;
+    
+begin
+  if FAcceptedCertsList <> nil then begin
     SaveAcceptedCertsList;
     FreeAndNil(FAcceptedCertsList);
   end;
-  //--Если файл списка сертификатов не найден, то выходим
-  if not FileExists(ProfilePath + AcceptedCertsFile) then Exit;
-  //--Загружаем список принятых сертификатов из файла
-  try
-    try
-      EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
-      try
-        //--расшифровываем
-        DecryptedDataStream := DecryptStream(EncryptedDataStream, UnitCrypto.PasswordByMac);
-        try
-          FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
-          if FAcceptedCertsList.IndexOf(hash) >= 0 then Result := true;
-        finally
-          FreeAndNil(DecryptedDataStream);
-        end;
-      finally
-        FreeAndNil(EncryptedDataStream);
-      end;
-    except
-      on E: Exception do
-        TLogger.Instance.WriteMessage(e);
-    end;
-  finally
-    FreeAndNil(FAcceptedCertsList);
-  end;
+    
+  inherited Destory();
 end;
 
 constructor TShowCertForm.Create(const Cert: TX509Base);
 begin
   inherited Create(nil);
-  FAcceptedCertsList := nil;
+  FAcceptedCertsList := TStringList.Create;
+  LoadAcceptedCertsList;
   //--Заполняем поля формы
   with Cert do
   begin
@@ -132,6 +117,35 @@ begin
   MainForm.AllImageList.GetBitmap(140, AcceptCertButton.Glyph);
 end;
 
+procedure TShowCertForm.LoadAcceptedCertsList;
+var
+  EncryptedDataStream: TFileStream;
+  DecryptedDataStream: TStream;
+begin
+  
+  if not FileExists(ProfilePath + AcceptedCertsFile) then 
+    Exit;
+  
+  try
+    EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile, fmOpenRead);
+    try
+      //--расшифровываем
+      DecryptedDataStream := DecryptStream(EncryptedDataStream, UnitCrypto.PasswordByMac);
+      try
+        FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
+      finally
+        FreeAndNil(DecryptedDataStream);
+      end;
+    finally
+      FreeAndNil(EncryptedDataStream);
+    end;
+  except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(e);
+  end;
+
+end;
+  
 procedure TShowCertForm.SaveAcceptedCertsList;
 var
   EncryptedFileStream: TFileStream;
@@ -159,7 +173,6 @@ begin
           EncryptedFileStream.CopyFrom(EncryptedDataStream, EncryptedDataStream.Size);
         finally
           FreeAndNil(EncryptedFileStream);
-          FreeAndNil(FAcceptedCertsList);
         end;
       finally
         FreeAndNil(EncryptedDataStream);
