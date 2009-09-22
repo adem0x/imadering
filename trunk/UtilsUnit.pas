@@ -367,6 +367,8 @@ begin
   DA.Options := FDAOptions;
   DA.AutoFree := true;
   DA.AutoFocus := false;
+  DA.Location.Width := DAWidth;
+  DA.Location.Height := DAHeight;
   DA.Location.Position := TJvDesktopAlertPosition(DAPos);
   DA.AlertStyle := TJvAlertStyle(DAStyle);
   DA.StyleHandler.DisplayDuration := DAVisible;

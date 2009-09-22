@@ -24,7 +24,7 @@ type
     JvStandardPage1: TJvStandardPage;
     JvStandardPage2: TJvStandardPage;
     JvStandardPage3: TJvStandardPage;
-    JvStandardPage4: TJvStandardPage;
+    PageEvent: TJvStandardPage;
     JvStandardPage5: TJvStandardPage;
     CancelBitBtn: TBitBtn;
     OKBitBtn: TBitBtn;
@@ -32,7 +32,6 @@ type
     GeneralOptionGroupBox: TGroupBox;
     CLWindowGroupBox: TGroupBox;
     ChatFormGroupBox: TGroupBox;
-    EventsGroupBox: TGroupBox;
     GroupBox5: TGroupBox;
     ProxyAddressEdit: TEdit;
     Label1: TLabel;
@@ -88,6 +87,20 @@ type
     ProfilePathEdit: TEdit;
     ProfilePathLabel: TLabel;
     ProfilePathSpeedButton: TSpeedButton;
+    gbPopUp: TGroupBox;
+    laPosition: TLabel;
+    laStyle: TLabel;
+    laWidth: TLabel;
+    lax: TLabel;
+    laHeight: TLabel;
+    laSecond: TLabel;
+    laRow: TLabel;
+    cbPosition: TComboBox;
+    cbStyle: TComboBox;
+    edWidth: TEdit;
+    edHeight: TEdit;
+    edSecond: TEdit;
+    edRow: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; Index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -115,6 +128,12 @@ type
     procedure SettingsProtoBitBtnClick(Sender: TObject);
     procedure ProtocolsListViewDblClick(Sender: TObject);
     procedure ProfilePathSpeedButtonClick(Sender: TObject);
+    procedure cbPositionChange(Sender: TObject);
+    procedure cbStyleChange(Sender: TObject);
+    procedure edWidthChange(Sender: TObject);
+    procedure edHeightChange(Sender: TObject);
+    procedure edSecondChange(Sender: TObject);
+    procedure edRowChange(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -186,6 +205,14 @@ procedure TSettingsForm.LoadSettings;
 var
   ListItemD: TListItem;
 begin
+
+  //~ Параметры всплывающих окон
+  cbPosition.ItemIndex := DAPos;
+  cbStyle.ItemIndex := DAStyle;
+  edWidth.Text := IntToStr(DAWidth);
+  edHeight.Text := IntToStr(DAHeight);
+  edSecond.Text := IntToStr(DATimeShow div 1000);
+
   //--Считываем настройки из xml файла
   if FileExists(ProfilePath + SettingsFileName) then
   begin
@@ -319,6 +346,13 @@ end;
 
 procedure TSettingsForm.ApplySettings;
 begin
+  //~ Параметры всплывающих окон
+  DAPos := cbPosition.ItemIndex;
+  DAStyle := cbStyle.ItemIndex;
+  DAWidth := StrToIntDef(edWidth.Text, 180);
+  DAHeight := StrToIntDef(edHeight.Text, 160);
+  DATimeShow := StrToIntDef(edSecond.Text, 5) * 1000; 
+
   //--Применяем настройки профиля
   if AnsiCompareText(ProfilePath, ProfilePathEdit.Text) <> 0 then
   begin
@@ -522,6 +556,18 @@ begin
         finally
           CloseKey();
         end;
+
+        //~ Сохраняем параметры всплывающих окон
+        if OpenKey('settings\main\popup', True) then
+        try
+          WriteInteger('pos', DAPos);
+          WriteInteger('style', DAStyle);
+          WriteInteger('width', DAWidth);
+          WriteInteger('height', DAHeight);
+          WriteInteger('timeshow', DATimeShow);
+        finally
+          CloseKey();
+        end;
         SaveToFile(ProfilePath + SettingsFileName);
       finally
         Free();
@@ -552,10 +598,46 @@ begin
   Close;
 end;
 
+procedure TSettingsForm.cbPositionChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
+end;
+
+procedure TSettingsForm.cbStyleChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
+end;
+
 procedure TSettingsForm.DeleteProtoBitBtnClick(Sender: TObject);
 begin
   //--В будущем удаляем протоколы в активный список
   ShowMessage(DevelMess);
+end;
+
+procedure TSettingsForm.edHeightChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
+end;
+
+procedure TSettingsForm.edRowChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
+end;
+
+procedure TSettingsForm.edSecondChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
+end;
+
+procedure TSettingsForm.edWidthChange(Sender: TObject);
+begin
+  //--Активируем кнопку Применить
+  ApplyBitBtn.Enabled := true;
 end;
 
 procedure TSettingsForm.OKBitBtnClick(Sender: TObject);

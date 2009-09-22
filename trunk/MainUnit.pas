@@ -1118,7 +1118,7 @@ begin
       if (ICQUINEdit.CanFocus) and (ICQUINEdit.Text = EmptyStr) then ICQUINEdit.SetFocus
       else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then PassEdit.SetFocus;
     end;
-    //--Выходим от сюда
+    //--Выходим отсюда
     Exit;
   end;
   //--Делаем выбранный статус в меню выделенным
@@ -4269,6 +4269,17 @@ begin
         //
         TopPanelToolButton.Visible := ReadBool('b8');
         TopPanelONMenu.Checked := TopPanelToolButton.Visible;
+      finally
+        CloseKey();
+      end;
+      //~ Читаем параметры всплывающих окон
+      if OpenKey('settings\main\popup') then
+      try
+        DAPos := ReadInteger('pos');
+        DAStyle := ReadInteger('style');
+        DAWidth := ReadInteger('width');
+        DAHeight := ReadInteger('height');
+        DATimeShow := ReadInteger('timeshow');
       finally
         CloseKey();
       end;

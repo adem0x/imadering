@@ -300,9 +300,11 @@ var
   //--Переменные оформления всплывающих подсказок
   FDAOptions: TJvDesktopAlertOptions;
   DACount: integer = 0;
-  DATimeShow: integer = 7000;
-  DAPos: integer = 3;
-  DAStyle: integer = 0;
+  DATimeShow: integer = 5000;
+  DAPos: integer = 0;//TJvDesktopAlertPosition = dapBottomRight;
+  DAStyle: integer = 1;//TJvAlertStyle = asFade;
+  DAWidth: integer = 180;
+  DAHeight: integer = 160;
 
   //--Переменные для окна чата
   NoAvatar: TImage;
