@@ -557,6 +557,7 @@ object MainForm: TMainForm
     OnSessionConnected = ICQWSocketSessionConnected
     OnSocksConnected = ICQWSocketSocksConnected
     OnError = ICQWSocketError
+    OnBgException = SocketBgException
     OnSocksError = ICQWSocketSocksError
     Left = 48
     Top = 32
@@ -595,6 +596,7 @@ object MainForm: TMainForm
     OnSessionConnected = MRAWSocketSessionConnected
     OnSocksConnected = MRAWSocketSocksConnected
     OnError = MRAWSocketError
+    OnBgException = SocketBgException
     OnSocksError = MRAWSocketSocksError
     Left = 48
     Top = 64
@@ -633,6 +635,7 @@ object MainForm: TMainForm
     OnSessionConnected = JabberWSocketSessionConnected
     OnSocksConnected = JabberWSocketSocksConnected
     OnError = JabberWSocketError
+    OnBgException = SocketBgException
     OnSocksError = JabberWSocketSocksError
     SslContext = JabberSslContext
     SslEnable = False

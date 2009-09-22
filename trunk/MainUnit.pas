@@ -367,6 +367,8 @@ type
     procedure AddNewContactClick(Sender: TObject);
     procedure JabberWSocketSslVerifyPeer(Sender: TObject; var Ok: Integer;
       Cert: TX509Base);
+    procedure SocketBgException(Sender: TObject; E: Exception;
+      var CanClose: Boolean);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -405,7 +407,7 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, UnitCrypto, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit,
-  UnitLogger, EncdDecd, ShowCertUnit;
+  UnitLogger, EncdDecd, ShowCertUnit, OverbyteIcsSSLEAY, OverbyteIcsLIBEAY;
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -1895,6 +1897,13 @@ begin
   Popup(JabberToolButton, RightJabberPopupMenu);
 end;
 
+procedure TMainForm.SocketBgException(Sender: TObject; E: Exception;
+  var CanClose: Boolean);
+begin
+  UnitLogger.TLogger.Instance.WriteMessage(e);
+  CanClose := false;
+end;
+
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 var
   Pkt, challenge: string;
@@ -2141,6 +2150,10 @@ begin
       http_login + #13#10;
     //--Отсылаем запрос для прокси
     JabberWSocket.sendStr(http_data);
+  end;
+  if Jabber_UseSSL then begin
+    OverbyteIcsSSLEAY.Load(IncludeTrailingBackslash(GetCurrentDir));
+    OverbyteIcsLIBEAY.Load(IncludeTrailingBackslash(GetCurrentDir));
   end;
   //--Если активно SSL
   JabberWSocket.SslEnable := Jabber_UseSSL;
