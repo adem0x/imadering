@@ -71,7 +71,41 @@ procedure Jabber_SendMessage(mJID, Msg: string);
 implementation
 
 uses
-  UtilsUnit, UnitLogger;
+  UtilsUnit, UnitLogger, UnitPluginObserver, UnitPluginInterface;
+
+{$REGION 'Plugin Events'}
+
+procedure StringToPWide(sStr: string; var Data: PWideChar);
+var
+  iSize: integer;
+  iNewSize: integer;
+begin
+  iSize := Length(sStr) + 1;
+  iNewSize := iSize * 2;
+
+  MultiByteToWideChar(CP_ACP, 0, PChar(sStr), iSize, Data, iNewSize);
+end;
+
+procedure NotifyPluginDisconnect;
+var
+  Param: PDisconnectParams;
+begin
+  //--сообщение плагинам о разъединении
+  New(Param);
+  with Param^ do
+  begin
+    cSize := SizeOf(TDisconnectParams);
+    ErrorCode := 1;
+    Server := 'INSERT ADDRESS HERE!';
+    Port := StrToIntDef(Jabber_ServerPort, 0);
+    IsSSLActive := Cardinal(Jabber_UseSSL);
+  end;
+  PluginObserver.Notify(eDisconnect, pJabber, Param);
+  Dispose(Param);
+end;
+
+{$ENDREGION}
+
 
 function JabberPlain_Auth: string;
 var
@@ -146,6 +180,7 @@ end;
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
 var
   Str, Response: string;
+  Param: PAuthorizationParams;
 begin
 { username   - имя JIDNode
   realm      - хост машины
@@ -161,11 +196,22 @@ begin
   //--Шифруем строку алгоритмом Base64
   Str := Base64Encode(Str);
   Result := Format('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''>%s</response>', [Str]);
+
+  New(Param);
+  with Param^ do begin
+    cSize := SizeOf(TAuthorizationParams);
+    UserLogin := PWideChar(User);
+    Server := PWideChar(Jabber_ServerAddr);
+    Port := StrToIntDef(Jabber_ServerPort, 0);
+    IsSSLActive := Cardinal(Jabber_UseSSL);
+  end;
+  PluginObserver.Notify(eAuthorization, pJabber, Param);
+  Dispose(Param);
 end;
 
 procedure Jabber_GoOffline;
 var
-  i: integer;
+  i: Integer;
 begin
   //--Отключаем таймер пингов
   MainForm.UnstableJabberStatus.Checked := false;
@@ -233,6 +279,9 @@ begin
   end;
   //--Запускаем обработку Ростера
   RosterForm.UpdateFullCL;
+
+  //--посылаем сообщение плагинам
+  NotifyPluginDisconnect;
 end;
 
 function Jabber_SetBind: string;
@@ -417,12 +466,26 @@ end;
 procedure Jabber_SendMessage(mJID, Msg: string);
 var
   m: string;
+  Param: PContactWriteMessageParams;
 begin
   //--Отправляем сообщение для jabber контакта
   m := Format(JmessHead, [mJID, Jabber_Seq]) + '<body>' + Msg + '</body></message>';
   MainForm.JabberWSocket.SendStr(UTF8Encode(m));
   //--Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
+
+  New(Param);
+  with Param^ do begin
+    cSize := SizeOf(TContactWriteMessageParams);
+    FromContactID := PWideChar(WideString(Jabber_JID));
+    FromContactCaption := PWideChar(WideString(Jabber_LoginUIN));
+    ToContactID := PWideChar(WideString(mJID));
+    ToContactCaption := PWideChar(WideString(mJID));
+    MessageText := PWideChar(WideString(Msg));
+    Direction := mdFROMme;
+  end;
+  PluginObserver.Notify(eWriteMessage, pJabber, Param);
+  Dispose(Param);
 end;
 
 procedure Jabber_ParsePresence(XmlData: string);
@@ -485,6 +548,7 @@ procedure Jabber_ParseMessage(XmlData: string);
 var
   pJID, InMsg, Nick, Mess, msgD, PopMsg: string;
   RosterItem: TListItem;
+  Param: PContactWriteMessageParams;
 begin
   //--Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then ChatForm := TChatForm.Create(MainForm);
@@ -569,6 +633,19 @@ begin
             //--Добавляем сообщение в текущий чат
             if ChatForm.AddMessInActiveChat(Nick, PopMsg, pJID, msgD, Mess) then
               RosterItem.SubItems[36] := EmptyStr;
+
+            New(Param);
+            with Param^ do begin
+              cSize := SizeOf(TContactWriteMessageParams);
+              FromContactID := PWideChar(WideString(pJID));
+              FromContactCaption := PWideChar(WideString(Nick));
+              ToContactID := PWideChar(WideString(Jabber_JID));
+              ToContactCaption := PWideChar(WideString(Jabber_LoginUIN));
+              MessageText := PWideChar(WideString(Mess));
+              Direction := mdTOme;
+            end;
+            PluginObserver.Notify(eWriteMessage, pJabber, Param);
+            Dispose(Param);
           end;
         end;
       finally

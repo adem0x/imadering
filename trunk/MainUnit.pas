@@ -379,6 +379,8 @@ type
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
     procedure WMQueryEndSession(var Msg: TWMQueryEndSession); message WM_QueryEndSession;
+    procedure LoadPlugins;
+    procedure LoadIcon(PluginHandle: Cardinal);
   public
     { Public declarations }
     RoasterGroup: TButtonCategory;
@@ -407,7 +409,11 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, UnitCrypto, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit,
-  UnitLogger, EncdDecd, ShowCertUnit;
+  UnitLogger, EncdDecd, ShowCertUnit, UnitPluginObserver, UnitPluginInterface, 
+  PluginLoaderUnit;
+
+resourcestring
+  StrPluginsFolder = 'Profile\Plugins\';
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -481,6 +487,68 @@ begin
     if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
       Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
     if Left < Screen.WorkAreaLeft then Left := Screen.WorkAreaLeft;
+  end;
+end;
+
+procedure TMainForm.LoadIcon(PluginHandle: Cardinal);
+var
+  PluginIcon: TBitmap;
+begin
+  PluginIcon := TBitmap.Create;
+  try
+    PluginIcon.LoadFromResourceName(PluginHandle, 'Icon');
+  except
+    on E: EResNotFound do
+    begin
+      TLogger.Instance.WriteMessage(e);
+      TLogger.Instance.WriteMessage('No icon for plugin. try to use default icon from Application resources');
+      PluginIcon.LoadFromResourceName(HInstance, 'Icon');
+    end;
+    on E: Exception do
+      TLogger.Instance.WriteMessage(e);
+  end;
+  SettingsForm.PluginsIconsImageList.Add(PluginIcon, nil);
+  TLogger.Instance.WriteMessage(IntToStr(SettingsForm.PluginsJvImageList.Images.Count));
+  FreeAndNil(PluginIcon);
+end;
+
+procedure TMainForm.LoadPlugins;
+var
+  SR: TSearchRec;
+  PluginLoader: TPluginLoader;
+  PluginHandle: THandle;
+  IconResource: TResourceStream;
+  sPath: String;
+begin
+  sPath := ProfilePath + StrPluginsFolder;
+  SettingsForm.PluginsJvImageList.Clear;
+  if FindFirst(sPath + '*.imr', faAnyFile, sr) = 0 then
+  begin
+    PluginLoader := TPluginLoader.Create;
+    try
+      repeat
+        if (sr.Name <> '.') and (SR.Name <> '..') then
+        begin
+          try
+            PluginHandle := PluginLoader.LoadPlugin(sPath + sr.Name);
+            if PluginHandle <> NULL then begin
+              TLogger.Instance.WriteMessage('Plugin %s loaded successfully', [sPath + SR.Name]);
+
+              //--Загружаем иконку плагина из его ресурсов
+              LoadIcon(PluginHandle);
+            end else begin
+              TLogger.Instance.WriteMessage('Can''t load plugin from %s', [sPath + SR.Name]);
+            end;
+          except
+            on E: Exception do
+              UnitLogger.TLogger.Instance.WriteMessage(e);
+          end;
+        end;
+      until FindNext(sr) <> 0;
+    finally
+      FreeAndNil(PluginLoader);
+    end;
+    FindClose(sr);
   end;
 end;
 
@@ -4005,6 +4073,7 @@ var
   S: string;
   buf: array[0..$FF] of char;
   Size: integer;
+  Param: PApplicationLoadedParams;
 begin
   //--Устанавливаем начальное значение ширины окна КЛ
   Width := 199;
@@ -4076,6 +4145,17 @@ begin
   JvTimerList.Events[7].Enabled := true;
   //--Инициализируем переменную времени начала статистики трафика сессии
   SesDataTraf := now;
+
+  //--загружаем плагины из папки
+  LoadPlugins;
+
+  //--Уведомляем плагины о окончании загрузки приложения
+  New(Param);
+  Param.cSize := sizeof(Param);
+  Param.AppVersion := Update_Version;
+  Param.ProfilePath := PWideChar(ProfilePath);
+  PluginObserver.Notify(eApplicationLoaded, pAny, Pointer(@Param));
+  Dispose(Param);
 end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);

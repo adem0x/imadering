@@ -563,6 +563,31 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
+          object PluginsJvImageList: TJvImageListViewer
+            Left = 16
+            Top = 24
+            Width = 401
+            Height = 281
+            HorzScrollBar.Tracking = True
+            VertScrollBar.Tracking = True
+            Images = PluginsIconsImageList
+            Options.AutoCenter = False
+            Options.ShowCaptions = False
+            SelectedIndex = -1
+            TabOrder = 0
+            TabStop = True
+            OnDblClick = PluginsJvImageListDblClick
+            OnGetCaption = PluginsJvImageListGetCaption
+          end
+          object ShowPluginConfigButton: TButton
+            Left = 16
+            Top = 320
+            Width = 401
+            Height = 25
+            Caption = #1053#1072#1089#1090#1088#1086#1080#1090#1100' '#1074#1099#1073#1088#1072#1085#1085#1099#1081' '#1087#1083#1072#1075#1080#1085'...'
+            TabOrder = 1
+            OnClick = PluginsJvImageListDblClick
+          end
         end
       end
       object JvStandardPage5: TJvStandardPage
@@ -1004,5 +1029,12 @@ object SettingsForm: TSettingsForm
     TabOrder = 4
     TabStop = False
     OnClick = ApplyBitBtnClick
+  end
+  object PluginsIconsImageList: TImageList
+    AllocBy = 1
+    Height = 100
+    Width = 100
+    Left = 160
+    Top = 384
   end
 end

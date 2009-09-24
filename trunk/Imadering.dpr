@@ -37,9 +37,15 @@ uses
   UnitPluginInterface in 'UnitPluginInterface.pas',
   UnitPluginObserver in 'UnitPluginObserver.pas',
   UnitCustomExceptions in 'UnitCustomExceptions.pas',
-  PluginLoaderUnit in 'PluginLoaderUnit.pas';
+  PluginLoaderUnit in 'PluginLoaderUnit.pas',
+  OverbyteIcsSSLEAY in 'lib\OverbyteIcsSSLEAY.pas',
+  OverbyteIcsLIBEAY in 'lib\OverbyteIcsLIBEAY.pas';
                                                                   
 {$R *.res}
+//--Дефолтная иконка для плагина
+//--Для ее обновления надо перекомпилировать ресурсы (см. brcc32.exe) 
+{$R resources.RES}
+
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or
   IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP}
 

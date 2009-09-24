@@ -3,8 +3,10 @@ del /s *.dcu
 del /s *.exe
 del /s *.xml
 del /s *.log
-del DummyPlugin\*.dll
+del /s *.map
+del Plugins\*.imr
 rd __history
 rd HistoryPacker\__history
 rd klic\__history
 rd lib\__history
+rd Plugins\__history

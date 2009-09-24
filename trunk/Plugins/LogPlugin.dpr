@@ -13,9 +13,13 @@ uses
   SysUtils,
   Classes,
   UnitPluginInterface in '..\UnitPluginInterface.pas',
-  DummyPluginUnit in 'DummyPluginUnit.pas';
+  CustomPluginUnit in 'CustomPluginUnit.pas',
+  LogPluginUnit in 'LogPluginUnit.pas',
+  LogForm in 'LogForm.pas' {Form1};
 
-{$R *.res}
+{$E imr}
+//--линкуем иконку!
+{$R RESOURCES.RES}
 
 function IsIMRPlugin: HRESULT; stdcall;
 begin
@@ -24,15 +28,19 @@ end;
 
 function CreatePluginInstance(const IID: TGUID; var Obj: IUnknown): HRESULT; stdcall;
 var
-  Plugin: TDummyPlugin;
+  Plugin: TCustomPlugin;
 begin
   result := S_FALSE;
 
-  Plugin := TDummyPlugin.Create;
+  if not Assigned(ClassOfPlugin) then exit;
+
+
+  Plugin := TCustomPlugin(ClassOfPlugin.NewInstance);
   if Plugin.GetInterface(IID, obj) then
     result := S_OK
-  else
+  else begin
     result := E_NOINTERFACE;
+  end;
 
 end;
 

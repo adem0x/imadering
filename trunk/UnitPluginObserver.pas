@@ -11,24 +11,24 @@ unit UnitPluginObserver;
 
 interface
 
-  uses UnitPluginInterface, SysUtils, classes;
+  uses UnitPluginInterface, SysUtils, classes, Contnrs;
 
   type
     /// <summary>Описывает сообщение, на которое подписан плагин</summary>
     TRegisteredEvent = class(TObject)
       /// <summary>Тип сообщение</summary>
       EventType: TEventType;
-      /// <summary>До или после события</summary>
-      EventAlign: TEventAlignType;
     end;
 
     TRegisteredPlugin = class(TObject)
       protected
         FPlugin: IIMRPlugin;
-        FRegisteredEvents: TList;
+        
         FName: string;
         procedure GatherPluginEvents();
       public
+        RegisteredEvents: TObjectList;
+        
         property Name: string read FName;
         property Plugin: IIMRPlugin read FPlugin;
         constructor Create(__Plugin: IIMRPlugin);
@@ -37,24 +37,50 @@ interface
         class function GetPluginName(__Plugin: IIMRPlugin): string;
       end;
 
+    /// <summary>Дочерний класс, выбирающий политику продолжения выполнения</summary>  
+    TObserverStratege = class(TObject)
+      FStates: array of boolean;
+      procedure ApplyStatus(Status: Boolean); virtual;
+      function GetAnswer: Boolean; virtual; abstract;
+      procedure ResetState; virtual;
+    end;
+
+    TObserverStrategeFullOk = class(TObserverStratege)
+      function GetAnswer: Boolean; override;
+    end;
+
+    TObserverStrategeFullFalse = class(TObserverStratege)
+      function GetAnswer: Boolean; override;    
+    end;
+    
+    ClassObserverStratege = class of TObserverStratege;      
+
     /// <summary>см. паттерн Observer</summary>
     TPluginObserver = class (TObject)
-      FPlugins: TList;
-    public
-      procedure Attach(__Plugin: IIMRPlugin);
-      procedure Detach(__Plugin: IIMRPlugin);
-      procedure Notify(Event: TEventType; EventAlign: TEventAlignType);
+      protected
+        FPlugins: TObjectList;
+        FStratege: TObserverStratege;
+        FPluginsByEvent: array[TEventType] of TObjectList;
+        function GetPluginName(i: Integer): string;
+        constructor Create(StrategeClass: ClassObserverStratege);
+        destructor Destroy(); override;
+      public
+        property PluginNames[i: Integer]: string read GetPluginName;
+        procedure ShowConfig(i: Integer);
+        function GetPluginCount: Integer;
+        function Attach(__Plugin: IIMRPlugin): string;
+        procedure Detach(__Plugin: IIMRPlugin);
+        /// <summmary>Уведомить плагины о каком-либо действии</summary>
+        function Notify(const EventType: TEventType; const Protocol: TProtocol; Data: Pointer):  boolean;
+    end;   
 
-      constructor Create();
-      destructor Destroy(); override;
-    end;
 
   var
     PluginObserver: TPluginObserver;
 
 implementation
 
-uses UnitLogger, windows, UnitCustomExceptions;
+uses UnitLogger, windows, UnitCustomExceptions, VarsUnit;
 
 {$REGION 'TRegisteredPlugin' }
 
@@ -64,21 +90,21 @@ var
   Status: HRESULT;
 begin
   inherited Create();
-  FRegisteredEvents := TList.Create;
+  RegisteredEvents := TObjectList.Create(true);
   FPlugin := __Plugin;
+  if FAILED(FPlugin.Init(-1)) then
+    RaiseLastOSError;
   FName := TRegisteredPlugin.GetPluginName(__Plugin);
-    
+
   GatherPluginEvents;
 end;
 
 destructor TRegisteredPlugin.destroy;
 var
-  Obj: pointer;
+  Obj: TObject;
 begin
-  for Obj in FRegisteredEvents do begin
-    TObject(Obj).Free();
-  end;
-  FreeAndNil(FRegisteredEvents);
+  FPlugin.Quit;
+  FreeAndNil(RegisteredEvents);
   inherited;
 end;
 
@@ -90,13 +116,13 @@ var
 begin
   try
     len := FPlugin.GetEventsCount;
-    FRegisteredEvents.Capacity := len;
+    RegisteredEvents.Capacity := len;
 
     for I := 0 to len - 1 do begin
       Event := TRegisteredEvent.Create;
-      if FPlugin.RegisterCallBack(Event.EventType, Event.EventAlign, i) <> S_OK then
+      if FPlugin.RegisterCallBack(Event.EventType, i) <> S_OK then
         exit;
-      FRegisteredEvents.Add(Event);
+      RegisteredEvents.Add(Event);
     end;
     
   except
@@ -132,27 +158,43 @@ end;
 
 {$REGION 'TPluginObserver' }
 
-procedure TPluginObserver.Attach(__Plugin: IIMRPlugin);
+function TPluginObserver.Attach(__Plugin: IIMRPlugin): string;
 var
   Plugin: TRegisteredPlugin;
+  Event: TRegisteredEvent;
+  p: Pointer;
 begin
   Plugin := TRegisteredPlugin.Create(__Plugin);
+  
   Self.FPlugins.Add(Plugin);
+  for p in Plugin.RegisteredEvents do begin
+    Event := TRegisteredEvent(p);
+    Self.FPluginsByEvent[Event.EventType].Add(Plugin);
+  end;
+
+  result := Plugin.Name;
 end;
 
-constructor TPluginObserver.Create;
+constructor TPluginObserver.Create(StrategeClass: ClassObserverStratege);
+var
+  i: Integer;
+  List: TEventType;
 begin
   inherited Create;
-  FPlugins := TList.Create;
+  FPlugins := TObjectList.Create(true);
+
+  //SetLength(Self.FPluginsByEvent, CONST_EVENTS_COUNT);
+  //for I := 0 to High(FPluginsByEvent) - 1 do
+  for List := Low(List) to High(List) do
+  begin
+    FPluginsByEvent[List] := TObjectList.Create(false);    
+  end;
+
+  FStratege := TObserverStratege(StrategeClass.NewInstance);
 end;
 
 destructor TPluginObserver.Destroy;
-var
-  Obj: pointer;
 begin
-  for Obj in FPlugins do begin
-    TObject(Obj).Free();
-  end;
   FreeAndNil(FPlugins);
 
   inherited;
@@ -179,16 +221,103 @@ begin
   end;
 end;
 
-procedure TPluginObserver.Notify(Event: TEventType;
-  EventAlign: TEventAlignType);
+function TPluginObserver.GetPluginCount: Integer;
 begin
-  //
+  result := FPlugins.Count;
+end;
+
+function TPluginObserver.GetPluginName(i: Integer): string;
+begin
+  try
+    result := TRegisteredPlugin(FPlugins[i]).Name;  
+  except
+    on E: Exception do begin
+      UnitLogger.TLogger.Instance.WriteMessage(e);
+    end;
+  end;
+end;
+
+function TPluginObserver.Notify(const EventType: TEventType; const Protocol: TProtocol; Data: Pointer): boolean;
+var
+  iter_Plugin: TRegisteredPlugin;
+  Event: TObject;
+  Context: UnitPluginInterface.TContext;
+  Status: HRESULT;
+  p: Pointer;
+begin
+  Context.cSize := SizeOf(Context);
+  Context.ActiveProtocol := Protocol; 
+  Context.ContinueExecution := Cardinal(true);
+  
+  FStratege.ResetState;
+  
+  for p in FPluginsByEvent[EventType] do begin
+    iter_Plugin := TRegisteredPlugin(p);
+    try
+      Status := iter_Plugin.FPlugin.NotifyPlugin(Context, EventType, Data);
+      if Failed(Status) then
+        raise TPluginException.Create(Status);
+    except
+      on E: Exception do begin
+        TLogger.Instance.WriteMessage(e);
+        Context.ContinueExecution := Cardinal(true);
+      end;
+    end;
+    FStratege.ApplyStatus(Boolean(Context.ContinueExecution));
+  end;
+
+  result := FStratege.GetAnswer;
+end;
+
+procedure TPluginObserver.ShowConfig(i: Integer);
+begin
+  if (i < 0) or (i > FPlugins.Count) then
+    exit;
+
+  TRegisteredPlugin(FPlugins[i]).FPlugin.Configure(PWideChar(ProfilePath));
+end;
+
+{$ENDREGION}
+
+{$REGION 'Observer Strateges' }
+
+function TObserverStrategeFullOk.GetAnswer: Boolean;
+var
+  t: Boolean;
+begin
+  result := true;
+  for t in FStates do
+    if not t then
+      result := false;
+end;
+
+function TObserverStrategeFullFalse.GetAnswer: Boolean;
+var
+  t: Boolean;
+begin
+  result := false;
+  for t in FStates do
+    if t then
+      result := true;    
+end;
+
+//////////////////////////
+
+procedure TObserverStratege.ApplyStatus(Status: Boolean);
+begin
+  SetLength(FStates, High(FStates) + 2);
+  FStates[High(FStates)] := Status;
+end;
+
+procedure TObserverStratege.ResetState;
+begin
+  SetLength(FStates, 0);
 end;
 
 {$ENDREGION}
 
 initialization
-  PluginObserver := TPluginObserver.Create;
+  PluginObserver := TPluginObserver.Create(TObserverStrategeFullFalse);
 
 finalization
   PluginObserver.Free;

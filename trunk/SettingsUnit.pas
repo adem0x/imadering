@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, JvPageList, JvExControls, ExtCtrls, ButtonGroup, StdCtrls, Buttons,
   rXml, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
-  Registry, ComCtrls;
+  Registry, ComCtrls, ImgList, JvExForms, JvCustomItemViewer, JvImageListViewer;
 
 type
   TSettingsForm = class(TForm)
@@ -88,6 +88,9 @@ type
     ProfilePathEdit: TEdit;
     ProfilePathLabel: TLabel;
     ProfilePathSpeedButton: TSpeedButton;
+    PluginsJvImageList: TJvImageListViewer;
+    PluginsIconsImageList: TImageList;
+    ShowPluginConfigButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; Index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -115,6 +118,9 @@ type
     procedure SettingsProtoBitBtnClick(Sender: TObject);
     procedure ProtocolsListViewDblClick(Sender: TObject);
     procedure ProfilePathSpeedButtonClick(Sender: TObject);
+    procedure PluginsJvImageListGetCaption(Sender: TObject; ImageIndex: Integer;
+      var ACaption: WideString);
+    procedure PluginsJvImageListDblClick(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -135,7 +141,7 @@ implementation
 
 uses
   MainUnit, VarsUnit, IcqOptionsUnit, UnitCrypto, JvBrowseFolder, UtilsUnit,
-  UnitLogger;
+  UnitLogger, PluginLoaderUnit, UnitPluginObserver;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -603,6 +609,22 @@ begin
   else if ProtocolsListView.Selected.Index = 2 then MainForm.JabberSettingsClick(self);
 end;
 
+procedure TSettingsForm.PluginsJvImageListDblClick(Sender: TObject);
+begin
+  try
+    PluginObserver.ShowConfig(PluginsJvImageList.SelectedIndex);
+  except
+    on E: Exception do
+      UnitLogger.TLogger.Instance.WriteMessage(e);
+  end;
+end;
+
+procedure TSettingsForm.PluginsJvImageListGetCaption(Sender: TObject;
+  ImageIndex: Integer; var ACaption: WideString);
+begin
+  ACaption := PluginObserver.PluginNames[ImageIndex];
+end;
+
 procedure TSettingsForm.ProfilePathSpeedButtonClick(Sender: TObject);
 var
   DDir: string;
@@ -777,6 +799,9 @@ begin
   ProfilePathEdit.Text := ProfilePath;
   //--Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := false;
+
+  //--Видимо  баг в JVCL. Приходится указывать в коде еще раз...
+  PluginsJvImageList.Options.ShowCaptions := true;
 end;
 
 procedure TSettingsForm.FormShow(Sender: TObject);

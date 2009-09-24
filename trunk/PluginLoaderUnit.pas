@@ -31,11 +31,11 @@ interface
       public
         constructor Create();
         destructor Destory();
-        function LoadPlugin(DllPath: string): HRESULT;
+        function LoadPlugin(DllPath: string): THandle;
 
         /// <summary>Если библиотека наш плагин - возвращаем
         ///  хэндл. в противном случае баранку</summary>a
-        class function CheckLibrary(DllPath: string): HRESULT;
+        class function CheckLibrary(DllPath: string): THandle;
     end;
 
 implementation
@@ -48,7 +48,7 @@ resourcestring
 
 { TPluginLoader }
 
-class function TPluginLoader.CheckLibrary(DllPath: string): HRESULT;
+class function TPluginLoader.CheckLibrary(DllPath: string): THandle;
 var
   LibHandle: THandle;
   TestFunc: TDllTestFunc;
@@ -90,7 +90,7 @@ begin
 
 end;
 
-function TPluginLoader.LoadPlugin(DllPath: string): HRESULT;
+function TPluginLoader.LoadPlugin(DllPath: string): THandle;
 var
   LibHandle: THandle;
   NewInstanceFunc: TDllInstanceFunc;
@@ -99,7 +99,7 @@ var
   status: HRESULT;
 begin
   try
-    result := S_FALSE;
+    result := 0;
 
     LibHandle := TPluginLoader.CheckLibrary(DllPath);
     if LibHandle = NULL then
@@ -120,7 +120,7 @@ begin
 
     PluginObserver.Attach(Plugin);
 
-    result := S_OK;
+    result := LibHandle;
   except
     on E: Exception do
       TLogger.Instance.WriteMessage(e);

@@ -98,7 +98,7 @@ begin
               begin
                 //--Узнаём ключ сессии
                 skey := IsolateTextString(Doc, 'action="', '"');
-                SendFileHttpClient.
+                //SendFileHttpClient.
               end;
             1:
               begin
