@@ -19,7 +19,7 @@ object TrafficForm: TTrafficForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object GroupBox1: TGroupBox
+  object TrafGroupBox: TGroupBox
     Left = 8
     Top = 8
     Width = 414
@@ -32,7 +32,7 @@ object TrafficForm: TTrafficForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
-    object Label1: TLabel
+    object CurTrafLabel: TLabel
       Left = 13
       Top = 20
       Width = 305
@@ -45,7 +45,7 @@ object TrafficForm: TTrafficForm
       Font.Style = []
       ParentFont = False
     end
-    object Label2: TLabel
+    object AllTrafLabel: TLabel
       Left = 13
       Top = 73
       Width = 252
@@ -58,7 +58,7 @@ object TrafficForm: TTrafficForm
       Font.Style = []
       ParentFont = False
     end
-    object Button1: TButton
+    object ResetCurTrafButton: TButton
       Left = 340
       Top = 37
       Width = 63
@@ -72,9 +72,9 @@ object TrafficForm: TTrafficForm
       ParentFont = False
       TabOrder = 0
       TabStop = False
-      OnClick = Button1Click
+      OnClick = ResetCurTrafButtonClick
     end
-    object Button2: TButton
+    object ResetAllTrafButton: TButton
       Left = 340
       Top = 90
       Width = 63
@@ -88,9 +88,9 @@ object TrafficForm: TTrafficForm
       ParentFont = False
       TabOrder = 1
       TabStop = False
-      OnClick = Button2Click
+      OnClick = ResetAllTrafButtonClick
     end
-    object Edit1: TEdit
+    object CurTrafEdit: TEdit
       Left = 12
       Top = 39
       Width = 322
@@ -106,7 +106,7 @@ object TrafficForm: TTrafficForm
       ReadOnly = True
       TabOrder = 2
     end
-    object Edit2: TEdit
+    object AllTrafEdit: TEdit
       Left = 12
       Top = 92
       Width = 322
@@ -123,7 +123,7 @@ object TrafficForm: TTrafficForm
       TabOrder = 3
     end
   end
-  object BitBtn1: TBitBtn
+  object CloseBitBtn: TBitBtn
     Left = 166
     Top = 138
     Width = 97
@@ -132,6 +132,6 @@ object TrafficForm: TTrafficForm
     Default = True
     TabOrder = 1
     TabStop = False
-    OnClick = BitBtn1Click
+    OnClick = CloseBitBtnClick
   end
 end

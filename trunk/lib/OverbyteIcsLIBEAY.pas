@@ -518,7 +518,7 @@ const
     f_EVP_cleanup :                            procedure; cdecl = nil;
     }
 
-function Load(RootPath: string = '') : Boolean;
+function Load : Boolean;
 function WhichFailedToLoad : String;
 {$IFDEF SSL_NEVER}
 function ERR_GET_REASON(ErrCode : Cardinal) : Cardinal;
@@ -546,7 +546,7 @@ function Asn1ToString(PAsn1 : PASN1_STRING): String;
 
 const
     GLIBEAY_DLL_Handle   : THandle = 0;
-    GLIBEAY_DLL_Name     : String  = 'LIBEAY32.DLL';
+    GLIBEAY_DLL_Name     : String  = 'OPENLIBEAY32.DLL';
     GLIBEAY_DLL_FileName : String  = '*NOT LOADED*';
 
     { Version stuff added 07/12/05                                            }
@@ -591,10 +591,8 @@ const
 
 implementation
 
-uses UnitLogger;
-
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-function Load(RootPath: string = '') : Boolean;
+function Load : Boolean;
 var
     ErrCode : Integer;
 begin
@@ -604,8 +602,7 @@ begin
         Result := TRUE;
         Exit;                                 // Already loaded
     end;
-    UnitLogger.TLogger.Instance.WriteMessage('Try to load lib at ' + RootPath + GLIBEAY_DLL_Name, lError);
-    GLIBEAY_DLL_Handle := LoadLibrary(PChar(RootPath + GLIBEAY_DLL_Name));
+    GLIBEAY_DLL_Handle := LoadLibrary(PChar(GLIBEAY_DLL_Name));
     if GLIBEAY_DLL_Handle < HINSTANCE_ERROR then begin
         ErrCode            := GLIBEAY_DLL_Handle;
         GLIBEAY_DLL_Handle := 0;

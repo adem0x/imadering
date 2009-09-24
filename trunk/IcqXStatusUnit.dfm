@@ -211,7 +211,6 @@ object IcqXStatusForm: TIcqXStatusForm
       end>
     ItemIndex = 0
     TabOrder = 0
-    OnButtonClicked = XButtonGroupButtonClicked
   end
   object XtextMemo: TMemo
     Left = 8

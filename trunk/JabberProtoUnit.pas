@@ -51,8 +51,11 @@ var
   FRootTag: string = 'stream:stream';
   Iq_Roster: string = 'jabber:iq:roster';
   JmessHead: string = '<message type=''chat'' to=''%s'' id=''%d''>';
+  JPlainMechanism: string = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''PLAIN''>%s</auth>';
+  JSessionId: string;
 
 function JabberDIGESTMD5_Auth(User, Host, Password, nonce, cnonce: string): string;
+function JabberPlain_Auth: string;
 procedure Jabber_GoOffline;
 function Jabber_SetBind: string;
 function Jabber_SetSession: string;
@@ -68,7 +71,27 @@ procedure Jabber_SendMessage(mJID, Msg: string);
 implementation
 
 uses
-  UtilsUnit;
+  UtilsUnit, UnitLogger;
+
+function JabberPlain_Auth: string;
+var
+  uu, upass, ujid, c, buff: string;
+begin
+  try
+    //--Преобразуем в UTF-8
+    ujid := UTF8Encode(Jabber_JID);
+    uu := UTF8Encode(Jabber_LoginUIN);
+    upass := UTF8Encode(Jabber_LoginPassword);
+    //--Записываем в память параметры логина
+    buff := ujid + ''#0 + uu + ''#0 + upass;
+    //--Кодируем в строку
+    c := Base64Encode(buff);
+  except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(e);
+  end;
+  Result := c;
+end;
 
 function GenResponse(UserName, realm, digest_uri, Pass, nonce, cnonce: string): string;
 const
@@ -224,6 +247,8 @@ function Jabber_SetSession: string;
 begin
   Result := Format(IqTypeSet, [Jabber_Seq]) + '<session xmlns=''urn:ietf:params:xml:ns:xmpp-session''/>' +
     '</iq>';
+  //--Запоминаем Id для запроса сессии (google talk)
+  JSessionId := Format('imadering_%d', [Jabber_Seq]);
   //--Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
 end;
@@ -289,10 +314,14 @@ begin
           RosterForm.RosterItemSetFull(ListItemD);
           //--Обновляем субстроки
           ListItemD.SubItems[0] := ReadString('name');
+          if ListItemD.SubItems[0] = EmptyStr then
+            ListItemD.SubItems[0] := ListItemD.Caption;
           ListItemD.SubItems[2] := ReadString('subscription');
           //--Открываем ключ группы
           OpenKey('group', false, 0);
           ListItemD.SubItems[1] := GetKeyText;
+          if ListItemD.SubItems[1] = EmptyStr then
+            ListItemD.SubItems[1] := JabberNullGroup;
           ListItemD.SubItems[3] := 'Jabber';
           ListItemD.SubItems[6] := '30';
         finally
@@ -359,6 +388,22 @@ begin
         begin
           //--Разбираем список контктов Jabber
           if ReadString('xmlns') = Iq_Roster then Jabber_ParseRoster(GetKeyXML);
+        end;
+      finally
+        CloseKey();
+      end
+      else
+      //--Такое можно было ожидать только от google talk
+      if OpenKey('iq') then
+      try
+        begin
+          if (ReadString('type') = 'result') and (ReadString('id') = JSessionId) then
+          begin
+            //--Запрашиваем список контактов
+            MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_GetRoster));
+            //--Устанавливаем статус
+            MainForm.JabberWSocket.SendStr(UTF8Encode(Jabber_SetStatus(Jabber_CurrentStatus)));
+          end;
         end;
       finally
         CloseKey();

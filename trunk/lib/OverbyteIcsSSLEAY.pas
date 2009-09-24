@@ -711,7 +711,7 @@ const
     f_SSL_get_wfd:                             function(S: PSSL): Integer; cdecl = nil; // B.S.
 
 
-function Load(RootPath: string = '') : Boolean;
+function Load : Boolean;
 function WhichFailedToLoad : String;
 function GetFileVerInfo(
     const AppName         : String;
@@ -739,14 +739,12 @@ function  f_SSL_CTX_get_client_cert_cb(CTX: PSSL_CTX): Pointer;
 
 const
     GSSLEAY_DLL_Handle          : THandle = 0;
-    GSSLEAY_DLL_Name            : String  = 'SSLEAY32.DLL';
+    GSSLEAY_DLL_Name            : String  = 'OPENSSLEAY32.DLL';
     GSSLEAY_DLL_FileName        : String  = '*NOT_LOADED*';
     GSSLEAY_DLL_FileVersion     : String = '';
     GSSLEAY_DLL_FileDescription : String = '';
 
 implementation
-
-uses UnitLogger;
 
 
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
@@ -816,7 +814,7 @@ end;
 
 
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-function Load(RootPath: string = '') : Boolean;
+function Load : Boolean;
 var
     ErrCode : Integer;
 begin
@@ -824,12 +822,10 @@ begin
         Result := TRUE;
         Exit;                                 // Already loaded
     end;
-    UnitLogger.TLogger.Instance.WriteMessage('Try to get info for ' + RootPath + GSSLEAY_DLL_Name, lError);
-    GetFileVerInfo(RootPath + GSSLEAY_DLL_Name,
+    GetFileVerInfo(GSSLEAY_DLL_Name,
                    GSSLEAY_DLL_FileVersion,
                    GSSLEAY_DLL_FileDescription);
-    UnitLogger.TLogger.Instance.WriteMessage('Try to load lib at ' + RootPath + GSSLEAY_DLL_Name, lError);
-    GSSLEAY_DLL_Handle := LoadLibrary(PChar(RootPath + GSSLEAY_DLL_Name));
+    GSSLEAY_DLL_Handle := LoadLibrary(PChar(GSSLEAY_DLL_Name));
     if GSSLEAY_DLL_Handle = 0 then begin
         ErrCode            := GetLastError;
         GSSLEAY_DLL_Handle := 0;

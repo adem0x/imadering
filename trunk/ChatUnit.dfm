@@ -114,6 +114,7 @@ object ChatForm: TChatForm
         PrintScale = 1.000000000000000000
         OnMouseDown = HTMLChatViewerMouseDown
         OnKeyDown = HTMLChatViewerKeyDown
+        OnParseEnd = HTMLChatViewerParseEnd
       end
     end
   end
@@ -891,5 +892,9 @@ object ChatForm: TChatForm
       ImageIndex = 149
       OnClick = UpWapru1Click
     end
+  end
+  object SendFileOpenDialog: TOpenDialog
+    Left = 200
+    Top = 160
   end
 end

@@ -97,7 +97,6 @@ object JabberOptionsForm: TJabberOptionsForm
     ItemIndex = 0
     TabOrder = 3
     OnButtonClicked = JabberOptionButtonGroupButtonClicked
-    OnKeyDown = JabberOptionButtonGroupKeyDown
   end
   object OptionPanel: TPanel
     Left = 151
@@ -138,7 +137,7 @@ object JabberOptionsForm: TJabberOptionsForm
           TabOrder = 0
           object RegNewAccountLabel: TLabel
             Left = 80
-            Top = 176
+            Top = 177
             Width = 229
             Height = 13
             Cursor = crHandPoint
@@ -180,7 +179,7 @@ object JabberOptionsForm: TJabberOptionsForm
           end
           object DeleteAccountLabel: TLabel
             Left = 80
-            Top = 205
+            Top = 204
             Width = 103
             Height = 13
             Cursor = crHandPoint
@@ -208,6 +207,7 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+            OnClick = JIDonserverLabelClick
             OnMouseEnter = JIDonserverLabelMouseEnter
             OnMouseLeave = JIDonserverLabelMouseLeave
           end
@@ -532,6 +532,41 @@ object JabberOptionsForm: TJabberOptionsForm
         Height = 356
         Caption = 'ParamsPage'
       end
+    end
+  end
+  object JServerPopupMenu: TPopupMenu
+    Alignment = paCenter
+    Left = 328
+    Top = 376
+    object Set_JabberOrg: TMenuItem
+      Tag = 1
+      Caption = 'Jabber.org'
+      Hint = '@jabber.org'
+      OnClick = Set_JabberOrgClick
+    end
+    object Set_JabberRu: TMenuItem
+      Tag = 2
+      Caption = 'Jabber.ru'
+      Hint = '@jabber.ru'
+      OnClick = Set_JabberOrgClick
+    end
+    object Set_QIPru: TMenuItem
+      Tag = 3
+      Caption = 'QIP.ru'
+      Hint = '@qip.ru'
+      OnClick = Set_JabberOrgClick
+    end
+    object Set_GoogleTalk: TMenuItem
+      Tag = 4
+      Caption = 'Google talk'
+      Hint = '@gmail.com'
+      OnClick = Set_JabberOrgClick
+    end
+    object Set_LiveJournal: TMenuItem
+      Tag = 5
+      Caption = 'LiveJournal'
+      Hint = '@livejournal.com'
+      OnClick = Set_JabberOrgClick
     end
   end
 end

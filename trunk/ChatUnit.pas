@@ -97,6 +97,7 @@ type
     CloseLastChatMenu: TMenuItem;
     FileTransferPopupMenu: TPopupMenu;
     UpWapru1: TMenuItem;
+    SendFileOpenDialog: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -166,6 +167,7 @@ type
     procedure QRepSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure UpWapru1Click(Sender: TObject);
+    procedure HTMLChatViewerParseEnd(Sender: TObject);
   private
     { Private declarations }
     lastClick: Tdatetime;
@@ -824,98 +826,119 @@ var
   UIN, HistoryFile, Doc, HFile: string;
   RosterItem: TListItem;
 begin
-  //--Если пустая вкладка, то выходим
-  if ChatPageControl.ActivePage = nil then Exit;
-  //--Изменяем размер компонента вкладок
-  ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;
-  //--Получаем учётную запись контакта
-  UIN := ChatPageControl.ActivePage.HelpKeyword;
-  //--Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
-  RosterItem := RosterForm.ReqRosterItem(UIN);
-  if RosterItem <> nil then
-  begin
-    with RosterItem do
+  try
+    //--Если пустая вкладка, то выходим
+    if ChatPageControl.ActivePage = nil then Exit;
+    //--Изменяем размер компонента вкладок
+    ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;
+    //--Получаем учётную запись контакта
+    UIN := ChatPageControl.ActivePage.HelpKeyword;
+    //--Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
+    RosterItem := RosterForm.ReqRosterItem(UIN);
+    if RosterItem <> nil then
     begin
-      //--Выставляем параметры этого контакта
-      SubItems[36] := EmptyStr;
-      ChatPageControl.ActivePage.Caption := SubItems[0];
-      ChatPageControl.ActivePage.Tag := StrToInt(SubItems[6]);
-      ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
-      ChatPageControl.ActivePage.Hint := SubItems[34];
-      if SubItems[33] = 'X' then UserUtf8Support := true
-      else UserUtf8Support := false;
-      UserAvatarHash := Hex2Text(SubItems[29]);
-      UserType := SubItems[3];
-      InputMemo.Text := SubItems[14];
-      //--Проверяем загружена ли история уже
-      if SubItems[13] = EmptyStr then
+      with RosterItem do
       begin
-        //--Загружаем файл истории сообщений
-        HistoryFile := ProfilePath + 'Profile\History\' + UserType + '_' + UIN + '.z';
-        if FileExists(HistoryFile) then
+        //--Выставляем параметры этого контакта
+        SubItems[36] := EmptyStr;
+        ChatPageControl.ActivePage.Caption := SubItems[0];
+        ChatPageControl.ActivePage.Tag := StrToInt(SubItems[6]);
+        ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
+        ChatPageControl.ActivePage.Hint := SubItems[34];
+        if SubItems[33] = 'X' then UserUtf8Support := true
+        else UserUtf8Support := false;
+        UserAvatarHash := Hex2Text(SubItems[29]);
+        UserType := SubItems[3];
+        InputMemo.Text := SubItems[14];
+        //--Проверяем загружена ли история уже
+        if SubItems[13] = EmptyStr then
         begin
-          try
-            //--Распаковываем файл с историей
-            UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
-            HFile := ProfilePath + 'Profile\History\' + UserType + '_History.htm';
-            //--Записываем историю в хранилище у этого контакта
-            SubItems[13] := ReadFromFile(HFile);
-            //--Удаляем уже не нужный распакованный файл с историей
-            if FileExists(HFile) then DeleteFile(HFile);
-          except
-            on E: Exception do
-              TLogger.Instance.WriteMessage(E);
+          //--Загружаем файл истории сообщений
+          HistoryFile := ProfilePath + 'Profile\History\' + UserType + '_' + UIN + '.z';
+          if FileExists(HistoryFile) then
+          begin
+            try
+              //--Распаковываем файл с историей
+              UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
+              HFile := ProfilePath + 'Profile\History\' + UserType + '_History.htm';
+              //--Записываем историю в хранилище у этого контакта
+              SubItems[13] := ReadFromFile(HFile);
+              //--Удаляем уже не нужный распакованный файл с историей
+              if FileExists(HFile) then DeleteFile(HFile);
+            except
+              on E: Exception do
+                TLogger.Instance.WriteMessage(E);
+            end;
           end;
         end;
+        //--Отображаем историю в чате
+        if SubItems[13] <> EmptyStr then
+        begin
+          //--Очищаем чат от другой истории
+          HTMLChatViewer.Clear;
+          //--Добавляем стили
+          Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+          //--Загружаем из файла истории указанное количесво сообщений
+          Doc := Doc + TailLineTail(SubItems[13], 5);
+          if not TextSmilies then CheckMessage_Smilies(Doc);
+          SetLength(Doc, Length(Doc) - 6);
+          Doc := Doc + '<HR>';
+          HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+        end
+        else
+        begin
+          //--Очищаем чат от другой истории
+          HTMLChatViewer.Clear;
+          //--Добавляем стили
+          Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+          HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+        end;
+        //--Ставим имя и фамилию в информационное поле
+        InfoPanel1.Caption := NameAndLast(UIN, UserType);
+        //--Ставим город и возраст в информационное поле
+        InfoPanel3.Caption := GetCityPanel;
+        InfoPanel4.Caption := GetAgePanel;
+        //--Ставим клиент в информационное поле
+        if SubItems[32] <> EmptyStr then
+        begin
+          NotifyPanel.Caption := SubItems[32];
+          NotifyPanel.Hint := SubItems[32];
+        end
+        else NotifyPanel.Caption := '...';
+        //--Выводим текст доп. статуса и иконку доп статуса
+        if SubItems[31] <> EmptyStr then
+        begin
+          Doc := HTMLChatViewer.DocumentSource;
+          //--Если есть и иконка доп. статуса
+          if SubItems[7] > '-1' then Doc := Doc + '<IMG NAME=x SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
+          Doc := Doc + '<span class=d>' + SubItems[31] + '</span><br><br>';
+          HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+          //--Преобразуем и подгружаем иконку доп. статуса
+          if SubItems[7] > '-1' then
+          begin
+            xStatusImg.Assign(nil);
+            MainForm.AllImageList.GetBitmap(StrToInt(SubItems[7]), xStatusImg);
+            xStatusGif.Assign(nil);
+            xStatusGif.Add(xStatusImg);
+            xStatusMem.Clear;
+            xStatusGif.SaveToStream(xStatusMem);
+            HTMLChatViewer.ReplaceImage('x', xStatusMem);
+          end;
+          //--Ставим каретку в самый низ текста
+          HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+          HTMLChatViewer.CaretPos := Length(Doc);
+        end;
       end;
-      //--Отображаем историю в чате
-      if SubItems[13] <> EmptyStr then
-      begin
-        //--Очищаем чат от другой истории
-        HTMLChatViewer.Clear;
-        //--Добавляем стили
-        Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-        //--Загружаем из файла истории указанное количесво сообщений
-        Doc := Doc + TailLineTail(SubItems[13], 5);
-        if not TextSmilies then CheckMessage_Smilies(Doc);
-        SetLength(Doc, Length(Doc) - 6);
-        Doc := Doc + '<HR>';
-        HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-        //--Ставим каретку в самый низ текста
-        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-        HTMLChatViewer.CaretPos := Length(Doc);
-      end
-      else
-      begin
-        //--Очищаем чат от другой истории
-        HTMLChatViewer.Clear;
-        //--Добавляем стили
-        Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-        HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-      end;
-      //--Ставим имя и фамилию в информационное поле
-      InfoPanel1.Caption := NameAndLast(UIN, UserType);
-      //--Ставим город и возраст в информационное поле
-      InfoPanel3.Caption := GetCityPanel;
-      InfoPanel4.Caption := GetAgePanel;
-      //--Ставим клиент в информационное поле
-      if SubItems[32] <> EmptyStr then
-      begin
-        NotifyPanel.Caption := SubItems[32];
-        NotifyPanel.Hint := SubItems[32];
-      end
-      else NotifyPanel.Caption := '...';
     end;
-  end;
-  if InfoPanel1.Caption = EmptyStr then InfoPanel1.Caption := ChatPageControl.ActivePage.Caption;
-  //--Ставим учётную запись контакта в информационное поле
-  InfoPanel2.Caption := UIN;
-  //--Ставим курсор в мемо после последнего символа
-  InputMemo.SelStart := InputMemo.GetTextLen;
-  //--Ставим фокус в поле ввода текста
-  if (InputMemo.CanFocus) and (ChatForm.Visible) then InputMemo.SetFocus;
-  //--Удаляем отметку о сообщении из списка очереди входящих сообщений
-  RosterForm.DellcIdInMessList(UIN);
+    if InfoPanel1.Caption = EmptyStr then InfoPanel1.Caption := ChatPageControl.ActivePage.Caption;
+    //--Ставим учётную запись контакта в информационное поле
+    InfoPanel2.Caption := UIN;
+    //--Ставим курсор в мемо после последнего символа
+    InputMemo.SelStart := InputMemo.GetTextLen;
+    //--Ставим фокус в поле ввода текста
+    if (InputMemo.CanFocus) and (ChatForm.Visible) then InputMemo.SetFocus;
+    //--Удаляем отметку о сообщении из списка очереди входящих сообщений
+    RosterForm.DellcIdInMessList(UIN);
 
   //--Загружаем аватар
   {if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
@@ -948,6 +971,11 @@ begin
     ContactImage.Picture.Assign(nil);
     ContactImage.Picture.Assign(NoAvatar.Picture);
   end;}
+
+  except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(e);
+  end;
 end;
 
 procedure TChatForm.ChatPageControlMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1120,13 +1148,34 @@ begin
 end;
 
 procedure TChatForm.UpWapru1Click(Sender: TObject);
+var
+  fsize: longint;
 begin
   //--Открываем форму отправки файлов
   if not Assigned(FileTransferForm) then FileTransferForm := TFileTransferForm.Create(self);
   //--Присваиваем переменную способа передачи
-  FileTransferForm.Tag := (Sender as TMenuItem).Tag;
+  with FileTransferForm do
+  begin
+    SendForUIN := InfoPanel2.Caption;
+    TopInfoPanel.Caption := FileTransfer1L + ' ' + ChatPageControl.ActivePage.Caption;
+    //--Открываем диалог выбора файла для передачи
+    if SendFileOpenDialog.Execute then
+    begin
+      FileNamePanel.Caption := ' ' + GetFileFName(SendFileOpenDialog.FileName);
+      //--Вычисляем размер файла
+      fsize := GetFileSize(SendFileOpenDialog.FileName);
+      if fsize > 1000000 then
+        FileSizePanel.Caption := FloatToStrF(fsize / 1000000, ffFixed, 18, 3) + ' MB'
+      else FileSizePanel.Caption := FloatToStrF(fsize / 1000, ffFixed, 18, 3) + ' KB';
+    end;
+  end;
   //--Отображаем окно
   xShowForm(FileTransferForm);
+  Update;
+  //--Запускаем передачу файла
+  case (Sender as TMenuItem).Tag of
+    1: FileTransferForm.SendUpWap(SendFileOpenDialog.FileName);
+  end;
 end;
 
 procedure TChatForm.FormActivate(Sender: TObject);
@@ -1245,6 +1294,9 @@ begin
   //--Присваиваем картинку пустой аватары в места для аватар
   ContactAvatarImage.Picture.Assign(NoAvatar.Picture);
   MyAvatarImage.Picture.Assign(NoAvatar.Picture);
+  xStatusImg := TBitmap.Create;
+  xStatusGif := TGifImage.Create;
+  xStatusMem := TMemoryStream.Create;
   //--Переводим форму на другие языки
   TranslateForm;
   //--Создаём меню быстрых ответов
@@ -1380,6 +1432,17 @@ procedure TChatForm.HTMLChatViewerMouseDown(Sender: TObject;
 begin
   //--Сбрасываем выделение текста в чате по клику левой клавишей мыши
   if Button = mbLeft then HTMLChatViewer.SelLength := 0;
+end;
+
+procedure TChatForm.HTMLChatViewerParseEnd(Sender: TObject);
+begin
+  //--Заменяем всегда картинку доп. статуса при изменениях текста чата
+  try
+    HTMLChatViewer.ReplaceImage('x', xStatusMem);
+  except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(e);
+  end;
 end;
 
 procedure TChatForm.SmiliesSpeedButtonClick(Sender: TObject);

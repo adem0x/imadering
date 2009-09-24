@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ButtonGroup, ExtCtrls, ComCtrls, JvPageList,
-  JvExControls, rXML, Mask, JvExMask, JvSpin;
+  JvExControls, rXML, Mask, JvExMask, JvSpin, Menus;
 
 type
   TJabberOptionsForm = class(TForm)
@@ -55,6 +55,12 @@ type
     ResursComboBox: TComboBox;
     PrioritetJvSpinEdit: TJvSpinEdit;
     PrioritetLabel: TLabel;
+    JServerPopupMenu: TPopupMenu;
+    Set_JabberOrg: TMenuItem;
+    Set_JabberRu: TMenuItem;
+    Set_QIPru: TMenuItem;
+    Set_GoogleTalk: TMenuItem;
+    Set_LiveJournal: TMenuItem;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);
@@ -69,8 +75,8 @@ type
     procedure JUseCustomServerSettingsCheckBoxClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure PassEditChange(Sender: TObject);
-    procedure JabberOptionButtonGroupKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure Set_JabberOrgClick(Sender: TObject);
+    procedure JIDonserverLabelClick(Sender: TObject);
   private
     { Private declarations }
     procedure LoadSettings;
@@ -182,6 +188,38 @@ begin
     end;
 end;
 
+procedure TJabberOptionsForm.Set_JabberOrgClick(Sender: TObject);
+begin
+  //--Автоматом подстраиваем учётные записи под серверы
+  if BMSearch(0, JabberJIDEdit.Text, '@') > -1 then
+    JabberJIDEdit.Text := Parse('@', JabberJIDEdit.Text, 1);
+  JabberJIDEdit.Text := JabberJIDEdit.Text + (Sender as TMenuItem).Hint;
+  //--Правим параметры серверов
+  case (Sender as TMenuItem).Tag of
+    1, 2, 5:
+      begin
+        JUseCustomServerSettingsCheckBox.Checked := false;
+        JCustomServerHostEdit.Text := '';
+        JCustomServerPortEdit.Text := '';
+        JUseSSLCheckBox.Checked := false;
+      end;
+    3:
+      begin
+        JUseCustomServerSettingsCheckBox.Checked := true;
+        JCustomServerHostEdit.Text := 'webim.qip.ru';
+        JCustomServerPortEdit.Text := '5222';
+        JUseSSLCheckBox.Checked := false;
+      end;
+    4:
+      begin
+        JUseCustomServerSettingsCheckBox.Checked := true;
+        JCustomServerHostEdit.Text := 'talk.google.com';
+        JCustomServerPortEdit.Text := '5223';
+        JUseSSLCheckBox.Checked := true;
+      end;
+  end;
+end;
+
 procedure TJabberOptionsForm.SaveSettingsJabberAccount(SettingsXml: TrXML);
 begin
   with SettingsXml do
@@ -193,7 +231,9 @@ begin
         WriteString(StrKeyPassword, EncryptString(PassEdit.Hint, PasswordByMac))
       else WriteString(StrKeyPassword, EmptyStr);
       //--Маскируем пароль
+      PassEdit.OnChange := nil;
       if PassEdit.Text <> EmptyStr then PassEdit.Text := StrPassMask;
+      PassEdit.OnChange := PassEditChange;
     finally
       CloseKey;
     end;
@@ -312,18 +352,20 @@ begin
   if Index <= OptionJvPageList.PageCount then OptionJvPageList.ActivePageIndex := Index;
 end;
 
-procedure TJabberOptionsForm.JabberOptionButtonGroupKeyDown(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
-begin
-  //--Выбираем страницу настроек соответсвенно выбранной вкладке
-  if JabberOptionButtonGroup.ItemIndex <= OptionJvPageList.PageCount then OptionJvPageList.ActivePageIndex := JabberOptionButtonGroup.ItemIndex;
-end;
-
 procedure TJabberOptionsForm.JUseCustomServerSettingsCheckBoxClick(Sender: TObject);
 begin
   JCustomServerHostEdit.Enabled := JUseCustomServerSettingsCheckBox.Checked;
   JCustomServerPortEdit.Enabled := JUseCustomServerSettingsCheckBox.Checked;
   JabberSomeEditChange(nil);
+end;
+
+procedure TJabberOptionsForm.JIDonserverLabelClick(Sender: TObject);
+var
+  FCursor: TPoint;
+begin
+  //--Выводим меню настройки на серверы
+  GetCursorPos(FCursor);
+  JServerPopupMenu.Popup(FCursor.X, FCursor.Y);
 end;
 
 procedure TJabberOptionsForm.JIDonserverLabelMouseEnter(Sender: TObject);

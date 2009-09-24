@@ -15,7 +15,7 @@ uses
   Dialogs, ComCtrls, ToolWin, CategoryButtons, ExtCtrls, Menus, ImgList,
   JvTimerList, OverbyteIcsWndControl, OverbyteIcsWSocket, OverbyteIcsHttpProt,
   rXML, JvHint, IdBaseComponent, IdThreadComponent, StrUtils,
-  OverbyteIcsMimeUtils, StdCtrls, Registry, ActnList;
+  OverbyteIcsMimeUtils, StdCtrls, Registry, ActnList, GifImage;
 
 type
   TMainForm = class(TForm)
@@ -407,7 +407,7 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, UnitCrypto, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit,
-  UnitLogger, EncdDecd, ShowCertUnit, OverbyteIcsSSLEAY, OverbyteIcsLIBEAY;
+  UnitLogger, EncdDecd, ShowCertUnit;
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -958,7 +958,7 @@ begin
     begin
       if UpdateHttpClient.ContentLength > -1 then
       begin
-        LoadSizeLabel.Caption := 'Скачано: ' + FloatToStrF(UpdateHttpClient.RcvdCount / 1000, ffFixed, 7, 1) + ' Кб';
+        LoadSizeLabel.Caption := 'Скачано: ' + FloatToStrF(UpdateHttpClient.RcvdCount / 1000, ffFixed, 7, 1) + ' KB';
         DownloadProgressBar.Max := UpdateHttpClient.ContentLength;
         DownloadProgressBar.Position := UpdateHttpClient.RcvdCount;
       end;
@@ -987,96 +987,101 @@ begin
   //--Читаем полученные http данные из блока памяти
   if UpdateHttpClient.RcvdStream <> nil then
   begin
-    //--Увеличиваем статистику входящего трафика
-    TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
-    AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
-    if Assigned(TrafficForm) then OpenTrafficClick(nil);
-    //--Определяем выполнение задания для данных по флагу
-    case UpdateHttpClient.Tag of
-      0:
-        begin
-          //--Создаём временный лист
-          list := TStringList.Create;
-          try
-            try
-              //--Обнуляем позицию начала чтения в блоке памяти
-              UpdateHttpClient.RcvdStream.Position := 0;
-              //--Читаем данные в лист
-              list.LoadFromStream(UpdateHttpClient.RcvdStream);
-              //--Разбираем данные в листе
-              if list.Text > EmptyStr then
-              begin
-                ver := IsolateTextString(list.Text, '<v>', '</v>');
-                bild := IsolateTextString(list.Text, '<b>', '</b>');
-                mess := IsolateTextString(list.Text, '<m>', '</m>');
-                //--Запоминаем переменную аддэйтпатч для автообновления
-                UpdateVersionPath := Format(UpdateVersionPath, [ver, bild]);
-                //--Отображаем всплывающее окно с информацией о новой версии
-                if (ver <> EmptyStr) and (bild <> EmptyStr) then
-                begin
-                  //--Если версия на сайте выше текущей
-                  if StrToInt(ver) > Update_Version then
-                  begin
-                    DAShow(InformationHead, NewVersionIMaderingYES1, EmptyStr, 133, 3, 100000000);
-                    ShowUpdateNote;
-                  end
-                  //--Если версия таже, но сборка выше текущей
-                  else if StrToInt(bild) > StrToInt(Parse('.', InitBuildInfo, 4)) then
-                  begin
-                    DAShow(InformationHead, NewVersionIMaderingYES2, EmptyStr, 133, 3, 100000000);
-                    ShowUpdateNote;
-                  end
-                  else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
-                end
-                else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingErr, EmptyStr, 134, 2, 0);
-              end;
-            except
-            end;
-          finally
-            list.Free;
-          end;
-        end;
-      1:
-        begin
-          if Assigned(UpdateForm) then
+    try
+      //--Увеличиваем статистику входящего трафика
+      TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
+      AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
+      if Assigned(TrafficForm) then OpenTrafficClick(nil);
+      //--Определяем выполнение задания для данных по флагу
+      case UpdateHttpClient.Tag of
+        0:
           begin
-            with UpdateForm do
-            begin
-              //--Создаём блок в памяти для приёма файла обновления
-              UpdateFile := TMemoryStream.Create;
+            //--Создаём временный лист
+            list := TStringList.Create;
+            try
               try
-                try
-                  //--Обнуляем позицию начала чтения в блоке памяти
-                  UpdateHttpClient.RcvdStream.Position := 0;
-                  //--Читаем данные в лист
-                  UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
-                  //--Информируем о успешной закачке файла обновления
-                  InfoMemo.Lines.Add(UpDateLoadL);
-                  InfoMemo.Lines.Add(UpDateUnL);
-                  //--Переименовываем файл Imadering.exe
-                  if FileExists(MyPath + 'Imadering.exe') then RenameFile(MyPath + 'Imadering.exe', MyPath + 'Imadering.old');
-                  //--Запускаем установку обновления
-                  UnZip_Stream(UpdateFile, MyPath);
-                  //--Выводим информацию об окончании обновления
-                  InfoMemo.Lines.Add(UpDateOKL);
-                  AbortBitBtn.Enabled := false;
-                except
+                //--Обнуляем позицию начала чтения в блоке памяти
+                UpdateHttpClient.RcvdStream.Position := 0;
+                //--Читаем данные в лист
+                list.LoadFromStream(UpdateHttpClient.RcvdStream);
+                //--Разбираем данные в листе
+                if list.Text > EmptyStr then
+                begin
+                  ver := IsolateTextString(list.Text, '<v>', '</v>');
+                  bild := IsolateTextString(list.Text, '<b>', '</b>');
+                  mess := IsolateTextString(list.Text, '<m>', '</m>');
+                  //--Запоминаем переменную аддэйтпатч для автообновления
+                  UpdateVersionPath := Format(UpdateVersionPath, [ver, bild]);
+                  //--Отображаем всплывающее окно с информацией о новой версии
+                  if (ver <> EmptyStr) and (bild <> EmptyStr) then
+                  begin
+                    //--Если версия на сайте выше текущей
+                    if StrToInt(ver) > Update_Version then
+                    begin
+                      DAShow(InformationHead, NewVersionIMaderingYES1, EmptyStr, 133, 3, 100000000);
+                      ShowUpdateNote;
+                    end
+                    //--Если версия таже, но сборка выше текущей
+                    else if StrToInt(bild) > StrToInt(Parse('.', InitBuildInfo, 4)) then
+                    begin
+                      DAShow(InformationHead, NewVersionIMaderingYES2, EmptyStr, 133, 3, 100000000);
+                      ShowUpdateNote;
+                    end
+                    else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
+                  end
+                  else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingErr, EmptyStr, 134, 2, 0);
                 end;
-              finally
-                //--Уничтожаем блок памяти
-                FreeAndNil(UpdateFile);
+              except
+                on E: Exception do
+                  TLogger.Instance.WriteMessage(E);
+              end;
+            finally
+              list.Free;
+            end;
+          end;
+        1:
+          begin
+            if Assigned(UpdateForm) then
+            begin
+              with UpdateForm do
+              begin
+                //--Создаём блок в памяти для приёма файла обновления
+                UpdateFile := TMemoryStream.Create;
+                try
+                  try
+                    //--Обнуляем позицию начала чтения в блоке памяти
+                    UpdateHttpClient.RcvdStream.Position := 0;
+                    //--Читаем данные в лист
+                    UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
+                    //--Информируем о успешной закачке файла обновления
+                    InfoMemo.Lines.Add(UpDateLoadL);
+                    InfoMemo.Lines.Add(UpDateUnL);
+                    //--Переименовываем файл Imadering.exe
+                    if FileExists(MyPath + 'Imadering.exe') then RenameFile(MyPath + 'Imadering.exe', MyPath + 'Imadering.old');
+                    //--Запускаем установку обновления
+                    UnZip_Stream(UpdateFile, MyPath);
+                    //--Выводим информацию об окончании обновления
+                    InfoMemo.Lines.Add(UpDateOKL);
+                    AbortBitBtn.Enabled := false;
+                  except
+                  end;
+                finally
+                  //--Уничтожаем блок памяти
+                  FreeAndNil(UpdateFile);
+                end;
               end;
             end;
           end;
-        end;
-      2:
-        begin
-          //--Ничего не делаем с данными
-        end;
+        2:
+          begin
+            //--Ничего не делаем с данными
+          end;
+      end;
+    finally
+      //--Высвобождаем блок памяти
+      UpdateHttpClient.RcvdStream.Free;
+      UpdateHttpClient.RcvdStream := nil;
     end;
-    //--Высвобождаем блок памяти
-    UpdateHttpClient.RcvdStream.Free;
-    UpdateHttpClient.RcvdStream := nil;
   end;
 end;
 
@@ -1118,7 +1123,7 @@ begin
       if (ICQUINEdit.CanFocus) and (ICQUINEdit.Text = EmptyStr) then ICQUINEdit.SetFocus
       else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then PassEdit.SetFocus;
     end;
-    //--Выходим отсюда
+    //--Выходим от сюда
     Exit;
   end;
   //--Делаем выбранный статус в меню выделенным
@@ -1900,6 +1905,7 @@ end;
 procedure TMainForm.SocketBgException(Sender: TObject; E: Exception;
   var CanClose: Boolean);
 begin
+  //--Логируем ошибки сокетов
   UnitLogger.TLogger.Instance.WriteMessage(e);
   CanClose := false;
 end;
@@ -1976,6 +1982,8 @@ begin
     begin
       if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (BMSearch(0, Pkt, FRootTag) = -1) then
       begin
+        //--Debug
+        //Showmessage(Pkt);
         //--Если это стадия подключения к серверу жаббер
         if Jabber_Connect_Phaze then
         begin
@@ -1983,6 +1991,9 @@ begin
           if BMSearch(0, Pkt, '>DIGEST-MD5<') > -1 then
             //--Отсылаем запрос challenge
             JabberWSocket.SendStr(UTF8Encode('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>'))
+          //--Если только механизм авторизации PLAIN
+          else if BMSearch(0, Pkt, '>PLAIN<') > -1 then
+            JabberWSocket.SendStr(UTF8Encode(Format(JPlainMechanism, [JabberPlain_Auth])))
           //--Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
           else if BMSearch(0, Pkt, '</challenge>') > -1 then
           begin
@@ -2006,7 +2017,11 @@ begin
           else if BMSearch(0, Pkt, '<success') > -1 then
           begin
             //--Закрепляем сессию с жаббер сервером
-            JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
+            //--Если сервер и порт указаны вручную
+            if JabberOptionsForm.JUseCustomServerSettingsCheckBox.Checked then
+              JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Parse('@', Jabber_JID, 2)])))
+            else
+              JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
             //--Активируем режим онлайн для Jabber
             Jabber_Connect_Phaze := false;
             Jabber_HTTP_Connect_Phaze := false;
@@ -2151,14 +2166,14 @@ begin
     //--Отсылаем запрос для прокси
     JabberWSocket.sendStr(http_data);
   end;
-  if Jabber_UseSSL then begin
-    OverbyteIcsSSLEAY.Load(IncludeTrailingBackslash(GetCurrentDir));
-    OverbyteIcsLIBEAY.Load(IncludeTrailingBackslash(GetCurrentDir));
-  end;
   //--Если активно SSL
   JabberWSocket.SslEnable := Jabber_UseSSL;
   //--Отсылаем строку начала сессии с сервером
-  JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
+  //--Если сервер и порт указаны вручную
+  if JabberOptionsForm.JUseCustomServerSettingsCheckBox.Checked then
+    JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Parse('@', Jabber_JID, 2)])))
+  else
+    JabberWSocket.SendStr(UTF8Encode(Format(StreamHead, [Jabber_ServerAddr])));
 end;
 
 procedure TMainForm.JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
@@ -3262,11 +3277,11 @@ begin
   //--Отображаем окно трафика
   if not Assigned(TrafficForm) then TrafficForm := TTrafficForm.Create(self);
   //--Показываем сколько трафика передано за эту сессию
-  TrafficForm.Edit1.Text := FloatToStrF(TrafRecev / 1000, ffFixed, 18, 3) + ' Кб | ' +
-    FloatToStrF(TrafSend / 1000, ffFixed, 18, 3) + ' Кб | ' + DateTimeToStr(SesDataTraf);
+  TrafficForm.CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, ffFixed, 18, 3) + ' KB | ' +
+    FloatToStrF(TrafSend / 1000, ffFixed, 18, 3) + ' KB | ' + DateTimeToStr(SesDataTraf);
   //--Показываем сколько трафика передано всего
-  TrafficForm.Edit2.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3) + ' Мб | ' +
-    FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' Мб | ' + AllSesDataTraf;
+  TrafficForm.AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3) + ' MB | ' +
+    FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3) + ' MB | ' + AllSesDataTraf;
   //--Отображаем окно
   xShowForm(TrafficForm);
 end;
@@ -3860,6 +3875,9 @@ begin
     if Assigned(NoAvatar) then FreeAndNil(NoAvatar);
     if Assigned(OutMessage2) then FreeAndNil(OutMessage2);
     if Assigned(OutMessage3) then FreeAndNil(OutMessage3);
+    if Assigned(xStatusImg) then FreeAndNil(xStatusImg);
+    if Assigned(xStatusGif) then FreeAndNil(xStatusGif);
+    if Assigned(xStatusMem) then FreeAndNil(xStatusMem);
     //--Уничтожаем окно смайлов
     if Assigned(SmilesForm) then FreeAndNil(SmilesForm);
     //--Уничтожаем окно чата
@@ -4269,17 +4287,6 @@ begin
         //
         TopPanelToolButton.Visible := ReadBool('b8');
         TopPanelONMenu.Checked := TopPanelToolButton.Visible;
-      finally
-        CloseKey();
-      end;
-      //~ Читаем параметры всплывающих окон
-      if OpenKey('settings\main\popup') then
-      try
-        DAPos := ReadInteger('pos');
-        DAStyle := ReadInteger('style');
-        DAWidth := ReadInteger('width');
-        DAHeight := ReadInteger('height');
-        DATimeShow := ReadInteger('timeshow');
       finally
         CloseKey();
       end;

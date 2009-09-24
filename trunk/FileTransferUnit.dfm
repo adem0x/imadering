@@ -18,28 +18,28 @@ object FileTransferForm: TFileTransferForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object FileNameLabel: TLabel
     Left = 9
     Top = 30
     Width = 78
     Height = 13
     Caption = #1058#1077#1082#1091#1097#1080#1081' '#1092#1072#1081#1083':'
   end
-  object Label2: TLabel
+  object FileSizeLabel: TLabel
     Left = 240
     Top = 30
     Width = 74
     Height = 13
     Caption = #1056#1072#1079#1084#1077#1088' '#1092#1072#1081#1083#1072':'
   end
-  object Label3: TLabel
+  object ProgressLabel: TLabel
     Left = 9
     Top = 76
     Width = 75
     Height = 13
     Caption = #1061#1086#1076' '#1087#1077#1088#1077#1076#1072#1095#1080':'
   end
-  object Label4: TLabel
+  object SendStatusLabel: TLabel
     Left = 9
     Top = 118
     Width = 40
@@ -54,9 +54,15 @@ object FileTransferForm: TFileTransferForm
     Height = 21
     Align = alTop
     BevelOuter = bvLowered
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 0
   end
-  object Panel1: TPanel
+  object FileNamePanel: TPanel
     Left = 8
     Top = 49
     Width = 225
@@ -65,7 +71,7 @@ object FileTransferForm: TFileTransferForm
     BevelOuter = bvLowered
     TabOrder = 1
   end
-  object Panel2: TPanel
+  object FileSizePanel: TPanel
     Left = 239
     Top = 49
     Width = 153
@@ -93,11 +99,12 @@ object FileTransferForm: TFileTransferForm
     TabStop = False
     OnClick = CloseBitBtnClick
   end
-  object ProgressBar1: TProgressBar
+  object SendProgressBar: TProgressBar
     Left = 8
     Top = 95
     Width = 482
     Height = 17
+    Smooth = True
     TabOrder = 5
   end
   object BottomInfoPanel: TPanel
@@ -115,5 +122,31 @@ object FileTransferForm: TFileTransferForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 6
+  end
+  object SendFileHttpClient: THttpCli
+    LocalAddr = '0.0.0.0'
+    ProxyPort = '80'
+    Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
+    Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
+    NoCache = False
+    ContentTypePost = 'application/x-www-form-urlencoded'
+    MultiThreaded = False
+    RequestVer = '1.0'
+    FollowRelocation = True
+    LocationChangeMaxCount = 5
+    ServerAuth = httpAuthNone
+    ProxyAuth = httpAuthNone
+    BandwidthLimit = 10000
+    BandwidthSampling = 1000
+    Options = []
+    OnSessionClosed = SendFileHttpClientSessionClosed
+    OnDocBegin = SendFileHttpClientDocBegin
+    OnDocEnd = SendFileHttpClientDocEnd
+    OnSendEnd = SendFileHttpClientSendEnd
+    SocksAuthentication = socksNoAuthentication
+    OnSocksConnected = SendFileHttpClientSocksConnected
+    OnSocksError = SendFileHttpClientSocksError
+    Left = 160
+    Top = 8
   end
 end

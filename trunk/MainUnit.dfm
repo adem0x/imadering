@@ -671,6 +671,7 @@ object MainForm: TMainForm
     ListenBacklog = 5
     ReqVerLow = 1
     ReqVerHigh = 1
+    OnBgException = SocketBgException
     Left = 80
     Top = 32
   end

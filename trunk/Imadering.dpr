@@ -1,4 +1,3 @@
-// JCL_DEBUG_EXPERT_INSERTJDBG ON
 program Imadering;
 
 uses
@@ -39,7 +38,7 @@ uses
   UnitPluginObserver in 'UnitPluginObserver.pas',
   UnitCustomExceptions in 'UnitCustomExceptions.pas',
   PluginLoaderUnit in 'PluginLoaderUnit.pas';
-
+                                                                  
 {$R *.res}
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or
   IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP}

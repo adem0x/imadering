@@ -174,6 +174,7 @@ begin
   if not Assigned(IcqContactInfoForm) then IcqContactInfoForm := TIcqContactInfoForm.Create(self);
   //--Присваиваем UIN инфу которого хотим смотреть
   IcqContactInfoForm.ReqUIN := SearchResultJvListView.Selected.SubItems[1];
+  IcqContactInfoForm.ReqProto := 'Icq';
   //--Загружаем информацию о нем
   IcqContactInfoForm.LoadUserUnfo;
   //--Отображаем окно

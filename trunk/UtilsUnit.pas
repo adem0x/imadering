@@ -94,6 +94,7 @@ procedure SetStringPropertyIfExists(AComp: TComponent; APropName: string;
 function ChangeSpaces(const Value: string): string;
 function ChangeSlash(const Value: string): string;
 function SendFLAP_MRA(PktType, Data: string; NoLen: boolean = false): boolean;
+function GetFileFName(FileName: string): string;
 
 implementation
 
@@ -113,6 +114,19 @@ begin
   if FindFirst(FileName, faAnyFile, SearchRec) = 0 then
   try
     Result := SearchRec.Size;
+  finally
+    FindClose(SearchRec);
+  end;
+end;
+
+function GetFileFName(FileName: string): string;
+var
+  SearchRec: TSearchRec;
+begin
+  Result := EmptyStr;
+  if FindFirst(FileName, faAnyFile, SearchRec) = 0 then
+  try
+    Result := SearchRec.Name;
   finally
     FindClose(SearchRec);
   end;
@@ -367,8 +381,6 @@ begin
   DA.Options := FDAOptions;
   DA.AutoFree := true;
   DA.AutoFocus := false;
-  DA.Location.Width := DAWidth;
-  DA.Location.Height := DAHeight;
   DA.Location.Position := TJvDesktopAlertPosition(DAPos);
   DA.AlertStyle := TJvAlertStyle(DAStyle);
   DA.StyleHandler.DisplayDuration := DAVisible;
@@ -861,36 +873,28 @@ var
   i: Integer;
 begin
   i := 1;
-  while i < length(MSG) do begin
-    if msg[i] = #0
-      then delete(msg, i, 1)
-    else
-      if msg[i] = #$04
-        then begin
-        if msg[i + 1] = #$01
-          then msg[i + 1] := '¨'
-        else
-          if msg[i + 1] = #$51
-            then msg[i + 1] := '¸'
-          else msg[i + 1] := chr(ord(msg[i + 1]) + $B0);
-        delete(msg, i, 1);
-      end
-      else
-        if (msg[i] = #$D0) and (msg[i + 1] in D0Set)
-          then begin
-          if msg[i + 1] = #$81
-            then msg[i + 1] := '¨'
-          else msg[i + 1] := chr(ord(msg[i + 1]) + $30);
-          delete(msg, i, 1);
-        end
-        else
-          if (msg[i] = #$D1) and (msg[i + 1] in D1Set)
-            then begin
-            if msg[i + 1] = #$91
-              then msg[i + 1] := '¸'
-            else msg[i + 1] := chr(ord(msg[i + 1]) + $70);
-            delete(msg, i, 1);
-          end;
+  while i < length(MSG) do
+  begin
+    if msg[i] = #0 then delete(msg, i, 1)
+    else if msg[i] = #$04 then
+    begin
+      if msg[i + 1] = #$01 then msg[i + 1] := '¨'
+      else if msg[i + 1] = #$51 then msg[i + 1] := '¸'
+      else msg[i + 1] := chr(ord(msg[i + 1]) + $B0);
+      delete(msg, i, 1);
+    end
+    else if (msg[i] = #$D0) and (msg[i + 1] in D0Set) then
+    begin
+      if msg[i + 1] = #$81 then msg[i + 1] := '¨'
+      else msg[i + 1] := chr(ord(msg[i + 1]) + $30);
+      delete(msg, i, 1);
+    end
+    else if (msg[i] = #$D1) and (msg[i + 1] in D1Set) then
+    begin
+      if msg[i + 1] = #$91 then msg[i + 1] := '¸'
+      else msg[i + 1] := chr(ord(msg[i + 1]) + $70);
+      delete(msg, i, 1);
+    end;
     inc(i);
   end;
   Result := msg;

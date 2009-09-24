@@ -11,7 +11,7 @@ unit VarsUnit;
 interface
 
 uses
-  SysUtils, Classes, ExtCtrls, JvDesktopAlert, Graphics;
+  SysUtils, Classes, ExtCtrls, JvDesktopAlert, Graphics, GifImage;
 
 const
   Bild_Version = '5.0.0 alpha';
@@ -219,6 +219,11 @@ var
   DellGroupErrL: string = 'Ошибка при удалении группы.';
   DellGroupOKL: string = 'Группа успешно удалена из вашего списка контактов!';
   AddNewGroupOKL: string = 'Группа успешно добавлена в ваш список контактов!';
+  JabberNullGroup: string = 'Общая';
+  FileTransfer1L: string = 'Отправка для:';
+  FileTransfer2L: string = 'Передача файла ...';
+  FileTransfer3L: string = 'Передача файла завершена';
+  FileTransfer4L: string = 'Передача файла отменена';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
@@ -300,16 +305,17 @@ var
   //--Переменные оформления всплывающих подсказок
   FDAOptions: TJvDesktopAlertOptions;
   DACount: integer = 0;
-  DATimeShow: integer = 5000;
-  DAPos: integer = 0;//TJvDesktopAlertPosition = dapBottomRight;
-  DAStyle: integer = 1;//TJvAlertStyle = asFade;
-  DAWidth: integer = 180;
-  DAHeight: integer = 160;
+  DATimeShow: integer = 7000;
+  DAPos: integer = 3;
+  DAStyle: integer = 0;
 
   //--Переменные для окна чата
   NoAvatar: TImage;
   OutMessage2: TMemoryStream;
   OutMessage3: TMemoryStream;
+  xStatusImg: TBitmap;
+  xStatusGif: TGifImage;
+  xStatusMem: TMemoryStream;
   QReplyAutoSend: boolean = false;
   SmilesList: TStringList;
   InMessList: TStringList;
