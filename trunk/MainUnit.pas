@@ -4145,10 +4145,8 @@ begin
   JvTimerList.Events[7].Enabled := true;
   //--Инициализируем переменную времени начала статистики трафика сессии
   SesDataTraf := now;
-
   //--загружаем плагины из папки
   LoadPlugins;
-
   //--Уведомляем плагины о окончании загрузки приложения
   New(Param);
   Param.cSize := sizeof(Param);

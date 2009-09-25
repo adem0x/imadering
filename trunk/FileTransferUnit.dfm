@@ -4,7 +4,7 @@ object FileTransferForm: TFileTransferForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1055#1077#1088#1077#1076#1072#1095#1072' '#1092#1072#1081#1083#1086#1074
-  ClientHeight = 161
+  ClientHeight = 222
   ClientWidth = 498
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -39,12 +39,20 @@ object FileTransferForm: TFileTransferForm
     Height = 13
     Caption = #1061#1086#1076' '#1087#1077#1088#1077#1076#1072#1095#1080':'
   end
-  object SendStatusLabel: TLabel
+  object DescLabel: TLabel
     Left = 9
-    Top = 118
-    Width = 40
+    Top = 121
+    Width = 97
     Height = 13
-    Caption = #1057#1090#1072#1090#1091#1089':'
+    Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1082' '#1092#1072#1081#1083#1091':'
+  end
+  object PassLabel: TLabel
+    Left = 25
+    Top = 172
+    Width = 41
+    Height = 13
+    Alignment = taRightJustify
+    Caption = #1055#1072#1088#1086#1083#1100':'
   end
   object TopInfoPanel: TPanel
     AlignWithMargins = True
@@ -85,6 +93,7 @@ object FileTransferForm: TFileTransferForm
     Width = 92
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
+    Enabled = False
     TabOrder = 3
     TabStop = False
     OnClick = CancelBitBtnClick
@@ -110,7 +119,7 @@ object FileTransferForm: TFileTransferForm
   object BottomInfoPanel: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 137
+    Top = 198
     Width = 492
     Height = 21
     Align = alBottom
@@ -122,6 +131,33 @@ object FileTransferForm: TFileTransferForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 6
+  end
+  object DescEdit: TEdit
+    Left = 8
+    Top = 140
+    Width = 482
+    Height = 21
+    TabOrder = 7
+  end
+  object PassEdit: TEdit
+    Left = 72
+    Top = 169
+    Width = 282
+    Height = 21
+    TabStop = False
+    PasswordChar = '*'
+    TabOrder = 8
+  end
+  object SendFileButton: TBitBtn
+    Left = 360
+    Top = 167
+    Width = 130
+    Height = 25
+    Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
+    Default = True
+    TabOrder = 9
+    TabStop = False
+    OnClick = SendFileButtonClick
   end
   object SendFileHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
@@ -142,10 +178,9 @@ object FileTransferForm: TFileTransferForm
     OnSessionClosed = SendFileHttpClientSessionClosed
     OnDocBegin = SendFileHttpClientDocBegin
     OnDocEnd = SendFileHttpClientDocEnd
+    OnSendData = SendFileHttpClientSendData
     OnSendEnd = SendFileHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
-    OnSocksConnected = SendFileHttpClientSocksConnected
-    OnSocksError = SendFileHttpClientSocksError
     Left = 160
     Top = 8
   end

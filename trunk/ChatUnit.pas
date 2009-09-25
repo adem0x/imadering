@@ -1156,25 +1156,23 @@ begin
   //--Присваиваем переменную способа передачи
   with FileTransferForm do
   begin
-    SendForUIN := InfoPanel2.Caption;
+    Tag := (Sender as TMenuItem).Tag;
     TopInfoPanel.Caption := FileTransfer1L + ' ' + ChatPageControl.ActivePage.Caption;
+    TopInfoPanel.Hint := InfoPanel2.Caption;
     //--Открываем диалог выбора файла для передачи
     if SendFileOpenDialog.Execute then
     begin
-      FileNamePanel.Caption := ' ' + GetFileFName(SendFileOpenDialog.FileName);
+      FileNamePanel.Hint := SendFileOpenDialog.FileName;
+      FileSizePanel.Hint := GetFileFName(SendFileOpenDialog.FileName);
+      FileNamePanel.Caption := ' ' + FileSizePanel.Hint;
       //--Вычисляем размер файла
       fsize := GetFileSize(SendFileOpenDialog.FileName);
       if fsize > 1000000 then
         FileSizePanel.Caption := FloatToStrF(fsize / 1000000, ffFixed, 18, 3) + ' MB'
       else FileSizePanel.Caption := FloatToStrF(fsize / 1000, ffFixed, 18, 3) + ' KB';
+      //--Отображаем окно
+      xShowForm(FileTransferForm);
     end;
-  end;
-  //--Отображаем окно
-  xShowForm(FileTransferForm);
-  Update;
-  //--Запускаем передачу файла
-  case (Sender as TMenuItem).Tag of
-    1: FileTransferForm.SendUpWap(SendFileOpenDialog.FileName);
   end;
 end;
 

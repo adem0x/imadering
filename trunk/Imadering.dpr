@@ -42,8 +42,8 @@ uses
   OverbyteIcsLIBEAY in 'lib\OverbyteIcsLIBEAY.pas';
                                                                   
 {$R *.res}
-//--Дефолтная иконка для плагина
-//--Для ее обновления надо перекомпилировать ресурсы (см. brcc32.exe) 
+//--Дефолтная иконка для плагина. Для ее обновления надо
+//перекомпилировать ресурсы (см. brcc32.exe)
 {$R resources.RES}
 
 {$SETPEFlAGS IMAGE_FILE_RELOCS_STRIPPED or

@@ -25,6 +25,7 @@ const
   Second = 1000 / MSecsPerDay;
   DTseconds = 1 / (SecsPerDay);
   dblClickTime = 0.6 * DTseconds;
+  RN = #13#10;
 
   ProgramKey: string = '\SoftWare\IMadering';
   cProfile: string = 'ProfilePath';
@@ -224,6 +225,8 @@ var
   FileTransfer2L: string = 'Передача файла ...';
   FileTransfer3L: string = 'Передача файла завершена';
   FileTransfer4L: string = 'Передача файла отменена';
+  FileTransfer5L: string = 'Ссылка для скачивания файла: %s' + RN + '%s' +
+    RN + '[ Файл отправлен через %s. Подробнее на сайте: %s ]';
 
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
