@@ -95,8 +95,37 @@ function ChangeSpaces(const Value: string): string;
 function ChangeSlash(const Value: string): string;
 function SendFLAP_MRA(PktType, Data: string; NoLen: boolean = false): boolean;
 function GetFileFName(FileName: string): string;
+procedure CheckMessage_BR(var msg: string);
+function NotProtoOnline(Proto: string): boolean;
 
 implementation
+
+function NotProtoOnline(Proto: string): boolean;
+begin
+  Result := false;
+  //--Проверяем онлайн ли клиент для этого протокола
+  if (Proto = 'Icq') and (not ICQ_Work_Phaze) then
+  begin
+    DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+    Result := true;
+  end
+  else if (Proto = 'Jabber') and (not Jabber_Work_Phaze) then
+  begin
+    DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+    Result := true;
+  end
+  else if (Proto = 'Mra') and (not MRA_Work_Phaze) then
+  begin
+    DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+    Result := true;
+  end;
+end;
+
+procedure CheckMessage_BR(var msg: string);
+begin
+  //--Заменяем все переходы на новую строку в сообщении на соответствующий тэг
+  msg := AnsiReplaceText(msg, #13#10, '<BR>');
+end;
 
 procedure xShowForm(xForm: TForm);
 begin

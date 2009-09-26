@@ -117,7 +117,8 @@ begin
     //--Добавляем стили
     AddHTML(TopHTMLViewer, '<html><head>' + DetailsCSS + '<title>Details</title></head><body>', EmptyStr, false, false, true);
     //--Учётная запись контакта
-    AddHTML(TopHTMLViewer, ICQAccountInfo + ' ' + ReqUIN, 'cbold');
+    if ReqProto = 'Icq' then AddHTML(TopHTMLViewer, ICQAccountInfo + ' ' + ReqUIN, 'cbold')
+    else if ReqProto = 'Jabber' then AddHTML(TopHTMLViewer, JabberAccountInfo + ' ' + ReqUIN, 'cbold');
     AddHTML(TopHTMLViewer, '<hr>', EmptyStr, false, true);
     //--Очищаем картинку гороскопа
     HoroImage.Picture.Assign(nil);

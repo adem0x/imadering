@@ -2689,10 +2689,10 @@ begin
   if Msg = EmptyStr then Exit;
   //--Обрабатываем сообщение
   Mess := Msg;
-  ChatForm.CheckMessage_BR(Mess);
+  CheckMessage_BR(Mess);
   ChatForm.CheckMessage_ClearTag(Mess);
   PopMsg := Mess;
-  ChatForm.CheckMessage_BR(Mess);
+  CheckMessage_BR(Mess);
   DecorateURL(Mess);
   //--Ищем эту запись в Ростере
   RosterItem := RosterForm.ReqRosterItem(UIN);
@@ -3968,6 +3968,7 @@ begin
     //--Объявляем финальный результат разбора всего пакета
     Result := true;
     //--Запускаем обработку Ростера
+    CollapseGroupsRestore := true;
     RosterForm.UpdateFullCL;
   end;
 end;

@@ -198,6 +198,9 @@ type
     JabberSslContext: TSslContext;
     AddNewContactJabber: TMenuItem;
     AddNewContactMRA: TMenuItem;
+    SendFileMenu: TMenuItem;
+    SendFileUpWapru: TMenuItem;
+    SendFileOpenDialog: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -369,6 +372,9 @@ type
       Cert: TX509Base);
     procedure SocketBgException(Sender: TObject; E: Exception;
       var CanClose: Boolean);
+    procedure SendFileUpWapruClick(Sender: TObject);
+    procedure ContactListCategoryCollapase(Sender: TObject;
+      const Category: TButtonCategory);
   private
     { Private declarations }
     ButtonInd: integer;
@@ -409,8 +415,8 @@ uses
   MraOptionsUnit, JabberOptionsUnit, ChatUnit, SmilesUnit, IcqReqAuthUnit,
   HistoryUnit, UnitCrypto, CLSearchUnit, TrafficUnit, UpdateUnit, IcqAddContactUnit,
   JabberProtoUnit, MraProtoUnit, RosterUnit, IcqSearchUnit, IcqGroupManagerUnit,
-  UnitLogger, EncdDecd, ShowCertUnit, UnitPluginObserver, UnitPluginInterface, 
-  PluginLoaderUnit;
+  UnitLogger, EncdDecd, ShowCertUnit, UnitPluginObserver, UnitPluginInterface,
+  PluginLoaderUnit, FileTransferUnit;
 
 resourcestring
   StrPluginsFolder = 'Profile\Plugins\';
@@ -518,7 +524,7 @@ var
   PluginLoader: TPluginLoader;
   PluginHandle: THandle;
   IconResource: TResourceStream;
-  sPath: String;
+  sPath: string;
 begin
   sPath := ProfilePath + StrPluginsFolder;
   SettingsForm.PluginsJvImageList.Clear;
@@ -3520,6 +3526,36 @@ begin
   ButtonInd := Button.Index;
 end;
 
+procedure TMainForm.ContactListCategoryCollapase(Sender: TObject;
+  const Category: TButtonCategory);
+var
+  GroupXml: TrXML;
+  skey: string;
+begin
+  //--Запоминаем свёрнутые группы
+  GroupXml := TrXML.Create;
+  try
+    with GroupXml do
+    begin
+      if FileExists(ProfilePath + GroupsFileName) then
+        LoadFromFile(ProfilePath + GroupsFileName);
+      skey := 'groups\' + Category.GroupCaption + '-' +
+        Category.GroupType + '-' + Category.GroupId;
+      //--Запоминаем состояние группы
+      if OpenKey(skey, True) then
+      try
+        WriteBool('collapsed', Category.Collapsed);
+      finally
+        CloseKey;
+      end;
+      //--Записываем файл
+      SaveToFile(ProfilePath + GroupsFileName);
+    end;
+  finally
+    FreeAndNil(GroupXml);
+  end;
+end;
+
 procedure TMainForm.ContactListContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 var
@@ -4487,6 +4523,37 @@ begin
   begin
     if ICQ_Work_Phaze then ICQ_SendYouAdded(ContactList.SelectedItem.UIN)
     else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+  end;
+end;
+
+procedure TMainForm.SendFileUpWapruClick(Sender: TObject);
+var
+  fsize: longint;
+begin
+  if NotProtoOnline(ContactList.SelectedItem.ContactType) then Exit;
+  //--Открываем форму отправки файлов
+  if not Assigned(FileTransferForm) then FileTransferForm := TFileTransferForm.Create(self);
+  //--Присваиваем переменную способа передачи
+  with FileTransferForm do
+  begin
+    Tag := (Sender as TMenuItem).Tag;
+    TopInfoPanel.Caption := FileTransfer1L + ' ' + ContactList.SelectedItem.Caption;
+    TopInfoPanel.Hint := ContactList.SelectedItem.UIN;
+    BottomInfoPanel.Hint := ContactList.SelectedItem.ContactType;
+    //--Открываем диалог выбора файла для передачи
+    if SendFileOpenDialog.Execute then
+    begin
+      FileNamePanel.Hint := SendFileOpenDialog.FileName;
+      FileSizePanel.Hint := GetFileFName(SendFileOpenDialog.FileName);
+      FileNamePanel.Caption := ' ' + FileSizePanel.Hint;
+      //--Вычисляем размер файла
+      fsize := GetFileSize(SendFileOpenDialog.FileName);
+      if fsize > 1000000 then
+        FileSizePanel.Caption := FloatToStrF(fsize / 1000000, ffFixed, 18, 3) + ' MB'
+      else FileSizePanel.Caption := FloatToStrF(fsize / 1000, ffFixed, 18, 3) + ' KB';
+      //--Отображаем окно
+      xShowForm(FileTransferForm);
+    end;
   end;
 end;
 

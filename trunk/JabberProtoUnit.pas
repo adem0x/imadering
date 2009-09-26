@@ -384,6 +384,7 @@ begin
     RosterForm.RosterJvListView.Items.EndUpdate;
   end;
   //--Запускаем обработку Ростера
+  CollapseGroupsRestore := true;
   RosterForm.UpdateFullCL;
 end;
 
@@ -569,10 +570,10 @@ begin
             if BMSearch(0, pJID, '/') > -1 then pJID := Parse('/', pJID, 1);
             //--Обрабатываем сообщение
             Mess := InMsg;
-            ChatForm.CheckMessage_BR(Mess);
+            CheckMessage_BR(Mess);
             ChatForm.CheckMessage_ClearTag(Mess);
             PopMsg := Mess;
-            ChatForm.CheckMessage_BR(Mess);
+            CheckMessage_BR(Mess);
             DecorateURL(Mess);
             //--Ищем эту запись в Ростере
             RosterItem := RosterForm.ReqRosterItem(pJID);

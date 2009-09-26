@@ -57,7 +57,7 @@ var
 implementation
 
 uses MainUnit, SettingsUnit, UnitLogger, TrafficUnit, VarsUnit, UtilsUnit,
-  IcqProtoUnit, RosterUnit;
+  IcqProtoUnit, RosterUnit, JabberProtoUnit, MraProtoUnit;
 
 {$R *.dfm}
 
@@ -106,7 +106,9 @@ var
   Doc, skey, Buf, Boundry, OKURL: string;
   FileToSend: TMemoryStream;
   RosterItem: TListItem;
+  SendYES: boolean;
 begin
+  SendYES := false;
   //--Читаем полученные http данные из блока памяти
   if SendFileHttpClient.RcvdStream <> nil then
   begin
@@ -194,6 +196,7 @@ begin
                       begin
                         if (RosterItem.SubItems[6] <> '9') and (RosterItem.SubItems[33] = 'X') then ICQ_SendMessage_0406(RosterItem.Caption, OKURL, false)
                         else ICQ_SendMessage_0406(RosterItem.Caption, OKURL, true);
+                        SendYES := true;
                       end;
                     end
                     else if RosterItem.SubItems[3] = 'Jabber' then
@@ -203,6 +206,15 @@ begin
                     else if RosterItem.SubItems[3] = 'Mra' then
                     begin
 
+                    end;
+                    //--Добавляем в историю
+                    if SendYES then
+                    begin
+                      CheckMessage_BR(OKURL);
+                      DecorateURL(OKURL);
+                      RosterItem.SubItems[13] := RosterItem.SubItems[13] +
+                        '<span class=a>' + YouAt + ' [' + DateTimeChatMess + ']' +
+                        '</span><br><span class=c>' + OKURL + '</span><br><br>' + RN;
                     end;
                   end;
                 end;

@@ -47,6 +47,7 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 1
     OnButtonClicked = ContactListButtonClicked
+    OnCategoryCollapase = ContactListCategoryCollapase
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
     OnMouseDown = ContactListMouseDown
@@ -1070,6 +1071,16 @@ object MainForm: TMainForm
       ImageIndex = 163
       OnClick = SendMessageForContactClick
     end
+    object SendFileMenu: TMenuItem
+      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1092#1072#1081#1083
+      ImageIndex = 149
+      object SendFileUpWapru: TMenuItem
+        Tag = 1
+        Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1095#1077#1088#1077#1079' UpWap.ru'
+        ImageIndex = 149
+        OnClick = SendFileUpWapruClick
+      end
+    end
     object CheckStatusContact: TMenuItem
       Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1089#1090#1072#1090#1091#1089#1072
       ImageIndex = 172
@@ -1337,5 +1348,9 @@ object MainForm: TMainForm
     SslSessionCacheSize = 20480
     Left = 80
     Top = 96
+  end
+  object SendFileOpenDialog: TOpenDialog
+    Left = 80
+    Top = 200
   end
 end

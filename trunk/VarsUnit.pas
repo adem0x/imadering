@@ -30,6 +30,7 @@ const
   ProgramKey: string = '\SoftWare\IMadering';
   cProfile: string = 'ProfilePath';
   SettingsFileName: string = 'Profile\Settings.xml';
+  GroupsFileName: string = 'Profile\Groups.xml';
   AnketaFileName: string = 'Profile\Contacts\';
   AvatarFileName: string = 'Profile\Avatars\';
   HistoryFileName: string = 'Profile\History\';
@@ -57,6 +58,7 @@ var
   ZipThreadStop: boolean = false;
   GroupHeaderColor: TColor = $00FFEAFF;
   RoasterReady: boolean = false;
+  CollapseGroupsRestore: boolean = true;
 
   //--Статистика трафика
   TrafSend: real;

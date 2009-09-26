@@ -50,7 +50,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit, ChatUnit, UnitLogger;
+  MainUnit, IcqProtoUnit, UtilsUnit, VarsUnit, ChatUnit, UnitLogger, rXML;
 
 function TRosterForm.ReqChatPage(cId: string): TTabSheet;
 var
@@ -236,6 +236,9 @@ begin
   begin
     with MainForm.ContactList do
     begin
+      //--Начинаем обновление КЛ
+      Categories.BeginUpdate;
+      //--Сканируем Ростер
       for i := 0 to Items.Count - 1 do
       begin
         //--Получаем статус контакта заранее
@@ -447,6 +450,30 @@ begin
           Categories[c].Caption := Categories[c].GroupCaption + ' - ' + IntToStr(i) + GroupInv + IntToStr(Categories[c].Items.Count);
         end;
       end;
+      //--Восстанавливаем состояние свёрнутых групп
+      if CollapseGroupsRestore then
+      begin
+        with TrXML.Create() do
+        try
+          if FileExists(ProfilePath + GroupsFileName) then
+            LoadFromFile(ProfilePath + GroupsFileName);
+          for c := 0 to Categories.Count - 1 do
+          begin
+            if OpenKey('groups\' + Categories[c].GroupCaption + '-' +
+              Categories[c].GroupType + '-' + Categories[c].GroupId) then
+            try
+              Categories[c].Collapsed := ReadBool('collapsed');
+            finally
+              CloseKey();
+            end;
+          end;
+        finally
+          Free();
+        end;
+        CollapseGroupsRestore := false;
+      end;
+      //--Заканчиваем обновление КЛ
+      Categories.EndUpdate;
     end;
   end;
 end;

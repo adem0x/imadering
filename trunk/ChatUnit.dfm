@@ -893,8 +893,4 @@ object ChatForm: TChatForm
       OnClick = UpWapru1Click
     end
   end
-  object SendFileOpenDialog: TOpenDialog
-    Left = 200
-    Top = 160
-  end
 end

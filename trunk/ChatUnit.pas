@@ -97,7 +97,6 @@ type
     CloseLastChatMenu: TMenuItem;
     FileTransferPopupMenu: TPopupMenu;
     UpWapru1: TMenuItem;
-    SendFileOpenDialog: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -185,7 +184,6 @@ type
     UserAvatarHash: string;
     procedure TranslateForm;
     procedure CheckMessage_Smilies(var msg: string);
-    procedure CheckMessage_BR(var msg: string);
     procedure CheckMessage_ClearTag(var msg: string);
     procedure AddChatText(Nick_Time, Mess_Text: string; MessIn: boolean = false);
     procedure CreateFastReplyMenu;
@@ -404,12 +402,6 @@ begin
       else Break;
     end;
   end;
-end;
-
-procedure TChatForm.CheckMessage_BR(var msg: string);
-begin
-  //--Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  msg := AnsiReplaceText(msg, #13#10, '<BR>');
 end;
 
 procedure TChatForm.CheckMessage_ClearTag(var msg: string);
@@ -665,7 +657,7 @@ begin
       begin
         RosterItem.SubItems[13] := RosterItem.SubItems[13] +
           '<span class=a>' + msgD + '</span><br><span class=c>' +
-          msg + '</span><br><br>' + #13#10;
+          msg + '</span><br><br>' + RN;
         //--Ставим флаг этому контакту, что история изменилась
         RosterItem.SubItems[17] := 'X';
       end;
@@ -1151,6 +1143,7 @@ procedure TChatForm.UpWapru1Click(Sender: TObject);
 var
   fsize: longint;
 begin
+  if NotProtoOnline(UserType) then Exit;
   //--Открываем форму отправки файлов
   if not Assigned(FileTransferForm) then FileTransferForm := TFileTransferForm.Create(self);
   //--Присваиваем переменную способа передачи
@@ -1159,14 +1152,15 @@ begin
     Tag := (Sender as TMenuItem).Tag;
     TopInfoPanel.Caption := FileTransfer1L + ' ' + ChatPageControl.ActivePage.Caption;
     TopInfoPanel.Hint := InfoPanel2.Caption;
+    BottomInfoPanel.Hint := UserType;
     //--Открываем диалог выбора файла для передачи
-    if SendFileOpenDialog.Execute then
+    if MainForm.SendFileOpenDialog.Execute then
     begin
-      FileNamePanel.Hint := SendFileOpenDialog.FileName;
-      FileSizePanel.Hint := GetFileFName(SendFileOpenDialog.FileName);
+      FileNamePanel.Hint := MainForm.SendFileOpenDialog.FileName;
+      FileSizePanel.Hint := GetFileFName(MainForm.SendFileOpenDialog.FileName);
       FileNamePanel.Caption := ' ' + FileSizePanel.Hint;
       //--Вычисляем размер файла
-      fsize := GetFileSize(SendFileOpenDialog.FileName);
+      fsize := GetFileSize(MainForm.SendFileOpenDialog.FileName);
       if fsize > 1000000 then
         FileSizePanel.Caption := FloatToStrF(fsize / 1000000, ffFixed, 18, 3) + ' MB'
       else FileSizePanel.Caption := FloatToStrF(fsize / 1000, ffFixed, 18, 3) + ' KB';
