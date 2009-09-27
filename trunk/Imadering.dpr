@@ -1,8 +1,6 @@
 program Imadering;
 
 uses
-  RtlVclOptimize,
-  VCLFixPack,
   SysUtils,
   Windows,
   Forms,
