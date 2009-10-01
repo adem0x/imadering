@@ -1,3 +1,5 @@
+//--Changes to the project IMadering
+
 {************************************************************
  SimpleXML - Библиотека для синтаксического разбора текстов XML
 	 и преобразования в иерархию XML-объектов.
@@ -20,7 +22,8 @@
 
 	Текущая версия: 1.0.1
 *************************************************************}
-// Polaris Software: Added IXmlNode.LoadNodeXML
+
+//--Polaris Software: Added IXmlNode.LoadNodeXML
 
 unit SimpleXML;
 
@@ -357,8 +360,8 @@ type
 		//		полученой строки на строки длиной aMaxLineLength.
 		//		Строки разделяются парой символов #13#10 (CR,LF).
 		//		После последней строки указанные символы не вставляются.
-		procedure ReplaceTextByBynaryData(const aData; aSize: Integer;
-			aMaxLineLength: Integer);
+		{procedure ReplaceTextByBynaryData(const aData; aSize: Integer;
+			aMaxLineLength: Integer);}
 
 		//	GetTextAsBynaryData - cобирает все текстовые элементы в одну строку и
 		//		производит преобразование из формата "base64" в двоичные данные.
@@ -479,8 +482,8 @@ function DateTimeToXSTR(v: TDateTime): TXmlString;
 function VarToXSTR(const v: TVarData): TXmlString;
 
 function TextToXML(const aText: TXmlString): TXmlString;
-function BinToBase64(const aBin; aSize, aMaxLineLength: Integer): String;
-function Base64ToBin(const aBase64: String): String;
+//function BinToBase64(const aBin; aSize, aMaxLineLength: Integer): String;
+//function Base64ToBin(const aBase64: String): String;
 function IsXmlDataString(const aData: String): Boolean;
 function XmlIsInBinaryFormat(const aData: String): Boolean;
 procedure PrepareToSaveXml(var anElem: IXmlElement; const aChildName: String);
@@ -557,6 +560,9 @@ var
 	var
 		i: Integer;
 	begin
+
+    //CharInSet(s[i], ['0'..'9']);
+
 		i := aPos;
 		while (i <= Length(s)) and (s[i] in ['0'..'9']) do
 			Inc(i);
@@ -590,8 +596,8 @@ end;
 function VarToXSTR(const v: TVarData): TXmlString;
 const
 	BoolStr: array[Boolean] of TXmlString = ('0', '1');
-var
-	p: Pointer;
+//var
+	//p: Pointer;
 begin
 	case v.VType of
 		varNull: Result := XSTR_NULL;
@@ -609,15 +615,15 @@ begin
 		varLongWord: Result := IntToStr(v.VLongWord);
 		varInt64: Result := IntToStr(v.VInt64);
 		varString: Result := String(v.VString);
-		varArray + varByte:
-			begin
+		varArray + varByte: Result := String(v.VString);
+			{begin
 				p := VarArrayLock(Variant(v));
 				try
 					Result := BinToBase64(p^, VarArrayHighBound(Variant(v), 1) - VarArrayLowBound(Variant(v), 1) + 1, 0);
 				finally
 					VarArrayUnlock(Variant(v))
 				end
-			end;
+			end;}
 		else
 			Result := Variant(v)
 	end;
@@ -684,6 +690,8 @@ function XmlIsInBinaryFormat(const aData: String): Boolean;
 begin
 	Result := Copy(aData, 1, BinXmlSignatureSize) = BinXmlSignature
 end;
+
+(*
 
 var
 	Base64Map: array [0..63] of Char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -828,6 +836,7 @@ begin
 	end;
 end;
 
+*)
 
 type
 	TBinXmlReader = class
@@ -1342,8 +1351,8 @@ type
 
 		// IXmlElement
 		procedure ReplaceTextByCDATASection(const aText: TXmlString);
-		procedure ReplaceTextByBynaryData(const aData; aSize: Integer;
-			aMaxLineLength: Integer);
+		{procedure ReplaceTextByBynaryData(const aData; aSize: Integer;
+			aMaxLineLength: Integer);}
 		function GetTextAsBynaryData: TXmlString;
 	public
 		constructor Create(aNames: TXmlNameTable; aNameID: Integer);
@@ -2865,15 +2874,15 @@ end;
 
 function TXmlElement.GetTextAsBynaryData: TXmlString;
 begin
-	Result := Base64ToBin(Get_Text);
+	Result := Get_Text; //Base64ToBin(Get_Text);
 end;
 
-procedure TXmlElement.ReplaceTextByBynaryData(const aData; aSize: Integer;
+{procedure TXmlElement.ReplaceTextByBynaryData(const aData; aSize: Integer;
 	aMaxLineLength: Integer);
 begin
 	RemoveTextNodes;
 	GetChilds.Insert(TXmlText.Create(FNames, BinToBase64(aData, aSize, aMaxLineLength)), -1);
-end;
+end;}
 
 procedure TXmlElement.RemoveTextNodes;
 var

@@ -25,7 +25,7 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_UnitSearchPath>lib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ExeOutput>Imadering</DCC_ExeOutput>
-			<DCC_Define>DEBUG;USE_SSL;$(DCC_Define)</DCC_Define>
+			<DCC_Define>USE_SSL;$(DCC_Define)</DCC_Define>
 			<DCC_DcuOutput>dcu</DCC_DcuOutput>
 			<DCC_UsePackage>vcl;rtl;vclx;vclactnband;dbrtl;bdertl;TeeUI;TeeDB;Tee;adortl;IndyCore;IndySystem;IndyProtocols;Jcl;JclVcl;JvCoreD12R;JvSystemD12R;JvStdCtrlsD12R;JvAppFrmD12R;JvBandsD12R;JvCmpD12R;JvCryptD12R;JvCtrlsD12R;JvCustomD12R;JvDlgsD12R;JvDockingD12R;JvEDID12R;vcldb;JvGlobusD12R;JvHMID12R;JvInterpreterD12R;JvJansD12R;JvManagedThreadsD12R;JvMMD12R;JvNetD12R;JvPageCompsD12R;JvPluginD12R;JvPrintPreviewD12R;JvRuntimeDesignD12R;JvTimeFrameworkD12R;JvValidatorsD12R;JvWizardD12R;JvXPCtrlsD12R;OverbyteIcsD2009Run</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>Imadering\Imadering.exe</DCC_DependencyCheckOutputName>
@@ -38,9 +38,9 @@
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_MapFile>3</DCC_MapFile>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<Version>7.0</Version>
-			<DCC_ExeOutput>Imadering</DCC_ExeOutput>
-			<DCC_DcuOutput>dcu</DCC_DcuOutput>
 			<DCC_ObjOutput>dcu</DCC_ObjOutput>
 			<DCC_HppOutput>dcu</DCC_HppOutput>
 			<DCC_ResourcePath>lib;$(DCC_ResourcePath)</DCC_ResourcePath>
@@ -167,7 +167,7 @@
 						<VersionInfo Name="MajorVer">0</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">406</VersionInfo>
+						<VersionInfo Name="Build">415</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -179,7 +179,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">0.0.0.406</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">0.0.0.415</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

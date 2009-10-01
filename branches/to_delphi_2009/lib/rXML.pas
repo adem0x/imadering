@@ -1,3 +1,5 @@
+//--Changes to the project IMadering
+
 unit rXML;
 
 interface
@@ -540,7 +542,7 @@ end;
 procedure TrXML.Merge(const aText: string);
 var
   x: TrXML;
-  //
+
   procedure __appendxml(aCanCreate: Boolean);
   var
     i: Integer;
@@ -566,7 +568,7 @@ var
       end;
     end;
   end;
-  //
+
 begin
   OpenKey('\');
   x := TrXML.Create();

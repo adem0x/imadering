@@ -1,3 +1,5 @@
+//--Changes to the project IMadering
+
 {*******************************************************}
 {                                                       }
 {       CodeGear Delphi Visual Component Library        }
@@ -34,10 +36,10 @@ type
   TButtonGroup = class(TCustomControl)
   private
     FDownIndex: Integer;
-    FDragIndex: Integer;
-    FDragStartPos: TPoint;
-    FDragStarted: Boolean;
-    FDragImageList: TDragImageList;
+    //FDragIndex: Integer;
+    //FDragStartPos: TPoint;
+    //FDragStarted: Boolean;
+    //FDragImageList: TDragImageList;
     FHiddenItems: Integer; { Hidden rows or Hidden columns, depending on the flow }
     FHotIndex: Integer;
     FInsertLeft, FInsertTop, FInsertRight, FInsertBottom: Integer;
@@ -62,7 +64,7 @@ type
     FOnAfterDrawButton: TGrpButtonDrawEvent;
     FOnReorderButton: TGrpButtonReorderEvent;
     FScrollBarShown: Boolean;
-    procedure AutoScroll(ScrollCode: TScrollCode);
+    //procedure AutoScroll(ScrollCode: TScrollCode);
     procedure ImageListChange(Sender: TObject);
     function CalcButtonsPerRow: Integer;
     function CalcRowsSeen: Integer;
@@ -86,19 +88,19 @@ type
     procedure WMMouseLeave(var Message: TMessage); message WM_MOUSELEAVE;
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
-    procedure SetDragIndex(const Value: Integer);
+    //procedure SetDragIndex(const Value: Integer);
   protected
     function CreateButton: TGrpButtonItem; virtual;
     procedure CreateHandle; override;
     procedure CreateParams(var Params: TCreateParams); override;
-    procedure DoEndDrag(Target: TObject; X: Integer; Y: Integer); override;
+    //procedure DoEndDrag(Target: TObject; X: Integer; Y: Integer); override;
     procedure DoHotButton; dynamic;
     function DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     function DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
-    procedure DoReorderButton(const OldIndex, NewIndex: Integer);
-    procedure DoStartDrag(var DragObject: TDragObject); override;
-    procedure DragOver(Source: TObject; X: Integer; Y: Integer;
-      State: TDragState; var Accept: Boolean); override;
+    //procedure DoReorderButton(const OldIndex, NewIndex: Integer);
+    //procedure DoStartDrag(var DragObject: TDragObject); override;
+    {procedure DragOver(Source: TObject; X: Integer; Y: Integer;
+      State: TDragState; var Accept: Boolean); override;}
     procedure DrawButton(Index: Integer; Canvas: TCanvas;
       Rect: TRect; State: TButtonDrawState); virtual;
     procedure DoItemClicked(const Index: Integer); virtual;
@@ -122,23 +124,23 @@ type
       because they are dragging the item at DragIndex. Set DragIndex to
       control which item is being dragged before manually calling
       BeginDrag. }
-    property DragIndex: Integer read FDragIndex write SetDragIndex;
-    property DragImageList: TDragImageList read FDragImageList;
-    procedure DragDrop(Source: TObject; X: Integer; Y: Integer); override;
+    //property DragIndex: Integer read FDragIndex write SetDragIndex;
+    //property DragImageList: TDragImageList read FDragImageList;
+    //procedure DragDrop(Source: TObject; X: Integer; Y: Integer); override;
     function GetButtonRect(const Index: Integer): TRect;
-    function GetDragImages: TDragImageList; override;
+    //function GetDragImages: TDragImageList; override;
     function IndexOfButtonAt(const X, Y: Integer): Integer;
     { RemoveInsertionPoints: Removes the insertion points added by
       SetInsertionPoints }
-    procedure RemoveInsertionPoints;
+    //procedure RemoveInsertionPoints;
     procedure ScrollIntoView(const Index: Integer);
     { SetInsertionPoints: Draws an insert line for inserting at
       InsertionIndex. Shows/Hides  }
-    procedure SetInsertionPoints(const InsertionIndex: Integer);
+   //procedure SetInsertionPoints(const InsertionIndex: Integer);
     { TargetIndexAt: Gives you the target insertion index given a
       coordinate. If it is above half of a current button, it inserts
       above it. If it is below the half, it inserts after it. }
-    function TargetIndexAt(const X, Y: Integer): Integer;
+    //function TargetIndexAt(const X, Y: Integer): Integer;
     property Canvas;
   published
     property Align;
@@ -155,9 +157,9 @@ type
     property ButtonOptions: TGrpButtonOptions read FButtonOptions write SetGrpButtonOptions default [gboShowCaptions];
     property DockSite;
     property DoubleBuffered;
-    property DragCursor;
-    property DragKind;
-    property DragMode;
+    //property DragCursor;
+    //property DragKind;
+    //property DragMode;
     property Enabled;
     property Font;
     property Height default 100;
@@ -178,10 +180,10 @@ type
     property OnContextPopup;
     property OnDockDrop;
     property OnDockOver;
-    property OnDragDrop;
-    property OnDragOver;
+    //property OnDragDrop;
+    //property OnDragOver;
     property OnEndDock;
-    property OnEndDrag;
+    //property OnEndDrag;
     property OnEnter;
     property OnExit;
     property OnHotButton: TGrpButtonEvent read FOnHotButton write FOnHotButton;
@@ -203,7 +205,7 @@ type
     property OnMouseWheelDown;
     property OnMouseWheelUp;
     property OnStartDock;
-    property OnStartDrag;
+    //property OnStartDrag;
   end;
 
   TGrpButtonItem = class(TBaseButtonItem)
@@ -254,7 +256,7 @@ begin
   inherited Create(AOwner);
   Width := 100;
   Height := 100;
-  ControlStyle := [csDoubleClicks, csCaptureMouse, csDisplayDragImage, csPannable];
+  ControlStyle := [csDoubleClicks, csCaptureMouse, {csDisplayDragImage, }csPannable];
   FButtonItems := GetButtonsClass.Create(Self);
   FButtonOptions := [gboShowCaptions];
   FBorderStyle := bsSingle;
@@ -266,12 +268,12 @@ begin
   FHotIndex := -1;
   FDownIndex := -1;
   FItemIndex := -1;
-  FDragIndex := -1;
+  //FDragIndex := -1;
   FInsertBottom := -1;
   FInsertTop := -1;
   FInsertLeft := -1;
   FInsertRight := -1;
-  FDragImageList := TDragImageList.Create(nil);
+  //FDragImageList := TDragImageList.Create(nil);
   FFocusIndex := -1;
   TabStop := True;
 end;
@@ -293,7 +295,7 @@ end;
 
 destructor TButtonGroup.Destroy;
 begin
-  FDragImageList.Free;
+  //FDragImageList.Free;
   FButtonItems.Free;
   FImageChangeLink.Free;
   inherited;
@@ -388,7 +390,7 @@ begin
     CurOffset.Y := 0;
     RowPos := 0;
     if gboFullSize in ButtonOptions then
-      ActualWidth := ClientWidth
+      ActualWidth := ClientWidth - 1
     else
       ActualWidth := FButtonWidth;
     ActualHeight := FButtonHeight;
@@ -397,14 +399,17 @@ begin
     begin
       ItemRect := Bounds(CurOffset.X, CurOffset.Y, ActualWidth, ActualHeight);
       DrawState := [];
-      if X = FHotIndex then
+      {if X = FHotIndex then
       begin
         Include(DrawState, bdsHot);
         if X = FDownIndex then
-          Include(DrawState, bdsDown);
-      end;
+          Include(DrawState, bdsSelected);
+      end;}
       if X = FItemIndex then
+      begin
+        Include(DrawState, bdsHot);
         Include(DrawState, bdsSelected);
+      end;
 
       if X = FInsertTop then
         Include(DrawState, bdsInsertTop)
@@ -414,8 +419,8 @@ begin
         Include(DrawState, bdsInsertRight)
       else if X = FInsertLeft then
         Include(DrawState, bdsInsertLeft);
-      if (X = FFocusIndex) and Focused then
-        Include(DrawState, bdsFocused);
+      //if (X = FFocusIndex) and Focused then
+      //  Include(DrawState, bdsFocused);
 
       DrawButton(X, Canvas, ItemRect, DrawState);
       Inc(RowPos);
@@ -696,17 +701,17 @@ begin
     Canvas.Font := Font;
     if bdsSelected in State then
     begin
-      Canvas.Brush.Color := GetShadowColor(clBtnFace, -25);
+      Canvas.Brush.Color := $00EFD3C6;
       Canvas.Font.Color := clBtnText;
     end
     else if bdsDown in State then
     begin
-      Canvas.Brush.Color := clBtnShadow;
-      Canvas.Font.Color := clBtnFace;
+      Canvas.Brush.Color := $00EFD3C6;
+      Canvas.Font.Color := clBtnText;
     end
     else
     begin
-      Canvas.Brush.Color := clBtnFace;
+      Canvas.Brush.Color := clWhite;
       Canvas.Font.Color := clBtnText;
     end;
 
@@ -714,13 +719,14 @@ begin
       FOnBeforeDrawButton(Self, Index, Canvas, Rect, State);
 
     FillColor := Canvas.Brush.Color;
-    EdgeColor := GetShadowColor(FillColor, -25);
+    EdgeColor := clWhite;
     Canvas.FillRect(Rect);
 
-    InflateRect(Rect, -2, -1);
+    InflateRect(Rect, 0, 0);
 
     if (bdsHot in State) and not (bdsDown in State) then
-      EdgeColor := GetShadowColor(EdgeColor, -50);
+      //EdgeColor := GetShadowColor(EdgeColor, -50);
+      EdgeColor := clHighlight;
 
     { Draw the edge outline }
     Canvas.Brush.Color := EdgeColor;
@@ -728,7 +734,7 @@ begin
     Canvas.Brush.Color := FillColor;
 
     { Compute the text location }
-    TextLeft := Rect.Left + 4;
+    TextLeft := Rect.Left + 7;
     RectHeight := Rect.Bottom - Rect.Top;
      TextTop := Rect.Top + (RectHeight - Canvas.TextHeight('Wg')) div 2; { Do not localize } 
     if TextTop < Rect.Top then
@@ -753,7 +759,7 @@ begin
       if bdsDown in State then
         Inc(ImgTop);
       FImages.Draw(Canvas, TextLeft - 1, ImgTop, ButtonItem.ImageIndex);
-      TextOffset := FImages.Width + 1;
+      TextOffset := FImages.Width + 3;
     end;
 
     { Show insert indications }
@@ -792,7 +798,7 @@ begin
       TextRect.Left := TextLeft;
       TextRect.Right := Rect.Right - 1;
       TextRect.Top := TextTop;
-      TextRect.Bottom := Rect.Bottom -1;
+      TextRect.Bottom := Rect.Bottom - 1;
       Text := ButtonItem.Caption;
       Canvas.TextRect(TextRect, Text, [tfEndEllipsis]);
     end;
@@ -806,7 +812,7 @@ begin
     if Assigned(FOnAfterDrawButton) then
       FOnAfterDrawButton(Self, Index, Canvas, OrgRect, State);
   end;
-  Canvas.Brush.Color := Color; { Restore the original color }
+  Canvas.Brush.Color := clWhite; { Restore the original color }
 end;
 
 procedure TButtonGroup.SetOnDrawButton(const Value: TGrpButtonDrawEvent);
@@ -838,17 +844,19 @@ begin
     FHotIndex := -1;
     DoHotButton;
   end;
-  if FDragImageList.Dragging then
+  {if FDragImageList.Dragging then
   begin
     FDragImageList.HideDragImage;
     RemoveInsertionPoints;
     UpdateWindow(Handle);
     FDragImageList.ShowDragImage;
-  end;
+  end;}
 end;
 
 procedure TButtonGroup.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
+var
+  LastDown: Integer;
 begin
   inherited;
   if Button = mbLeft then
@@ -857,19 +865,38 @@ begin
     if not Focused then
       Windows.SetFocus(Handle);
 
-    FDragStarted := False;
+    //FDragStarted := False;
     FDownIndex := IndexOfButtonAt(X, Y);
     if FDownIndex <> -1 then
     begin
-      if gboAllowReorder in ButtonOptions then
+      {if gboAllowReorder in ButtonOptions then
         FDragIndex := FDownIndex;
-      FDragStartPos := Point(X, Y);
+      FDragStartPos := Point(X, Y);}
       { If it is the same as the selected, don't do anything }
       if FDownIndex <> FItemIndex then
         UpdateButton(FDownIndex)
       else
         FDownIndex := -1;
     end;
+    //--Перенёс событие MouseUp сюда для более правильного выбора пунктов
+    if Button = mbLeft then
+  begin
+    LastDown := FDownIndex;
+    FDownIndex := -1;
+    //FDragIndex := -1;
+    if (LastDown <> -1) and (IndexOfButtonAt(X, Y) = LastDown) then
+    begin
+      UpdateButton(LastDown);
+      DoItemClicked(LastDown);
+      if gboGroupStyle in ButtonOptions then
+        ItemIndex := LastDown;
+    end
+    else if LastDown <> -1 then
+      UpdateButton(LastDown);
+    if Assigned(FOnClick) then
+      FOnClick(Self);
+  end;
+    //--Конец события MouseUp
   end;
 end;
 
@@ -877,11 +904,11 @@ procedure TButtonGroup.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   NewHotIndex, OldHotIndex: Integer;
   EventTrack: TTrackMouseEvent;
-  DragThreshold: Integer;
+  //DragThreshold: Integer;
 begin
   inherited;
   { Was the drag threshold met? }
-  if (gboAllowReorder in ButtonOptions) and (FDragIndex <> -1) then
+  (*if (gboAllowReorder in ButtonOptions) and (FDragIndex <> -1) then
   begin
     DragThreshold := Mouse.DragThreshold;
     if (Abs(FDragStartPos.X - X) >= DragThreshold) or
@@ -904,7 +931,7 @@ begin
       BeginDrag(True, -1);
       Exit;
     end;
-  end;
+  end;*)
 
   NewHotIndex := IndexOfButtonAt(X, Y);
   if NewHotIndex <> FHotIndex then
@@ -933,11 +960,11 @@ end;
 
 procedure TButtonGroup.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
-var
-  LastDown: Integer;
+//var
+  //LastDown: Integer;
 begin
   inherited;
-  if (Button = mbLeft) and (not FDragStarted) then
+  {if (Button = mbLeft) and (not FDragStarted) then
   begin
     LastDown := FDownIndex;
     FDownIndex := -1;
@@ -954,8 +981,8 @@ begin
       UpdateButton(LastDown);
     if Assigned(FOnClick) then
       FOnClick(Self);
-  end;
-  FDragStarted := False;
+  end;}
+  //FDragStarted := False;
 end;
 
 function TButtonGroup.IndexOfButtonAt(const X, Y: Integer): Integer;
@@ -1006,7 +1033,7 @@ begin
     FOnButtonClicked(Self, Index);
 end;
 
-procedure TButtonGroup.DragDrop(Source: TObject; X, Y: Integer);
+(*procedure TButtonGroup.DragDrop(Source: TObject; X, Y: Integer);
 var
   TargetIndex: Integer;
 begin
@@ -1057,7 +1084,7 @@ begin
   end
   else
     inherited DragOver(Source, X, Y, State, Accept);
-end;
+end;*)
 
 procedure TButtonGroup.DoHotButton;
 begin
@@ -1065,7 +1092,7 @@ begin
     FOnHotButton(Self, FHotIndex);
 end;
 
-procedure TButtonGroup.DoStartDrag(var DragObject: TDragObject);
+(*procedure TButtonGroup.DoStartDrag(var DragObject: TDragObject);
 var
   ButtonRect: TRect;
   State: TButtonDrawState;
@@ -1237,7 +1264,7 @@ begin
       if X > (ButtonRect.Left + (ButtonRect.Right - ButtonRect.Left) div 2) then
         Inc(Result)
   end;
-end;
+end;*)
 
 procedure TButtonGroup.CNKeydown(var Message: TWMKeyDown);
 var
@@ -1420,7 +1447,7 @@ begin
     inherited;
 end;
 
-procedure TButtonGroup.SetInsertionPoints(const InsertionIndex: Integer);
+(*procedure TButtonGroup.SetInsertionPoints(const InsertionIndex: Integer);
 begin
   if FInsertTop <> InsertionIndex then 
   begin
@@ -1458,7 +1485,7 @@ procedure TButtonGroup.SetDragIndex(const Value: Integer);
 begin
   FDragIndex := Value;
   FDragStarted := True;
-end;
+end;*)
 
 function TButtonGroup.DoMouseWheelDown(Shift: TShiftState;
   MousePos: TPoint): Boolean;

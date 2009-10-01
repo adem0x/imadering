@@ -135,7 +135,6 @@ var
   Stack: string;
 begin
   CSection.Enter;
-  //OutputDebugString(PAnsiChar(Text));
   UpdateFullPath;
   try
     try
@@ -167,7 +166,6 @@ begin
         LogFile.SaveToFile(FFullLogPath);
       end;
     except
-      //
     end;
   finally
     CSection.Leave;
