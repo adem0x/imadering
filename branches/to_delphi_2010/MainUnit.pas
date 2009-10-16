@@ -780,10 +780,6 @@ end;
 
 procedure TMainForm.JabberStatusOnlineClick(Sender: TObject);
 begin
-
-  Jabber_JID := 'imadering@jabber.ru';
-  Jabber_LoginPassword := 'vogrant';
-
   // Если логин Jabber или пароль пустые, то выводим окно настроек для их ввода
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
   begin
@@ -3343,13 +3339,16 @@ begin
 end;
 
 procedure TMainForm.OpenTestClick(Sender: TObject);
+var
+  d: Tcomponent;
 begin
   // Место для запуска тестов
-
-  if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(Self);
-  ChatForm.Show;
-
+  try
+     d.Assign(d);
+  except
+    on E: Exception do
+      TLogger.Instance.WriteMessage(E);
+  end;
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);

@@ -19,7 +19,6 @@ type
     LogMemo: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure LogMemoDblClick(Sender: TObject);
-    procedure LogMemoChange(Sender: TObject);
 
   private
     { Private declarations }
@@ -37,7 +36,8 @@ implementation
 uses
   MainUnit,
   UtilsUnit,
-  VarsUnit, RosterUnit;
+  VarsUnit,
+  RosterUnit;
 
 procedure TLogForm.FormCreate(Sender: TObject);
 begin
@@ -47,18 +47,12 @@ begin
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Пишем в лог начальные события запуска программы
-  xLog(LogMyPath + MyPath);
-  xLog(LogProfile + ProfilePath);
-  xLog(Format(LogIconCount, [AllIconCount]));
-  xLog(LogNickCash + IntToStr(AccountToNick.Count));
-  xLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1));
-  xLog(LogRosterCount + IntToStr(RosterForm.RosterJvListView.Items.Count));
-end;
-
-procedure TLogForm.LogMemoChange(Sender: TObject);
-begin
-  // Если количество строк в логе слишком большое, то очищаем его
-  if LogMemo.Lines.Count > 10000 then LogMemo.Clear;
+  XLog(LogMyPath + MyPath);
+  XLog(LogProfile + ProfilePath);
+  XLog(Format(LogIconCount, [AllIconCount]));
+  XLog(LogNickCash + IntToStr(AccountToNick.Count));
+  XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1));
+  XLog(LogRosterCount + IntToStr(RosterForm.RosterJvListView.Items.Count));
 end;
 
 procedure TLogForm.LogMemoDblClick(Sender: TObject);

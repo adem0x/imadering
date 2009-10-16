@@ -25,7 +25,6 @@ object LogForm: TLogForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 0
-    OnChange = LogMemoChange
     OnDblClick = LogMemoDblClick
   end
 end

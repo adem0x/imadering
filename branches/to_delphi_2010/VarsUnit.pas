@@ -58,7 +58,7 @@ var
   GroupHeaderColor: TColor = $00FFEAFF;
   RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
-  AllIconCount: integer = 0;
+  AllIconCount: Integer = 0;
 
   // Статистика трафика
   TrafSend: Real;
@@ -372,6 +372,11 @@ var
   Log_Jabber_Status: string = 'Jabber | Выбран статус: ';
   Log_Jabber_Plain: string = 'Jabber | Авторизация по механизму PLAIN';
   Log_Jabber_Nonce: string = 'Jabber | Получен ключ для MD5 авторизации: ';
+  Log_Clear: string = 'Лог событий автоматически очищен.';
+  Log_Exception: string = 'В программе произошла ошибка:' + RN + RN + '%s' + RN +
+    'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
+    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.' + RN +
+    'Путь к файлу с логом ошибок: %s';
 
 implementation
 

@@ -138,6 +138,14 @@ end;
 
 procedure XLog(XLogData: string);
 begin
+  // Если количество строк в логе слишком большое, то очищаем его
+  if LogForm.LogMemo.Lines.Count > 1000 then
+  begin
+    LogForm.LogMemo.Clear;
+    LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Clear);
+    LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
+  end;
+  // Добавляем в лог новое сообщение
   LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + XLogData);
   LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
 end;
