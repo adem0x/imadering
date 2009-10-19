@@ -11,8 +11,20 @@ unit FileTransferUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ComCtrls, StdCtrls, Buttons, OverbyteIcsWndControl,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ExtCtrls,
+  ComCtrls,
+  StdCtrls,
+  Buttons,
+  OverbyteIcsWndControl,
   OverbyteIcsHttpProt;
 
 type
@@ -42,8 +54,8 @@ type
     procedure SendFileHttpClientSendEnd(Sender: TObject);
     procedure SendFileHttpClientSessionClosed(Sender: TObject);
     procedure SendFileButtonClick(Sender: TObject);
-    procedure SendFileHttpClientSendData(Sender: TObject; Buffer: Pointer;
-      Len: Integer);
+    procedure SendFileHttpClientSendData(Sender: TObject; Buffer: Pointer; Len: Integer);
+
   private
     { Private declarations }
   public
@@ -56,8 +68,17 @@ var
 
 implementation
 
-uses MainUnit, SettingsUnit, UnitLogger, TrafficUnit, VarsUnit, UtilsUnit,
-  IcqProtoUnit, RosterUnit, JabberProtoUnit, MraProtoUnit;
+uses
+  MainUnit,
+  SettingsUnit,
+  TrafficUnit,
+  VarsUnit,
+  UtilsUnit,
+  IcqProtoUnit,
+  RosterUnit,
+  JabberProtoUnit,
+  MraProtoUnit;
+
 {$R *.dfm}
 
 const
@@ -66,29 +87,23 @@ const
 procedure TFileTransferForm.SendFileButtonClick(Sender: TObject);
 begin
   // Блокируем контролы Описания и Пароля
-  CancelBitBtn.Enabled := true;
-  DescEdit.Enabled := false;
-  DescEdit.Color := clBtnFace;
-  PassEdit.Enabled := false;
-  PassEdit.Color := clBtnFace;
-  SendFileButton.Enabled := false;
+  CancelBitBtn.Enabled := True;
+  DescEdit.Enabled := False;
+  DescEdit.Color := ClBtnFace;
+  PassEdit.Enabled := False;
+  PassEdit.Color := ClBtnFace;
+  SendFileButton.Enabled := False;
   // Применяем параметры прокси
   SendFileHttpClient.Abort;
   SettingsForm.ApplyProxyHttpClient(SendFileHttpClient);
   case Tag of
-    1:
-      begin
+    1: begin
         // Запрашиваем страницу с кодом сессии
-        try
-          SendProgressBar.Position := 0;
-          SendFileHttpClient.Tag := 0;
-          SendFileHttpClient.URL := 'http://upwap.ru/upload/';
-          BottomInfoPanel.Caption := FileTransfer2L;
-          SendFileHttpClient.GetASync;
-        except
-          on E: Exception do
-            TLogger.Instance.WriteMessage(E);
-        end;
+        SendProgressBar.Position := 0;
+        SendFileHttpClient.Tag := 0;
+        SendFileHttpClient.URL := 'http://upwap.ru/upload/';
+        BottomInfoPanel.Caption := FileTransfer2L;
+        SendFileHttpClient.GetASync;
       end;
   end;
 end;
@@ -101,161 +116,145 @@ end;
 
 procedure TFileTransferForm.SendFileHttpClientDocEnd(Sender: TObject);
 var
-  list: TStringList;
-  Doc, skey, Buf, Boundry, OKURL: string;
+  List: TStringList;
+  Doc, Skey, Buf, Boundry, OKURL: string;
   FileToSend: TMemoryStream;
   RosterItem: TListItem;
-  SendYES: boolean;
+  SendYES: Boolean;
 begin
-  SendYES := false;
+  SendYES := False;
   // Читаем полученные http данные из блока памяти
   if SendFileHttpClient.RcvdStream <> nil then
-  begin
-    try
-      // Увеличиваем статистику входящего трафика
-      TrafRecev := TrafRecev + SendFileHttpClient.RcvdCount;
-      AllTrafRecev := AllTrafRecev + SendFileHttpClient.RcvdCount;
-      if Assigned(TrafficForm) then
-        MainForm.OpenTrafficClick(nil);
-      // Определяем выполнение задания для данных по флагу
-      // Создаём временный лист
-      list := TStringList.Create;
+    begin
       try
-        // Обнуляем позицию начала чтения в блоке памяти
-        SendFileHttpClient.RcvdStream.Position := 0;
-        // Читаем данные в лист
-        list.LoadFromStream(SendFileHttpClient.RcvdStream);
-        // Разбираем данные в листе
-        if list.Text > EmptyStr then
-        begin
-          Doc := list.Text;
-          case SendFileHttpClient.Tag of
-            0:
-              begin
-                // Узнаём ключ сессии
-                skey := IsolateTextString(Doc, 'action="', '"');
-                // Создаём блок памяти для отправки файла методом POST
-                SendFileHttpClient.SendStream := TMemoryStream.Create;
-                // Формируем данные для отправки
-                with SendFileHttpClient do
-                begin
-                  // Ссылка для приёма данных
-                  URL := UpWapRootURL + skey;
-                  // Заполняем переменные для POST
-                  Boundry := '----------sZLbqiVRVfOO8NjlMuYJE3';
-                  { Specified in Multipart/form-data RFC }
-                  ContentTypePost := UTF8Encode
-                    ('multipart/form-data; boundary=' + Copy
-                      (Boundry, 3, length(Boundry)));
-                  Buf := UTF8Encode(Boundry + RN +
-                      'Content-Disposition: form-data; name="file"; filename="'
-                      + FileSizePanel.Hint + '"' + RN +
-                      'Content-Type: image/jpeg' + RN + RN);
-                  // Записываем переменные в память
-                  SendStream.Write(Buf[1], length(Buf));
-                  // Создаём блок памяти для файла
-                  try
-                    FileToSend := TMemoryStream.Create;
-                    FileToSend.LoadFromFile(FileNamePanel.Hint);
-                    FileToSend.SaveToStream(SendStream);
-                  finally
-                    FileToSend.Free;
-                  end;
-                  // Записываем переменную описания файла
-                  Buf := UTF8Encode(RN + Boundry + RN +
-                      'Content-Disposition: form-data; name="desc"' + RN + RN +
-                      DescEdit.Text + RN + Boundry + RN +
-                      'Content-Disposition: form-data; name="password"' + RN +
-                      RN + PassEdit.Text + RN + Boundry + RN +
-                      'Content-Disposition: form-data; name="send"' + RN + RN +
-                      'Отправить!' + RN + Boundry + '--' + RN);
-                  SendStream.Write(Buf[1], length(Buf));
-                  SendStream.Seek(0, soFromBeginning);
-                  // Отправляем данные на сервер
-                  OnSessionClosed := nil;
-                  Abort;
-                  OnSessionClosed := SendFileHttpClientSessionClosed;
-                  SendFileHttpClient.Tag := 1;
-                  PostAsync;
-                end;
-              end;
-            1:
-              begin
-                // Блокируем кнопку отмены операции
-                CancelBitBtnClick(nil);
-                // Ищем информацию об успешной закачке файла на сервер
-                if BMSearch(0, Doc, 'Файл размещен') > -1 then
-                begin
-                  BottomInfoPanel.Caption := FileTransfer3L;
-                  OKURL := UpWapRootURL + IsolateTextString
-                    (Doc, 'action="', '"');
-                  // Формируем текст со ссылкой
-                  case Tag of
-                    1:
-                      OKURL := Format
-                        (FileTransfer5L, [FileSizePanel.Hint, OKURL,
-                        'upwap.ru', 'http://upwap.ru']);
-                  end;
-                  // Ищем такой контакт в Ростере
-                  RosterItem := RosterForm.ReqRosterItem(TopInfoPanel.Hint);
-                  if RosterItem <> nil then
-                  begin
-                    // Отсылаем контакту ссылку и записываем это в историю сообщений
-                    if RosterItem.SubItems[3] = 'Icq' then
-                    begin
-                      if ICQ_Work_Phaze then
+        // Увеличиваем статистику входящего трафика
+        TrafRecev := TrafRecev + SendFileHttpClient.RcvdCount;
+        AllTrafRecev := AllTrafRecev + SendFileHttpClient.RcvdCount;
+        if Assigned(TrafficForm) then
+          MainForm.OpenTrafficClick(nil);
+        // Определяем выполнение задания для данных по флагу
+        // Создаём временный лист
+        List := TStringList.Create;
+        try
+          // Обнуляем позицию начала чтения в блоке памяти
+          SendFileHttpClient.RcvdStream.Position := 0;
+          // Читаем данные в лист
+          List.LoadFromStream(SendFileHttpClient.RcvdStream);
+          // Разбираем данные в листе
+          if List.Text > EmptyStr then
+            begin
+              Doc := List.Text;
+              case SendFileHttpClient.Tag of
+                0: begin
+                    // Узнаём ключ сессии
+                    Skey := IsolateTextString(Doc, 'action="', '"');
+                    // Создаём блок памяти для отправки файла методом POST
+                    SendFileHttpClient.SendStream := TMemoryStream.Create;
+                    // Формируем данные для отправки
+                    with SendFileHttpClient do
                       begin
-                        if (RosterItem.SubItems[6] <> '9') and
-                          (RosterItem.SubItems[33] = 'X') then
-                          ICQ_SendMessage_0406(RosterItem.Caption, OKURL, false)
-                        else
-                          ICQ_SendMessage_0406(RosterItem.Caption, OKURL, true);
-                        SendYES := true;
+                        // Ссылка для приёма данных
+                        URL := UpWapRootURL + Skey;
+                        // Заполняем переменные для POST
+                        Boundry := '----------sZLbqiVRVfOO8NjlMuYJE3';
+                        { Specified in Multipart/form-data RFC }
+                        ContentTypePost := UTF8Encode('multipart/form-data; boundary=' + Copy(Boundry, 3, Length(Boundry)));
+                        Buf := UTF8Encode
+                          (Boundry + RN + 'Content-Disposition: form-data; name="file"; filename="' + FileSizePanel.Hint + '"' + RN +
+                            'Content-Type: image/jpeg' + RN + RN);
+                        // Записываем переменные в память
+                        SendStream.write(Buf[1], Length(Buf));
+                        // Создаём блок памяти для файла
+                        try
+                          FileToSend := TMemoryStream.Create;
+                          FileToSend.LoadFromFile(FileNamePanel.Hint);
+                          FileToSend.SaveToStream(SendStream);
+                        finally
+                          FileToSend.Free;
+                        end;
+                        // Записываем переменную описания файла
+                        Buf := UTF8Encode
+                          (RN + Boundry + RN + 'Content-Disposition: form-data; name="desc"' + RN + RN + DescEdit.Text + RN + Boundry +
+                            RN + 'Content-Disposition: form-data; name="password"' + RN + RN + PassEdit.Text + RN + Boundry + RN +
+                            'Content-Disposition: form-data; name="send"' + RN + RN + 'Отправить!' + RN + Boundry + '--' + RN);
+                        SendStream.write(Buf[1], Length(Buf));
+                        SendStream.Seek(0, SoFromBeginning);
+                        // Отправляем данные на сервер
+                        OnSessionClosed := nil;
+                        Abort;
+                        OnSessionClosed := SendFileHttpClientSessionClosed;
+                        SendFileHttpClient.Tag := 1;
+                        PostAsync;
                       end;
-                    end
-                    else if RosterItem.SubItems[3] = 'Jabber' then
-                    begin
-
-                    end
-                    else if RosterItem.SubItems[3] = 'Mra' then
-                    begin
-
-                    end;
-                    // Добавляем в историю
-                    if SendYES then
-                    begin
-                      CheckMessage_BR(OKURL);
-                      DecorateURL(OKURL);
-                      RosterItem.SubItems[13] := RosterItem.SubItems[13]
-                        + '<span class=a>' + YouAt + ' [' + DateTimeChatMess +
-                        ']' + '</span><br><span class=c>' + OKURL +
-                        '</span><br><br>' + RN;
-                    end;
                   end;
-                end;
+                1: begin
+                    // Блокируем кнопку отмены операции
+                    CancelBitBtnClick(nil);
+                    // Ищем информацию об успешной закачке файла на сервер
+                    if BMSearch(0, Doc, 'Файл размещен') > -1 then
+                      begin
+                        BottomInfoPanel.Caption := FileTransfer3L;
+                        OKURL := UpWapRootURL + IsolateTextString(Doc, 'action="', '"');
+                        // Формируем текст со ссылкой
+                        case Tag of
+                          1: OKURL := Format(FileTransfer5L, [FileSizePanel.Hint, OKURL, 'upwap.ru', 'http://upwap.ru']);
+                        end;
+                        // Ищем такой контакт в Ростере
+                        RosterItem := RosterForm.ReqRosterItem(TopInfoPanel.Hint);
+                        if RosterItem <> nil then
+                          begin
+                            // Отсылаем контакту ссылку и записываем это в историю сообщений
+                            if RosterItem.SubItems[3] = 'Icq' then
+                              begin
+                                if ICQ_Work_Phaze then
+                                  begin
+                                    if (RosterItem.SubItems[6] <> '9') and (RosterItem.SubItems[33] = 'X') then
+                                      ICQ_SendMessage_0406(RosterItem.Caption, OKURL, False)
+                                    else
+                                      ICQ_SendMessage_0406(RosterItem.Caption, OKURL, True);
+                                    SendYES := True;
+                                  end;
+                              end
+                            else if RosterItem.SubItems[3] = 'Jabber' then
+                              begin
+
+                              end
+                            else if RosterItem.SubItems[3] = 'Mra' then
+                              begin
+
+                              end;
+                            // Добавляем в историю
+                            if SendYES then
+                              begin
+                                CheckMessage_BR(OKURL);
+                                DecorateURL(OKURL);
+                                RosterItem.SubItems[13] := RosterItem.SubItems[13] + '<span class=a>' + YouAt + ' [' + DateTimeChatMess +
+                                  ']' + '</span><br><span class=c>' + OKURL + '</span><br><br>' + RN;
+                              end;
+                          end;
+                      end;
+                  end;
               end;
-          end;
+            end;
+        finally
+          List.Free;
         end;
       finally
-        list.Free;
+        // Высвобождаем блок памяти
+        SendFileHttpClient.RcvdStream.Free;
+        SendFileHttpClient.RcvdStream := nil;
       end;
-    finally
-      // Высвобождаем блок памяти
-      SendFileHttpClient.RcvdStream.Free;
-      SendFileHttpClient.RcvdStream := nil;
     end;
-  end;
 end;
 
-procedure TFileTransferForm.SendFileHttpClientSendData
-  (Sender: TObject; Buffer: Pointer; Len: Integer);
+procedure TFileTransferForm.SendFileHttpClientSendData(Sender: TObject; Buffer: Pointer; Len: Integer);
 begin
   // Если прерывание передачи, то останавливаем сокет
   if SendFileHttpClient.Tag = 2 then
-  begin
-    SendFileHttpClient.CloseAsync;
-    SendFileHttpClient.Abort;
-  end;
+    begin
+      SendFileHttpClient.CloseAsync;
+      SendFileHttpClient.Abort;
+    end;
   // Отображаем процесс передачи файла
   SendProgressBar.Max := SendFileHttpClient.SendStream.Size;
   SendProgressBar.Position := SendFileHttpClient.SentCount;
@@ -275,30 +274,29 @@ end;
 procedure TFileTransferForm.SendFileHttpClientSessionClosed(Sender: TObject);
 begin
   // Обрабатываем возможные ошибки в работе http сокета
-  if (SendFileHttpClient.StatusCode = 0) or
-    (SendFileHttpClient.StatusCode >= 400) then
-  begin
-    BottomInfoPanel.Caption := ErrorHttpClient(SendFileHttpClient.StatusCode);
-  end;
+  if (SendFileHttpClient.StatusCode = 0) or (SendFileHttpClient.StatusCode >= 400) then
+    begin
+      BottomInfoPanel.Caption := ErrorHttpClient(SendFileHttpClient.StatusCode);
+    end;
 end;
 
 procedure TFileTransferForm.CancelBitBtnClick(Sender: TObject);
 begin
   // Блокируем кнопку
-  CancelBitBtn.Enabled := false;
+  CancelBitBtn.Enabled := False;
   // Останавливаем передачу файла
   SendFileHttpClient.Tag := 2;
   SendFileHttpClient.Abort;
   // Разблокируем контролы Описания и Пароля
-  DescEdit.Enabled := true;
-  DescEdit.Color := clWindow;
-  PassEdit.Enabled := true;
-  PassEdit.Color := clWindow;
+  DescEdit.Enabled := True;
+  DescEdit.Color := ClWindow;
+  PassEdit.Enabled := True;
+  PassEdit.Color := ClWindow;
   if Sender <> nil then
-  begin
-    BottomInfoPanel.Caption := FileTransfer4L;
-    SendFileButton.Enabled := true;
-  end;
+    begin
+      BottomInfoPanel.Caption := FileTransfer4L;
+      SendFileButton.Enabled := True;
+    end;
 end;
 
 procedure TFileTransferForm.CloseBitBtnClick(Sender: TObject);
@@ -307,22 +305,21 @@ begin
   Close;
 end;
 
-procedure TFileTransferForm.FormClose
-  (Sender: TObject; var Action: TCloseAction);
+procedure TFileTransferForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Если передача закончена, то уничтожаем окно
   if not CancelBitBtn.Enabled then
-  begin
-    // Высвобождаем память
-    if SendFileHttpClient.SendStream <> nil then
     begin
-      SendFileHttpClient.SendStream.Free;
-      SendFileHttpClient.SendStream := nil;
+      // Высвобождаем память
+      if SendFileHttpClient.SendStream <> nil then
+        begin
+          SendFileHttpClient.SendStream.Free;
+          SendFileHttpClient.SendStream := nil;
+        end;
+      // Уничтожаем форму
+      Action := CaFree;
+      FileTransferForm := nil;
     end;
-    // Уничтожаем форму
-    Action := caFree;
-    FileTransferForm := nil;
-  end;
 end;
 
 procedure TFileTransferForm.FormCreate(Sender: TObject);
@@ -336,8 +333,7 @@ begin
   MainForm.AllImageList.GetBitmap(166, SendFileButton.Glyph);
   // Делаем окно независимым и помещаем его кнопку на панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE)
-      or WS_EX_APPWINDOW);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TFileTransferForm.TranslateForm;

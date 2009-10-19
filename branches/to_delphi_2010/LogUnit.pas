@@ -12,18 +12,25 @@ uses
   Controls,
   Forms,
   Dialogs,
-  StdCtrls;
+  StdCtrls, ExtCtrls, Buttons;
 
 type
   TLogForm = class(TForm)
     LogMemo: TMemo;
+    Panel1: TPanel;
+    ClearLogSpeedButton: TSpeedButton;
+    Bevel: TBevel;
+    ICQDumpSpeedButton: TSpeedButton;
+    JabberDumpSpeedButton: TSpeedButton;
+    MRADumpSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
-    procedure LogMemoDblClick(Sender: TObject);
+    procedure ClearLogSpeedButtonClick(Sender: TObject);
 
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure TranslateForm;
   end;
 
 var
@@ -39,26 +46,28 @@ uses
   VarsUnit,
   RosterUnit;
 
-procedure TLogForm.FormCreate(Sender: TObject);
+procedure TLogForm.TranslateForm;
 begin
-  // Присваиваем иконку окну
-  MainForm.AllImageList.GetIcon(245, Icon);
-  // Помещаем кнопку формы в таскбар и делаем независимой
-  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
-  // Пишем в лог начальные события запуска программы
-  XLog(LogMyPath + MyPath);
-  XLog(LogProfile + ProfilePath);
-  XLog(Format(LogIconCount, [AllIconCount]));
-  XLog(LogNickCash + IntToStr(AccountToNick.Count));
-  XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1));
-  XLog(LogRosterCount + IntToStr(RosterForm.RosterJvListView.Items.Count));
+  // Устанавливаем хинты
+  ClearLogSpeedButton.Hint := H_Log_Clear;
+  ICQDumpSpeedButton.Hint := H_Log_ICQ;
+  JabberDumpSpeedButton.Hint := H_Log_Jabber;
+  MRADumpSpeedButton.Hint := H_Log_MRA;
 end;
 
-procedure TLogForm.LogMemoDblClick(Sender: TObject);
+procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);
 begin
   // Очищаем лог
   LogMemo.Clear;
+end;
+
+procedure TLogForm.FormCreate(Sender: TObject);
+begin
+  // Переводим окно на другие языки
+  TranslateForm;
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 end.

@@ -58,7 +58,6 @@ var
   GroupHeaderColor: TColor = $00FFEAFF;
   RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
-  AllIconCount: Integer = 0;
 
   // Статистика трафика
   TrafSend: Real;
@@ -232,6 +231,7 @@ var
   FileTransfer4L: string = 'Передача файла отменена';
   FileTransfer5L: string = 'Ссылка для скачивания файла: %s' + RN + '%s' + RN + '[ Файл отправлен через %s. Подробнее на сайте: %s ]';
 
+  // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
   ConnectErrors_0002: string = 'Сервис временно недоступен.';
   ConnectErrors_0003: string = 'Ошибка авторизации.';
@@ -265,6 +265,7 @@ var
   ConnectErrors_0020: string = 'Неверный SecureID.';
   ConnectErrors_0022: string = 'Эта учётная запись недоступна из-за вашего возраста (меньше 13).';
 
+  // Основные статусы плюс расширенные из QIP
   LStatus1: string = 'Готов поболтать';
   LStatus2: string = 'Злой';
   LStatus3: string = 'Депрессия';
@@ -333,9 +334,8 @@ var
   GetAgePanel: string;
 
   // Список для отображения в About
-  AboutList: array [1 .. 15] of string = (
+  AboutList: array [1 .. 14] of string = (
     'Автор проекта и ведущий программист;Эдуард Толмачёв',
-    'Программирование;Sergey Melnikov',
     'Программирование;Максим Нижник',
     'Программирование;Francois PIETTE (Ics components)',
     'Программирование;David Baldwin (HTML components)',
@@ -368,15 +368,20 @@ var
   LogSmiliesCount: string = 'Количество загруженных смайликов: ';
   LogRosterCount: string = 'Количество записей в файле кэша списка контактов: ';
   Log_Jabber_Connect: string = 'Jabber | Подключение к жаббер серверу: ';
-  Log_Jabber_JID: string = 'Jabber | Логин для авторизации: ';
-  Log_Jabber_Status: string = 'Jabber | Выбран статус: ';
+  Log_Login: string = 'Логин для авторизации: ';
+  Log_Set_Status: string = 'Выбран статус: ';
   Log_Jabber_Plain: string = 'Jabber | Авторизация по механизму PLAIN';
   Log_Jabber_Nonce: string = 'Jabber | Получен ключ для MD5 авторизации: ';
   Log_Clear: string = 'Лог событий автоматически очищен.';
-  Log_Exception: string = 'В программе произошла ошибка:' + RN + RN + '%s' + RN +
-    'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
-    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.' + RN +
-    'Путь к файлу с логом ошибок: %s';
+  Log_Exception1: string = 'В программе произошла ошибка:' + RN;
+  Log_Exception2: string = RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
+    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
+
+  // Подсказки <b></b><br>
+  H_Log_Clear: string = '<b>Очистить</b><br>Удалить все сообщения лога';
+  H_Log_ICQ: string = '<b>Дампы ICQ</b><br>Включить или выключить<br>отображение в логе данных протокола';
+  H_Log_Jabber: string = '<b>Дампы Jabber</b><br>Включить или выключить<br>отображение в логе данных протокола';
+  H_Log_MRA: string = '<b>Дампы MRA</b><br>Включить или выключить<br>отображение в логе данных протокола';
 
 implementation
 

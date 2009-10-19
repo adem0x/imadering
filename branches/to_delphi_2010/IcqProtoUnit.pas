@@ -26,13 +26,11 @@ uses
   Messages,
   Classes,
   IcqContactInfoUnit,
-  UnitCrypto,
   VarsUnit,
   Graphics,
   CategoryButtons,
   RXML,
   RosterUnit,
-  UnitLogger,
   OverbyteIcsMimeUtils;
 
 const
@@ -244,7 +242,7 @@ const
   M_AUTODND = $EB; // Auto do not disturb message
   M_AUTOFFC = $EC; // Auto free for chat message
 
-  ICQ_FLAP_HEAD_SIZE = 12;
+  ICQ_FLAP_HEAD_SIZE = 6;
 
 var
   ICQ_Bos_IP: string;
@@ -252,7 +250,7 @@ var
   ICQ_myBeautifulSocketBuffer: string;
   ICQ_LoginServerAddr: string = 'login.icq.com';
   ICQ_LoginServerPort: string = '5190';
-  ICQ_HexPkt: string;
+  ICQ_BuffPkt: string;
   // ICQ_RegUIN_HexPkt: string;
   ICQ_Avatar_HexPkt: string;
   ICQ_LoginUIN: string = '';
@@ -271,8 +269,8 @@ var
   ICQ_X_CurrentStatus_Cap: string = '';
   ICQ_X_CurrentStatus_Code: string = '';
   ICQ_X_CurrentStatus_Text: string = '';
-  ICQ_Seq1: Word = $1000;
-  ICQ_Seq2: Word = $2000;
+  ICQ_Seq: Word = $1000;
+  ICQ_Avatar_Seq: Word = $2000;
   ICQ_LastSendedFlap1: TDateTime;
   ICQ_LastSendedFlap2: TDateTime;
   ICQ_Bos_Cookie: string;
@@ -1952,20 +1950,15 @@ begin
                 begin
                   MsgLen := HexToInt(NextData(PktData, 4));
                   MsgLen := MsgLen * 2;
-                  try
-                    Date64 := HexToInt64(NextData(PktData, MsgLen));
-                    if Date64 > 0 then
-                      begin
-                        SDate64 := SDate64 + (48 * Hour);
-                        // Вычисляем возраст
-                        Age := CalculateAge(SDate64, Date);
-                        // Разбираем дату на день - месяц - год
-                        DecodeDate(SDate64, IYear, IMonth, IDay);
-                      end;
-                  except
-                    on E: Exception do
-                      TLogger.Instance.WriteMessage(E);
-                  end;
+                  Date64 := HexToInt64(NextData(PktData, MsgLen));
+                  if Date64 > 0 then
+                    begin
+                      SDate64 := SDate64 + (48 * Hour);
+                      // Вычисляем возраст
+                      Age := CalculateAge(SDate64, Date);
+                      // Разбираем дату на день - месяц - год
+                      DecodeDate(SDate64, IYear, IMonth, IDay);
+                    end;
                 end;
               $0096: // Получаем суб TLV с инфой о месте жительства
                 begin
@@ -2346,17 +2339,12 @@ begin
                 begin
                   MsgLen := HexToInt(NextData(PktData, 4));
                   MsgLen := MsgLen * 2;
-                  try
-                    Date64 := HexToInt64(NextData(PktData, MsgLen));
-                    if Date64 > 0 then
-                      begin
-                        SDate64 := SDate64 + (48 * Hour);
-                        LastUpdateInfo := DateTimeToStr(SDate64);
-                      end;
-                  except
-                    on E: Exception do
-                      TLogger.Instance.WriteMessage(E);
-                  end;
+                  Date64 := HexToInt64(NextData(PktData, MsgLen));
+                  if Date64 > 0 then
+                    begin
+                      SDate64 := SDate64 + (48 * Hour);
+                      LastUpdateInfo := DateTimeToStr(SDate64);
+                    end;
                 end
               else
                 begin
@@ -2372,69 +2360,64 @@ begin
         // При поиске контактов запрошенный UIN должен быть пустой
         if ICQ_ReqInfo_UIN <> EmptyStr then
           begin
-            try
-              // Добавляем ник контакта в список ников
-              if Assigned(AccountToNick) then
-                begin
-                  // Если такого контакта ещё нет в списке ников, то добавляем его ник
-                  if AccountToNick.IndexOf('Icq_' + UIN) = -1 then
-                    begin
-                      // Если ник не пустой и ник не равен UIN
-                      if (Nick > EmptyStr) and (Nick <> UIN) then
-                        begin
-                          AccountToNick.Add('Icq_' + UIN);
-                          AccountToNick.Add(Nick);
-                          AccountToNick.SaveToFile(ProfilePath + 'Profile\' + 'Nicks.txt');
-                        end;
-                    end;
-                end;
-              // Если ник не пустой и ник не равен UIN
-              if (Nick > EmptyStr) and (Nick <> UIN) then
-                begin
-                  // Присваиваем этот ник контакту не из нашего КЛ
-                  with MainForm.ContactList do
-                    begin
-                      for I := 0 to Categories.Count - 1 do
-                        begin
-                          if (Categories.Items[I].GroupId = '0000') or (Categories.Items[I].GroupId = 'NoCL') then
-                            begin
-                              for Ii := 0 to Categories[I].Items.Count - 1 do
-                                begin
-                                  if Categories[I].Items[Ii].UIN = UIN then
-                                    begin
-                                      Categories[I].Items[Ii].Caption := Nick;
-                                      // Выходим из цыклов
-                                      goto Y;
-                                    end;
-                                end;
-                            end;
-                        end;
-                    end;
-                Y :;
-                  // Ищем вкладку в окне чата и ей присваиваем Ник
-                  if Assigned(ChatForm) then
-                    begin
-                      with ChatForm.ChatPageControl do
-                        begin
-                          if Visible then
-                            begin
-                              for I := 0 to PageCount - 1 do
-                                begin
-                                  if Pages[I].HelpKeyword = UIN then
-                                    begin
-                                      Pages[I].Caption := Nick;
-                                      // Выходим из цыкла
-                                      Break;
-                                    end;
-                                end;
-                            end;
-                        end;
-                    end;
-                end;
-            except
-              on E: Exception do
-                TLogger.Instance.WriteMessage(E);
-            end;
+            // Добавляем ник контакта в список ников
+            if Assigned(AccountToNick) then
+              begin
+                // Если такого контакта ещё нет в списке ников, то добавляем его ник
+                if AccountToNick.IndexOf('Icq_' + UIN) = -1 then
+                  begin
+                    // Если ник не пустой и ник не равен UIN
+                    if (Nick > EmptyStr) and (Nick <> UIN) then
+                      begin
+                        AccountToNick.Add('Icq_' + UIN);
+                        AccountToNick.Add(Nick);
+                        AccountToNick.SaveToFile(ProfilePath + 'Profile\' + 'Nicks.txt');
+                      end;
+                  end;
+              end;
+            // Если ник не пустой и ник не равен UIN
+            if (Nick > EmptyStr) and (Nick <> UIN) then
+              begin
+                // Присваиваем этот ник контакту не из нашего КЛ
+                with MainForm.ContactList do
+                  begin
+                    for I := 0 to Categories.Count - 1 do
+                      begin
+                        if (Categories.Items[I].GroupId = '0000') or (Categories.Items[I].GroupId = 'NoCL') then
+                          begin
+                            for Ii := 0 to Categories[I].Items.Count - 1 do
+                              begin
+                                if Categories[I].Items[Ii].UIN = UIN then
+                                  begin
+                                    Categories[I].Items[Ii].Caption := Nick;
+                                    // Выходим из цыклов
+                                    goto Y;
+                                  end;
+                              end;
+                          end;
+                      end;
+                  end;
+              Y :;
+                // Ищем вкладку в окне чата и ей присваиваем Ник
+                if Assigned(ChatForm) then
+                  begin
+                    with ChatForm.ChatPageControl do
+                      begin
+                        if Visible then
+                          begin
+                            for I := 0 to PageCount - 1 do
+                              begin
+                                if Pages[I].HelpKeyword = UIN then
+                                  begin
+                                    Pages[I].Caption := Nick;
+                                    // Выходим из цыкла
+                                    Break;
+                                  end;
+                              end;
+                          end;
+                      end;
+                  end;
+              end;
             // Сохраняем полученные данные в локальный файл инфы о контакте
             with TrXML.Create() do
               try
@@ -4041,30 +4024,25 @@ begin
                       end;
                     $0151: // Дней проведено в сети
                       begin
-                        try
-                          Len := HexToInt(NextData(SubData, 4));
-                          Len := Len * 2;
-                          Dt := HexToInt(NextData(SubData, Len)) / 86400;
-                          if Trunc(Dt) > 0 then
-                            begin
-                              Rsu := IntToStr(Trunc(Dt)) + ' day';
-                              if Trunc(Dt) > 1 then
-                                Rsu := Rsu + 's';
-                              Rsu := Rsu + ', ';
-                            end;
-                          DecodeTime(Dt, Hour, Min, Sec, MSec);
-                          if Hour > 0 then
-                            Rsu := Rsu + Format('%d h, ', [Hour]);
-                          if Min > 0 then
-                            Rsu := Rsu + Format('%d m, ', [Min]);
-                          if Sec > 0 then
-                            Rsu := Rsu + Format('%d s, ', [Sec]);
-                          Delete(Rsu, Length(Rsu) - 1, 2);
-                          ICQ_OnlineTime := Rsu;
-                        except
-                          on E: Exception do
-                            TLogger.Instance.WriteMessage(E);
-                        end;
+                        Len := HexToInt(NextData(SubData, 4));
+                        Len := Len * 2;
+                        Dt := HexToInt(NextData(SubData, Len)) / 86400;
+                        if Trunc(Dt) > 0 then
+                          begin
+                            Rsu := IntToStr(Trunc(Dt)) + ' day';
+                            if Trunc(Dt) > 1 then
+                              Rsu := Rsu + 's';
+                            Rsu := Rsu + ', ';
+                          end;
+                        DecodeTime(Dt, Hour, Min, Sec, MSec);
+                        if Hour > 0 then
+                          Rsu := Rsu + Format('%d h, ', [Hour]);
+                        if Min > 0 then
+                          Rsu := Rsu + Format('%d m, ', [Min]);
+                        if Sec > 0 then
+                          Rsu := Rsu + Format('%d s, ', [Sec]);
+                        Delete(Rsu, Length(Rsu) - 1, 2);
+                        ICQ_OnlineTime := Rsu;
                       end;
                     $0152: // Всего отправлено Away сообщений
                       begin
@@ -4350,7 +4328,7 @@ begin
   ICQ_Offline_Phaze := True;
   ICQ_SSI_Phaze := False;
   ICQ_myBeautifulSocketBuffer := EmptyStr;
-  ICQ_HexPkt := EmptyStr;
+  ICQ_BuffPkt := EmptyStr;
   // Обнуляем переменные протокола
   ICQ_Online_IP := EmptyStr;
   ICQ_MyUIN_RegTime := EmptyStr;
@@ -4366,7 +4344,7 @@ begin
   with MainForm do
     begin
       if ICQWSocket.State = WsConnected then
-        ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));
+        ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq, 4) + '0000'));
       // Закрываем сокет
       ICQWSocket.Abort;
       // Ставим иконку и значение статуса оффлайн
@@ -4377,8 +4355,8 @@ begin
       ICQStatusOffline.default := True;
     end;
   // Обнуляем счётчики пакетов
-  ICQ_Seq1 := $1000;
-  ICQ_Seq2 := $2000;
+  ICQ_Seq := $1000;
+  ICQ_Avatar_Seq := $2000;
   // Обнуляем события и переменные в Ростере
   with RosterForm.RosterJvListView do
     begin

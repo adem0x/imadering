@@ -11,8 +11,21 @@ unit FirstStartUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, JvPageList, JvExControls, Buttons, ShellApi;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ExtCtrls,
+  StdCtrls,
+  JvPageList,
+  JvExControls,
+  Buttons,
+  ShellApi;
 
 type
   TFirstStartForm = class(TForm)
@@ -69,9 +82,11 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure RegNewUINLabelClick(Sender: TObject);
     procedure MRARegNewEmailLabelClick(Sender: TObject);
+
   private
     { Private declarations }
     procedure CheckSelectProtocols;
+
   public
     { Public declarations }
     procedure TranslateForm;
@@ -85,18 +100,21 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit, UtilsUnit, IcqProtoUnit, UnitCrypto, IcqOptionsUnit,
+  MainUnit,
+  VarsUnit,
+  UtilsUnit,
+  IcqProtoUnit,
+  IcqOptionsUnit,
   JabberOptionsUnit;
 
 procedure TFirstStartForm.CheckSelectProtocols;
 begin
   // Проверяем выбран ли хоть один протокол
-  if (not ICQEnableCheckBox.Checked) and (not MRAEnableCheckBox.Checked) and
-    (not JabberEnableCheckBox.Checked) then
-  begin
-    ShowMessage(FirstStartProtoSelectAlert);
-    ICQEnableCheckBox.Checked := true;
-  end;
+  if (not ICQEnableCheckBox.Checked) and (not MRAEnableCheckBox.Checked) and (not JabberEnableCheckBox.Checked) then
+    begin
+      ShowMessage(FirstStartProtoSelectAlert);
+      ICQEnableCheckBox.Checked := True;
+    end;
 end;
 
 procedure TFirstStartForm.TranslateForm;
@@ -115,46 +133,41 @@ procedure TFirstStartForm.NextButtonClick(Sender: TObject);
 begin
   // Переключаем страницы
   case ProtoJvPageList.ActivePageIndex of
-    0:
-      begin
+    0: begin
         // Применяем и сохраняем логин и пароль ICQ
         if Assigned(IcqOptionsForm) then
-        begin
-          // Присваиваем логин
-          IcqOptionsForm.ICQUINEdit.Text := ICQUINEdit.Text;
-          IcqOptionsForm.PassEdit.Text := ICQPassEdit.Text;
-          IcqOptionsForm.SavePassCheckBox.Checked :=
-            ICQSavePassCheckBox.Checked;
-          // Применяем и сохраняем настройки логина ICQ
-          IcqOptionsForm.ApplySettings;
-        end;
+          begin
+            // Присваиваем логин
+            IcqOptionsForm.ICQUINEdit.Text := ICQUINEdit.Text;
+            IcqOptionsForm.PassEdit.Text := ICQPassEdit.Text;
+            IcqOptionsForm.SavePassCheckBox.Checked := ICQSavePassCheckBox.Checked;
+            // Применяем и сохраняем настройки логина ICQ
+            IcqOptionsForm.ApplySettings;
+          end;
         // Переключаем на Jabber страницу
         ProtoJvPageList.ActivePageIndex := 1;
         // Активируем клавишу возврата
-        PrevButton.Enabled := true;
+        PrevButton.Enabled := True;
       end;
-    1:
-      begin
+    1: begin
         // Применяем и сохраняем логин и пароль Jabber
         if Assigned(JabberOptionsForm) then
-        begin
-          // Присваиваем логин
-          JabberOptionsForm.JabberJIDEdit.Text := JabberIDEdit.Text;
-          JabberOptionsForm.PassEdit.Text := JabberPassEdit.Text;
-          JabberOptionsForm.SavePassCheckBox.Checked :=
-            JabberSavePassCheckBox.Checked;
-          // Применяем и сохраняем настройки логина ICQ
-          JabberOptionsForm.ApplySettings;
-        end;
+          begin
+            // Присваиваем логин
+            JabberOptionsForm.JabberJIDEdit.Text := JabberIDEdit.Text;
+            JabberOptionsForm.PassEdit.Text := JabberPassEdit.Text;
+            JabberOptionsForm.SavePassCheckBox.Checked := JabberSavePassCheckBox.Checked;
+            // Применяем и сохраняем настройки логина ICQ
+            JabberOptionsForm.ApplySettings;
+          end;
         // Переключаем на MRA страницу
         ProtoJvPageList.ActivePageIndex := 2;
         // Устанавливаем текст на кнопке управления
         NextButton.Caption := 'OK';
         // Активируем клавишу возврата
-        PrevButton.Enabled := true;
+        PrevButton.Enabled := True;
       end;
-    2:
-      begin
+    2: begin
         // Проверяем не все ли протоколы были отключены
         CheckSelectProtocols;
         // Сохраняем результаты начальной настройки протоколов
@@ -169,18 +182,18 @@ procedure TFirstStartForm.PrevButtonClick(Sender: TObject);
 begin
   // Возврат на предыдущую страницу
   with ProtoJvPageList do
-  begin
-    if ActivePageIndex = 0 then
-      Exit
-    else
     begin
-      // Листаем страницу назад
-      ActivePageIndex := ActivePageIndex - 1;
-      // Деактивируем клавишу возврата если первая страница
       if ActivePageIndex = 0 then
-        PrevButton.Enabled := false;
+        Exit
+      else
+        begin
+          // Листаем страницу назад
+          ActivePageIndex := ActivePageIndex - 1;
+          // Деактивируем клавишу возврата если первая страница
+          if ActivePageIndex = 0 then
+            PrevButton.Enabled := False;
+        end;
     end;
-  end;
   // Устанавливаем текст на кнопке управления
   NextButton.Caption := FirstStartNextButton;
 end;
@@ -189,27 +202,27 @@ procedure TFirstStartForm.JabberEnableCheckBoxClick(Sender: TObject);
 begin
   // Управляем контролами для Jabber
   if JabberEnableCheckBox.Checked then
-  begin
-    JabberGroupBox.Enabled := true;
-    JabberIDEdit.Color := clWindow;
-    JabberPassEdit.Color := clWindow;
-    JabberShowPassCheckBox.Enabled := true;
-    JabberSavePassCheckBox.Enabled := true;
-    RegNewJIDLabel.Enabled := true;
-    // Включаем протокол жаббер
-    MainForm.JabberEnable(true);
-  end
+    begin
+      JabberGroupBox.Enabled := True;
+      JabberIDEdit.Color := ClWindow;
+      JabberPassEdit.Color := ClWindow;
+      JabberShowPassCheckBox.Enabled := True;
+      JabberSavePassCheckBox.Enabled := True;
+      RegNewJIDLabel.Enabled := True;
+      // Включаем протокол жаббер
+      MainForm.JabberEnable(True);
+    end
   else
-  begin
-    JabberGroupBox.Enabled := false;
-    JabberIDEdit.Color := clBtnFace;
-    JabberPassEdit.Color := clBtnFace;
-    JabberShowPassCheckBox.Enabled := false;
-    JabberSavePassCheckBox.Enabled := false;
-    RegNewJIDLabel.Enabled := false;
-    // Выключаем протокол жаббер
-    MainForm.JabberEnable(false);
-  end;
+    begin
+      JabberGroupBox.Enabled := False;
+      JabberIDEdit.Color := ClBtnFace;
+      JabberPassEdit.Color := ClBtnFace;
+      JabberShowPassCheckBox.Enabled := False;
+      JabberSavePassCheckBox.Enabled := False;
+      RegNewJIDLabel.Enabled := False;
+      // Выключаем протокол жаббер
+      MainForm.JabberEnable(False);
+    end;
 end;
 
 procedure TFirstStartForm.RegNewUINLabelClick(Sender: TObject);
@@ -222,27 +235,27 @@ procedure TFirstStartForm.ICQEnableCheckBoxClick(Sender: TObject);
 begin
   // Управляем контролами для ICQ
   if ICQEnableCheckBox.Checked then
-  begin
-    ICQGroupBox.Enabled := true;
-    ICQUINEdit.Color := clWindow;
-    ICQPassEdit.Color := clWindow;
-    ICQShowPassCheckBox.Enabled := true;
-    ICQSavePassCheckBox.Enabled := true;
-    RegNewUINLabel.Enabled := true;
-    // Включаем протокол ICQ
-    MainForm.ICQEnable(true);
-  end
+    begin
+      ICQGroupBox.Enabled := True;
+      ICQUINEdit.Color := ClWindow;
+      ICQPassEdit.Color := ClWindow;
+      ICQShowPassCheckBox.Enabled := True;
+      ICQSavePassCheckBox.Enabled := True;
+      RegNewUINLabel.Enabled := True;
+      // Включаем протокол ICQ
+      MainForm.ICQEnable(True);
+    end
   else
-  begin
-    ICQGroupBox.Enabled := false;
-    ICQUINEdit.Color := clBtnFace;
-    ICQPassEdit.Color := clBtnFace;
-    ICQShowPassCheckBox.Enabled := false;
-    ICQSavePassCheckBox.Enabled := false;
-    RegNewUINLabel.Enabled := false;
-    // Выключаем протокол ICQ
-    MainForm.ICQEnable(false);
-  end;
+    begin
+      ICQGroupBox.Enabled := False;
+      ICQUINEdit.Color := ClBtnFace;
+      ICQPassEdit.Color := ClBtnFace;
+      ICQShowPassCheckBox.Enabled := False;
+      ICQSavePassCheckBox.Enabled := False;
+      RegNewUINLabel.Enabled := False;
+      // Выключаем протокол ICQ
+      MainForm.ICQEnable(False);
+    end;
 end;
 
 procedure TFirstStartForm.ICQShowPassCheckBoxClick(Sender: TObject);
@@ -261,12 +274,12 @@ end;
 
 procedure TFirstStartForm.MRARegNewEmailLabelMouseEnter(Sender: TObject);
 begin (Sender as TLabel)
-  .Font.Color := clBlue;
+  .Font.Color := ClBlue;
 end;
 
 procedure TFirstStartForm.MRARegNewEmailLabelMouseLeave(Sender: TObject);
 begin (Sender as TLabel)
-  .Font.Color := clNavy;
+  .Font.Color := ClNavy;
 end;
 
 procedure TFirstStartForm.MRAShowPassCheckBoxClick(Sender: TObject);
@@ -281,27 +294,27 @@ procedure TFirstStartForm.MRAEnableCheckBoxClick(Sender: TObject);
 begin
   // Управляем контролами для MRA
   if MRAEnableCheckBox.Checked then
-  begin
-    MRAGroupBox.Enabled := true;
-    MRAEmailEdit.Color := clWindow;
-    MRAPassEdit.Color := clWindow;
-    MRAShowPassCheckBox.Enabled := true;
-    MRASavePassCheckBox.Enabled := true;
-    MRARegNewEmailLabel.Enabled := true;
-    // Включаем протокол MRA
-    MainForm.MRAEnable(true);
-  end
+    begin
+      MRAGroupBox.Enabled := True;
+      MRAEmailEdit.Color := ClWindow;
+      MRAPassEdit.Color := ClWindow;
+      MRAShowPassCheckBox.Enabled := True;
+      MRASavePassCheckBox.Enabled := True;
+      MRARegNewEmailLabel.Enabled := True;
+      // Включаем протокол MRA
+      MainForm.MRAEnable(True);
+    end
   else
-  begin
-    MRAGroupBox.Enabled := false;
-    MRAEmailEdit.Color := clBtnFace;
-    MRAPassEdit.Color := clBtnFace;
-    MRAShowPassCheckBox.Enabled := false;
-    MRASavePassCheckBox.Enabled := false;
-    MRARegNewEmailLabel.Enabled := false;
-    // Выключаем протокол MRA
-    MainForm.MRAEnable(false);
-  end;
+    begin
+      MRAGroupBox.Enabled := False;
+      MRAEmailEdit.Color := ClBtnFace;
+      MRAPassEdit.Color := ClBtnFace;
+      MRAShowPassCheckBox.Enabled := False;
+      MRASavePassCheckBox.Enabled := False;
+      MRARegNewEmailLabel.Enabled := False;
+      // Выключаем протокол MRA
+      MainForm.MRAEnable(False);
+    end;
 end;
 
 procedure TFirstStartForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -309,12 +322,11 @@ begin
   // Выводим главное окно на самый передний план
   SetForeGroundWindow(Application.MainForm.Handle);
   // Эту форму уничтожаем
-  Action := caFree;
+  Action := CaFree;
   FirstStartForm := nil;
 end;
 
-procedure TFirstStartForm.FormCloseQuery
-  (Sender: TObject; var CanClose: Boolean);
+procedure TFirstStartForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   // Проверяем не все ли протоколы были отключены
   CheckSelectProtocols;
@@ -334,11 +346,10 @@ begin
   TranslateForm;
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE)
-      or WS_EX_APPWINDOW);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // По умолчанию деактивируем контролы протоколов MRA и Jabber
-  MRAEnableCheckBoxClick(self);
-  JabberEnableCheckBoxClick(self);
+  MRAEnableCheckBoxClick(Self);
+  JabberEnableCheckBoxClick(Self);
 end;
 
 end.

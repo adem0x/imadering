@@ -11,8 +11,17 @@ unit SmilesUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Htmlview, ExtCtrls;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  Htmlview,
+  ExtCtrls;
 
 type
   TSmilesForm = class(TForm)
@@ -21,19 +30,19 @@ type
     SmiliesHTMLViewer: THTMLViewer;
     procedure HintTimerTimer(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure SmiliesHTMLViewerMouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
+    procedure SmiliesHTMLViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure SmiliesHTMLViewerHotSpotClick(Sender: TObject; const SRC: string;
-      var Handled: Boolean);
+    procedure SmiliesHTMLViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
     procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+
   private
     TimerCount: Integer;
     OldTitle: string;
     HintWindow: THintWindow;
     HintVisible: Boolean;
     procedure CloseAll;
+
   public
     //
   end;
@@ -44,7 +53,11 @@ var
 implementation
 
 uses
-  MainUnit, ChatUnit, UtilsUnit, UnitLogger, VarsUnit;
+  MainUnit,
+  ChatUnit,
+  UtilsUnit,
+  VarsUnit;
+
 {$R *.dfm}
 
 procedure TSmilesForm.CloseAll;
@@ -63,26 +76,18 @@ end;
 
 procedure TSmilesForm.FormCreate(Sender: TObject);
 begin
-  try
-    // Создаём окно подсказок
-    HintWindow := THintWindow.Create(Self);
-    HintWindow.Color := clInfoBk;
-    // Вычисляем размер окна смайлов
-    if SmilesList.Count > 0 then
+  // Создаём окно подсказок
+  HintWindow := THintWindow.Create(Self);
+  HintWindow.Color := ClInfoBk;
+  // Вычисляем размер окна смайлов
+  if SmilesList.Count > 0 then
     begin
-      Height := StrToInt(IsolateTextString(SmilesList.Strings[0], '<height>',
-          '</height>'));
-      Width := StrToInt(IsolateTextString(SmilesList.Strings[0], '<width>',
-          '</width>'));
+      Height := StrToInt(IsolateTextString(SmilesList.Strings[0], '<height>', '</height>'));
+      Width := StrToInt(IsolateTextString(SmilesList.Strings[0], '<width>', '</width>'));
     end;
-    // Загружаем смайлы из смайлпака
-    if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm') then
-      SmiliesHTMLViewer.LoadFromFile
-        (MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm');
-  except
-    on E: Exception do
-      TLogger.Instance.WriteMessage(E);
-  end;
+  // Загружаем смайлы из смайлпака
+  if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm') then
+    SmiliesHTMLViewer.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm');
 end;
 
 procedure TSmilesForm.FormDeactivate(Sender: TObject);
@@ -111,41 +116,37 @@ begin
   GetCursorPos(Pt);
   Pt1 := SmiliesHTMLViewer.ScreenToClient(Pt);
   TitleStr := SmiliesHTMLViewer.TitleAttr;
-  if (TitleStr = EmptyStr) or not PtInRect(SmiliesHTMLViewer.ClientRect, Pt1)
-    then
-  begin
-    OldTitle := EmptyStr;
-    CloseAll;
-    Exit;
-  end;
+  if (TitleStr = EmptyStr) or not PtInRect(SmiliesHTMLViewer.ClientRect, Pt1) then
+    begin
+      OldTitle := EmptyStr;
+      CloseAll;
+      Exit;
+    end;
   if TitleStr <> OldTitle then
-  begin
-    TimerCount := 0;
-    OldTitle := TitleStr;
-    HintWindow.ReleaseHandle;
-    HintVisible := False;
-    Exit;
-  end;
+    begin
+      TimerCount := 0;
+      OldTitle := TitleStr;
+      HintWindow.ReleaseHandle;
+      HintVisible := False;
+      Exit;
+    end;
   if TimerCount > EndCount then
     CloseAll
   else if (TimerCount >= StartCount) and not HintVisible then
-  begin
-    ARect := HintWindow.CalcHintRect(300, TitleStr, nil);
-    with ARect do
-      HintWindow.ActivateHint
-        (Rect(Pt.X, Pt.Y + 18, Pt.X + Right, Pt.Y + 18 + Bottom), TitleStr);
-    HintVisible := True;
-  end;
+    begin
+      ARect := HintWindow.CalcHintRect(300, TitleStr, nil);
+      with ARect do
+        HintWindow.ActivateHint(Rect(Pt.X, Pt.Y + 18, Pt.X + Right, Pt.Y + 18 + Bottom), TitleStr);
+      HintVisible := True;
+    end;
 end;
 
-procedure TSmilesForm.SmiliesHTMLViewerHotSpotClick
-  (Sender: TObject; const SRC: string; var Handled: Boolean);
+procedure TSmilesForm.SmiliesHTMLViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
 begin
   // Отключаем реакции
   Handled := True;
   // Вставляем выбранный смайлик в поле ввода в окне чата
-  ChatForm.InputMemo.Text := ChatForm.InputMemo.Text + ' ' +
-    SmiliesHTMLViewer.TitleAttr;
+  ChatForm.InputMemo.Text := ChatForm.InputMemo.Text + ' ' + SmiliesHTMLViewer.TitleAttr;
   ChatForm.InputMemo.SelStart := ChatForm.InputMemo.GetTextLen;
   if SmiliesHTMLViewer.CanFocus then
     SmiliesHTMLViewer.SetFocus;
@@ -157,25 +158,23 @@ begin
     ChatForm.InputMemo.SetFocus;
 end;
 
-procedure TSmilesForm.SmiliesHTMLViewerMouseMove
-  (Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TSmilesForm.SmiliesHTMLViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   TitleStr: string;
 begin
   // При движениях мыши определяем всплывание подсказок
-  if not HintTimer.Enabled and Assigned(ActiveControl)
-    and ActiveControl.Focused then
-  begin
-    TitleStr := SmiliesHTMLViewer.TitleAttr;
-    if TitleStr = EmptyStr then
-      OldTitle := EmptyStr
-    else if TitleStr <> OldTitle then
+  if not HintTimer.Enabled and Assigned(ActiveControl) and ActiveControl.Focused then
     begin
-      TimerCount := 0;
-      HintTimer.Enabled := True;
-      OldTitle := TitleStr;
+      TitleStr := SmiliesHTMLViewer.TitleAttr;
+      if TitleStr = EmptyStr then
+        OldTitle := EmptyStr
+      else if TitleStr <> OldTitle then
+        begin
+          TimerCount := 0;
+          HintTimer.Enabled := True;
+          OldTitle := TitleStr;
+        end;
     end;
-  end;
 end;
 
 end.

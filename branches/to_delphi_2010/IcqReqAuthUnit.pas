@@ -11,8 +11,18 @@ unit IcqReqAuthUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, CategoryButtons, Buttons;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  CategoryButtons,
+  Buttons;
 
 type
   TIcqReqAuthForm = class(TForm)
@@ -24,13 +34,14 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure NoBitBtnClick(Sender: TObject);
+
   private
     { Private declarations }
   public
     { Public declarations }
-    Invite: boolean;
-    UpDate: boolean;
-    procedure UpDateVersion(m: string);
+    Invite: Boolean;
+    UpDate: Boolean;
+    procedure UpDateVersion(M: string);
   end;
 
 var
@@ -41,16 +52,20 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UnitCrypto, VarsUnit, UtilsUnit, UpdateUnit;
+  MainUnit,
+  IcqProtoUnit,
+  VarsUnit,
+  UtilsUnit,
+  UpdateUnit;
 
 procedure TIcqReqAuthForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Автоматически уничтожаем форму при закрытии
   if UpDate then
-  begin
-    Action := caFree;
-    IcqReqAuthForm := nil;
-  end;
+    begin
+      Action := CaFree;
+      IcqReqAuthForm := nil;
+    end;
 end;
 
 procedure TIcqReqAuthForm.FormCreate(Sender: TObject);
@@ -67,20 +82,20 @@ begin
     Close;
 end;
 
-procedure TIcqReqAuthForm.UpDateVersion(m: string);
+procedure TIcqReqAuthForm.UpDateVersion(M: string);
 begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(6, Icon);
   // Отображаем информацию и запрос на закачку новой версии
   Caption := UpDate3L;
   HeadLabel.Caption := UpDate1L;
-  InfoMemo.Text := UpDate2L + #13#10 + #13#10 + m;
+  InfoMemo.Text := UpDate2L + #13#10 + #13#10 + M;
   // Ставим флаги функции окна
-  UpDate := true;
-  Invite := false;
+  UpDate := True;
+  Invite := False;
   // Блокируем мемо
-  InfoMemo.ReadOnly := true;
-  InfoMemo.Color := clBtnFace;
+  InfoMemo.readonly := True;
+  InfoMemo.Color := ClBtnFace;
 end;
 
 procedure TIcqReqAuthForm.YesBitBtnClick(Sender: TObject);
@@ -88,17 +103,17 @@ procedure TIcqReqAuthForm.YesBitBtnClick(Sender: TObject);
 // x;
 begin
   if UpDate then
-  begin
-    // Открываем окно автообновления
-    if not Assigned(UpdateForm) then
-      UpdateForm := TUpdateForm.Create(MainForm);
-    // Отображаем окно на передний план
-    xShowForm(UpdateForm);
-    // Запускаем процесс получения информации для обновления
-    UpdateForm.StartBitBtnClick(nil);
-    // Закрываем это окно
-    Close;
-  end;
+    begin
+      // Открываем окно автообновления
+      if not Assigned(UpdateForm) then
+        UpdateForm := TUpdateForm.Create(MainForm);
+      // Отображаем окно на передний план
+      XShowForm(UpdateForm);
+      // Запускаем процесс получения информации для обновления
+      UpdateForm.StartBitBtnClick(nil);
+      // Закрываем это окно
+      Close;
+    end;
 
   { if RoasterForm.Roaster_Sel_Button = nil then goto x;
     //

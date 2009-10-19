@@ -11,8 +11,18 @@ unit MraXStatusUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ButtonGroup, StdCtrls, VarsUnit;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ButtonGroup,
+  StdCtrls,
+  VarsUnit;
 
 type
   TMraXStatusForm = class(TForm)
@@ -25,7 +35,8 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
-    procedure XButtonGroupButtonClicked(Sender: TObject; Index: Integer);
+    procedure XButtonGroupButtonClicked(Sender: TObject; index: Integer);
+
   private
     { Private declarations }
     // Xindex: integer;
@@ -42,7 +53,9 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UnitCrypto, UtilsUnit;
+  MainUnit,
+  IcqProtoUnit,
+  UtilsUnit;
 
 procedure TMraXStatusForm.FormCreate(Sender: TObject);
 begin
@@ -108,8 +121,7 @@ begin
   Close;
 end;
 
-procedure TMraXStatusForm.XButtonGroupButtonClicked
-  (Sender: TObject; Index: Integer);
+procedure TMraXStatusForm.XButtonGroupButtonClicked(Sender: TObject; index: Integer);
 begin
   { Xini := TIniFile.Create(MyPath + 'Users\' + 'IcqXstatuses.ini');
     //
@@ -143,7 +155,7 @@ begin
   // Выводим главное окно на передний план
   SetForeGroundWindow(Application.MainForm.Handle);
   // Уничтожаем эту форму
-  Action := caFree;
+  Action := CaFree;
   MraXStatusForm := nil;
 end;
 

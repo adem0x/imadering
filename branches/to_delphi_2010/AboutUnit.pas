@@ -143,7 +143,7 @@ end;
 
 procedure TAboutForm.DonateBitBtnClick(Sender: TObject);
 begin
-  // Поддержим проект откртытием официального сайта
+  // Поддержим проект открытием официального сайта
   URLLabelClick(Self);
 end;
 

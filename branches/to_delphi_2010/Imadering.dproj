@@ -53,85 +53,83 @@
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="MainUnit.pas">
-				<Form> MainForm </Form>
+				<Form>MainForm</Form>
 			</DCCReference>
 			<DCCReference Include="SettingsUnit.pas">
-				<Form> SettingsForm </Form>
+				<Form>SettingsForm</Form>
 			</DCCReference>
 			<DCCReference Include="AboutUnit.pas">
-				<Form> AboutForm </Form>
+				<Form>AboutForm</Form>
 			</DCCReference>
 			<DCCReference Include="ChatUnit.pas">
-				<Form> ChatForm </Form>
+				<Form>ChatForm</Form>
 			</DCCReference>
 			<DCCReference Include="CLSearchUnit.pas">
-				<Form> CLSearchForm </Form>
+				<Form>CLSearchForm</Form>
 			</DCCReference>
 			<DCCReference Include="FirstStartUnit.pas">
-				<Form> FirstStartForm </Form>
+				<Form>FirstStartForm</Form>
 			</DCCReference>
 			<DCCReference Include="FloatingUnit.pas">
-				<Form> FloatingForm </Form>
+				<Form>FloatingForm</Form>
 			</DCCReference>
 			<DCCReference Include="HistoryUnit.pas">
-				<Form> HistoryForm </Form>
+				<Form>HistoryForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqAddContactUnit.pas">
-				<Form> IcqAddContactForm </Form>
+				<Form>IcqAddContactForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqContactInfoUnit.pas">
-				<Form> IcqContactInfoForm </Form>
+				<Form>IcqContactInfoForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqEditContactUnit.pas">
-				<Form> IcqEditContactForm </Form>
+				<Form>IcqEditContactForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqGroupManagerUnit.pas">
-				<Form> IcqGroupManagerForm </Form>
+				<Form>IcqGroupManagerForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqOptionsUnit.pas">
-				<Form> IcqOptionsForm </Form>
+				<Form>IcqOptionsForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqReqAuthUnit.pas">
-				<Form> IcqReqAuthForm </Form>
+				<Form>IcqReqAuthForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqSearchUnit.pas">
-				<Form> IcqSearchForm </Form>
+				<Form>IcqSearchForm</Form>
 			</DCCReference>
 			<DCCReference Include="IcqXStatusUnit.pas">
-				<Form> IcqXStatusForm </Form>
+				<Form>IcqXStatusForm</Form>
 			</DCCReference>
 			<DCCReference Include="SmilesUnit.pas">
-				<Form> SmilesForm </Form>
+				<Form>SmilesForm</Form>
 			</DCCReference>
 			<DCCReference Include="SMSsendUnit.pas">
-				<Form> SMSsendForm </Form>
+				<Form>SMSsendForm</Form>
 			</DCCReference>
 			<DCCReference Include="MraXStatusUnit.pas">
-				<Form> MraXStatusForm </Form>
+				<Form>MraXStatusForm</Form>
 			</DCCReference>
 			<DCCReference Include="MraOptionsUnit.pas">
-				<Form> MraOptionsForm </Form>
+				<Form>MraOptionsForm</Form>
 			</DCCReference>
 			<DCCReference Include="JabberOptionsUnit.pas">
-				<Form> JabberOptionsForm </Form>
+				<Form>JabberOptionsForm</Form>
 			</DCCReference>
 			<DCCReference Include="UpdateUnit.pas">
-				<Form> UpdateForm </Form>
+				<Form>UpdateForm</Form>
 			</DCCReference>
 			<DCCReference Include="TrafficUnit.pas">
-				<Form> TrafficForm </Form>
+				<Form>TrafficForm</Form>
 			</DCCReference>
 			<DCCReference Include="RosterUnit.pas">
-				<Form> RosterForm </Form>
+				<Form>RosterForm</Form>
 			</DCCReference>
 			<DCCReference Include="FileTransferUnit.pas">
-				<Form> FileTransferForm </Form>
+				<Form>FileTransferForm</Form>
 			</DCCReference>
 			<DCCReference Include="ShowCertUnit.pas">
-				<Form> ShowCertForm </Form>
+				<Form>ShowCertForm</Form>
 			</DCCReference>
-			<DCCReference Include="lib\UnitCrypto.pas"/>
-			<DCCReference Include="lib\UnitLogger.pas"/>
 			<DCCReference Include="lib\OverbyteIcsSSLEAY.pas"/>
 			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
 			<DCCReference Include="lib\ButtonGroup.pas"/>
@@ -148,7 +146,7 @@
 			<DCCReference Include="lib\Menus.pas"/>
 			<DCCReference Include="lib\HTMLView.pas"/>
 			<DCCReference Include="LogUnit.pas">
-				<Form> LogForm </Form>
+				<Form>LogForm</Form>
 			</DCCReference>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
@@ -180,7 +178,7 @@
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">679</VersionInfo>
+						<VersionInfo Name="Build">858</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -192,7 +190,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.0.679</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.0.858</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

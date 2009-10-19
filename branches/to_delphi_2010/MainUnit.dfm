@@ -1348,4 +1348,9 @@ object MainForm: TMainForm
     Left = 48
     Top = 200
   end
+  object IMaderingEvents: TApplicationEvents
+    OnException = IMaderingEventsException
+    Left = 48
+    Top = 168
+  end
 end

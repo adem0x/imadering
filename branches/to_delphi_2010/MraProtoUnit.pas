@@ -11,10 +11,25 @@ unit MraProtoUnit;
 interface
 
 uses
-  Windows, MainUnit, MraOptionsUnit, SysUtils, JvTrayIcon,
-  Dialogs, OverbyteIcsWSocket, ChatUnit, MmSystem, Forms,
-  ComCtrls, Messages, Classes, IcqContactInfoUnit, UnitCrypto, VarsUnit,
-  Graphics, CategoryButtons, rXML, RosterUnit;
+  Windows,
+  MainUnit,
+  MraOptionsUnit,
+  SysUtils,
+  JvTrayIcon,
+  Dialogs,
+  OverbyteIcsWSocket,
+  ChatUnit,
+  MmSystem,
+  Forms,
+  ComCtrls,
+  Messages,
+  Classes,
+  IcqContactInfoUnit,
+  VarsUnit,
+  Graphics,
+  CategoryButtons,
+  RXML,
+  RosterUnit;
 
 const
   // Коды статусов
@@ -22,12 +37,9 @@ const
   M_ONLINE = '010000000D0000005354415455535F4F4E4C494E4506000000CEEDEBE0E9ED';
   M_AWAY = '020000000B0000005354415455535F4157415906000000CEF2EEF8E5EB';
   M_UNDETERMINATED = '03000000';
-  M_FFC =
-    '040000000B0000007374617475735F636861740F000000C3EEF2EEE220EFEEE1EEEBF2E0F2FC';
-  M_DND =
-    '040000000A0000007374617475735F646E640D000000CDE520E1E5F1EFEEEAEEE8F2FC';
-  M_INVISIBLE =
-    '01000080100000005354415455535F494E56495349424C4507000000CDE5E2E8E4E8EC';
+  M_FFC = '040000000B0000007374617475735F636861740F000000C3EEF2EEE220EFEEE1EEEBF2E0F2FC';
+  M_DND = '040000000A0000007374617475735F646E640D000000CDE520E1E5F1EFEEEAEEE8F2FC';
+  M_INVISIBLE = '01000080100000005354415455535F494E56495349424C4507000000CDE5E2E8E4E8EC';
 
   // Доп. статусы
   M_1 = '04000000080000007374617475735F35';
@@ -96,15 +108,15 @@ var
   MRA_Seq: LongWord = 1;
   MRA_LastSendedFlap: TDateTime;
   // Фазы работы начало
-  MRA_Connect_Phaze: boolean = false;
-  MRA_HTTP_Connect_Phaze: boolean = false;
-  MRA_BosConnect_Phaze: boolean = false;
-  MRA_Work_Phaze: boolean = false;
-  MRA_Offline_Phaze: boolean = true;
+  MRA_Connect_Phaze: Boolean = False;
+  MRA_HTTP_Connect_Phaze: Boolean = False;
+  MRA_BosConnect_Phaze: Boolean = False;
+  MRA_Work_Phaze: Boolean = False;
+  MRA_Offline_Phaze: Boolean = True;
   // Фазы работы конец
-  MRA_CurrentStatus: integer = 23;
-  MRA_CurrentStatus_bac: integer = 23;
-  MRA_Reconnect: boolean = false;
+  MRA_CurrentStatus: Integer = 23;
+  MRA_CurrentStatus_bac: Integer = 23;
+  MRA_Reconnect: Boolean = False;
   // Другие переменные протокола
   MRA_Bos_Addr: string = '';
 
@@ -124,73 +136,73 @@ begin
   // Формируем пакет первичного логина
   Pkt := '000000000000000000000000000000000000000000000000';
   // Отправляем пакет
-  SendFLAP_MRA('01100000', Pkt, true);
+  SendFLAP_MRA('01100000', Pkt, True);
 end;
 
 procedure MRA_GoOffline;
 var
-  i: integer;
+  I: Integer;
 begin
   // Отключаем таймер факстатуса, пингов
-  MainForm.UnstableMRAStatus.Checked := false;
+  MainForm.UnstableMRAStatus.Checked := False;
   with MainForm.JvTimerList do
-  begin
-    Events[10].Enabled := false;
-  end;
+    begin
+      Events[10].Enabled := False;
+    end;
   // Если существует форма настроек протокола MRA, то блокируем там контролы
   if Assigned(MraOptionsForm) then
-  begin
-    with MraOptionsForm do
     begin
-      MRAEmailEdit.Enabled := true;
-      MRAEmailEdit.Color := clWindow;
-      PassEdit.Enabled := true;
-      PassEdit.Color := clWindow;
+      with MraOptionsForm do
+        begin
+          MRAEmailEdit.Enabled := True;
+          MRAEmailEdit.Color := ClWindow;
+          PassEdit.Enabled := True;
+          PassEdit.Color := ClWindow;
+        end;
     end;
-  end;
   // Активируем фазу оффлайн и обнуляем буферы пакетов
-  MRA_Connect_Phaze := false;
-  MRA_HTTP_Connect_Phaze := false;
-  MRA_BosConnect_Phaze := false;
-  MRA_Work_Phaze := false;
-  MRA_Offline_Phaze := true;
+  MRA_Connect_Phaze := False;
+  MRA_HTTP_Connect_Phaze := False;
+  MRA_BosConnect_Phaze := False;
+  MRA_Work_Phaze := False;
+  MRA_Offline_Phaze := True;
   MRA_myBeautifulSocketBuffer := EmptyStr;
   MRA_HexPkt := EmptyStr;
   // Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do
-  begin
-    { if MRAWSocket.State = wsConnected then
-      MRAWSocket.SendStr(); }
-    // Закрываем сокет
-    MRAWSocket.Abort;
-    // Ставим иконку и значение статуса оффлайн
-    MRA_CurrentStatus := 23;
-    MRAToolButton.ImageIndex := MRA_CurrentStatus;
-    MRATrayIcon.IconIndex := MRA_CurrentStatus;
-    // Подсвечиваем в меню статуса MRA статус оффлайн
-    MRAStatusOffline.Default := true;
-  end;
+    begin
+      { if MRAWSocket.State = wsConnected then
+        MRAWSocket.SendStr(); }
+      // Закрываем сокет
+      MRAWSocket.Abort;
+      // Ставим иконку и значение статуса оффлайн
+      MRA_CurrentStatus := 23;
+      MRAToolButton.ImageIndex := MRA_CurrentStatus;
+      MRATrayIcon.IconIndex := MRA_CurrentStatus;
+      // Подсвечиваем в меню статуса MRA статус оффлайн
+      MRAStatusOffline.default := True;
+    end;
   // Обнуляем счётчики пакетов
   MRA_Seq := 1;
   // Обнуляем события и переменные в Ростере
   with RosterForm.RosterJvListView do
-  begin
-    for i := 0 to Items.Count - 1 do
     begin
-      if Items[i].SubItems[3] = 'Mra' then
-      begin
-        Items[i].SubItems[6] := '23';
-        Items[i].SubItems[7] := '-1';
-        Items[i].SubItems[8] := '-1';
-        Items[i].SubItems[13] := '';
-        Items[i].SubItems[15] := '';
-        Items[i].SubItems[16] := '';
-        Items[i].SubItems[18] := '0';
-        Items[i].SubItems[19] := '0';
-        Items[i].SubItems[35] := '0';
-      end;
+      for I := 0 to Items.Count - 1 do
+        begin
+          if Items[I].SubItems[3] = 'Mra' then
+            begin
+              Items[I].SubItems[6] := '23';
+              Items[I].SubItems[7] := '-1';
+              Items[I].SubItems[8] := '-1';
+              Items[I].SubItems[13] := '';
+              Items[I].SubItems[15] := '';
+              Items[I].SubItems[16] := '';
+              Items[I].SubItems[18] := '0';
+              Items[I].SubItems[19] := '0';
+              Items[I].SubItems[35] := '0';
+            end;
+        end;
     end;
-  end;
   // Запускаем обработку Ростера
   RosterForm.UpdateFullCL;
 end;

@@ -11,14 +11,25 @@ unit ShowCertUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, OverbyteIcsWSocket, Buttons;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ExtCtrls,
+  OverbyteIcsWSocket,
+  Buttons;
 
 const
   AcceptedCertsFile = 'Profile\AcceptedCerts.txt';
 
 type
-  /// <summary>Визуализирует сертификат. Пользователь может его  принять или отвергнуть</summary>
+  // Визуализирует сертификат. Пользователь может его  принять или отвергнуть
   TShowCertForm = class(TForm)
     AcceptCertButton: TBitBtn;
     RefuseCertButton: TBitBtn;
@@ -27,13 +38,14 @@ type
     LblIssuer: TLabel;
     LblSubject: TLabel;
     LblSerial: TLabel;
-    lblValidAfter: TLabel;
+    LblValidAfter: TLabel;
     LblValidBefore: TLabel;
     LblShaHash: TLabel;
     LblCertExpired: TLabel;
     LblIssuerMemo: TMemo;
     procedure AcceptCertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+
   private
     { Private declarations }
     FCertAccepted: Boolean;
@@ -41,60 +53,63 @@ type
     FCertHash: string;
     procedure SaveAcceptedCertsList;
     procedure LoadAcceptedCertsList;
+
   public
-    /// <summary>Принял ли пользователь сертификат</summary>
-    property CertAccepted: Boolean read FCertAccepted default false;
-    /// <summary>Проверить, вдруг этот сертификат уже принимали</summary>
+    // Принял ли пользователь сертификат
+    property CertAccepted: Boolean read FCertAccepted default False;
+    // Проверить, вдруг этот сертификат уже принимали
     function CheckAccepted(Hash: string): Boolean;
+
 {$WARNINGS OFF}
-    /// <param name="Cert">Сертификат, информацию о котором нужно отобразить</param>
+
+    // Сертификат, информацию о котором нужно отобразить
     constructor Create(const Cert: TX509Base);
     destructor Destroy; override;
   end;
+
 {$WARNINGS ON}
 
 implementation
 
-uses MainUnit, EncdDecd, UnitLogger, VarsUnit, UnitCrypto;
+uses
+  MainUnit,
+  EncdDecd,
+  VarsUnit;
+
 {$R *.dfm}
 
 procedure TShowCertForm.AcceptCertButtonClick(Sender: TObject);
 begin
   // Принимаем и сохраняем в файл сертификат
-  try
-    // Добавляем в лист хэш сертификата
-    FAcceptedCertsList.Add(FCertHash);
-    // Сохраняем лист сертификатов в файл
-    SaveAcceptedCertsList;
-    FCertAccepted := true;
-  except
-    on E: Exception do
-      TLogger.Instance.WriteMessage(E);
-  end;
+  // Добавляем в лист хэш сертификата
+  FAcceptedCertsList.Add(FCertHash);
+  // Сохраняем лист сертификатов в файл
+  SaveAcceptedCertsList;
+  FCertAccepted := True;
   // Закрываем модальное окно
-  ModalResult := mrOk;
+  ModalResult := MrOk;
 end;
 
 function TShowCertForm.CheckAccepted(Hash: string): Boolean;
 begin
-  Result := false;
+  Result := False;
   if FAcceptedCertsList <> nil then
-  begin
-    // Если нашли в листе сертификатов этот хэш, то ОК
-    if FAcceptedCertsList.IndexOf(Hash) > -1 then
-      Result := true;
-  end;
+    begin
+      // Если нашли в листе сертификатов этот хэш, то ОК
+      if FAcceptedCertsList.IndexOf(Hash) > -1 then
+        Result := True;
+    end;
 end;
 
 destructor TShowCertForm.Destroy;
 begin
   if FAcceptedCertsList <> nil then
-  begin
-    // Сохраняем сертификаты
-    SaveAcceptedCertsList;
-    // Уничтожаем лист сертификатов
-    FreeAndNil(FAcceptedCertsList);
-  end;
+    begin
+      // Сохраняем сертификаты
+      SaveAcceptedCertsList;
+      // Уничтожаем лист сертификатов
+      FreeAndNil(FAcceptedCertsList);
+    end;
   inherited Destroy;
 end;
 
@@ -107,18 +122,17 @@ begin
   LoadAcceptedCertsList;
   // Заполняем поля формы
   with Cert do
-  begin
-    FCertHash := EncodeString(Sha1Hash);
-    LblIssuerMemo.Text := IssuerOneLine;
-    LblSubject.Caption := LblSubject.Caption + SubjectCName;
-    LblSerial.Caption := LblSerial.Caption + IntToStr(SerialNum);
-    lblValidAfter.Caption := lblValidAfter.Caption + DateToStr(ValidNotAfter);
-    LblValidBefore.Caption := LblValidBefore.Caption + DateToStr
-      (ValidNotBefore);
-    LblShaHash.Caption := LblShaHash.Caption + FCertHash;
-    // Отображаем сообщение если сертификат просрочен
-    LblCertExpired.Visible := HasExpired;
-  end;
+    begin
+      FCertHash := EncodeString(Sha1Hash);
+      LblIssuerMemo.Text := IssuerOneLine;
+      LblSubject.Caption := LblSubject.Caption + SubjectCName;
+      LblSerial.Caption := LblSerial.Caption + IntToStr(SerialNum);
+      LblValidAfter.Caption := LblValidAfter.Caption + DateToStr(ValidNotAfter);
+      LblValidBefore.Caption := LblValidBefore.Caption + DateToStr(ValidNotBefore);
+      LblShaHash.Caption := LblShaHash.Caption + FCertHash;
+      // Отображаем сообщение если сертификат просрочен
+      LblCertExpired.Visible := HasExpired;
+    end;
 end;
 
 procedure TShowCertForm.FormCreate(Sender: TObject);
@@ -134,27 +148,22 @@ var
   EncryptedDataStream: TFileStream;
   DecryptedDataStream: TStream;
 begin
-  if not FileExists(ProfilePath + AcceptedCertsFile) then
+  { if not FileExists(ProfilePath + AcceptedCertsFile) then
     Exit;
-  try
-    EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile,
-      fmOpenRead);
     try
-      // Расшифровываем
-      DecryptedDataStream := DecryptStream(EncryptedDataStream,
-        UnitCrypto.PasswordByMac);
-      try
-        FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
-      finally
-        FreeAndNil(DecryptedDataStream);
-      end;
+    EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile,
+    fmOpenRead);
+    // Расшифровываем
+    DecryptedDataStream := DecryptStream(EncryptedDataStream,
+    UnitCrypto.PasswordByMac);
+    try
+    FAcceptedCertsList.LoadFromStream(DecryptedDataStream);
     finally
-      FreeAndNil(EncryptedDataStream);
+    FreeAndNil(DecryptedDataStream);
     end;
-  except
-    on E: Exception do
-      TLogger.Instance.WriteMessage(E);
-  end;
+    finally
+    FreeAndNil(EncryptedDataStream);
+    end; }
 end;
 
 procedure TShowCertForm.SaveAcceptedCertsList;
@@ -164,41 +173,36 @@ var
   EncryptedDataStream: TStream;
 begin
   // Сохраняем список принятых сертификатов в файл
-  try
-    DecryptedDataStream := TMemoryStream.Create;
+  { DecryptedDataStream := TMemoryStream.Create;
     try
-      EncryptedDataStream := TMemoryStream.Create;
-      try
-        FAcceptedCertsList.SaveToStream(DecryptedDataStream);
-        // Шифруем
-        EncryptedDataStream := EncryptStream
-          (DecryptedDataStream, UnitCrypto.PasswordByMac);
-        // Если уже есть какой-то файл списка, то удаляем его
-        if FileExists(ProfilePath + AcceptedCertsFile) then
-          DeleteFile(ProfilePath + AcceptedCertsFile);
-        // Создаём папку профиля
-        if not DirectoryExists(ExtractFilePath(ProfilePath + AcceptedCertsFile)
-          ) then
-          ForceDirectories(ProfilePath + AcceptedCertsFile);
-        // Записываем в файл из памяти
-        EncryptedFileStream := TFileStream.Create
-          (ProfilePath + AcceptedCertsFile, fmCreate);
-        try
-          EncryptedFileStream.CopyFrom(EncryptedDataStream,
-            EncryptedDataStream.Size);
-        finally
-          FreeAndNil(EncryptedFileStream);
-        end;
-      finally
-        FreeAndNil(EncryptedDataStream);
-      end;
+    EncryptedDataStream := TMemoryStream.Create;
+    try
+    FAcceptedCertsList.SaveToStream(DecryptedDataStream);
+    // Шифруем
+    EncryptedDataStream := EncryptStream
+    (DecryptedDataStream, UnitCrypto.PasswordByMac);
+    // Если уже есть какой-то файл списка, то удаляем его
+    if FileExists(ProfilePath + AcceptedCertsFile) then
+    DeleteFile(ProfilePath + AcceptedCertsFile);
+    // Создаём папку профиля
+    if not DirectoryExists(ExtractFilePath(ProfilePath + AcceptedCertsFile)
+    ) then
+    ForceDirectories(ProfilePath + AcceptedCertsFile);
+    // Записываем в файл из памяти
+    EncryptedFileStream := TFileStream.Create
+    (ProfilePath + AcceptedCertsFile, fmCreate);
+    try
+    EncryptedFileStream.CopyFrom(EncryptedDataStream,
+    EncryptedDataStream.Size);
     finally
-      FreeAndNil(DecryptedDataStream);
+    FreeAndNil(EncryptedFileStream);
     end;
-  except
-    on E: Exception do
-      TLogger.Instance.WriteMessage(E);
-  end;
+    finally
+    FreeAndNil(EncryptedDataStream);
+    end;
+    finally
+    FreeAndNil(DecryptedDataStream);
+    end; }
 end;
 
 end.

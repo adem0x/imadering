@@ -146,7 +146,6 @@ object RosterForm: TRosterForm
     ReadOnly = True
     RowSelect = True
     PopupMenu = RosterPopupMenu
-    SmallImages = MainForm.AllImageList
     TabOrder = 0
     ViewStyle = vsReport
     OnGetImageIndex = RosterJvListViewGetImageIndex
@@ -236,7 +235,6 @@ object RosterForm: TRosterForm
   end
   object RosterPopupMenu: TPopupMenu
     Alignment = paCenter
-    Images = MainForm.AllImageList
     Left = 136
     Top = 128
     object ClearICQ: TMenuItem

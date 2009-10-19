@@ -11,8 +11,21 @@ unit HistoryUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Htmlview, ExtCtrls, Buttons, Menus, ExtDlgs;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  Htmlview,
+  ExtCtrls,
+  Buttons,
+  Menus,
+  ExtDlgs;
 
 type
   THistoryForm = class(TForm)
@@ -43,8 +56,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure HistoryPopupMenuPopup(Sender: TObject);
-    procedure HTMLHistoryViewerKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure HTMLHistoryViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SearchTextBitBtnClick(Sender: TObject);
     procedure ReloadHistoryBitBtnClick(Sender: TObject);
     procedure SaveHistoryAsBitBtnClick(Sender: TObject);
@@ -53,14 +65,16 @@ type
     procedure CopyHistorySelTextClick(Sender: TObject);
     procedure CopyAllHistoryTextClick(Sender: TObject);
     procedure CloseBitBtnClick(Sender: TObject);
+
   private
     { Private declarations }
     ReqHUIN: string;
     ReqCType: string;
+
   public
     { Public declarations }
     procedure TranslateForm;
-    procedure LoadHistoryFromFile(hUIN: string; fullpath: boolean = false);
+    procedure LoadHistoryFromFile(HUIN: string; Fullpath: Boolean = False);
   end;
 
 var
@@ -71,10 +85,13 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, ChatUnit, UtilsUnit, VarsUnit, UnitLogger, rXML;
+  MainUnit,
+  ChatUnit,
+  UtilsUnit,
+  VarsUnit,
+  RXML;
 
-procedure THistoryForm.LoadHistoryFromFile
-  (hUIN: string; fullpath: boolean = false);
+procedure THistoryForm.LoadHistoryFromFile(HUIN: string; Fullpath: Boolean = False);
 { label
   x;
   var
@@ -208,13 +225,13 @@ procedure THistoryForm.HistoryPopupMenuPopup(Sender: TObject);
 begin
   // Определяем есть ли выделенный текст
   if HTMLHistoryViewer.SelLength = 0 then
-  begin
-    CopyHistorySelText.Enabled := false;
-  end
+    begin
+      CopyHistorySelText.Enabled := False;
+    end
   else
-  begin
-    CopyHistorySelText.Enabled := true;
-  end;
+    begin
+      CopyHistorySelText.Enabled := True;
+    end;
 end;
 
 procedure THistoryForm.TranslateForm;
@@ -228,8 +245,7 @@ begin
   // Снимаем предыдущее выделение текста
   HTMLHistoryViewer.SelLength := 0;
   // Делаем поиск текста в истории
-  if not HTMLHistoryViewer.FindEx(SearchTextEdit.Text, RegistrCheckBox.Checked,
-    UpSearchCheckBox.Checked) then
+  if not HTMLHistoryViewer.FindEx(SearchTextEdit.Text, RegistrCheckBox.Checked, UpSearchCheckBox.Checked) then
     Showmessage(HistorySearchNoL);
 end;
 
@@ -241,7 +257,7 @@ end;
 
 procedure THistoryForm.SaveHistoryAsBitBtnClick(Sender: TObject);
 var
-  list: TStringList;
+  List: TStringList;
 begin
   // Если путь к файлу пустой, то выходим
   if (ReqHUIN = EmptyStr) or (ReqCType = EmptyStr) then
@@ -250,48 +266,45 @@ begin
   SaveTextAsFileDialog.FileName := 'History_' + ReqCType + '_' + ReqHUIN;
   // Открываем диалог сохранения файла
   if SaveTextAsFileDialog.Execute then
-  begin
-    // Создаём лист строк
-    list := TStringList.Create;
-    try
-      // Выделяем весь текст в истории
-      HTMLHistoryViewer.SelectAll;
-      // Копируем выделенный текст в лист
-      list.Text := HTMLHistoryViewer.SelText;
-      // Сбрасываем выделение текста
-      HTMLHistoryViewer.SelLength := 0;
-      // Сохраняем текст из листа в файл из диалога
-      list.SaveToFile(SaveTextAsFileDialog.FileName);
-    finally
-      list.Free;
+    begin
+      // Создаём лист строк
+      List := TStringList.Create;
+      try
+        // Выделяем весь текст в истории
+        HTMLHistoryViewer.SelectAll;
+        // Копируем выделенный текст в лист
+        List.Text := HTMLHistoryViewer.SelText;
+        // Сбрасываем выделение текста
+        HTMLHistoryViewer.SelLength := 0;
+        // Сохраняем текст из листа в файл из диалога
+        List.SaveToFile(SaveTextAsFileDialog.FileName);
+      finally
+        List.Free;
+      end;
     end;
-  end;
 end;
 
 procedure THistoryForm.DeleteHistoryBitBtnClick(Sender: TObject);
 var
   Doc: string;
-  i: integer;
+  I: Integer;
 begin
   // Если путь к файлу пустой, то выходим
   if (ReqHUIN = EmptyStr) or (ReqCType = EmptyStr) then
     Exit;
   // Выводим запрос на удаление файла истории
-  i := MessageBox(Handle, PChar(HistoryDelL), PChar(WarningHead),
-    MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
+  I := MessageBox(Handle, PChar(HistoryDelL), PChar(WarningHead), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
   // Если ответ положительный
-  if i = 6 then
-  begin
-    // Удаляем файл
-    if FileExists(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN +
-        '.z') then
-      DeleteFile(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN +
-          '.z');
-    // Очищаем компонент истории
-    HTMLHistoryViewer.Clear;
-    Doc := EmptyStr;
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-  end;
+  if I = 6 then
+    begin
+      // Удаляем файл
+      if FileExists(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z') then
+        DeleteFile(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z');
+      // Очищаем компонент истории
+      HTMLHistoryViewer.Clear;
+      Doc := EmptyStr;
+      HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+    end;
 end;
 
 procedure THistoryForm.CloseBitBtnClick(Sender: TObject);
@@ -303,7 +316,7 @@ end;
 procedure THistoryForm.ContactsComboBoxChange(Sender: TObject);
 begin
   // Загружаем файл с историей выбранного контакта
-  LoadHistoryFromFile(ContactsComboBox.Text, true);
+  LoadHistoryFromFile(ContactsComboBox.Text, True);
   if SearchTextEdit.CanFocus then
     SearchTextEdit.SetFocus;
 end;
@@ -311,7 +324,7 @@ end;
 procedure THistoryForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Указываем, что окно после закрытия уничтожится
-  Action := caFree;
+  Action := CaFree;
   HistoryForm := nil;
 end;
 
@@ -322,21 +335,21 @@ begin
     try
       // Загружаем настройки
       if FileExists(ProfilePath + SettingsFileName) then
-      begin
-        LoadFromFile(ProfilePath + SettingsFileName);
-        // Загружаем позицию окна
-        if OpenKey('settings\forms\historyform\position') then
-          try
-            Top := ReadInteger('top');
-            Left := ReadInteger('left');
-            Height := ReadInteger('height');
-            Width := ReadInteger('width');
-            // Определяем не находится ли окно за пределами экрана
-            MainForm.FormSetInWorkArea(self); ;
-          finally
-            CloseKey();
-          end;
-      end;
+        begin
+          LoadFromFile(ProfilePath + SettingsFileName);
+          // Загружаем позицию окна
+          if OpenKey('settings\forms\historyform\position') then
+            try
+              Top := ReadInteger('top');
+              Left := ReadInteger('left');
+              Height := ReadInteger('height');
+              Width := ReadInteger('width');
+              // Определяем не находится ли окно за пределами экрана
+              MainForm.FormSetInWorkArea(Self); ;
+            finally
+              CloseKey();
+            end;
+        end;
     finally
       Free();
     end;
@@ -350,12 +363,10 @@ begin
   MainForm.AllImageList.GetBitmap(148, DeleteHistoryBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
   // Создаём список имеющихся файлов истории для выбора
-  ListFileDirHist(ProfilePath + 'Profile\History', '*.z', '.z',
-    ContactsComboBox.Items);
+  ListFileDirHist(ProfilePath + 'Profile\History', '*.z', '.z', ContactsComboBox.Items);
   // Делаем окно независимым и ставим его кнопку в панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE)
-      or WS_EX_APPWINDOW);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure THistoryForm.FormDestroy(Sender: TObject);
@@ -368,7 +379,7 @@ begin
       if FileExists(ProfilePath + SettingsFileName) then
         LoadFromFile(ProfilePath + SettingsFileName);
       // Сохраняем позицию окна
-      if OpenKey('settings\forms\historyform\position', true) then
+      if OpenKey('settings\forms\historyform\position', True) then
         try
           WriteInteger('top', Top);
           WriteInteger('left', Left);
@@ -384,14 +395,13 @@ begin
     end;
 end;
 
-procedure THistoryForm.HTMLHistoryViewerKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure THistoryForm.HTMLHistoryViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   // При нажатии клавиш контрл + с копируем выделенный текст в буфер обмена
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 67) then
-  begin
-    HTMLHistoryViewer.CopyToClipboard;
-  end;
+    begin
+      HTMLHistoryViewer.CopyToClipboard;
+    end;
 end;
 
 end.

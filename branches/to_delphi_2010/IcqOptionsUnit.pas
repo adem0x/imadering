@@ -11,9 +11,26 @@ unit IcqOptionsUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ButtonGroup, JvPageList, JvExControls, ExtCtrls, StdCtrls,
-  Buttons, ComCtrls, OverbyteIcsWSocket, VarsUnit, ShellApi, rXML;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ButtonGroup,
+  JvPageList,
+  JvExControls,
+  ExtCtrls,
+  StdCtrls,
+  Buttons,
+  ComCtrls,
+  OverbyteIcsWSocket,
+  VarsUnit,
+  ShellApi,
+  RXML;
 
 type
   TIcqOptionsForm = class(TForm)
@@ -237,8 +254,7 @@ type
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
-    procedure ICQOptionButtonGroupButtonClicked
-      (Sender: TObject; Index: Integer);
+    procedure ICQOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
     procedure ICQUINEditChange(Sender: TObject);
     procedure ApplyButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
@@ -248,17 +264,17 @@ type
     procedure ChangePassButtonClick(Sender: TObject);
     procedure WebAwareTestButtonClick(Sender: TObject);
     procedure PassEditClick(Sender: TObject);
-    procedure ClientIDInfoMemoMouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
+    procedure ClientIDInfoMemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure SendCustomICQPaketTimerEditExit(Sender: TObject);
-    procedure SendCustomICQPaketTimerEditKeyPress
-      (Sender: TObject; var Key: Char);
+    procedure SendCustomICQPaketTimerEditKeyPress(Sender: TObject; var Key: Char);
     procedure SendCustomICQPacketButtonClick(Sender: TObject);
     procedure SendCustomICQPaketTimerTimer(Sender: TObject);
     procedure RegNewUINLabelClick(Sender: TObject);
+
   private
     { Private declarations }
     procedure LoadSettings;
+
   public
     { Public declarations }
     procedure ApplySettings;
@@ -274,7 +290,12 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UnitCrypto, SettingsUnit, UtilsUnit, RosterUnit;
+  MainUnit,
+  IcqProtoUnit,
+  SettingsUnit,
+  UtilsUnit,
+  RosterUnit,
+  OverbyteIcsMimeUtils;
 
 // APPLY SETTINGS--------------------------------------------------------------
 
@@ -283,20 +304,20 @@ begin
   // Применяем настройки ICQ протокола
   // Нормализуем ICQ логин
   ICQUINEdit.Text := Trim(ICQUINEdit.Text);
-  ICQUINEdit.Text := exNormalizeIcqNumber(ICQUINEdit.Text);
-  ICQUINEdit.Text := exNormalizeScreenName(ICQUINEdit.Text);
+  ICQUINEdit.Text := ExNormalizeIcqNumber(ICQUINEdit.Text);
+  ICQUINEdit.Text := ExNormalizeScreenName(ICQUINEdit.Text);
   // Обновляем данные логина в протоколе
   if ICQUINEdit.Enabled then
-  begin
-    if ICQUINEdit.Text <> ICQ_LoginUIN then
-      RosterForm.ClearICQClick(self); // Очищаем контакты
-    ICQ_LoginUIN := ICQUINEdit.Text;
-    if PassEdit.Text <> '----------------------' then
     begin
-      PassEdit.Hint := PassEdit.Text;
-      ICQ_LoginPassword := PassEdit.Hint;
+      if ICQUINEdit.Text <> ICQ_LoginUIN then
+        RosterForm.ClearICQClick(Self); // Очищаем контакты
+      ICQ_LoginUIN := ICQUINEdit.Text;
+      if PassEdit.Text <> '----------------------' then
+        begin
+          PassEdit.Hint := PassEdit.Text;
+          ICQ_LoginPassword := PassEdit.Hint;
+        end;
     end;
-  end;
   // --------------------------------------------------------------------------
   // Записываем настройки ICQ протокола в файл
   with TrXML.Create() do
@@ -307,9 +328,8 @@ begin
         try
           WriteString('login', ICQUINEdit.Text);
           WriteBool('save-password', SavePassCheckBox.Checked);
-          if (SavePassCheckBox.Checked) and
-            (PassEdit.Text <> '----------------------') then
-            WriteString('password', EncryptString(PassEdit.Hint, PasswordByMac))
+          if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
+            WriteString('password', Base64Encode(PassEdit.Hint))
           else
             WriteString('password', EmptyStr);
           // Маскируем пароль
@@ -332,7 +352,7 @@ begin
       Free();
     end;
   // Деактивируем кнопку применения настроек
-  ApplyButton.Enabled := false;
+  ApplyButton.Enabled := False;
 end;
 
 // LOAD SETTINGS---------------------------------------------------------------
@@ -349,34 +369,34 @@ begin
   with TrXML.Create() do
     try
       if FileExists(ProfilePath + SettingsFileName) then
-      begin
-        LoadFromFile(ProfilePath + SettingsFileName);
-        // Загружаем данные логина
-        if OpenKey('settings\icq\account') then
-          try
-            ICQUINEdit.Text := ReadString('login');
-            if ICQUINEdit.Text <> EmptyStr then
-              ICQ_LoginUIN := ICQUINEdit.Text;
-            SavePassCheckBox.Checked := ReadBool('save-password');
-            PassEdit.Text := ReadString('password');
-            if PassEdit.Text <> EmptyStr then
-            begin
-              PassEdit.Hint := DecryptString(PassEdit.Text, PasswordByMac);
-              ICQ_LoginPassword := PassEdit.Hint;
-              PassEdit.Text := '----------------------';
+        begin
+          LoadFromFile(ProfilePath + SettingsFileName);
+          // Загружаем данные логина
+          if OpenKey('settings\icq\account') then
+            try
+              ICQUINEdit.Text := ReadString('login');
+              if ICQUINEdit.Text <> EmptyStr then
+                ICQ_LoginUIN := ICQUINEdit.Text;
+              SavePassCheckBox.Checked := ReadBool('save-password');
+              PassEdit.Text := ReadString('password');
+              if PassEdit.Text <> EmptyStr then
+                begin
+                  PassEdit.Hint := Base64Decode(PassEdit.Text);
+                  ICQ_LoginPassword := PassEdit.Hint;
+                  PassEdit.Text := '----------------------';
+                end;
+            finally
+              CloseKey();
             end;
-          finally
-            CloseKey();
-          end;
-        // Загружаем остальные настройки
-        if OpenKey('settings\icq\show-hide-contacts') then
-          try
-            ShowHideContactsCheckBox.Checked := ReadBool('value');
-            ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
-          finally
-            CloseKey();
-          end;
-      end;
+          // Загружаем остальные настройки
+          if OpenKey('settings\icq\show-hide-contacts') then
+            try
+              ShowHideContactsCheckBox.Checked := ReadBool('value');
+              ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
+            finally
+              CloseKey();
+            end;
+        end;
     finally
       Free();
     end;
@@ -390,12 +410,12 @@ end;
 
 procedure TIcqOptionsForm.ReqPassLabelMouseEnter(Sender: TObject);
 begin (Sender as TLabel)
-  .Font.Color := clBlue;
+  .Font.Color := ClBlue;
 end;
 
 procedure TIcqOptionsForm.ReqPassLabelMouseLeave(Sender: TObject);
 begin (Sender as TLabel)
-  .Font.Color := clNavy;
+  .Font.Color := ClNavy;
 end;
 
 procedure TIcqOptionsForm.TranslateForm;
@@ -444,29 +464,26 @@ end;
 procedure TIcqOptionsForm.ChangePassButtonClick(Sender: TObject);
 begin
   if ICQ_Work_Phaze then
-  begin
-    if (CurrentPassChangeEdit.Text = EmptyStr) or
-      (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) then
-      DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-    else if NewPassChangeEdit.Text = EmptyStr then
-      DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-    else if Length(NewPassChangeEdit.Text) < 6 then
-      DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-    else if (RetypeNewPassEdit.Text = EmptyStr) or
-      (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
-      DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-    else
     begin
-      ICQ_PassChange(RetypeNewPassEdit.Text);
-      ICQ_ChangePassword := RetypeNewPassEdit.Text;
-    end;
-  end
+      if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) then
+        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+      else if NewPassChangeEdit.Text = EmptyStr then
+        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+      else if Length(NewPassChangeEdit.Text) < 6 then
+        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+      else if (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
+        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+      else
+        begin
+          ICQ_PassChange(RetypeNewPassEdit.Text);
+          ICQ_ChangePassword := RetypeNewPassEdit.Text;
+        end;
+    end
   else
     DAShow(AlertHead, OnlineAlert, EmptyStr, 134, 2, 0);
 end;
 
-procedure TIcqOptionsForm.ClientIDInfoMemoMouseMove
-  (Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TIcqOptionsForm.ClientIDInfoMemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   // ClientIDInfoMemo.
 end;
@@ -479,34 +496,32 @@ begin
   Pkt := Trim(SendCustomICQPacketRichEdit.Text);
   // Если пакет больше нуля и рабочая фаза icq подключения
   if (Pkt > EmptyStr) and ICQ_Work_Phaze then
-  begin
-    // Удаляем все переносы строк из пакета
-    Pkt := DeleteLineBreaks(Pkt);
-    // Удаляем все пробелы из пакета
-    Pkt := DeleteSpaces(Pkt);
-    // Если пакет с заголовком, то удаляем из пакета заголовок
-    if (Length(Pkt) > 2) and (UpperCase(Pkt[1] + Pkt[2]) = '2A') then
     begin
-      NextData(Pkt, 12);
-      // Отправляем пакет по второму каналу
-      SendFLAP('2', Pkt);
-    end
-    else
-      SendFLAP('2', Pkt);
-    // Запускаем таймер повтора отправки если установлено
-    if SendCustomICQPaketTimerCheckBox.Checked then
-    begin
-      // Применяем время таймера
-      SendCustomICQPaketTimer.Interval := StrToInt
-        (SendCustomICQPaketTimerEdit.Text) * 1000;
-      // Пересбрасываем и перезапускаем таймер
-      SendCustomICQPaketTimer.Enabled := false;
-      SendCustomICQPaketTimer.Enabled := True;
+      // Удаляем все переносы строк из пакета
+      Pkt := DeleteLineBreaks(Pkt);
+      // Удаляем все пробелы из пакета
+      Pkt := DeleteSpaces(Pkt);
+      // Если пакет с заголовком, то удаляем из пакета заголовок
+      if (Length(Pkt) > 2) and (UpperCase(Pkt[1] + Pkt[2]) = '2A') then
+        begin
+          NextData(Pkt, 12);
+          // Отправляем пакет по второму каналу
+          SendFLAP('2', Pkt);
+        end
+      else
+        SendFLAP('2', Pkt);
+      // Запускаем таймер повтора отправки если установлено
+      if SendCustomICQPaketTimerCheckBox.Checked then
+        begin
+          // Применяем время таймера
+          SendCustomICQPaketTimer.Interval := StrToInt(SendCustomICQPaketTimerEdit.Text) * 1000;
+          // Пересбрасываем и перезапускаем таймер
+          SendCustomICQPaketTimer.Enabled := False;
+          SendCustomICQPaketTimer.Enabled := True;
+        end;
     end;
-  end;
   // Сохраняем пакет локально для дальнейшего использования
-  SendCustomICQPacketRichEdit.Lines.SaveToFile
-    (ProfilePath + 'Profile\IcqPacket.txt');
+  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Profile\IcqPacket.txt');
 end;
 
 procedure TIcqOptionsForm.SendCustomICQPaketTimerEditExit(Sender: TObject);
@@ -516,8 +531,7 @@ begin
     SendCustomICQPaketTimerEdit.Text := '10';
 end;
 
-procedure TIcqOptionsForm.SendCustomICQPaketTimerEditKeyPress
-  (Sender: TObject; var Key: Char);
+procedure TIcqOptionsForm.SendCustomICQPaketTimerEditKeyPress(Sender: TObject; var Key: Char);
 const
   ValidAsciiChars = ['0' .. '9'];
 begin
@@ -529,21 +543,19 @@ end;
 procedure TIcqOptionsForm.SendCustomICQPaketTimerTimer(Sender: TObject);
 begin
   // Применяем время таймера
-  SendCustomICQPaketTimer.Interval := StrToInt
-    (SendCustomICQPaketTimerEdit.Text) * 1000;
+  SendCustomICQPaketTimer.Interval := StrToInt(SendCustomICQPaketTimerEdit.Text) * 1000;
   // Нажимаем на кнопку отправки
   if SendCustomICQPaketTimerCheckBox.Checked then
-    SendCustomICQPacketButtonClick(self)
+    SendCustomICQPacketButtonClick(Self)
   else
-    SendCustomICQPaketTimer.Enabled := false;
+    SendCustomICQPaketTimer.Enabled := False;
 end;
 
-procedure TIcqOptionsForm.ICQOptionButtonGroupButtonClicked
-  (Sender: TObject; Index: Integer);
+procedure TIcqOptionsForm.ICQOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
 begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
-  if Index <= ICQOptionsJvPageList.PageCount then
-    ICQOptionsJvPageList.ActivePageIndex := Index;
+  if index <= ICQOptionsJvPageList.PageCount then
+    ICQOptionsJvPageList.ActivePageIndex := index;
 end;
 
 procedure TIcqOptionsForm.ShowPassCheckBoxClick(Sender: TObject);
@@ -562,17 +574,17 @@ end;
 procedure TIcqOptionsForm.ShowPassChangeCheckBoxClick(Sender: TObject);
 begin
   if ShowPassChangeCheckBox.Checked then
-  begin
-    CurrentPassChangeEdit.PasswordChar := #0;
-    NewPassChangeEdit.PasswordChar := #0;
-    RetypeNewPassEdit.PasswordChar := #0;
-  end
+    begin
+      CurrentPassChangeEdit.PasswordChar := #0;
+      NewPassChangeEdit.PasswordChar := #0;
+      RetypeNewPassEdit.PasswordChar := #0;
+    end
   else
-  begin
-    CurrentPassChangeEdit.PasswordChar := '*';
-    NewPassChangeEdit.PasswordChar := '*';
-    RetypeNewPassEdit.PasswordChar := '*';
-  end;
+    begin
+      CurrentPassChangeEdit.PasswordChar := '*';
+      NewPassChangeEdit.PasswordChar := '*';
+      RetypeNewPassEdit.PasswordChar := '*';
+    end;
 end;
 
 procedure TIcqOptionsForm.ICQUINEditChange(Sender: TObject);
@@ -590,7 +602,7 @@ begin
   // Применяем онлайн переменные
   SetOnlineVars;
   // Деактивируем кнопку "применить"
-  ApplyButton.Enabled := false;
+  ApplyButton.Enabled := False;
   // Выставляем иконки формы и кнопок
   MainForm.AllImageList.GetIcon(81, Icon);
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
@@ -598,8 +610,7 @@ begin
   MainForm.AllImageList.GetBitmap(140, OKButton.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE)
-      or WS_EX_APPWINDOW);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TIcqOptionsForm.WebAwareTestButtonClick(Sender: TObject);

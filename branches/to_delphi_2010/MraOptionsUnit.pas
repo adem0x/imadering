@@ -11,9 +11,23 @@ unit MraOptionsUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ButtonGroup, ExtCtrls, ComCtrls, JvPageList,
-  JvExControls, rXML;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  Buttons,
+  ButtonGroup,
+  ExtCtrls,
+  ComCtrls,
+  JvPageList,
+  JvExControls,
+  RXML;
 
 type
   TMraOptionsForm = class(TForm)
@@ -53,11 +67,12 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure PassEditClick(Sender: TObject);
     procedure ShowPassCheckBoxClick(Sender: TObject);
-    procedure MRAOptionButtonGroupButtonClicked
-      (Sender: TObject; Index: Integer);
+    procedure MRAOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
+
   private
     { Private declarations }
     procedure LoadSettings;
+
   public
     { Public declarations }
     procedure ApplySettings;
@@ -72,7 +87,12 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, UtilsUnit, VarsUnit, MraProtoUnit, UnitCrypto, RosterUnit;
+  MainUnit,
+  UtilsUnit,
+  VarsUnit,
+  MraProtoUnit,
+  RosterUnit,
+  OverbyteIcsMimeUtils;
 
 procedure TMraOptionsForm.ApplyButtonClick(Sender: TObject);
 begin
@@ -87,19 +107,19 @@ begin
   // Применяем настройки MRA протокола
   // Нормализуем MRA логин
   MRAEmailEdit.Text := Trim(MRAEmailEdit.Text);
-  MRAEmailEdit.Text := exNormalizeScreenName(MRAEmailEdit.Text);
+  MRAEmailEdit.Text := ExNormalizeScreenName(MRAEmailEdit.Text);
   // Обновляем данные логина в протоколе
   if MRAEmailEdit.Enabled then
-  begin
-    if MRAEmailEdit.Text <> MRA_LoginUIN then
-      RosterForm.ClearMRAClick(self); // Очищаем контакты
-    MRA_LoginUIN := MRAEmailEdit.Text;
-    if PassEdit.Text <> '----------------------' then
     begin
-      PassEdit.Hint := PassEdit.Text;
-      MRA_LoginPassword := PassEdit.Hint;
+      if MRAEmailEdit.Text <> MRA_LoginUIN then
+        RosterForm.ClearMRAClick(Self); // Очищаем контакты
+      MRA_LoginUIN := MRAEmailEdit.Text;
+      if PassEdit.Text <> '----------------------' then
+        begin
+          PassEdit.Hint := PassEdit.Text;
+          MRA_LoginPassword := PassEdit.Hint;
+        end;
     end;
-  end;
   // Обновляем данные сервера подключения
   MRA_LoginServerAddr := MraLoginServerComboBox.Text;
   MRA_LoginServerPort := MraLoginServerPortEdit.Text;
@@ -114,9 +134,8 @@ begin
         try
           WriteString('login', MRAEmailEdit.Text);
           WriteBool('save-password', SavePassCheckBox.Checked);
-          if (SavePassCheckBox.Checked) and
-            (PassEdit.Text <> '----------------------') then
-            WriteString('password', EncryptString(PassEdit.Hint, PasswordByMac))
+          if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
+            WriteString('password', Base64Encode(PassEdit.Hint))
           else
             WriteString('password', EmptyStr);
           // Маскируем пароль
@@ -139,7 +158,7 @@ begin
       Free();
     end;
   // Деактивируем кнопку применения настроек
-  ApplyButton.Enabled := false;
+  ApplyButton.Enabled := False;
 end;
 
 // LOAD SETTINGS---------------------------------------------------------------
@@ -150,34 +169,34 @@ begin
   with TrXML.Create() do
     try
       if FileExists(ProfilePath + SettingsFileName) then
-      begin
-        LoadFromFile(ProfilePath + SettingsFileName);
-        // Загружаем данные логина
-        if OpenKey('settings\mra\account') then
-          try
-            MRAEmailEdit.Text := ReadString('login');
-            if MRAEmailEdit.Text <> EmptyStr then
-              MRA_LoginUIN := MRAEmailEdit.Text;
-            SavePassCheckBox.Checked := ReadBool('save-password');
-            PassEdit.Text := ReadString('password');
-            if PassEdit.Text <> EmptyStr then
-            begin
-              PassEdit.Hint := DecryptString(PassEdit.Text, PasswordByMac);
-              MRA_LoginPassword := PassEdit.Hint;
-              PassEdit.Text := '----------------------';
+        begin
+          LoadFromFile(ProfilePath + SettingsFileName);
+          // Загружаем данные логина
+          if OpenKey('settings\mra\account') then
+            try
+              MRAEmailEdit.Text := ReadString('login');
+              if MRAEmailEdit.Text <> EmptyStr then
+                MRA_LoginUIN := MRAEmailEdit.Text;
+              SavePassCheckBox.Checked := ReadBool('save-password');
+              PassEdit.Text := ReadString('password');
+              if PassEdit.Text <> EmptyStr then
+                begin
+                  PassEdit.Hint := Base64Decode(PassEdit.Text);
+                  MRA_LoginPassword := PassEdit.Hint;
+                  PassEdit.Text := '----------------------';
+                end;
+            finally
+              CloseKey();
             end;
-          finally
-            CloseKey();
-          end;
-        // Загружаем данные сервера подключения
-        if OpenKey('settings\mra\server') then
-          try
-            MraLoginServerComboBox.Text := ReadString('login-server');
-            MraLoginServerPortEdit.Text := ReadString('login-port');
-          finally
-            CloseKey();
-          end;
-      end;
+          // Загружаем данные сервера подключения
+          if OpenKey('settings\mra\server') then
+            try
+              MraLoginServerComboBox.Text := ReadString('login-server');
+              MraLoginServerPortEdit.Text := ReadString('login-port');
+            finally
+              CloseKey();
+            end;
+        end;
     finally
       Free();
     end;
@@ -202,7 +221,7 @@ begin
   // Загружаем настройки
   LoadSettings;
   // Деактивируем кнопку "применить"
-  ApplyButton.Enabled := false;
+  ApplyButton.Enabled := False;
   // Выставляем иконки формы и кнопок
   MainForm.AllImageList.GetIcon(66, Icon);
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
@@ -210,8 +229,7 @@ begin
   MainForm.AllImageList.GetBitmap(140, OKButton.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE)
-      or WS_EX_APPWINDOW);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TMraOptionsForm.MRAEmailEditChange(Sender: TObject);
@@ -222,20 +240,19 @@ end;
 
 procedure TMraOptionsForm.MRAonserverLabelMouseEnter(Sender: TObject);
 begin (Sender as TLabel)
-  .Font.Color := clBlue;
+  .Font.Color := ClBlue;
 end;
 
 procedure TMraOptionsForm.MRAonserverLabelMouseLeave(Sender: TObject);
 begin (Sender as TLabel)
-  .Font.Color := clNavy;
+  .Font.Color := ClNavy;
 end;
 
-procedure TMraOptionsForm.MRAOptionButtonGroupButtonClicked
-  (Sender: TObject; Index: Integer);
+procedure TMraOptionsForm.MRAOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
 begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
-  if Index <= OptionJvPageList.PageCount then
-    OptionJvPageList.ActivePageIndex := Index;
+  if index <= OptionJvPageList.PageCount then
+    OptionJvPageList.ActivePageIndex := index;
 end;
 
 procedure TMraOptionsForm.OKButtonClick(Sender: TObject);

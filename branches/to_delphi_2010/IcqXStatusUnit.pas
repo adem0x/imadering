@@ -11,8 +11,18 @@ unit IcqXStatusUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ButtonGroup, StdCtrls, VarsUnit;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ButtonGroup,
+  StdCtrls,
+  VarsUnit;
 
 type
   TIcqXStatusForm = class(TForm)
@@ -26,9 +36,11 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
+
   private
     { Private declarations }
-    Xindex: integer;
+    Xindex: Integer;
+
   public
     { Public declarations }
     procedure TranslateForm;
@@ -42,7 +54,9 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UnitCrypto, UtilsUnit;
+  MainUnit,
+  IcqProtoUnit,
+  UtilsUnit;
 
 procedure TIcqXStatusForm.FormCreate(Sender: TObject);
 begin
@@ -72,22 +86,19 @@ begin
   // Присваиваем переменным протокола выбранный статус
   ICQ_X_CurrentStatus := XButtonGroup.ItemIndex;
   ICQ_X_CurrentStatus_Cap := XButtonGroup.Items[XButtonGroup.ItemIndex].Hint;
-  ICQ_X_CurrentStatus_Code := XButtonGroup.Items[XButtonGroup.ItemIndex]
-    .Caption;
+  ICQ_X_CurrentStatus_Code := XButtonGroup.Items[XButtonGroup.ItemIndex].Caption;
   ICQ_X_CurrentStatus_Text := XtextMemo.Text;
   // Ставим иконку доп. статуса в меню icq
-  MainForm.ICQXStatus.ImageIndex := XButtonGroup.Items[XButtonGroup.ItemIndex]
-    .ImageIndex;
+  MainForm.ICQXStatus.ImageIndex := XButtonGroup.Items[XButtonGroup.ItemIndex].ImageIndex;
   // Отправляем пакеты с инфой о новом статусе
-  SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr,
-      ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
+  SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
   ICQ_SetInfoP;
   ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
   // Если шарик дня рождения то активируем этот режим
   if BirthDayCheckBox.Checked then
-    ICQ_BirthDay_Enabled := true
+    ICQ_BirthDay_Enabled := True
   else
-    ICQ_BirthDay_Enabled := false;
+    ICQ_BirthDay_Enabled := False;
   SendFLAP('2', ICQ_CreateShortStatusPkt);
   // Сохраняем настройки доп. статуса
   //
@@ -106,7 +117,7 @@ begin
   // Выводим главное окно на передний план
   SetForeGroundWindow(Application.MainForm.Handle);
   // Уничтожаем эту форму
-  Action := caFree;
+  Action := CaFree;
   IcqXStatusForm := nil;
 end;
 
