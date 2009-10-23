@@ -37,7 +37,6 @@ uses
   Categorybuttons,
   Jabberprotounit,
   Registry,
-  Typinfo,
   Mraprotounit,
   Rxml,
   LogUnit;
@@ -45,8 +44,8 @@ uses
 function Parse(Char, S: string; Count: Integer): string;
 procedure Listfiledirhist(Path, Ext, Eext: string; Filelist: Tstrings);
 procedure Gettreedirs(Root: string; out Outstring: Tstringlist);
-function Hex2text(Hextext: string): string;
-function Text2hex(Msg: string): string;
+function Hex2text(HexText: string): string;
+function Text2hex(Msg: RawByteString): string;
 function Rightstr(const Str: string; Size: Word): string;
 function Leftstr(const Str: string; Size: Word): string;
 function Hextoint(Value: string): Longword;
@@ -55,7 +54,6 @@ function Swap16(Value: Word): Word;
 assembler;
 function Swap32(Value: Longword): Longword;
 assembler;
-function Md5pointertohex(Buffer: Pointer): string;
 function Deletespaces(const Value: string): string;
 function Deletelinebreaks(const S: string): string;
 function Exnormalizescreenname(Sn: string): string;
@@ -78,7 +76,7 @@ function Exisvalidcharactersdigit(Value: string): Boolean;
 function Hextoint64(Hex: string): Int64;
 function Calculateage(Birthday, Currentdate: Tdate): Integer;
 function Setclipboardtext(Wnd: Hwnd; Value: string): Boolean;
-function Dump(Data: string): string;
+function Dump(Data: RawByteString): string;
 function Chop(I: Integer; var S: string): string; overload;
 function Chop(I, L: Integer; var S: string): string; overload;
 function Chop(Ss: string; var S: string): string; overload;
@@ -112,7 +110,6 @@ function Cleardir(const Path: string; Delete: Boolean): Boolean;
 procedure Setcustomwidthcombobox(Cb: Tcombobox);
 procedure Xshowform(Xform: Tform);
 procedure Openurl(Url: string);
-procedure Setstringpropertyifexists(Acomp: Tcomponent; Apropname: string; Avalue: string);
 function Changespaces(const Value: string): string;
 function Changeslash(const Value: string): string;
 procedure Sendflap_mra(Pkttype, Data: string; Nolen: Boolean = False);
@@ -123,8 +120,17 @@ function Getfiledatetime(Filename: string): Tdatetime;
 procedure Sendflap_jabber(Xmldata: string);
 procedure XLog(XLogData: string);
 function RafinePath(const Path: string): string;
+function NotifyConnectError(SName: string; ErrCode: Integer): string;
 
 implementation
+
+function NotifyConnectError(SName: string; ErrCode: Integer): string;
+begin
+  // Определяем что за ошибка произошла при подключении
+  Result := SocketConnErrorInfo_1 + RN + WSocketErrorDesc(ErrCode) + RN + Format(HttpSocketErrCodeL, [ErrCode])
+    + RN + '[ ' + SocketL + ' ' + SName + ' ]';
+  XLog(SName + ' | ' + Result);
+end;
 
 // На случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
 function RafinePath(const Path: string): string;
@@ -139,7 +145,7 @@ end;
 procedure XLog(XLogData: string);
 begin
   // Если количество строк в логе слишком большое, то очищаем его
-  if LogForm.LogMemo.Lines.Count > 5000 then
+  if LogForm.LogMemo.Lines.Count > 10000 then
     begin
       LogForm.LogMemo.Clear;
       LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Clear);
@@ -152,18 +158,11 @@ end;
 
 procedure Sendflap_jabber(Xmldata: string);
 begin
-  // Расклеиваем пакеты по времени отсылки
-  while Abs(Now - Jabber_lastsendedflap) < Dt2100miliseconds do
-    begin
-      // делаем нано паузу :)
-    end;
   // Пишем в лог данные пакета
   if LogForm.JabberDumpSpeedButton.Down then
     XLog('Jabber send | ' + RN + Trim(Dump(Xmldata)));
   // Отправляем данные через сокет
   Mainform.JabberWSocket.SendStr(Utf8Encode(Xmldata));
-  // Запоминаем время отправления пакета
-  Jabber_lastsendedflap := Now;
 end;
 
 {$WARNINGS OFF}
@@ -1037,7 +1036,7 @@ begin
   Result := Inet_ntoa(Inaddr);
 end;
 
-function Dump(Data: string): string;
+function Dump(Data: RawByteString): string;
 const
   Cols = 16;
 var
@@ -1095,57 +1094,43 @@ end;
 
 procedure Sendflap(Channel, Data: string);
 var
-  Str: string;
+  Str: RawByteString;
   Len: Integer;
 begin
   // Вычисляем длинну данных
   Len := Length(Hex2text(Data));
   // Преобразуем данные в бинарный формат
-  Str := Hex2text('2a0' + Channel + Inttohex(Icq_seq, 4) + Inttohex(Len, 4) + Data);
-  // Расклеиваем пакеты по времени отсылки
-  while Abs(Now - Icq_lastsendedflap1) < Dt2100miliseconds do
-    begin
-      // делаем нано паузу :)
-    end;
+  Str := Hex2Text('2A0' + Channel + Inttohex(Icq_seq, 4) + Inttohex(Len, 4) + Data);
   // Пишем в лог данные пакета
   if LogForm.ICQDumpSpeedButton.Down then
     XLog('ICQ send | ' + RN + Trim(Dump(Str)));
   // Отсылаем данные по сокету
   Mainform.Icqwsocket.SendStr(Str);
-  // Запоминаем время отправления пакета
-  Icq_lastsendedflap1 := Now;
   // Увеличиваем счётчик пакетов
   Inc(Icq_seq);
 end;
 
 procedure Sendflap_avatar(Channel, Data: string);
 var
-  Str: string;
+  Str: RawByteString;
   Len: Integer;
 begin
   // Вычисляем длинну данных
   Len := Length(Hex2text(Data));
   // Преобразуем данные в бинарный формат
-  Str := Hex2text('2a0' + Channel + Inttohex(ICQ_Avatar_Seq, 4) + Inttohex(Len, 4) + Data);
-  // Расклеиваем пакеты по времени отсылки
-  while Abs(Now - Icq_lastsendedflap2) < Dt2100miliseconds do
-    begin
-      // делаем нано паузу :)
-    end;
+  Str := Hex2text('2A0' + Channel + Inttohex(ICQ_Avatar_Seq, 4) + Inttohex(Len, 4) + Data);
   // Пишем в лог данные пакета
   if LogForm.ICQDumpSpeedButton.Down then
     XLog('ICQ avatar send | ' + RN + Trim(Dump(Str)));
   // Отсылаем данные по сокету
   Mainform.Icqavatarwsocket.SendStr(Str);
-  // Запоминаем время отправления пакета
-  Icq_lastsendedflap2 := Now;
   // Увеличиваем счётчик пакетов
   Inc(ICQ_Avatar_Seq);
 end;
 
 procedure Sendflap_mra(Pkttype, Data: string; Nolen: Boolean = False);
 var
-  Str: string;
+  Str: RawByteString;
   Len: Integer;
 begin
   // Вычисляем длинну данных
@@ -1155,18 +1140,11 @@ begin
     Len := 0;
   // Преобразуем данные в бинарный формат
   Str := Hex2text(Mra_magkey + Mra_protover + Inttohex(Swap32(Mra_seq), 8) + Pkttype + Inttohex(Swap32(Len), 8) + Data);
-  // Расклеиваем пакеты по времени отсылки
-  while Abs(Now - Mra_lastsendedflap) < Dt2100miliseconds do
-    begin
-      // делаем нано паузу :)
-    end;
   // Пишем в лог данные пакета
   if LogForm.MRADumpSpeedButton.Down then
     XLog('MRA send | ' + RN + Trim(Dump(Str)));
   // Отсылаем данные по сокету
   Mainform.Mrawsocket.SendStr(Str);
-  // Запоминаем время отправления пакета
-  Mra_lastsendedflap := Now;
   // Увеличиваем счётчик пакетов
   Inc(Mra_seq);
 end;
@@ -1315,38 +1293,24 @@ begin
     Inc(Result, (Pos(Upcase(Value[I]), Hexstr) - 1) shl ((Length(Value) - I) shl 2));
 end;
 
-function Hextochar(S: string): Char;
+function Hex2Text(HexText: string): string;
 var
-  C: Char;
-begin
-  C := Char(Strtoint('$' + S));
-  Result := C;
-end;
-
-function Hex2text(Hextext: string): string;
-var
-  I, X: Integer;
-  Temp, Msgtext: string;
-begin
-  for I := 1 to (Length(Hextext) div 2) do
-    begin
-      X := I * 2;
-      Temp := Hextext[X - 1] + Hextext[X];
-      Msgtext := Msgtext + Hextochar(Temp);
-    end;
-  Result := Msgtext;
-end;
-
-function Text2hex(Msg: string): string;
-var
-  Msgline: string;
   I: Integer;
 begin
+  Result := EmptyStr;
+  for I := 1 to Length(HexText) div 2 do
+    Result := Result + AnsiChar(StrToInt('$' + Copy(HexText, (I - 1) * 2 + 1, 2)));
+end;
+
+function Text2Hex(Msg: RawByteString): string;
+var
+  I: Integer;
+begin
+  Result := EmptyStr;
   for I := 1 to Length(Msg) do
     begin
-      Msgline := Msgline + Inttohex(Ord(Msg[I]), 2);
+      Result := Result + Inttohex(Ord(Msg[I]), 2);
     end;
-  Result := Msgline;
 end;
 
 function Rightstr(const Str: string; Size: Word): string;
@@ -1397,18 +1361,6 @@ asm
   bswap eax
 end
 ;
-
-function Md5pointertohex(Buffer: Pointer): string;
-var
-  Hash: string;
-  I: Word;
-begin
-  for I := 0 to 15 do
-    begin
-      Hash := Hash + Inttohex(Pbyte(Longword(Buffer) + I)^, 2);
-    end;
-  Result := Hash;
-end;
 
 {$WARNINGS OFF}
 
@@ -1879,20 +1831,6 @@ begin
         Url := '"' + Changeslash(Url) + '"'; // Для открытия в winebrowser
     end;
   Shellexecute(0, 'open', Pchar(Ts), Pchar(Url), nil, Sw_show);
-end;
-
-procedure Setstringpropertyifexists(Acomp: Tcomponent; Apropname: string; Avalue: string);
-var
-  Propinfo: Ppropinfo;
-  Tk: Ttypekind;
-begin
-  Propinfo := Getpropinfo(Acomp.Classinfo, Apropname);
-  if Propinfo <> nil then
-    begin
-      Tk := Propinfo^.Proptype^.Kind;
-      if (Tk = Tkstring) or (Tk = Tklstring) or (Tk = Tkwstring) then
-        Setstrprop(Acomp, Propinfo, Avalue);
-    end;
 end;
 
 end.

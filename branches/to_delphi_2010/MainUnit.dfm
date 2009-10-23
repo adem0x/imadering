@@ -71,7 +71,6 @@ object MainForm: TMainForm
       Tag = 1
       Left = 0
       Top = 0
-      Hint = '<b>'#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102'</b>'
       ImageIndex = 0
       ParentShowHint = False
       PopupMenu = MainPopupMenu
@@ -155,7 +154,6 @@ object MainForm: TMainForm
     object PrivatToolButton: TToolButton
       Left = 161
       Top = 0
-      Hint = '<b>'#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080'</b>'
       Caption = 'PrivatToolButton'
       ImageIndex = 236
       ParentShowHint = False
@@ -167,7 +165,6 @@ object MainForm: TMainForm
     object HistoryToolButton: TToolButton
       Left = 184
       Top = 0
-      Hint = '<b>'#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081'</b>'
       ImageIndex = 147
       ParentShowHint = False
       PopupMenu = BottomPanelPopupMenu
@@ -178,7 +175,6 @@ object MainForm: TMainForm
     object SettingsToolButton: TToolButton
       Left = 207
       Top = 0
-      Hint = '<b>'#1053#1072#1089#1090#1088#1086#1081#1082#1080'</b>'
       Caption = 'SettingsToolButton'
       ImageIndex = 2
       ParentShowHint = False
@@ -190,7 +186,6 @@ object MainForm: TMainForm
     object TrafficToolButton: TToolButton
       Left = 230
       Top = 0
-      Hint = '<b>'#1058#1088#1072#1092#1080#1082'</b>'
       ImageIndex = 226
       ParentShowHint = False
       PopupMenu = BottomPanelPopupMenu
@@ -226,7 +221,6 @@ object MainForm: TMainForm
     object MainToolTopButton: TToolButton
       Left = 0
       Top = 0
-      Hint = '<b>'#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102'</b>'
       ImageIndex = 0
       ParentShowHint = False
       PopupMenu = MainPopupMenu
@@ -268,7 +262,6 @@ object MainForm: TMainForm
     object PrivatTopToolButton: TToolButton
       Left = 92
       Top = 0
-      Hint = '<b>'#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080'</b>'
       ImageIndex = 236
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
@@ -278,7 +271,6 @@ object MainForm: TMainForm
     object HistoryTopToolButton: TToolButton
       Left = 115
       Top = 0
-      Hint = '<b>'#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081'</b>'
       ImageIndex = 147
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
@@ -288,7 +280,6 @@ object MainForm: TMainForm
     object SettingsTopToolButton: TToolButton
       Left = 138
       Top = 0
-      Hint = '<b>'#1053#1072#1089#1090#1088#1086#1081#1082#1080'</b>'
       ImageIndex = 2
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
@@ -298,7 +289,6 @@ object MainForm: TMainForm
     object TrafficTopToolButton: TToolButton
       Left = 161
       Top = 0
-      Hint = '<b>'#1058#1088#1072#1092#1080#1082'</b>'
       ImageIndex = 226
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu

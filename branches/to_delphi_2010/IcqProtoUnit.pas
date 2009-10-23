@@ -271,8 +271,6 @@ var
   ICQ_X_CurrentStatus_Text: string = '';
   ICQ_Seq: Word = $1000;
   ICQ_Avatar_Seq: Word = $2000;
-  ICQ_LastSendedFlap1: TDateTime;
-  ICQ_LastSendedFlap2: TDateTime;
   ICQ_Bos_Cookie: string;
   ICQ_Online_IP: string;
   ICQ_MyUIN_RegTime: string;
@@ -301,10 +299,9 @@ var
   ICQ_Bos_Addr: string = '';
   ICQ_CL_Count: Integer = 0;
 
-function ICQ_NotifyConnectError(ErrCode: Integer): string;
 procedure ICQ_NotifyUserStatus(UIN, IStatus, IClient: string; IColor: Integer);
 procedure ICQ_GoOffline;
-function ICQ_MD5CliLoginPkt(Key: string): string;
+function ICQ_MD5CliLoginPkt(cPass, cKey: RawByteString): string;
 function ICQ_NotifyAuthCookieError(ErrCode: string): string;
 function ICQ_CliCookiePkt(Cookie: string): string;
 function ICQ_CliFamilyPkt: string;
@@ -377,7 +374,8 @@ function ICQ_CreateHint(RosterItem: TListItem): string;
 implementation
 
 uses
-  UtilsUnit;
+  UtilsUnit,
+  OverbyteIcsMD5;
 
 procedure ICQ_PassChange(Pass: string);
 var
@@ -3803,9 +3801,9 @@ begin
   // Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
   Result := False;
   // Пропускаем версию КЛ
-  NextData(PktData, 2);
+  NextData(PktData, 1);
   // Получаем количесво записей в нашем КЛ
-  Count := HexToInt(NextData(PktData, 4));
+  Count := HexToInt(Text2Hex(NextData(PktData, 2)));
   ICQ_CL_Count := ICQ_CL_Count + Count;
   // Разбираем записи
   // Начинаем добаление записей контактов в Ростер
@@ -3814,19 +3812,17 @@ begin
     for I := 0 to Count - 1 do
       begin
         // Длинна записи
-        Len := HexToInt(NextData(PktData, 4));
-        Len := Len * 2;
-        // Получаем имя записи и конвертируем из UTF-8 в Ansi
-        QSN := Hex2Text(NextData(PktData, Len));
+        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+        // Получаем имя записи
+        QSN := NextData(PktData, Len);
         // Получаем идентификатор группы
-        QGroupId := NextData(PktData, 4);
+        QGroupId := Text2Hex(NextData(PktData, 2));
         // Идентификатор записи
-        QID := NextData(PktData, 4);
+        QID := Text2Hex(NextData(PktData, 2));
         // Тип записи
-        QType := NextData(PktData, 4);
+        QType := Text2Hex(NextData(PktData, 2));
         // Длинна TLV записи
-        Len := HexToInt(NextData(PktData, 4));
-        Len := Len * 2;
+        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
         // Получаем субпакет записи
         SubData := NextData(PktData, Len);
         // Определяем действие по типу записи
@@ -3851,25 +3847,22 @@ begin
                   // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
                   while Length(SubData) > 0 do
                     begin
-                      case HexToInt(NextData(SubData, 4)) of
+                      case HexToInt(Text2Hex(NextData(SubData, 2))) of
                         $0131: // Ник контакта
                           begin
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
-                            QNick := Hex2Text(NextData(SubData, Len));
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                            QNick := Utf8Decode(NextData(SubData, Len));
                             if QNick <> EmptyStr then
                               SubItems[0] := QNick;
                           end;
                         $013A: // Номер сотового телефона
                           begin
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
-                            SubItems[9] := Hex2Text(NextData(SubData, Len));
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                            SubItems[9] := NextData(SubData, Len);
                           end;
                         $0066: // Авторизован ли контакт для нашего КЛ
                           begin
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                             NextData(SubData, Len);
                             // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
                             SubItems.Strings[2] := 'none';
@@ -3878,30 +3871,26 @@ begin
                           end;
                         $013C: // Заметка о контакте
                           begin
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
-                            SubItems[10] := Hex2Text(NextData(SubData, Len));
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                            SubItems[10] := NextData(SubData, Len);
                           end;
                         $0137: // Email контакта
                           begin
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
-                            SubItems[11] := Hex2Text(NextData(SubData, Len));
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                            SubItems[11] := NextData(SubData, Len);
                           end;
                         $006D: // TimeId
                           begin
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
-                            QTimeId := NextData(SubData, Len);
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                            QTimeId := Text2Hex(NextData(SubData, Len));
                             SubItems[12] := QTimeId;
                             // DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
                           end
                         else
                           begin
                             // Если пакет содержит другие TLV, то пропускаем их
-                            Len := HexToInt(NextData(SubData, 4));
-                            Len := Len * 2;
-                            NextData(SubData, Len);
+                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                            xLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(SubData, Len))));
                           end;
                       end;
                     end;
@@ -3962,7 +3951,7 @@ begin
             end;
           BUDDY_DELETE, BUDDY_AUTORIZ: // Временные контакты из нулевой группы
             begin
-              ListItemD := RosterForm.RosterJvListView.Items.Add;
+              {ListItemD := RosterForm.RosterJvListView.Items.Add;
               with ListItemD do
                 begin
                   Caption := QSN;
@@ -4002,12 +3991,12 @@ begin
                           end;
                       end;
                     end;
-                end;
+                end;}
             end;
           BUDDY_VANITY: // Информация о нашей деятельности на этом UIN
             begin
               // Сканируем пакет на нужные нам TLV
-              while Length(SubData) > 0 do
+              {while Length(SubData) > 0 do
                 begin
                   case HexToInt(NextData(SubData, 4)) of
                     $0067: // Начало сбора статистики
@@ -4073,7 +4062,7 @@ begin
                 end;
               // Отображаем эти переменные в окне настроек ICQ
               if Assigned(IcqOptionsForm) then
-                IcqOptionsForm.SetOnlineVars;
+                IcqOptionsForm.SetOnlineVars;}
             end;
         end;
       end;
@@ -4082,7 +4071,7 @@ begin
     RosterForm.RosterJvListView.Items.EndUpdate;
   end;
   // Финальное время контакт листа
-  CLTimeStamp := HexToInt(NextData(PktData, 8));
+  CLTimeStamp := HexToInt(Text2Hex(NextData(PktData, 4)));
   // Если время больше нуля, то заканчиваем с наполнением КЛ
   if CLTimeStamp <> 0 then
     begin
@@ -4113,42 +4102,43 @@ begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
     Exit;
-  // Длинна нашего UIN
-  Len := HexToInt(NextData(PktData, 2));
-  Len := Len * 2;
-  // Пропускаем наш UIN
-  NextData(PktData, Len);
-  // Пропускаем уровень предупреждений (в icq протоколе всегда равен 0)
-  NextData(PktData, 4);
+  // При ошибочных данных инкапсулированных в пакет O_o
+  if Ord(PktData[1]) = $00 then xLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, 8))));
+  // Пропускаем наш UIN и уровень предупреждений (в icq протоколе всегда равен 0)
+  NextData(PktData, Ord(PktData[1]) + 3);
   // Получаем количесво вложенных в пакет TLV
-  Count := HexToInt(NextData(PktData, 4));
+  Count := HexToInt(Text2Hex(NextData(PktData, 2)));
   for I := 0 to Count - 1 do
     begin
+      NextData(PktData, 1);
       // Сканируем пакет на наличие нужных нам TLV
-      case HexToInt(NextData(PktData, 4)) of
-        $0003: // Время подключения
+      case Ord(PktData[1]) of
+        $03: // Время подключения
           begin
-            Len := HexToInt(NextData(PktData, 4));
-            Len := Len * 2;
-            MyConnTime := DateTimeToStr(UnixToDateTime(HexToInt(NextData(PktData, Len))));
+            NextData(PktData, 1);
+            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+            MyConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+            xLog('ICQ parsing | ' + MyConnTime);
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.ConnectTimeInfoEdit.Text := MyConnTime;
           end;
-        $0005: // Дата регистрации нашего UIN
+        $05: // Дата регистрации нашего UIN
           begin
-            Len := HexToInt(NextData(PktData, 4));
-            Len := Len * 2;
-            ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(NextData(PktData, Len))));
+            NextData(PktData, 1);
+            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+            ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+            xLog('ICQ parsing | ' + ICQ_MyUIN_RegTime);
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
           end;
-        $000A: // Наш внешний IP адрес
+        $0A: // Наш внешний IP адрес
           begin
-            Len := HexToInt(NextData(PktData, 4));
-            Len := Len * 2;
-            ICQ_Online_IP := NumToIp(Swap32(HexToInt(NextData(PktData, Len))));
+            NextData(PktData, 1);
+            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+            ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
+            xLog('ICQ parsing | ' + ICQ_Online_IP);
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
@@ -4156,9 +4146,9 @@ begin
         else
           begin
             // Если пакет содержит другие TLV, то пропускаем их
-            Len := HexToInt(NextData(PktData, 4));
-            Len := Len * 2;
-            NextData(PktData, Len);
+            NextData(PktData, 1);
+            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+            xLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, Len))));
           end;
       end;
     end;
@@ -4183,28 +4173,34 @@ begin
   Result := Pkt;
 end;
 
-function ICQ_MD5CliLoginPkt(Key: string): string;
+function ICQ_MD5CliLoginPkt(cPass, cKey: RawByteString): string;
 var
-  Pkt, MD5hash: string;
+  CLIENT_MD5_STRING: RawByteString;
+  MD5hash: string;
+  State: TMd5Context;
+  Digest: TMD5Digest;
 begin
-  { if Length(ICQ_LoginPassword) > 8 then
+  xLog('ICQ parsing | ' + Log_MD5_Nonce + cKey);
+  // Уменьшаем длинну пароля до 8 символов (ограничение протокола ICQ)
+  if Length(ICQ_LoginPassword) > 8 then
     Setlength(ICQ_LoginPassword, 8);
-    MD5hash := MD5PointerToHex(Oscarmd5__encode_pass(ICQ_LoginPassword, Key, 2));
-    Pkt := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4)
-    + Text2Hex(ICQ_LoginUIN) + '00250010' + MD5hash + '004c0000' + '0003' +
-    IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client')
-    + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4)
-    + '00190002' + IntToHex(0, 4) + '001a0002' + IntToHex(102, 4)
-    + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8)
-    + '000f' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '000e' + IntToHex
-    (Length('ru'), 4) + Text2Hex('ru') + '0094000100';
-    Result := Pkt; }
-end;
-
-function ICQ_NotifyConnectError(ErrCode: Integer): string;
-begin
-  // Определяем что за ошибка произошла при подключении
-  Result := SocketConnErrorInfo_1 + #13#10 + WSocketErrorDesc(ErrCode) + #13#10 + Format(HttpSocketErrCodeL, [ErrCode]);
+  // Вычисляем MD5 хэш пароля
+  CLIENT_MD5_STRING := 'AOL Instant Messenger (SM)';
+  MD5Init(State);
+  MD5UpdateBuffer(State, PByteArray(@cPass[1]), Length(cPass));
+  MD5Final(Digest, State);
+  MD5Init(State);
+  MD5UpdateBuffer(State, PByteArray(@cKey[1]), Length(cKey));
+  MD5UpdateBuffer(State, PByteArray(@Digest), SizeOf(TMD5Digest));
+  MD5UpdateBuffer(State, PByteArray(@CLIENT_MD5_STRING[1]), Length(CLIENT_MD5_STRING));
+  MD5Final(Digest, State);
+  MD5hash := PacketToHex(@Digest, SizeOf(TMD5Digest));
+  // Формируем пакет
+  Result := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN)
+    + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client') + '00170002' + IntToHex(6, 4)
+    + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001A0002' + IntToHex(102, 4) + '00160002' + IntToHex(266, 4)
+    + '00140004' + IntToHex(30007, 8) + '000F' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '000E' + IntToHex(Length('ru'), 4) + Text2Hex
+    ('ru') + '0094000100';
 end;
 
 procedure ICQ_NotifyUserStatus(UIN, IStatus, IClient: string; IColor: Integer);
@@ -4293,6 +4289,7 @@ begin
     Result := ConnectErrors_0022
   else
     Result := UnknownError + ' (' + ErrCode + ')';
+  xLog('ICQ | ' + Result);
 end;
 
 procedure ICQ_GoOffline;

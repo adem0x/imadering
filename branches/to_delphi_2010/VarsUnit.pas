@@ -78,14 +78,6 @@ var
   RestoreFromTrayStr: string = 'Показать IMadering';
   HideInTrayStr: string = 'Скрыть IMadering';
   DevelMess: string = 'Данная функция находится в разработке! Следите за обновлениями проекта.';
-  SoundOnHint: string = '<b>Включить звуки</b>';
-  SoundOffHint: string = '<b>Отключить звуки</b>';
-  OnlyOnlineOn: string = '<b>Показать оффлайн контакты</b>';
-  OnlyOnlineOff: string = '<b>Скрыть оффлайн контакты</b>';
-  GroupCLOn: string = '<b>Показывать группы контактов</b>';
-  GroupCLOff: string = '<b>Скрывать группы контактов</b>';
-  TopPanelOn: string = '<b>Показать верхнюю панель</b>';
-  TopPanelOff: string = '<b>Скрыть верхнюю панель</b>';
   FirstStartNextButton: string = 'Далее';
   FirstStartProtoSelectAlert: string = 'Не выбран ни один протокол! В таком случае протокол ICQ будет выбран автоматически.';
   NewVersionIMaderingYES1: string = 'Доступна новая версия IMadering.' + #13#10 + #13#10 +
@@ -230,6 +222,7 @@ var
   FileTransfer3L: string = 'Передача файла завершена';
   FileTransfer4L: string = 'Передача файла отменена';
   FileTransfer5L: string = 'Ссылка для скачивания файла: %s' + RN + '%s' + RN + '[ Файл отправлен через %s. Подробнее на сайте: %s ]';
+  SocketL: string = 'Сокет:';
 
   // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
@@ -367,21 +360,55 @@ var
   LogNickCash: string = 'Количество ников в файле кэша: ';
   LogSmiliesCount: string = 'Количество загруженных смайликов: ';
   LogRosterCount: string = 'Количество записей в файле кэша списка контактов: ';
-  Log_Jabber_Connect: string = 'Jabber | Подключение к жаббер серверу: ';
+  Log_Jabber_Connect: string = 'Jabber | Подключение к jabber серверу: ';
+  Log_ICQ_Connect: string = 'ICQ | Подключение к ICQ серверу: ';
+  Log_MRA_Connect: string = 'MRA | Подключение к MRA серверу: ';
+  Log_HTTP_Proxy_Connect: string = 'Подключение к прокси: ';
   Log_Login: string = 'Логин для авторизации: ';
   Log_Set_Status: string = 'Выбран статус: ';
   Log_Jabber_Plain: string = 'Jabber | Авторизация по механизму PLAIN';
-  Log_Jabber_Nonce: string = 'Jabber | Получен ключ для MD5 авторизации: ';
+  Log_MD5_Nonce: string = 'Получен ключ для MD5 авторизации: ';
   Log_Clear: string = 'Лог событий автоматически очищен.';
   Log_Exception1: string = 'В программе произошла ошибка:' + RN;
   Log_Exception2: string = RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
     'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
+  Log_Proxy_OK: string = 'Подключение к прокси установлено успешно.';
+  Log_Server_Hello: string = 'Получено приглашение сервера.';
+  Log_Get_Server: string = 'Получен адрес сервера: ';
+  Log_Unk_Data: string = 'Получены неизвестные или неважные данные:';
+  Log_Close_Server: string = 'Сеанс связи с сервером заверщён.';
+  Log_Get_CL: string = 'Получен список контактов.';
 
   // Подсказки <b></b><br>
   H_Log_Clear: string = '<b>Очистить</b><br>Удалить все сообщения лога';
   H_Log_ICQ: string = '<b>Дампы ICQ</b><br>Включить или выключить<br>отображение в логе данных протокола';
   H_Log_Jabber: string = '<b>Дампы Jabber</b><br>Включить или выключить<br>отображение в логе данных протокола';
   H_Log_MRA: string = '<b>Дампы MRA</b><br>Включить или выключить<br>отображение в логе данных протокола';
+  H_Sound: string = '<b>Звуки</b><br>Включить или выключить озвучивание событий';
+  H_OnlyOnline: string = '<b>Оффлайн контакты</b><br>Показывать или скрывать отключенные контакты';
+  H_GroupCL: string = '<b>Группы контактов</b><br>Показывать или скрывать группы';
+  H_TopPanel: string = '<b>Верхняя панель</b><br>Показать или скрыть панель';
+  H_Main_Button: string = '<b>Главное меню</b><br>Доступ к основным пунктам';
+  H_Privat_Button: string = '<b>Приватные списки</b><br>Управление списками приватности';
+  H_History_Button: string = '<b>История сообщений</b><br>Просмотр архивов переписки';
+  H_Setting_Button: string = '<b>Настройки</b><br>Открыть окно настроек программы';
+  H_Traf_Button: string = '<b>Трафик</b><br>Открыть статистику потраченного трафика';
+  H_Smilies_Button: string = '<b>Смайлы</b><br>Открыть окно выбора смайлика';
+  H_Q_Button: string = '<b>Цитировать</b><br>Вставить последнее полученное сообщение';
+  H_Qrep_Button: string = '<b>Готовые ответы</b><br>Открыть меню выбора шаблона ответа';
+  H_Chat_History_Button: string = '<b>История сообщений</b><br>Просмотр архивов переписки<br><br>' +
+    'Клик правой клавишей мыши откроет меню<br>выбора подгрузки истории сообщений в чат';
+  H_FileSend_Button: string = '<b>Отправить файл</b><br>Открыть меню выбора способа передачи файла';
+  H_Chat_Clear_Button: string = '<b>Очистить</b><br>Скрыть сообщения текущего чата';
+  H_Info_Button: string = '<b>Анкета</b><br>Открыть анкетную информацию о контакте';
+  H_CEdit_Button: string = '<b>Редактировать</b><br>Изменить параметры контакта';
+  H_Font_Button: string = '<b>Текст</b><br>Настройки шрифта и цвета текста';
+  H_CMenu_Chat: string = '<b>Меню контакта</b><br>Управление текущим контактом';
+  H_Chat_Setting: string = '<b>Настройки</b><br>Открыть настройки окна чата';
+  H_Send_Enter: string = '<b>Отправлять по Enter</b><br>Включить или выключить отправку сообщения клавишей Enter<br><br>' +
+    'Иначе отправка сообщения по нажатию клавиш Ctrl + Enter';
+  H_Typing_Notify: string = '<b>Уведомлять о наборе</b><br>Включить или выключить отправку<br>собеседнику уведомлений о наборе текста';
+  H_Sound_Key: string = '<b>Звук набора</b><br>Включить или выключить озвучку нажатия клавиш';
 
 implementation
 

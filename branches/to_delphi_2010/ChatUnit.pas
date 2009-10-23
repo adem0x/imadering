@@ -1160,8 +1160,21 @@ end;
 
 procedure TChatForm.TranslateForm;
 begin
-  // Переводим форму на другие языки
-
+  // Выставляем подсказки к кнопкам
+  SmiliesSpeedButton.Hint := H_Smilies_Button;
+  QSpeedButton.Hint := H_Q_Button;
+  QRepSpeedButton.Hint := H_Qrep_Button;
+  HistorySpeedButton.Hint := H_Chat_History_Button;
+  SendFileSpeedButton.Hint := H_FileSend_Button;
+  ClearChatSpeedButton.Hint := H_Chat_Clear_Button;
+  InfoContactSpeedButton.Hint := H_Info_Button;
+  EditContactSpeedButton.Hint := H_CEdit_Button;
+  ChatFontToolButton.Hint := H_Font_Button;
+  ContactMenuToolButton.Hint := H_CMenu_Chat;
+  ChatSettingsToolButton.Hint := H_Chat_Setting;
+  EnterKeyToolButton.Hint := H_Send_Enter;
+  TypingTextToolButton.Hint := H_Typing_Notify;
+  KeySoundToolButton.Hint := H_Sound_Key;
 end;
 
 procedure TChatForm.TypingTextToolButtonClick(Sender: TObject);

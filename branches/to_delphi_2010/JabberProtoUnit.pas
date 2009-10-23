@@ -51,7 +51,6 @@ var
   Jabber_Seq: Word = 0;
   JabberResurs: string = 'IMadering';
   JabberPriority: string = '30';
-  Jabber_lastsendedflap: TDateTime;
   // Фазы работы начало
   Jabber_Connect_Phaze: Boolean = False;
   Jabber_HTTP_Connect_Phaze: Boolean = False;
@@ -116,7 +115,7 @@ begin
   Nc := '00000001';
   Gop := 'auth';
   Razdel := Ord(':');
-  XLog(Log_Jabber_Nonce + Nonce);
+  XLog('Jabber parsing | ' + Log_MD5_Nonce + Nonce);
   // Вычисляем А1 по формуле RFC 2831
   SJID := Format('%S:%S:%S', [UserName, Realm, Pass]);
   MD5Init(Context);

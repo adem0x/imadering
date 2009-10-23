@@ -1,6 +1,7 @@
 ﻿program Imadering;
 
 uses
+  ShareMem,
   SysUtils,
   Windows,
   Forms,

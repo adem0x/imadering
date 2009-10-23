@@ -456,36 +456,24 @@ end;
 
 procedure TMainForm.TranslateForm;
 begin
-  // Выставляем основные переменные
-  OnlyOnlineContactsTopButton.Hint := OnlyOnlineOff;
-  OnlyOnlineContactsToolButton.Hint := OnlyOnlineOff;
-  GroupOnOffToolTopButton.Hint := GroupCLOff;
-  GroupOnOffToolButton.Hint := GroupCLOff;
-  SoundOnOffToolTopButton.Hint := SoundOffHint;
-  SoundOnOffToolButton.Hint := SoundOffHint;
-  TopPanelToolButton.Hint := TopPanelOff;
-  // Переводим окно на другие языки
-  { //--Загружаем перевод интерфейса программы
-    if CurrentLang <> EmptyStr then
-    begin
-    if FileExists(MyPath + 'Langs\' + CurrentLang + '.xml') then begin
-
-    with TrXML.Create() do try
-
-    LoadFromFile(MyPath + 'Langs\' + CurrentLang + '.xml');
-    //--Переводим главное окно
-    for i := 0 to MainForm.ComponentCount - 1 do begin
-    if OpenKey('settings\main-form\' + MainForm.Components[i].Name) then try
-    SetStringPropertyIfExists(MainForm.Components[i], 'Hint', '<b>' + ReadString('hint') + '</b>');
-    finally
-    CloseKey();
-    end;
-    end;
-    finally
-    Free();
-    end;
-    end;
-    end; }
+  // Выставляем подсказки к кнопкам
+  OnlyOnlineContactsTopButton.Hint := H_OnlyOnline;
+  OnlyOnlineContactsToolButton.Hint := H_OnlyOnline;
+  GroupOnOffToolTopButton.Hint := H_GroupCL;
+  GroupOnOffToolButton.Hint := H_GroupCL;
+  SoundOnOffToolTopButton.Hint := H_Sound;
+  SoundOnOffToolButton.Hint := H_Sound;
+  TopPanelToolButton.Hint := H_TopPanel;
+  MainToolButton.Hint := H_Main_Button;
+  MainToolTopButton.Hint := H_Main_Button;
+  PrivatTopToolButton.Hint := H_Privat_Button;
+  PrivatToolButton.Hint := H_Privat_Button;
+  HistoryTopToolButton.Hint := H_History_Button;
+  HistoryToolButton.Hint := H_History_Button;
+  SettingsTopToolButton.Hint := H_Setting_Button;
+  SettingsToolButton.Hint := H_Setting_Button;
+  TrafficTopToolButton.Hint := H_Traf_Button;
+  TrafficToolButton.Hint := H_Traf_Button;
 end;
 
 procedure TMainForm.FormShowInWorkArea(XForm: TForm);
@@ -598,7 +586,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -675,6 +663,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   MRA_CurrentStatus := TMenuItem(Sender).ImageIndex;
+  XLog('MRA | ' + Log_Set_Status + TMenuItem(Sender).Caption);
   // Ставим запасное значение статуса для протокола
   MRA_CurrentStatus_bac := MRA_CurrentStatus;
   // Ставим иконки статусов в окне и в трэе
@@ -686,6 +675,7 @@ begin
   // Подключаемся к MRA серверу
   if MRA_Offline_Phaze then
     begin
+      XLog('MRA | ' + Log_Login + ICQ_LoginUIN);
       // Ставим иконки подключения в окне и в трэе
       MRATrayIcon.IconIndex := 168;
       MRAToolButton.ImageIndex := 168;
@@ -715,11 +705,13 @@ begin
         begin
           MRAWSocket.Addr := HttpProxy_Address;
           MRAWSocket.Port := HttpProxy_Port;
+          XLog('MRA | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
         end
       else
         begin
           MRAWSocket.Addr := MRA_LoginServerAddr;
           MRAWSocket.Port := MRA_LoginServerPort;
+          XLog(Log_MRA_Connect + MRA_LoginServerAddr + ':' + MRA_LoginServerPort);
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -811,6 +803,7 @@ begin
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
     begin
+      XLog('Jabber | ' + Log_Login + Jabber_JID);
       // Разбираем JID на логин и сервер
       Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
       Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
@@ -822,8 +815,6 @@ begin
             Jabber_ServerAddr := JCustomServerHostEdit.Text;
             Jabber_ServerPort := JCustomServerPortEdit.Text;
           end;
-      XLog(Log_Jabber_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort);
-      XLog('Jabber | ' + Log_Login + Jabber_JID);
       // Ставим иконки статуса в окне и в трэе
       JabberToolButton.ImageIndex := 168;
       JabberTrayIcon.IconIndex := 168;
@@ -852,11 +843,13 @@ begin
         begin
           JabberWSocket.Addr := HttpProxy_Address;
           JabberWSocket.Port := HttpProxy_Port;
+          XLog('Jabber | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
         end
       else
         begin
           JabberWSocket.Addr := Jabber_ServerAddr;
           JabberWSocket.Port := Jabber_ServerPort;
+          XLog(Log_Jabber_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort);
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -1078,12 +1071,14 @@ end;
 procedure TMainForm.ICQStatusOfflineClick(Sender: TObject);
 begin
   // Уводим ICQ протокол в оффлайн
+  XLog('ICQ | ' + Log_Set_Status + TMenuItem(Sender).Caption);
   ICQ_GoOffline;
   ICQ_Reconnect := False;
 end;
 
 procedure TMainForm.ICQStatusOnlineClick(Sender: TObject);
 begin
+  try
   // Если логин ICQ или пароль пустые, то выводим окно настроек для их ввода
   if (ICQ_LoginUIN = EmptyStr) or (ICQ_LoginPassword = EmptyStr) then
     begin
@@ -1106,6 +1101,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
+  XLog('ICQ | ' + Log_Set_Status + TMenuItem(Sender).Caption);
   // Ставим запасное значение статуса для протокола
   ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
   // Ставим иконки статусов в окне и в трэе
@@ -1123,6 +1119,7 @@ begin
   // Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
     begin
+      XLog('ICQ | ' + Log_Login + ICQ_LoginUIN);
       // Ставим иконки подключения в окне и в трэе
       ICQTrayIcon.IconIndex := 168;
       ICQToolButton.ImageIndex := 168;
@@ -1152,11 +1149,13 @@ begin
         begin
           ICQWSocket.Addr := HttpProxy_Address;
           ICQWSocket.Port := HttpProxy_Port;
+          XLog('ICQ | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
         end
       else
         begin
           ICQWSocket.Addr := ICQ_LoginServerAddr;
           ICQWSocket.Port := ICQ_LoginServerPort;
+          XLog(Log_ICQ_Connect + ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort);
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -1166,6 +1165,10 @@ begin
   // Отправляем статус
   if ICQ_Work_Phaze then
     SendFLAP('2', ICQ_CreateShortStatusPkt);
+  except
+    on E: Exception do
+      IMaderingEventsException(Self, E);
+  end;
 end;
 
 procedure TMainForm.ICQToolButtonClick(Sender: TObject);
@@ -1264,13 +1267,10 @@ begin
   try
     // Получаем пришедшие от сервера данные с сокета
     Pkt := ICQWSocket.ReceiveStr;
-    // Пишем в лог данные пакета
-    if LogForm.ICQDumpSpeedButton.Down then
-      XLog('ICQ get | ' + RN + Trim(Dump(Pkt)));
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
       begin
-        DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+        DAShow(ErrorHead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
         // Активируем режим оффлайн
         ICQ_GoOffline;
       end;
@@ -1292,6 +1292,7 @@ begin
           ('HTTP/1.1 200', Pkt) then
           begin
             ICQ_HTTP_Connect_Phaze := True;
+            xLog('ICQ get | ' + Log_Proxy_OK);
           end
         else
         // Сообщаем об ошибках прокси
@@ -1299,11 +1300,13 @@ begin
           begin
             ProxyErr := 1;
             DAShow(ErrorHead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
+            xLog('ICQ get | ' + ProxyConnectErrL1);
           end
         else
           begin
             ProxyErr := 2;
             DAShow(ErrorHead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
+            xLog('ICQ get | ' + ProxyConnectErrL2);
           end;
         // Забираем из буфера пакет с данными ICQ
         Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1333,6 +1336,7 @@ begin
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
         DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
+        xLog('ICQ get | ' + ParsingPktError);
         ICQ_GoOffline;
         Exit;
       end;
@@ -1340,18 +1344,15 @@ begin
     // для проверки этих данные на наличие слудующего целого пакета данных
   X :;
     PktSize := ICQ_BodySize;
-
-    Xlog('PktSize = ' + IntToStr(PktSize));
-
     // Проверяем если ли в буфере хоть один целый пакет
     if (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE + PktSize) or
       ((ICQ_BuffPkt[2] = #$04) and (PktSize = 0)) then
       begin
         // Забираем из буфера один целый пакет
         HexPkt := NextData(ICQ_BuffPkt, ICQ_FLAP_HEAD_SIZE + PktSize);
-
-        Xlog('HexPkt = ' + Dump(HexPkt));
-
+        // Пишем в лог данные пакета
+        if LogForm.ICQDumpSpeedButton.Down then
+          XLog('ICQ get | ' + RN + Trim(Dump(HexPkt)));
         // Разбираем пакет данных если его длинна больше нуля
         if Length(HexPkt) > 0 then
           begin
@@ -1361,11 +1362,9 @@ begin
                 // Смотрим какой канал у пакета
                 case Ord(HexPkt[1]) of
                   $01: begin
+                      xLog('ICQ get | ' + Log_Server_Hello);
                       // Пропускаем канал, Seq (счётчик) и длинну пакета
                       NextData(HexPkt, 5);
-
-                      Xlog('DataPkt = ' + Dump(HexPkt));
-
                       // Если AOL прислал приглашение и мы в фазе подключения к серверу
                       if (ICQ_Connect_Phaze) and (HexPkt = #$00#$00#$00#$01) then
                         begin
@@ -1384,19 +1383,16 @@ begin
                         end;
                     end;
                   $02: begin
-                      // Пропускаем Seq (счётчик)
-                      NextData(HexPkt, 4);
-                      // Узнаём длинну пакета и увеличиваем её в двое для HEX формата
-                      PktLen := HexToInt(NextData(HexPkt, 4));
-                      PktLen := PktLen * 2;
-                      // Получаем тело пакета
-                      SubPkt := NextData(HexPkt, PktLen);
+                      // Пропускаем канал, Seq (счётчик), длинну пакета и первый символ фэмили
+                      NextData(HexPkt, 6);
                       // Смотрим какая фэмили у пакета
-                      case HexToInt(NextData(SubPkt, 4)) of
-                        $0001: begin
+                      case Ord(HexPkt[1]) of
+                        $01: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
                             // Смотрим какая субфэмили у пакета
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $0003: begin
+                            case Ord(HexPkt[1]) of
+                              $03: begin
                                   if ICQ_BosConnect_Phaze then
                                     begin
                                       // Очищаем группы ICQ в Ростере
@@ -1408,13 +1404,13 @@ begin
                                       SendFLAP('2', ICQ_CliFamilyPkt);
                                     end;
                                 end;
-                              $0005: begin
+                              $05: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с адресом сервера icq аватар
-                                  ICQ_Parse_0105(SubPkt);
+                                  //ICQ_Parse_0105(HexPkt);
                                 end;
-                              $0013: begin
+                              $13: begin
                                   // Если фаза подключения уже к основному серверу
                                   if ICQ_BosConnect_Phaze then
                                     begin
@@ -1429,92 +1425,114 @@ begin
                                       SendFLAP('2', '00090002000000000002');
                                     end;
                                 end;
-                              $000F: begin
+                              $15: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
-                                  // Разбираем пакет с онлайн инфой о нашем подключении и аккаунте
-                                  ICQ_Parse_010F(SubPkt);
+                                  NextData(HexPkt, 7);
+                                  // Разбираем пакет с "добрыми" ссылками
+                                  while Length(HexPkt) > 0 do
+                                    begin
+                                      NextData(HexPkt, 2); // Пропускаем TLV
+                                      Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
+                                      xLog('ICQ parsing | ' + Log_Unk_Data + RN + NextData(HexPkt, Len));
+                                    end;
                                 end;
-                              $0021: begin
+                              $0F: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
+                                  // Разбираем пакет с онлайн инфой о нашем подключении и аккаунте
+                                  ICQ_Parse_010F(HexPkt);
+                                end;
+                              $21: begin
+                                  // Пропускаем раздел флагов
+                                  NextData(HexPkt, 7);
                                   // Получаем аватар Hash нашего аккаунта
-                                  if NextData(SubPkt, 4) = '0001' then
+                                  if NextData(HexPkt, 2) = #$00#$01 then
                                     begin
                                       // Пропускаем непонятный 01
-                                      NextData(SubPkt, 2);
+                                      NextData(HexPkt, 1);
                                       // Узнаём длинну Hash
-                                      Len := HexToInt(NextData(SubPkt, 2));
-                                      Len := Len * 2;
+                                      {Len := HexToInt(NextData(HexPkt, 2));
                                       // Забираем Hash
-                                      ICQ_MyIcon_Hash := NextData(SubPkt, Len);
+                                      ICQ_MyIcon_Hash := NextData(HexPkt, Len);}
                                     end;
                                 end;
                             end;
                           end;
-                        $0002: begin
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $0006: begin
+                        $02: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
+                            // Смотрим какая субфэмили у пакета
+                            case Ord(HexPkt[1]) of
+                              $06: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с онлайн инфой о контакте
-                                  ICQ_UserOnline_030B(SubPkt, True);
+                                  //ICQ_UserOnline_030B(HexPkt, True);
                                 end;
                             end;
                           end;
-                        $0004: begin
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $0007: begin
+                        $04: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
+                            // Смотрим какая субфэмили у пакета
+                            case Ord(HexPkt[1]) of
+                              $07: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с сообщением от контакта
-                                  ICQ_ReqMessage_0407(SubPkt);
+                                  //ICQ_ReqMessage_0407(HexPkt);
                                 end;
-                              $0014: begin
+                              $14: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с нотификацией о наборе сообщения контактом
-                                  ICQ_UserSentTyping_0414(SubPkt);
+                                  //ICQ_UserSentTyping_0414(HexPkt);
                                 end;
-                              $000C: begin
+                              $0C: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с сообщением о принятии нашего сообщения сервером
-                                  ICQ_SRV_MSGACK_ADVANCED(SubPkt, False);
+                                  //ICQ_SRV_MSGACK_ADVANCED(HexPkt, False);
                                 end;
-                              $000B: begin
+                              $0B: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с сообщением о принятии нашего сообщения контактом
-                                  ICQ_SRV_MSGACK_ADVANCED(SubPkt, True);
+                                  //ICQ_SRV_MSGACK_ADVANCED(HexPkt, True);
                                 end;
                             end;
                           end;
-                        $0003: begin
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $000A: begin
+                        $03: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
+                            // Смотрим какая субфэмили у пакета
+                            case Ord(HexPkt[1]) of
+                              $0A: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с неизвестным статусом контакта
-                                  ICQ_UserUnkStatus_030A(SubPkt);
+                                  //ICQ_UserUnkStatus_030A(HexPkt);
                                 end;
-                              $000B: begin
+                              $0B: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с онлайн инфой о контакте
-                                  ICQ_UserOnline_030B(SubPkt, False);
+                                  //ICQ_UserOnline_030B(HexPkt, False);
                                 end;
-                              $000C: begin
+                              $0C: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет с оффлайн инфой о контакте
-                                  ICQ_UserOffline_030C(SubPkt);
+                                  //ICQ_UserOffline_030C(HexPkt);
                                 end;
                             end;
                           end;
-                        $0013: begin
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $0001: begin
+                        $13: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
+                            // Смотрим какая субфэмили у пакета
+                            case Ord(HexPkt[1]) of
+                              $01: begin
                                   // Если фаза добавления контакта
                                   if ICQ_Add_Contact_Phaze then
                                     begin
@@ -1545,11 +1563,12 @@ begin
                                       DAShow(ErrorHead, DelGroupError, EmptyStr, 134, 2, 0);
                                     end;
                                 end;
-                              $0006: begin
+                              $06: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет со списком контактов
-                                  if ICQ_Parse_1306(SubPkt) then
+                                  xLog('ICQ get | ' + Log_Get_CL);
+                                  if ICQ_Parse_1306(HexPkt) then
                                     begin
                                       // Запрашиваем нашу инфу обязательно!
                                       ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
@@ -1589,77 +1608,81 @@ begin
                                         JvTimerList.Events[5].Enabled := True;
                                     end;
                                 end;
-                              $000E: begin
+                              $0E: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Разбираем пакет подтверждения операций со списком контактов
-                                  ICQ_Parse_130E_UpdateAck(SubPkt);
+                                  //ICQ_Parse_130E_UpdateAck(HexPkt);
                                 end;
                             end;
                           end;
-                        $0015: begin
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $0003: begin
+                        $15: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
+                            // Смотрим какая субфэмили у пакета
+                            case Ord(HexPkt[1]) of
+                              $03: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Пропускаем данные о размере пакета и UIN получателя
-                                  NextData(SubPkt, 20);
-                                  case HexToInt(NextData(SubPkt, 4)) of
+                                  NextData(HexPkt, 10);
+                                  case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
                                     $DA07: begin
                                         // Пропускаем ещё данные о счётчике
-                                        NextData(SubPkt, 4);
+                                        NextData(HexPkt, 2);
                                         // Разбираем пакет с инфой для данного UIN
-                                        ICQ_Parse_SNAC_1503(SubPkt);
+                                        //ICQ_Parse_SNAC_1503(HexPkt);
                                       end;
                                   end;
                                 end;
                             end;
                           end;
-                        $0017: begin
-                            case HexToInt(NextData(SubPkt, 4)) of
-                              $0007: begin
+                        $17: begin
+                            // Пропускаем первый символ субфэмили
+                            NextData(HexPkt, 2);
+                            // Смотрим какая субфэмили у пакета
+                            case Ord(HexPkt[1]) of
+                              $07: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Узнаём длинну пакета и увеличиваем её в двое для HEX формата
-                                  Len := HexToInt(NextData(SubPkt, 4));
-                                  Len := Len * 2;
+                                  Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                   // Отсылаем логин в формате MD5 шифрования
-                                  SendFLAP('2', ICQ_MD5CliLoginPkt(Hex2Text(NextData(SubPkt, Len))));
+                                  SendFLAP('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, NextData(HexPkt, Len)));
                                 end;
-                              $0003: begin
+                              $03: begin
                                   // Пропускаем раздел флагов
-                                  NextData(SubPkt, 12);
+                                  NextData(HexPkt, 7);
                                   // Сканируем пакет на наличие нужных нам TLV
-                                  while Length(SubPkt) > 0 do
+                                  while Length(HexPkt) > 0 do
                                     begin
-                                      case HexToInt(NextData(SubPkt, 4)) of
-                                        $0008: // TLV с ошибкой авторизации
-                                        begin
-                                        Len := HexToInt(NextData(SubPkt, 4));
-                                        Len := Len * 2;
-                                        DAShow(ErrorHead, ICQ_NotifyAuthCookieError(NextData(SubPkt, Len)), EmptyStr, 134, 2, 0);
+                                      NextData(HexPkt, 1); // Пропускаем первый символ
+                                      case Ord(HexPkt[1]) of
+                                        $08: begin // TLV с ошибкой авторизации
+                                        NextData(HexPkt, 1);
+                                        Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
+                                        DAShow(ErrorHead, ICQ_NotifyAuthCookieError(Text2Hex(NextData(HexPkt, Len))), EmptyStr, 134, 2, 0);
                                         ICQ_GoOffline;
                                         end;
-                                        $0005: // TLV с адресом для коннекта к основному серверу
-                                        begin
-                                        Len := HexToInt(NextData(SubPkt, 4));
-                                        Len := Len * 2;
-                                        ICQ_Bos_Addr := Hex2Text(NextData(SubPkt, Len));
+                                        $05: begin // TLV с адресом для коннекта к основному серверу
+                                        NextData(HexPkt, 1);
+                                        Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
+                                        ICQ_Bos_Addr := NextData(HexPkt, Len);
+                                        xLog('ICQ parsing | ' + Log_Get_Server + ICQ_Bos_Addr);
                                         ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
                                         ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                         end;
-                                        $0006: // TLV с куком для коннекта к основному серверу
-                                        begin
-                                        Len := HexToInt(NextData(SubPkt, 4));
-                                        Len := Len * 2;
-                                        ICQ_Bos_Cookie := NextData(SubPkt, Len);
+                                        $06: begin // TLV с куком для коннекта к основному серверу
+                                        NextData(HexPkt, 1);
+                                        Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
+                                        ICQ_Bos_Cookie := Text2Hex(NextData(HexPkt, Len));
+                                        xLog('ICQ parsing | Cookie');
                                         end
-                                        else
+                                        else // Если пакет содержит другие TLV, то пропускаем их
                                         begin
-                                        // Если пакет содержит другие TLV, то пропускаем их
-                                        Len := HexToInt(NextData(SubPkt, 4));
-                                        Len := Len * 2;
-                                        NextData(SubPkt, Len);
+                                        NextData(HexPkt, 1);
+                                        Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
+                                        xLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(HexPkt, Len))));
                                         end;
                                       end;
                                     end;
@@ -1669,13 +1692,10 @@ begin
                       end;
                     end;
                   $04: begin
-                      // Пропускаем Seq (счётчик)
-                      NextData(HexPkt, 4);
-                      // Узнаём длинну пакета
-                      PktLen := HexToInt(NextData(HexPkt, 4));
                       // Если длинна пакета ноль, то завершаем связь с сервером
-                      if PktLen = 0 then
+                      if PktSize = 0 then
                         begin
+                          xLog('ICQ get | ' + Log_Close_Server);
                           // Если сокет ещё подключён, то отсылаем "прощание"
                           if ICQWSocket.State = WsConnected then
                             ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq, 4) + '0000'));
@@ -1699,11 +1719,13 @@ begin
                                 begin
                                   ICQWSocket.Addr := HttpProxy_Address;
                                   ICQWSocket.Port := HttpProxy_Port;
+                                  XLog('ICQ | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
                                 end
                               else
                                 begin
                                   ICQWSocket.Addr := ICQ_Bos_IP;
                                   ICQWSocket.Port := ICQ_Bos_Port;
+                                  XLog(Log_ICQ_Connect + ICQ_Bos_IP + ':' + ICQ_Bos_Port);
                                 end;
                               // Начинаем подключение к основному серверу
                               ICQWSocket.Connect;
@@ -1713,16 +1735,15 @@ begin
                         end
                       else
                         begin
-                          // Если длинна пакета больше нуля, то увеличиваем её вдвое
-                          PktLen := PktLen * 2;
-                          // Получаем тело пакета
-                          SubPkt := NextData(HexPkt, PktLen);
+                          // Пропускаем канал, Seq (счётчик), длинну пакета и первый символ фэмили
+                          NextData(HexPkt, 6);
                           // Ищем нужные нам TLV
-                          case HexToInt(NextData(SubPkt, 4)) of
-                            $0009: // TLV с кодом ошибки
+                          case Ord(HexPkt[1]) of
+                            $09: // TLV с кодом ошибки
                               begin
                                 // Выводим сообщение о том, что наш номер используется кем то другим
                                 DAShow(ErrorHead, ICQxUIN, EmptyStr, 134, 2, 100000000);
+                                xLog('ICQ get | ' + ICQxUIN);
                                 // Активиуем режим оффлайн
                                 ICQ_GoOffline;
                               end;
@@ -1739,6 +1760,7 @@ begin
                 // Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
                 DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
+                xLog('ICQ get | ' + ParsingPktError);
                 ICQ_GoOffline;
                 Exit;
               end;
@@ -1768,7 +1790,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -1779,7 +1801,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if (not ICQ_Connect_Phaze) and (not ICQ_Offline_Phaze) then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -1794,7 +1816,7 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -1825,7 +1847,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -1879,7 +1901,7 @@ end;
 procedure TMainForm.SocketBgException(Sender: TObject; E: Exception; var CanClose: Boolean);
 begin
   // Логируем ошибки сокетов
-  // UnitLogger.TLogger.Instance.WriteMessage(E);
+  IMaderingEventsException(Self, E);
   CanClose := False;
 end;
 
@@ -1901,7 +1923,7 @@ begin
   // Если при получении данных возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('Jabber', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jabber_GoOffline;
       Exit;
@@ -1924,6 +1946,7 @@ begin
         ('HTTP/1.1 200', Pkt) then
         begin
           Jabber_HTTP_Connect_Phaze := True;
+          xLog('Jabber | ' + Log_Proxy_OK);
         end
       else
       // Сообщаем об ошибках прокси
@@ -1931,11 +1954,13 @@ begin
         begin
           ProxyErr := 1;
           DAShow(ErrorHead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
+          xLog('Jabber | ' + ProxyConnectErrL1);
         end
       else
         begin
           ProxyErr := 2;
           DAShow(ErrorHead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
+          xLog('Jabber | ' + ProxyConnectErrL2);
         end;
       // Забираем из буфера пакет с данными Jabber
       Pkt := Jabber_myBeautifulSocketBuffer;
@@ -2086,7 +2111,7 @@ end;
 procedure TMainForm.JabberWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(ErrorHead, NotifyConnectError('Jabber', WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   Jabber_GoOffline;
 end;
@@ -2105,7 +2130,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('Jabber', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jabber_GoOffline;
     end;
@@ -2116,7 +2141,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if not Jabber_Offline_Phaze then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('Jabber', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jabber_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -2131,7 +2156,7 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('Jabber', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jabber_GoOffline;
     end;
@@ -2168,7 +2193,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('Jabber', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jabber_GoOffline;
     end;
@@ -2669,7 +2694,7 @@ begin
   // Если при получении данных возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -2691,6 +2716,7 @@ begin
         ('HTTP/1.1 200', Pkt) then
         begin
           MRA_HTTP_Connect_Phaze := True;
+          xLog('MRA | ' + Log_Proxy_OK);
           // Если уже подключились в Bos серверу
           if MRA_BosConnect_Phaze then
             begin
@@ -2705,11 +2731,13 @@ begin
         begin
           ProxyErr := 1;
           DAShow(ErrorHead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
+          xLog('MRA | ' + ProxyConnectErrL1);
         end
       else
         begin
           ProxyErr := 2;
           DAShow(ErrorHead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
+          xLog('MRA | ' + ProxyConnectErrL2);
         end;
       // Забираем из буфера пакет с данными ICQ
       Pkt := MRA_myBeautifulSocketBuffer;
@@ -3315,7 +3343,8 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   // Место для запуска тестов
-
+  if not Assigned(ChatForm) then ChatForm := TChatForm.Create(self);
+  xShowForm(ChatForm);
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -3326,16 +3355,12 @@ begin
       OnlyOnlineContactsTopButton.Down := True;
       OnlyOnlineContactsToolButton.ImageIndex := 137;
       OnlyOnlineContactsTopButton.ImageIndex := 137;
-      OnlyOnlineContactsToolButton.Hint := OnlyOnlineOn;
-      OnlyOnlineContactsTopButton.Hint := OnlyOnlineOn;
     end
   else
     begin
       OnlyOnlineContactsTopButton.Down := False;
       OnlyOnlineContactsToolButton.ImageIndex := 138;
       OnlyOnlineContactsTopButton.ImageIndex := 138;
-      OnlyOnlineContactsToolButton.Hint := OnlyOnlineOff;
-      OnlyOnlineContactsTopButton.Hint := OnlyOnlineOff;
     end;
   // Запускаем обработку Ростера
   if RoasterReady then
@@ -4214,16 +4239,12 @@ begin
       GroupOnOffToolTopButton.Down := True;
       GroupOnOffToolButton.ImageIndex := 231;
       GroupOnOffToolTopButton.ImageIndex := 231;
-      GroupOnOffToolButton.Hint := GroupCLOff;
-      GroupOnOffToolTopButton.Hint := GroupCLOff;
     end
   else
     begin
       GroupOnOffToolTopButton.Down := False;
       GroupOnOffToolButton.ImageIndex := 232;
       GroupOnOffToolTopButton.ImageIndex := 232;
-      GroupOnOffToolButton.Hint := GroupCLOn;
-      GroupOnOffToolTopButton.Hint := GroupCLOn;
     end;
   // Запускаем обработку Ростера
   if RoasterReady then
@@ -4329,7 +4350,6 @@ begin
               if not ReadBool('value') then
                 begin
                   TopPanelToolButton.Down := False;
-                  TopPanelToolButton.Hint := TopPanelOn;
                   TopToolBar.Visible := False;
                 end;
               // Загружаем состояние кнопок
@@ -4578,16 +4598,12 @@ begin
       SoundOnOffToolTopButton.Down := True;
       SoundOnOffToolButton.ImageIndex := 136;
       SoundOnOffToolTopButton.ImageIndex := 136;
-      SoundOnOffToolButton.Hint := SoundOnHint;
-      SoundOnOffToolTopButton.Hint := SoundOnHint;
     end
   else
     begin
       SoundOnOffToolTopButton.Down := False;
       SoundOnOffToolButton.ImageIndex := 135;
       SoundOnOffToolTopButton.ImageIndex := 135;
-      SoundOnOffToolButton.Hint := SoundOffHint;
-      SoundOnOffToolTopButton.Hint := SoundOffHint;
     end;
 end;
 
@@ -4637,15 +4653,9 @@ procedure TMainForm.TopPanelToolButtonClick(Sender: TObject);
 begin
   // Включаем или отключаем отображение верхней панели
   if TopPanelToolButton.Down then
-    begin
-      TopToolBar.Visible := True;
-      TopPanelToolButton.Hint := TopPanelOff;
-    end
+      TopToolBar.Visible := True
   else
-    begin
       TopToolBar.Visible := False;
-      TopPanelToolButton.Hint := TopPanelOn;
-    end;
 end;
 
 procedure TMainForm.TopPrivatONMenuClick(Sender: TObject);
@@ -4803,7 +4813,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('Update', ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -4819,7 +4829,7 @@ end;
 procedure TMainForm.ICQWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(ErrorHead, NotifyConnectError('ICQ', WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   ICQ_GoOffline;
 end;
@@ -4827,7 +4837,7 @@ end;
 procedure TMainForm.MRAWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(ErrorHead, ICQ_NotifyConnectError(WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(ErrorHead, NotifyConnectError('MRA', WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   MRA_GoOffline;
 end;
@@ -4846,7 +4856,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -4857,7 +4867,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if (not MRA_Connect_Phaze) and (not MRA_Offline_Phaze) then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -4872,7 +4882,7 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -4903,7 +4913,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(ErrorHead, ICQ_NotifyConnectError(ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(ErrorHead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;

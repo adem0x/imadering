@@ -106,7 +106,6 @@ var
   MRA_ProtoVer: string = '13000100';
   MRA_Ident: string = 'MRA 5.0 (build 2094);';
   MRA_Seq: LongWord = 1;
-  MRA_LastSendedFlap: TDateTime;
   // Фазы работы начало
   MRA_Connect_Phaze: Boolean = False;
   MRA_HTTP_Connect_Phaze: Boolean = False;

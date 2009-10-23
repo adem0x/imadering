@@ -243,6 +243,8 @@ object ChatForm: TChatForm
           Left = 23
           Top = 0
           ImageIndex = 218
+          ParentShowHint = False
+          ShowHint = True
           OnClick = ContactMenuToolButtonClick
           OnContextPopup = ContactMenuToolButtonContextPopup
         end
@@ -257,6 +259,7 @@ object ChatForm: TChatForm
         object EnterKeyToolButton: TToolButton
           Left = 69
           Top = 0
+          Down = True
           ImageIndex = 219
           ParentShowHint = False
           ShowHint = True
@@ -452,6 +455,8 @@ object ChatForm: TChatForm
         Width = 23
         Height = 22
         Flat = True
+        ParentShowHint = False
+        ShowHint = True
         OnClick = SmiliesSpeedButtonClick
       end
       object Bevel1: TBevel
@@ -467,6 +472,8 @@ object ChatForm: TChatForm
         Width = 23
         Height = 22
         Flat = True
+        ParentShowHint = False
+        ShowHint = True
         OnClick = QSpeedButtonClick
       end
       object QRepSpeedButton: TSpeedButton
@@ -475,6 +482,8 @@ object ChatForm: TChatForm
         Width = 23
         Height = 22
         Flat = True
+        ParentShowHint = False
+        ShowHint = True
         OnClick = QRepSpeedButtonClick
         OnMouseDown = QRepSpeedButtonMouseDown
       end
@@ -491,7 +500,9 @@ object ChatForm: TChatForm
         Width = 23
         Height = 22
         Flat = True
+        ParentShowHint = False
         PopupMenu = HistoryShowPopupMenu
+        ShowHint = True
         OnClick = HistorySpeedButtonClick
         OnMouseDown = HistorySpeedButtonMouseDown
       end
@@ -509,6 +520,8 @@ object ChatForm: TChatForm
         Height = 22
         Anchors = [akTop, akRight]
         Flat = True
+        ParentShowHint = False
+        ShowHint = True
         OnClick = ClearChatSpeedButtonClick
       end
       object SendFileSpeedButton: TSpeedButton
@@ -517,6 +530,8 @@ object ChatForm: TChatForm
         Width = 23
         Height = 22
         Flat = True
+        ParentShowHint = False
+        ShowHint = True
         OnClick = SendFileSpeedButtonClick
         OnMouseDown = SendFileSpeedButtonMouseDown
       end
