@@ -535,6 +535,18 @@ object ChatForm: TChatForm
         OnClick = SendFileSpeedButtonClick
         OnMouseDown = SendFileSpeedButtonMouseDown
       end
+      object GtransSpeedButton: TSpeedButton
+        Left = 216
+        Top = 2
+        Width = 23
+        Height = 22
+        AllowAllUp = True
+        GroupIndex = 1
+        Flat = True
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = GtransSpeedButtonClick
+      end
       object TextLenPanel: TPanel
         AlignWithMargins = True
         Left = 4
@@ -551,9 +563,9 @@ object ChatForm: TChatForm
         TabOrder = 0
       end
       object NotifyPanel: TPanel
-        Left = 218
+        Left = 244
         Top = 3
-        Width = 247
+        Width = 221
         Height = 19
         Anchors = [akLeft, akTop, akRight]
         BevelOuter = bvLowered

@@ -46,7 +46,8 @@ uses
   VarsUnit in 'VarsUnit.pas',
   Menus in 'lib\Menus.pas',
   HTMLView in 'lib\HTMLView.pas',
-  LogUnit in 'LogUnit.pas' {LogForm};
+  LogUnit in 'LogUnit.pas' {LogForm},
+  GtransUnit in 'GtransUnit.pas' {GTransForm};
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -62,6 +63,7 @@ begin
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TGTransForm, GTransForm);
   ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

@@ -51,7 +51,6 @@ type
     procedure RosterItemSetFull(SItem: TListItem);
     procedure AddHistory(CItem: TListItem; CMsgD, CMess: string);
     procedure OpenChatPage(CId: string);
-    procedure ResetGroupSelected;
     procedure DellcIdInMessList(CId: string);
   end;
 
@@ -109,27 +108,6 @@ begin
                   Delete(I);
                   Break;
                 end;
-            end;
-        end;
-    end;
-end;
-
-procedure TRosterForm.ResetGroupSelected;
-var
-  I: Integer;
-begin
-  // Сбрасываем выделение заголовка группы при клике по любому контакту
-  with MainForm.ContactList do
-    begin
-      for I := 0 to Categories.Count - 1 do
-        begin
-          if Categories[I].GroupSelected = True then
-            begin
-              Categories[I].GroupSelected := False;
-              // Перерисовываем заголовок группы
-              // ShareUpdateCategory(Categories[i]);
-              // Выходим из цикла
-              Break;
             end;
         end;
     end;
@@ -311,8 +289,8 @@ begin
                             begin
                               Caption := Items[I].SubItems[0];
                               UIN := Items[I].Caption;
-                              Status := 30;
-                              ImageIndex := 30;
+                              Status := S;
+                              ImageIndex := S;
                               XImageIndex := -1;
                               CImageIndex := -1;
                               ContactType := 'Jabber';
@@ -337,8 +315,8 @@ begin
                         begin
                           Caption := RosterJvListView.Items[I].SubItems[0];
                           UIN := RosterJvListView.Items[I].Caption;
-                          Status := 30;
-                          ImageIndex := 30;
+                          Status := S;
+                          ImageIndex := S;
                           XImageIndex := -1;
                           CImageIndex := -1;
                           ContactType := 'Jabber';
@@ -430,10 +408,10 @@ begin
                                 begin
                                   Caption := Items[I].SubItems[0];
                                   UIN := Items[I].Caption;
-                                  Status := 9;
-                                  ImageIndex := 9;
-                                  XImageIndex := -1;
-                                  CImageIndex := -1;
+                                  Status := S;
+                                  ImageIndex := S;
+                                  XImageIndex := StrToInt(Items[I].SubItems[7]);
+                                  CImageIndex := StrToInt(Items[I].SubItems[8]);
                                   ContactType := 'Icq';
                                   Hint := Items[I].SubItems[34];
                                 end;

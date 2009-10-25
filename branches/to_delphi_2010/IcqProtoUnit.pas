@@ -3793,7 +3793,7 @@ function ICQ_Parse_1306(PktData: string): Boolean;
 var
   Len, Count, I: Integer;
   CLTimeStamp: DWord;
-  SubData, QSN, QGroupId, QID, QType, QTimeId, Rsu, QNick: string;
+  SubData, QSN, QGroupId, QID, QType, QTimeId, Rsu, QNick, TLV: string;
   Dt: TDateTime;
   Hour, Min, Sec, MSec: Word;
   ListItemD: TListItem;
@@ -3814,7 +3814,7 @@ begin
         // Длинна записи
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
         // Получаем имя записи
-        QSN := NextData(PktData, Len);
+        QSN := Utf8Decode(NextData(PktData, Len));
         // Получаем идентификатор группы
         QGroupId := Text2Hex(NextData(PktData, 2));
         // Идентификатор записи
@@ -3847,6 +3847,7 @@ begin
                   // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
                   while Length(SubData) > 0 do
                     begin
+                      TLV := Text2Hex(SubData[1] + SubData[2]);
                       case HexToInt(Text2Hex(NextData(SubData, 2))) of
                         $0131: // Ник контакта
                           begin
@@ -3890,7 +3891,7 @@ begin
                           begin
                             // Если пакет содержит другие TLV, то пропускаем их
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            xLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(SubData, Len))));
+                            xLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))));
                           end;
                       end;
                     end;
@@ -4098,6 +4099,7 @@ end;
 procedure ICQ_Parse_010F(PktData: string);
 var
   Len, Count, I: Integer;
+  TLV: string;
 begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
@@ -4146,9 +4148,9 @@ begin
         else
           begin
             // Если пакет содержит другие TLV, то пропускаем их
-            NextData(PktData, 1);
+            TLV := '00' + Text2Hex(NextData(PktData, 1));
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            xLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, Len))));
+            xLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
           end;
       end;
     end;

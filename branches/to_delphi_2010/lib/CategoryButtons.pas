@@ -1018,7 +1018,7 @@ begin
   begin
     { 2 Pixel buffer on each side }
     XStart := 2;
-    XEnd := ClientWidth - 3;
+    XEnd := ClientWidth - 2;
 
     ButtonsPerRow := CalcButtonsPerRow;
     CatHeight := CalcCategoryHeight(Category, ButtonsPerRow);
@@ -1238,6 +1238,7 @@ begin
   with CategoryRealBounds do
   begin
     Right := Right - 1;
+    Bottom := Bottom - 1; // Внёс изменения
     // take care of the top left few pixels..
     TempColor := Self.Color;
     Canvas.Pixels[Left, Top] := TempColor;
@@ -1260,7 +1261,7 @@ begin
     Canvas.Pixels[Right, Bottom - 1] := TempColor;
 
     { Now draw an outline }
-    Canvas.Pen.Color := GetShadowColor(SourceColor, -10);
+    Canvas.Pen.Color := GetShadowColor(SourceColor, - 10);
     Canvas.Polyline([Point(Left + 2, Top), Point(Right - 2, Top), { Top line }
       Point(Right, Top + 2), { Top right curve }
       Point(Right, Bottom - 2), { Right side line }
@@ -1271,13 +1272,13 @@ begin
       Point(Left + 2, Top)]); { Top left curve }
   end;
 
-  if ((Category.Collapsed) and (FSelectedItem <> nil) and
+  {if ((Category.Collapsed) and (FSelectedItem <> nil) and
       (CurrentCategory = Category)) or (FSelectedItem = Category) then
   begin
     Canvas.Brush.Color := GetShadowColor(SourceColor, -75);
     with CategoryFrameBounds do
       Canvas.FrameRect(Rect(Left + 1, Top + 1, Right, Bottom));
-  end;
+  end;}
 
   ChevronBounds := GetChevronBounds(CategoryRealBounds);
 
@@ -1308,7 +1309,7 @@ begin
   if not VerticalCaption then
   begin
     CaptionRect.Left := CategoryBounds.Left + 4 + cDropDownSize;
-    CaptionRect.Top := CategoryBounds.Top + 2; // Внёс изменения
+    CaptionRect.Top := CategoryBounds.Top + 1; // Внёс изменения
   end
   else
   begin
@@ -1995,7 +1996,7 @@ begin
         begin
           R := GetCategoryRect(DownCategory, True);
           if PtInRect(R, Point(X, Y)) then
-            DownCategory.Collapsed := not DownCategory.Collapsed
+            DownCategory.Collapsed := not DownCategory.Collapsed;
         end;
       end;
       Click;

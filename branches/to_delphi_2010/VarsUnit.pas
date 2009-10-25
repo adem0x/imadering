@@ -55,7 +55,7 @@ var
   UpdateVersionPath: string = 'Update_%s_%s.z';
   UpdateFile: TMemoryStream;
   NoReSave: Boolean = True;
-  GroupHeaderColor: TColor = $00FFEAFF;
+  GroupHeaderColor: TColor = $00FFDEFF;
   RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
 
@@ -409,6 +409,7 @@ var
     'Иначе отправка сообщения по нажатию клавиш Ctrl + Enter';
   H_Typing_Notify: string = '<b>Уведомлять о наборе</b><br>Включить или выключить отправку<br>собеседнику уведомлений о наборе текста';
   H_Sound_Key: string = '<b>Звук набора</b><br>Включить или выключить озвучку нажатия клавиш';
+  H_GTrans_Button: string = '<b>Переводчик</b><br>Автоматически переводить сообщения на иностранные языки<br>используя онлайн сервис Google переводчик';
 
 implementation
 

@@ -4,8 +4,8 @@ object IcqReqAuthForm: TIcqReqAuthForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1047#1072#1075#1086#1083#1086#1074#1086#1082
-  ClientHeight = 211
-  ClientWidth = 304
+  ClientHeight = 350
+  ClientWidth = 491
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -35,15 +35,15 @@ object IcqReqAuthForm: TIcqReqAuthForm
   object InfoMemo: TMemo
     Left = 8
     Top = 27
-    Width = 288
-    Height = 145
+    Width = 475
+    Height = 284
     TabStop = False
     ScrollBars = ssVertical
     TabOrder = 0
   end
   object YesBitBtn: TBitBtn
-    Left = 199
-    Top = 178
+    Left = 386
+    Top = 317
     Width = 97
     Height = 25
     Caption = #1044#1072
@@ -56,7 +56,7 @@ object IcqReqAuthForm: TIcqReqAuthForm
   end
   object NoBitBtn: TBitBtn
     Left = 8
-    Top = 178
+    Top = 317
     Width = 97
     Height = 25
     Caption = #1053#1077#1090

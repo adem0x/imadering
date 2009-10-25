@@ -116,6 +116,7 @@ type
     CloseLastChatMenu: TMenuItem;
     FileTransferPopupMenu: TPopupMenu;
     UpWapru1: TMenuItem;
+    GtransSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -174,6 +175,7 @@ type
     procedure QRepSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure UpWapru1Click(Sender: TObject);
     procedure HTMLChatViewerParseEnd(Sender: TObject);
+    procedure GtransSpeedButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -222,7 +224,8 @@ uses
   RosterUnit,
   JabberProtoUnit,
   FileTransferUnit,
-  RXML;
+  RXML,
+  GtransUnit;
 
 function TChatForm.AddMessInActiveChat(CNick, CPopMsg, CId, CMsgD, CMess: string): Boolean;
 begin
@@ -1175,6 +1178,7 @@ begin
   EnterKeyToolButton.Hint := H_Send_Enter;
   TypingTextToolButton.Hint := H_Typing_Notify;
   KeySoundToolButton.Hint := H_Sound_Key;
+  GtransSpeedButton.Hint := H_GTrans_Button;
 end;
 
 procedure TChatForm.TypingTextToolButtonClick(Sender: TObject);
@@ -1321,6 +1325,7 @@ begin
   MainForm.AllImageList.GetBitmap(141, EditContactSpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(166, SendMessageBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(158, CloseTabBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(246, GtransSpeedButton.Glyph);
   // Создаём хранитель картинки пустой аватары для быстрого её отображения
   NoAvatar := TImage.Create(MainForm);
   if FileExists(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif') then
@@ -1417,6 +1422,12 @@ begin
     Exit;
   // Регулируем высоту вкладок для мультилайн режима
   ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;
+end;
+
+procedure TChatForm.GtransSpeedButtonClick(Sender: TObject);
+begin
+  ShowMessage(DevelMess);
+  GtransSpeedButton.Down := false;
 end;
 
 procedure TChatForm.HtmlPopupMenuPopup(Sender: TObject);

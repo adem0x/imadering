@@ -39,8 +39,10 @@ object MainForm: TMainForm
     ButtonHeight = 20
     ButtonOptions = [boFullSize, boGradientFill, boShowCaptions, boBoldCaptions, boUsePlusMinus, boCaptionOnlyBorder]
     Categories = <>
+    DoubleBuffered = True
     GradientDirection = gdVertical
     Images = AllImageList
+    ParentDoubleBuffered = False
     PopupMenu = ContactListPopupMenu
     RegularButtonColor = clWhite
     SelectedButtonColor = 15717318
@@ -51,7 +53,6 @@ object MainForm: TMainForm
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
     OnMouseDown = ContactListMouseDown
-    OnSelectedItemChange = ContactListSelectedItemChange
   end
   object BottomToolBar: TToolBar
     Left = 0

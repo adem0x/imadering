@@ -146,6 +146,7 @@ object RosterForm: TRosterForm
     ReadOnly = True
     RowSelect = True
     PopupMenu = RosterPopupMenu
+    SmallImages = MainForm.AllImageList
     TabOrder = 0
     ViewStyle = vsReport
     OnGetImageIndex = RosterJvListViewGetImageIndex
