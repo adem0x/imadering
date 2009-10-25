@@ -1,4 +1,4 @@
-unit GtransUnit;
+﻿unit GtransUnit;
 
 interface
 

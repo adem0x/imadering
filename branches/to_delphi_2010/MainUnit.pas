@@ -3371,9 +3371,7 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   // Место для запуска тестов
-  if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(Self);
-  XShowForm(ChatForm);
+  DAShow(ErrorHead, DevelMess, EmptyStr, 134, 2, 0);
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
