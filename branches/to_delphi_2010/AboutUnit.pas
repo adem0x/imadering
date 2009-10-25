@@ -27,7 +27,8 @@ uses
   GIFImg,
   JvExStdCtrls,
   JvBehaviorLabel,
-  UtilsUnit;
+  UtilsUnit,
+  ComCtrls;
 
 type
   TAboutForm = class(TForm)
@@ -36,7 +37,6 @@ type
     SiteLabel: TLabel;
     DataLabel: TLabel;
     HeadLabel: TLabel;
-    InfoAboutMemo: TMemo;
     CheckUpdateBitBtn: TBitBtn;
     Bevel1: TBevel;
     DonateBitBtn: TBitBtn;
@@ -47,6 +47,7 @@ type
     AboutListTimer: TTimer;
     Label1: TLabel;
     Label2: TLabel;
+    AboutRichEdit: TRichEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure URLLabelMouseEnter(Sender: TObject);
@@ -62,6 +63,7 @@ type
     procedure AboutListTimerTimer(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure Label2Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   private
     { Private declarations }
@@ -69,6 +71,7 @@ type
 
   public
     { Public declarations }
+    procedure TranslateForm;
   end;
 
 var
@@ -81,6 +84,13 @@ implementation
 uses
   MainUnit,
   VarsUnit;
+
+procedure TAboutForm.TranslateForm;
+begin
+  // Присваиваем текстовые значения
+  //AboutRichEdit.Lines.Append(Info_About);
+  AboutRichEdit.Text := Info_About;
+end;
 
 procedure TAboutForm.OKBitBtnClick(Sender: TObject);
 begin
@@ -161,6 +171,8 @@ begin
   MainForm.AllImageList.GetBitmap(6, CheckUpdateBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(185, DonateBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
+  // Переводим форму на другие языки
+  TranslateForm;
   // Загружаем логотип программы
   if FileExists(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif') then
     LogoImage.Picture.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif');
@@ -175,6 +187,12 @@ begin
   AboutLen := 1;
   // Стартуем показ титров
   HeadJvBehaviorLabel.BehaviorOptions.Active := True;
+end;
+
+procedure TAboutForm.FormShow(Sender: TObject);
+begin
+  // Прокручиваем рич в верх против глюка в вайн
+  SendMessage(AboutRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
 end;
 
 procedure TAboutForm.HeadJvBehaviorLabelStart(Sender: TObject);

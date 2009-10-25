@@ -146,16 +146,19 @@ begin
   // Отключаем реакции
   Handled := True;
   // Вставляем выбранный смайлик в поле ввода в окне чата
-  ChatForm.InputMemo.Text := ChatForm.InputMemo.Text + ' ' + SmiliesHTMLViewer.TitleAttr;
-  ChatForm.InputMemo.SelStart := ChatForm.InputMemo.GetTextLen;
-  if SmiliesHTMLViewer.CanFocus then
-    SmiliesHTMLViewer.SetFocus;
-  // Закрываем окно смайлов
-  Close;
-  // Выводим на передний план окно чата и ставим фокус в поле ввода
-  SetForegroundWindow(ChatForm.Handle);
-  if ChatForm.InputMemo.CanFocus then
-    ChatForm.InputMemo.SetFocus;
+  with ChatForm.InputRichEdit do
+    begin
+      Text := Text + ' ' + SmiliesHTMLViewer.TitleAttr;
+      SelStart := GetTextLen;
+      if SmiliesHTMLViewer.CanFocus then
+        SmiliesHTMLViewer.SetFocus;
+      // Закрываем окно смайлов
+      Close;
+      // Выводим на передний план окно чата и ставим фокус в поле ввода
+      SetForegroundWindow(ChatForm.Handle);
+      if CanFocus then
+        SetFocus;
+    end;
 end;
 
 procedure TSmilesForm.SmiliesHTMLViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);

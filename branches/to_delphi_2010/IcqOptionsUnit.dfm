@@ -97,6 +97,7 @@ object IcqOptionsForm: TIcqOptionsForm
     Height = 366
     BevelKind = bkTile
     BevelOuter = bvNone
+    ShowCaption = False
     TabOrder = 1
     object ICQOptionsJvPageList: TJvPageList
       AlignWithMargins = True
@@ -558,9 +559,14 @@ object IcqOptionsForm: TIcqOptionsForm
               
                 #1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081'. '#1048#1089#1087#1086#1083#1100#1079#1091#1081#1090#1077' '#1077#1105' '#1090#1086#1083#1100#1082#1086' '#1077#1089#1083#1080' '#1074#1099' '#1090#1086#1095#1085#1086' '#1079#1085#1072#1077#1090#1077', '#1095#1090#1086' '#1074 +
                 #1099' '
-              #1076#1077#1083#1072#1077#1090#1077'. '#1055#1086#1089#1083#1077#1076#1089#1090#1074#1080#1103' '#1084#1086#1075#1091#1090' '#1073#1099#1090#1100' '#1085#1077#1087#1088#1077#1076#1089#1082#1072#1079#1091#1077#1084#1099#1077'.')
+              #1076#1077#1083#1072#1077#1090#1077'. '#1055#1086#1089#1083#1077#1076#1089#1090#1074#1080#1103' '#1084#1086#1075#1091#1090' '#1073#1099#1090#1100' '#1085#1077#1087#1088#1077#1076#1089#1082#1072#1079#1091#1077#1084#1099#1077'.'
+              'gggg'
+              'gfgfg'
+              'fgfhhfgh'
+              'fgh')
             ParentFont = False
             ReadOnly = True
+            ScrollBars = ssVertical
             TabOrder = 0
           end
           object SendCustomICQPacketButton: TButton
@@ -580,10 +586,10 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object SendCustomICQPacketRichEdit: TRichEdit
             Left = 13
-            Top = 79
+            Top = 152
             Width = 396
-            Height = 151
-            Font.Charset = DEFAULT_CHARSET
+            Height = 78
+            Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
             Font.Name = 'Tahoma'
@@ -3767,7 +3773,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 22
             Width = 393
             Height = 313
-            Font.Charset = DEFAULT_CHARSET
+            Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
             Font.Name = 'Tahoma'
@@ -3847,7 +3853,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 394
             Height = 313
             Color = clBtnFace
-            Font.Charset = DEFAULT_CHARSET
+            Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
             Font.Name = 'Tahoma'

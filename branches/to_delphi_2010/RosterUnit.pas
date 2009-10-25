@@ -153,8 +153,8 @@ begin
       // Отображаем окно сообщений
       XShowForm(ChatForm);
       // Ставим фокус в поле ввода текста
-      if (InputMemo.CanFocus) and (Visible) then
-        InputMemo.SetFocus;
+      if (InputRichEdit.CanFocus) and (Visible) then
+        InputRichEdit.SetFocus;
     end;
 end;
 

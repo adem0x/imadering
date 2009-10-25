@@ -48,7 +48,6 @@ type
     BottomToolsPanel: TPanel;
     MemoPanel: TPanel;
     MyAvatarPanelSpeedButton: TSpeedButton;
-    InputMemo: TMemo;
     MyAvatarPanel: TPanel;
     MyAvatarImage: TImage;
     HTMLMsg: THTMLViewer;
@@ -117,10 +116,10 @@ type
     FileTransferPopupMenu: TPopupMenu;
     UpWapru1: TMenuItem;
     GtransSpeedButton: TSpeedButton;
+    InputRichEdit: TRichEdit;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
-    procedure InputMemoChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ChatCategoryButtonsContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure ChatCategoryButtonsHotButton(Sender: TObject; const Button: TButtonItem);
@@ -128,9 +127,7 @@ type
     procedure CloseTabAllClick(Sender: TObject);
     procedure CloseTabAllNoCurrentClick(Sender: TObject);
     procedure CloseTabAllOfflineClick(Sender: TObject);
-    procedure InputMemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ChatSettingsToolButtonClick(Sender: TObject);
-    procedure InputMemoKeyPress(Sender: TObject; var Key: Char);
     procedure EditContactSpeedButtonClick(Sender: TObject);
     procedure ShowAllHistoryClick(Sender: TObject);
     procedure InfoContactSpeedButtonClick(Sender: TObject);
@@ -176,6 +173,9 @@ type
     procedure UpWapru1Click(Sender: TObject);
     procedure HTMLChatViewerParseEnd(Sender: TObject);
     procedure GtransSpeedButtonClick(Sender: TObject);
+    procedure InputRichEditChange(Sender: TObject);
+    procedure InputRichEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure InputRichEditKeyPress(Sender: TObject; var Key: Char);
 
   private
     { Private declarations }
@@ -296,14 +296,14 @@ begin
   if RosterItem <> nil then
     begin
       if RosterItem.SubItems[15] <> EmptyStr then
-        InputMemo.Lines.Add('> ' + RosterItem.SubItems[15]);
+        InputRichEdit.Lines.Add('> ' + RosterItem.SubItems[15]);
     end;
 end;
 
 procedure TChatForm.QuickMessClick(Sender: TObject);
 begin
   // Вставляем в поле ввода текст из меню быстрых ответов
-  InputMemo.SelText := TMenuItem(Sender).Hint;
+  InputRichEdit.SelText := TMenuItem(Sender).Hint;
 end;
 
 procedure TChatForm.CreateFastReplyMenu;
@@ -452,257 +452,6 @@ begin
   HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
 end;
 
-procedure TChatForm.InputMemoChange(Sender: TObject);
-begin
-  // Убираем из поля ввода текста сишний символ перехода на новую строку
-  if InputMemo.Text = #13#10 then
-    InputMemo.Clear;
-  // Отображаем длинну введённого текста
-  TextLenPanel.Caption := IntToStr(InputMemo.GetTextLen);
-end;
-
-procedure TChatForm.InputMemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-{ var
-  list: TStringList;
-  Selected, YesConvert: boolean;
-  buf, Outbuf, temp: string;
-  HMemo: HWND;
-  i, ii: integer;
-
-  procedure ReplaceText(Str: string);
-  begin
-  SendMessage(HMemo, EM_REPLACESEL, 0, Longint(PChar(Str)));
-  end;
-
-  function GetSelText(var Str: string): boolean;
-  begin
-  result := false;
-  if self.InputMemo.SelText <> EmptyStr then
-  begin
-  result := true;
-  Str := self.InputMemo.SelText;
-  end
-  else
-  Str := self.InputMemo.Text;
-  end; }
-
-begin
-  // Если зажата клавиша контрл и нажата клавиша интер и не нажата кнопка отправки по интер, то отправляем сообщение
-  if (GetKeyState(VK_CONTROL) < 0) and (Key = 13) and (not EnterKeyToolButton.Down) then
-    SendMessageBitBtnClick(Self);
-  // Если зажата клавиша контрл и нажата клавиша "s", то открываем окно смайлов
-  if (GetKeyState(VK_CONTROL) < 0) and (Key = 83) then
-    SmiliesSpeedButtonClick(Self);
-  //
-  { if (GetKeyState(VK_CONTROL) < 0) and (Key = 82) then
-    begin
-    if not FileExists(MyPath + 'Langs\chars_r.txt') then Exit;
-    HMemo := self.InputMemo.Handle;
-    if HMemo = 0 then Exit;
-    Selected := GetSelText(buf);
-    if Length(buf) = 0 then Exit;
-    Zundo := self.InputMemo.Text;
-    list := TStringList.Create;
-    list.LoadFromFile(MyPath + 'Langs\chars_r.txt');
-    //
-    for i := 1 to Length(buf) do
-    begin
-    YesConvert := false;
-    for ii := 0 to list.Count - 1 do
-    begin
-    temp := Parse('=', list.Strings[ii], 1);
-    if buf[i] = temp then
-    begin
-    Outbuf := Outbuf + Parse('=', list.Strings[ii], 2);
-    YesConvert := true;
-    Break;
-    end;
-    end;
-    if not YesConvert then Outbuf := Outbuf + buf[i];
-    end;
-    //
-    list.Free;
-    if Selected then ReplaceText(Outbuf)
-    else SetWindowText(HMemo, PChar(Outbuf));
-    SendMessage(HMemo, EM_SETSEL, Length(self.InputMemo.Text), Length(self.InputMemo.Text));
-    end;
-    //
-    if (GetKeyState(VK_CONTROL) < 0) and (Key = 84) then
-    begin
-    if not FileExists(MyPath + 'Langs\chars_t.txt') then Exit;
-    HMemo := self.InputMemo.Handle;
-    if HMemo = 0 then Exit;
-    Selected := GetSelText(buf);
-    if Length(buf) = 0 then Exit;
-    Zundo := self.InputMemo.Text;
-    list := TStringList.Create;
-    list.LoadFromFile(MyPath + 'Langs\chars_t.txt');
-    //
-    for i := 1 to Length(buf) do
-    begin
-    YesConvert := false;
-    for ii := 0 to list.Count - 1 do
-    begin
-    temp := Parse('=', list.Strings[ii], 1);
-    if buf[i] = temp then
-    begin
-    Outbuf := Outbuf + Parse('=', list.Strings[ii], 2);
-    YesConvert := true;
-    Break;
-    end;
-    end;
-    if not YesConvert then Outbuf := Outbuf + buf[i];
-    end;
-    //
-    list.Free;
-    if Selected then ReplaceText(Outbuf)
-    else SetWindowText(HMemo, PChar(Outbuf));
-    SendMessage(HMemo, EM_SETSEL, Length(self.InputMemo.Text), Length(self.InputMemo.Text));
-    end;
-    //
-    if (GetKeyState(VK_CONTROL) < 0) and (Key = 90) then
-    begin
-    if Zundo > EmptyStr then self.InputMemo.Text := Zundo;
-    self.InputMemo.SelStart := self.InputMemo.GetTextLen;
-    Zundo := EmptyStr;
-    end; }
-end;
-
-procedure TChatForm.InputMemoKeyPress(Sender: TObject; var Key: Char);
-label
-  X;
-var
-  MsgD, Msg, UIN: string;
-  RosterItem: TListItem;
-begin
-  // Если поле идентификатора пользователя пустое, то выходим от сюда (в будущем сделать чтобы закрывалось окно)
-  if InfoPanel2.Caption = EmptyStr then
-    Exit;
-  // Если нажата клавиша не интер, то если включен режим звуковой клавиатуры, то воспроизводим звуки
-  if Key <> #13 then
-    begin
-      // Если нажата кнопка звука нажатия клавиш, то играем звуки
-      if KeySoundToolButton.Down then
-        begin
-          if (Key = #8) and (InputMemo.Text <> EmptyStr) then
-            begin
-              if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Back.wav') then
-                SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Back.wav'), SND_ASYNC);
-            end
-          else
-            begin
-              if (Key <> #8) then
-                begin
-                  if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Type.wav') then
-                    SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Type.wav'), SND_ASYNC);
-                end;
-            end;
-        end;
-      // Если нажата кнопка отправки оповещения о печати текста
-      if TypingTextToolButton.Down then
-        begin
-          { if not MainForm.ICQTypeTextTimer.Enabled then
-            begin
-            UIN := InfoPanel2.Caption;
-            //if ICQ_Work_Phaze then ICQ_SendTextTyping(TextTypeForUIN, '02');
-            MainForm.ICQTypeTextTimer.Enabled := true;
-            end
-            else MainForm.ICQTypeTextTimer.Enabled := true; }
-        end;
-      // Выходим
-      Exit;
-    end;
-  // Если нажата клавиша интер и кнопка отправки по интер
-  if (Key = #13) and (EnterKeyToolButton.Down) then
-    // Если зажата клавиша Шифт
-    if GetKeyState(VK_SHIFT) < 0 then
-      Exit
-    else
-      begin
-      X :;
-        // Обнуляем символ клавиши
-        Key := #0;
-        // Если поле ввода пустое, то выходим
-        if InputMemo.GetTextLen = 0 then
-          Exit;
-        // Если нажата кнопка звука нажатия клавиш, то играем звуки
-        if KeySoundToolButton.Down then
-          begin
-            if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav') then
-              SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav'), SND_ASYNC);
-          end;
-        // Узнаём Идентификатор пользователя
-        UIN := InfoPanel2.Caption;
-        // Копируем текст сообщения
-        Msg := InputMemo.Text;
-        // Если тип контакта ICQ, то отправляем сообщение по ICQ протоколу
-        if UserType = 'Icq' then
-          begin
-            // Если нет подключения к серверу ICQ, то выходим
-            if not ICQ_Work_Phaze then
-              Exit;
-            // Заканчиваем оповещение о наборе текста
-            // if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
-            // Если статус пользователя не оффлайн и есть поддержка UTF-8 сообщений, то отправляем сообщение в юникоде.
-            // Иначе отправляем сообщение в старом анси формате
-            if (ChatPageControl.ActivePage.Tag <> 9) and (UserUtf8Support) then
-              ICQ_SendMessage_0406(UIN, Msg, False)
-            else
-              ICQ_SendMessage_0406(UIN, Msg, True);
-          end
-        else if UserType = 'Jabber' then
-          begin
-            // Если нет подключения к серверу Jabber, то выходим
-            if not Jabber_Work_Phaze then
-              Exit;
-            // Отправляем сообщение
-            Jabber_SendMessage(UIN, Msg);
-          end
-        else if UserType = 'Mra' then
-          begin
-
-          end
-        else
-          Exit;
-        // Добавляем сообщение в файл истории и в чат
-        MsgD := YouAt + ' [' + DateTimeChatMess + ']';
-        // Форматируем сообщение под html формат
-        CheckMessage_BR(Msg);
-        CheckMessage_ClearTag(Msg);
-        CheckMessage_BR(Msg);
-        DecorateURL(Msg);
-        // Записываем историю в этот контакт
-        RosterItem := RosterForm.ReqRosterItem(UIN);
-        if RosterItem <> nil then
-          begin
-            RosterItem.SubItems[13] := RosterItem.SubItems[13] + '<span class=a>' + MsgD + '</span><br><span class=c>' + Msg +
-              '</span><br><br>' + RN;
-            // Ставим флаг этому контакту, что история изменилась
-            RosterItem.SubItems[17] := 'X';
-          end;
-        // Если включены графические смайлики, то форматируем сообщение под смайлы
-        if not TextSmilies then
-          CheckMessage_Smilies(Msg);
-        // Увеличиваем счётчик исходящих сообщений
-        Inc(OutMessIndex);
-        // Добавляем в чат сообщение
-        AddChatText(MsgD, Msg);
-        // Прокручиваем чат до конца
-        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-        // Очищаем поле ввода теста
-        InputMemo.Clear;
-        InputMemoChange(Self);
-        // Выходим
-        Exit;
-      end;
-  // Если нажата клавиша интер и не нажата кнопка отправки по интер и зажата клавиша сонтрл, то переходим к отправке сообщения
-  if (Key = #13) and (not EnterKeyToolButton.Down) and (GetKeyState(VK_CONTROL) < 0) then
-    goto X;
-  // Если нажата кнопка "отправить" сообщение
-  if (Key = #13) and (not EnterKeyToolButton.Down) and (Sender.ClassName = 'TBitBtn') then
-    goto X;
-end;
-
 procedure TChatForm.CloseTabAllOfflineClick(Sender: TObject);
 label
   X;
@@ -804,36 +553,39 @@ end;
 procedure TChatForm.CopyMemoClick(Sender: TObject);
 begin
   // Копируем выделенный текст из поля ввода в буфер обмена
-  InputMemo.CopyToClipboard;
+  InputRichEdit.CopyToClipboard;
 end;
 
 procedure TChatForm.ChatHTMLQTextClick(Sender: TObject);
-var
-  Str: string;
+//var
+  //Str: string;
 begin
   // Цитируем выделенный текст в поле ввода и подставляем в начало каждой строки символ >
-  HTMLChatViewer.CopyToClipboard;
-  InputMemo.SelText := '> ';
-  InputMemo.PasteFromClipboard;
-  InputMemo.Text := Trim(InputMemo.Text);
-  Str := AnsiReplaceText(InputMemo.Text, #13#10, #13#10 + '> ');
-  InputMemo.Text := Str + #13#10;
-  InputMemo.SelStart := InputMemo.GetTextLen;
-  if InputMemo.CanFocus then
-    InputMemo.SetFocus;
+
+
+
+  {HTMLChatViewer.CopyToClipboard;
+  InputRichEdit.SelText := '> ';
+  InputRichEdit.PasteFromClipboard;
+  InputRichEdit.Text := Trim(InputRichEdit.Text);
+  Str := AnsiReplaceText(InputRichEdit.Text, #13#10, #13#10 + '> ');
+  InputRichEdit.Text := Str + #13#10;
+  InputRichEdit.SelStart := InputRichEdit.GetTextLen;
+  if InputRichEdit.CanFocus then
+    InputRichEdit.SetFocus;}
 end;
 
 procedure TChatForm.CopyAllMemoClick(Sender: TObject);
 begin
   // Копируем весь текст из поля ввода в буфер обмена
-  InputMemo.SelectAll;
-  InputMemo.CopyToClipboard;
+  InputRichEdit.SelectAll;
+  InputRichEdit.CopyToClipboard;
 end;
 
 procedure TChatForm.PasteMemoClick(Sender: TObject);
 begin
   // Вставляем в поле ввода текст из буфера обмена
-  InputMemo.PasteFromClipboard;
+  InputRichEdit.PasteFromClipboard;
 end;
 
 procedure TChatForm.ChatPageControlChange(Sender: TObject);
@@ -866,7 +618,7 @@ begin
               UserUtf8Support := False;
             UserAvatarHash := Hex2Text(SubItems[29]);
             UserType := SubItems[3];
-            InputMemo.Text := SubItems[14];
+            InputRichEdit.Text := SubItems[14];
             // Проверяем загружена ли история уже
             { if SubItems[13] = EmptyStr then
               begin
@@ -958,10 +710,10 @@ begin
     // Ставим учётную запись контакта в информационное поле
     InfoPanel2.Caption := UIN;
     // Ставим курсор в мемо после последнего символа
-    InputMemo.SelStart := InputMemo.GetTextLen;
+    InputRichEdit.SelStart := InputRichEdit.GetTextLen;
     // Ставим фокус в поле ввода текста
-    if (InputMemo.CanFocus) and (ChatForm.Visible) then
-      InputMemo.SetFocus;
+    if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
+      InputRichEdit.SetFocus;
     // Удаляем отметку о сообщении из списка очереди входящих сообщений
     RosterForm.DellcIdInMessList(UIN);
 
@@ -1084,10 +836,10 @@ var
 begin
   // Вызываем событие нажатия клавиши интер для поля ввода текста
   K := #13;
-  InputMemoKeyPress(Sender, K);
+  InputRichEditKeyPress(Sender, K);
   // Ставим фокус курсора в поле ввода
-  if (ChatForm.InputMemo.CanFocus) and (ChatForm.Visible) then
-    ChatForm.InputMemo.SetFocus;
+  if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
+    InputRichEdit.SetFocus;
 end;
 
 procedure TChatForm.MyAvatarPanelSpeedButtonClick(Sender: TObject);
@@ -1155,7 +907,7 @@ begin
             ShowWindow(Handle, SW_RESTORE);
           Show;
           // Активируем раздел
-          JvPageList1.ActivePageIndex := 2;
+          SettingsJvPageList.ActivePageIndex := 2;
           SettingButtonGroup.ItemIndex := 2;
         end;
     end;
@@ -1648,7 +1400,7 @@ end;
 procedure TChatForm.MemoPopupMenuPopup(Sender: TObject);
 begin
   // Управляем пунктами меню
-  if InputMemo.SelLength = 0 then
+  if InputRichEdit.SelLength = 0 then
     begin
       CutMemo.Enabled := False;
       CopyMemo.Enabled := False;
@@ -1663,7 +1415,7 @@ end;
 procedure TChatForm.CutMemoClick(Sender: TObject);
 begin
   // Вырезаем в буфер обмена
-  InputMemo.CutToClipboard;
+  InputRichEdit.CutToClipboard;
 end;
 
 procedure TChatForm.ChatHTMLAllTextCopyClick(Sender: TObject);
@@ -1671,6 +1423,256 @@ begin
   // Выделяем всё и копируем в буфер обмена
   HTMLChatViewer.SelectAll;
   HTMLChatViewer.CopyToClipboard;
+end;
+
+procedure TChatForm.InputRichEditChange(Sender: TObject);
+begin
+  // Убираем из поля ввода текста сишний символ перехода на новую строку
+  if InputRichEdit.Text = #13#10 then
+    InputRichEdit.Clear;
+  // Отображаем длинну введённого текста
+  TextLenPanel.Caption := IntToStr(InputRichEdit.GetTextLen);
+end;
+
+procedure TChatForm.InputRichEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+{ var
+  list: TStringList;
+  Selected, YesConvert: boolean;
+  buf, Outbuf, temp: string;
+  HMemo: HWND;
+  i, ii: integer;
+
+  procedure ReplaceText(Str: string);
+  begin
+  SendMessage(HMemo, EM_REPLACESEL, 0, Longint(PChar(Str)));
+  end;
+
+  function GetSelText(var Str: string): boolean;
+  begin
+  result := false;
+  if self.InputMemo.SelText <> EmptyStr then
+  begin
+  result := true;
+  Str := self.InputMemo.SelText;
+  end
+  else
+  Str := self.InputMemo.Text;
+  end; }
+begin
+  // Если зажата клавиша контрл и нажата клавиша интер и не нажата кнопка отправки по интер, то отправляем сообщение
+  if (GetKeyState(VK_CONTROL) < 0) and (Key = 13) and (not EnterKeyToolButton.Down) then
+    SendMessageBitBtnClick(Self);
+  // Если зажата клавиша контрл и нажата клавиша "s", то открываем окно смайлов
+  if (GetKeyState(VK_CONTROL) < 0) and (Key = 83) then
+    SmiliesSpeedButtonClick(Self);
+  //
+  { if (GetKeyState(VK_CONTROL) < 0) and (Key = 82) then
+    begin
+    if not FileExists(MyPath + 'Langs\chars_r.txt') then Exit;
+    HMemo := self.InputMemo.Handle;
+    if HMemo = 0 then Exit;
+    Selected := GetSelText(buf);
+    if Length(buf) = 0 then Exit;
+    Zundo := self.InputMemo.Text;
+    list := TStringList.Create;
+    list.LoadFromFile(MyPath + 'Langs\chars_r.txt');
+    //
+    for i := 1 to Length(buf) do
+    begin
+    YesConvert := false;
+    for ii := 0 to list.Count - 1 do
+    begin
+    temp := Parse('=', list.Strings[ii], 1);
+    if buf[i] = temp then
+    begin
+    Outbuf := Outbuf + Parse('=', list.Strings[ii], 2);
+    YesConvert := true;
+    Break;
+    end;
+    end;
+    if not YesConvert then Outbuf := Outbuf + buf[i];
+    end;
+    //
+    list.Free;
+    if Selected then ReplaceText(Outbuf)
+    else SetWindowText(HMemo, PChar(Outbuf));
+    SendMessage(HMemo, EM_SETSEL, Length(self.InputMemo.Text), Length(self.InputMemo.Text));
+    end;
+    //
+    if (GetKeyState(VK_CONTROL) < 0) and (Key = 84) then
+    begin
+    if not FileExists(MyPath + 'Langs\chars_t.txt') then Exit;
+    HMemo := self.InputMemo.Handle;
+    if HMemo = 0 then Exit;
+    Selected := GetSelText(buf);
+    if Length(buf) = 0 then Exit;
+    Zundo := self.InputMemo.Text;
+    list := TStringList.Create;
+    list.LoadFromFile(MyPath + 'Langs\chars_t.txt');
+    //
+    for i := 1 to Length(buf) do
+    begin
+    YesConvert := false;
+    for ii := 0 to list.Count - 1 do
+    begin
+    temp := Parse('=', list.Strings[ii], 1);
+    if buf[i] = temp then
+    begin
+    Outbuf := Outbuf + Parse('=', list.Strings[ii], 2);
+    YesConvert := true;
+    Break;
+    end;
+    end;
+    if not YesConvert then Outbuf := Outbuf + buf[i];
+    end;
+    //
+    list.Free;
+    if Selected then ReplaceText(Outbuf)
+    else SetWindowText(HMemo, PChar(Outbuf));
+    SendMessage(HMemo, EM_SETSEL, Length(self.InputMemo.Text), Length(self.InputMemo.Text));
+    end;
+    //
+    if (GetKeyState(VK_CONTROL) < 0) and (Key = 90) then
+    begin
+    if Zundo > EmptyStr then self.InputMemo.Text := Zundo;
+    self.InputMemo.SelStart := self.InputMemo.GetTextLen;
+    Zundo := EmptyStr;
+    end; }
+end;
+
+procedure TChatForm.InputRichEditKeyPress(Sender: TObject; var Key: Char);
+label
+  X;
+var
+  MsgD, Msg, UIN: string;
+  RosterItem: TListItem;
+begin
+  // Если поле идентификатора пользователя пустое, то выходим от сюда (в будущем сделать чтобы закрывалось окно)
+  if InfoPanel2.Caption = EmptyStr then
+    Exit;
+  // Если нажата клавиша не интер, то если включен режим звуковой клавиатуры, то воспроизводим звуки
+  if Key <> #13 then
+    begin
+      // Если нажата кнопка звука нажатия клавиш, то играем звуки
+      if KeySoundToolButton.Down then
+        begin
+          if (Key = #8) and (InputRichEdit.Text <> EmptyStr) then
+            begin
+              if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Back.wav') then
+                SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Back.wav'), SND_ASYNC);
+            end
+          else
+            begin
+              if (Key <> #8) then
+                begin
+                  if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Type.wav') then
+                    SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Type.wav'), SND_ASYNC);
+                end;
+            end;
+        end;
+      // Если нажата кнопка отправки оповещения о печати текста
+      if TypingTextToolButton.Down then
+        begin
+          { if not MainForm.ICQTypeTextTimer.Enabled then
+            begin
+            UIN := InfoPanel2.Caption;
+            //if ICQ_Work_Phaze then ICQ_SendTextTyping(TextTypeForUIN, '02');
+            MainForm.ICQTypeTextTimer.Enabled := true;
+            end
+            else MainForm.ICQTypeTextTimer.Enabled := true; }
+        end;
+      // Выходим
+      Exit;
+    end;
+  // Если нажата клавиша интер и кнопка отправки по интер
+  if (Key = #13) and (EnterKeyToolButton.Down) then
+    // Если зажата клавиша Шифт
+    if GetKeyState(VK_SHIFT) < 0 then
+      Exit
+    else
+      begin
+      X :;
+        // Обнуляем символ клавиши
+        Key := #0;
+        // Если поле ввода пустое, то выходим
+        if InputRichEdit.GetTextLen = 0 then
+          Exit;
+        // Если нажата кнопка звука нажатия клавиш, то играем звуки
+        if KeySoundToolButton.Down then
+          begin
+            if FileExists(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav') then
+              SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav'), SND_ASYNC);
+          end;
+        // Узнаём Идентификатор пользователя
+        UIN := InfoPanel2.Caption;
+        // Копируем текст сообщения
+        Msg := InputRichEdit.Text;
+        // Если тип контакта ICQ, то отправляем сообщение по ICQ протоколу
+        if UserType = 'Icq' then
+          begin
+            // Если нет подключения к серверу ICQ, то выходим
+            if not ICQ_Work_Phaze then
+              Exit;
+            // Заканчиваем оповещение о наборе текста
+            // if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
+            // Если статус пользователя не оффлайн и есть поддержка UTF-8 сообщений, то отправляем сообщение в юникоде.
+            // Иначе отправляем сообщение в старом анси формате
+            if (ChatPageControl.ActivePage.Tag <> 9) and (UserUtf8Support) then
+              ICQ_SendMessage_0406(UIN, Msg, False)
+            else
+              ICQ_SendMessage_0406(UIN, Msg, True);
+          end
+        else if UserType = 'Jabber' then
+          begin
+            // Если нет подключения к серверу Jabber, то выходим
+            if not Jabber_Work_Phaze then
+              Exit;
+            // Отправляем сообщение
+            Jabber_SendMessage(UIN, Msg);
+          end
+        else if UserType = 'Mra' then
+          begin
+
+          end
+        else
+          Exit;
+        // Добавляем сообщение в файл истории и в чат
+        MsgD := YouAt + ' [' + DateTimeChatMess + ']';
+        // Форматируем сообщение под html формат
+        CheckMessage_BR(Msg);
+        CheckMessage_ClearTag(Msg);
+        CheckMessage_BR(Msg);
+        DecorateURL(Msg);
+        // Записываем историю в этот контакт
+        RosterItem := RosterForm.ReqRosterItem(UIN);
+        if RosterItem <> nil then
+          begin
+            RosterItem.SubItems[13] := RosterItem.SubItems[13] + '<span class=a>' + MsgD + '</span><br><span class=c>' + Msg +
+              '</span><br><br>' + RN;
+            // Ставим флаг этому контакту, что история изменилась
+            RosterItem.SubItems[17] := 'X';
+          end;
+        // Если включены графические смайлики, то форматируем сообщение под смайлы
+        if not TextSmilies then
+          CheckMessage_Smilies(Msg);
+        // Увеличиваем счётчик исходящих сообщений
+        Inc(OutMessIndex);
+        // Добавляем в чат сообщение
+        AddChatText(MsgD, Msg);
+        // Прокручиваем чат до конца
+        HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+        // Очищаем поле ввода теста
+        InputRichEdit.Clear;
+        InputRichEditChange(Self);
+        // Выходим
+        Exit;
+      end;
+  // Если нажата клавиша интер и не нажата кнопка отправки по интер и зажата клавиша сонтрл, то переходим к отправке сообщения
+  if (Key = #13) and (not EnterKeyToolButton.Down) and (GetKeyState(VK_CONTROL) < 0) then
+    goto X;
+  // Если нажата кнопка "отправить" сообщение
+  if (Key = #13) and (not EnterKeyToolButton.Down) and (Sender.ClassName = 'TBitBtn') then
+    goto X;
 end;
 
 end.

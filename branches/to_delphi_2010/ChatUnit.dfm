@@ -368,28 +368,6 @@ object ChatForm: TChatForm
         ExplicitTop = 22
         ExplicitHeight = 68
       end
-      object InputMemo: TMemo
-        Left = 0
-        Top = 0
-        Width = 423
-        Height = 103
-        Align = alClient
-        BevelKind = bkTile
-        BorderStyle = bsNone
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        HideSelection = False
-        ParentFont = False
-        PopupMenu = MemoPopupMenu
-        ScrollBars = ssVertical
-        TabOrder = 0
-        OnChange = InputMemoChange
-        OnKeyDown = InputMemoKeyDown
-        OnKeyPress = InputMemoKeyPress
-      end
       object MyAvatarPanel: TPanel
         Left = 430
         Top = 0
@@ -400,7 +378,7 @@ object ChatForm: TChatForm
         BevelOuter = bvNone
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 1
+        TabOrder = 0
         object MyAvatarImage: TImage
           Left = 0
           Top = 0
@@ -414,6 +392,26 @@ object ChatForm: TChatForm
           Transparent = True
         end
       end
+      object InputRichEdit: TRichEdit
+        Left = 0
+        Top = 0
+        Width = 423
+        Height = 103
+        Align = alClient
+        Font.Charset = RUSSIAN_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        PlainText = True
+        PopupMenu = MemoPopupMenu
+        ScrollBars = ssVertical
+        TabOrder = 2
+        OnChange = InputRichEditChange
+        OnKeyDown = InputRichEditKeyDown
+        OnKeyPress = InputRichEditKeyPress
+      end
       object HTMLMsg: THTMLViewer
         Left = 183
         Top = 28
@@ -421,7 +419,7 @@ object ChatForm: TChatForm
         Height = 56
         Cursor = crDefault
         ViewImages = False
-        TabOrder = 2
+        TabOrder = 1
         DefBackground = clWhite
         BorderStyle = htNone
         Visible = False

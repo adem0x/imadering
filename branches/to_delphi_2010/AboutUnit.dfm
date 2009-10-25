@@ -17,6 +17,7 @@ object AboutForm: TAboutForm
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object VersionLabel: TLabel
@@ -173,22 +174,6 @@ object AboutForm: TAboutForm
     OnMouseEnter = URLLabelMouseEnter
     OnMouseLeave = URLLabelMouseLeave
   end
-  object InfoAboutMemo: TMemo
-    Left = 8
-    Top = 96
-    Width = 269
-    Height = 75
-    TabStop = False
-    Color = clBtnFace
-    Lines.Strings = (
-      #1069#1090#1072' '#1087#1088#1086#1075#1088#1072#1084#1084#1072' '#1089#1086#1079#1076#1072#1085#1072' '#1076#1083#1103' '#1080#1079#1091#1095#1077#1085#1080#1103' '#1080' '
-      #1090#1077#1089#1090#1080#1088#1086#1074#1072#1085#1080#1103' '#1074#1086#1079#1084#1086#1078#1085#1086#1089#1090#1080' '#1074#1079#1072#1080#1084#1086#1076#1077#1081#1089#1090#1074#1080#1103' '#1089' '
-      #1087#1086#1087#1091#1083#1103#1088#1085#1099#1084#1080' '#1087#1088#1086#1090#1086#1082#1086#1083#1072#1084#1080' '#1087#1077#1088#1077#1076#1072#1095#1080' '#1084#1075#1085#1086#1074#1077#1085#1085#1099#1093' '
-      #1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1074' '#1089#1077#1090#1080' '#1080#1085#1090#1077#1088#1085#1077#1090'.'
-      #1055#1088#1086#1077#1082#1090' '#1089' '#1086#1090#1082#1088#1099#1090#1099#1084' '#1080#1089#1093#1086#1076#1085#1099#1084' '#1082#1086#1076#1086#1084'.')
-    ReadOnly = True
-    TabOrder = 0
-  end
   object CheckUpdateBitBtn: TBitBtn
     Left = 8
     Top = 65
@@ -197,7 +182,7 @@ object AboutForm: TAboutForm
     Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 1
+    TabOrder = 0
     TabStop = False
     OnClick = CheckUpdateBitBtnClick
   end
@@ -209,7 +194,7 @@ object AboutForm: TAboutForm
     Caption = #1055#1086#1076#1076#1077#1088#1078#1072#1090#1100' '#1087#1088#1086#1077#1082#1090
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 2
+    TabOrder = 1
     TabStop = False
     OnClick = DonateBitBtnClick
   end
@@ -221,9 +206,31 @@ object AboutForm: TAboutForm
     Caption = 'OK'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 3
+    TabOrder = 2
     TabStop = False
     OnClick = OKBitBtnClick
+  end
+  object AboutRichEdit: TRichEdit
+    Left = 8
+    Top = 96
+    Width = 269
+    Height = 75
+    TabStop = False
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    Color = clBtnFace
+    Ctl3D = True
+    Font.Charset = RUSSIAN_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentCtl3D = False
+    ParentFont = False
+    PlainText = True
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 3
   end
   object AboutListTimer: TTimer
     Enabled = False

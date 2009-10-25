@@ -41,12 +41,12 @@ type
   TSettingsForm = class(TForm)
     SettingButtonGroup: TButtonGroup;
     PagesPanel: TPanel;
-    JvPageList1: TJvPageList;
-    JvStandardPage1: TJvStandardPage;
-    JvStandardPage2: TJvStandardPage;
-    JvStandardPage3: TJvStandardPage;
-    JvStandardPage4: TJvStandardPage;
-    JvStandardPage5: TJvStandardPage;
+    SettingsJvPageList: TJvPageList;
+    General: TJvStandardPage;
+    CL: TJvStandardPage;
+    Chat: TJvStandardPage;
+    Events: TJvStandardPage;
+    GlobalProxy: TJvStandardPage;
     CancelBitBtn: TBitBtn;
     OKBitBtn: TBitBtn;
     ApplyBitBtn: TBitBtn;
@@ -85,14 +85,14 @@ type
     AutoHideCLCheckBox: TCheckBox;
     AutoHideClEdit: TEdit;
     HeaderTextEdit: TEdit;
-    JvStandardPage6: TJvStandardPage;
-    JvStandardPage7: TJvStandardPage;
-    JvStandardPage8: TJvStandardPage;
-    JvStandardPage9: TJvStandardPage;
-    JvStandardPage10: TJvStandardPage;
-    JvStandardPage11: TJvStandardPage;
-    JvStandardPage12: TJvStandardPage;
-    JvStandardPage13: TJvStandardPage;
+    History: TJvStandardPage;
+    Statuses: TJvStandardPage;
+    AntiSpam: TJvStandardPage;
+    Sounds: TJvStandardPage;
+    Themes: TJvStandardPage;
+    HotKeys: TJvStandardPage;
+    Plugins: TJvStandardPage;
+    Accounts: TJvStandardPage;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
@@ -615,15 +615,15 @@ end;
 procedure TSettingsForm.SettingButtonGroupButtonClicked(Sender: TObject; index: Integer);
 begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
-  if index <= JvPageList1.PageCount then
-    JvPageList1.ActivePageIndex := index;
+  if index <= SettingsJvPageList.PageCount then
+    SettingsJvPageList.ActivePageIndex := index;
 end;
 
 procedure TSettingsForm.SettingButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
-  if SettingButtonGroup.ItemIndex <= JvPageList1.PageCount then
-    JvPageList1.ActivePageIndex := SettingButtonGroup.ItemIndex;
+  if SettingButtonGroup.ItemIndex <= SettingsJvPageList.PageCount then
+    SettingsJvPageList.ActivePageIndex := SettingButtonGroup.ItemIndex;
 end;
 
 procedure TSettingsForm.SettingsProtoBitBtnClick(Sender: TObject);
@@ -840,7 +840,7 @@ begin
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;
   // Становимся на первую вкладку
-  JvPageList1.ActivePageIndex := 0;
+  SettingsJvPageList.ActivePageIndex := 0;
   SettingButtonGroup.ItemIndex := 0;
 end;
 
