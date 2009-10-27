@@ -68,6 +68,7 @@ type
     procedure PassEditClick(Sender: TObject);
     procedure ShowPassCheckBoxClick(Sender: TObject);
     procedure MRAOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
+    procedure MRAOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -253,6 +254,13 @@ begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
   if index <= OptionJvPageList.PageCount then
     OptionJvPageList.ActivePageIndex := index;
+end;
+
+procedure TMraOptionsForm.MRAOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  // Выбираем страницу настроек соответсвенно выбранной вкладке
+  if MRAOptionButtonGroup.ItemIndex <= OptionJvPageList.PageCount then
+    OptionJvPageList.ActivePageIndex := MRAOptionButtonGroup.ItemIndex;
 end;
 
 procedure TMraOptionsForm.OKButtonClick(Sender: TObject);

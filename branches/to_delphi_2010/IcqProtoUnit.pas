@@ -2399,7 +2399,7 @@ begin
                 // Ищем вкладку в окне чата и ей присваиваем Ник
                 if Assigned(ChatForm) then
                   begin
-                    with ChatForm.ChatPageControl do
+                    {with ChatForm.ChatPageControl do
                       begin
                         if Visible then
                           begin
@@ -2413,7 +2413,7 @@ begin
                                   end;
                               end;
                           end;
-                      end;
+                      end;}
                   end;
               end;
             // Сохраняем полученные данные в локальный файл инфы о контакте

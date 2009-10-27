@@ -88,8 +88,7 @@ uses
 procedure TAboutForm.TranslateForm;
 begin
   // Присваиваем текстовые значения
-  //AboutRichEdit.Lines.Append(Info_About);
-  AboutRichEdit.Text := Info_About;
+  AboutRichEdit.Lines.Append(Info_About);
 end;
 
 procedure TAboutForm.OKBitBtnClick(Sender: TObject);

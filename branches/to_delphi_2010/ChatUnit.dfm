@@ -35,16 +35,17 @@ object ChatForm: TChatForm
   end
   object CenterChatFormPanel: TPanel
     Left = 0
-    Top = 70
+    Top = 94
     Width = 502
-    Height = 177
+    Height = 153
     Align = alClient
     BevelOuter = bvNone
+    ShowCaption = False
     TabOrder = 0
     object GroupSplitter: TSplitter
       Left = 356
       Top = 0
-      Height = 177
+      Height = 153
       Align = alRight
       AutoSnap = False
       ExplicitLeft = 428
@@ -54,7 +55,7 @@ object ChatForm: TChatForm
       Left = 359
       Top = 0
       Width = 143
-      Height = 177
+      Height = 153
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 1
@@ -82,16 +83,17 @@ object ChatForm: TChatForm
       Left = 0
       Top = 0
       Width = 356
-      Height = 177
+      Height = 153
       Align = alClient
       BevelKind = bkTile
       BevelOuter = bvNone
+      ShowCaption = False
       TabOrder = 1
       object HTMLChatViewer: THTMLViewer
         Left = 0
         Top = 0
         Width = 352
-        Height = 173
+        Height = 149
         Cursor = crDefault
         OnHotSpotClick = HTMLChatViewerHotSpotClick
         TabOrder = 0
@@ -127,6 +129,7 @@ object ChatForm: TChatForm
     BevelKind = bkTile
     BevelOuter = bvNone
     ParentBackground = False
+    ShowCaption = False
     TabOrder = 1
     object BottomToolsPanel: TPanel
       Left = 0
@@ -135,6 +138,7 @@ object ChatForm: TChatForm
       Height = 31
       Align = alBottom
       BevelOuter = bvNone
+      ShowCaption = False
       TabOrder = 0
       DesignSize = (
         498
@@ -227,9 +231,12 @@ object ChatForm: TChatForm
         Margins.Bottom = 0
         Align = alNone
         Anchors = [akLeft, akRight, akBottom]
+        DoubleBuffered = True
         Images = MainForm.AllImageList
+        List = True
+        ParentDoubleBuffered = False
         TabOrder = 0
-        Transparent = True
+        Transparent = False
         Wrapable = False
         object ChatFontToolButton: TToolButton
           Left = 0
@@ -318,16 +325,13 @@ object ChatForm: TChatForm
       Height = 103
       Align = alClient
       BevelOuter = bvNone
+      ShowCaption = False
       TabOrder = 1
       object MyAvatarPanelSpeedButton: TSpeedButton
-        Left = 423
+        Left = 425
         Top = 0
         Width = 7
         Height = 103
-        Margins.Left = 0
-        Margins.Top = 0
-        Margins.Right = 0
-        Margins.Bottom = 1
         Align = alRight
         Flat = True
         Glyph.Data = {
@@ -361,7 +365,7 @@ object ChatForm: TChatForm
           FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
           00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
         ParentShowHint = False
-        ShowHint = True
+        ShowHint = False
         Spacing = 0
         OnClick = MyAvatarPanelSpeedButtonClick
         ExplicitLeft = 412
@@ -369,14 +373,16 @@ object ChatForm: TChatForm
         ExplicitHeight = 68
       end
       object MyAvatarPanel: TPanel
-        Left = 430
+        Left = 432
         Top = 0
-        Width = 68
+        Width = 66
         Height = 103
         Align = alRight
+        BevelEdges = [beLeft, beTop, beBottom]
         BevelKind = bkTile
         BevelOuter = bvNone
         ParentShowHint = False
+        ShowCaption = False
         ShowHint = True
         TabOrder = 0
         object MyAvatarImage: TImage
@@ -393,11 +399,18 @@ object ChatForm: TChatForm
         end
       end
       object InputRichEdit: TRichEdit
-        Left = 0
+        AlignWithMargins = True
+        Left = 4
         Top = 0
-        Width = 423
+        Width = 421
         Height = 103
+        Margins.Left = 4
+        Margins.Top = 0
+        Margins.Right = 0
+        Margins.Bottom = 0
         Align = alClient
+        BevelKind = bkTile
+        BorderStyle = bsNone
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
@@ -580,49 +593,20 @@ object ChatForm: TChatForm
   end
   object TopChatFormPanel: TPanel
     Left = 0
-    Top = 1
+    Top = 28
     Width = 502
-    Height = 69
+    Height = 66
     Align = alTop
+    BevelEdges = [beLeft, beTop, beRight]
+    BevelKind = bkTile
     BevelOuter = bvNone
+    ShowCaption = False
     TabOrder = 2
-    DesignSize = (
-      502
-      69)
-    object InfoContactSpeedButton: TSpeedButton
-      AlignWithMargins = True
-      Left = 474
-      Top = 8
-      Width = 23
-      Height = 22
-      Margins.Right = 0
-      Anchors = [akTop, akRight]
-      Flat = True
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = InfoContactSpeedButtonClick
-    end
-    object EditContactSpeedButton: TSpeedButton
-      AlignWithMargins = True
-      Left = 474
-      Top = 38
-      Width = 23
-      Height = 22
-      Anchors = [akTop, akRight]
-      Flat = True
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = EditContactSpeedButtonClick
-    end
     object ContactAvatarPanelSpeedButton: TSpeedButton
-      Left = 69
+      Left = 66
       Top = 0
       Width = 7
-      Height = 69
-      Margins.Left = 0
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 1
+      Height = 64
       Align = alLeft
       Flat = True
       Glyph.Data = {
@@ -657,66 +641,28 @@ object ChatForm: TChatForm
         00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
       NumGlyphs = 4
       ParentShowHint = False
-      ShowHint = True
+      ShowHint = False
       Spacing = 0
       OnClick = ContactAvatarPanelSpeedButtonClick
       ExplicitLeft = 412
       ExplicitTop = 22
       ExplicitHeight = 68
     end
-    object InfoPanel1: TPanel
-      AlignWithMargins = True
-      Left = 77
-      Top = 8
-      Width = 204
-      Height = 22
-      Margins.Left = 5
-      Anchors = [akLeft, akTop, akRight]
-      BevelOuter = bvLowered
-      TabOrder = 0
-    end
-    object InfoPanel2: TPanel
-      AlignWithMargins = True
-      Left = 287
-      Top = 8
-      Width = 181
-      Height = 22
-      Anchors = [akTop, akRight]
-      BevelOuter = bvLowered
-      TabOrder = 1
-    end
-    object InfoPanel3: TPanel
-      Left = 77
-      Top = 38
-      Width = 204
-      Height = 22
-      Anchors = [akLeft, akTop, akRight]
-      BevelOuter = bvLowered
-      TabOrder = 2
-    end
-    object InfoPanel4: TPanel
-      Left = 287
-      Top = 38
-      Width = 181
-      Height = 22
-      Anchors = [akTop, akRight]
-      BevelOuter = bvLowered
-      TabOrder = 3
-    end
     object ContactAvatarPanel: TPanel
-      AlignWithMargins = True
-      Left = 1
-      Top = 1
-      Width = 68
-      Height = 68
-      Margins.Left = 1
-      Margins.Top = 1
+      Left = 0
+      Top = 0
+      Width = 66
+      Height = 64
+      Margins.Left = 0
+      Margins.Top = 0
       Margins.Right = 0
       Margins.Bottom = 0
       Align = alLeft
+      BevelEdges = [beRight]
       BevelKind = bkTile
       BevelOuter = bvNone
-      TabOrder = 4
+      ShowCaption = False
+      TabOrder = 0
       object ContactAvatarImage: TImage
         Left = 0
         Top = 0
@@ -730,23 +676,143 @@ object ChatForm: TChatForm
         ExplicitHeight = 52
       end
     end
+    object TopInfoButtonPanel: TPanel
+      Left = 468
+      Top = 0
+      Width = 30
+      Height = 64
+      Align = alRight
+      BevelOuter = bvNone
+      ShowCaption = False
+      TabOrder = 1
+      object InfoContactSpeedButton: TSpeedButton
+        AlignWithMargins = True
+        Left = 2
+        Top = 6
+        Width = 23
+        Height = 22
+        Margins.Left = 2
+        Margins.Top = 6
+        Margins.Right = 5
+        Align = alTop
+        Flat = True
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = InfoContactSpeedButtonClick
+        ExplicitLeft = 10
+      end
+      object EditContactSpeedButton: TSpeedButton
+        AlignWithMargins = True
+        Left = 2
+        Top = 36
+        Width = 23
+        Height = 22
+        Margins.Left = 2
+        Margins.Right = 5
+        Margins.Bottom = 6
+        Align = alBottom
+        Flat = True
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = EditContactSpeedButtonClick
+        ExplicitLeft = 12
+        ExplicitTop = 34
+      end
+    end
+    object TopInfoPanelR: TPanel
+      Left = 295
+      Top = 0
+      Width = 173
+      Height = 64
+      Align = alRight
+      BevelOuter = bvNone
+      TabOrder = 2
+      ExplicitLeft = 296
+      object InfoPanel2: TPanel
+        AlignWithMargins = True
+        Left = 3
+        Top = 6
+        Width = 167
+        Height = 22
+        Margins.Top = 6
+        Align = alTop
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitTop = 3
+      end
+      object InfoPanel4: TPanel
+        AlignWithMargins = True
+        Left = 3
+        Top = 36
+        Width = 167
+        Height = 22
+        Margins.Bottom = 6
+        Align = alBottom
+        BevelOuter = bvLowered
+        TabOrder = 1
+        ExplicitLeft = 27
+        ExplicitTop = 30
+        ExplicitWidth = 194
+      end
+    end
+    object TopInfoPanelL: TPanel
+      Left = 73
+      Top = 0
+      Width = 222
+      Height = 64
+      Align = alClient
+      BevelOuter = bvNone
+      TabOrder = 3
+      ExplicitLeft = 79
+      ExplicitTop = 6
+      ExplicitWidth = 155
+      ExplicitHeight = 54
+      object InfoPanel1: TPanel
+        AlignWithMargins = True
+        Left = 1
+        Top = 6
+        Width = 218
+        Height = 22
+        Margins.Left = 1
+        Margins.Top = 6
+        Align = alTop
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitLeft = 28
+        ExplicitWidth = 127
+      end
+      object InfoPanel3: TPanel
+        AlignWithMargins = True
+        Left = 1
+        Top = 36
+        Width = 218
+        Height = 22
+        Margins.Left = 1
+        Margins.Bottom = 6
+        Align = alBottom
+        BevelOuter = bvLowered
+        TabOrder = 1
+        ExplicitLeft = 28
+        ExplicitTop = 32
+        ExplicitWidth = 127
+      end
+    end
   end
-  object ChatPageControl: TPageControl
+  object ChatPageToolBar: TToolBar
     Left = 0
     Top = 0
     Width = 502
-    Height = 1
-    Align = alTop
+    Height = 28
+    AutoSize = True
+    BorderWidth = 1
+    ButtonWidth = 85
+    DoubleBuffered = True
+    EdgeBorders = [ebLeft, ebTop, ebRight]
     Images = MainForm.AllImageList
-    MultiLine = True
-    ParentShowHint = False
-    ShowHint = True
-    TabHeight = 22
+    List = True
+    ParentDoubleBuffered = False
+    ShowCaptions = True
     TabOrder = 3
-    Visible = False
-    OnChange = ChatPageControlChange
-    OnMouseDown = ChatPageControlMouseDown
-    OnMouseMove = ChatPageControlMouseMove
   end
   object CloseTabPopupMenu: TPopupMenu
     Alignment = paCenter
@@ -890,8 +956,8 @@ object ChatForm: TChatForm
   object TabPopupMenu: TPopupMenu
     Alignment = paCenter
     Images = MainForm.AllImageList
-    Left = 232
-    Top = 80
+    Left = 224
+    Top = 112
     object CloseChatTabMenu: TMenuItem
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1082#1083#1072#1076#1082#1091
       ImageIndex = 158

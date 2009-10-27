@@ -86,6 +86,7 @@ object MraOptionsForm: TMraOptionsForm
     ItemIndex = 0
     TabOrder = 3
     OnButtonClicked = MRAOptionButtonGroupButtonClicked
+    OnKeyDown = MRAOptionButtonGroupKeyDown
   end
   object OptionPanel: TPanel
     Left = 151

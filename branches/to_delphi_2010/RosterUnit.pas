@@ -75,7 +75,7 @@ var
 begin
   Result := nil;
   // Ищем вкладку в окне чата
-  if Assigned(ChatForm) then
+  {if Assigned(ChatForm) then
     begin
       with ChatForm.ChatPageControl do
         begin
@@ -89,7 +89,7 @@ begin
                 end;
             end;
         end;
-    end;
+    end;}
 end;
 
 procedure TRosterForm.DellcIdInMessList(CId: string);
@@ -117,7 +117,7 @@ procedure TRosterForm.OpenChatPage(CId: string);
 label
   A;
 var
-  Sheet: TTabSheet;
+  Sheet: TToolButton;
   I: Integer;
 begin
   // Если окно чата не создано, то создаём его
@@ -126,7 +126,7 @@ begin
   // Ищем вкладку в табе
   with ChatForm do
     begin
-      with ChatPageControl do
+      {with ChatPageControl do
         begin
           for I := 0 to PageCount - 1 do
             begin
@@ -137,19 +137,21 @@ begin
                   goto A;
                 end;
             end;
-        end;
+        end;}
       // Если вкладку не нашли, то создаём её
-      Sheet := TTabSheet.Create(Self);
+      Sheet := TToolButton.Create(Self);
       Sheet.Caption := CId;
       Sheet.HelpKeyword := CId;
       Sheet.ShowHint := True;
-      Sheet.PageControl := ChatPageControl;
-      ChatPageControl.ActivePageIndex := Sheet.PageIndex;
+      Sheet.AutoSize := true;
+      Sheet.Style := tbsCheck;
+      Sheet.Grouped := true;
+      Sheet.ImageIndex := 0;
+      Sheet.Parent := ChatPageToolBar;
+      Sheet.Down := true;
     A :;
-      // Показываем компонент табов
-      ChatPageControl.Visible := True;
       // Активируем чат и применяем параметры в окне чата
-      ChatPageControlChange(Self);
+      //ChatPageControlChange(Self);
       // Отображаем окно сообщений
       XShowForm(ChatForm);
       // Ставим фокус в поле ввода текста

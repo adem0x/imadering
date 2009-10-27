@@ -57,7 +57,7 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'IMadering';
-  // Устанавливаем высокий приоритет приложению
+  // Устанавливаем приоритет приложению
   SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
   SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_HIGHEST);
   // Изначально скрываем главную форму

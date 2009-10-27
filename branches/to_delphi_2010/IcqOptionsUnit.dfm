@@ -89,6 +89,7 @@ object IcqOptionsForm: TIcqOptionsForm
     ItemIndex = 0
     TabOrder = 0
     OnButtonClicked = ICQOptionButtonGroupButtonClicked
+    OnKeyDown = ICQOptionButtonGroupKeyDown
   end
   object GeneralPanel: TPanel
     Left = 151
@@ -99,13 +100,13 @@ object IcqOptionsForm: TIcqOptionsForm
     BevelOuter = bvNone
     ShowCaption = False
     TabOrder = 1
-    object ICQOptionsJvPageList: TJvPageList
+    object OptionJvPageList: TJvPageList
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = AccountPage
+      ActivePage = BonusPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -475,65 +476,11 @@ object IcqOptionsForm: TIcqOptionsForm
           Enabled = False
           TabOrder = 0
         end
-        object CheckAccountGroupBox: TGroupBox
-          Left = 3
-          Top = 278
-          Width = 422
-          Height = 75
-          Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1091#1095#1105#1090#1085#1086#1081' '#1079#1072#1087#1080#1089#1080
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          TabOrder = 1
-          object CheckAccountLabel: TLabel
-            Left = 15
-            Top = 20
-            Width = 173
-            Height = 13
-            Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100' ICQ# '#1080#1083#1080' AIM SN:'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Edit5: TEdit
-            Left = 14
-            Top = 38
-            Width = 292
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-          end
-          object CheckAccountButton: TButton
-            Left = 312
-            Top = 36
-            Width = 99
-            Height = 25
-            Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 1
-          end
-        end
         object CustomICQPacketGroupBox: TGroupBox
           Left = 3
           Top = 3
           Width = 422
-          Height = 269
+          Height = 350
           Caption = #1054#1090#1089#1099#1083#1082#1072' '#1087#1088#1086#1080#1079#1074#1086#1083#1100#1085#1086#1075#1086' '#1087#1072#1082#1077#1090#1072' '#1076#1072#1085#1085#1099#1093
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -541,37 +488,10 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 2
-          object CustomICQPacketInfoMemo: TMemo
-            Left = 13
-            Top = 21
-            Width = 396
-            Height = 52
-            TabStop = False
-            Color = clBtnFace
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            Lines.Strings = (
-              #1042#1085#1080#1084#1072#1085#1080#1077'! '#1069#1090#1072' '#1092#1091#1085#1082#1094#1080#1103' '#1087#1088#1077#1076#1085#1072#1079#1085#1072#1095#1077#1085#1072' '#1076#1083#1103' '#1086#1095#1077#1085#1100' '#1086#1087#1099#1090#1085#1099#1093' '
-              
-                #1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081'. '#1048#1089#1087#1086#1083#1100#1079#1091#1081#1090#1077' '#1077#1105' '#1090#1086#1083#1100#1082#1086' '#1077#1089#1083#1080' '#1074#1099' '#1090#1086#1095#1085#1086' '#1079#1085#1072#1077#1090#1077', '#1095#1090#1086' '#1074 +
-                #1099' '
-              #1076#1077#1083#1072#1077#1090#1077'. '#1055#1086#1089#1083#1077#1076#1089#1090#1074#1080#1103' '#1084#1086#1075#1091#1090' '#1073#1099#1090#1100' '#1085#1077#1087#1088#1077#1076#1089#1082#1072#1079#1091#1077#1084#1099#1077'.'
-              'gggg'
-              'gfgfg'
-              'fgfhhfgh'
-              'fgh')
-            ParentFont = False
-            ReadOnly = True
-            ScrollBars = ssVertical
-            TabOrder = 0
-          end
+          TabOrder = 1
           object SendCustomICQPacketButton: TButton
-            Left = 13
-            Top = 236
+            Left = 9
+            Top = 318
             Width = 88
             Height = 25
             Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
@@ -581,29 +501,29 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 1
+            TabOrder = 0
             OnClick = SendCustomICQPacketButtonClick
           end
           object SendCustomICQPacketRichEdit: TRichEdit
-            Left = 13
-            Top = 152
-            Width = 396
-            Height = 78
+            Left = 9
+            Top = 80
+            Width = 404
+            Height = 232
+            TabStop = False
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
-            Font.Name = 'Tahoma'
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
             Font.Style = []
-            HideScrollBars = False
             ParentFont = False
             PlainText = True
             ScrollBars = ssVertical
-            TabOrder = 2
+            TabOrder = 1
           end
           object SendCustomICQPaketTimerCheckBox: TCheckBox
-            Left = 111
-            Top = 240
-            Width = 259
+            Left = 106
+            Top = 322
+            Width = 268
             Height = 17
             Caption = #1055#1086#1074#1090#1086#1088#1103#1090#1100' '#1086#1090#1087#1088#1072#1074#1082#1091' '#1074' '#1094#1080#1082#1083#1077' ('#1089#1077#1082#1091#1085#1076#1099'):'
             Font.Charset = DEFAULT_CHARSET
@@ -612,11 +532,11 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 2
           end
           object SendCustomICQPaketTimerEdit: TEdit
-            Left = 376
-            Top = 238
+            Left = 380
+            Top = 320
             Width = 33
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -626,10 +546,28 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             MaxLength = 3
             ParentFont = False
-            TabOrder = 4
+            TabOrder = 3
             Text = '10'
             OnExit = SendCustomICQPaketTimerEditExit
             OnKeyPress = SendCustomICQPaketTimerEditKeyPress
+          end
+          object RichEdit1: TRichEdit
+            Left = 9
+            Top = 18
+            Width = 404
+            Height = 56
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            Lines.Strings = (
+              #1055#1086#1074#1090#1086#1088#1103#1090#1100)
+            ParentFont = False
+            TabOrder = 4
           end
         end
       end

@@ -61,9 +61,12 @@ object MainForm: TMainForm
     Height = 25
     Align = alBottom
     Color = clBtnFace
+    DoubleBuffered = True
     EdgeBorders = [ebTop]
     Images = AllImageList
+    List = True
     ParentColor = False
+    ParentDoubleBuffered = False
     TabOrder = 0
     Transparent = False
     Wrapable = False
@@ -212,9 +215,12 @@ object MainForm: TMainForm
     Width = 283
     Height = 25
     Color = clBtnFace
+    DoubleBuffered = True
     EdgeBorders = [ebBottom]
     Images = AllImageList
+    List = True
     ParentColor = False
+    ParentDoubleBuffered = False
     TabOrder = 2
     Transparent = False
     Wrapable = False

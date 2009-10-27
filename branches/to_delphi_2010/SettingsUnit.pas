@@ -31,22 +31,18 @@ uses
   OverbyteIcsWSocket,
   OverbyteIcsHttpProt,
   Registry,
-  ComCtrls,
-  ImgList,
-  JvExForms,
-  JvCustomItemViewer,
-  JvImageListViewer;
+  ComCtrls;
 
 type
   TSettingsForm = class(TForm)
     SettingButtonGroup: TButtonGroup;
     PagesPanel: TPanel;
     SettingsJvPageList: TJvPageList;
-    General: TJvStandardPage;
-    CL: TJvStandardPage;
-    Chat: TJvStandardPage;
-    Events: TJvStandardPage;
-    GlobalProxy: TJvStandardPage;
+    GeneralPage: TJvStandardPage;
+    CLPage: TJvStandardPage;
+    ChatPage: TJvStandardPage;
+    EventsPage: TJvStandardPage;
+    GlobalProxyPage: TJvStandardPage;
     CancelBitBtn: TBitBtn;
     OKBitBtn: TBitBtn;
     ApplyBitBtn: TBitBtn;
@@ -85,14 +81,14 @@ type
     AutoHideCLCheckBox: TCheckBox;
     AutoHideClEdit: TEdit;
     HeaderTextEdit: TEdit;
-    History: TJvStandardPage;
-    Statuses: TJvStandardPage;
-    AntiSpam: TJvStandardPage;
-    Sounds: TJvStandardPage;
-    Themes: TJvStandardPage;
-    HotKeys: TJvStandardPage;
-    Plugins: TJvStandardPage;
-    Accounts: TJvStandardPage;
+    HistoryPage: TJvStandardPage;
+    StatusesPage: TJvStandardPage;
+    AntiSpamPage: TJvStandardPage;
+    SoundsPage: TJvStandardPage;
+    ThemesPage: TJvStandardPage;
+    HotKeysPage: TJvStandardPage;
+    PluginsPage: TJvStandardPage;
+    AccountsPage: TJvStandardPage;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
@@ -109,8 +105,8 @@ type
     ProfilePathEdit: TEdit;
     ProfilePathLabel: TLabel;
     ProfilePathSpeedButton: TSpeedButton;
-    PluginsJvImageList: TJvImageListViewer;
     ShowPluginConfigButton: TButton;
+    PluginsListView: TListView;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -817,9 +813,6 @@ begin
   ProfilePathEdit.Text := ProfilePath;
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;
-
-  // Видимо  баг в JVCL. Приходится указывать в коде еще раз...
-  PluginsJvImageList.Options.ShowCaptions := True;
 end;
 
 procedure TSettingsForm.FormShow(Sender: TObject);

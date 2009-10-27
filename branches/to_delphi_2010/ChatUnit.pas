@@ -55,10 +55,6 @@ type
     HtmlPanel: TPanel;
     HTMLChatViewer: THTMLViewer;
     TopChatFormPanel: TPanel;
-    InfoPanel1: TPanel;
-    InfoPanel2: TPanel;
-    InfoContactSpeedButton: TSpeedButton;
-    EditContactSpeedButton: TSpeedButton;
     HistoryShowPopupMenu: TPopupMenu;
     ShowAllHistory: TMenuItem;
     Show100History: TMenuItem;
@@ -76,9 +72,6 @@ type
     ChatHTMLAllTextCopy: TMenuItem;
     ChatHTMLQText: TMenuItem;
     QmessPopupMenu: TPopupMenu;
-    ChatPageControl: TPageControl;
-    InfoPanel3: TPanel;
-    InfoPanel4: TPanel;
     ContactAvatarPanel: TPanel;
     ContactAvatarImage: TImage;
     ChatToolBar: TToolBar;
@@ -117,6 +110,16 @@ type
     UpWapru1: TMenuItem;
     GtransSpeedButton: TSpeedButton;
     InputRichEdit: TRichEdit;
+    ChatPageToolBar: TToolBar;
+    TopInfoButtonPanel: TPanel;
+    InfoContactSpeedButton: TSpeedButton;
+    EditContactSpeedButton: TSpeedButton;
+    TopInfoPanelR: TPanel;
+    InfoPanel2: TPanel;
+    InfoPanel4: TPanel;
+    TopInfoPanelL: TPanel;
+    InfoPanel1: TPanel;
+    InfoPanel3: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -263,7 +266,7 @@ function TChatForm.PageIdxAt(X, Y: Integer): Integer;
 var
   R: Trect;
 begin
-  Result := 0;
+  {Result := 0;
   while Result < ChatPageControl.PageCount do
     begin
       SendMessage(ChatPageControl.Handle, TCM_GETITEMRECT, Result, Longint(@R));
@@ -271,7 +274,7 @@ begin
         Exit;
       Inc(Result);
     end;
-  Result := -1;
+  Result := -1;}
 end;
 
 procedure TChatForm.QRepSpeedButtonClick(Sender: TObject);
@@ -459,7 +462,7 @@ var
   I: Integer;
 begin
   // Если вкладки есть, то закрываем те что со статусом оффлайн
-  with ChatPageControl do
+  {with ChatPageControl do
     begin
       if Visible then
         begin
@@ -483,7 +486,7 @@ begin
           else
             ChatPageControlChange(Self);
         end;
-    end;
+    end;}
 end;
 
 procedure TChatForm.CloseTabAllNoCurrentClick(Sender: TObject);
@@ -491,7 +494,7 @@ var
   I: Integer;
 begin
   // Если вкладки присутствуют, то закрываем все кроме текущей
-  with ChatPageControl do
+  {with ChatPageControl do
     begin
       if Visible then
         begin
@@ -510,13 +513,13 @@ begin
           // Регулируем высоту табов
           Height := ActivePage.Top - 3;
         end;
-    end;
+    end;}
 end;
 
 procedure TChatForm.CloseChatTabMenuClick(Sender: TObject);
 begin
   // Закрываем вкладку над которой было вызвано меню
-    if (ChatPageControl.Visible) and (ChatPageControl.PageCount > 0) then
+    {if (ChatPageControl.Visible) and (ChatPageControl.PageCount > 0) then
       begin
         ChatPageControl.Pages[ITab].Free;
         // Если вкладок больше нет, то закрываем окно
@@ -524,13 +527,13 @@ begin
           Close
         else
           ChatPageControlChange(Self);
-      end;
+      end;}
 end;
 
 procedure TChatForm.CloseTabAllClick(Sender: TObject);
 begin
   // Закрываем все вкладки чата
-  with ChatPageControl do
+  {with ChatPageControl do
     begin
       // Если вкладки активны
       if Visible then
@@ -547,7 +550,7 @@ begin
         end;
     end;
   // Закрываем окно чата
-  Close;
+  Close;}
 end;
 
 procedure TChatForm.CopyMemoClick(Sender: TObject);
@@ -593,7 +596,7 @@ var
   UIN, HistoryFile, Doc, HFile: string;
   RosterItem: TListItem;
 begin
-    // Если пустая вкладка, то выходим
+  (*  // Если пустая вкладка, то выходим
     if ChatPageControl.ActivePage = nil then
       Exit;
     // Изменяем размер компонента вкладок
@@ -748,7 +751,7 @@ begin
       ContactImage.Picture.Assign(nil);
       ContactImage.Picture.Assign(NoAvatar.Picture);
       end; }
-
+                *)
 end;
 
 procedure TChatForm.ChatPageControlMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -756,7 +759,7 @@ var
   Diff: Tdatetime;
   FCursor: TPoint;
 begin
-  // Обрабатываем нажатия кнопок мыши по вкладке
+{  // Обрабатываем нажатия кнопок мыши по вкладке
   case Button of
     MbRight: // Если нажали правой клавишей мыши
       begin
@@ -791,18 +794,18 @@ begin
         // Закрываем эту вкладку
         CloseChatTabMenuClick(Self);
       end;
-  end;
+  end; }
 end;
 
 procedure TChatForm.ChatPageControlMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
-  // Вычисляем над какой вкладкой у нас курсор, чтобы показать подсказку
+{  // Вычисляем над какой вкладкой у нас курсор, чтобы показать подсказку
   if PageIdxAt(X, Y) <> HintInd then
     Application.CancelHint;
   // Присваиваем подсказку для контакта компоненту вкладок
   ChatPageControl.Hint := ChatPageControl.Pages[PageIdxAt(X, Y)].Hint;
   // Запоминаем индекс вкладки с подсказкой
-  HintInd := PageIdxAt(X, Y);
+  HintInd := PageIdxAt(X, Y); }
 end;
 
 procedure TChatForm.SendAllClick(Sender: TObject);
@@ -942,7 +945,7 @@ procedure TChatForm.UpWapru1Click(Sender: TObject);
 var
   Fsize: Longint;
 begin
-  if NotProtoOnline(UserType) then
+  {if NotProtoOnline(UserType) then
     Exit;
   // Открываем форму отправки файлов
   if not Assigned(FileTransferForm) then
@@ -969,7 +972,7 @@ begin
           // Отображаем окно
           XShowForm(FileTransferForm);
         end;
-    end;
+    end;}
 end;
 
 procedure TChatForm.FormActivate(Sender: TObject);
@@ -977,7 +980,7 @@ var
   RosterItem: TListItem;
 begin
   // Сбрасываем иконку в активной вкладке в окне чата
-  if ChatPageControl.ActivePage = nil then
+  {if ChatPageControl.ActivePage = nil then
     Exit;
   ChatPageControl.ActivePage.ImageIndex := ChatPageControl.ActivePage.Tag;
   // Сбрасываем иконку сообщения в Ростере
@@ -985,7 +988,7 @@ begin
   if RosterItem <> nil then
     RosterItem.SubItems[36] := EmptyStr;
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
-  RosterForm.DellcIdInMessList(InfoPanel2.Caption);
+  RosterForm.DellcIdInMessList(InfoPanel2.Caption);}
 end;
 
 procedure TChatForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1045,11 +1048,8 @@ begin
               ContactAvatarPanel.Width := ReadInteger('contact-avatar', 68);
               if ContactAvatarPanel.Width = 0 then
                 begin
+                  ContactAvatarPanelSpeedButton.Left := 0;
                   ContactAvatarPanelSpeedButton.NumGlyphs := 1;
-                  InfoPanel1.Left := 9;
-                  InfoPanel3.Left := 9;
-                  InfoPanel1.Width := Width - 238;
-                  InfoPanel3.Width := InfoPanel1.Width;
                 end;
               MyAvatarPanel.Width := ReadInteger('my-avatar', 68);
               if MyAvatarPanel.Width = 0 then
@@ -1061,8 +1061,6 @@ begin
     finally
       Free();
     end;
-  // Включаем двойной буферинг для вкладок
-  ChatPageControl.DoubleBuffered := True;
   // Устанавливаем начальный индекс подсказки
   HintInd := -1;
   // Присваиваем окну и кнопкам иконки
@@ -1170,10 +1168,10 @@ end;
 procedure TChatForm.FormResize(Sender: TObject);
 begin
   // Если пустая вкладка, то выходим
-  if ChatPageControl.ActivePage = nil then
+  {if ChatPageControl.ActivePage = nil then
     Exit;
   // Регулируем высоту вкладок для мультилайн режима
-  ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;
+  ChatPageControl.Height := ChatPageControl.ActivePage.Top - 3;}
 end;
 
 procedure TChatForm.GtransSpeedButtonClick(Sender: TObject);
@@ -1283,22 +1281,16 @@ begin
   if ContactAvatarPanelSpeedButton.NumGlyphs = 4 then
     begin
       ContactAvatarPanel.Width := 0;
+      ContactAvatarPanelSpeedButton.Left := 0;
       ContactAvatarPanelSpeedButton.NumGlyphs := 1;
       SetCursorPos(FCursor.X - 68, FCursor.Y);
-      InfoPanel1.Left := ContactAvatarPanelSpeedButton.Left + 8;
-      InfoPanel3.Left := InfoPanel1.Left;
-      InfoPanel1.Width := InfoPanel2.Left - 15;
-      InfoPanel3.Width := InfoPanel1.Width;
     end
   else
     begin
+      ContactAvatarPanelSpeedButton.Left := 68;
       ContactAvatarPanel.Width := 68;
       ContactAvatarPanelSpeedButton.NumGlyphs := 4;
       SetCursorPos(FCursor.X + 68, FCursor.Y);
-      InfoPanel1.Left := ContactAvatarPanelSpeedButton.Left + 8;
-      InfoPanel3.Left := InfoPanel1.Left;
-      InfoPanel1.Width := InfoPanel2.Left - 83;
-      InfoPanel3.Width := InfoPanel1.Width;
     end;
 end;
 
@@ -1328,7 +1320,7 @@ end;
 procedure TChatForm.CloseTabBitBtnClick(Sender: TObject);
 begin
   // Закрываем вкладку чата
-  if (ChatPageControl.Visible) and (ChatPageControl.PageCount > 0) then
+  {if (ChatPageControl.Visible) and (ChatPageControl.PageCount > 0) then
     begin
       ChatPageControl.ActivePage.Free;
       // Если вкладок больше нет, то закрываем окно
@@ -1336,7 +1328,7 @@ begin
         Close
       else
         ChatPageControlChange(Self);
-    end;
+    end;}
 end;
 
 procedure TChatForm.CloseTabSpeedButtonDropClick(Sender: TObject);
@@ -1617,10 +1609,10 @@ begin
             // if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
             // Если статус пользователя не оффлайн и есть поддержка UTF-8 сообщений, то отправляем сообщение в юникоде.
             // Иначе отправляем сообщение в старом анси формате
-            if (ChatPageControl.ActivePage.Tag <> 9) and (UserUtf8Support) then
+            {if (ChatPageControl.ActivePage.Tag <> 9) and (UserUtf8Support) then
               ICQ_SendMessage_0406(UIN, Msg, False)
             else
-              ICQ_SendMessage_0406(UIN, Msg, True);
+              ICQ_SendMessage_0406(UIN, Msg, True);}
           end
         else if UserType = 'Jabber' then
           begin

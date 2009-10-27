@@ -103,6 +103,7 @@ object JabberOptionsForm: TJabberOptionsForm
     ItemIndex = 0
     TabOrder = 3
     OnButtonClicked = JabberOptionButtonGroupButtonClicked
+    OnKeyDown = JabberOptionButtonGroupKeyDown
   end
   object OptionPanel: TPanel
     Left = 151

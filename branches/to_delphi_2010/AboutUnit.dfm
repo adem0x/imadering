@@ -222,8 +222,8 @@ object AboutForm: TAboutForm
     Ctl3D = True
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
-    Font.Height = -12
-    Font.Name = 'Tahoma'
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentCtl3D = False
     ParentFont = False

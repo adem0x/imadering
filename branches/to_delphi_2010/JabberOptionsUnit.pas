@@ -94,6 +94,7 @@ type
     procedure PassEditChange(Sender: TObject);
     procedure Set_JabberOrgClick(Sender: TObject);
     procedure JIDonserverLabelClick(Sender: TObject);
+    procedure JabberOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -370,6 +371,13 @@ begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
   if index <= OptionJvPageList.PageCount then
     OptionJvPageList.ActivePageIndex := index;
+end;
+
+procedure TJabberOptionsForm.JabberOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  // Выбираем страницу настроек соответсвенно выбранной вкладке
+  if JabberOptionButtonGroup.ItemIndex <= OptionJvPageList.PageCount then
+    OptionJvPageList.ActivePageIndex := JabberOptionButtonGroup.ItemIndex;
 end;
 
 procedure TJabberOptionsForm.JUseCustomServerSettingsCheckBoxClick(Sender: TObject);

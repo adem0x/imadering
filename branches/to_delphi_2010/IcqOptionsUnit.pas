@@ -36,7 +36,7 @@ type
   TIcqOptionsForm = class(TForm)
     ICQOptionButtonGroup: TButtonGroup;
     GeneralPanel: TPanel;
-    ICQOptionsJvPageList: TJvPageList;
+    OptionJvPageList: TJvPageList;
     AccountPage: TJvStandardPage;
     PrivatPage: TJvStandardPage;
     BonusPage: TJvStandardPage;
@@ -78,17 +78,12 @@ type
     YesAutoAuthRadioButton: TRadioButton;
     ShowWebAwareCheckBox: TCheckBox;
     WebAwareTestButton: TButton;
-    CheckAccountGroupBox: TGroupBox;
-    CheckAccountLabel: TLabel;
-    Edit5: TEdit;
-    CheckAccountButton: TButton;
     PrivatLevelGroupBox: TGroupBox;
     PrivatLevelLabel: TLabel;
     PrivatLevelInfoLabel: TLabel;
     PrivatLevelTrackBar: TTrackBar;
     AutoReqAuthCheckBox: TCheckBox;
     CustomICQPacketGroupBox: TGroupBox;
-    CustomICQPacketInfoMemo: TMemo;
     SendCustomICQPacketButton: TButton;
     ClientCaps3Edit: TEdit;
     ClientVersionEdit: TEdit;
@@ -250,6 +245,7 @@ type
     ShowHideContactsCheckBox: TCheckBox;
     RegNewUINLabel: TLabel;
     ConnectPage: TJvStandardPage;
+    RichEdit1: TRichEdit;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -270,6 +266,7 @@ type
     procedure SendCustomICQPacketButtonClick(Sender: TObject);
     procedure SendCustomICQPaketTimerTimer(Sender: TObject);
     procedure RegNewUINLabelClick(Sender: TObject);
+    procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -554,8 +551,15 @@ end;
 procedure TIcqOptionsForm.ICQOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
 begin
   // Выбираем страницу настроек соответсвенно выбранной вкладке
-  if index <= ICQOptionsJvPageList.PageCount then
-    ICQOptionsJvPageList.ActivePageIndex := index;
+  if index <= OptionJvPageList.PageCount then
+    OptionJvPageList.ActivePageIndex := index;
+end;
+
+procedure TIcqOptionsForm.ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  // Выбираем страницу настроек соответсвенно выбранной вкладке
+  if ICQOptionButtonGroup.ItemIndex <= OptionJvPageList.PageCount then
+    OptionJvPageList.ActivePageIndex := ICQOptionButtonGroup.ItemIndex;
 end;
 
 procedure TIcqOptionsForm.ShowPassCheckBoxClick(Sender: TObject);
