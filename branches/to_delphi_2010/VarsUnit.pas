@@ -58,6 +58,7 @@ var
   GroupHeaderColor: TColor = $00FFDEFF;
   RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
+  CompresHistoryProcess: boolean = false;
 
   // Статистика трафика
   TrafSend: Real;
@@ -223,6 +224,7 @@ var
   FileTransfer4L: string = 'Передача файла отменена';
   FileTransfer5L: string = 'Ссылка для скачивания файла: %s' + RN + '%s' + RN + '[ Файл отправлен через %s. Подробнее на сайте: %s ]';
   SocketL: string = 'Сокет:';
+  HistoryCompressedL: string = 'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
 
   // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';

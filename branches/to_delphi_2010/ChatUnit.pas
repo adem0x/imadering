@@ -261,7 +261,18 @@ begin
       else if UserType = 'Mra' then
         HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + MRA_LoginUIN + ' ' + UIN + '.htm';
       if FileExists(HistoryFile) then
-        HistoryText := Readfromfile(HistoryFile);
+      begin
+        // Проверяем создавать или нет архив истории
+        if CreateHistoryArhive(HistoryFile) then
+        begin
+          // Если сжатие истории закончено успешно, то удаляем файл истории
+          if not CompresHistoryProcess then DeleteFile(HistoryFile);
+          // Сообщаем о создании архива и записываем это в новый файл для памятки
+          HistoryText := '<span class=d>' + HistoryCompressedL + '</span><br><br>';
+          SaveTextInHistory(HistoryText, HistoryFile);
+        end
+        else HistoryText := Readfromfile(HistoryFile);
+      end;
       // Отображаем историю в чате
       if HistoryText <> EmptyStr then
       begin
@@ -303,7 +314,7 @@ begin
       begin
         Doc := HTMLChatViewer.DocumentSource;
         // Если есть и иконка доп. статуса
-        if SubItems[7] > '-1' then
+        if SubItems[7] <> '-1' then
           Doc := Doc + '<IMG NAME=x SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
         Doc := Doc + '<span class=d>' + SubItems[31] + '</span><br><br>';
         HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
