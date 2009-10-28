@@ -1235,7 +1235,7 @@ begin
     Exit;
 X :;
   // Открываем чат с этим контактом
-  RosterForm.OpenChatPage(MUIN);
+  //RosterForm.OpenChatPage(MUIN);
 end;
 
 procedure TMainForm.ICQTrayIconClick(Sender: TObject);
@@ -3518,7 +3518,7 @@ begin
     // Меняем иконку кнопки контакта на его статус
     Button.ImageIndex := Button.Status;
     // Открываем чат с этим контактом
-    RosterForm.OpenChatPage(Button.UIN);
+    RosterForm.OpenChatPage(Button);
   end;
   // Запоминаем индекс кнопки
   ButtonInd := Button.index;

@@ -356,7 +356,6 @@ var
   LogMyPath: string = 'Путь к программе: ';
   LogProfile: string = 'Путь к профилю: ';
   LogIconCount: string = 'Загружено %d иконок';
-  LogFormOpen: string = 'Открыто окно: ';
   LogNickCash: string = 'Количество ников в файле кэша: ';
   LogSmiliesCount: string = 'Количество загруженных смайликов: ';
   LogRosterCount: string = 'Количество записей в файле кэша списка контактов: ';

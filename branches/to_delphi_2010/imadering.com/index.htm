@@ -61,16 +61,13 @@ document.write('<iframe src="http://link.link.ru/show?squareid=45392&showtype=22
                               <img SRC="/resurs/ichat.gif" ALT="Chat" WIDTH="48" HEIGHT="48" BORDER="0" />
                               <img SRC="/resurs/people.gif" ALT="Jabber" WIDTH="48" HEIGHT="48" BORDER="0" /></td>
                             <td align="right">
-                              <a href="http://translate.google.ru/translate?prev=hp&hl=ru&js=n&u=http%3A%2F%2Fimadering.com/index.htm&sl=ru&tl=en&swap=1">
-                                <b>English version</b></a>
-                              <br>
-                              <br>
-                              <form method="get" action="http://www.google.ru/search" target="_blank">
-                                <input type="text" name="q" value="" size="15" maxlength="64" id="infield"/>
-                                <input type="submit" name="submit" value="Поиск" id="submit"/>
-                                <input type="hidden" name="sitesearch" value="imadering.com"/>
-                                <input type="hidden" name="hl" value="ru"/>
-                              </form></td>
+<div id="google_translate_element"></div><script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ru'
+  }, 'google_translate_element');
+}
+</script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script></td>
                           </tr>
                         </tbody>
                       </table></td>

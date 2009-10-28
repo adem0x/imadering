@@ -220,7 +220,7 @@ begin
     SubItems[35] := '0';
   end;
   // Открываем чат с этим контактом
-  RosterForm.OpenChatPage(SearchResultJvListView.Selected.SubItems[1]);
+  //RosterForm.OpenChatPage(SearchResultJvListView.Selected.SubItems[1]);
 end;
 
 procedure TIcqSearchForm.TranslateForm;

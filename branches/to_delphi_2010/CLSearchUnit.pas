@@ -108,7 +108,7 @@ begin
   if CLSearchJvListView.Selected <> nil then
   begin
     // Открываем чат с этим контактом
-    RosterForm.OpenChatPage(CLSearchJvListView.Selected.Caption);
+    //RosterForm.OpenChatPage(CLSearchJvListView.Selected.Caption);
   end;
 end;
 

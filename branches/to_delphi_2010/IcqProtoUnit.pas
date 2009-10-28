@@ -528,15 +528,15 @@ end;
 procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language,
   PageIndex: Integer; OnlineOnly: Boolean);
 var
-  Pkt, PktSub, Utf8_Nick, Utf8_First, Utf8_Last, Utf8_City, Utf8_Key: string;
+  Pkt, PktSub, Utf8_Nick, Utf8_First, Utf8_Last, Utf8_City, Utf8_Key: RawByteString;
   Len: Integer;
 begin
   // Преобразуем строки в UTF-8
-  Utf8_Nick := StrToUtf8(NickName);
-  Utf8_First := StrToUtf8(FirstName);
-  Utf8_Last := StrToUtf8(LastName);
-  Utf8_City := StrToUtf8(City);
-  Utf8_Key := StrToUtf8(Keywords);
+  Utf8_Nick := UTF8Encode(NickName);
+  Utf8_First := UTF8Encode(FirstName);
+  Utf8_Last := UTF8Encode(LastName);
+  Utf8_City := UTF8Encode(City);
+  Utf8_Key := UTF8Encode(Keywords);
   // Обнуляем переменные
   Pkt := EmptyStr;
   PktSub := EmptyStr;
@@ -1189,10 +1189,10 @@ end;
 
 procedure ICQ_ReqAuthSend(UIN, Mess: string);
 var
-  Pkt, Utf8Mess: string;
+  Pkt, Utf8Mess: RawByteString;
 begin
   // Собираем пакет запроса авторизации
-  Utf8Mess := StrToUtf8(Mess);
+  Utf8Mess := UTF8Encode(Mess);
   Pkt := '00130018000000000018' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + IntToHex(Length(Utf8Mess), 4) + Text2Hex(Utf8Mess) + '0000';
   // Отсылаем пакет
   SendFLAP('2', Pkt);
@@ -1312,11 +1312,11 @@ end;
 procedure ICQ_UpdateGroup_AddContact(GrCaption, IGroupId: string; CiDlist: TStringList);
 var
   I, Len1, Len2: Integer;
-  Pkt, Pkt1, Pkt2: string;
-  Utf8Capt: string;
+  Pkt, Pkt1, Pkt2: RawByteString;
+  Utf8Capt: RawByteString;
 begin
   // Обновляем группу при добавлении контакта в серверном КЛ
-  Utf8Capt := StrToUtf8(GrCaption);
+  Utf8Capt := UTF8Encode(GrCaption);
   for I := 0 to CiDlist.Count - 1 do
     begin
       Pkt2 := Pkt2 + CiDlist.Strings[I];
@@ -1331,11 +1331,11 @@ end;
 
 procedure ICQ_DeleteGroup(GName, GId: string);
 var
-  Pkt: string;
-  Utf8Name: string;
+  Pkt: RawByteString;
+  Utf8Name: RawByteString;
 begin
   // Формируем пакет удаления группы
-  Utf8Name := StrToUtf8(GName);
+  Utf8Name := UTF8Encode(GName);
   Pkt := '0013000A00000000000A' + IntToHex(Length(Utf8Name), 4) + Text2Hex(Utf8Name) + GId + '00000001000400C80000';
   // Открываем сессию
   ICQ_AddStart;
@@ -1364,11 +1364,11 @@ end;
 
 procedure ICQ_AddGroup(GName, GId: string);
 var
-  Pkt: string;
-  Utf8Name: string;
+  Pkt: RawByteString;
+  Utf8Name: RawByteString;
 begin
   // Формируем пакет добавления группы в серверный КЛ
-  Utf8Name := StrToUtf8(GName);
+  Utf8Name := UTF8Encode(GName);
   Pkt := '00130008000000000008' + IntToHex(Length(Utf8Name), 4) + Text2Hex(Utf8Name) + GId + '00000001000400C80000';
   // Открываем сессию
   ICQ_AddStart;
@@ -1379,14 +1379,14 @@ end;
 procedure ICQ_RenameAndEditContact(UIN, GroupId, Id, Nick, Cell, Email, Zametka: string);
 var
   Len: Integer;
-  Pkt, Pkt1: string;
-  Utf8Nick, Utf8Cell, Utf8Email, Utf8Zametka: string;
+  Pkt, Pkt1: RawByteString;
+  Utf8Nick, Utf8Cell, Utf8Email, Utf8Zametka: RawByteString;
 begin
   // Переводим в UTF-8
-  Utf8Nick := StrToUtf8(Nick);
-  Utf8Cell := StrToUtf8(Cell);
-  Utf8Email := StrToUtf8(Email);
-  Utf8Zametka := StrToUtf8(Zametka);
+  Utf8Nick := UTF8Encode(Nick);
+  Utf8Cell := UTF8Encode(Cell);
+  Utf8Email := UTF8Encode(Email);
+  Utf8Zametka := UTF8Encode(Zametka);
   // Формируем пакет
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell)
     + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex(Utf8Email);
@@ -1633,11 +1633,11 @@ end;
 procedure ICQ_AddContact(UIN, GroupId, CId, Nick: string; NoAuth: Boolean);
 var
   Len: Integer;
-  Pkt, Pkt1: string;
-  Utf8Nick: string;
+  Pkt, Pkt1: RawByteString;
+  Utf8Nick: RawByteString;
 begin
   // Формируем пакет для добавления нового контакта в серверный КЛ
-  Utf8Nick := StrToUtf8(Nick);
+  Utf8Nick := UTF8Encode(Nick);
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A0000013C000001370000';
   if NoAuth then
     Pkt1 := Pkt1 + '00660000';
@@ -1657,14 +1657,14 @@ end;
 procedure ICQ_DeleteContact(UIN, GroupId, Id, Nick, Cell, Email, Zametka: string);
 var
   Len: Integer;
-  Pkt, Pkt1: string;
-  Utf8Nick, Utf8Cell, Utf8Email, Utf8Zametka: string;
+  Pkt, Pkt1: RawByteString;
+  Utf8Nick, Utf8Cell, Utf8Email, Utf8Zametka: RawByteString;
 begin
   // Переводим все в кодировку UTF-8
-  Utf8Nick := StrToUtf8(Nick);
-  Utf8Cell := StrToUtf8(Cell);
-  Utf8Email := StrToUtf8(Email);
-  Utf8Zametka := StrToUtf8(Zametka);
+  Utf8Nick := UTF8Encode(Nick);
+  Utf8Cell := UTF8Encode(Cell);
+  Utf8Email := UTF8Encode(Email);
+  Utf8Zametka := UTF8Encode(Zametka);
   // Формируем пакет
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell)
     + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex(Utf8Email);
@@ -1695,13 +1695,13 @@ end;
 procedure ICQ_SetStatusXText(XText, XCode: string);
 var
   Len: Integer;
-  Pkt, Pkt1: string;
-  Utf8XText: string;
+  Pkt, Pkt1: RawByteString;
+  Utf8XText: RawByteString;
 begin
   // Формируем пакет установки доп. статуса и подписи к нему
   if XText <> EmptyStr then
     begin
-      Utf8XText := StrToUtf8(XText);
+      Utf8XText := UTF8Encode(XText);
       Pkt1 := '0002' + '04' + IntToHex(Length(Utf8XText) + 4, 2) + IntToHex(Length(Utf8XText), 4) + Text2Hex(Utf8XText)
         + '0000' + '000E' + IntToHex(Length(XCode), 4) + Text2Hex(XCode);
     end
@@ -2717,10 +2717,10 @@ const
   Cap1 = '{0946134E-4C7F-11D1-8222-444553540000}';
 var
   Len1, Len2: Integer;
-  Pkt, Pkt1, Pkt2: string;
+  Pkt, Pkt1, Pkt2: RawByteString;
   OrigMsg, Utf8Mess, AnsiMsg: string;
-  CoocId: string;
-  CoocId1: string;
+  CoocId: RawByteString;
+  CoocId1: RawByteString;
 begin
   // Запоминаем текст сообщения
   OrigMsg := SMsg;
@@ -2730,7 +2730,7 @@ begin
       if Old then
         AnsiMsg := NextData(OrigMsg, 1200)
       else
-        Utf8Mess := StrToUtf8(NextData(OrigMsg, 3000));
+        Utf8Mess := UTF8Encode(NextData(OrigMsg, 3000));
       Randomize;
       CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4);
       CoocId1 := IntToHex(Random($AAAA), 4);

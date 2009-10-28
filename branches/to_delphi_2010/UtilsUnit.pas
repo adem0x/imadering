@@ -20,7 +20,6 @@ uses
   Controls,
   Forms,
   Dialogs,
-  Imglist,
   Menus,
   Mmsystem,
   Strutils,
@@ -59,7 +58,7 @@ function Deletelinebreaks(const S: string): string;
 function Exnormalizescreenname(Sn: string): string;
 function Exnormalizeicqnumber(Sn: string): string;
 function Normalizecellularnumber(const Value: string): string;
-function Appendorwritetexttofile(Filename: Tfilename; Writetext: string): Boolean;
+function AppendOrWriteTextToFile(Filename: Tfilename; Writetext: string): Boolean;
 function Datetimechatmess: string;
 procedure Sendflap(Channel, Data: string);
 procedure Sendflap_avatar(Channel, Data: string);
@@ -68,7 +67,6 @@ function Unixtodatetime(const Avalue: Int64): Tdatetime;
 function Gettimezone: Integer;
 function Taillinetail(Ahistory: string; Alinescount: Integer): string;
 function Bmsearch(Startpos: Integer; const S, P: string): Integer;
-function Strtoutf8(Value: string): string;
 function Rtf2plain(const Asource: string): string;
 procedure Formflash(Hnd: Hwnd);
 function Exisvalidcharacterstext(Value: string): Boolean;
@@ -87,7 +85,6 @@ function Horospope(D, M: Integer): Integer;
 function Translitrus2lat(const Str: string): string;
 procedure Dashow(Dahead, Datext, Daid: string; Daico, Dacolor, Davisible: Integer);
 function Initmixer: Hmixer;
-function Unicodecharcode2ansistring(Acode: Word): string;
 function Icq_bodysize: Integer;
 function Icq_bodysize_avatar: Integer;
 function Mra_bodysize: Integer;
@@ -105,22 +102,22 @@ function Getfulltag(Adata: string): string;
 procedure Implaysnd(Snd: Integer);
 function Searchnickincash(Ctype, Cid: string): string;
 function Copydir(const Fromdir, Todir: string): Boolean;
-function Normaldir(const Dirname: string): string;
 function Cleardir(const Path: string; Delete: Boolean): Boolean;
-procedure Setcustomwidthcombobox(Cb: Tcombobox);
+procedure SetcustomWidthCombobox(Cb: Tcombobox);
 procedure Xshowform(Xform: Tform);
-procedure Openurl(Url: string);
+procedure OpenUrl(Url: string);
 function Changespaces(const Value: string): string;
 function Changeslash(const Value: string): string;
 procedure Sendflap_mra(Pkttype, Data: string; Nolen: Boolean = False);
 function Getfilefname(Filename: string): string;
 procedure Checkmessage_br(var Msg: string);
-function Notprotoonline(Proto: string): Boolean;
+function NotProtoOnline(Proto: string): Boolean;
 function Getfiledatetime(Filename: string): Tdatetime;
 procedure Sendflap_jabber(Xmldata: string);
 procedure XLog(XLogData: string);
 function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; ErrCode: Integer): string;
+
 
 implementation
 
@@ -214,7 +211,6 @@ begin
     Showwindow(Xform.Handle, Sw_restore);
   Xform.Show;
   Setforegroundwindow(Xform.Handle);
-  XLog(LogFormOpen + Xform.name);
 end;
 
 function Getfilesize(Filename: string): Longint;
@@ -752,15 +748,6 @@ begin
   Flashwindowex(Rec);
 end;
 
-function Unicodecharcode2ansistring(Acode: Word): string;
-var
-  Buf: array [0 .. 1] of Word;
-begin
-  Buf[0] := Acode;
-  Buf[1] := 0;
-  Unicodecharcode2ansistring := Widechartostring(@Buf[0])[1];
-end;
-
 function Rtf2plain(const Asource: string): string;
 var
   Source: string;
@@ -849,8 +836,8 @@ begin
                   Result := Result + #$0D#$0A
                 else if Control = 'tab' then
                   Result := Result + #$09
-                else if Control = 'u' then
-                  Result := Result + Unicodecharcode2ansistring(Strtoint(Numericvalue))
+                {else if Control = 'u' then
+                  Result := Result + Unicodecharcode2ansistring(Strtoint(Numericvalue))}
                 else if Control = 'colortbl' then
                   Textvalue := Emptystr;
                 if Length(Textvalue) > 0 then
@@ -918,24 +905,6 @@ begin
     end
   else
     Result := Asource;
-end;
-
-function Strtoutf8(Value: string): string;
-var
-  Buffer: Pointer;
-  Buflen: Longword;
-  Lpbuf: Pointer;
-begin
-  Buflen := Length(Value) * 2 + 4;
-  Getmem(Buffer, Buflen);
-  Fillchar(Buffer^, Buflen, 0);
-  Getmem(Lpbuf, Buflen);
-  Fillchar(Lpbuf^, Buflen, 0);
-  Stringtowidechar(Value, Buffer, Buflen);
-  Widechartomultibyte(Cp_utf8, 0, Buffer, -1, Lpbuf, Buflen, nil, nil);
-  Freemem(Buffer, Buflen);
-  Result := Pchar(Lpbuf);
-  Freemem(Lpbuf, Buflen);
 end;
 
 function Bmsearch(Startpos: Integer; const S, P: string): Integer;
@@ -1722,18 +1691,6 @@ begin
   Result := (0 = Shfileoperation(Fos));
 end;
 
-function Normaldir(const Dirname: string): string;
-begin
-  Result := Dirname;
-  if (Result <> Emptystr) and not(Ansilastchar(Result)^ in [':', '\']) then
-    begin
-      if (Length(Result) = 1) and (Upcase(Result[1]) in ['A' .. 'Z']) then
-        Result := Result + ':\'
-      else
-        Result := Result + '\';
-    end;
-end;
-
 {$WARNINGS OFF}
 
 function Cleardir(const Path: string; Delete: Boolean): Boolean;
@@ -1746,19 +1703,19 @@ begin
   Result := Directoryexists(Path);
   if not Result then
     Exit;
-  Doscode := Findfirst(Normaldir(Path) + '*.*', Faanyfile, Fileinfo);
+  Doscode := Findfirst(Path + '*.*', Faanyfile, Fileinfo);
   try
     while Doscode = 0 do
       begin
         if (Fileinfo.name[1] <> '.') then
           begin
             if (Fileinfo.Attr and Fadirectory = Fadirectory) then
-              Result := Cleardir(Normaldir(Path) + Fileinfo.name, Delete) and Result
+              Result := Cleardir(Path + Fileinfo.name, Delete) and Result
             else
               begin
                 if (Fileinfo.Attr and Fareadonly = Fareadonly) then
-                  Filesetattr(Normaldir(Path) + Fileinfo.name, Faarchive);
-                Result := Deletefile(Normaldir(Path) + Fileinfo.name) and Result;
+                  Filesetattr(Path + Fileinfo.name, Faarchive);
+                Result := Deletefile(Path + Fileinfo.name) and Result;
               end;
           end;
         Doscode := Findnext(Fileinfo);

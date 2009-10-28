@@ -68,7 +68,7 @@ object RosterForm: TRosterForm
         Caption = 'TimeId'
       end
       item
-        Caption = '-'
+        Caption = #1055#1077#1088#1077#1074#1086#1076#1095#1080#1082
       end
       item
         Caption = #1048#1089#1093#1086#1076#1103#1097#1077#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077

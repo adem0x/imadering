@@ -18,7 +18,6 @@ object ChatForm: TChatForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object ChatSplitter: TSplitter
@@ -587,6 +586,8 @@ object ChatForm: TChatForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 1
       end
     end
@@ -727,7 +728,6 @@ object ChatForm: TChatForm
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 2
-      ExplicitLeft = 296
       object InfoPanel2: TPanel
         AlignWithMargins = True
         Left = 3
@@ -738,7 +738,6 @@ object ChatForm: TChatForm
         Align = alTop
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitTop = 3
       end
       object InfoPanel4: TPanel
         AlignWithMargins = True
@@ -750,9 +749,6 @@ object ChatForm: TChatForm
         Align = alBottom
         BevelOuter = bvLowered
         TabOrder = 1
-        ExplicitLeft = 27
-        ExplicitTop = 30
-        ExplicitWidth = 194
       end
     end
     object TopInfoPanelL: TPanel
@@ -763,10 +759,6 @@ object ChatForm: TChatForm
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 3
-      ExplicitLeft = 79
-      ExplicitTop = 6
-      ExplicitWidth = 155
-      ExplicitHeight = 54
       object InfoPanel1: TPanel
         AlignWithMargins = True
         Left = 1
@@ -778,8 +770,6 @@ object ChatForm: TChatForm
         Align = alTop
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitLeft = 28
-        ExplicitWidth = 127
       end
       object InfoPanel3: TPanel
         AlignWithMargins = True
@@ -792,9 +782,6 @@ object ChatForm: TChatForm
         Align = alBottom
         BevelOuter = bvLowered
         TabOrder = 1
-        ExplicitLeft = 28
-        ExplicitTop = 32
-        ExplicitWidth = 127
       end
     end
   end

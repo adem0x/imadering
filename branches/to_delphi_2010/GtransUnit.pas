@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons;
+  Dialogs, StdCtrls, Buttons, OverbyteIcsWndControl, OverbyteIcsHttpProt;
 
 type
   TGTransForm = class(TForm)
@@ -14,10 +14,13 @@ type
     YourLangLabel: TLabel;
     ToLangLabel: TLabel;
     ToLangComboBox: TComboBox;
+    GtransHttpClient: THttpCli;
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure GetTranslation(GText: string);
   end;
 
 var
@@ -26,5 +29,15 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TGTransForm.GetTranslation(GText: string);
+begin
+  //
+end;
+
+procedure TGTransForm.FormCreate(Sender: TObject);
+begin
+  //
+end;
 
 end.
