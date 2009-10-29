@@ -805,7 +805,7 @@ object ChatForm: TChatForm
     Alignment = paCenter
     Images = MainForm.AllImageList
     Left = 40
-    Top = 80
+    Top = 104
     object CloseTabAllOffline: TMenuItem
       Tag = 1
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1089#1077', '#1082#1090#1086' '#1085#1077' '#1074' '#1089#1077#1090#1080
@@ -859,8 +859,8 @@ object ChatForm: TChatForm
     Alignment = paCenter
     Images = MainForm.AllImageList
     OnPopup = MemoPopupMenuPopup
-    Left = 64
-    Top = 312
+    Left = 16
+    Top = 288
     object QRepMess: TMenuItem
       Tag = 1
       Caption = #1054#1090#1074#1077#1090
@@ -899,7 +899,7 @@ object ChatForm: TChatForm
     Images = MainForm.AllImageList
     OnPopup = HtmlPopupMenuPopup
     Left = 160
-    Top = 112
+    Top = 152
     object ChatHTMLTextCopy: TMenuItem
       Tag = 1
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
@@ -928,7 +928,7 @@ object ChatForm: TChatForm
     Alignment = paCenter
     Images = MainForm.AllImageList
     Left = 8
-    Top = 80
+    Top = 104
     object SendAllOnline: TMenuItem
       Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1074#1089#1077#1084', '#1082#1090#1086' '#1074' '#1089#1077#1090#1080
       ImageIndex = 166
@@ -943,7 +943,7 @@ object ChatForm: TChatForm
   object TabPopupMenu: TPopupMenu
     Alignment = paCenter
     Images = MainForm.AllImageList
-    Left = 224
+    Left = 160
     Top = 112
     object CloseChatTabMenu: TMenuItem
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1082#1083#1072#1076#1082#1091
@@ -954,12 +954,12 @@ object ChatForm: TChatForm
   object ConfPopupMenu: TPopupMenu
     Images = MainForm.AllImageList
     Left = 416
-    Top = 136
+    Top = 152
   end
   object ChatUserPopupMenu: TPopupMenu
     Images = MainForm.AllImageList
-    Left = 136
-    Top = 344
+    Left = 48
+    Top = 288
     object CloseLastChatMenu: TMenuItem
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1101#1090#1086#1090' '#1095#1072#1090
       ImageIndex = 158

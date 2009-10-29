@@ -1459,9 +1459,9 @@ begin
                               // Пропускаем непонятный 01
                               NextData(HexPkt, 1);
                               // Узнаём длинну Hash
-                              { Len := HexToInt(NextData(HexPkt, 2));
-                                // Забираем Hash
-                                ICQ_MyIcon_Hash := NextData(HexPkt, Len); }
+                              Len := Ord(NextData(HexPkt, 1));
+                              // Забираем Hash
+                              ICQ_MyIcon_Hash := Text2Hex(NextData(HexPkt, Len));
                             end;
                           end;
                       end;
@@ -1477,7 +1477,7 @@ begin
                             // Пропускаем раздел флагов
                             NextData(HexPkt, 7);
                             // Разбираем пакет с онлайн инфой о контакте
-                            // ICQ_UserOnline_030B(HexPkt, True);
+                            ICQ_UserOnline_030B(HexPkt, True);
                           end;
                       end;
                     end;
@@ -1492,7 +1492,7 @@ begin
                             // Пропускаем раздел флагов
                             NextData(HexPkt, 7);
                             // Разбираем пакет с сообщением от контакта
-                            // ICQ_ReqMessage_0407(HexPkt);
+                            ICQ_ReqMessage_0407(HexPkt);
                           end;
                         $14:
                           begin
