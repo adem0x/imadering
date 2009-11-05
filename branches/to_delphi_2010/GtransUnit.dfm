@@ -5,7 +5,7 @@ object GTransForm: TGTransForm
   BorderStyle = bsSingle
   Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080#1081' '#1087#1077#1088#1077#1074#1086#1076#1095#1080#1082
   ClientHeight = 107
-  ClientWidth = 479
+  ClientWidth = 338
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,7 +26,7 @@ object GTransForm: TGTransForm
     Caption = #1042#1072#1096' '#1103#1079#1099#1082':'
   end
   object ToLangLabel: TLabel
-    Left = 251
+    Left = 178
     Top = 13
     Width = 98
     Height = 13
@@ -45,7 +45,7 @@ object GTransForm: TGTransForm
     TabStop = False
   end
   object OKBitBtn: TBitBtn
-    Left = 373
+    Left = 232
     Top = 74
     Width = 98
     Height = 25
@@ -61,7 +61,7 @@ object GTransForm: TGTransForm
   object YourLangComboBox: TComboBox
     Left = 8
     Top = 32
-    Width = 221
+    Width = 153
     Height = 21
     ItemIndex = 34
     TabOrder = 2
@@ -121,9 +121,9 @@ object GTransForm: TGTransForm
       #1103#1087#1086#1085#1089#1082#1080#1081' [ja]')
   end
   object ToLangComboBox: TComboBox
-    Left = 250
+    Left = 177
     Top = 32
-    Width = 221
+    Width = 153
     Height = 21
     ItemIndex = 1
     TabOrder = 3
@@ -198,6 +198,8 @@ object GTransForm: TGTransForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
+    OnDocBegin = GtransHttpClientDocBegin
+    OnDocEnd = GtransHttpClientDocEnd
     SocksAuthentication = socksNoAuthentication
     Left = 152
     Top = 64

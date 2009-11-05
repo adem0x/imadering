@@ -1122,7 +1122,12 @@ begin
       // Отображаем модально окно переводчика
       if not Assigned(GTransForm) then
         GTransForm := TGTransForm.Create(Self);
-      if GTransForm.ShowModal <> 1 then GtransSpeedButton.Down := false;
+      if GTransForm.ShowModal <> 1 then
+      begin
+       GtransSpeedButton.Down := false;
+       Exit;
+      end;
+
     end
   else
     begin

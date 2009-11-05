@@ -334,6 +334,8 @@ begin
   // Делаем окно независимым и помещаем его кнопку на панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  // Применяем настройки прокси
+  SettingsForm.ApplyProxyHttpClient(SendFileHttpClient);
 end;
 
 procedure TFileTransferForm.TranslateForm;

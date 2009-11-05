@@ -23,6 +23,7 @@ type
     ICQDumpSpeedButton: TSpeedButton;
     JabberDumpSpeedButton: TSpeedButton;
     MRADumpSpeedButton: TSpeedButton;
+    WriteLogSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
 
@@ -53,6 +54,7 @@ begin
   ICQDumpSpeedButton.Hint := H_Log_ICQ;
   JabberDumpSpeedButton.Hint := H_Log_Jabber;
   MRADumpSpeedButton.Hint := H_Log_MRA;
+  WriteLogSpeedButton.Hint := H_Log_Write;
 end;
 
 procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);

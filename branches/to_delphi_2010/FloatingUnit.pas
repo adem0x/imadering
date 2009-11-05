@@ -33,6 +33,8 @@ type
     FloatPopupMenu: TPopupMenu;
     FloatShape: TShape;
     CloseFloatMenu: TMenuItem;
+    OpenChatFloatMenu: TMenuItem;
+    N2: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -43,6 +45,11 @@ type
     procedure WMNCHitTest(var Msg: TWMNCHitTest);
     message WM_NCHITTEST;
     procedure CreateParams(var Params: TCreateParams); override;
+
+    procedure WMNCRBUTTONDOWN(var Msg: TMessage);
+    message WM_NCRBUTTONDOWN;
+    { procedure WMNCLBUTTONDOWN(var Msg: TMessage);
+      message WM_NCLBUTTONDOWN; }
 
   public
     { Public declarations }
@@ -56,9 +63,34 @@ implementation
 {$R *.dfm}
 {$HINTS OFF}
 
+uses
+  MainUnit,
+  UtilsUnit;
+
+procedure TFloatingForm.WMNCRBUTTONDOWN(var Msg: TMessage);
+var
+  FCursor: TPoint;
+begin
+  // Если по форме был клик правой кнопокой мыши, то отображаем меню
+  if Msg.wParam = HTCAPTION then
+  begin
+    GetCursorPos(FCursor);
+    FloatPopupMenu.Popup(FCursor.X, FCursor.Y);
+  end;
+  inherited;
+end;
+
+{ procedure TFloatingForm.WMNCLBUTTONDOWN(var Msg: TMessage);
+  begin
+  if Msg.wParam = HTCAPTION then
+  xlog('Left Click!');
+  inherited;
+  end; }
+
 procedure TFloatingForm.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
+  // Переопределяем стиль создания формы
   Params.ExStyle := Params.ExStyle or WS_EX_TOOLWINDOW;
   Params.WndParent := HWND_DESKTOP;
 end;
@@ -71,6 +103,7 @@ end;
 
 procedure TFloatingForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  // Уничтожаем форму после закрытия
   Action := CaFree;
   Self := nil;
 end;
@@ -79,6 +112,7 @@ end;
 
 procedure TFloatingForm.FormCreate(Sender: TObject);
 begin
+  // Формируем размеры плавающего окна
   FloatShape.Top := Top;
   FloatShape.Left := Left;
   FloatShape.Height := Height;
@@ -87,6 +121,7 @@ end;
 
 procedure TFloatingForm.FormResize(Sender: TObject);
 begin
+  // Формируем размеры плавающего окна
   FloatShape.Top := Top;
   FloatShape.Left := Left;
   FloatShape.Height := Height;
@@ -96,6 +131,7 @@ end;
 procedure TFloatingForm.WMNCHitTest(var Msg: TWMNCHitTest);
 begin
   inherited;
+  // Определяем события мыши как клик по заголовку окна
   if (ScreenToClient(Mouse.CursorPos).Y < FloatShape.Top + FloatShape.Height) and
     (ScreenToClient(Mouse.CursorPos).X < FloatShape.Left + FloatShape.Width) then
     Msg.Result := HTCAPTION;

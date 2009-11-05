@@ -157,7 +157,9 @@ uses
   IcqOptionsUnit,
   JvBrowseFolder,
   UtilsUnit,
-  OverbyteIcsMimeUtils;
+  OverbyteIcsMimeUtils,
+  FileTransferUnit,
+  GTransUnit;
 
 procedure DoAppToRun(RunName, AppName: string);
 var
@@ -386,6 +388,18 @@ begin
           MRAAvatarHttpClient.Abort;
           ApplyProxyHttpClient(MRAAvatarHttpClient);
         end;
+      // HTTP сокет для передачи файлов
+      if (Assigned(FileTransferForm)) and (FileTransferForm.SendFileHttpClient.State <> HttpConnected) then
+      begin
+        FileTransferForm.SendFileHttpClient.Abort;
+        ApplyProxyHttpClient(FileTransferForm.SendFileHttpClient);
+      end;
+      // HTTP сокет для переводчика
+      if (Assigned(GtransForm)) and (GtransForm.GtransHttpClient.State <> HttpConnected) then
+      begin
+        GtransForm.GtransHttpClient.Abort;
+        ApplyProxyHttpClient(GtransForm.GtransHttpClient);
+      end;
       // Сокет для протокола ICQ
       if ICQWSocket.State <> WsConnected then
         begin

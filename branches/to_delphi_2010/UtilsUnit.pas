@@ -162,8 +162,10 @@ end;
 
 procedure XLog(XLogData: string);
 begin
+  // Если запись лога выключена, то выходим
+  if not LogForm.WriteLogSpeedButton.Down then Exit;
   // Если количество строк в логе слишком большое, то очищаем его
-  if LogForm.LogMemo.Lines.Count > 10000 then
+  if LogForm.LogMemo.Lines.Count > 5000 then
   begin
     LogForm.LogMemo.Clear;
     LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Clear);

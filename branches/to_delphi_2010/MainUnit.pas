@@ -4186,6 +4186,7 @@ begin
   AllImageList.GetBitmap(81, LogForm.ICQDumpSpeedButton.Glyph);
   AllImageList.GetBitmap(43, LogForm.JabberDumpSpeedButton.Glyph);
   AllImageList.GetBitmap(66, LogForm.MRADumpSpeedButton.Glyph);
+  AllImageList.GetBitmap(249, LogForm.WriteLogSpeedButton.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);

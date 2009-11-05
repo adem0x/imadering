@@ -96,9 +96,18 @@ object FloatingForm: TFloatingForm
   end
   object FloatPopupMenu: TPopupMenu
     Alignment = paCenter
+    Images = MainForm.AllImageList
     Left = 104
+    object OpenChatFloatMenu: TMenuItem
+      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
+      ImageIndex = 163
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
     object CloseFloatMenu: TMenuItem
-      Caption = #1047#1072#1082#1088#1099#1090#1100
+      Caption = #1042#1099#1082#1083'. '#1087#1083#1072#1074#1072#1102#1097#1080#1081' '#1082#1086#1085#1090#1072#1082#1090
+      ImageIndex = 248
       OnClick = CloseFloatMenuClick
     end
   end

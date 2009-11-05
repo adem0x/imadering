@@ -91,5 +91,17 @@ object LogForm: TLogForm
       ParentShowHint = False
       ShowHint = True
     end
+    object WriteLogSpeedButton: TSpeedButton
+      Left = 520
+      Top = 2
+      Width = 23
+      Height = 22
+      AllowAllUp = True
+      GroupIndex = 4
+      Down = True
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
+    end
   end
 end
