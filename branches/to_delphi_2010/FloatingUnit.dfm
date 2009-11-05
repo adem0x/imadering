@@ -5,7 +5,7 @@ object FloatingForm: TFloatingForm
   BorderStyle = bsNone
   Caption = 'FloatingForm'
   ClientHeight = 20
-  ClientWidth = 163
+  ClientWidth = 162
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,7 @@ object FloatingForm: TFloatingForm
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
+  PopupMenu = FloatPopupMenu
   Scaled = False
   ScreenSnap = True
   OnClose = FormClose
@@ -21,14 +22,14 @@ object FloatingForm: TFloatingForm
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object Shape1: TShape
+  object FloatShape: TShape
     Left = 27
     Top = 1
     Width = 65
     Height = 17
     Pen.Color = clActiveCaption
   end
-  object Image1: TImage
+  object StatusImage: TImage
     AlignWithMargins = True
     Left = 3
     Top = 2
@@ -39,10 +40,11 @@ object FloatingForm: TFloatingForm
     Margins.Bottom = 2
     Align = alLeft
     Center = True
+    PopupMenu = FloatPopupMenu
     Transparent = True
     ExplicitLeft = 2
   end
-  object Image2: TImage
+  object XStatusImage: TImage
     AlignWithMargins = True
     Left = 23
     Top = 2
@@ -54,13 +56,14 @@ object FloatingForm: TFloatingForm
     Margins.Bottom = 2
     Align = alLeft
     Center = True
+    PopupMenu = FloatPopupMenu
     Transparent = True
     ExplicitLeft = 22
     ExplicitHeight = 17
   end
-  object Image3: TImage
+  object ClientImage: TImage
     AlignWithMargins = True
-    Left = 144
+    Left = 143
     Top = 2
     Width = 16
     Height = 16
@@ -69,27 +72,34 @@ object FloatingForm: TFloatingForm
     Margins.Bottom = 2
     Align = alRight
     Center = True
+    PopupMenu = FloatPopupMenu
     Transparent = True
     ExplicitLeft = 142
     ExplicitTop = 3
     ExplicitHeight = 15
   end
-  object Label1: TLabel
+  object NickLabel: TLabel
     AlignWithMargins = True
     Left = 43
     Top = 2
-    Width = 31
+    Width = 44
     Height = 16
     Margins.Left = 2
     Margins.Top = 2
     Margins.Right = 2
     Margins.Bottom = 2
     Align = alLeft
-    Caption = 'Label1'
+    Caption = 'NickLabel'
+    PopupMenu = FloatPopupMenu
     Layout = tlCenter
     ExplicitHeight = 13
   end
-  object PopupMenu1: TPopupMenu
-    Left = 96
+  object FloatPopupMenu: TPopupMenu
+    Alignment = paCenter
+    Left = 104
+    object CloseFloatMenu: TMenuItem
+      Caption = #1047#1072#1082#1088#1099#1090#1100
+      OnClick = CloseFloatMenuClick
+    end
   end
 end

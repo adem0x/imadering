@@ -1095,6 +1095,11 @@ object MainForm: TMainForm
       ImageIndex = 178
       OnClick = AnketaContactClick
     end
+    object UniqContactSettingsMenu: TMenuItem
+      Caption = #1059#1085#1080#1082#1072#1083#1100#1085#1099#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
+      ImageIndex = 247
+      OnClick = UniqContactSettingsMenuClick
+    end
     object HistoryContact: TMenuItem
       Caption = #1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
@@ -1124,6 +1129,14 @@ object MainForm: TMainForm
       Hint = #1059#1076#1072#1083#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
       ImageIndex = 142
       OnClick = DeleteContactClick
+    end
+    object N27: TMenuItem
+      Caption = '-'
+    end
+    object FloatContactMenu: TMenuItem
+      Caption = #1055#1083#1072#1074#1072#1102#1097#1080#1081' '#1082#1086#1085#1090#1072#1082#1090
+      ImageIndex = 248
+      OnClick = FloatContactMenuClick
     end
     object N23: TMenuItem
       Caption = '-'

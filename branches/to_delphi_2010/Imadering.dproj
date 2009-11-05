@@ -130,27 +130,32 @@
 			<DCCReference Include="ShowCertUnit.pas">
 				<Form>ShowCertForm</Form>
 			</DCCReference>
-			<DCCReference Include="lib\OverbyteIcsSSLEAY.pas"/>
-			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
-			<DCCReference Include="lib\ButtonGroup.pas"/>
-			<DCCReference Include="lib\CategoryButtons.pas"/>
-			<DCCReference Include="lib\JvListView.pas"/>
-			<DCCReference Include="lib\rXML.pas"/>
-			<DCCReference Include="lib\SimpleXML.pas"/>
-			<DCCReference Include="lib\XMLStand.pas"/>
 			<DCCReference Include="IcqProtoUnit.pas"/>
 			<DCCReference Include="JabberProtoUnit.pas"/>
 			<DCCReference Include="MraProtoUnit.pas"/>
 			<DCCReference Include="UtilsUnit.pas"/>
 			<DCCReference Include="VarsUnit.pas"/>
-			<DCCReference Include="lib\Menus.pas"/>
-			<DCCReference Include="lib\HTMLView.pas"/>
 			<DCCReference Include="LogUnit.pas">
 				<Form>LogForm</Form>
 			</DCCReference>
 			<DCCReference Include="GtransUnit.pas">
 				<Form>GTransForm</Form>
 			</DCCReference>
+			<DCCReference Include="lib\ButtonGroup.pas"/>
+			<DCCReference Include="lib\CategoryButtons.pas"/>
+			<DCCReference Include="lib\ComCtrls.pas"/>
+			<DCCReference Include="lib\htmlgif1.pas"/>
+			<DCCReference Include="lib\HTMLView.pas"/>
+			<DCCReference Include="lib\JvDesktopAlert.pas"/>
+			<DCCReference Include="lib\JvDesktopAlertForm.pas"/>
+			<DCCReference Include="lib\JvHint.pas"/>
+			<DCCReference Include="lib\JvListView.pas"/>
+			<DCCReference Include="lib\Menus.pas"/>
+			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
+			<DCCReference Include="lib\OverbyteIcsSSLEAY.pas"/>
+			<DCCReference Include="lib\rXML.pas"/>
+			<DCCReference Include="lib\SimpleXML.pas"/>
+			<DCCReference Include="lib\XMLStand.pas"/>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
@@ -181,7 +186,7 @@
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">1390</VersionInfo>
+						<VersionInfo Name="Build">1551</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -193,7 +198,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.0.1390</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.0.1551</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

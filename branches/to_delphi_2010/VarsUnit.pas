@@ -16,7 +16,8 @@ uses
   ExtCtrls,
   JvDesktopAlert,
   Graphics,
-  GifImg;
+  GifImg,
+  FloatingUnit;
 
 const
   SecsPerDay = 86400;
@@ -59,6 +60,7 @@ var
   RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
   CompresHistoryProcess: boolean = false;
+  FloatingFrm: TFloatingForm;
 
   // Статистика трафика
   TrafSend: Real;
@@ -379,6 +381,23 @@ var
   Log_Unk_Data: string = 'Получены неизвестные или неважные данные:';
   Log_Close_Server: string = 'Сеанс связи с сервером заверщён.';
   Log_Get_CL: string = 'Получен список контактов.';
+  Log_ConnTime: string = 'Время подключения: ';
+  Log_UIN_RegTime: string = 'Дата регистрации: ';
+  Log_Ext_IP: string = 'Внешний IP: ';
+  Log_Int_IP: string = 'Внутренний IP: ';
+  Log_Icon_Hash: string = 'Хэш аватар:';
+  Log_User_Online_Event: string = 'Получен пакет онлайн статуса от контакта: ';
+  Log_User_Offline_Event: string = 'Получен пакет оффлайн статуса от контакта: ';
+  Log_UserClass: string = 'Класс контакта: ';
+  Log_ConnFlag: string = 'Флаг подключения: ';
+  Log_ProtoVer: string = 'Версия протокола: ';
+  Log_Status: string = 'Код статуса: ';
+  Log_TimeInOnline: string = 'Время проведённое в онлайн: ';
+  Log_ReqMessage: string = 'Получен пакет с сообщением от контакта: ';
+  Log_Msg_Chanel: string = 'Канал сообщения: ';
+  Log_Msg_Type: string = 'Тип сообщения: ';
+  Log_Msg_Text: string = 'Текст сообщения:';
+  Log_Connect_Count: string = 'Количество подключений к серверу: ';
 
   // Подсказки <b></b><br>
   H_Log_Clear: string = '<b>Очистить</b><br>Удалить все сообщения лога';

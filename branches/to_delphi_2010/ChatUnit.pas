@@ -119,6 +119,7 @@ type
     TopInfoPanelL: TPanel;
     InfoPanel1: TPanel;
     InfoPanel3: TPanel;
+    UniqToolButton: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -176,6 +177,7 @@ type
     procedure InputRichEditKeyPress(Sender: TObject; var Key: Char);
     procedure ToolButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure UniqToolButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -582,7 +584,7 @@ procedure TChatForm.AddChatText(Nick_Time, Mess_Text: string; MessIn: Boolean = 
 var
   Doc: string;
 begin
-  Doc := HTMLChatViewer.DocumentSource;
+  Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
   if MessIn then
     Doc := Doc + '<IMG NAME=i SRC="' + MyPath + 'Icons\' + CurrentIcons + '\inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' +
       Nick_Time + '</span><br>'
@@ -885,6 +887,11 @@ begin
   ShowMessage(DevelMess);
 end;
 
+procedure TChatForm.UniqToolButtonClick(Sender: TObject);
+begin
+  ShowMessage(DevelMess);
+end;
+
 procedure TChatForm.UpWapru1Click(Sender: TObject);
 var
   Fsize: Longint;
@@ -1109,8 +1116,18 @@ end;
 
 procedure TChatForm.GtransSpeedButtonClick(Sender: TObject);
 begin
-  ShowMessage(DevelMess);
-  GtransSpeedButton.Down := False;
+  // Включаем или отключаем автоматический перевод сообщений
+  if GtransSpeedButton.Down then
+    begin
+      // Отображаем модально окно переводчика
+      if not Assigned(GTransForm) then
+        GTransForm := TGTransForm.Create(Self);
+      if GTransForm.ShowModal <> 1 then GtransSpeedButton.Down := false;
+    end
+  else
+    begin
+
+    end;
 end;
 
 procedure TChatForm.HtmlPopupMenuPopup(Sender: TObject);

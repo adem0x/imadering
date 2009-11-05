@@ -535,7 +535,7 @@ begin
                           SubItems[17] := 'X';
                           SubItems[35] := '0';
                           // Добавляем историю в эту запись
-                          RosterForm.AddHistory(RosterItem, MsgD, Mess);
+                          //RosterForm.AddHistory(RosterItem, MsgD, Mess);
                         end;
                     end
                   else // Если такой контакт не найден в Ростере, то добавляем его
@@ -572,7 +572,7 @@ begin
                           SubItems[17] := 'X';
                           SubItems[35] := '0';
                           // Добавляем историю в эту запись
-                          RosterForm.AddHistory(RosterItem, MsgD, Mess);
+                          //RosterForm.AddHistory(RosterItem, MsgD, Mess);
                         end;
                     end;
                   // Добавляем сообщение в текущий чат

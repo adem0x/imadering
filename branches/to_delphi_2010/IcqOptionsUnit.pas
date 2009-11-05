@@ -650,6 +650,8 @@ begin
     ParamInfoRichEdit.Lines.Add(OnlineInfo6L + ': ' + ICQ_MyIcon_Hash);
   if ICQ_CL_Count > 0 then
     ParamInfoRichEdit.Lines.Add(OnlineInfo7L + ': ' + IntToStr(ICQ_CL_Count));
+  if ICQ_Connect_Count <> EmptyStr then
+    ParamInfoRichEdit.Lines.Add(Log_Connect_Count + ICQ_Connect_Count);
   // Заканчиваем заполнение строк
   ParamInfoRichEdit.Lines.EndUpdate;
 end;

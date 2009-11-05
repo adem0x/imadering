@@ -245,8 +245,14 @@ object ChatForm: TChatForm
           ShowHint = True
           OnClick = ChatFontToolButtonClick
         end
-        object ContactMenuToolButton: TToolButton
+        object UniqToolButton: TToolButton
           Left = 23
+          Top = 0
+          ImageIndex = 247
+          OnClick = UniqToolButtonClick
+        end
+        object ContactMenuToolButton: TToolButton
+          Left = 46
           Top = 0
           ImageIndex = 218
           ParentShowHint = False
@@ -255,7 +261,7 @@ object ChatForm: TChatForm
           OnContextPopup = ContactMenuToolButtonContextPopup
         end
         object ChatSettingsToolButton: TToolButton
-          Left = 46
+          Left = 69
           Top = 0
           ImageIndex = 2
           ParentShowHint = False
@@ -263,7 +269,7 @@ object ChatForm: TChatForm
           OnClick = ChatSettingsToolButtonClick
         end
         object EnterKeyToolButton: TToolButton
-          Left = 69
+          Left = 92
           Top = 0
           Down = True
           ImageIndex = 219
@@ -272,7 +278,7 @@ object ChatForm: TChatForm
           Style = tbsCheck
         end
         object TypingTextToolButton: TToolButton
-          Left = 92
+          Left = 115
           Top = 0
           ImageIndex = 161
           ParentShowHint = False
@@ -281,7 +287,7 @@ object ChatForm: TChatForm
           OnClick = TypingTextToolButtonClick
         end
         object KeySoundToolButton: TToolButton
-          Left = 115
+          Left = 138
           Top = 0
           Caption = 'KeySoundToolButton'
           ImageIndex = 183

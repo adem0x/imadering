@@ -69,7 +69,7 @@ procedure TSMSsendForm.Edit1KeyPress(Sender: TObject; var Key: Char);
 const
   ValidAsciiChars = ['0' .. '9', '+'];
 begin
-  if (not(Key in ValidAsciiChars)) and (Key <> #8) then
+  if (not(CharInSet(Key, ValidAsciiChars))) and (Key <> #8) then
     Key := #0;
 end;
 

@@ -106,7 +106,7 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = BonusPage
+      ActivePage = ParamsPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -3713,8 +3713,8 @@ object IcqOptionsForm: TIcqOptionsForm
             Height = 313
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
-            Font.Name = 'Tahoma'
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
             Font.Style = []
             HideScrollBars = False
             ParentFont = False
@@ -3793,8 +3793,8 @@ object IcqOptionsForm: TIcqOptionsForm
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
-            Font.Name = 'Tahoma'
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
             Font.Style = []
             HideScrollBars = False
             ParentFont = False

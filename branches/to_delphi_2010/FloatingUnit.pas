@@ -11,24 +11,39 @@ unit FloatingUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Menus;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ExtCtrls,
+  StdCtrls,
+  Menus;
 
 type
   TFloatingForm = class(TForm)
-    Image1: TImage;
-    Image2: TImage;
-    Image3: TImage;
-    Label1: TLabel;
-    PopupMenu1: TPopupMenu;
-    Shape1: TShape;
+    StatusImage: TImage;
+    XStatusImage: TImage;
+    ClientImage: TImage;
+    NickLabel: TLabel;
+    FloatPopupMenu: TPopupMenu;
+    FloatShape: TShape;
+    CloseFloatMenu: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure CloseFloatMenuClick(Sender: TObject);
+
   private
     { Private declarations }
     procedure WMNCHitTest(var Msg: TWMNCHitTest);
     message WM_NCHITTEST;
+    procedure CreateParams(var Params: TCreateParams); override;
+
   public
     { Public declarations }
   end;
@@ -41,34 +56,48 @@ implementation
 {$R *.dfm}
 {$HINTS OFF}
 
+procedure TFloatingForm.CreateParams(var Params: TCreateParams);
+begin
+  inherited CreateParams(Params);
+  Params.ExStyle := Params.ExStyle or WS_EX_TOOLWINDOW;
+  Params.WndParent := HWND_DESKTOP;
+end;
+
+procedure TFloatingForm.CloseFloatMenuClick(Sender: TObject);
+begin
+  // Закрываем плавающий контакт
+  Close;
+end;
+
 procedure TFloatingForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Action := caFree;
-  self := nil;
+  Action := CaFree;
+  Self := nil;
 end;
+
 {$HINTS ON}
 
 procedure TFloatingForm.FormCreate(Sender: TObject);
 begin
-  Shape1.Top := Top;
-  Shape1.Left := Left;
-  Shape1.Height := Height;
-  Shape1.Width := Width;
+  FloatShape.Top := Top;
+  FloatShape.Left := Left;
+  FloatShape.Height := Height;
+  FloatShape.Width := Width;
 end;
 
 procedure TFloatingForm.FormResize(Sender: TObject);
 begin
-  Shape1.Top := Top;
-  Shape1.Left := Left;
-  Shape1.Height := Height;
-  Shape1.Width := Width;
+  FloatShape.Top := Top;
+  FloatShape.Left := Left;
+  FloatShape.Height := Height;
+  FloatShape.Width := Width;
 end;
 
 procedure TFloatingForm.WMNCHitTest(var Msg: TWMNCHitTest);
 begin
   inherited;
-  if (ScreenToClient(Mouse.CursorPos).Y < Shape1.Top + Shape1.Height) and
-    (ScreenToClient(Mouse.CursorPos).X < Shape1.Left + Shape1.Width) then
+  if (ScreenToClient(Mouse.CursorPos).Y < FloatShape.Top + FloatShape.Height) and
+    (ScreenToClient(Mouse.CursorPos).X < FloatShape.Left + FloatShape.Width) then
     Msg.Result := HTCAPTION;
 end;
 

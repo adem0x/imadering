@@ -1,9 +1,11 @@
 object GTransForm: TGTransForm
   Left = 0
   Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
   Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080#1081' '#1087#1077#1088#1077#1074#1086#1076#1095#1080#1082
   ClientHeight = 107
-  ClientWidth = 477
+  ClientWidth = 479
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +13,7 @@ object GTransForm: TGTransForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesktopCenter
   Scaled = False
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -23,7 +26,7 @@ object GTransForm: TGTransForm
     Caption = #1042#1072#1096' '#1103#1079#1099#1082':'
   end
   object ToLangLabel: TLabel
-    Left = 249
+    Left = 251
     Top = 13
     Width = 98
     Height = 13
@@ -36,18 +39,24 @@ object GTransForm: TGTransForm
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
     DoubleBuffered = True
+    ModalResult = 2
     ParentDoubleBuffered = False
     TabOrder = 0
+    TabStop = False
   end
   object OKBitBtn: TBitBtn
-    Left = 371
+    Left = 373
     Top = 74
     Width = 98
     Height = 25
     Caption = 'OK'
+    Default = True
     DoubleBuffered = True
+    ModalResult = 1
     ParentDoubleBuffered = False
     TabOrder = 1
+    TabStop = False
+    OnClick = OKBitBtnClick
   end
   object YourLangComboBox: TComboBox
     Left = 8
@@ -56,6 +65,7 @@ object GTransForm: TGTransForm
     Height = 21
     ItemIndex = 34
     TabOrder = 2
+    TabStop = False
     Text = #1088#1091#1089#1089#1082#1080#1081' [ru]'
     Items.Strings = (
       #1072#1083#1073#1072#1085#1089#1082#1080#1081' [sq]'
@@ -111,12 +121,13 @@ object GTransForm: TGTransForm
       #1103#1087#1086#1085#1089#1082#1080#1081' [ja]')
   end
   object ToLangComboBox: TComboBox
-    Left = 248
+    Left = 250
     Top = 32
     Width = 221
     Height = 21
     ItemIndex = 1
     TabOrder = 3
+    TabStop = False
     Text = #1072#1085#1075#1083#1080#1081#1089#1082#1080#1081' [en]'
     Items.Strings = (
       #1072#1083#1073#1072#1085#1089#1082#1080#1081' [sq]'

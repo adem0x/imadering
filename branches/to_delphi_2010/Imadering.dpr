@@ -31,23 +31,28 @@ uses
   RosterUnit in 'RosterUnit.pas' {RosterForm},
   FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
   ShowCertUnit in 'ShowCertUnit.pas' {ShowCertForm},
-  OverbyteIcsSSLEAY in 'lib\OverbyteIcsSSLEAY.pas',
-  OverbyteIcsLIBEAY in 'lib\OverbyteIcsLIBEAY.pas',
-  ButtonGroup in 'lib\ButtonGroup.pas',
-  CategoryButtons in 'lib\CategoryButtons.pas',
-  JvListView in 'lib\JvListView.pas',
-  rXML in 'lib\rXML.pas',
-  SimpleXML in 'lib\SimpleXML.pas',
-  XMLStand in 'lib\XMLStand.pas',
   IcqProtoUnit in 'IcqProtoUnit.pas',
   JabberProtoUnit in 'JabberProtoUnit.pas',
   MraProtoUnit in 'MraProtoUnit.pas',
   UtilsUnit in 'UtilsUnit.pas',
   VarsUnit in 'VarsUnit.pas',
-  Menus in 'lib\Menus.pas',
-  HTMLView in 'lib\HTMLView.pas',
   LogUnit in 'LogUnit.pas' {LogForm},
-  GtransUnit in 'GtransUnit.pas' {GTransForm};
+  GtransUnit in 'GtransUnit.pas' {GTransForm},
+  ButtonGroup in 'lib\ButtonGroup.pas',
+  CategoryButtons in 'lib\CategoryButtons.pas',
+  ComCtrls in 'lib\ComCtrls.pas',
+  htmlgif1 in 'lib\htmlgif1.pas',
+  HTMLView in 'lib\HTMLView.pas',
+  JvDesktopAlert in 'lib\JvDesktopAlert.pas',
+  JvDesktopAlertForm in 'lib\JvDesktopAlertForm.pas',
+  JvHint in 'lib\JvHint.pas',
+  JvListView in 'lib\JvListView.pas',
+  Menus in 'lib\Menus.pas',
+  OverbyteIcsLIBEAY in 'lib\OverbyteIcsLIBEAY.pas',
+  OverbyteIcsSSLEAY in 'lib\OverbyteIcsSSLEAY.pas',
+  rXML in 'lib\rXML.pas',
+  SimpleXML in 'lib\SimpleXML.pas',
+  XMLStand in 'lib\XMLStand.pas';
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -58,12 +63,11 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.Title := 'IMadering';
   // Устанавливаем приоритет приложению
-  SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
-  SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_HIGHEST);
+  //SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
+  //SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_HIGHEST);
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TGTransForm, GTransForm);
   ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

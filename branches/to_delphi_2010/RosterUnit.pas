@@ -49,7 +49,6 @@ type
     function ReqCLContact(CId: string): TButtonItem;
     function ReqChatPage(CId: string): TTabSheet;
     procedure RosterItemSetFull(SItem: TListItem);
-    procedure AddHistory(CItem: TListItem; CMsgD, CMess: string);
     procedure OpenChatPage(cButton: TButtonItem);
     procedure DellcIdInMessList(CId: string);
   end;
@@ -160,45 +159,6 @@ begin
     // Ставим фокус в поле ввода текста
     if (InputRichEdit.CanFocus) and (Visible) then
       InputRichEdit.SetFocus;
-  end;
-end;
-
-procedure TRosterForm.AddHistory(CItem: TListItem; CMsgD, CMess: string);
-var
-  HistoryFile, HFile: string;
-begin
-  with CItem do
-  begin
-    { // Проверяем загружена ли история уже
-      if SubItems[13] = EmptyStr then
-      begin
-      // Загружаем файл истории сообщений
-      HistoryFile := ProfilePath + 'Profile\History\' + SubItems[3]
-      + '_' + Caption + '.z';
-      if FileExists(HistoryFile) then
-      begin
-      try
-      // Распаковываем файл с историей
-      UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
-      // Записываем историю в хранилище у этого контакта
-      hFile := ProfilePath + 'Profile\History\' + SubItems[3]
-      + '_History.htm';
-      SubItems[13] := ReadFromFile(hFile);
-      // Удаляем уже не нужный распакованный файл с историей
-      if FileExists(hFile) then
-      DeleteFile(hFile);
-      except
-      on E: Exception do
-      TLogger.Instance.WriteMessage(E);
-      end;
-      end;
-      end;
-      // Добавляем историю в этот контакт
-      SubItems[13] := SubItems[13] + '<span class=b>' + cMsgD +
-      '</span><br><span class=c>' + cMess + '</span><br><br>' + #13#10;
-      // Ставим флаг этому контакту, что есть непрочитанные сообщения
-      SubItems[17] := 'X';
-      SubItems[36] := 'X'; }
   end;
 end;
 

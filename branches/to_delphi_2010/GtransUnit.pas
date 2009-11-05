@@ -16,6 +16,7 @@ type
     ToLangComboBox: TComboBox;
     GtransHttpClient: THttpCli;
     procedure FormCreate(Sender: TObject);
+    procedure OKBitBtnClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -30,14 +31,26 @@ implementation
 
 {$R *.dfm}
 
+uses
+  MainUnit;
+
 procedure TGTransForm.GetTranslation(GText: string);
 begin
   //
 end;
 
+procedure TGTransForm.OKBitBtnClick(Sender: TObject);
+begin
+  // Активируем режим перевода для этого контакта
+
+end;
+
 procedure TGTransForm.FormCreate(Sender: TObject);
 begin
-  //
+  // Устанавливаем иконки
+  MainForm.AllImageList.GetIcon(246, Icon);
+  MainForm.AllImageList.GetBitmap(139, CancelBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
 end;
 
 end.
