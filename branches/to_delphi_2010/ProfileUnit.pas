@@ -38,6 +38,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    procedure TranslateForm;
   end;
 
 var
@@ -52,6 +53,13 @@ uses
   VarsUnit,
   UtilsUnit;
 
+procedure TProfileForm.TranslateForm;
+begin
+  // Создаём шаблон для перевода
+  CreateLang(self);
+
+end;
+
 procedure TProfileForm.FormCreate(Sender: TObject);
 begin
   // Присваиваем иконку окну и кнопкам
@@ -64,6 +72,8 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Сведения о версии программы
   VersionLabel.Caption := Format(VersionL, [InitBuildInfo]);
+  // Переводим форму
+  TranslateForm;
 end;
 
 procedure TProfileForm.SiteLabelClick(Sender: TObject);

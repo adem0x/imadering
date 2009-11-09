@@ -5,7 +5,12 @@ unit rXML;
 interface
 
 uses
-  Windows, Classes, SysUtils, SimpleXML, XMLStand, Dialogs;
+  Windows,
+  Classes,
+  SysUtils,
+  SimpleXML,
+  XMLStand,
+  Dialogs;
 
 // Идентификатор служебного тега
 const
@@ -27,13 +32,13 @@ type
     FCurrentPath: string;
     // Делаем попытку открыть ноду на 1 уровень ниже, чем у FollowNode
     // Если нет такой ноды, а есть параметр CanCreate, то пытаемся такую ноду создать
-    function Open1Node(const AName: string; CanCreate: Boolean; Num: Integer)
-      : Boolean;
+    function Open1Node(const AName: string; CanCreate: Boolean; Num: Integer): Boolean;
     function GetNode: IXmlNode;
     function GetValueName(Index: Integer): string;
     function GetKeyName(Index: Integer): string;
     function GetText: string;
     procedure SetText(const Value: string);
+
   public
     constructor Create;
     procedure CloseKey;
@@ -44,8 +49,7 @@ type
     procedure GetValueNames(Strings: TStrings);
     function HasSubKeys: Boolean;
     function KeyExists(const Key: string): Boolean;
-    function OpenKey(const Key: string; CanCreate: Boolean = False;
-      Num: Integer = 0): Boolean;
+    function OpenKey(const Key: string; CanCreate: Boolean = False; Num: Integer = 0): Boolean;
     function GetKeyCount(const Name: string = ''): Integer;
     function GetValueCount: Integer;
     function ReadBool(const Name: string; Default: Boolean = False): Boolean;
@@ -85,8 +89,7 @@ type
     property KeyCount[const AName: string]: Integer read GetKeyCount;
     property ValueCount: Integer read GetValueCount;
     property KeyXML: string read GetKeyXML write SetKeyXML;
-    property KeyValues[const AName: string]
-      : string read GetKeyValue write SetKeyValue;
+    property KeyValues[const AName: string]: string read GetKeyValue write SetKeyValue;
   end;
 
 implementation
@@ -246,15 +249,15 @@ end;
 function TrXML.GetText: string;
 
 // Строка из начала подлежит уничтожению
-  function IsForDelete(const S: string): Boolean;
-  begin
-    Result := True;
-    if Trim(S) = '' then
-      Exit;
-    if AnsiCompareText(ServiceTag, Copy(S, 1, length(ServiceTag))) = 0 then
-      Exit;
-    Result := False;
-  end;
+function IsForDelete(const S: string): Boolean;
+begin
+  Result := True;
+  if Trim(S) = EmptyStr then
+    Exit;
+  if AnsiCompareText(ServiceTag, Copy(S, 1, length(ServiceTag))) = 0 then
+    Exit;
+  Result := False;
+end;
 
 var
   Strings: TStringList;
@@ -307,8 +310,7 @@ begin
   CloseKey;
 end;
 
-function TrXML.Open1Node(const AName: string; CanCreate: Boolean; Num: Integer)
-  : Boolean;
+function TrXML.Open1Node(const AName: string; CanCreate: Boolean; Num: Integer): Boolean;
 var
   I: IXmlNode;
   n, j: Integer;
@@ -351,19 +353,10 @@ begin
     Exit;
   end;
   // Необходимо создать ноду
-  { n := I.ChildNodes.Count;
-    I.AppendElement(AName);
-    if n = I.ChildNodes.Count then
-    begin
-    Result := false;
-    Exit;
-    end;
-    FFollowNode := I.ChildNodes[ I.ChildNodes.Count - 1 ]; }
   FFollowNode := I.AppendElement(AName);
 end;
 
-function TrXML.OpenKey(const Key: string; CanCreate: Boolean; Num: Integer)
-  : Boolean;
+function TrXML.OpenKey(const Key: string; CanCreate: Boolean; Num: Integer): Boolean;
 var
   LastFollowNode: IXmlNode;
   S, S1, sOldPath: string;
@@ -560,31 +553,31 @@ procedure TrXML.Merge(const aText: string);
 var
   x: TrXML;
 
-  procedure __appendxml(aCanCreate: Boolean);
-  var
-    I: Integer;
-    k, S: string;
+procedure __appendxml(aCanCreate: Boolean);
+var
+  I: Integer;
+  k, S: string;
+begin
+  for I := 0 to x.ValueCount - 1 do
   begin
-    for I := 0 to x.ValueCount - 1 do
+    k := x.ValueNames[I];
+    S := x.ReadString(k);
+    WriteString(k, S);
+  end;
+  for I := 0 to x.KeyCount[''] - 1 do
+  begin
+    k := x.KeyNames[I];
+    if x.OpenKey(k, aCanCreate) then
     begin
-      k := x.ValueNames[I];
-      S := x.ReadString(k);
-      WriteString(k, S);
-    end;
-    for I := 0 to x.KeyCount[''] - 1 do
-    begin
-      k := x.KeyNames[I];
-      if x.OpenKey(k, aCanCreate) then
+      if OpenKey(k, aCanCreate) then
       begin
-        if OpenKey(k, aCanCreate) then
-        begin
-          __appendxml(True);
-          OpenKey('..', False);
-        end;
-        x.OpenKey('..', False);
+        __appendxml(True);
+        OpenKey('..', False);
       end;
+      x.OpenKey('..', False);
     end;
   end;
+end;
 
 begin
   OpenKey('\');

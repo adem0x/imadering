@@ -39,7 +39,8 @@ uses
   Mraprotounit,
   Rxml,
   LogUnit,
-  JclCompression;
+  JclCompression,
+  Buttons;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure Listfiledirhist(Path, Ext, Eext: string; Filelist: Tstrings);
@@ -119,8 +120,71 @@ function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 function CreateHistoryArhive(HFile: string): Boolean;
 procedure SaveTextInHistory(LogString: string; LogFileName: string);
+procedure CreateLang(Xform: Tform);
 
 implementation
+
+procedure CreateLang(Xform: Tform);
+var
+  I: Integer;
+  cf: string;
+begin
+  // Создаём необходимые папки
+  ForceDirectories(MyPath + 'Langs\');
+  with TrXML.Create() do
+    try
+      // Записываем заголовок формы
+      cf := 'language\' + Xform.Name + '\';
+      if OpenKey(cf, True) then
+        try
+          WriteString('c', Xform.Caption);
+        finally
+          CloseKey();
+        end;
+      // Просматриваем все контролы на форме
+      for I := 0 to Xform.ComponentCount - 1 do
+      begin
+        // Если это TLabel
+        if (Xform.Components[I] is TLabel) then
+        begin
+          if OpenKey(cf + Xform.Components[I].Name, true) then
+            try
+              WriteString('c', (Xform.Components[I] as TLabel).Caption);
+            finally
+              CloseKey();
+            end;
+        end;
+        // Если это TButton
+        //else if (Xform.Components[I] is TButton) then
+        //begin
+          {if OpenKey(cf + 'cvbvcb', True) then
+            try
+              WriteString('c', 'fgfdgdf');
+            finally
+              CloseKey();
+            end;
+            xlog(Text);
+        //end
+        // Если это TBitBtn
+        //else if (Xform.Components[I] is TBitBtn) then
+        //begin
+          if OpenKey(cf + 'mnjyu', True) then
+            try
+              WriteString('c', 'fhjyui');
+            finally
+              CloseKey();
+            end;
+        //end;}
+      end;
+      // Записываем сам файл
+
+      xlog(Text);
+
+      SaveToFile(MyPath + 'Langs\' + Xform.Name + '.xml');
+    finally
+      Free();
+    end;
+end;
 
 procedure SaveTextInHistory(LogString: string; LogFileName: string);
 var
@@ -163,7 +227,8 @@ end;
 procedure XLog(XLogData: string);
 begin
   // Если запись лога выключена, то выходим
-  if not LogForm.WriteLogSpeedButton.Down then Exit;
+  if not LogForm.WriteLogSpeedButton.Down then
+    Exit;
   // Если количество строк в логе слишком большое, то очищаем его
   if LogForm.LogMemo.Lines.Count > 5000 then
   begin
@@ -270,35 +335,35 @@ begin
   Getcitypanel := EmptyStr;
   Getagepanel := EmptyStr;
   // Ищем файл с анкетой этого контакта
-  if FileExists(Profilepath + Anketafilename + Cproto + '_' + Cid + '.xml') then
+  if FileExists(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml') then
   begin
     // Инициализируем XML
-    with Trxml.Create() do
+    with TrXML.Create() do
       try
-        Loadfromfile(Profilepath + Anketafilename + Cproto + '_' + Cid + '.xml');
+        Loadfromfile(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml');
         // Загружаем Имя и Фамилию
-        if Openkey('profile\name-info') then
+        if OpenKey('profile\name-info') then
           try
             Ln := Readstring('first');
             Lf := Readstring('last');
           finally
-            Closekey;
+            CloseKey;
           end;
         // Загружаем Город
-        if Openkey('profile\home-info') then
+        if OpenKey('profile\home-info') then
           try
             Getcitypanel := Readstring('city');
           finally
-            Closekey;
+            CloseKey;
           end;
         // Загружаем Возраст
-        if Openkey('profile\age-info') then
+        if OpenKey('profile\age-info') then
           try
             La := Readstring('age');
             if La <> '0' then
               Getagepanel := Infoagel + ' ' + La;
           finally
-            Closekey;
+            CloseKey;
           end;
       finally
         Free();
@@ -1809,13 +1874,13 @@ begin
   with Tregistry.Create do
     try
       Rootkey := Hkey_classes_root;
-      Openkey('\http\shell\open\command', False);
+      OpenKey('\http\shell\open\command', False);
       try
         Ts := Readstring(EmptyStr);
       except
         Ts := EmptyStr;
       end;
-      Closekey;
+      CloseKey;
     finally
       Free;
     end;
@@ -1847,7 +1912,7 @@ var
   FSaveCreationDateTime: IJclArchiveSaveCreationDateTime;
   FSaveLastAccessDateTime: IJclArchiveSaveLastAccessDateTime;
   HArhFile: string;
-  N: integer;
+  N: Integer;
 begin
   Result := False;
   // Проверяем размер файла истории

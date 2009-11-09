@@ -4,15 +4,15 @@ unit XMLStand;
 
 interface
 
-uses SysUtils;
+uses
+  SysUtils;
 
 type
   TCharSet = TSysCharSet;
 
 function WordCount(const S: string; const WordDelims: TCharSet): Integer;
 
-function ExtractWord(N: Integer; const S: string; const WordDelims: TCharSet)
-  : string;
+function ExtractWord(N: Integer; const S: string; const WordDelims: TCharSet): string;
 
 const
   DateSeparatorFix: Char = '.';
@@ -21,9 +21,12 @@ const
   ShortTimeFormatFix = 'hh:nn:ss';
 
 function IIF(Switch: Boolean; Var1, Var2: Variant): Variant;
+
 {$IFDEF POLARIS_D4} overload;
 function IIF(Switch: Boolean; Var1, Var2: string): string; overload;
+
 {$ENDIF}
+
 function StrToDateFix(const S: string): TDateTime;
 function StrToTimeFix(const S: string): TDateTime;
 function StrToDateTimeFix(const S: string): TDateTime;
@@ -33,8 +36,7 @@ function DateTimeToStrFix(DateTime: TDateTime): string;
 
 implementation
 
-function WordPosition(const N: Integer; const S: string;
-  const WordDelims: TCharSet): Integer;
+function WordPosition(const N: Integer; const S: string; const WordDelims: TCharSet): Integer;
 var
   Count, I: Integer;
 begin
@@ -76,8 +78,7 @@ begin
   end;
 end;
 
-function ExtractWord(N: Integer; const S: string; const WordDelims: TCharSet)
-  : string;
+function ExtractWord(N: Integer; const S: string; const WordDelims: TCharSet): string;
 var
   I: Integer;
   Len: Integer;
@@ -98,13 +99,16 @@ begin
 end;
 
 function IIF(Switch: Boolean; Var1, Var2: Variant): Variant;
+
 {$IFDEF POLARIS_D4} overload; {$ENDIF}
+
 begin
   if Switch then
     Result := Var1
   else
     Result := Var2;
 end;
+
 {$IFDEF POLARIS_D4}
 
 function IIF(Switch: Boolean; Var1, Var2: string): string; overload;
@@ -114,6 +118,7 @@ begin
   else
     Result := Var2;
 end;
+
 {$ENDIF}
 
 function StrToDateFix(const S: string): TDateTime;

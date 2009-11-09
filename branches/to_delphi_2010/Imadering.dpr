@@ -70,7 +70,6 @@ begin
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TProfileForm, ProfileForm);
   ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

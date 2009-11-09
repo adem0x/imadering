@@ -304,7 +304,7 @@ object MainForm: TMainForm
     end
   end
   object ICQTrayIcon: TTrayIcon
-    Hint = 'IMadering ICQ'
+    Hint = 'ICQ'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
@@ -358,7 +358,7 @@ object MainForm: TMainForm
     Active = True
     Events = <
       item
-        Name = 'MainFormShowTimer'
+        Name = 'ProfileFormShowTimer'
         Cycled = False
         Enabled = False
         Interval = 1
@@ -513,7 +513,7 @@ object MainForm: TMainForm
     end
   end
   object MRATrayIcon: TTrayIcon
-    Hint = 'IMadering MRA'
+    Hint = 'MRA'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
@@ -522,7 +522,7 @@ object MainForm: TMainForm
     Top = 64
   end
   object JabberTrayIcon: TTrayIcon
-    Hint = 'IMadering Jabber'
+    Hint = 'Jabber'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
@@ -1367,5 +1367,30 @@ object MainForm: TMainForm
     OnException = IMaderingEventsException
     Left = 48
     Top = 168
+  end
+  object xTrayIcon: TTrayIcon
+    Hint = 'IMadering'
+    Icons = AllImageList
+    PopupMenu = xTrayPopupMenu
+    Left = 80
+    Top = 168
+  end
+  object xTrayPopupMenu: TPopupMenu
+    Images = AllImageList
+    Left = 80
+    Top = 200
+    object HidexTrayMenu: TMenuItem
+      Caption = #1057#1082#1088#1099#1090#1100' IMadering'
+      ImageIndex = 4
+      OnClick = HidexTrayMenuClick
+    end
+    object N24: TMenuItem
+      Caption = '-'
+    end
+    object ClosexTrayMenu: TMenuItem
+      Caption = #1042#1099#1081#1090#1080' '#1080#1079' IMadering'
+      ImageIndex = 3
+      OnClick = CloseProgramClick
+    end
   end
 end

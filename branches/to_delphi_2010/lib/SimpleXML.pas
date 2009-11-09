@@ -30,7 +30,9 @@ unit SimpleXML;
 interface
 
 uses
-  Windows, SysUtils, Classes;
+  Windows,
+  SysUtils,
+  Classes;
 
 const
   BinXmlSignatureSize = Length('< binary-xml >');
@@ -168,20 +170,15 @@ type
 
     // AppendProcessingInstruction - создает инструкцию и добавляет её
     // в конец списка дочерних объектов
-    function AppendProcessingInstruction(aTargetID: Integer;
-      const aData: TXmlString): IXmlProcessingInstruction; overload;
-    function AppendProcessingInstruction(const aTarget: TXmlString;
-      const aData: TXmlString): IXmlProcessingInstruction; overload;
+    function AppendProcessingInstruction(aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction; overload;
+    function AppendProcessingInstruction(const aTarget: TXmlString; const aData: TXmlString): IXmlProcessingInstruction; overload;
 
     // GetChildText - возвращает значение дочернего узла
     // SetChildText - добавляет или изменяет значение дочернего узла
-    function GetChildText(const aName: TXmlString;
-      const aDefault: TXmlString = ''): TXmlString; overload;
-    function GetChildText(aNameID: Integer; const aDefault: TXmlString = '')
-      : TXmlString; overload;
+    function GetChildText(const aName: TXmlString; const aDefault: TXmlString = ''): TXmlString; overload;
+    function GetChildText(aNameID: Integer; const aDefault: TXmlString = ''): TXmlString; overload;
     procedure SetChildText(const aName, aValue: TXmlString); overload;
-    procedure SetChildText(aNameID: Integer; const aValue: TXmlString);
-      overload;
+    procedure SetChildText(aNameID: Integer; const aValue: TXmlString); overload;
 
     // NeedChild - возвращает дочерний узел с указанным именем.
     // Если узел не найден, то генерируется исключение
@@ -204,8 +201,7 @@ type
     function SelectSingleNode(const anExpression: TXmlString): IXmlNode;
     // FindElement - производит поиск первого узла, удовлетворяющего
     // указанным критериям
-    function FindElement(const anElementName, anAttrName: String;
-      const anAttrValue: Variant): IXmlElement;
+    function FindElement(const anElementName, anAttrName: String; const anAttrValue: Variant): IXmlElement;
 
     // Get_AttrCount - возвращает количество атрибутов
     function Get_AttrCount: Integer;
@@ -232,10 +228,8 @@ type
     // GetVarAttr - возвращает типизированное значение указанного атрибута.
     // Если атрибут не задан, то возвращается значение по умолчанию
     // SetAttr - изменяет или добавляет указанный атрибут
-    function GetVarAttr(aNameID: Integer; const aDefault: Variant): Variant;
-      overload;
-    function GetVarAttr(const aName: TXmlString; const aDefault: Variant)
-      : Variant; overload;
+    function GetVarAttr(aNameID: Integer; const aDefault: Variant): Variant; overload;
+    function GetVarAttr(const aName: TXmlString; const aDefault: Variant): Variant; overload;
     procedure SetVarAttr(aNameID: Integer; const aValue: Variant); overload;
     procedure SetVarAttr(const aName: TXmlString; aValue: Variant); overload;
 
@@ -247,52 +241,41 @@ type
     // GetAttr - возвращает строковое значение указанного атрибута.
     // Если атрибут не задан, то возвращается значение по умолчанию
     // SetAttr - изменяет или добавляет указанный атрибут
-    function GetAttr(aNameID: Integer; const aDefault: TXmlString = '')
-      : TXmlString; overload;
-    function GetAttr(const aName: TXmlString; const aDefault: TXmlString = '')
-      : TXmlString; overload;
+    function GetAttr(aNameID: Integer; const aDefault: TXmlString = ''): TXmlString; overload;
+    function GetAttr(const aName: TXmlString; const aDefault: TXmlString = ''): TXmlString; overload;
     procedure SetAttr(aNameID: Integer; const aValue: TXmlString); overload;
     procedure SetAttr(const aName, aValue: TXmlString); overload;
 
     // GetBoolAttr - возвращает целочисленное значение указанного атрибута
     // SetBoolAttr - изменяет или добавляет указанный атрибут целочисленным
     // значением
-    function GetBoolAttr(aNameID: Integer; aDefault: Boolean = False): Boolean;
-      overload;
-    function GetBoolAttr(const aName: TXmlString; aDefault: Boolean = False)
-      : Boolean; overload;
+    function GetBoolAttr(aNameID: Integer; aDefault: Boolean = False): Boolean; overload;
+    function GetBoolAttr(const aName: TXmlString; aDefault: Boolean = False): Boolean; overload;
     procedure SetBoolAttr(aNameID: Integer; aValue: Boolean = False); overload;
     procedure SetBoolAttr(const aName: TXmlString; aValue: Boolean); overload;
 
     // GetIntAttr - возвращает целочисленное значение указанного атрибута
     // SetIntAttr - изменяет или добавляет указанный атрибут целочисленным
     // значением
-    function GetIntAttr(aNameID: Integer; aDefault: Integer = 0): Integer;
-      overload;
-    function GetIntAttr(const aName: TXmlString; aDefault: Integer = 0)
-      : Integer; overload;
+    function GetIntAttr(aNameID: Integer; aDefault: Integer = 0): Integer; overload;
+    function GetIntAttr(const aName: TXmlString; aDefault: Integer = 0): Integer; overload;
     procedure SetIntAttr(aNameID: Integer; aValue: Integer); overload;
     procedure SetIntAttr(const aName: TXmlString; aValue: Integer); overload;
 
     // GetDateTimeAttr - возвращает целочисленное значение указанного атрибута
     // SetDateTimeAttr - изменяет или добавляет указанный атрибут целочисленным
     // значением
-    function GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime = 0)
-      : TDateTime; overload;
-    function GetDateTimeAttr(const aName: TXmlString; aDefault: TDateTime = 0)
-      : TDateTime; overload;
+    function GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime = 0): TDateTime; overload;
+    function GetDateTimeAttr(const aName: TXmlString; aDefault: TDateTime = 0): TDateTime; overload;
     procedure SetDateTimeAttr(aNameID: Integer; aValue: TDateTime); overload;
-    procedure SetDateTimeAttr(const aName: TXmlString; aValue: TDateTime);
-      overload;
+    procedure SetDateTimeAttr(const aName: TXmlString; aValue: TDateTime); overload;
 
     // GetFloatAttr - возвращает значение указанного атрибута в виде
     // вещественного числа
     // SetFloatAttr - изменяет или добавляет указанный атрибут вещественным
     // значением
-    function GetFloatAttr(aNameID: Integer; aDefault: Double = 0): Double;
-      overload;
-    function GetFloatAttr(const aName: TXmlString; aDefault: Double = 0)
-      : Double; overload;
+    function GetFloatAttr(aNameID: Integer; aDefault: Double = 0): Double; overload;
+    function GetFloatAttr(const aName: TXmlString; aDefault: Double = 0): Double; overload;
     procedure SetFloatAttr(aNameID: Integer; aValue: Double); overload;
     procedure SetFloatAttr(const aName: TXmlString; aValue: Double); overload;
 
@@ -308,29 +291,20 @@ type
     // генерируется исключение.
     // Если атрибут не был задан, до он будет добавлен.
     // Если был задан, то будет изменен.
-    function GetHexAttr(const aName: TXmlString; aDefault: Integer = 0)
-      : Integer; overload;
-    function GetHexAttr(aNameID: Integer; aDefault: Integer = 0): Integer;
-      overload;
-    procedure SetHexAttr(const aName: TXmlString; aValue: Integer;
-      aDigits: Integer = 8); overload;
-    procedure SetHexAttr(aNameID: Integer; aValue: Integer;
-      aDigits: Integer = 8); overload;
+    function GetHexAttr(const aName: TXmlString; aDefault: Integer = 0): Integer; overload;
+    function GetHexAttr(aNameID: Integer; aDefault: Integer = 0): Integer; overload;
+    procedure SetHexAttr(const aName: TXmlString; aValue: Integer; aDigits: Integer = 8); overload;
+    procedure SetHexAttr(aNameID: Integer; aValue: Integer; aDigits: Integer = 8); overload;
 
     // GetEnumAttr - ищет значение атрибута в указанном списке строк и
     // возвращает индекс	найденной строки. Если атрибут задан но не найден
     // в списке, то генерируется исключение.
     // Если атрибут не задан, возвращается значение параметра aDefault.
-    function GetEnumAttr(const aName: TXmlString;
-      const aValues: array of TXmlString; aDefault: Integer = 0): Integer;
-      overload;
-    function GetEnumAttr(aNameID: Integer; const aValues: array of TXmlString;
-      aDefault: Integer = 0): Integer; overload;
+    function GetEnumAttr(const aName: TXmlString; const aValues: array of TXmlString; aDefault: Integer = 0): Integer; overload;
+    function GetEnumAttr(aNameID: Integer; const aValues: array of TXmlString; aDefault: Integer = 0): Integer; overload;
 
-    function NeedEnumAttr(const aName: TXmlString;
-      const aValues: array of TXmlString): Integer; overload;
-    function NeedEnumAttr(aNameID: Integer; const aValues: array of TXmlString)
-      : Integer; overload;
+    function NeedEnumAttr(const aName: TXmlString; const aValues: array of TXmlString): Integer; overload;
+    function NeedEnumAttr(aNameID: Integer; const aValues: array of TXmlString): Integer; overload;
 
     function Get_Values(const aName: String): Variant;
     procedure Set_Values(const aName: String; const aValue: Variant);
@@ -355,8 +329,7 @@ type
     property DataType: Integer read Get_DataType;
     property TypedValue: Variant read Get_TypedValue write Set_TypedValue;
     property XML: TXmlString read Get_XML;
-    property Values[const aName: String]
-      : Variant read Get_Values write Set_Values; default;
+    property Values[const aName: String]: Variant read Get_Values write Set_Values; default;
     procedure LoadNodeXML(const aXML: TXmlString);
   end;
 
@@ -404,20 +377,16 @@ type
     function Get_PreserveWhiteSpace: Boolean;
     procedure Set_PreserveWhiteSpace(aValue: Boolean);
 
-    function NewDocument(const aVersion, anEncoding: TXmlString;
-      aRootElementNameID: Integer): IXmlElement; overload;
-    function NewDocument(const aVersion, anEncoding,
-      aRootElementName: TXmlString): IXmlElement; overload;
+    function NewDocument(const aVersion, anEncoding: TXmlString; aRootElementNameID: Integer): IXmlElement; overload;
+    function NewDocument(const aVersion, anEncoding, aRootElementName: TXmlString): IXmlElement; overload;
 
     function CreateElement(aNameID: Integer): IXmlElement; overload;
     function CreateElement(const aName: TXmlString): IXmlElement; overload;
     function CreateText(const aData: TXmlString): IXmlText;
     function CreateCDATASection(const aData: TXmlString): IXmlCDATASection;
     function CreateComment(const aData: TXmlString): IXmlComment;
-    function CreateProcessingInstruction(const aTarget, aData: TXmlString)
-      : IXmlProcessingInstruction; overload;
-    function CreateProcessingInstruction(aTargetID: Integer;
-      const aData: TXmlString): IXmlProcessingInstruction; overload;
+    function CreateProcessingInstruction(const aTarget, aData: TXmlString): IXmlProcessingInstruction; overload;
+    function CreateProcessingInstruction(aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction; overload;
 
     procedure LoadXML(const aXML: TXmlString);
     procedure LoadBinaryXML(const aXML: String);
@@ -431,23 +400,19 @@ type
     procedure Save(const aFileName: TXmlString); overload;
 
     procedure SaveBinary(aStream: TStream; anOptions: LongWord = 0); overload;
-    procedure SaveBinary(const aFileName: TXmlString; anOptions: LongWord = 0);
-      overload;
+    procedure SaveBinary(const aFileName: TXmlString; anOptions: LongWord = 0); overload;
 
-    property PreserveWhiteSpace: Boolean read Get_PreserveWhiteSpace write
-      Set_PreserveWhiteSpace;
+    property PreserveWhiteSpace: Boolean read Get_PreserveWhiteSpace write Set_PreserveWhiteSpace;
     property DocumentElement: IXmlElement read Get_DocumentElement;
     property BinaryXML: String read Get_BinaryXML;
   end;
 
 function CreateNameTable(aHashTableSize: Integer = 4096): IXmlNameTable;
-function CreateXmlDocument(const aRootElementName: String = '';
-  const aVersion: String = '1.0'; const anEncoding: String = '';
+function CreateXmlDocument(const aRootElementName: String = ''; const aVersion: String = '1.0'; const anEncoding: String = '';
   // SimpleXmlDefaultEncoding
   const aNames: IXmlNameTable = nil): IXmlDocument;
 
-function CreateXmlElement(const aName: TXmlString;
-  const aNameTable: IXmlNameTable = nil): IXmlElement;
+function CreateXmlElement(const aName: TXmlString; const aNameTable: IXmlNameTable = nil): IXmlElement;
 function LoadXmlDocumentFromXML(const aXML: TXmlString): IXmlDocument;
 function LoadXmlDocumentFromBinaryXML(const aXML: String): IXmlDocument;
 
@@ -455,21 +420,22 @@ function LoadXmlDocument(aStream: TStream): IXmlDocument; overload;
 function LoadXmlDocument(const aFileName: TXmlString): IXmlDocument; overload;
 function LoadXmlDocument(aResType, aResName: PChar): IXmlDocument; overload;
 
+const
+  RN = #13#10;
+
 var
   DefaultNameTable: IXmlNameTable = nil;
   DefaultPreserveWhiteSpace: Boolean = False;
   DefaultEncoding: String = 'UTF-16';
-  DefaultIndentText: String = ^I;
+  DefaultIndentText: String = #$09;
 
 resourcestring
-  SSimpleXmlError1 =
-    'Ошибка получения элемента списка: индекс выходит за пределы';
+  SSimpleXmlError1 = 'Ошибка получения элемента списка: индекс выходит за пределы';
   SSimpleXmlError2 = 'Не завершено определение элемента';
   SSimpleXmlError3 = 'Некорретный символ в имени элемента';
   SSimpleXmlError4 = 'Ошибка чтения двоичного XML: некорректный тип узла';
   SSimpleXmlError5 = 'Ошибка записи двоичного XML: некорректный тип узла';
-  SSimpleXmlError6 = 'Неверное значение атрибута "%s" элемента "%s".'^M^J +
-    'Допустимые значения:'^M^J + '%s';
+  SSimpleXmlError6 = 'Неверное значение атрибута "%s" элемента "%s".' + RN + 'Допустимые значения:' + RN + '%s';
   SSimpleXmlError7 = 'Не найден атрибут "%s"';
   SSimpleXmlError8 = 'Не задан атрибут "%s"';
   SSimpleXmlError9 = 'Данная возможность не поддерживается SimpleXML';
@@ -481,8 +447,7 @@ resourcestring
   SSimpleXmlError15 = 'Некорректное имя управляющего символа';
   SSimpleXmlError16 = 'Ожидается "%s"';
   SSimpleXmlError17 = 'Ожидается "%s"';
-  SSimpleXmlError18 =
-    'Символ "<" не может использоваться в значениях атрибутов';
+  SSimpleXmlError18 = 'Символ "<" не может использоваться в значениях атрибутов';
   SimpleXmlError19 = 'Ожидается "%s"';
   SSimpleXmlError20 = 'Ожидается значение атрибута';
   SSimpleXmlError21 = 'Ожидается строковая константа';
@@ -493,7 +458,7 @@ resourcestring
 
 function XSTRToFloat(s: TXmlString): Double;
 function FloatToXSTR(v: Double): TXmlString;
-function DateTimeToXSTR(v: TDateTime): TXmlString;
+//function DateTimeToXSTR(v: TDateTime): TXmlString;
 function VarToXSTR(const v: TVarData): TXmlString;
 
 function TextToXML(const aText: TXmlString): TXmlString;
@@ -502,13 +467,12 @@ function TextToXML(const aText: TXmlString): TXmlString;
 function IsXmlDataString(const aData: String): Boolean;
 function XmlIsInBinaryFormat(const aData: String): Boolean;
 procedure PrepareToSaveXml(var anElem: IXmlElement; const aChildName: String);
-function PrepareToLoadXml(var anElem: IXmlElement; const aChildName: String)
-  : Boolean;
+function PrepareToLoadXml(var anElem: IXmlElement; const aChildName: String): Boolean;
 
 implementation
 
 uses
-  Variants, DateUtils;
+  Variants;
 
 function TextToXML(const aText: TXmlString): TXmlString;
 var
@@ -593,26 +557,26 @@ begin
     Result[aPos] := '.';
 end;
 
-function XSTRToDateTime(const s: String): TDateTime;
+{function XSTRToDateTime(const s: String): TDateTime;
 var
   aPos: Integer;
 
-  function FetchTo(aStop: Char): Integer;
-  var
-    I: Integer;
-  begin
-    I := aPos;
-    while (I <= Length(s)) and (CharInSet(s[I], ['0' .. '9'])) do
-      Inc(I);
-    if I > aPos then
-      Result := StrToInt(Copy(s, aPos, I - aPos))
-    else
-      Result := 0;
-    if (I <= Length(s)) and (s[I] = aStop) then
-      aPos := I + 1
-    else
-      aPos := Length(s) + 1;
-  end;
+function FetchTo(aStop: Char): Integer;
+var
+  I: Integer;
+begin
+  I := aPos;
+  while (I <= Length(s)) and (CharInSet(s[I], ['0' .. '9'])) do
+    Inc(I);
+  if I > aPos then
+    Result := StrToInt(Copy(s, aPos, I - aPos))
+  else
+    Result := 0;
+  if (I <= Length(s)) and (s[I] = aStop) then
+    aPos := I + 1
+  else
+    aPos := Length(s) + 1;
+end;
 
 var
   y, M, d, h, n, ss: Integer;
@@ -633,7 +597,7 @@ var
 begin
   DecodeDateTime(v, y, M, d, h, n, s, ms);
   Result := Format('%.4d-%.2d-%.2dT%.2d-%.2d-%.2d', [y, M, d, h, n, s])
-end;
+end;}
 
 function VarToXSTR(const v: TVarData): TXmlString;
 const
@@ -654,8 +618,8 @@ begin
       Result := FloatToXSTR(v.VDouble);
     varCurrency:
       Result := FloatToXSTR(v.VCurrency);
-    varDate:
-      Result := DateTimeToXSTR(v.VDate);
+    {varDate:
+      Result := DateTimeToXSTR(v.VDate);}
     varOleStr:
       Result := v.VOleStr;
     varBoolean:
@@ -693,16 +657,14 @@ begin
     anElem := anElem.AppendElement(aChildName);
 end;
 
-function PrepareToLoadXml(var anElem: IXmlElement; const aChildName: String)
-  : Boolean;
+function PrepareToLoadXml(var anElem: IXmlElement; const aChildName: String): Boolean;
 begin
   if (aChildName <> '') and Assigned(anElem) then
     anElem := anElem.SelectSingleNode(aChildName).AsElement;
   Result := Assigned(anElem);
 end;
 
-function LoadXMLResource(aModule: HMODULE; aName, aType: PChar;
-  const aXMLDoc: IXmlDocument): Boolean;
+function LoadXMLResource(aModule: HMODULE; aName, aType: PChar; const aXMLDoc: IXmlDocument): Boolean;
 var
   aRSRC: HRSRC;
   aGlobal: HGLOBAL;
@@ -906,6 +868,7 @@ type
   TBinXmlReader = class
   private
     FOptions: LongWord;
+
   public
     procedure Read(var aBuf; aSize: Integer); virtual; abstract;
 
@@ -922,6 +885,7 @@ type
     FOptions: LongWord;
     FBufStart, FBufEnd, FBufPtr: PChar;
     FBufSize, FRestSize: Integer;
+
   public
     constructor Create(aStream: TStream; aBufSize: Integer);
     destructor Destroy; override;
@@ -935,6 +899,7 @@ type
     FOptions: LongWord;
     FPtr: PChar;
     FRestSize: Integer;
+
   public
     constructor Create(const aStr: String);
 
@@ -944,6 +909,7 @@ type
   TBinXmlWriter = class
   private
     FOptions: LongWord;
+
   public
     procedure Write(const aBuf; aSize: Integer); virtual; abstract;
 
@@ -959,9 +925,9 @@ type
     FStream: TStream;
     FBufStart, FBufEnd, FBufPtr: PChar;
     FBufSize: Integer;
+
   public
-    constructor Create(aStream: TStream; anOptions: LongWord;
-      aBufSize: Integer);
+    constructor Create(aStream: TStream; anOptions: LongWord; aBufSize: Integer);
     destructor Destroy; override;
 
     procedure Write(const aBuf; aSize: Integer); override;
@@ -973,6 +939,7 @@ type
     FBufStart, FBufEnd, FBufPtr: PChar;
     FBufSize: Integer;
     procedure FlushBuf;
+
   public
     constructor Create(anOptions: LongWord; aBufSize: Integer);
     destructor Destroy; override;
@@ -984,6 +951,7 @@ type
   protected
     // реализация интерфейса IXmlBase
     function GetObject: TObject;
+
   public
   end;
 
@@ -1000,9 +968,11 @@ type
     FXmlCommentNameID: Integer;
     FXmlDocumentNameID: Integer;
     FXmlID: Integer;
+
   protected
     function GetID(const aName: TXmlString): Integer;
     function GetName(anID: Integer): TXmlString;
+
   public
     constructor Create(aHashTableSize: Integer);
 
@@ -1050,8 +1020,7 @@ begin
   begin
     anIndex := aReader.ReadLongint;
     SetLength(FHashTable[anIndex], aReader.ReadLongint);
-    aReader.Read(FHashTable[anIndex][0], Length(FHashTable[anIndex]) * sizeof
-        (Longint));
+    aReader.Read(FHashTable[anIndex][0], Length(FHashTable[anIndex]) * sizeof(Longint));
   end;
 end;
 
@@ -1087,14 +1056,14 @@ end;
 
 function TXmlNameTable.GetID(const aName: TXmlString): Integer;
 
-  function NameHashKey(const aName: TXmlString): UINT;
-  var
-    I: Integer;
-  begin
-    Result := 0;
-    for I := 1 to Length(aName) do
-      Result := UINT((int64(Result) shl 5) + Result + Ord(aName[I]));
-  end;
+function NameHashKey(const aName: TXmlString): UINT;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 1 to Length(aName) do
+    Result := UINT((int64(Result) shl 5) + Result + Ord(aName[I]));
+end;
 
 var
   I: Integer;
@@ -1104,8 +1073,7 @@ begin
     Result := -1
   else
   begin
-    aNameIndexes := @FHashTable[NameHashKey(aName) mod UINT(Length(FHashTable))
-      ];
+    aNameIndexes := @FHashTable[NameHashKey(aName) mod UINT(Length(FHashTable))];
     for I := 0 to Length(aNameIndexes^) - 1 do
     begin
       Result := aNameIndexes^[I];
@@ -1141,6 +1109,7 @@ type
   private
     FValueBuf: TXmlString;
     FValueStart, FValuePtr, FValueEnd: PXmlChar;
+
   public
     constructor Create;
     procedure Clear;
@@ -1157,6 +1126,7 @@ type
     FTokenStackTop: Integer;
     FToken: TXmlToken;
     function ExpectQuotedText(aQuote: TXmlChar): TXmlString;
+
   public
     CurChar: TXmlChar;
     constructor Create;
@@ -1186,6 +1156,7 @@ type
   private
     FSource: TXmlString;
     FSourcePtr, FSourceEnd: PXmlChar;
+
   public
     constructor Create(const aSource: TXmlString);
     function EOF: Boolean; override;
@@ -1198,6 +1169,7 @@ type
     FBufStart, FBufPtr, FBufEnd: PChar;
     FBufSize: Integer;
     FSize: Integer;
+
   public
     constructor Create(aStream: TStream; aBufSize: Integer);
     function EOF: Boolean; override;
@@ -1212,20 +1184,20 @@ type
     FItems: array of TXmlNode;
     FCount: Integer;
     procedure Grow;
+
   protected
     function Get_Count: Integer;
     function Get_Item(anIndex: Integer): IXmlNode;
     function Get_XML: TXmlString;
+
   public
     constructor Create(anOwnerNode: TXmlNode);
     destructor Destroy; override;
 
     function IndexOf(aNode: TXmlNode): Integer;
-    procedure ParseXML(aXML: TXmlSource; aNames: TXmlNameTable;
-      aPreserveWhiteSpace: Boolean; aSkipLevel: Boolean = False);
+    procedure ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreserveWhiteSpace: Boolean; aSkipLevel: Boolean = False);
 
-    procedure LoadBinXml(aReader: TBinXmlReader; aCount: Integer;
-      aNames: TXmlNameTable);
+    procedure LoadBinXml(aReader: TBinXmlReader; aCount: Integer; aNames: TXmlNameTable);
     procedure SaveBinXml(aWriter: TBinXmlWriter);
 
     procedure Insert(aNode: TXmlNode; anIndex: Integer);
@@ -1295,21 +1267,16 @@ type
     function AppendText(const aData: TXmlString): IXmlText;
     function AppendCDATA(const aData: TXmlString): IXmlCDATASection;
     function AppendComment(const aData: TXmlString): IXmlComment;
-    function AppendProcessingInstruction(aTargetID: Integer;
-      const aData: TXmlString): IXmlProcessingInstruction; overload;
-    function AppendProcessingInstruction(const aTarget: TXmlString;
-      const aData: TXmlString): IXmlProcessingInstruction; overload;
+    function AppendProcessingInstruction(aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction; overload;
+    function AppendProcessingInstruction(const aTarget: TXmlString; const aData: TXmlString): IXmlProcessingInstruction; overload;
 
     procedure InsertBefore(const aChild, aBefore: IXmlNode);
     procedure ReplaceChild(const aNewChild, anOldChild: IXmlNode);
     procedure RemoveChild(const aChild: IXmlNode);
-    function GetChildText(const aName: TXmlString;
-      const aDefault: TXmlString = ''): TXmlString; overload;
-    function GetChildText(aNameID: Integer; const aDefault: TXmlString = '')
-      : TXmlString; overload;
+    function GetChildText(const aName: TXmlString; const aDefault: TXmlString = ''): TXmlString; overload;
+    function GetChildText(aNameID: Integer; const aDefault: TXmlString = ''): TXmlString; overload;
     procedure SetChildText(const aName, aValue: TXmlString); overload;
-    procedure SetChildText(aNameID: Integer; const aValue: TXmlString);
-      overload;
+    procedure SetChildText(aNameID: Integer; const aValue: TXmlString); overload;
 
     function NeedChild(aNameID: Integer): IXmlNode; overload;
     function NeedChild(const aName: TXmlString): IXmlNode; overload;
@@ -1320,8 +1287,7 @@ type
 
     function SelectNodes(const anExpression: TXmlString): IXmlNodeList;
     function SelectSingleNode(const anExpression: TXmlString): IXmlNode;
-    function FindElement(const anElementName, anAttrName: String;
-      const anAttrValue: Variant): IXmlElement;
+    function FindElement(const anElementName, anAttrName: String; const anAttrValue: Variant): IXmlElement;
 
     function Get_AttrCount: Integer;
     function Get_AttrNameID(anIndex: Integer): Integer;
@@ -1336,70 +1302,48 @@ type
     function GetAttrType(aNameID: Integer): Integer; overload;
     function GetAttrType(const aName: TXmlString): Integer; overload;
 
-    function GetVarAttr(aNameID: Integer; const aDefault: Variant): Variant;
-      overload;
-    function GetVarAttr(const aName: TXmlString; const aDefault: Variant)
-      : Variant; overload;
+    function GetVarAttr(aNameID: Integer; const aDefault: Variant): Variant; overload;
+    function GetVarAttr(const aName: TXmlString; const aDefault: Variant): Variant; overload;
     procedure SetVarAttr(aNameID: Integer; const aValue: Variant); overload;
     procedure SetVarAttr(const aName: TXmlString; aValue: Variant); overload;
 
     function NeedAttr(aNameID: Integer): TXmlString; overload;
     function NeedAttr(const aName: TXmlString): TXmlString; overload;
 
-    function GetAttr(aNameID: Integer; const aDefault: TXmlString = '')
-      : TXmlString; overload;
-    function GetAttr(const aName: TXmlString; const aDefault: TXmlString = '')
-      : TXmlString; overload;
+    function GetAttr(aNameID: Integer; const aDefault: TXmlString = ''): TXmlString; overload;
+    function GetAttr(const aName: TXmlString; const aDefault: TXmlString = ''): TXmlString; overload;
     procedure SetAttr(aNameID: Integer; const aValue: TXmlString); overload;
     procedure SetAttr(const aName, aValue: TXmlString); overload;
 
-    function GetBoolAttr(aNameID: Integer; aDefault: Boolean = False): Boolean;
-      overload;
-    function GetBoolAttr(const aName: TXmlString; aDefault: Boolean = False)
-      : Boolean; overload;
+    function GetBoolAttr(aNameID: Integer; aDefault: Boolean = False): Boolean; overload;
+    function GetBoolAttr(const aName: TXmlString; aDefault: Boolean = False): Boolean; overload;
     procedure SetBoolAttr(aNameID: Integer; aValue: Boolean = False); overload;
     procedure SetBoolAttr(const aName: TXmlString; aValue: Boolean); overload;
 
-    function GetIntAttr(aNameID: Integer; aDefault: Integer = 0): Integer;
-      overload;
-    function GetIntAttr(const aName: TXmlString; aDefault: Integer = 0)
-      : Integer; overload;
+    function GetIntAttr(aNameID: Integer; aDefault: Integer = 0): Integer; overload;
+    function GetIntAttr(const aName: TXmlString; aDefault: Integer = 0): Integer; overload;
     procedure SetIntAttr(aNameID: Integer; aValue: Integer); overload;
     procedure SetIntAttr(const aName: TXmlString; aValue: Integer); overload;
 
-    function GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime = 0)
-      : TDateTime; overload;
-    function GetDateTimeAttr(const aName: TXmlString; aDefault: TDateTime = 0)
-      : TDateTime; overload;
+    function GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime = 0): TDateTime; overload;
+    function GetDateTimeAttr(const aName: TXmlString; aDefault: TDateTime = 0): TDateTime; overload;
     procedure SetDateTimeAttr(aNameID: Integer; aValue: TDateTime); overload;
-    procedure SetDateTimeAttr(const aName: TXmlString; aValue: TDateTime);
-      overload;
+    procedure SetDateTimeAttr(const aName: TXmlString; aValue: TDateTime); overload;
 
-    function GetFloatAttr(aNameID: Integer; aDefault: Double = 0): Double;
-      overload;
-    function GetFloatAttr(const aName: TXmlString; aDefault: Double = 0)
-      : Double; overload;
+    function GetFloatAttr(aNameID: Integer; aDefault: Double = 0): Double; overload;
+    function GetFloatAttr(const aName: TXmlString; aDefault: Double = 0): Double; overload;
     procedure SetFloatAttr(aNameID: Integer; aValue: Double); overload;
     procedure SetFloatAttr(const aName: TXmlString; aValue: Double); overload;
 
-    function GetHexAttr(const aName: TXmlString; aDefault: Integer = 0)
-      : Integer; overload;
-    function GetHexAttr(aNameID: Integer; aDefault: Integer = 0): Integer;
-      overload;
-    procedure SetHexAttr(const aName: TXmlString; aValue: Integer;
-      aDigits: Integer = 8); overload;
-    procedure SetHexAttr(aNameID: Integer; aValue: Integer;
-      aDigits: Integer = 8); overload;
+    function GetHexAttr(const aName: TXmlString; aDefault: Integer = 0): Integer; overload;
+    function GetHexAttr(aNameID: Integer; aDefault: Integer = 0): Integer; overload;
+    procedure SetHexAttr(const aName: TXmlString; aValue: Integer; aDigits: Integer = 8); overload;
+    procedure SetHexAttr(aNameID: Integer; aValue: Integer; aDigits: Integer = 8); overload;
 
-    function GetEnumAttr(const aName: TXmlString;
-      const aValues: array of TXmlString; aDefault: Integer = 0): Integer;
-      overload;
-    function GetEnumAttr(aNameID: Integer; const aValues: array of TXmlString;
-      aDefault: Integer = 0): Integer; overload;
-    function NeedEnumAttr(const aName: TXmlString;
-      const aValues: array of TXmlString): Integer; overload;
-    function NeedEnumAttr(aNameID: Integer; const aValues: array of TXmlString)
-      : Integer; overload;
+    function GetEnumAttr(const aName: TXmlString; const aValues: array of TXmlString; aDefault: Integer = 0): Integer; overload;
+    function GetEnumAttr(aNameID: Integer; const aValues: array of TXmlString; aDefault: Integer = 0): Integer; overload;
+    function NeedEnumAttr(const aName: TXmlString; const aValues: array of TXmlString): Integer; overload;
+    function NeedEnumAttr(aNameID: Integer; const aValues: array of TXmlString): Integer; overload;
 
     function Get_Values(const aName: String): Variant;
     procedure Set_Values(const aName: String; const aValue: Variant);
@@ -1410,6 +1354,7 @@ type
     function AsComment: IXmlComment; virtual;
     function AsProcessingInstruction: IXmlProcessingInstruction; virtual;
     procedure LoadNodeXML(const aXML: TXmlString);
+
   public
     constructor Create(aNames: TXmlNameTable);
     destructor Destroy; override;
@@ -1422,6 +1367,7 @@ type
     procedure RemoveTextNodes;
     procedure SetNodeNameID(aValue: Integer); override;
     function DoCloneNode(aDeep: Boolean): IXmlNode; override;
+
   protected
     function GetChilds: TXmlNodeList; override;
 
@@ -1441,6 +1387,7 @@ type
     { procedure ReplaceTextByBynaryData(const aData; aSize: Integer;
       aMaxLineLength: Integer); }
     function GetTextAsBynaryData: TXmlString;
+
   public
     constructor Create(aNames: TXmlNameTable; aNameID: Integer);
   end;
@@ -1448,9 +1395,11 @@ type
   TXmlCharacterData = class(TXmlNode, IXmlCharacterData)
   private
     FData: TXmlString;
+
   protected
     function Get_Text: TXmlString; override;
     procedure Set_Text(const aValue: TXmlString); override;
+
   public
     constructor Create(aNames: TXmlNameTable; const aData: TXmlString);
   end;
@@ -1459,6 +1408,7 @@ type
   private
     FData: Variant;
     function DoCloneNode(aDeep: Boolean): IXmlNode; override;
+
   protected
     function Get_NodeNameID: Integer; override;
     function Get_NodeType: Integer; override;
@@ -1469,6 +1419,7 @@ type
     procedure Set_TypedValue(const aValue: Variant); override;
     function Get_XML: TXmlString; override;
     function AsText: IXmlText; override;
+
   public
     constructor Create(aNames: TXmlNameTable; const aData: Variant);
   end;
@@ -1480,6 +1431,7 @@ type
     function Get_XML: TXmlString; override;
     function AsCDATASection: IXmlCDATASection; override;
     function DoCloneNode(aDeep: Boolean): IXmlNode; override;
+
   public
   end;
 
@@ -1490,6 +1442,7 @@ type
     function Get_XML: TXmlString; override;
     function AsComment: IXmlComment; override;
     function DoCloneNode(aDeep: Boolean): IXmlNode; override;
+
   public
   end;
 
@@ -1499,6 +1452,7 @@ type
     FData: String;
     procedure SetNodeNameID(aValue: Integer); override;
     function DoCloneNode(aDeep: Boolean): IXmlNode; override;
+
   protected
     function Get_NodeNameID: Integer; override;
     function Get_NodeType: Integer; override;
@@ -1508,8 +1462,7 @@ type
     function AsProcessingInstruction: IXmlProcessingInstruction; override;
 
   public
-    constructor Create(aNames: TXmlNameTable; aTargetID: Integer;
-      const aData: TXmlString);
+    constructor Create(aNames: TXmlNameTable; aTargetID: Integer; const aData: TXmlString);
   end;
 
   TXmlDocument = class(TXmlNode, IXmlDocument)
@@ -1517,6 +1470,7 @@ type
     FPreserveWhiteSpace: Boolean;
 
     function DoCloneNode(aDeep: Boolean): IXmlNode; override;
+
   protected
     function Get_NodeNameID: Integer; override;
     function Get_NodeType: Integer; override;
@@ -1526,10 +1480,8 @@ type
     function Get_PreserveWhiteSpace: Boolean;
     procedure Set_PreserveWhiteSpace(aValue: Boolean);
 
-    function NewDocument(const aVersion, anEncoding: TXmlString;
-      aRootElementNameID: Integer): IXmlElement; overload;
-    function NewDocument(const aVersion, anEncoding,
-      aRootElementName: TXmlString): IXmlElement; overload;
+    function NewDocument(const aVersion, anEncoding: TXmlString; aRootElementNameID: Integer): IXmlElement; overload;
+    function NewDocument(const aVersion, anEncoding, aRootElementName: TXmlString): IXmlElement; overload;
 
     function CreateElement(aNameID: Integer): IXmlElement; overload;
     function CreateElement(const aName: TXmlString): IXmlElement; overload;
@@ -1537,10 +1489,8 @@ type
     function CreateCDATASection(const aData: TXmlString): IXmlCDATASection;
     function CreateComment(const aData: TXmlString): IXmlComment;
     function Get_DocumentElement: IXmlElement;
-    function CreateProcessingInstruction(const aTarget, aData: TXmlString)
-      : IXmlProcessingInstruction; overload;
-    function CreateProcessingInstruction(aTargetID: Integer;
-      const aData: TXmlString): IXmlProcessingInstruction; overload;
+    function CreateProcessingInstruction(const aTarget, aData: TXmlString): IXmlProcessingInstruction; overload;
+    function CreateProcessingInstruction(aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction; overload;
     procedure LoadXML(const aXML: TXmlString);
 
     procedure Load(aStream: TStream); overload;
@@ -1552,11 +1502,11 @@ type
     procedure Save(const aFileName: TXmlString); overload;
 
     procedure SaveBinary(aStream: TStream; anOptions: LongWord); overload;
-    procedure SaveBinary(const aFileName: TXmlString; anOptions: LongWord);
-      overload;
+    procedure SaveBinary(const aFileName: TXmlString; anOptions: LongWord); overload;
 
     function Get_BinaryXML: String;
     procedure LoadBinaryXML(const aXML: String);
+
   public
     constructor Create(aNames: TXmlNameTable);
   end;
@@ -1585,8 +1535,7 @@ begin
   aNode := FItems[anIndex];
   Dec(FCount);
   if anIndex < FCount then
-    Move(FItems[anIndex + 1], FItems[anIndex], (FCount - anIndex) * sizeof
-        (TXmlNode));
+    Move(FItems[anIndex + 1], FItems[anIndex], (FCount - anIndex) * sizeof(TXmlNode));
   if Assigned(aNode) then
   begin
     if Assigned(FOwnerNode) then
@@ -1652,8 +1601,7 @@ begin
   if FCount = Length(FItems) then
     Grow;
   if anIndex < FCount then
-    Move(FItems[anIndex], FItems[anIndex + 1], (FCount - anIndex) * sizeof
-        (TXmlNode));
+    Move(FItems[anIndex], FItems[anIndex + 1], (FCount - anIndex) * sizeof(TXmlNode));
   FItems[anIndex] := aNode;
   Inc(FCount);
   if aNode <> nil then
@@ -1709,112 +1657,109 @@ begin
     Result := Result + FItems[I].Get_XML;
 end;
 
-procedure TXmlNodeList.ParseXML(aXML: TXmlSource; aNames: TXmlNameTable;
-  aPreserveWhiteSpace: Boolean; aSkipLevel: Boolean = False);
+procedure TXmlNodeList.ParseXML(aXML: TXmlSource; aNames: TXmlNameTable; aPreserveWhiteSpace: Boolean; aSkipLevel: Boolean = False);
 
 // на входе: символ текста
 // на выходе: символ разметки '<'
-  procedure ParseText;
-  var
-    aText: String;
-  begin
-    aXML.NewToken;
-    while not aXML.EOF and (aXML.CurChar <> '<') do
-      if aXML.CurChar = '&' then
-        aXML.AppendTokenChar(aXML.ExpectXmlEntity)
-      else
-      begin
-        aXML.AppendTokenChar(aXML.CurChar);
-        aXML.Next;
-      end;
-    aText := aXML.AcceptToken;
-    if aPreserveWhiteSpace or (Trim(aText) <> '') then
-      Insert(TXmlText.Create(aNames, aText), -1);
-  end;
+procedure ParseText;
+var
+  aText: String;
+begin
+  aXML.NewToken;
+  while not aXML.EOF and (aXML.CurChar <> '<') do
+    if aXML.CurChar = '&' then
+      aXML.AppendTokenChar(aXML.ExpectXmlEntity)
+    else
+    begin
+      aXML.AppendTokenChar(aXML.CurChar);
+      aXML.Next;
+    end;
+  aText := aXML.AcceptToken;
+  if aPreserveWhiteSpace or (Trim(aText) <> '') then
+    Insert(TXmlText.Create(aNames, aText), -1);
+end;
 
 // CurChar - '?'
-  procedure ParseProcessingInstruction;
-  var
-    aTarget: TXmlString;
-    aNode: TXmlProcessingInstruction;
+procedure ParseProcessingInstruction;
+var
+  aTarget: TXmlString;
+  aNode: TXmlProcessingInstruction;
+begin
+  aXML.Next;
+  aTarget := aXML.ExpectXmlName;
+  aNode := TXmlProcessingInstruction.Create(aNames, aNames.GetID(aTarget), '');
+  Insert(aNode, -1);
+  if aNode.FTargetID = aNames.FXmlID then
   begin
-    aXML.Next;
-    aTarget := aXML.ExpectXmlName;
-    aNode := TXmlProcessingInstruction.Create
-      (aNames, aNames.GetID(aTarget), '');
-    Insert(aNode, -1);
-    if aNode.FTargetID = aNames.FXmlID then
-    begin
-      aXML.ParseAttrs(aNode);
-      aXML.ExpectText('?>');
-    end
-    else
-      aNode.FData := aXML.ParseTo('?>');
-  end;
+    aXML.ParseAttrs(aNode);
+    aXML.ExpectText('?>');
+  end
+  else
+    aNode.FData := aXML.ParseTo('?>');
+end;
 
 // на входе: первый '--'
 // на выходе: символ после '-->'
-  procedure ParseComment;
-  begin
-    aXML.ExpectText('--');
-    Insert(TXmlComment.Create(aNames, aXML.ParseTo('-->')), -1);
-  end;
+procedure ParseComment;
+begin
+  aXML.ExpectText('--');
+  Insert(TXmlComment.Create(aNames, aXML.ParseTo('-->')), -1);
+end;
 
 // на входе: '[CDATA['
 // на выходе: символ после ']]>'
-  procedure ParseCDATA;
-  begin
-    aXML.ExpectText('[CDATA[');
-    Insert(TXmlCDATASection.Create(aNames, aXML.ParseTo(']]>')), -1);
-  end;
+procedure ParseCDATA;
+begin
+  aXML.ExpectText('[CDATA[');
+  Insert(TXmlCDATASection.Create(aNames, aXML.ParseTo(']]>')), -1);
+end;
 
 // на входе: 'DOCTYPE'
 // на выходе: символ после '>'
-  procedure ParseDOCTYPE;
-  begin
-    aXML.ExpectText('DOCTYPE');
-    aXML.ParseTo('>');
-  end;
+procedure ParseDOCTYPE;
+begin
+  aXML.ExpectText('DOCTYPE');
+  aXML.ParseTo('>');
+end;
 
 // на входе: 'имя-элемента'
 // на выходе: символ после '>'
-  procedure ParseElement;
-  var
-    aNameID: Integer;
-    aNode: TXmlElement;
+procedure ParseElement;
+var
+  aNameID: Integer;
+  aNode: TXmlElement;
+begin
+  aNameID := aNames.GetID(aXML.ExpectXmlName);
+  if aXML.EOF then
+    raise Exception.Create(SSimpleXmlError2);
+  if not((aXML.CurChar <= ' ') or (aXML.CurChar = '/') or (aXML.CurChar = '>')) then
+    raise Exception.Create(SSimpleXmlError3);
+  if aSkipLevel then
   begin
-    aNameID := aNames.GetID(aXML.ExpectXmlName);
-    if aXML.EOF then
-      raise Exception.Create(SSimpleXmlError2);
-    if not((aXML.CurChar <= ' ') or (aXML.CurChar = '/') or (aXML.CurChar = '>')
-      ) then
-      raise Exception.Create(SSimpleXmlError3);
-    if aSkipLevel then
-    begin
-      aNode := nil;
-      aXML.ParseAttrs(FOwnerNode);
-    end
-    else
-    begin
-      aNode := TXmlElement.Create(aNames, aNameID);
-      Insert(aNode, -1);
-      aXML.ParseAttrs(aNode);
-    end;
-    if aXML.CurChar = '/' then
-      aXML.ExpectText('/>')
-    else
-    begin
-      aXML.ExpectChar('>');
-      if aSkipLevel then
-        ParseXML(aXML, aNames, aPreserveWhiteSpace)
-      else
-        aNode.GetChilds.ParseXML(aXML, aNames, aPreserveWhiteSpace);
-      aXML.ExpectChar('/');
-      aXML.ExpectText(PXmlChar(aNames.GetName(aNameID)));
-      aXML.SkipBlanks;
-      aXML.ExpectChar('>');
-    end;
+    aNode := nil;
+    aXML.ParseAttrs(FOwnerNode);
+  end
+  else
+  begin
+    aNode := TXmlElement.Create(aNames, aNameID);
+    Insert(aNode, -1);
+    aXML.ParseAttrs(aNode);
   end;
+  if aXML.CurChar = '/' then
+    aXML.ExpectText('/>')
+  else
+  begin
+    aXML.ExpectChar('>');
+    if aSkipLevel then
+      ParseXML(aXML, aNames, aPreserveWhiteSpace)
+    else
+      aNode.GetChilds.ParseXML(aXML, aNames, aPreserveWhiteSpace);
+    aXML.ExpectChar('/');
+    aXML.ExpectText(PXmlChar(aNames.GetName(aNameID)));
+    aXML.SkipBlanks;
+    aXML.ExpectChar('>');
+  end;
+end;
 
 begin
   while not aXML.EOF do
@@ -1841,8 +1786,7 @@ begin
   end;
 end;
 
-procedure TXmlNodeList.LoadBinXml(aReader: TBinXmlReader; aCount: Integer;
-  aNames: TXmlNameTable);
+procedure TXmlNodeList.LoadBinXml(aReader: TBinXmlReader; aCount: Integer; aNames: TXmlNameTable);
 var
   I: Integer;
   aNodeType: Byte;
@@ -1874,8 +1818,7 @@ begin
       NODE_PROCESSING_INSTRUCTION:
         begin
           aNameID := aReader.ReadLongint;
-          aNode := TXmlProcessingInstruction.Create
-            (aNames, aNameID, aReader.ReadXmlString);
+          aNode := TXmlProcessingInstruction.Create(aNames, aNameID, aReader.ReadXmlString);
           Insert(aNode, -1);
           aNode.LoadBinXml(aReader);
         end;
@@ -1907,8 +1850,7 @@ begin
         with TXmlElement(aNode) do
         begin
           aWriter.WriteLongint(FNameID);
-          if Assigned(FChilds) and (FChilds.FCount > 0) or VarIsEmpty(FData)
-            then
+          if Assigned(FChilds) and (FChilds.FCount > 0) or VarIsEmpty(FData) then
             aWriter.WriteVariant(EmptyVar)
           else
             aWriter.WriteVariant(TVarData(FData));
@@ -1994,8 +1936,7 @@ begin
   Result := GetAttr(FNames.GetID(aName), aDefault)
 end;
 
-function TXmlNode.GetAttr(aNameID: Integer; const aDefault: TXmlString)
-  : TXmlString;
+function TXmlNode.GetAttr(aNameID: Integer; const aDefault: TXmlString): TXmlString;
 var
   aData: PXmlAttrData;
 begin
@@ -2017,8 +1958,7 @@ begin
     Result := aDefault
 end;
 
-function TXmlNode.GetBoolAttr(const aName: TXmlString; aDefault: Boolean)
-  : Boolean;
+function TXmlNode.GetBoolAttr(const aName: TXmlString; aDefault: Boolean): Boolean;
 begin
   Result := GetBoolAttr(FNames.GetID(aName), aDefault)
 end;
@@ -2037,8 +1977,7 @@ begin
   Result := nil
 end;
 
-function TXmlNode.GetChildText(aNameID: Integer; const aDefault: TXmlString)
-  : TXmlString;
+function TXmlNode.GetChildText(aNameID: Integer; const aDefault: TXmlString): TXmlString;
 var
   aChild: TXmlNode;
 begin
@@ -2049,20 +1988,17 @@ begin
     Result := aDefault
 end;
 
-function TXmlNode.GetChildText(const aName: TXmlString;
-  const aDefault: TXmlString): TXmlString;
+function TXmlNode.GetChildText(const aName: TXmlString; const aDefault: TXmlString): TXmlString;
 begin
   Result := GetChildText(FNames.GetID(aName), aDefault);
 end;
 
-function TXmlNode.GetEnumAttr(const aName: TXmlString;
-  const aValues: array of TXmlString; aDefault: Integer): Integer;
+function TXmlNode.GetEnumAttr(const aName: TXmlString; const aValues: array of TXmlString; aDefault: Integer): Integer;
 begin
   Result := GetEnumAttr(FNames.GetID(aName), aValues, aDefault);
 end;
 
-function EnumAttrValue(aNode: TXmlNode; anAttrData: PXmlAttrData;
-  const aValues: array of TXmlString): Integer;
+function EnumAttrValue(aNode: TXmlNode; anAttrData: PXmlAttrData; const aValues: array of TXmlString): Integer;
 var
   anAttrValue: TXmlString;
   s: String;
@@ -2078,15 +2014,12 @@ begin
   begin
     s := aValues[0];
     for I := 1 to Length(aValues) - 1 do
-      s := s + ^M^J + aValues[I];
+      s := s + RN + aValues[I];
   end;
-  raise Exception.CreateFmt
-    (SSimpleXmlError6, [aNode.FNames.GetName(anAttrData.NameID),
-    aNode.Get_NodeName, s]);
+  raise Exception.CreateFmt(SSimpleXmlError6, [aNode.FNames.GetName(anAttrData.NameID), aNode.Get_NodeName, s]);
 end;
 
-function TXmlNode.GetEnumAttr(aNameID: Integer;
-  const aValues: array of TXmlString; aDefault: Integer): Integer;
+function TXmlNode.GetEnumAttr(aNameID: Integer; const aValues: array of TXmlString; aDefault: Integer): Integer;
 var
   anAttrData: PXmlAttrData;
 begin
@@ -2097,14 +2030,12 @@ begin
     Result := aDefault;
 end;
 
-function TXmlNode.NeedEnumAttr(const aName: TXmlString;
-  const aValues: array of TXmlString): Integer;
+function TXmlNode.NeedEnumAttr(const aName: TXmlString; const aValues: array of TXmlString): Integer;
 begin
   Result := NeedEnumAttr(FNames.GetID(aName), aValues)
 end;
 
-function TXmlNode.NeedEnumAttr(aNameID: Integer;
-  const aValues: array of TXmlString): Integer;
+function TXmlNode.NeedEnumAttr(aNameID: Integer; const aValues: array of TXmlString): Integer;
 var
   anAttrData: PXmlAttrData;
 begin
@@ -2115,8 +2046,7 @@ begin
     raise Exception.CreateFmt(SSimpleXmlError7, [FNames.GetName(aNameID)]);
 end;
 
-function TXmlNode.GetFloatAttr(const aName: TXmlString; aDefault: Double)
-  : Double;
+function TXmlNode.GetFloatAttr(const aName: TXmlString; aDefault: Double): Double;
 begin
   Result := GetFloatAttr(FNames.GetID(aName), aDefault);
 end;
@@ -2146,8 +2076,7 @@ begin
     Result := aDefault;
 end;
 
-function TXmlNode.GetHexAttr(const aName: TXmlString; aDefault: Integer)
-  : Integer;
+function TXmlNode.GetHexAttr(const aName: TXmlString; aDefault: Integer): Integer;
 begin
   Result := GetHexAttr(FNames.GetID(aName), aDefault)
 end;
@@ -2163,8 +2092,7 @@ begin
     Result := aDefault;
 end;
 
-function TXmlNode.GetIntAttr(const aName: TXmlString; aDefault: Integer)
-  : Integer;
+function TXmlNode.GetIntAttr(const aName: TXmlString; aDefault: Integer): Integer;
 begin
   Result := GetIntAttr(FNames.GetID(aName), aDefault)
 end;
@@ -2184,8 +2112,7 @@ begin
   Result := NeedAttr(FNames.GetID(aName))
 end;
 
-function TXmlNode.GetVarAttr(aNameID: Integer; const aDefault: Variant)
-  : Variant;
+function TXmlNode.GetVarAttr(aNameID: Integer; const aDefault: Variant): Variant;
 var
   anAttr: PXmlAttrData;
 begin
@@ -2196,8 +2123,7 @@ begin
     Result := aDefault;
 end;
 
-function TXmlNode.GetVarAttr(const aName: TXmlString; const aDefault: Variant)
-  : Variant;
+function TXmlNode.GetVarAttr(const aName: TXmlString; const aDefault: Variant): Variant;
 begin
   Result := GetVarAttr(FNames.GetID(aName), aDefault)
 end;
@@ -2317,22 +2243,32 @@ end;
 
 function NameCanBeginWith(aChar: TXmlChar): Boolean;
 begin
+
 {$IFDEF XML_WIDE_CHARS}
+
   Result := (aChar = '_') or IsCharAlphaW(aChar)
+
 {$ELSE}
+
   Result := (aChar = '_') or IsCharAlpha(aChar)
+
 {$ENDIF}
+
 end;
 
 function NameCanContain(aChar: TXmlChar): Boolean;
 begin
+
 {$IFDEF XML_WIDE_CHARS}
-  Result := (aChar = '_') or (aChar = '-') or (aChar = ':') or (aChar = '.')
-    or IsCharAlphaNumericW(aChar)
+
+  Result := (aChar = '_') or (aChar = '-') or (aChar = ':') or (aChar = '.') or IsCharAlphaNumericW(aChar)
+
 {$ELSE}
-  Result := (CharInSet(aChar, ['_', '-', ':', '.'])) or IsCharAlphaNumeric
-    (aChar)
+
+  Result := (CharInSet(aChar, ['_', '-', ':', '.'])) or IsCharAlphaNumeric(aChar)
+
 {$ENDIF}
+
 end;
 
 function IsName(const s: TXmlString): Boolean;
@@ -2362,9 +2298,8 @@ const
   ntText = -5;
 
 type
-  TAxis = (axAncestor, axAncestorOrSelf, axAttribute, axChild, axDescendant,
-    axDescendantOrSelf, axFollowing, axFollowingSibling, axParent, axPreceding,
-    axPrecedingSibling, axSelf);
+  TAxis = (axAncestor, axAncestorOrSelf, axAttribute, axChild, axDescendant, axDescendantOrSelf, axFollowing, axFollowingSibling, axParent,
+    axPreceding, axPrecedingSibling, axSelf);
 
   TPredicate = class
     function Check(aNode: TXmlNode): Boolean; virtual; abstract;
@@ -2386,7 +2321,7 @@ var
   I: Integer;
   {
     aPath: TXmlPath;
-  }
+    }
 begin
   if IsName(anExpression) then
   begin
@@ -2397,8 +2332,7 @@ begin
     for I := 0 to aChilds.FCount - 1 do
     begin
       aChild := aChilds.FItems[I];
-      if (aChild.Get_NodeType = NODE_ELEMENT) and
-        (aChild.Get_NodeNameID = aNameID) then
+      if (aChild.Get_NodeType = NODE_ELEMENT) and (aChild.Get_NodeNameID = aNameID) then
         aNodes.Insert(aChild, aNodes.FCount);
     end;
   end
@@ -2413,7 +2347,7 @@ begin
       finally
       aPath.Free
       end
-    }
+      }
   end;
 end;
 
@@ -2431,8 +2365,7 @@ begin
     for I := 0 to aChilds.FCount - 1 do
     begin
       aChild := aChilds.FItems[I];
-      if (aChild.Get_NodeType = NODE_ELEMENT) and
-        (aChild.Get_NodeNameID = aNameID) then
+      if (aChild.Get_NodeType = NODE_ELEMENT) and (aChild.Get_NodeNameID = aNameID) then
       begin
         Result := aChild;
         Exit
@@ -2446,8 +2379,7 @@ begin
   end
 end;
 
-function TXmlNode.FindElement(const anElementName, anAttrName: String;
-  const anAttrValue: Variant): IXmlElement;
+function TXmlNode.FindElement(const anElementName, anAttrName: String; const anAttrValue: Variant): IXmlElement;
 var
   aChild: TXmlNode;
   aNameID, anAttrNameID: Integer;
@@ -2462,8 +2394,7 @@ begin
     for I := 0 to FChilds.FCount - 1 do
     begin
       aChild := FChilds.FItems[I];
-      if (aChild.Get_NodeType = NODE_ELEMENT) and
-        (aChild.Get_NodeNameID = aNameID) then
+      if (aChild.Get_NodeType = NODE_ELEMENT) and (aChild.Get_NodeNameID = aNameID) then
       begin
         pa := aChild.FindAttrData(anAttrNameID);
         try
@@ -2508,8 +2439,7 @@ begin
     SetVarAttr(FNames.GetID(aName), aValue)
   end;
 
-  procedure TXmlNode.SetChildText(const aName: TXmlString;
-    const aValue: TXmlString);
+  procedure TXmlNode.SetChildText(const aName: TXmlString; const aValue: TXmlString);
   begin
     SetChildText(FNames.GetID(aName), aValue)
   end;
@@ -2538,8 +2468,7 @@ begin
     SetVarAttr(FNames.GetID(aName), aValue);
   end;
 
-  procedure TXmlNode.SetHexAttr(const aName: TXmlString;
-    aValue, aDigits: Integer);
+  procedure TXmlNode.SetHexAttr(const aName: TXmlString; aValue, aDigits: Integer);
   begin
     SetVarAttr(FNames.GetID(aName), IntToHex(aValue, aDigits))
   end;
@@ -2664,19 +2593,16 @@ begin
     Result := aChild
   end;
 
-  function TXmlNode.AppendProcessingInstruction
-    (const aTarget, aData: TXmlString): IXmlProcessingInstruction;
+  function TXmlNode.AppendProcessingInstruction(const aTarget, aData: TXmlString): IXmlProcessingInstruction;
   var
     aChild: TXmlProcessingInstruction;
   begin
-    aChild := TXmlProcessingInstruction.Create
-      (FNames, FNames.GetID(aTarget), aData);
+    aChild := TXmlProcessingInstruction.Create(FNames, FNames.GetID(aTarget), aData);
     GetChilds.Insert(aChild, -1);
     Result := aChild
   end;
 
-  function TXmlNode.AppendProcessingInstruction(aTargetID: Integer;
-    const aData: TXmlString): IXmlProcessingInstruction;
+  function TXmlNode.AppendProcessingInstruction(aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction;
   var
     aChild: TXmlProcessingInstruction;
   begin
@@ -2705,8 +2631,7 @@ begin
       a := @FAttrs[0];
       for I := 0 to FAttrCount - 1 do
       begin
-        Result := Result + ' ' + FNames.GetName(a.NameID) + '="' + TextToXML
-          (VarToXSTR(TVarData(a.Value))) + '"';
+        Result := Result + ' ' + FNames.GetName(a.NameID) + '="' + TextToXML(VarToXSTR(TVarData(a.Value))) + '"';
         Inc(a);
       end;
     end;
@@ -2766,11 +2691,17 @@ begin
 
   function TXmlNode.Get_DataType: Integer;
   begin
+
 {$IFDEF XML_WIDE_CHARS}
+
     Result := varOleStr
+
 {$ELSE}
+
     Result := varString
+
 {$ENDIF}
+
   end;
 
   function TXmlNode.AttrExists(aNameID: Integer): Boolean;
@@ -2791,11 +2722,17 @@ begin
     if Assigned(a) then
       Result := TVarData(a.Value).VType
     else
+
 {$IFDEF XML_WIDE_CHARS}
+
       Result := varOleStr
+
 {$ELSE}
+
       Result := varString
+
 {$ENDIF}
+
   end;
 
   function TXmlNode.GetAttrType(const aName: TXmlString): Integer;
@@ -2838,26 +2775,23 @@ begin
     end
   end;
 
-  function TXmlNode.GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime)
-    : TDateTime;
+  function TXmlNode.GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime): TDateTime;
   var
     anAttr: PXmlAttrData;
   begin
     anAttr := FindAttrData(aNameID);
     if Assigned(anAttr) then
     begin
-      if (VarType(anAttr.Value) = varString) or
-        (VarType(anAttr.Value) = varOleStr) then
+      {if (VarType(anAttr.Value) = varString) or (VarType(anAttr.Value) = varOleStr) then
         Result := XSTRToDateTime(anAttr.Value)
       else
-        Result := VarAsType(anAttr.Value, varDate)
+        Result := VarAsType(anAttr.Value, varDate)}
     end
     else
       Result := aDefault;
   end;
 
-  function TXmlNode.GetDateTimeAttr(const aName: TXmlString;
-    aDefault: TDateTime): TDateTime;
+  function TXmlNode.GetDateTimeAttr(const aName: TXmlString; aDefault: TDateTime): TDateTime;
   begin
     Result := GetDateTimeAttr(FNames.GetID(aName), aDefault)
   end;
@@ -2867,8 +2801,7 @@ begin
     SetVarAttr(aNameID, VarAsType(aValue, varDate))
   end;
 
-  procedure TXmlNode.SetDateTimeAttr(const aName: TXmlString;
-    aValue: TDateTime);
+  procedure TXmlNode.SetDateTimeAttr(const aName: TXmlString; aValue: TDateTime);
   begin
     SetVarAttr(aName, VarAsType(aValue, varDate))
   end;
@@ -2951,8 +2884,7 @@ begin
     RemoveAllAttrs;
     aSource := TXmlStrSource.Create(aXML);
     try
-      GetChilds.ParseXML(aSource, GetOwnerDocument.FNames,
-        GetOwnerDocument.FPreserveWhiteSpace, True);
+      GetChilds.ParseXML(aSource, GetOwnerDocument.FNames, GetOwnerDocument.FPreserveWhiteSpace, True);
     finally
       aSource.Free
     end
@@ -3000,8 +2932,7 @@ begin
       for I := 0 to aChilds.FCount - 1 do
       begin
         aChild := aChilds.FItems[I];
-        if aChild.Get_NodeType in [NODE_ELEMENT, NODE_TEXT, NODE_CDATA_SECTION]
-          then
+        if aChild.Get_NodeType in [NODE_ELEMENT, NODE_TEXT, NODE_CDATA_SECTION] then
         begin
           aChildText := aChild.Get_Text;
           if aChildText <> '' then
@@ -3046,22 +2977,21 @@ begin
 
   procedure TXmlElement.ReplaceTextByCDATASection(const aText: TXmlString);
 
-    procedure AddCDATASection(const aText: TXmlString);
-    var
-      I: Integer;
-      aChilds: TXmlNodeList;
+  procedure AddCDATASection(const aText: TXmlString);
+  var
+    I: Integer;
+    aChilds: TXmlNodeList;
+  begin
+    I := Pos(']]>', aText);
+    aChilds := GetChilds;
+    if I = 0 then
+      aChilds.Insert(TXmlCDATASection.Create(FNames, aText), aChilds.FCount)
+    else
     begin
-      I := Pos(']]>', aText);
-      aChilds := GetChilds;
-      if I = 0 then
-        aChilds.Insert(TXmlCDATASection.Create(FNames, aText), aChilds.FCount)
-      else
-      begin
-        aChilds.Insert(TXmlCDATASection.Create(FNames, Copy(aText, 1, I)),
-          aChilds.FCount);
-        AddCDATASection(Copy(aText, I + 1, Length(aText) - I - 1));
-      end;
+      aChilds.Insert(TXmlCDATASection.Create(FNames, Copy(aText, 1, I)), aChilds.FCount);
+      AddCDATASection(Copy(aText, I + 1, Length(aText) - I - 1));
     end;
+  end;
 
   begin
     RemoveTextNodes;
@@ -3089,8 +3019,7 @@ begin
   begin
     SetLength(Result, FGetXMLIntend * Length(DefaultIndentText));
     for I := 0 to FGetXMLIntend - 1 do
-      Move(DefaultIndentText[1], Result[I * Length(DefaultIndentText) + 1],
-        Length(DefaultIndentText));
+      Move(DefaultIndentText[1], Result[I * Length(DefaultIndentText) + 1], Length(DefaultIndentText) + 1);
   end;
 
   function HasCRLF(const s: String): Boolean;
@@ -3098,7 +3027,7 @@ begin
     I: Integer;
   begin
     for I := 1 to Length(s) do
-      if (s[I] = ^M) or (s[I] = ^J) then
+      if (s[I] = #13) or (s[I] = #10) then
       begin
         Result := True;
         Exit
@@ -3108,8 +3037,7 @@ begin
 
   function EndWithCRLF(const s: String): Boolean;
   begin
-    Result := (Length(s) > 1) and (s[Length(s) - 1] = ^M) and
-      (s[Length(s)] = ^J);
+    Result := (Length(s) > 1) and (s[Length(s) - 1] = #13) and (s[Length(s)] = #10);
   end;
 
   function TXmlElement.Get_XML: TXmlString;
@@ -3154,15 +3082,14 @@ begin
       else
         aChildsXML := TextToXML(VarToXSTR(TVarData(FData)));
       aTag := FNames.GetName(FNameID);
-      Result := ^M^J + GetIndentStr + '<' + aTag + GetAttrsXML;
+      Result := RN + GetIndentStr + '<' + aTag + GetAttrsXML;
       if aChildsXML = '' then
         Result := Result + '/>'
       else if HasCRLF(aChildsXML) then
         if EndWithCRLF(aChildsXML) then
           Result := Result + '>' + aChildsXML + GetIndentStr + '</' + aTag + '>'
         else
-          Result := Result + '>' + aChildsXML + ^M^J + GetIndentStr + '</' +
-            aTag + '>'
+          Result := Result + '>' + aChildsXML + RN + GetIndentStr + '</' + aTag + '>'
         else
           Result := Result + '>' + aChildsXML + '</' + aTag + '>';
     end;
@@ -3186,11 +3113,17 @@ begin
   function TXmlElement.Get_DataType: Integer;
   begin
     if (Assigned(FChilds) and (FChilds.FCount > 0)) or VarIsEmpty(FData) then
+
 {$IFDEF XML_WIDE_CHARS}
+
       Result := varOleStr
+
 {$ELSE}
+
       Result := varString
+
 {$ENDIF}
+
     else
       Result := TVarData(FData).VType;
   end;
@@ -3223,8 +3156,7 @@ begin
 
   { TXmlCharacterData }
 
-  constructor TXmlCharacterData.Create(aNames: TXmlNameTable;
-    const aData: TXmlString);
+  constructor TXmlCharacterData.Create(aNames: TXmlNameTable; const aData: TXmlString);
   begin
     inherited Create(aNames);
     FData := aData;
@@ -3339,8 +3271,7 @@ begin
     if I = 0 then
       Result := '<![CDATA[' + aValue + ']]>'
     else
-      Result := '<![CDATA[' + Copy(aValue, 1, I) + ']]>' + GenCDATAXML
-        (Copy(aValue, I + 1, Length(aValue) - I - 1));
+      Result := '<![CDATA[' + Copy(aValue, 1, I) + ']]>' + GenCDATAXML(Copy(aValue, I + 1, Length(aValue) - I - 1));
   end;
 
   function TXmlCDATASection.Get_XML: TXmlString;
@@ -3383,8 +3314,7 @@ begin
     FPreserveWhiteSpace := DefaultPreserveWhiteSpace;
   end;
 
-  function TXmlDocument.CreateCDATASection(const aData: TXmlString)
-    : IXmlCDATASection;
+  function TXmlDocument.CreateCDATASection(const aData: TXmlString): IXmlCDATASection;
   begin
     Result := TXmlCDATASection.Create(FNames, aData)
   end;
@@ -3404,15 +3334,12 @@ begin
     Result := TXmlElement.Create(FNames, FNames.GetID(aName));
   end;
 
-  function TXmlDocument.CreateProcessingInstruction
-    (const aTarget, aData: TXmlString): IXmlProcessingInstruction;
+  function TXmlDocument.CreateProcessingInstruction(const aTarget, aData: TXmlString): IXmlProcessingInstruction;
   begin
-    Result := TXmlProcessingInstruction.Create
-      (FNames, FNames.GetID(aTarget), aData)
+    Result := TXmlProcessingInstruction.Create(FNames, FNames.GetID(aTarget), aData)
   end;
 
-  function TXmlDocument.CreateProcessingInstruction
-    (aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction;
+  function TXmlDocument.CreateProcessingInstruction(aTargetID: Integer; const aData: TXmlString): IXmlProcessingInstruction;
   begin
     Result := TXmlProcessingInstruction.Create(FNames, aTargetID, aData)
   end;
@@ -3495,8 +3422,7 @@ begin
     for I := 0 to aChilds.FCount - 1 do
     begin
       aChild := aChilds.FItems[I];
-      if aChild.Get_NodeType in [NODE_ELEMENT, NODE_TEXT, NODE_CDATA_SECTION]
-        then
+      if aChild.Get_NodeType in [NODE_ELEMENT, NODE_TEXT, NODE_CDATA_SECTION] then
       begin
         aChildText := aChild.Get_Text;
         if aChildText <> '' then
@@ -3628,14 +3554,12 @@ begin
     end
   end;
 
-  function TXmlDocument.NewDocument(const aVersion, anEncoding,
-    aRootElementName: TXmlString): IXmlElement;
+  function TXmlDocument.NewDocument(const aVersion, anEncoding, aRootElementName: TXmlString): IXmlElement;
   begin
     Result := NewDocument(aVersion, anEncoding, FNames.GetID(aRootElementName));
   end;
 
-  function TXmlDocument.NewDocument(const aVersion, anEncoding: TXmlString;
-    aRootElementNameID: Integer): IXmlElement;
+  function TXmlDocument.NewDocument(const aVersion, anEncoding: TXmlString; aRootElementNameID: Integer): IXmlElement;
   var
     aChilds: TXmlNodeList;
     aRoot: TXmlElement;
@@ -3647,8 +3571,7 @@ begin
       e := DefaultEncoding
     else
       e := anEncoding;
-    aChilds.Insert(TXmlProcessingInstruction.Create(FNames, FNames.FXmlID,
-        'version="' + aVersion + '" encoding="' + e + '"'), 0);
+    aChilds.Insert(TXmlProcessingInstruction.Create(FNames, FNames.FXmlID, 'version="' + aVersion + '" encoding="' + e + '"'), 0);
     aRoot := TXmlElement.Create(FNames, aRootElementNameID);
     aChilds.Insert(aRoot, 1);
     Result := aRoot;
@@ -3687,8 +3610,7 @@ begin
     end
   end;
 
-  procedure TXmlDocument.SaveBinary(const aFileName: TXmlString;
-    anOptions: LongWord);
+  procedure TXmlDocument.SaveBinary(const aFileName: TXmlString; anOptions: LongWord);
   var
     aFile: TFileStream;
   begin
@@ -3716,14 +3638,12 @@ begin
 
   { TXmlProcessingInstruction }
 
-  function TXmlProcessingInstruction.AsProcessingInstruction
-    : IXmlProcessingInstruction;
+  function TXmlProcessingInstruction.AsProcessingInstruction: IXmlProcessingInstruction;
   begin
     Result := Self
   end;
 
-  constructor TXmlProcessingInstruction.Create(aNames: TXmlNameTable;
-    aTargetID: Integer; const aData: TXmlString);
+  constructor TXmlProcessingInstruction.Create(aNames: TXmlNameTable; aTargetID: Integer; const aData: TXmlString);
   begin
     inherited Create(aNames);
     FTargetID := aTargetID;
@@ -3876,14 +3796,19 @@ begin
     e: Integer;
   begin
     NewToken;
+
 {$IFDEF XML_WIDE_CHARS}
-    while (CurChar >= '0') and (CurChar <= '9') or (CurChar >= 'A') and
-      (CurChar <= 'F') or (CurChar >= 'a') and (CurChar <= 'f') do
+
+    while (CurChar >= '0') and (CurChar <= '9') or (CurChar >= 'A') and (CurChar <= 'F') or (CurChar >= 'a') and (CurChar <= 'f') do
     begin
+
 {$ELSE}
+
       while CharInSet(CurChar, ['0' .. '9', 'A' .. 'F', 'a' .. 'f']) do
       begin
+
 {$ENDIF}
+
         AppendTokenChar(CurChar);
         Next;
       end;
@@ -4001,7 +3926,9 @@ begin
 
     function StrEquals(p1, p2: PXmlChar; aLen: Integer): Boolean;
     begin
+
 {$IFDEF XML_WIDE_CHARS}
+
       while aLen > 0 do
         if p1^ <> p2^ then
         begin
@@ -4020,9 +3947,13 @@ begin
           Dec(aLen);
         end;
       Result := True;
+
 {$ELSE}
+
       Result := StrLComp(p1, p2, aLen) = 0
+
 {$ENDIF}
+
     end;
 
     // на входе: первый символ текста
@@ -4152,13 +4083,16 @@ begin
     begin
       Result := FValuePtr - FValueStart;
     end;
+
 {$IFDEF XML_WIDE_CHARS}
 
     function AnsiToUnicode(c: AnsiChar): WideChar;
     begin
       MultiByteToWideChar(CP_ACP, 0, @c, 1, @Result, 1);
     end;
+
 {$ENDIF}
+
     { TXmlStmSource }
 
     constructor TXmlStmSource.Create(aStream: TStream; aBufSize: Integer);
@@ -4184,11 +4118,17 @@ begin
         FBufEnd := FBufStart + aSize;
         FBufPtr := FBufStart;
         Dec(FSize, aSize);
+
 {$IFDEF XML_WIDE_CHARS}
+
         CurChar := AnsiToUnicode(FBufPtr^);
+
 {$ELSE}
+
         CurChar := FBufPtr^;
+
 {$ENDIF}
+
       end
     end;
 
@@ -4226,20 +4166,32 @@ begin
           FBufPtr := FBufStart;
           Dec(FSize, aSize);
           Result := True;
+
 {$IFDEF XML_WIDE_CHARS}
+
           CurChar := AnsiToUnicode(FBufPtr^);
+
 {$ELSE}
+
           CurChar := FBufPtr^;
+
 {$ENDIF}
+
         end
         else
         begin
           Result := True;
+
 {$IFDEF XML_WIDE_CHARS}
+
           CurChar := AnsiToUnicode(FBufPtr^);
+
 {$ELSE}
+
           CurChar := FBufPtr^;
+
 {$ENDIF}
+
         end;
     end;
 
@@ -4435,8 +4387,7 @@ begin
 
     { TStmXmlWriter }
 
-    constructor TStmXmlWriter.Create(aStream: TStream; anOptions: LongWord;
-      aBufSize: Integer);
+    constructor TStmXmlWriter.Create(aStream: TStream; anOptions: LongWord; aBufSize: Integer);
     begin
       inherited Create;
       FStream := aStream;
@@ -4614,8 +4565,7 @@ begin
           WriteAnsiString(Variant(v));
         varArray + varByte:
           begin
-            aSize := VarArrayHighBound(Variant(v), 1) - VarArrayLowBound
-              (Variant(v), 1) + 1;
+            aSize := VarArrayHighBound(Variant(v), 1) - VarArrayLowBound(Variant(v), 1) + 1;
             WriteLongint(aSize);
             p := VarArrayLock(Variant(v));
             try
@@ -4650,8 +4600,7 @@ begin
     var
       DefaultNameTableImpl: TXmlNameTable = nil;
 
-    function CreateXmlElement(const aName: TXmlString;
-      const aNameTable: IXmlNameTable): IXmlElement;
+    function CreateXmlElement(const aName: TXmlString; const aNameTable: IXmlNameTable): IXmlElement;
     var
       aNameTableImpl: TXmlNameTable;
     begin
@@ -4662,8 +4611,7 @@ begin
       Result := TXmlElement.Create(aNameTableImpl, aNameTableImpl.GetID(aName));
     end;
 
-    function CreateXmlDocument(const aRootElementName: String;
-      const aVersion: String; const anEncoding: String;
+    function CreateXmlDocument(const aRootElementName: String; const aVersion: String; const anEncoding: String;
       const aNames: IXmlNameTable): IXmlDocument;
     var
       aNameTable: TXmlNameTable;
@@ -4700,8 +4648,7 @@ begin
       Result.Load(aStream);
     end;
 
-    function LoadXmlDocument(const aFileName: TXmlString): IXmlDocument;
-      overload;
+    function LoadXmlDocument(const aFileName: TXmlString): IXmlDocument; overload;
     begin
       Result := TXmlDocument.Create(DefaultNameTableImpl);
       Result.Load(aFileName);
