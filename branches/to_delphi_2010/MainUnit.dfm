@@ -496,6 +496,11 @@ object MainForm: TMainForm
     object N3: TMenuItem
       Caption = '-'
     end
+    object ProfileOpenMenu: TMenuItem
+      Caption = #1044#1088#1091#1075#1086#1081' '#1087#1088#1086#1092#1080#1083#1100
+      ImageIndex = 253
+      OnClick = ProfileOpenMenuClick
+    end
     object HideInTray: TMenuItem
       Caption = #1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4

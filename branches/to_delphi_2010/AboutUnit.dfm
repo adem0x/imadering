@@ -23,9 +23,9 @@ object AboutForm: TAboutForm
   object VersionLabel: TLabel
     Left = 64
     Top = 27
-    Width = 39
+    Width = 6
     Height = 13
-    Caption = #1042#1077#1088#1089#1080#1103':'
+    Caption = 'V'
   end
   object URLLabel: TLabel
     Left = 139

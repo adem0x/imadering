@@ -227,7 +227,8 @@ uses
   FileTransferUnit,
   RXML,
   GtransUnit,
-  MraProtoUnit;
+  MraProtoUnit,
+  UniqUnit;
 
 procedure TChatForm.CreateNewChat(CButton: TToolButton);
 var
@@ -880,6 +881,7 @@ begin
   TypingTextToolButton.Hint := H_Typing_Notify;
   KeySoundToolButton.Hint := H_Sound_Key;
   GtransSpeedButton.Hint := H_GTrans_Button;
+  UniqToolButton.Hint := H_Uniq_Button;
 end;
 
 procedure TChatForm.TypingTextToolButtonClick(Sender: TObject);
@@ -889,7 +891,15 @@ end;
 
 procedure TChatForm.UniqToolButtonClick(Sender: TObject);
 begin
-  ShowMessage(DevelMess);
+  // Открываем окно уникальных настроек контакта
+  if not Assigned(UniqForm) then
+    UniqForm := TUniqForm.Create(Self);
+  if UserType = 'Icq' then
+    UniqForm.AccountPanel.Caption := ICQAccountInfo + ' ' + InfoPanel2.Caption
+  else if UserType = 'Jabber' then
+    UniqForm.AccountPanel.Caption := JabberAccountInfo + ' ' + InfoPanel2.Caption;
+  // Отображаем окно
+  XShowForm(UniqForm);
 end;
 
 procedure TChatForm.UpWapru1Click(Sender: TObject);
@@ -1122,12 +1132,10 @@ begin
       // Отображаем модально окно переводчика
       if not Assigned(GTransForm) then
         GTransForm := TGTransForm.Create(Self);
-      if GTransForm.ShowModal <> 1 then
-      begin
-       GtransSpeedButton.Down := false;
-       Exit;
-      end;
 
+
+
+      if GTransForm.ShowModal <> 1 then GtransSpeedButton.Down := false;
     end
   else
     begin

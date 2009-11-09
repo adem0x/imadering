@@ -179,7 +179,7 @@ begin
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Сведения о версии программы
-  VersionLabel.Caption := VersionLabel.Caption + ' ' + InitBuildInfo;
+  VersionLabel.Caption := Format(VersionL, [InitBuildInfo]);
   // Получаем дату компиляци файла
   DataLabel.Caption := DataLabel.Caption + ' ' + DateToStr(GetFileDateTime(MyPath + 'Imadering.exe'));
   // Присваиваем начальное значение длинны списка титров

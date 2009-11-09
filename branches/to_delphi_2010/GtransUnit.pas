@@ -35,6 +35,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    Translation: boolean;
     procedure GetTranslation(GText, SLang, DLang: string);
   end;
 
@@ -57,7 +58,8 @@ procedure TGTransForm.GetTranslation(GText, SLang, DLang: string);
 begin
   // Сбрасываем сокет если он занят чем то другим или висит
   GtransHttpClient.Abort;
-  // Запускаем проверку обновлений программы на сайте
+  // Запускаем перевод текст через сайт гугл
+  Translation := true;
   GtransHttpClient.URL := Format('http://ajax.googleapis.com/ajax/services/language/translate?q=%s&langpair=%s|%s&v=1.0',
       [URLEncode(GText), SLang, DLang]);
   GtransHttpClient.GetASync;
@@ -101,6 +103,7 @@ begin
       // Высвобождаем блок памяти
       GtransHttpClient.RcvdStream.Free;
       GtransHttpClient.RcvdStream := nil;
+      Translation := false;
     end;
   end;
 end;

@@ -229,6 +229,7 @@ type
     UniqContactSettingsMenu: TMenuItem;
     FloatContactMenu: TMenuItem;
     N27: TMenuItem;
+    ProfileOpenMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
@@ -383,6 +384,7 @@ type
     procedure IMaderingEventsException(Sender: TObject; E: Exception);
     procedure UniqContactSettingsMenuClick(Sender: TObject);
     procedure FloatContactMenuClick(Sender: TObject);
+    procedure ProfileOpenMenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -447,7 +449,9 @@ uses
   ShowCertUnit,
   FileTransferUnit,
   LogUnit,
-  FloatingUnit;
+  FloatingUnit,
+  UniqUnit,
+  ProfileUnit;
 
 resourcestring
   StrPluginsFolder = 'Profile\Plugins\';
@@ -900,7 +904,7 @@ begin
   if not Assigned(HistoryForm) then
     HistoryForm := THistoryForm.Create(Self);
   // Загружаем файл истории для текущего чата
-  // HistoryForm.LoadHistoryFromFile(ContactList.SelectedItem.UIN);
+  HistoryForm.LoadHistoryFromFile((ContactList.SelectedItem as TButtonItem).UIN);
   // Отображаем окно
   XShowForm(HistoryForm);
 end;
@@ -3289,11 +3293,11 @@ begin
   if ContactList.SelectedItem <> nil then
     begin
       // Если контакт ICQ
-      { if ContactList.SelectedItem.ContactType = 'Icq' then
+       if (ContactList.SelectedItem as TButtonItem).ContactType = 'Icq' then
         begin
-        if ICQ_Work_Phaze then ICQ_ReqStatus0215(ContactList.SelectedItem.UIN)
+        if ICQ_Work_Phaze then ICQ_ReqStatus0215((ContactList.SelectedItem as TButtonItem).UIN)
         else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
-        end; }
+        end;
     end;
 end;
 
@@ -3380,24 +3384,25 @@ begin
   PrivatToolButton.Visible := not PrivatToolButton.Visible;
 end;
 
-procedure TMainForm.OpenTestClick(Sender: TObject);
+procedure TMainForm.ProfileOpenMenuClick(Sender: TObject);
 var
-  Doc: string;
+  spath: AnsiString;
+begin
+  // Запускаем второй экземпляр программы для выбора другого профиля
+  spath := MyPath + 'Imadering.exe';
+  xLog(spath + ' ' + IntToStr(WinExec(PAnsiChar(spath), SW_Restore)));
+end;
+
+procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   // Место для запуска тестов
 
-  if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(Self);
-  XShowForm(ChatForm);
+  // Открываем окно о программе
+  if not Assigned(ProfileForm) then
+    ProfileForm := TProfileForm.Create(Self);
+  // Отображаем окно
+  XShowForm(ProfileForm);
 
-  ChatForm.HTMLChatViewer.Clear;
-
-  Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-  ChatForm.HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-
-  ChatForm.AddChatText('Тест', 'qwerty 世界您好 привет');
-  ChatForm.AddChatText('Тест', 'qwerty 世界您好 привет');
-  ChatForm.AddChatText('Тест', 'qwerty 世界您好 привет');
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -3730,7 +3735,7 @@ end;
 procedure TMainForm.CopyAccountContactClick(Sender: TObject);
 begin
   // Копируем имя учётной записи контакта в буфер обмена
-  // if ContactList.SelectedItem <> nil then SetClipboardText(Handle, ContactList.SelectedItem.UIN);
+  if ContactList.SelectedItem <> nil then SetClipboardText(Handle, (ContactList.SelectedItem as TButtonItem).UIN);
 end;
 
 procedure TMainForm.DeleteContactClick(Sender: TObject);
@@ -4090,8 +4095,8 @@ begin
       if not Assigned(IcqContactInfoForm) then
         IcqContactInfoForm := TIcqContactInfoForm.Create(Self);
       // Присваиваем UIN инфу которого хотим смотреть
-      { IcqContactInfoForm.ReqUIN := ContactList.SelectedItem.UIN;
-        IcqContactInfoForm.ReqProto := ContactList.SelectedItem.ContactType; }
+      IcqContactInfoForm.ReqUIN := (ContactList.SelectedItem as TButtonItem).UIN;
+      IcqContactInfoForm.ReqProto := (ContactList.SelectedItem as TButtonItem).ContactType;
       // Загружаем информацию о нем
       IcqContactInfoForm.LoadUserUnfo;
       // Отображаем окно
@@ -4255,8 +4260,8 @@ begin
   // Позволяем добавить нас без повторения запроса на авторизацию нам
   if ContactList.SelectedItem <> nil then
     begin
-      { if ICQ_Work_Phaze then ICQ_SendGrandAuth(ContactList.SelectedItem.UIN)
-        else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0); }
+      if ICQ_Work_Phaze then ICQ_SendGrandAuth((ContactList.SelectedItem as TButtonItem).UIN)
+        else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
     end;
 end;
 
@@ -4567,8 +4572,8 @@ begin
   // Отправляем пакет "Вас добавили"
   if ContactList.SelectedItem <> nil then
     begin
-      { if ICQ_Work_Phaze then ICQ_SendYouAdded(ContactList.SelectedItem.UIN)
-        else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0); }
+      if ICQ_Work_Phaze then ICQ_SendYouAdded((ContactList.SelectedItem as TButtonItem).UIN)
+        else DAShow(AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
     end;
 end;
 
@@ -4614,8 +4619,8 @@ begin
   if ContactList.SelectedItem <> nil then
     begin
       // Делаем двойной клик по контакту
-      // ContactListButtonClicked(self, ContactList.SelectedItem);
-      // ContactListButtonClicked(self, ContactList.SelectedItem);
+      ContactListButtonClicked(self, (ContactList.SelectedItem as TButtonItem));
+      ContactListButtonClicked(self, (ContactList.SelectedItem as TButtonItem));
     end;
 end;
 
@@ -4798,7 +4803,15 @@ end;
 
 procedure TMainForm.UniqContactSettingsMenuClick(Sender: TObject);
 begin
-  ShowMessage(DevelMess);
+  // Открываем окно уникальных настроек контакта
+  if not Assigned(UniqForm) then
+    UniqForm := TUniqForm.Create(Self);
+  if (ContactList.SelectedItem as TButtonItem).ContactType = 'Icq' then
+    UniqForm.AccountPanel.Caption := ICQAccountInfo + ' ' + (ContactList.SelectedItem as TButtonItem).UIN
+  else if (ContactList.SelectedItem as TButtonItem).ContactType = 'Jabber' then
+    UniqForm.AccountPanel.Caption := JabberAccountInfo + ' ' + (ContactList.SelectedItem as TButtonItem).UIN;
+  // Отображаем окно
+  XShowForm(UniqForm);
 end;
 
 procedure TMainForm.UnstableICQStatusClick(Sender: TObject);

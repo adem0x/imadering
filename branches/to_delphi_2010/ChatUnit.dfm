@@ -249,6 +249,8 @@ object ChatForm: TChatForm
           Left = 23
           Top = 0
           ImageIndex = 247
+          ParentShowHint = False
+          ShowHint = True
           OnClick = UniqToolButtonClick
         end
         object ContactMenuToolButton: TToolButton

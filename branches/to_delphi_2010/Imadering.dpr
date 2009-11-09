@@ -52,7 +52,9 @@ uses
   OverbyteIcsSSLEAY in 'lib\OverbyteIcsSSLEAY.pas',
   rXML in 'lib\rXML.pas',
   SimpleXML in 'lib\SimpleXML.pas',
-  XMLStand in 'lib\XMLStand.pas';
+  XMLStand in 'lib\XMLStand.pas',
+  UniqUnit in 'UniqUnit.pas' {UniqForm},
+  ProfileUnit in 'ProfileUnit.pas' {ProfileForm};
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -68,6 +70,7 @@ begin
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TProfileForm, ProfileForm);
   ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

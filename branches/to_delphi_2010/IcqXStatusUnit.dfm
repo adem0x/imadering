@@ -208,6 +208,16 @@ object IcqXStatusForm: TIcqXStatusForm
         Caption = 'icqmood34'
         Hint = '0072D9084AD143DD91996F026966026F'
         ImageIndex = 79
+      end
+      item
+        Caption = 'icqmood35'
+        Hint = '3FB0BD36AF3B4A609EEFCF190F6A5A7E'
+        ImageIndex = 250
+      end
+      item
+        Caption = 'icqmood36'
+        Hint = 'E601E41C33734BD1BC06811D6C323D82'
+        ImageIndex = 251
       end>
     ItemIndex = 0
     TabOrder = 0
