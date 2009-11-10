@@ -101,7 +101,7 @@ object ProfileForm: TProfileForm
       Height = 21
       TabOrder = 1
     end
-    object CheckBox1: TCheckBox
+    object SavePassCheckBox: TCheckBox
       Left = 11
       Top = 107
       Width = 215
@@ -122,6 +122,8 @@ object ProfileForm: TProfileForm
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = False
       TabOrder = 3
     end
     object DeleteButton: TButton

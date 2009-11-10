@@ -35,13 +35,14 @@ const
   AnketaFileName: string = 'Profile\Contacts\';
   AvatarFileName: string = 'Profile\Avatars\';
   HistoryFileName: string = 'Profile\History\';
+  LangPath: string = 'Langs\%s.xml';
 
 var
   // Переменные общие для всей программы
   MyPath: string;
   ProfilePath: string;
   CurrentIcons: string = 'Imadering';
-  CurrentLang: string = 'Russian';
+  CurrentLang: string = 'ru';
   CurrentSmiles: string = 'Imadering';
   CurrentSounds: string = 'Imadering';
   ProgramCloseCommand: Boolean = False;
@@ -399,6 +400,7 @@ var
   Log_Msg_Type: string = 'Тип сообщения: ';
   Log_Msg_Text: string = 'Текст сообщения:';
   Log_Connect_Count: string = 'Количество подключений к серверу: ';
+  Log_Lang_Code: string = 'Код языка системы: ';
 
   // Подсказки <b></b><br>
   H_Log_Clear: string = '<b>Очистить</b><br>Удалить все сообщения лога';

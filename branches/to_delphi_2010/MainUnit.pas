@@ -4217,6 +4217,7 @@ var
   S: string;
   Buf: array [0 .. $FF] of Char;
   Size: Integer;
+  lang: word;
 begin
   // Самым первым создаём окно лога
   LogForm := TLogForm.Create(Self);
@@ -4225,6 +4226,13 @@ begin
   // Узнаём путь откуда запущена программа
   MyPath := ExtractFilePath(Application.ExeName);
   XLog(LogMyPath + MyPath);
+  // Смотрим язык системы
+  lang := GetSystemDefaultLangID;
+  if lang <> 1049 then CurrentLang := 'en';
+  XLog(Log_Lang_Code + IntToStr(lang));
+
+  CurrentLang := 'en';
+
   // Смотрим в реестре путь к профилю
   with TRegistry.Create do
     try

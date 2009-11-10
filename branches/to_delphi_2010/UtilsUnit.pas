@@ -40,7 +40,8 @@ uses
   Rxml,
   LogUnit,
   JclCompression,
-  Buttons;
+  Buttons,
+  TypInfo;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure Listfiledirhist(Path, Ext, Eext: string; Filelist: Tstrings);
@@ -121,21 +122,81 @@ function NotifyConnectError(SName: string; Errcode: Integer): string;
 function CreateHistoryArhive(HFile: string): Boolean;
 procedure SaveTextInHistory(LogString: string; LogFileName: string);
 procedure CreateLang(Xform: Tform);
+procedure SetLang(Xform: Tform);
 
 implementation
+
+procedure SetLang(Xform: Tform);
+var
+  I, II: Integer;
+  List: Tstringlist;
+  PropInfo: PPropInfo;
+  TK: TTypeKind;
+begin
+  // Если язык отличается от умолчального, то применяем другой язык
+  if CurrentLang <> 'ru' then
+  begin
+    List := Tstringlist.Create;
+    try
+      with TrXML.Create() do
+        try
+          if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+          begin
+            // Загружаем файл языка
+            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            // Переводим заголовок формы и получаем все остальные пункты
+            if OpenKey('language\' + Xform.name) then
+              try
+                Xform.Caption := ReadString('c');
+                List.Text := GetKeyXML;
+              finally
+                CloseKey();
+              end;
+          end;
+        finally
+          Free();
+        end;
+      // Переводим компоненты формы с Caption
+      with Xform do
+        for I := 0 to ComponentCount - 1 do
+        begin
+          // Ищем этот компонент в списке по имени
+          for II := 0 to List.Count - 1 do
+          begin
+            if Components[I].name = Isolatetextstring(List.Strings[II], '<', ' c="') then
+            begin
+              // Устанавливаем Caption через технологию RTTI
+              PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
+              if PropInfo <> nil then
+              begin
+                TK := PropInfo^.PropType^.Kind;
+                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                  SetStrProp(Components[I], PropInfo, Isolatetextstring(List.Strings[II], 'c="', '"/>'));
+              end;
+              Break;
+            end;
+          end;
+        end;
+    finally
+      List.Free;
+    end;
+  end;
+end;
 
 procedure CreateLang(Xform: Tform);
 var
   I: Integer;
-  cf: string;
+  Cf: string;
+  PropInfo: PPropInfo;
+  TK: TTypeKind;
 begin
   // Создаём необходимые папки
-  ForceDirectories(MyPath + 'Langs\');
+  ForceDirectories(MyPath + 'Langs\Forms\');
   with TrXML.Create() do
     try
       // Записываем заголовок формы
-      cf := 'language\' + Xform.Name + '\';
-      if OpenKey(cf, True) then
+      Cf := 'language\' + Xform.name + '\';
+      if OpenKey(Cf, True) then
         try
           WriteString('c', Xform.Caption);
         finally
@@ -144,43 +205,24 @@ begin
       // Просматриваем все контролы на форме
       for I := 0 to Xform.ComponentCount - 1 do
       begin
-        // Если это TLabel
-        if (Xform.Components[I] is TLabel) then
+        // Пишем в файл все компоненты которые имеют Caption
+        PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
+        if PropInfo <> nil then
         begin
-          if OpenKey(cf + Xform.Components[I].Name, true) then
-            try
-              WriteString('c', (Xform.Components[I] as TLabel).Caption);
-            finally
-              CloseKey();
-            end;
+          TK := PropInfo^.PropType^.Kind;
+          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+          begin
+            if OpenKey(Cf + Xform.Components[I].name, True) then
+              try
+                WriteString('c', GetStrProp(Xform.Components[I], PropInfo));
+              finally
+                CloseKey();
+              end;
+          end;
         end;
-        // Если это TButton
-        //else if (Xform.Components[I] is TButton) then
-        //begin
-          {if OpenKey(cf + 'cvbvcb', True) then
-            try
-              WriteString('c', 'fgfdgdf');
-            finally
-              CloseKey();
-            end;
-            xlog(Text);
-        //end
-        // Если это TBitBtn
-        //else if (Xform.Components[I] is TBitBtn) then
-        //begin
-          if OpenKey(cf + 'mnjyu', True) then
-            try
-              WriteString('c', 'fhjyui');
-            finally
-              CloseKey();
-            end;
-        //end;}
       end;
       // Записываем сам файл
-
-      xlog(Text);
-
-      SaveToFile(MyPath + 'Langs\' + Xform.Name + '.xml');
+      SaveToFile(MyPath + 'Langs\Forms\' + Xform.name + '.xml');
     finally
       Free();
     end;
@@ -197,11 +239,11 @@ begin
   PStr := StrAlloc(LengthLogString + 1);
   StrPCopy(PStr, LogString);
   if FileExists(LogFileName) then
-    F := TFileStream.Create(LogFileName, fmOpenWrite)
+    F := TFileStream.Create(LogFileName, FmOpenWrite)
   else
-    F := TFileStream.Create(LogFileName, fmCreate);
+    F := TFileStream.Create(LogFileName, FmCreate);
   F.Position := F.Size;
-  F.Write(PStr^, LengthLogString);
+  F.write(PStr^, LengthLogString);
   StrDispose(PStr);
   F.Free;
 end;
@@ -340,26 +382,26 @@ begin
     // Инициализируем XML
     with TrXML.Create() do
       try
-        Loadfromfile(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml');
+        LoadFromFile(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml');
         // Загружаем Имя и Фамилию
         if OpenKey('profile\name-info') then
           try
-            Ln := Readstring('first');
-            Lf := Readstring('last');
+            Ln := ReadString('first');
+            Lf := ReadString('last');
           finally
             CloseKey;
           end;
         // Загружаем Город
         if OpenKey('profile\home-info') then
           try
-            Getcitypanel := Readstring('city');
+            Getcitypanel := ReadString('city');
           finally
             CloseKey;
           end;
         // Загружаем Возраст
         if OpenKey('profile\age-info') then
           try
-            La := Readstring('age');
+            La := ReadString('age');
             if La <> '0' then
               Getagepanel := Infoagel + ' ' + La;
           finally
@@ -692,7 +734,7 @@ function Readfromfile(Filename: string): string;
 begin
   with Tstringlist.Create do
     try
-      Loadfromfile(Filename, TEncoding.Unicode);
+      LoadFromFile(Filename, TEncoding.Unicode);
       Result := Text;
     finally
       Free;
@@ -1876,7 +1918,7 @@ begin
       Rootkey := Hkey_classes_root;
       OpenKey('\http\shell\open\command', False);
       try
-        Ts := Readstring(EmptyStr);
+        Ts := ReadString(EmptyStr);
       except
         Ts := EmptyStr;
       end;

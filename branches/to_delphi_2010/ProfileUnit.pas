@@ -24,7 +24,7 @@ type
     ProfileLabel: TLabel;
     ProfilePassEdit: TEdit;
     ProfilePassLabel: TLabel;
-    CheckBox1: TCheckBox;
+    SavePassCheckBox: TCheckBox;
     LoginButton: TButton;
     DeleteButton: TButton;
     VersionLabel: TLabel;
@@ -51,13 +51,15 @@ implementation
 uses
   MainUnit,
   VarsUnit,
-  UtilsUnit;
+  UtilsUnit,
+  rXML;
 
 procedure TProfileForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
   CreateLang(self);
-
+  // Применяем язык
+  SetLang(self);
 end;
 
 procedure TProfileForm.FormCreate(Sender: TObject);
