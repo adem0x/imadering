@@ -174,57 +174,6 @@ object SettingsForm: TSettingsForm
             OnClick = ProxyAddressEditChange
           end
         end
-        object GroupBox10: TGroupBox
-          Left = 3
-          Top = 108
-          Width = 426
-          Height = 248
-          Caption = #1055#1088#1086#1092#1080#1083#1100
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          TabOrder = 1
-          object ProfilePathLabel: TLabel
-            Left = 15
-            Top = 21
-            Width = 88
-            Height = 13
-            Caption = #1055#1091#1090#1100' '#1082' '#1087#1088#1086#1092#1080#1083#1102':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object ProfilePathSpeedButton: TSpeedButton
-            Left = 388
-            Top = 40
-            Width = 23
-            Height = 22
-            Flat = True
-            OnClick = ProfilePathSpeedButtonClick
-          end
-          object ProfilePathEdit: TEdit
-            Left = 14
-            Top = 40
-            Width = 370
-            Height = 21
-            Color = clBtnFace
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 0
-            Text = 'C:\Imadering\'
-          end
-        end
       end
       object CLPage: TJvStandardPage
         Left = 0

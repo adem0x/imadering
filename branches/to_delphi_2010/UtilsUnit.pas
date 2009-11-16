@@ -102,9 +102,9 @@ function Getrandomhexbytes(Bytescount: Integer): string;
 function Errorhttpclient(Errcode: Integer): string;
 function Getfulltag(Adata: string): string;
 procedure Implaysnd(Snd: Integer);
-function Searchnickincash(Ctype, Cid: string): string;
-function Copydir(const Fromdir, Todir: string): Boolean;
-function Cleardir(const Path: string; Delete: Boolean): Boolean;
+function SearchNickInCash(Ctype, Cid: string): string;
+//function Copydir(const Fromdir, Todir: string): Boolean;
+//function Cleardir(const Path: string; Delete: Boolean): Boolean;
 procedure SetcustomWidthCombobox(Cb: Tcombobox);
 procedure Xshowform(Xform: Tform);
 procedure OpenUrl(Url: string);
@@ -112,7 +112,8 @@ function Changespaces(const Value: string): string;
 function Changeslash(const Value: string): string;
 procedure Sendflap_mra(Pkttype, Data: string; Nolen: Boolean = False);
 function Getfilefname(Filename: string): string;
-procedure Checkmessage_br(var Msg: string);
+procedure CheckMessage_BR(var Msg: string);
+procedure CheckText_RN(var Msg: string);
 function NotProtoOnline(Proto: string): Boolean;
 function Getfiledatetime(Filename: string): Tdatetime;
 procedure Sendflap_jabber(Xmldata: string);
@@ -128,19 +129,16 @@ implementation
 
 procedure SetLang(Xform: Tform);
 var
-  I, II: Integer;
+  I, II, M: Integer;
   List: Tstringlist;
   PropInfo: PPropInfo;
   TK: TTypeKind;
 begin
-  // Если язык отличается от умолчального, то применяем другой язык
-  if CurrentLang <> 'ru' then
-  begin
-    List := Tstringlist.Create;
-    try
-      with TrXML.Create() do
-        try
-          if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+  List := Tstringlist.Create;
+  try
+    with TrXML.Create() do
+      try
+        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
           begin
             // Загружаем файл языка
             LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
@@ -153,39 +151,56 @@ begin
                 CloseKey();
               end;
           end;
-        finally
-          Free();
-        end;
-      // Переводим компоненты формы с Caption
-      with Xform do
-        for I := 0 to ComponentCount - 1 do
+      finally
+        Free();
+      end;
+    // Переводим компоненты формы с Caption
+    with Xform do
+      for I := 0 to ComponentCount - 1 do
         begin
-          // Ищем этот компонент в списке по имени
-          for II := 0 to List.Count - 1 do
+          // Если этот компонент меню
+          if (Components[I] is TPopupMenu) then
           begin
-            if Components[I].name = Isolatetextstring(List.Strings[II], '<', ' c="') then
+            for M := 0 to (Components[I] as TPopupMenu).Items.Count - 1 do
             begin
-              // Устанавливаем Caption через технологию RTTI
-              PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
-              if PropInfo <> nil then
+              for II := 0 to List.Count - 1 do
               begin
-                TK := PropInfo^.PropType^.Kind;
-                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                  SetStrProp(Components[I], PropInfo, Isolatetextstring(List.Strings[II], 'c="', '"/>'));
+                if (Components[I] as TPopupMenu).Items[M].Name = IsolateTextString(List.Strings[II], '<', ' c="') then
+                begin
+                  (Components[I] as TPopupMenu).Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"/>');
+                  Break;
+                end;
               end;
-              Break;
             end;
+            Continue;
           end;
+          // Если этот компонент ЛистВиев
+
+          // Ищем компонент в списке по имени
+          for II := 0 to List.Count - 1 do
+            begin
+              if Components[I].name = IsolateTextString(List.Strings[II], '<', ' c="') then
+                begin
+                  // Устанавливаем Caption через технологию RTTI
+                  PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
+                  if PropInfo <> nil then
+                    begin
+                      TK := PropInfo^.PropType^.Kind;
+                      if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                        SetStrProp(Components[I], PropInfo, IsolateTextString(List.Strings[II], 'c="', '"/>'));
+                    end;
+                  Break;
+                end;
+            end;
         end;
-    finally
-      List.Free;
-    end;
+  finally
+    List.Free;
   end;
 end;
 
 procedure CreateLang(Xform: Tform);
 var
-  I: Integer;
+  I, MI: Integer;
   Cf: string;
   PropInfo: PPropInfo;
   TK: TTypeKind;
@@ -204,23 +219,39 @@ begin
         end;
       // Просматриваем все контролы на форме
       for I := 0 to Xform.ComponentCount - 1 do
-      begin
-        // Пишем в файл все компоненты которые имеют Caption
-        PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
-        if PropInfo <> nil then
         begin
-          TK := PropInfo^.PropType^.Kind;
-          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-          begin
-            if OpenKey(Cf + Xform.Components[I].name, True) then
-              try
-                WriteString('c', GetStrProp(Xform.Components[I], PropInfo));
-              finally
-                CloseKey();
-              end;
-          end;
+          // Пишем в файл всплывающие меню
+          if (Xform.Components[I] is TPopupMenu) then
+            begin
+              for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
+                begin
+                  if OpenKey(Cf + Xform.Components[I].name, True) then
+                    try
+                      WriteString('c', (Xform.Components[I] as TPopupMenu).Items.Caption);
+                    finally
+                      CloseKey();
+                    end;
+                end;
+              Continue;
+            end;
+          // Пишем в файл ЛистВиев
+
+          // Пишем в файл все компоненты которые имеют Caption
+          PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
+          if PropInfo <> nil then
+            begin
+              TK := PropInfo^.PropType^.Kind;
+              if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                begin
+                  if OpenKey(Cf + Xform.Components[I].name, True) then
+                    try
+                      WriteString('c', GetStrProp(Xform.Components[I], PropInfo));
+                    finally
+                      CloseKey();
+                    end;
+                end;
+            end;
         end;
-      end;
       // Записываем сам файл
       SaveToFile(MyPath + 'Langs\Forms\' + Xform.name + '.xml');
     finally
@@ -273,11 +304,11 @@ begin
     Exit;
   // Если количество строк в логе слишком большое, то очищаем его
   if LogForm.LogMemo.Lines.Count > 5000 then
-  begin
-    LogForm.LogMemo.Clear;
-    LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Clear);
-    LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
-  end;
+    begin
+      LogForm.LogMemo.Clear;
+      LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Clear);
+      LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
+    end;
   // Добавляем в лог новое сообщение
   LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + XLogData);
   LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
@@ -312,34 +343,40 @@ begin
   Result := False;
   // Проверяем онлайн ли клиент для этого протокола
   if (Proto = 'Icq') and (not Icq_work_phaze) then
-  begin
-    Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
-    Result := True;
-  end
+    begin
+      Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
+      Result := True;
+    end
   else if (Proto = 'Jabber') and (not Jabber_work_phaze) then
-  begin
-    Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
-    Result := True;
-  end
+    begin
+      Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
+      Result := True;
+    end
   else if (Proto = 'Mra') and (not Mra_work_phaze) then
-  begin
-    Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
-    Result := True;
-  end;
+    begin
+      Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
+      Result := True;
+    end;
 end;
 
-procedure Checkmessage_br(var Msg: string);
+procedure CheckMessage_BR(var Msg: string);
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
   Msg := Ansireplacetext(Msg, #13#10, '<BR>');
 end;
 
+procedure CheckText_RN(var Msg: string);
+begin
+  // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
+  Msg := Ansireplacetext(Msg, '<RN>', #13#10);
+end;
+
 procedure Xshowform(Xform: Tform);
 begin
   // Автоматизируем показ окон
+  Xform.Show;
   if Xform.Visible then
     Showwindow(Xform.Handle, Sw_restore);
-  Xform.Show;
   Setforegroundwindow(Xform.Handle);
 end;
 
@@ -378,46 +415,46 @@ begin
   Getagepanel := EmptyStr;
   // Ищем файл с анкетой этого контакта
   if FileExists(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml') then
-  begin
-    // Инициализируем XML
-    with TrXML.Create() do
-      try
-        LoadFromFile(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml');
-        // Загружаем Имя и Фамилию
-        if OpenKey('profile\name-info') then
-          try
-            Ln := ReadString('first');
-            Lf := ReadString('last');
-          finally
-            CloseKey;
-          end;
-        // Загружаем Город
-        if OpenKey('profile\home-info') then
-          try
-            Getcitypanel := ReadString('city');
-          finally
-            CloseKey;
-          end;
-        // Загружаем Возраст
-        if OpenKey('profile\age-info') then
-          try
-            La := ReadString('age');
-            if La <> '0' then
-              Getagepanel := Infoagel + ' ' + La;
-          finally
-            CloseKey;
-          end;
-      finally
-        Free();
-      end;
-    // Формируем строку
-    if Ln > EmptyStr then
-      Result := Result + Ln;
-    if (Ln > EmptyStr) and (Lf > EmptyStr) then
-      Result := Result + ' ' + Lf
-    else if (Ln = EmptyStr) and (Lf > EmptyStr) then
-      Result := Result + Lf;
-  end;
+    begin
+      // Инициализируем XML
+      with TrXML.Create() do
+        try
+          LoadFromFile(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml');
+          // Загружаем Имя и Фамилию
+          if OpenKey('profile\name-info') then
+            try
+              Ln := ReadString('first');
+              Lf := ReadString('last');
+            finally
+              CloseKey;
+            end;
+          // Загружаем Город
+          if OpenKey('profile\home-info') then
+            try
+              Getcitypanel := ReadString('city');
+            finally
+              CloseKey;
+            end;
+          // Загружаем Возраст
+          if OpenKey('profile\age-info') then
+            try
+              La := ReadString('age');
+              if La <> '0' then
+                Getagepanel := Infoagel + ' ' + La;
+            finally
+              CloseKey;
+            end;
+        finally
+          Free();
+        end;
+      // Формируем строку
+      if Ln > EmptyStr then
+        Result := Result + Ln;
+      if (Ln > EmptyStr) and (Lf > EmptyStr) then
+        Result := Result + ' ' + Lf
+      else if (Ln = EmptyStr) and (Lf > EmptyStr) then
+        Result := Result + Lf;
+    end;
 end;
 
 procedure Decorateurl(var Text: string);
@@ -427,92 +464,92 @@ begin
   Ltext := Lowercase(Text);
   //
   if Pos('http://', Ltext) > 0 then
-  begin
-    S := Ltext;
-    Delete(S, 1, Pos('http://', S) - 1);
-    if Pos(' ', S) > 0 then
     begin
-      S := Copy(S, 1, Pos(' ', S) - 1);
-      if Pos('<br>', S) > 0 then
-        S := Copy(S, 1, Pos('<br>', S) - 1);
-    end
-    else if Pos('<br>', S) > 0 then
-    begin
-      S := Copy(S, 1, Pos('<br>', S) - 1);
+      S := Ltext;
+      Delete(S, 1, Pos('http://', S) - 1);
       if Pos(' ', S) > 0 then
-        S := Copy(S, 1, Pos(' ', S) - 1);
-    end
-    else
-      S := Copy(S, 1, Length(S));
-    Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
-    Exit;
-  end;
+        begin
+          S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos('<br>', S) > 0 then
+            S := Copy(S, 1, Pos('<br>', S) - 1);
+        end
+      else if Pos('<br>', S) > 0 then
+        begin
+          S := Copy(S, 1, Pos('<br>', S) - 1);
+          if Pos(' ', S) > 0 then
+            S := Copy(S, 1, Pos(' ', S) - 1);
+        end
+      else
+        S := Copy(S, 1, Length(S));
+      Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
+      Exit;
+    end;
   //
   if Pos('https://', Ltext) > 0 then
-  begin
-    S := Ltext;
-    Delete(S, 1, Pos('https://', S) - 1);
-    if Pos(' ', S) > 0 then
     begin
-      S := Copy(S, 1, Pos(' ', S) - 1);
-      if Pos('<br>', S) > 0 then
-        S := Copy(S, 1, Pos('<br>', S) - 1);
-    end
-    else if Pos('<br>', S) > 0 then
-    begin
-      S := Copy(S, 1, Pos('<br>', S) - 1);
+      S := Ltext;
+      Delete(S, 1, Pos('https://', S) - 1);
       if Pos(' ', S) > 0 then
-        S := Copy(S, 1, Pos(' ', S) - 1);
-    end
-    else
-      S := Copy(S, 1, Length(S));
-    Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
-    Exit;
-  end;
+        begin
+          S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos('<br>', S) > 0 then
+            S := Copy(S, 1, Pos('<br>', S) - 1);
+        end
+      else if Pos('<br>', S) > 0 then
+        begin
+          S := Copy(S, 1, Pos('<br>', S) - 1);
+          if Pos(' ', S) > 0 then
+            S := Copy(S, 1, Pos(' ', S) - 1);
+        end
+      else
+        S := Copy(S, 1, Length(S));
+      Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
+      Exit;
+    end;
   //
   if Pos('www.', Ltext) > 0 then
-  begin
-    S := Ltext;
-    Delete(S, 1, Pos('www.', S) - 1);
-    if Pos(' ', S) > 0 then
     begin
-      S := Copy(S, 1, Pos(' ', S) - 1);
-      if Pos('<br>', S) > 0 then
-        S := Copy(S, 1, Pos('<br>', S) - 1);
-    end
-    else if Pos('<br>', S) > 0 then
-    begin
-      S := Copy(S, 1, Pos('<br>', S) - 1);
+      S := Ltext;
+      Delete(S, 1, Pos('www.', S) - 1);
       if Pos(' ', S) > 0 then
-        S := Copy(S, 1, Pos(' ', S) - 1);
-    end
-    else
-      S := Copy(S, 1, Length(S));
-    Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
-    Exit;
-  end;
+        begin
+          S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos('<br>', S) > 0 then
+            S := Copy(S, 1, Pos('<br>', S) - 1);
+        end
+      else if Pos('<br>', S) > 0 then
+        begin
+          S := Copy(S, 1, Pos('<br>', S) - 1);
+          if Pos(' ', S) > 0 then
+            S := Copy(S, 1, Pos(' ', S) - 1);
+        end
+      else
+        S := Copy(S, 1, Length(S));
+      Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
+      Exit;
+    end;
   //
   if Pos('ftp://', Ltext) > 0 then
-  begin
-    S := Ltext;
-    Delete(S, 1, Pos('ftp://', S) - 1);
-    if Pos(' ', S) > 0 then
     begin
-      S := Copy(S, 1, Pos(' ', S) - 1);
-      if Pos('<br>', S) > 0 then
-        S := Copy(S, 1, Pos('<br>', S) - 1);
-    end
-    else if Pos('<br>', S) > 0 then
-    begin
-      S := Copy(S, 1, Pos('<br>', S) - 1);
+      S := Ltext;
+      Delete(S, 1, Pos('ftp://', S) - 1);
       if Pos(' ', S) > 0 then
-        S := Copy(S, 1, Pos(' ', S) - 1);
-    end
-    else
-      S := Copy(S, 1, Length(S));
-    Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
-    Exit;
-  end;
+        begin
+          S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos('<br>', S) > 0 then
+            S := Copy(S, 1, Pos('<br>', S) - 1);
+        end
+      else if Pos('<br>', S) > 0 then
+        begin
+          S := Copy(S, 1, Pos('<br>', S) - 1);
+          if Pos(' ', S) > 0 then
+            S := Copy(S, 1, Pos(' ', S) - 1);
+        end
+      else
+        S := Copy(S, 1, Length(S));
+      Text := Stringreplace(Ltext, S, '<a href="' + S + '">' + S + '</a>', [Rfreplaceall]);
+      Exit;
+    end;
 end;
 
 function Isnotnull(Stringsarr: array of string): Boolean;
@@ -521,10 +558,10 @@ var
 begin
   Result := True;
   for I := low(Stringsarr) to high(Stringsarr) do
-  begin
-    if Trim(Stringsarr[I]) <> EmptyStr then
-      Exit;
-  end;
+    begin
+      if Trim(Stringsarr[I]) <> EmptyStr then
+        Exit;
+    end;
   Result := False;
 end;
 
@@ -546,19 +583,19 @@ begin
   Result := EmptyStr;
   Lens := Length(Str);
   for I := 1 to Lens do
-  begin
-    D := 1;
-    P := Pos(Str[I], Rarrayl);
-    if P = 0 then
     begin
-      P := Pos(Str[I], Rarrayu);
-      D := 2
+      D := 1;
+      P := Pos(Str[I], Rarrayl);
+      if P = 0 then
+        begin
+          P := Pos(Str[I], Rarrayu);
+          D := 2
+        end;
+      if P <> 0 then
+        Result := Result + Arr[D, P]
+      else
+        Result := Result + Str[I];
     end;
-    if P <> 0 then
-      Result := Result + Arr[D, P]
-    else
-      Result := Result + Str[I];
-  end;
 end;
 
 function Horospope(D, M: Integer): Integer;
@@ -715,18 +752,18 @@ begin
   repeat
     Pscan := Strpos(Pscan, Ptag1);
     if Pscan <> nil then
-    begin
-      Inc(Pscan, Length(Tag1));
-      Pend := Strpos(Pscan, Ptag2);
-      if Pend <> nil then
       begin
-        Setstring(Foundtext, PChar(S) + (Pscan - PChar(Searchtext)), Pend - Pscan);
-        Result := Foundtext;
-        Pscan := Pend + Length(Tag2);
-      end
-      else
-        Pscan := nil;
-    end;
+        Inc(Pscan, Length(Tag1));
+        Pend := Strpos(Pscan, Ptag2);
+        if Pend <> nil then
+          begin
+            Setstring(Foundtext, PChar(S) + (Pscan - PChar(Searchtext)), Pend - Pscan);
+            Result := Foundtext;
+            Pscan := Pend + Length(Tag2);
+          end
+        else
+          Pscan := nil;
+      end;
   until Pscan = nil;
 end;
 
@@ -754,11 +791,11 @@ end;
 function Chop(I, L: Integer; var S: string): string;
 begin
   if I = 0 then
-  begin
-    Result := S;
-    S := EmptyStr;
-    Exit;
-  end;
+    begin
+      Result := S;
+      S := EmptyStr;
+      Exit;
+    end;
   Result := Copy(S, 1, I - 1);
   Delete(S, 1, I - 1 + L);
 end;
@@ -771,27 +808,27 @@ var
 begin
   Result := True;
   if Openclipboard(Wnd) then
-  begin
-    try
-      Len := Length(Value) + 1;
-      Hdata := Globalalloc(Gmem_moveable or Gmem_ddeshare, Len);
+    begin
       try
-        Pdata := Globallock(Hdata);
+        Len := Length(Value) + 1;
+        Hdata := Globalalloc(Gmem_moveable or Gmem_ddeshare, Len);
         try
-          Move(PChar(Value)^, Pdata^, Len);
-          Emptyclipboard;
-          Setclipboarddata(Cf_text, Hdata);
-        finally
-          Globalunlock(Hdata);
+          Pdata := Globallock(Hdata);
+          try
+            Move(PChar(Value)^, Pdata^, Len);
+            Emptyclipboard;
+            Setclipboarddata(Cf_text, Hdata);
+          finally
+            Globalunlock(Hdata);
+          end;
+        except
+          Globalfree(Hdata);
+          raise
         end;
-      except
-        Globalfree(Hdata);
-        raise
+      finally
+        Closeclipboard;
       end;
-    finally
-      Closeclipboard;
-    end;
-  end
+    end
   else
     Result := False;
 end;
@@ -803,21 +840,21 @@ begin
   Decodedate(Birthday, Year, Month, Day);
   Decodedate(Currentdate, Currentyear, Currentmonth, Currentday);
   if (Year = Currentyear) and (Month = Currentmonth) and (Day = Currentday) then
-  begin
-    Result := 0;
-  end
-  else
-  begin
-    Result := Currentyear - Year;
-    if (Month > Currentmonth) then
-      Dec(Result)
-    else
     begin
-      if Month = Currentmonth then
-        if (Day > Currentday) then
-          Dec(Result);
+      Result := 0;
+    end
+  else
+    begin
+      Result := Currentyear - Year;
+      if (Month > Currentmonth) then
+        Dec(Result)
+      else
+        begin
+          if Month = Currentmonth then
+            if (Day > Currentday) then
+              Dec(Result);
+        end;
     end;
-  end;
 end;
 
 function Hextoint64(Hex: string): Int64;
@@ -828,13 +865,10 @@ var
 begin
   Result := 0;
   case Length(Hex) of
-    0:
-      Result := 0;
-    1 .. 16:
-      for I := 1 to Length(Hex) do
+    0: Result := 0;
+    1 .. 16: for I := 1 to Length(Hex) do
         Result := 16 * Result + Pos(Upcase(Hex[I]), Hexvalues) - 1;
-  else
-    for I := 1 to 16 do
+  else for I := 1 to 16 do
       Result := 16 * Result + Pos(Upcase(Hex[I]), Hexvalues) - 1;
   end;
 end;
@@ -848,10 +882,10 @@ begin
   Result := True;
   for I := 1 to Length(Value) do
     if not(Value[I] in Validasciichars) then
-    begin
-      Result := False;
-      Exit;
-    end;
+      begin
+        Result := False;
+        Exit;
+      end;
 end;
 
 function Exisvalidcharactersdigit(Value: string): Boolean;
@@ -863,10 +897,10 @@ begin
   Result := True;
   for I := 1 to Length(Value) do
     if not(Value[I] in Validasciichars) then
-    begin
-      Result := False;
-      Exit;
-    end;
+      begin
+        Result := False;
+        Exit;
+      end;
 end;
 
 procedure Formflash(Hnd: Hwnd);
@@ -896,25 +930,21 @@ begin
   Bracesopened := 1;
   Escaped := False;
   while Bracesopened > 0 do
-  begin
-    Inc(Nchar);
-    case Source[Nchar] of
-      '{':
-        if Escaped then
-          Escaped := False
-        else
-          Inc(Bracesopened);
-      '}':
-        if Escaped then
-          Escaped := False
-        else
-          Dec(Bracesopened);
-      '\':
-        Escaped := not Escaped;
-    else
-      Escaped := False;
+    begin
+      Inc(Nchar);
+      case Source[Nchar] of
+        '{': if Escaped then
+            Escaped := False
+          else
+            Inc(Bracesopened);
+        '}': if Escaped then
+            Escaped := False
+          else
+            Dec(Bracesopened);
+        '\': Escaped := not Escaped;
+      else Escaped := False;
+      end;
     end;
-  end;
 end;
 
 var
@@ -924,58 +954,51 @@ begin
   Inc(Nchar);
   while Nchar <= Length(Source) do
     case Source[Nchar] of
-      '{':
-        Result := Result + Processgrouprecursevly;
-      '}':
-        begin
+      '{': Result := Result + Processgrouprecursevly;
+      '}': begin
           Inc(Nchar);
           Break;
         end;
-      '\':
-        begin
+      '\': begin
           Inc(Nchar);
           case Source[Nchar] of
-            '''':
-              begin
+            '''': begin
                 Result := Result + Chr(Hextoint(Copy(Source, Nchar + 1, 2)));
                 Inc(Nchar, 3);
               end;
-            '~':
-              Result := Result + #$20;
-            '*':
-              Skipstar;
-            'a' .. 'z':
-              begin
+            '~': Result := Result + #$20;
+            '*': Skipstar;
+            'a' .. 'z': begin
                 Control := EmptyStr;
                 while Source[Nchar] in ['a' .. 'z'] do
-                begin
-                  Control := Control + Source[Nchar];
-                  Inc(Nchar);
-                end;
+                  begin
+                    Control := Control + Source[Nchar];
+                    Inc(Nchar);
+                  end;
                 if Source[Nchar] = '-' then
-                begin
-                  Numericvalue := Source[Nchar];
-                  Inc(Nchar);
-                end
+                  begin
+                    Numericvalue := Source[Nchar];
+                    Inc(Nchar);
+                  end
                 else
                   Numericvalue := EmptyStr;
                 while Source[Nchar] in ['0' .. '9'] do
-                begin
-                  Numericvalue := Numericvalue + Source[Nchar];
-                  Inc(Nchar);
-                end;
+                  begin
+                    Numericvalue := Numericvalue + Source[Nchar];
+                    Inc(Nchar);
+                  end;
                 if Source[Nchar] = '{' then
                   Processgrouprecursevly;
                 Textvalue := EmptyStr;
                 if not(Source[Nchar] in ['a' .. 'z', '{', '}', '\']) then
-                begin
-                  Inc(Nchar);
-                  while not(Source[Nchar] in ['{', '}', '\']) do
                   begin
-                    Textvalue := Textvalue + Source[Nchar];
                     Inc(Nchar);
+                    while not(Source[Nchar] in ['{', '}', '\']) do
+                      begin
+                        Textvalue := Textvalue + Source[Nchar];
+                        Inc(Nchar);
+                      end;
                   end;
-                end;
                 if (Control = 'line') or (Control = 'par') then
                   Result := Result + #$0D#$0A
                 else if Control = 'tab' then
@@ -986,20 +1009,18 @@ begin
                   Textvalue := EmptyStr;
                 if Length(Textvalue) > 0 then
                   if (not((Textvalue[Length(Textvalue)] = ';') and (Source[Nchar] = '}'))) then
-                  begin
-                    Result := Result + Textvalue;
-                    Textvalue := EmptyStr;
-                  end;
+                    begin
+                      Result := Result + Textvalue;
+                      Textvalue := EmptyStr;
+                    end;
               end;
-          else
-            begin
+          else begin
               Result := Result + Source[Nchar];
               Inc(Nchar);
             end;
           end;
         end;
-    else
-      begin
+    else begin
         Result := Result + Source[Nchar];
         Inc(Nchar);
       end;
@@ -1014,45 +1035,41 @@ begin
   if Copy(Asource, 1, 5) <> '{\rtf' then
     Initsource := False
   else
-  begin
-    Source := EmptyStr;
-    Bracescount := 0;
-    Escaped := False;
-    Nchar := 1;
-    while (Nchar <= Length(Asource)) and (Bracescount >= 0) do
     begin
-      if not(Asource[Nchar] in [#$0D, #$0A]) then
-      begin
-        Source := Source + Asource[Nchar];
-        case Asource[Nchar] of
-          '{':
-            if not Escaped then
-              Inc(Bracescount)
-            else
-              Escaped := False;
-          '}':
-            if not Escaped then
-              Dec(Bracescount)
-            else
-              Escaped := False;
-          '\':
-            Escaped := True;
-        else
-          Escaped := False;
+      Source := EmptyStr;
+      Bracescount := 0;
+      Escaped := False;
+      Nchar := 1;
+      while (Nchar <= Length(Asource)) and (Bracescount >= 0) do
+        begin
+          if not(Asource[Nchar] in [#$0D, #$0A]) then
+            begin
+              Source := Source + Asource[Nchar];
+              case Asource[Nchar] of
+                '{': if not Escaped then
+                    Inc(Bracescount)
+                  else
+                    Escaped := False;
+                '}': if not Escaped then
+                    Dec(Bracescount)
+                  else
+                    Escaped := False;
+                '\': Escaped := True;
+              else Escaped := False;
+              end;
+            end;
+          Inc(Nchar);
         end;
-      end;
-      Inc(Nchar);
+      Initsource := Bracescount = 0;
     end;
-    Initsource := Bracescount = 0;
-  end;
 end;
 
 begin
   if Initsource then
-  begin
-    Nchar := 1;
-    Result := Processgrouprecursevly;
-  end
+    begin
+      Nchar := 1;
+      Result := Processgrouprecursevly;
+    end
   else
     Result := Asource;
 end;
@@ -1078,22 +1095,22 @@ begin
     if P[Lp] <> S[Pos] then
       Pos := Pos + Bmt[Byte(S[Pos])]
     else if Lp = 1 then
-    begin
-      Result := Pos;
-      Exit;
-    end
+      begin
+        Result := Pos;
+        Exit;
+      end
     else
       for I := Lp - 1 downto 1 do
         if P[I] <> S[Pos - Lp + I] then
-        begin
-          Inc(Pos);
-          Break;
-        end
+          begin
+            Inc(Pos);
+            Break;
+          end
         else if I = 1 then
-        begin
-          Result := Pos - Lp + 1;
-          Exit;
-        end;
+          begin
+            Result := Pos - Lp + 1;
+            Exit;
+          end;
   Result := -1;
 end;
 
@@ -1165,26 +1182,26 @@ begin
   Result := EmptyStr;
   Ofs := 0;
   while Ofs < Length(Data) do
-  begin
-    S1 := EmptyStr;
-    S2 := EmptyStr;
-    for I := 1 to Cols do
-      if Ofs + I <= Length(Data) then
-      begin
-        S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
-        if I = 8 then
-          S1 := S1 + '  '
-        else
-          S1 := S1 + ' ';
-        if Data[Ofs + I] < #32 then
-          S2 := S2 + '.'
-        else
-          S2 := S2 + Data[Ofs + I];
-      end;
-    S1 := S1 + StringOfChar(' ', Cols * 3 + 4 - Length(S1));
-    Result := Result + S1 + S2 + RN;
-    Inc(Ofs, Cols);
-  end;
+    begin
+      S1 := EmptyStr;
+      S2 := EmptyStr;
+      for I := 1 to Cols do
+        if Ofs + I <= Length(Data) then
+          begin
+            S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
+            if I = 8 then
+              S1 := S1 + '  '
+            else
+              S1 := S1 + ' ';
+            if Data[Ofs + I] < #32 then
+              S2 := S2 + '.'
+            else
+              S2 := S2 + Data[Ofs + I];
+          end;
+      S1 := S1 + StringOfChar(' ', Cols * 3 + 4 - Length(S1));
+      Result := Result + S1 + S2 + RN;
+      Inc(Ofs, Cols);
+    end;
 end;
 
 function Icq_bodysize: Integer;
@@ -1284,10 +1301,10 @@ begin
   SetLength(Result, Length(Value));
   for I := 1 to Length(Value) do
     if Value[I] <> '-' then
-    begin
-      Inc(Counter);
-      Result[Counter] := Value[I];
-    end;
+      begin
+        Inc(Counter);
+        Result[Counter] := Value[I];
+      end;
   SetLength(Result, Counter);
 end;
 
@@ -1301,12 +1318,12 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Value) do
-  begin
-    if Value[I] = ' ' then
-      Result := Result + '%20'
-    else
-      Result := Result + Value[I];
-  end;
+    begin
+      if Value[I] = ' ' then
+        Result := Result + '%20'
+      else
+        Result := Result + Value[I];
+    end;
 end;
 
 function Changeslash(const Value: string): string;
@@ -1315,12 +1332,12 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Value) do
-  begin
-    if Value[I] = '\' then
-      Result := Result + '/'
-    else
-      Result := Result + Value[I];
-  end;
+    begin
+      if Value[I] = '\' then
+        Result := Result + '/'
+      else
+        Result := Result + Value[I];
+    end;
 end;
 
 function Deletespaces(const Value: string): string;
@@ -1331,10 +1348,10 @@ begin
   SetLength(Result, Length(Value));
   for I := 1 to Length(Value) do
     if Value[I] <> ' ' then
-    begin
-      Inc(Counter);
-      Result[Counter] := Value[I];
-    end;
+      begin
+        Inc(Counter);
+        Result[Counter] := Value[I];
+      end;
   SetLength(Result, Counter);
 end;
 
@@ -1351,10 +1368,10 @@ begin
   SetLength(Result, Length(Value));
   for I := 1 to Length(Value) do
     if (Value[I] <> ' ') and (Value[I] <> '-') and (Value[I] <> '(') and (Value[I] <> ')') and (Value[I] <> 'S') and (Value[I] <> 'M') then
-    begin
-      Inc(Counter);
-      Result[Counter] := Value[I];
-    end;
+      begin
+        Inc(Counter);
+        Result[Counter] := Value[I];
+      end;
   SetLength(Result, Counter);
 end;
 
@@ -1365,15 +1382,13 @@ begin
   Source := Pointer(S);
   Sourceend := Source + Length(S);
   while Source < Sourceend do
-  begin
-    case Source^ of
-      #10:
-        Source^ := #32;
-      #13:
-        Source^ := #32;
+    begin
+      case Source^ of
+        #10: Source^ := #32;
+        #13: Source^ := #32;
+      end;
+      Inc(Source);
     end;
-    Inc(Source);
-  end;
   Result := S;
 end;
 
@@ -1405,9 +1420,9 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Msg) do
-  begin
-    Result := Result + IntToHex(Ord(Msg[I]), 2);
-  end;
+    begin
+      Result := Result + IntToHex(Ord(Msg[I]), 2);
+    end;
 end;
 
 function Rightstr(const Str: string; Size: Word): string;
@@ -1430,16 +1445,16 @@ var
   Blok: string;
 begin
   if Count <= 0 then
-  begin
-    Result := EmptyStr;
-    Exit;
-  end;
+    begin
+      Result := EmptyStr;
+      Exit;
+    end;
   if Count > Length(Data) then
-  begin
-    Result := Data;
-    SetLength(Data, 0);
-    Exit;
-  end;
+    begin
+      Result := Data;
+      SetLength(Data, 0);
+      Exit;
+    end;
   Blok := Leftstr(Data, Count);
   Data := Rightstr(Data, Length(Data) - Count);
   Result := Blok;
@@ -1471,13 +1486,13 @@ begin
   Root := Includetrailingbackslash(Root);
   Setcurrentdir(Root);
   if Findfirst('*', Faanyfile, Sresult) = 0 then
-  begin
-    repeat
-      if (Sresult.name <> '.') and (Sresult.name <> '..') and ((Sresult.Attr and Fadirectory) = Fadirectory) then
-        Outstring.Add(Sresult.name);
-    until Findnext(Sresult) <> 0;
-    Findclose(Sresult);
-  end;
+    begin
+      repeat
+        if (Sresult.name <> '.') and (Sresult.name <> '..') and ((Sresult.Attr and Fadirectory) = Fadirectory) then
+          Outstring.Add(Sresult.name);
+      until Findnext(Sresult) <> 0;
+      Findclose(Sresult);
+    end;
 end;
 
 {$WARNINGS ON}
@@ -1501,10 +1516,10 @@ begin
   if S[Length(S)] <> Char then
     S := S + Char;
   for I := 1 to Count do
-  begin
-    T := Copy(S, 0, Pos(Char, S) - 1);
-    S := Copy(S, Pos(Char, S) + 1, Length(S));
-  end;
+    begin
+      T := Copy(S, 0, Pos(Char, S) - 1);
+      S := Copy(S, Pos(Char, S) + 1, Length(S));
+    end;
   Result := T;
 end;
 
@@ -1513,15 +1528,15 @@ var
   Sr: Tsearchrec;
 begin
   if Findfirst(Path + '\' + Ext, Faanyfile, Sr) = 0 then
-  begin
-    repeat
-      if (Sr.Attr <> Fadirectory) then
-      begin
-        Filelist.Add(Parse(Eext, Sr.name, 1));
-      end;
-    until Findnext(Sr) <> 0;
-    Findclose(Sr);
-  end;
+    begin
+      repeat
+        if (Sr.Attr <> Fadirectory) then
+          begin
+            Filelist.Add(Parse(Eext, Sr.name, 1));
+          end;
+      until Findnext(Sr) <> 0;
+      Findclose(Sr);
+    end;
 end;
 
 procedure Popup(Compon: Tcomponent; Pm: Tpopupmenu);
@@ -1558,19 +1573,19 @@ begin
   S := Application.Exename;
   Sz := Getfileversioninfosize(PChar(S), H);
   if Sz > 0 then
-  begin
-    try
-      Buf := Allocmem(Sz);
-      Getfileversioninfo(PChar(S), H, Sz, Buf);
-      Verqueryvalue(Buf, '\VarFileInfo\Translation', Value, Len);
-      Ts := IntToHex(Makelong(Hiword(Longint(Value^)), Loword(Longint(Value^))), 8);
-      // Получаем номер билда
-      Verqueryvalue(Buf, PChar('StringFileInfo\' + Ts + '\FileVersion'), Pointer(Value), Len);
-      if Len > 1 then
-        Result := Strpas(PChar(Value));
-    except
+    begin
+      try
+        Buf := Allocmem(Sz);
+        Getfileversioninfo(PChar(S), H, Sz, Buf);
+        Verqueryvalue(Buf, '\VarFileInfo\Translation', Value, Len);
+        Ts := IntToHex(Makelong(Hiword(Longint(Value^)), Loword(Longint(Value^))), 8);
+        // Получаем номер билда
+        Verqueryvalue(Buf, PChar('StringFileInfo\' + Ts + '\FileVersion'), Pointer(Value), Len);
+        if Len > 1 then
+          Result := Strpas(PChar(Value));
+      except
+      end;
     end;
-  end;
 end;
 
 {$WARNINGS OFF}
@@ -1581,9 +1596,9 @@ var
   I: Integer;
 begin
   for I := 1 to Buflen do
-  begin
-    S := S + IntToHex(Pbyte(Longword(Buffer) + I - 1)^, 2);
-  end;
+    begin
+      S := S + IntToHex(Pbyte(Longword(Buffer) + I - 1)^, 2);
+    end;
   Result := S;
 end;
 
@@ -1597,64 +1612,39 @@ var
 begin
   Result := EmptyStr;
   for I := 0 to Bytescount do
-  begin
-    Result := Result + Bit16[Random(15) + 1];
-  end;
+    begin
+      Result := Result + Bit16[Random(15) + 1];
+    end;
 end;
 
 function Errorhttpclient(Errcode: Integer): string;
 begin
   case Errcode of
-    0:
-      Result := SocketConnErrorInfo_1;
-    400:
-      Result := Err400;
-    401:
-      Result := Err401;
-    402:
-      Result := Err402;
-    403:
-      Result := Err403;
-    404:
-      Result := Err404;
-    405:
-      Result := Err405;
-    406:
-      Result := Err406;
-    407:
-      Result := Err407;
-    408:
-      Result := Err408;
-    409:
-      Result := Err409;
-    410:
-      Result := Err410;
-    411:
-      Result := Err411;
-    412:
-      Result := Err412;
-    413:
-      Result := Err413;
-    414:
-      Result := Err414;
-    415:
-      Result := Err415;
-    416:
-      Result := Err416;
-    417:
-      Result := Err417;
-    500:
-      Result := Err500;
-    501:
-      Result := Err501;
-    502:
-      Result := Err502;
-    503:
-      Result := Err503;
-    504:
-      Result := Err504;
-    505:
-      Result := Err505
+    0: Result := SocketConnErrorInfo_1;
+    400: Result := Err400;
+    401: Result := Err401;
+    402: Result := Err402;
+    403: Result := Err403;
+    404: Result := Err404;
+    405: Result := Err405;
+    406: Result := Err406;
+    407: Result := Err407;
+    408: Result := Err408;
+    409: Result := Err409;
+    410: Result := Err410;
+    411: Result := Err411;
+    412: Result := Err412;
+    413: Result := Err413;
+    414: Result := Err414;
+    415: Result := Err415;
+    416: Result := Err416;
+    417: Result := Err417;
+    500: Result := Err500;
+    501: Result := Err501;
+    502: Result := Err502;
+    503: Result := Err503;
+    504: Result := Err504;
+    505: Result := Err505
     else
       Result := SocketConnErrorInfo_1;
   end;
@@ -1685,9 +1675,9 @@ begin
     Mybuff := Copy(In_data, Lastpos + 1, Origlen - Newpos);
     Newpos := Pos(Find_data, Mybuff);
     if (Newpos > 0) then
-    begin
-      Lastpos := Lastpos + Newpos;
-    end;
+      begin
+        Lastpos := Lastpos + Newpos;
+      end;
   until (Newpos <= 0);
   Result := Lastpos;
 end;
@@ -1706,81 +1696,81 @@ begin
     Exit;
   P := Pos('<', Sbuff);
   if P <= 0 then
-  begin
-    Dashow(Errorhead, Parsingpkterror, EmptyStr, 134, 2, 0);
-    Exit;
-  end;
+    begin
+      Dashow(Errorhead, Parsingpkterror, EmptyStr, 134, 2, 0);
+      Exit;
+    end;
   Tmps := Copy(Sbuff, P, L - P + 1);
   E := Pos('>', Tmps);
   I := Pos('/>', Tmps);
   if ((E = 0) and (I = 0)) then
     Exit;
   if Froot = EmptyStr then
-  begin
-    Sp := Pos(' ', Tmps);
-    Tb := Pos(#09, Tmps);
-    Cr := Pos(#10, Tmps);
-    Nl := Pos(#13, Tmps);
-    Ws := Sp;
-    if (Tb > 0) then
-      Ws := Min(Ws, Tb);
-    if (Cr > 0) then
-      Ws := Min(Ws, Cr);
-    if (Nl > 0) then
-      Ws := Min(Ws, Nl);
-    if ((I > 0) and (I < Ws)) then
-      Froot := Trim(Copy(Sbuff, P + 1, I - 2))
-    else if (E < Ws) then
-      Froot := Trim(Copy(Sbuff, P + 1, E - 2))
-    else
-      Froot := Trim(Copy(Sbuff, P + 1, Ws - 2));
-    if (Froot = '?xml') or (Froot = '!ENTITY') or (Froot = '!--') or (Froot = '!ATTLIST') or (Froot = Froottag) then
+    begin
+      Sp := Pos(' ', Tmps);
+      Tb := Pos(#09, Tmps);
+      Cr := Pos(#10, Tmps);
+      Nl := Pos(#13, Tmps);
+      Ws := Sp;
+      if (Tb > 0) then
+        Ws := Min(Ws, Tb);
+      if (Cr > 0) then
+        Ws := Min(Ws, Cr);
+      if (Nl > 0) then
+        Ws := Min(Ws, Nl);
+      if ((I > 0) and (I < Ws)) then
+        Froot := Trim(Copy(Sbuff, P + 1, I - 2))
+      else if (E < Ws) then
+        Froot := Trim(Copy(Sbuff, P + 1, E - 2))
+      else
+        Froot := Trim(Copy(Sbuff, P + 1, Ws - 2));
+      if (Froot = '?xml') or (Froot = '!ENTITY') or (Froot = '!--') or (Froot = '!ATTLIST') or (Froot = Froottag) then
+        begin
+          R := Copy(Sbuff, P, E);
+          Froot := EmptyStr;
+          Jabber_buffpkt := Copy(Sbuff, P + E, L - E - P + 1);
+          Result := R;
+          Exit;
+        end;
+    end;
+  if (E = (I + 1)) then
     begin
       R := Copy(Sbuff, P, E);
       Froot := EmptyStr;
       Jabber_buffpkt := Copy(Sbuff, P + E, L - E - P + 1);
-      Result := R;
-      Exit;
-    end;
-  end;
-  if (E = (I + 1)) then
-  begin
-    R := Copy(Sbuff, P, E);
-    Froot := EmptyStr;
-    Jabber_buffpkt := Copy(Sbuff, P + E, L - E - P + 1);
-  end
+    end
   else
-  begin
-    I := P;
-    Stag := '<' + Froot;
-    Etag := '</' + Froot + '>';
-    Ls := Length(Stag);
-    Le := Length(Etag);
-    R := EmptyStr;
-    repeat
-      Tmps := Copy(Sbuff, I, L - I + 1);
-      Ps := Pos(Stag, Tmps);
-      if (Ps > 0) then
-      begin
-        _counter := _counter + 1;
-        I := I + Ps + Ls - 1;
-      end;
-      Tmps := Copy(Sbuff, I, L - I + 1);
-      Pe := Rpos(Etag, Tmps);
-      if ((Pe > 0) and ((Ps > 0) and (Pe > Ps))) then
-      begin
-        _counter := _counter - 1;
-        I := I + Pe + Le - 1;
-        if (_counter <= 0) then
-        begin
-          R := Copy(Sbuff, P, I - P);
-          Froot := EmptyStr;
-          Jabber_buffpkt := Copy(Sbuff, I, L - I + 1);
-          Break;
-        end;
-      end;
-    until ((Pe <= 0) or (Ps <= 0) or (Tmps = EmptyStr));
-  end;
+    begin
+      I := P;
+      Stag := '<' + Froot;
+      Etag := '</' + Froot + '>';
+      Ls := Length(Stag);
+      Le := Length(Etag);
+      R := EmptyStr;
+      repeat
+        Tmps := Copy(Sbuff, I, L - I + 1);
+        Ps := Pos(Stag, Tmps);
+        if (Ps > 0) then
+          begin
+            _counter := _counter + 1;
+            I := I + Ps + Ls - 1;
+          end;
+        Tmps := Copy(Sbuff, I, L - I + 1);
+        Pe := Rpos(Etag, Tmps);
+        if ((Pe > 0) and ((Ps > 0) and (Pe > Ps))) then
+          begin
+            _counter := _counter - 1;
+            I := I + Pe + Le - 1;
+            if (_counter <= 0) then
+              begin
+                R := Copy(Sbuff, P, I - P);
+                Froot := EmptyStr;
+                Jabber_buffpkt := Copy(Sbuff, I, L - I + 1);
+                Break;
+              end;
+          end;
+      until ((Pe <= 0) or (Ps <= 0) or (Tmps = EmptyStr));
+    end;
   Result := R;
 end;
 
@@ -1793,16 +1783,14 @@ begin
     }
   try
     if Soundon then
-    begin
-      case Snd of
-        0:
-          if (Soundstartprog) and (FileExists(Soundstartprogpath)) then
-            Sndplaysound(PChar(Soundstartprogpath), Snd_async);
-        1:
-          if (Soundincmsg) and (FileExists(Soundincmsgpath)) then
-            Sndplaysound(PChar(Soundincmsgpath), Snd_async);
+      begin
+        case Snd of
+          0: if (Soundstartprog) and (FileExists(Soundstartprogpath)) then
+              Sndplaysound(PChar(Soundstartprogpath), Snd_async);
+          1: if (Soundincmsg) and (FileExists(Soundincmsgpath)) then
+              Sndplaysound(PChar(Soundincmsgpath), Snd_async);
+        end;
       end;
-    end;
   except
   end;
 end;
@@ -1815,21 +1803,23 @@ begin
   try
     // Проверяем создан ли список ников
     if Assigned(Accounttonick) then
-    begin
-      // Находим ники в списке ников по учётной записи
-      for I := 0 to Accounttonick.Count - 1 do
       begin
-        if (Ctype + '_' + Cid) = Accounttonick.Strings[I] then
-        begin
-          Result := Accounttonick.Strings[I + 1];
-          // Выходим из цикла
-          Break;
-        end;
+        // Находим ники в списке ников по учётной записи
+        for I := 0 to Accounttonick.Count - 1 do
+          begin
+            if (Ctype + '_' + Cid) = Accounttonick.Strings[I] then
+              begin
+                Result := Accounttonick.Strings[I + 1];
+                // Выходим из цикла
+                Break;
+              end;
+          end;
       end;
-    end;
   except
   end;
 end;
+
+(*
 
 function Copydir(const Fromdir, Todir: string): Boolean;
 var
@@ -1837,12 +1827,12 @@ var
 begin
   Zeromemory(@Fos, SizeOf(Fos));
   with Fos do
-  begin
-    Wfunc := Fo_copy;
-    Fflags := Fof_filesonly;
-    Pfrom := PChar(Fromdir + #0);
-    Pto := PChar(Todir)
-  end;
+    begin
+      Wfunc := Fo_copy;
+      Fflags := Fof_filesonly;
+      Pfrom := PChar(Fromdir + #0);
+      Pto := PChar(Todir)
+    end;
   Result := (0 = Shfileoperation(Fos));
 end;
 
@@ -1861,31 +1851,33 @@ begin
   Doscode := Findfirst(Path + '*.*', Faanyfile, Fileinfo);
   try
     while Doscode = 0 do
-    begin
-      if (Fileinfo.name[1] <> '.') then
       begin
-        if (Fileinfo.Attr and Fadirectory = Fadirectory) then
-          Result := Cleardir(Path + Fileinfo.name, Delete) and Result
-        else
-        begin
-          if (Fileinfo.Attr and Fareadonly = Fareadonly) then
-            Filesetattr(Path + Fileinfo.name, Faarchive);
-          Result := Deletefile(Path + Fileinfo.name) and Result;
-        end;
+        if (Fileinfo.name[1] <> '.') then
+          begin
+            if (Fileinfo.Attr and Fadirectory = Fadirectory) then
+              Result := Cleardir(Path + Fileinfo.name, Delete) and Result
+            else
+              begin
+                if (Fileinfo.Attr and Fareadonly = Fareadonly) then
+                  Filesetattr(Path + Fileinfo.name, Faarchive);
+                Result := Deletefile(Path + Fileinfo.name) and Result;
+              end;
+          end;
+        Doscode := Findnext(Fileinfo);
       end;
-      Doscode := Findnext(Fileinfo);
-    end;
   finally
     Findclose(Fileinfo);
   end;
   if Delete and Result and (Doscode = Filenotfound) and not((Length(Path) = 2) and (Path[2] = ':')) then
-  begin
-    Rmdir(Path);
-    Result := (Ioresult = 0) and Result;
-  end;
+    begin
+      Rmdir(Path);
+      Result := (Ioresult = 0) and Result;
+    end;
 end;
 
 {$WARNINGS ON}
+
+*)
 
 procedure SetcustomWidthCombobox(Cb: Tcombobox);
 var
@@ -1894,18 +1886,18 @@ begin
   // Выравниваем ширину списка по самой длинной строке
   Itemwidth := 0;
   with Cb do
-  begin
-    for I := 0 to Items.Count - 1 do
     begin
-      Cwidth := Application.Mainform.Canvas.Textwidth(Items.Strings[I]);
-      if Cwidth > Itemwidth then
-        Itemwidth := Cwidth;
+      for I := 0 to Items.Count - 1 do
+        begin
+          Cwidth := Application.Mainform.Canvas.Textwidth(Items.Strings[I]);
+          if Cwidth > Itemwidth then
+            Itemwidth := Cwidth;
+        end;
+      if Items.Count > Dropdowncount then
+        Perform(Cb_setdroppedwidth, Itemwidth + 25, 0)
+      else
+        Perform(Cb_setdroppedwidth, Itemwidth + 8, 0);
     end;
-    if Items.Count > Dropdowncount then
-      Perform(Cb_setdroppedwidth, Itemwidth + 25, 0)
-    else
-      Perform(Cb_setdroppedwidth, Itemwidth + 8, 0);
-  end;
 end;
 
 procedure OpenUrl(Url: string);
@@ -1927,21 +1919,21 @@ begin
       Free;
     end;
   if Ts = EmptyStr then
-  begin
-    Setclipboardtext(Application.Handle, Url);
-    Dashow(Errorhead, Urlopenerrl, EmptyStr, 134, 2, 0);
-    Exit;
-  end;
+    begin
+      Setclipboardtext(Application.Handle, Url);
+      Dashow(Errorhead, Urlopenerrl, EmptyStr, 134, 2, 0);
+      Exit;
+    end;
   if Bmsearch(0, Ts, '"') > -1 then
     Ts := Parse('"', Ts, 2);
   // Проверяем под wine запущена программа или нет
   if Bmsearch(0, Ts, 'winebrowser.exe') = -1 then
     Url := Changespaces(Url) // Преобразуем пробелы в %20
   else
-  begin
-    if Bmsearch(0, Url, ':\') > -1 then
-      Url := '"' + Changeslash(Url) + '"'; // Для открытия в winebrowser
-  end;
+    begin
+      if Bmsearch(0, Url, ':\') > -1 then
+        Url := '"' + Changeslash(Url) + '"'; // Для открытия в winebrowser
+    end;
   Shellexecute(0, 'open', PChar(Ts), PChar(Url), nil, Sw_show);
 end;
 
@@ -1959,40 +1951,40 @@ begin
   Result := False;
   // Проверяем размер файла истории
   if Getfilesize(HFile) > 1000000 then
-  begin
-    FreeAndNil(FArchive);
-    // Проверяем какой номер архива свободен
-    N := 1;
-    HArhFile := Copy(HFile, 1, Length(HFile) - 4);
-    while FileExists(HArhFile + ' [' + IntToStr(N) + '].7z') do
-      Inc(N);
-    HArhFile := HArhFile + ' [' + IntToStr(N) + '].7z';
-    // Инициализируем архиватор по расширению 7z
-    AFormat := GetArchiveFormats.FindCompressFormat(HArhFile);
-    if AFormat <> nil then
     begin
-      // Устанавливаем параметры архивирования
-      FArchive := AFormat.Create(HArhFile);
-      FArchive.Password := ''; (FArchive as TJclCompressArchive)
-      .AddFile(ExtractFileName(HFile), HFile);
-      Supports(IUnknown(FArchive), IJclArchiveCompressionLevel, FCompressionLevel);
-      Supports(IUnknown(FArchive), IJclArchiveCompressHeader, FCompressHeader);
-      Supports(IUnknown(FArchive), IJclArchiveSaveCreationDateTime, FSaveCreationDateTime);
-      Supports(IUnknown(FArchive), IJclArchiveSaveLastAccessDateTime, FSaveLastAccessDateTime);
-      FCompressionLevel.CompressionLevel := 9;
-      FCompressHeader.CompressHeader := True;
-      FCompressHeader.CompressHeaderFull := True;
-      FSaveLastAccessDateTime.SaveLastAccessDateTime := False;
-      FSaveCreationDateTime.SaveCreationDateTime := False;
-      // Упаковываем файл архиватором 7zip
-      CompresHistoryProcess := True; (FArchive as TJclCompressArchive)
-      .Compress;
-      // Завершаем процесс архивирования
       FreeAndNil(FArchive);
-      CompresHistoryProcess := False;
+      // Проверяем какой номер архива свободен
+      N := 1;
+      HArhFile := Copy(HFile, 1, Length(HFile) - 4);
+      while FileExists(HArhFile + ' [' + IntToStr(N) + '].7z') do
+        Inc(N);
+      HArhFile := HArhFile + ' [' + IntToStr(N) + '].7z';
+      // Инициализируем архиватор по расширению 7z
+      AFormat := GetArchiveFormats.FindCompressFormat(HArhFile);
+      if AFormat <> nil then
+        begin
+          // Устанавливаем параметры архивирования
+          FArchive := AFormat.Create(HArhFile);
+          FArchive.Password := ''; (FArchive as TJclCompressArchive)
+          .AddFile(ExtractFileName(HFile), HFile);
+          Supports(IUnknown(FArchive), IJclArchiveCompressionLevel, FCompressionLevel);
+          Supports(IUnknown(FArchive), IJclArchiveCompressHeader, FCompressHeader);
+          Supports(IUnknown(FArchive), IJclArchiveSaveCreationDateTime, FSaveCreationDateTime);
+          Supports(IUnknown(FArchive), IJclArchiveSaveLastAccessDateTime, FSaveLastAccessDateTime);
+          FCompressionLevel.CompressionLevel := 9;
+          FCompressHeader.CompressHeader := True;
+          FCompressHeader.CompressHeaderFull := True;
+          FSaveLastAccessDateTime.SaveLastAccessDateTime := False;
+          FSaveCreationDateTime.SaveCreationDateTime := False;
+          // Упаковываем файл архиватором 7zip
+          CompresHistoryProcess := True; (FArchive as TJclCompressArchive)
+          .Compress;
+          // Завершаем процесс архивирования
+          FreeAndNil(FArchive);
+          CompresHistoryProcess := False;
+        end;
+      Result := True;
     end;
-    Result := True;
-  end;
 end;
 
 end.

@@ -4,7 +4,7 @@ object ProfileForm: TProfileForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'IMadering'
-  ClientHeight = 310
+  ClientHeight = 281
   ClientWidth = 259
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,6 +15,8 @@ object ProfileForm: TProfileForm
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -30,39 +32,26 @@ object ProfileForm: TProfileForm
   end
   object VersionLabel: TLabel
     Left = 9
-    Top = 287
-    Width = 35
+    Top = 260
+    Width = 43
     Height = 13
-    Caption = 'Version'
+    Caption = '#Version'
   end
   object CenterPanel: TPanel
     Left = 8
     Top = 79
     Width = 243
-    Height = 202
+    Height = 175
     BevelKind = bkTile
     BevelOuter = bvNone
     ShowCaption = False
     TabOrder = 0
     object ProfileLabel: TLabel
       Left = 11
-      Top = 7
-      Width = 122
+      Top = 51
+      Width = 135
       Height = 13
-      Caption = #1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1087#1088#1086#1092#1080#1083#1100':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object ProfilePassLabel: TLabel
-      Left = 11
-      Top = 61
-      Width = 46
-      Height = 13
-      Caption = #1055#1072#1088#1086#1083#1100':'
+      Caption = '#'#1051#1086#1082#1072#1083#1100#1085#1099#1081'_'#1087#1088#1086#1092#1080#1083#1100':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -72,7 +61,7 @@ object ProfileForm: TProfileForm
     end
     object SiteLabel: TLabel
       Left = 62
-      Top = 174
+      Top = 151
       Width = 114
       Height = 13
       Cursor = crHandPoint
@@ -87,34 +76,33 @@ object ProfileForm: TProfileForm
       OnMouseEnter = SiteLabelMouseEnter
       OnMouseLeave = SiteLabelMouseLeave
     end
+    object LangLabel: TLabel
+      Left = 11
+      Top = 5
+      Width = 119
+      Height = 13
+      Caption = '#'#1071#1079#1099#1082'_'#1080#1085#1090#1077#1088#1092#1077#1081#1089#1072':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
     object ProfileComboBox: TComboBox
       Left = 10
-      Top = 26
+      Top = 70
       Width = 218
       Height = 21
       TabOrder = 0
-    end
-    object ProfilePassEdit: TEdit
-      Left = 10
-      Top = 80
-      Width = 218
-      Height = 21
-      TabOrder = 1
-    end
-    object SavePassCheckBox: TCheckBox
-      Left = 11
-      Top = 107
-      Width = 215
-      Height = 17
-      Caption = #1053#1077' '#1089#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
-      TabOrder = 2
+      Text = 'Profile1'
     end
     object LoginButton: TButton
       Left = 10
-      Top = 138
+      Top = 120
       Width = 102
       Height = 25
-      Caption = #1042#1086#1081#1090#1080
+      Caption = '#'#1042#1086#1081#1090#1080
       Default = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -124,14 +112,39 @@ object ProfileForm: TProfileForm
       ParentFont = False
       ParentShowHint = False
       ShowHint = False
-      TabOrder = 3
+      TabOrder = 1
+      OnClick = LoginButtonClick
     end
     object DeleteButton: TButton
       Left = 126
-      Top = 138
+      Top = 120
       Width = 102
       Height = 25
-      Caption = #1059#1076#1072#1083#1080#1090#1100
+      Caption = '#'#1059#1076#1072#1083#1080#1090#1100
+      TabOrder = 2
+      OnClick = DeleteButtonClick
+    end
+    object LangComboBox: TComboBox
+      Left = 10
+      Top = 24
+      Width = 218
+      Height = 21
+      Style = csDropDownList
+      DropDownCount = 15
+      ItemIndex = 0
+      TabOrder = 3
+      TabStop = False
+      Text = #1056#1091#1089#1089#1082#1080#1081' [ru]'
+      Items.Strings = (
+        #1056#1091#1089#1089#1082#1080#1081' [ru]'
+        'English [en]')
+    end
+    object AutoSignCheckBox: TCheckBox
+      Left = 10
+      Top = 97
+      Width = 218
+      Height = 17
+      Caption = '#'#1042#1093#1086#1076#1080#1090#1100'_'#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
       TabOrder = 4
     end
   end

@@ -101,10 +101,6 @@ type
     AddProtoBitBtn: TBitBtn;
     SettingsProtoBitBtn: TBitBtn;
     DeleteProtoBitBtn: TBitBtn;
-    GroupBox10: TGroupBox;
-    ProfilePathEdit: TEdit;
-    ProfilePathLabel: TLabel;
-    ProfilePathSpeedButton: TSpeedButton;
     ShowPluginConfigButton: TButton;
     PluginsListView: TListView;
     procedure FormCreate(Sender: TObject);
@@ -130,7 +126,6 @@ type
     procedure ProtocolsListViewKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SettingsProtoBitBtnClick(Sender: TObject);
     procedure ProtocolsListViewDblClick(Sender: TObject);
-    procedure ProfilePathSpeedButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -212,11 +207,11 @@ var
   ListItemD: TListItem;
 begin
   // Считываем настройки из xml файла
-  if FileExists(ProfilePath + SettingsFileName) then
+  if FileExists(ProfilePath + Profile + SettingsFileName) then
     begin
       with TrXML.Create() do
         try
-          LoadFromFile(ProfilePath + SettingsFileName);
+          LoadFromFile(ProfilePath + Profile + SettingsFileName);
           // Загружаем и отображаем настройки прокси
           if OpenKey('settings\proxy\address') then
             try
@@ -320,7 +315,7 @@ begin
         end;
     end;
   // Устанавливаем галочки включенных протоколов
-  ProtocolsListView.Clear;
+  {ProtocolsListView.Clear;
   ProtocolsListView.Items.BeginUpdate;
   // Добавляем ICQ протокол
   ListItemD := ProtocolsListView.Items.Add;
@@ -340,36 +335,15 @@ begin
   ListItemD.Checked := MainForm.JabberToolButton.Visible;
   ListItemD.Caption := 'Jabber:';
   ListItemD.ImageIndex := 43;
-  ProtocolsListView.Items.EndUpdate;
+  ProtocolsListView.Items.EndUpdate;}
 end;
 
-// Apply Settings--------------------------------------------------------------
+// Apply Settings --------------------------------------------------------------
 
 procedure TSettingsForm.ApplySettings;
 begin
-  // Применяем настройки профиля
-  if AnsiCompareText(ProfilePath, ProfilePathEdit.Text) <> 0 then
-    begin
-      // Попробуем скопировать
-      if CopyDir(ProfilePath + 'Profile', ProfilePathEdit.Text + 'Profile') then
-        begin
-          // Спрашиваем удалять профиль или нет
-          if MessageBox(Handle, PChar(DelProfile), PChar('IMadering'), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
-            ClearDir(ProfilePath + 'Profile', True);
-          // Изменяем путь
-          ProfilePath := ProfilePathEdit.Text;
-          // Сохраняем путь к профилю
-          with TRegistry.Create do
-            try
-              if OpenKey(ProgramKey, True) then
-                WriteString(CProfile, ProfilePath);
-            finally
-              Free;
-            end;
-        end;
-    end;
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath + 'Profile\');
+  ForceDirectories(ProfilePath);
   ForceDirectories(ProfilePath + HistoryFileName);
   ForceDirectories(ProfilePath + AvatarFileName);
   ForceDirectories(ProfilePath + AnketaFileName);
@@ -465,8 +439,8 @@ begin
         begin
           with TrXML.Create() do
             try
-              if FileExists(ProfilePath + SettingsFileName) then
-                LoadFromFile(ProfilePath + SettingsFileName);
+              if FileExists(ProfilePath + Profile + SettingsFileName) then
+                LoadFromFile(ProfilePath + Profile + SettingsFileName);
               // Записываем настройки прокси
               if OpenKey('settings\proxy\main', True) then
                 try
@@ -562,7 +536,7 @@ begin
                 finally
                   CloseKey();
                 end;
-              SaveToFile(ProfilePath + SettingsFileName);
+              SaveToFile(ProfilePath + Profile + SettingsFileName);
             finally
               Free();
             end;
@@ -645,26 +619,6 @@ begin
     MainForm.MRASettingsClick(Self)
   else if ProtocolsListView.Selected.index = 2 then
     MainForm.JabberSettingsClick(Self);
-end;
-
-procedure TSettingsForm.ProfilePathSpeedButtonClick(Sender: TObject);
-var
-  DDir: string;
-begin
-  DDir := ProfilePathEdit.Text;
-  // Открываем диалог выбора папки
-  if BrowseForFolder(SelectDirL, True, DDir) then
-    begin
-      // Если выбрана не папка, то выходим
-      if BMSearch(0, DDir, ':\') = -1 then
-        Exit;
-      // Правим слэш для выбранной папки
-      if Length(DDir) > 3 then
-        ProfilePathEdit.Text := DDir + '\'
-      else
-        ProfilePathEdit.Text := DDir;
-      ProxyAddressEditChange(Self);
-    end;
 end;
 
 procedure TSettingsForm.ProtocolsListViewClick(Sender: TObject);
@@ -815,22 +769,6 @@ end;
 
 procedure TSettingsForm.FormCreate(Sender: TObject);
 begin
-  // Помещаем кнопку формы в таскбар и делаем независимой
-  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
-  // Загружаем настройки
-  LoadSettings;
-  ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
-  // Устанавливаем перевод
-  TranslateForm;
-  // Путь к профилю
-  ProfilePathEdit.Text := ProfilePath;
-  // Деактивируем кнопку применения настроек
-  ApplyBitBtn.Enabled := False;
-end;
-
-procedure TSettingsForm.FormShow(Sender: TObject);
-begin
   // Устанавливаем иконку окна
   MainForm.AllImageList.GetIcon(2, Icon);
   // Устанавливаем иконки на кнопки
@@ -840,7 +778,20 @@ begin
   MainForm.AllImageList.GetBitmap(186, AddProtoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(2, SettingsProtoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(139, DeleteProtoBitBtn.Glyph);
-  MainForm.AllImageList.GetBitmap(227, ProfilePathSpeedButton.Glyph);
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  // Загружаем настройки
+  LoadSettings;
+  ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
+  // Устанавливаем перевод
+  TranslateForm;
+  // Деактивируем кнопку применения настроек
+  ApplyBitBtn.Enabled := False;
+end;
+
+procedure TSettingsForm.FormShow(Sender: TObject);
+begin
   // Востанавливаем прежние сохранённые настройки
   LoadSettings;
   ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
@@ -862,8 +813,10 @@ end;
 
 procedure TSettingsForm.TranslateForm;
 begin
-  // Переводим форму на другие языки
-
+  // Создаём шаблон для перевода
+  CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
 end;
 
 procedure TSettingsForm.ApplyProxyHttpClient(HttpClient: THttpCli);

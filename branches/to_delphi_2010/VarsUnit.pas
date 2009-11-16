@@ -17,7 +17,8 @@ uses
   JvDesktopAlert,
   Graphics,
   GifImg,
-  FloatingUnit;
+  FloatingUnit,
+  RXML;
 
 const
   SecsPerDay = 86400;
@@ -28,19 +29,20 @@ const
   DblClickTime = 0.6 * DTseconds;
   RN = #13#10;
 
-  ProgramKey: string = '\SoftWare\IMadering';
-  CProfile: string = 'ProfilePath';
-  SettingsFileName: string = 'Profile\Settings.xml';
-  GroupsFileName: string = 'Profile\Groups.xml';
-  AnketaFileName: string = 'Profile\Contacts\';
-  AvatarFileName: string = 'Profile\Avatars\';
-  HistoryFileName: string = 'Profile\History\';
+  SettingsFileName: string = 'settings.xml';
+  ProfilesFileName: string = 'Profiles.xml';
+  GroupsFileName: string = 'groups.xml';
+  AnketaFileName: string = 'Contacts\';
+  AvatarFileName: string = 'Avatars\';
+  HistoryFileName: string = 'History\';
   LangPath: string = 'Langs\%s.xml';
+  ContactListFileName: string = 'contact list.txt';
 
 var
   // Переменные общие для всей программы
   MyPath: string;
   ProfilePath: string;
+  Profile: string;
   CurrentIcons: string = 'Imadering';
   CurrentLang: string = 'ru';
   CurrentSmiles: string = 'Imadering';
@@ -60,7 +62,7 @@ var
   GroupHeaderColor: TColor = $00FFDEFF;
   RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
-  CompresHistoryProcess: boolean = false;
+  CompresHistoryProcess: Boolean = False;
   FloatingFrm: TFloatingForm;
 
   // Статистика трафика
@@ -79,8 +81,11 @@ var
   SoundIncMsgPath: string = '';
 
   // Переменные для языка
-  RestoreFromTrayStr: string = 'Показать IMadering';
-  HideInTrayStr: string = 'Скрыть IMadering';
+  RestoreFromTrayStr: string;
+  HideInTrayStr: string;
+  RestoreProfileFromTrayStr: string;
+  HideProfileInTrayStr: string;
+
   DevelMess: string = 'Данная функция находится в разработке! Следите за обновлениями проекта.';
   FirstStartNextButton: string = 'Далее';
   FirstStartProtoSelectAlert: string = 'Не выбран ни один протокол! В таком случае протокол ICQ будет выбран автоматически.';
@@ -227,8 +232,10 @@ var
   FileTransfer4L: string = 'Передача файла отменена';
   FileTransfer5L: string = 'Ссылка для скачивания файла: %s' + RN + '%s' + RN + '[ Файл отправлен через %s. Подробнее на сайте: %s ]';
   SocketL: string = 'Сокет:';
-  HistoryCompressedL: string = 'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
-  VersionL: string = 'Версия: %s alpha';
+  HistoryCompressedL: string =
+    'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
+  VersionL: string;
+  ProfileErrorL: string;
 
   // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
@@ -433,16 +440,92 @@ var
     'Иначе отправка сообщения по нажатию клавиш Ctrl + Enter';
   H_Typing_Notify: string = '<b>Уведомлять о наборе</b><br>Включить или выключить отправку<br>собеседнику уведомлений о наборе текста';
   H_Sound_Key: string = '<b>Звук набора</b><br>Включить или выключить озвучку нажатия клавиш';
-  H_GTrans_Button: string = '<b>Переводчик</b><br>Автоматически переводить сообщения на иностранные языки<br>используя онлайн сервис Google переводчик';
+  H_GTrans_Button: string =
+    '<b>Переводчик</b><br>Автоматически переводить сообщения на иностранные языки<br>используя онлайн сервис Google переводчик';
   H_Uniq_Button: string = '<b>Уникальные настройки</b><br>Редактировать настройки для этого контакта';
   H_SelFolder_Button: string = '<b>Путь к файлу</b><br>Указать путь к файлу';
   H_PlaySound_Button: string = '<b>Воспроизвести</b><br>Прослушать звуковой файл';
 
   // Информационные поля
-  Info_About: string = 'Эта программа создана для изучения и тестирования возможности взаимодействия с популярными протоколами передачи мгновенных сообщений в сети интернет.' +
+  Info_About: string =
+    'Эта программа создана для изучения и тестирования возможности взаимодействия с популярными протоколами передачи мгновенных сообщений в сети интернет.' +
     RN + 'Проект с открытым исходным кодом.';
-  Info_SendICQDump: string = 'Внимание! Эта функция предназначена для очень опытных пользователей. Используйте её только если вы точно знаете, что вы делаете. Последствия могут быть непредсказуемые.';
+  Info_SendICQDump: string =
+    'Внимание! Эта функция предназначена для очень опытных пользователей. Используйте её только если вы точно знаете, что вы делаете. Последствия могут быть непредсказуемые.';
+
+procedure SetLangVars;
 
 implementation
+
+uses
+  UtilsUnit;
+
+procedure SetLangVars;
+var
+  I: Integer;
+  List: Tstringlist;
+begin
+  List := Tstringlist.Create;
+  try
+    with TrXML.Create() do
+      try
+        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+          begin
+            // Загружаем переменные из файла языка
+            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            if OpenKey('language\vars') then
+              try
+                List.Text := GetKeyXML;
+              finally
+                CloseKey();
+              end;
+          end;
+      finally
+        Free();
+      end;
+      // Присваиваем переменные в цикле
+      for I := 0 to List.Count - 1 do
+      begin
+        if IsolateTextString(List.Strings[I], '<', ' c="') = 'RestoreFromTrayStr' then
+        begin
+          RestoreFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
+          CheckText_RN(RestoreFromTrayStr);
+          Continue;
+        end
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'HideInTrayStr' then
+        begin
+          HideInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
+          CheckText_RN(RestoreFromTrayStr);
+          Continue;
+        end
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'RestoreProfileFromTrayStr' then
+        begin
+          RestoreProfileFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
+          CheckText_RN(RestoreFromTrayStr);
+          Continue;
+        end
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'HideProfileInTrayStr' then
+        begin
+          HideProfileInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
+          CheckText_RN(RestoreFromTrayStr);
+          Continue;
+        end
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'VersionL' then
+        begin
+          VersionL := IsolateTextString(List.Strings[I], 'c="', '"/>');
+          CheckText_RN(RestoreFromTrayStr);
+          Continue;
+        end
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'ProfileErrorL' then
+        begin
+          ProfileErrorL := IsolateTextString(List.Strings[I], 'c="', '"/>');
+          CheckText_RN(RestoreFromTrayStr);
+          Continue;
+        end;
+      end;
+  finally
+    List.Free;
+  end;
+end;
 
 end.
