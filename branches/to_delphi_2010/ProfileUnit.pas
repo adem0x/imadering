@@ -42,7 +42,7 @@ type
 
   private
     { Private declarations }
-    FClose: boolean;
+    FClose: Boolean;
     procedure SaveSettings;
     procedure LoadSettings;
 
@@ -63,7 +63,9 @@ uses
   VarsUnit,
   UtilsUnit,
   RXML,
-  SettingsUnit;
+  SettingsUnit,
+  RosterUnit,
+  FirstStartUnit;
 
 procedure TProfileForm.SaveSettings;
 var
@@ -166,22 +168,80 @@ begin
   Profile := ProfileComboBox.Text;
   if ProfileComboBox.Items.IndexOf(Profile) = -1 then
     ProfileComboBox.Items.Add(Profile);
-
-  // Временно создаём форму с настройками для применения настроек
-  //SettingsForm := TSettingsForm.Create(Self);
-  //SettingsForm.ApplySettings;
-
   // Сохраняем настройки
   SaveSettings;
+  // Инициализируем папку с профилем
+  ProfilePath := ProfilePath + Profile + '\';
+  XLog(LogProfile + ProfilePath);
+  // Создаём форму с настройками для применения настроек
+  SettingsForm := TSettingsForm.Create(MainForm);
+  SettingsForm.ApplySettings;
+  // Модифицируем меню в трэе
+  with MainForm do
+    begin
+      HideProfileInTray.Visible := False;
+      HideMainInTray2.Visible := True;
+      StatusTray2.Visible := True;
+      SettingsTray2.Visible := True;
+      CheckUpdateTray2.Visible := True;
+      // Заранее подгружаем иконки начальных статусов протоколов в трэй
+      AllImageList.GetIcon(9, ICQTrayIcon.Icon);
+      AllImageList.GetIcon(23, MRATrayIcon.Icon);
+      AllImageList.GetIcon(30, JabberTrayIcon.Icon);
+    end;
+  // Пока просто скрываем общую иконку в трэе (потом сделать отображение по настройке)
+  MainForm.XTrayIcon.Visible := false;
+  // Создаём окно Ростера
+  RosterForm := TRosterForm.Create(MainForm);
+  // Загружаем настройки окна
+  MainForm.LoadMainFormSettings;
+  if AllSesDataTraf = EmptyStr then
+    AllSesDataTraf := DateTimeToStr(Now);
+  // Если это первый старт программы, то по умолчанию активруем ICQ протокол
+  if not FirstStart then
+    MainForm.ICQEnable(True);
+  // Если автоматически проверять новые версии при старте
+  if SettingsForm.AutoUpdateCheckBox.Checked then
+    MainForm.JvTimerList.Events[2].Enabled := True;
+  // Создаём необходимые листы
+  AccountToNick := TStringList.Create;
+  InMessList := TStringList.Create;
+  SmilesList := TStringList.Create;
+  if FileExists(ProfilePath + 'Profile\' + 'Nicks.txt') then
+    AccountToNick.LoadFromFile(ProfilePath + 'Profile\' + 'Nicks.txt');
+  XLog(LogNickCash + IntToStr(AccountToNick.Count));
+  if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt') then
+    SmilesList.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt');
+  XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1));
+  // Если не активно запускаться свёрнутой в трэй то показываем клавное окно
+  if not SettingsForm.HideInTrayProgramStartCheckBox.Checked then
+    begin
+      XShowForm(MainForm);
+      // Выводим окно на самый передний план, против глюков в вин и вайн
+      SetForeGroundWindow(Application.MainForm.Handle);
+    end;
+  // В фоне создаём окно смайлов
+  MainForm.JvTimerList.Events[7].Enabled := True;
+  // Инициализируем переменную времени начала статистики трафика сессии
+  SesDataTraf := Now;
+  // Если это первый старт программы то запускаем окно первичной настройки протоколов
+  if not FirstStart then
+    begin
+      // Затем показываем окно начальной настройки протоколов
+      FirstStartForm := TFirstStartForm.Create(MainForm);
+      XShowForm(FirstStartForm);
+    end;
+  // Запускаем таймер индикации событий
+  MainForm.JvTimerList.Events[1].Enabled := True;
   // Закрываем окно
-  FClose := true;
+  FClose := True;
   Close;
 end;
 
 procedure TProfileForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  //CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Сведения о версии программы
@@ -190,16 +250,16 @@ end;
 
 procedure TProfileForm.DeleteButtonClick(Sender: TObject);
 var
-  N: integer;
+  N: Integer;
 begin
   // Удаляем профиль из списка
   N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
   if N > -1 then
-  begin
-    ProfileComboBox.Items.Delete(N);
-    ProfileComboBox.Text := EmptyStr;
-    SaveSettings;
-  end;
+    begin
+      ProfileComboBox.Items.Delete(N);
+      ProfileComboBox.Text := EmptyStr;
+      SaveSettings;
+    end;
 end;
 
 procedure TProfileForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -212,7 +272,8 @@ end;
 procedure TProfileForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   // Закрываем программу
-  if not FClose then MainForm.CloseProgramClick(nil);
+  if not FClose then
+    MainForm.CloseProgramClick(nil);
 end;
 
 procedure TProfileForm.FormCreate(Sender: TObject);

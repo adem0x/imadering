@@ -29,14 +29,14 @@ const
   DblClickTime = 0.6 * DTseconds;
   RN = #13#10;
 
-  SettingsFileName: string = 'settings.xml';
+  SettingsFileName: string = 'Settings.xml';
   ProfilesFileName: string = 'Profiles.xml';
-  GroupsFileName: string = 'groups.xml';
+  GroupsFileName: string = 'Groups.xml';
   AnketaFileName: string = 'Contacts\';
   AvatarFileName: string = 'Avatars\';
   HistoryFileName: string = 'History\';
   LangPath: string = 'Langs\%s.xml';
-  ContactListFileName: string = 'contact list.txt';
+  ContactListFileName: string = 'Contacts.txt';
 
 var
   // Переменные общие для всей программы
@@ -483,45 +483,21 @@ begin
       finally
         Free();
       end;
-      // Присваиваем переменные в цикле
-      for I := 0 to List.Count - 1 do
+    // Присваиваем переменные в цикле (для переноса строк CheckText_RN)
+    for I := 0 to List.Count - 1 do
       begin
         if IsolateTextString(List.Strings[I], '<', ' c="') = 'RestoreFromTrayStr' then
-        begin
-          RestoreFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
-          CheckText_RN(RestoreFromTrayStr);
-          Continue;
-        end
+          RestoreFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'HideInTrayStr' then
-        begin
-          HideInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
-          CheckText_RN(RestoreFromTrayStr);
-          Continue;
-        end
+          HideInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'RestoreProfileFromTrayStr' then
-        begin
-          RestoreProfileFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
-          CheckText_RN(RestoreFromTrayStr);
-          Continue;
-        end
+          RestoreProfileFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'HideProfileInTrayStr' then
-        begin
-          HideProfileInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>');
-          CheckText_RN(RestoreFromTrayStr);
-          Continue;
-        end
+          HideProfileInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'VersionL' then
-        begin
-          VersionL := IsolateTextString(List.Strings[I], 'c="', '"/>');
-          CheckText_RN(RestoreFromTrayStr);
-          Continue;
-        end
+          VersionL := IsolateTextString(List.Strings[I], 'c="', '"/>')
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'ProfileErrorL' then
-        begin
           ProfileErrorL := IsolateTextString(List.Strings[I], 'c="', '"/>');
-          CheckText_RN(RestoreFromTrayStr);
-          Continue;
-        end;
       end;
   finally
     List.Free;

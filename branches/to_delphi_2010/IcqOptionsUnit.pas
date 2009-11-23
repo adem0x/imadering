@@ -245,7 +245,7 @@ type
     ShowHideContactsCheckBox: TCheckBox;
     RegNewUINLabel: TLabel;
     ConnectPage: TJvStandardPage;
-    RichEdit1: TRichEdit;
+    DumpInfoRichEdit: TRichEdit;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -267,6 +267,7 @@ type
     procedure SendCustomICQPaketTimerTimer(Sender: TObject);
     procedure RegNewUINLabelClick(Sender: TObject);
     procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
 
   private
     { Private declarations }
@@ -615,6 +616,12 @@ begin
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+end;
+
+procedure TIcqOptionsForm.FormShow(Sender: TObject);
+begin
+  // Прокручиваем рич в верх против глюка в вайн
+  SendMessage(DumpInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
 end;
 
 procedure TIcqOptionsForm.WebAwareTestButtonClick(Sender: TObject);

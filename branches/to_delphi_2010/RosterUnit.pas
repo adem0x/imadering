@@ -139,6 +139,7 @@ begin
     end;
     // Если вкладку не нашли, то создаём её
     Sheet := TToolButton.Create(Self);
+    Sheet.Parent := ChatPageToolBar;
     Sheet.Caption := cButton.Caption;
     Sheet.HelpKeyword := cButton.UIN;
     Sheet.ShowHint := true;
@@ -149,7 +150,6 @@ begin
     Sheet.ImageIndex := cButton.Status;
     Sheet.OnMouseDown := ToolButtonMouseDown;
     Sheet.OnContextPopup := ToolButtonContextPopup;
-    Sheet.Parent := ChatPageToolBar;
     Sheet.Down := true;
     Sheet.PopupMenu := TabPopupMenu;
     CreateNewChat(Sheet);
@@ -489,8 +489,8 @@ begin
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Загружаем копию локальную списка контактов
-  if FileExists(ProfilePath + 'Profile\ContactList.txt') then
-    RosterJvListView.LoadFromCSV(ProfilePath + 'Profile\ContactList.txt');
+  if FileExists(ProfilePath + ContactListFileName) then
+    RosterJvListView.LoadFromCSV(ProfilePath + ContactListFileName);
   XLog(LogRosterCount + IntToStr(RosterJvListView.Items.Count));
 end;
 

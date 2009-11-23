@@ -121,7 +121,7 @@ procedure XLog(XLogData: string);
 function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 function CreateHistoryArhive(HFile: string): Boolean;
-procedure SaveTextInHistory(LogString: string; LogFileName: string);
+procedure SaveTextInHistory(hString: string; hFileName: string);
 procedure CreateLang(Xform: Tform);
 procedure SetLang(Xform: Tform);
 
@@ -259,20 +259,20 @@ begin
     end;
 end;
 
-procedure SaveTextInHistory(LogString: string; LogFileName: string);
+procedure SaveTextInHistory(hString: string; hFileName: string);
 var
   F: TFileStream;
   PStr: PChar;
   LengthLogString: Integer;
 begin
-  LengthLogString := (Length(LogString) + 2) * SizeOf(Char);
-  LogString := LogString + #13#10;
+  LengthLogString := (Length(hString) + 2) * SizeOf(Char);
+  hString := hString + #13#10;
   PStr := StrAlloc(LengthLogString + 1);
-  StrPCopy(PStr, LogString);
-  if FileExists(LogFileName) then
-    F := TFileStream.Create(LogFileName, FmOpenWrite)
+  StrPCopy(PStr, hString);
+  if FileExists(hFileName) then
+    F := TFileStream.Create(hFileName, FmOpenWrite)
   else
-    F := TFileStream.Create(LogFileName, FmCreate);
+    F := TFileStream.Create(hFileName, FmCreate);
   F.Position := F.Size;
   F.write(PStr^, LengthLogString);
   StrDispose(PStr);

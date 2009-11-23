@@ -163,6 +163,7 @@
 			<DCCReference Include="ProfileUnit.pas">
 				<Form>ProfileForm</Form>
 			</DCCReference>
+			<DCCReference Include="lib\htmlun2.pas"/>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
@@ -192,8 +193,8 @@
 						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">1832</VersionInfo>
+						<VersionInfo Name="Release">1</VersionInfo>
+						<VersionInfo Name="Build">1911</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -205,7 +206,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.0.1832</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.1.1911</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

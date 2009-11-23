@@ -207,11 +207,11 @@ var
   ListItemD: TListItem;
 begin
   // Считываем настройки из xml файла
-  if FileExists(ProfilePath + Profile + SettingsFileName) then
+  if FileExists(ProfilePath + SettingsFileName) then
     begin
       with TrXML.Create() do
         try
-          LoadFromFile(ProfilePath + Profile + SettingsFileName);
+          LoadFromFile(ProfilePath + SettingsFileName);
           // Загружаем и отображаем настройки прокси
           if OpenKey('settings\proxy\address') then
             try
@@ -315,7 +315,7 @@ begin
         end;
     end;
   // Устанавливаем галочки включенных протоколов
-  {ProtocolsListView.Clear;
+  ProtocolsListView.Clear;
   ProtocolsListView.Items.BeginUpdate;
   // Добавляем ICQ протокол
   ListItemD := ProtocolsListView.Items.Add;
@@ -335,7 +335,7 @@ begin
   ListItemD.Checked := MainForm.JabberToolButton.Visible;
   ListItemD.Caption := 'Jabber:';
   ListItemD.ImageIndex := 43;
-  ProtocolsListView.Items.EndUpdate;}
+  ProtocolsListView.Items.EndUpdate;
 end;
 
 // Apply Settings --------------------------------------------------------------
@@ -439,8 +439,8 @@ begin
         begin
           with TrXML.Create() do
             try
-              if FileExists(ProfilePath + Profile + SettingsFileName) then
-                LoadFromFile(ProfilePath + Profile + SettingsFileName);
+              if FileExists(ProfilePath + SettingsFileName) then
+                LoadFromFile(ProfilePath + SettingsFileName);
               // Записываем настройки прокси
               if OpenKey('settings\proxy\main', True) then
                 try
@@ -536,7 +536,7 @@ begin
                 finally
                   CloseKey();
                 end;
-              SaveToFile(ProfilePath + Profile + SettingsFileName);
+              SaveToFile(ProfilePath + SettingsFileName);
             finally
               Free();
             end;

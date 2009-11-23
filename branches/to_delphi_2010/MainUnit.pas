@@ -176,7 +176,7 @@ type
     HideEmptyGroups: TMenuItem;
     GroupOnOffToolButton: TToolButton;
     ICQSearchNewContact: TMenuItem;
-    CheckUpdateMainMenu: TMenuItem;
+    CheckUpdateMenu: TMenuItem;
     N29: TMenuItem;
     PrivatListMenu: TMenuItem;
     JabberSearchNewContact: TMenuItem;
@@ -242,6 +242,22 @@ type
     N30: TMenuItem;
     SettingsTray2: TMenuItem;
     CheckUpdateTray2: TMenuItem;
+    AllStatusOffline: TMenuItem;
+    N32: TMenuItem;
+    AllStatusInvisible: TMenuItem;
+    AllStatusOnline: TMenuItem;
+    N35: TMenuItem;
+    AllStatusDND: TMenuItem;
+    AllStatusOccupied: TMenuItem;
+    AllStatusNA: TMenuItem;
+    AllStatusAway: TMenuItem;
+    AllStatusLunch: TMenuItem;
+    N41: TMenuItem;
+    AllStatusWork: TMenuItem;
+    AllStatusHome: TMenuItem;
+    AllStatusDepres: TMenuItem;
+    AllStatusEvil: TMenuItem;
+    AllStatusFFC: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -405,7 +421,6 @@ type
     ButtonInd: Integer;
     LastClick: Tdatetime;
     procedure LoadImageList(ImgList: TImageList; FName: string);
-    procedure LoadMainFormSettings;
     procedure MainFormHideInTray;
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
@@ -417,6 +432,7 @@ type
     RoasterGroup: TButtonCategory;
     RoasterButton: TButtonItem;
     procedure TranslateForm;
+    procedure LoadMainFormSettings;
     procedure SaveMainFormSettings;
     procedure ICQEnable(OnOff: Boolean);
     procedure MRAEnable(OnOff: Boolean);
@@ -503,6 +519,16 @@ begin
   SetLang(Self);
   // Применяем перевод меню
   HideProfileInTray.Caption := HideProfileInTrayStr;
+  HideInTray.Caption := HideInTrayStr;
+  HideMainInTray1.Caption := HideInTrayStr;
+  HideMainInTray2.Caption := HideInTrayStr;
+  SettingsTray1.Caption := OpenSettings.Caption;
+  SettingsTray2.Caption := OpenSettings.Caption;
+  CloseProgramTray1.Caption := CloseProgram.Caption;
+  CloseProgramTray2.Caption := CloseProgram.Caption;
+  CheckUpdateTray1.Caption := CheckUpdateMenu.Caption;
+  CheckUpdateTray2.Caption := CheckUpdateMenu.Caption;
+  StatusTray2.Caption := StatusTray1.Caption;
 end;
 
 procedure TMainForm.FormShowInWorkArea(XForm: TForm);
@@ -2304,20 +2330,6 @@ begin
     ProfileForm.LoginButton.Click
   else
     XShowForm(ProfileForm);
-
-  { // Отображаем главное окно программы
-    Show;
-    // Выводим окно на самый передний план, против глюков в вин и вайн
-    SetForeGroundWindow(Application.MainForm.Handle); }
-  { // Если это первый старт программы то запускаем окно первичной настройки протоколов
-    if not FirstStart then
-    begin
-    // Даём главному окну нормально прорисоваться
-    Update;
-    // Затем показываем окно начальной настройки протоколов
-    FirstStartForm := TFirstStartForm.Create(Self);
-    FirstStartForm.Show;
-    end; }
 end;
 
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
@@ -3466,12 +3478,6 @@ procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   // Место для запуска тестов
 
-  // Открываем окно о программе
-  if not Assigned(ProfileForm) then
-    ProfileForm := TProfileForm.Create(Self);
-  // Отображаем окно
-  XShowForm(ProfileForm);
-
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -4044,7 +4050,7 @@ procedure TMainForm.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   // Сохраняем настройки окна
-  // SaveMainFormSettings;
+  SaveMainFormSettings;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -4097,7 +4103,7 @@ begin
       // Делаем текущую локальную копию списка контактов для отображения при запуске программы
       if Assigned(RosterForm) then
         begin
-          RosterForm.RosterJvListView.SaveToCSV(ProfilePath + Profile + ContactListFileName);
+          RosterForm.RosterJvListView.SaveToCSV(ProfilePath + ContactListFileName);
           // Уничтожаем окно Ростера
           FreeAndNil(RosterForm);
         end;
@@ -4276,40 +4282,6 @@ begin
   TranslateForm;
   // Запускаем таймер отображения окна выбора профиля
   JvTimerList.Events[0].Enabled := True;
-
-  { // Заранее подгружаем иконки начальных статусов протоколов в трэй
-    AllImageList.GetIcon(9, ICQTrayIcon.Icon);
-    AllImageList.GetIcon(23, MRATrayIcon.Icon);
-    AllImageList.GetIcon(30, JabberTrayIcon.Icon);
-    // Создаём окно Ростера
-    RosterForm := TRosterForm.Create(Self); }
-  { // Загружаем настройки окна
-    LoadMainFormSettings;
-    if AllSesDataTraf = EmptyStr then
-    AllSesDataTraf := DateTimeToStr(Now);
-    // Если это первый старт программы, то по умолчанию активруем ICQ протокол
-    if not FirstStart then
-    ICQEnable(True);
-    // Если автоматически проверять новые версии при старте
-    if SettingsForm.AutoUpdateCheckBox.Checked then
-    JvTimerList.Events[2].Enabled := True; }
-  { // Создаём необходимые листы
-    AccountToNick := TStringList.Create;
-    InMessList := TStringList.Create;
-    SmilesList := TStringList.Create;
-    if FileExists(ProfilePath + 'Profile\' + 'Nicks.txt') then
-    AccountToNick.LoadFromFile(ProfilePath + 'Profile\' + 'Nicks.txt');
-    XLog(LogNickCash + IntToStr(AccountToNick.Count));
-    if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt') then
-    SmilesList.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt');
-    XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1)); }
-  { // Если не активно запускаться свёрнутой в трэй то показываем клавное окно
-    if not SettingsForm.HideInTrayProgramStartCheckBox.Checked then
-    JvTimerList.Events[0].Enabled := True;
-    // В фоне создаём окно смайлов
-    JvTimerList.Events[7].Enabled := True;
-    // Инициализируем переменную времени начала статистики трафика сессии
-    SesDataTraf := Now; }
 end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);

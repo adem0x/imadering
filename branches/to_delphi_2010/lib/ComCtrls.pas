@@ -1,4 +1,4 @@
-// Изменения для проекта IMadering
+п»ї// РР·РјРµРЅРµРЅРёСЏ РґР»СЏ РїСЂРѕРµРєС‚Р° IMadering
 
 {*******************************************************}
 {                                                       }
@@ -22757,7 +22757,7 @@ begin
             WrapSizeHorz(CurrSize.X, CurrSize.Y);
           { CurrSize now has optimium dimensions }
           CalcSize(CurrSize.X, CurrSize.Y);
-          if {(Vertical or (Align = alNone)) and} (CurrSize.X <> PrevSize.X) or // Изменил
+          if {(Vertical or (Align = alNone)) and} (CurrSize.X <> PrevSize.X) or // РР·РјРµРЅРёР»
             (CurrSize.Y <> PrevSize.Y) then
           begin
             { Enforce changes to Wrap property }
@@ -23284,7 +23284,7 @@ begin
   if not (csDesigning in ComponentState) then
   begin
     case Message.Msg of
-      WM_MOUSEMOVE:
+      (*WM_MOUSEMOVE:
         begin
           { Call default wndproc to get buttons to repaint when Flat = True. }
 {$IF DEFINED(CLR)}
@@ -23300,7 +23300,7 @@ begin
           end
           else
             DefaultHandler(Message);
-        end;
+        end;*)
       WM_LBUTTONUP:
         begin
           { Update button states after a click. }

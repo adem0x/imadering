@@ -54,7 +54,8 @@ uses
   SimpleXML in 'lib\SimpleXML.pas',
   XMLStand in 'lib\XMLStand.pas',
   UniqUnit in 'UniqUnit.pas' {UniqForm},
-  ProfileUnit in 'ProfileUnit.pas' {ProfileForm};
+  ProfileUnit in 'ProfileUnit.pas' {ProfileForm},
+  htmlun2 in 'lib\htmlun2.pas';
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -65,8 +66,8 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.Title := 'IMadering';
   // Устанавливаем приоритет приложению
-  //SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
-  //SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_HIGHEST);
+  SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
+  SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_HIGHEST);
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);

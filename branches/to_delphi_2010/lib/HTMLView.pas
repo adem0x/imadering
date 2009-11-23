@@ -1578,7 +1578,7 @@ begin
   GuResult := GetURL(X, Y, UrlTarget, FormControl, FTitleAttr);
   if GuUrl in GuResult then
     begin
-      NextCursor := HandCursor;
+      NextCursor := crHandPoint;
       URL := UrlTarget.URL;
       Target := UrlTarget.Target;
       FLinkAttributes.Text := UrlTarget.Attr;
@@ -1586,21 +1586,21 @@ begin
       UrlTarget.Free;
     end;
   if GuControl in GuResult then
-    NextCursor := HandCursor;
+    NextCursor := crHandPoint;
   if (Assigned(FOnImageClick) or Assigned(FOnImageOver)) and FSectionList.PtInObject(X, Y + FSectionList.YOff, Obj, IX, IY) then
     begin
-      if NextCursor <> HandCursor then { in case it's also a Link }
+      if NextCursor <> crHandPoint then { in case it's also a Link }
         NextCursor := CrArrow;
       if Assigned(FOnImageOver) then
         FOnImageOver(Self, Obj, Shift, IX, IY);
     end
   else if (FSectionList.FindCursor(PaintPanel.Canvas, X, Y + FSectionList.YOff, XR, YR, CaretHt, InText) >= 0) and InText and
-    (NextCursor <> HandCursor) then
+    (NextCursor <> crHandPoint) then
     NextCursor := Cursor;
 
   PaintPanel.Cursor := NextCursor;
 
-  if ((NextCursor = HandCursor) or (SectionList.ActiveImage <> nil)) then
+  if ((NextCursor = crHandPoint) or (SectionList.ActiveImage <> nil)) then
     HTMLTimer.Enabled := True
   else
     HTMLTimer.Enabled := False;

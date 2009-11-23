@@ -258,11 +258,11 @@ begin
           InputRichEdit.Text := SubItems[14];
           // Загружаем файл истории сообщений
           if UserType = 'Icq' then
-            HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + ICQ_LoginUIN + ' ' + UIN + '.htm'
+            HistoryFile := ProfilePath + HistoryFileName + UserType + ' ' + ICQ_LoginUIN + ' ' + UIN + '.htm'
           else if UserType = 'Jabber' then
-            HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + Jabber_LoginUIN + ' ' + UIN + '.htm'
+            HistoryFile := ProfilePath + HistoryFileName + UserType + ' ' + Jabber_LoginUIN + ' ' + UIN + '.htm'
           else if UserType = 'Mra' then
-            HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + MRA_LoginUIN + ' ' + UIN + '.htm';
+            HistoryFile := ProfilePath + HistoryFileName + UserType + ' ' + MRA_LoginUIN + ' ' + UIN + '.htm';
           if FileExists(HistoryFile) then
             begin
               // Проверяем создавать или нет архив истории
@@ -656,21 +656,12 @@ end;
 procedure TChatForm.CloseChatTabMenuClick(Sender: TObject);
 begin
   // Закрываем вкладку над которой было вызвано меню
-  if TabMenuToolButton <> nil then
+  if (TabMenuToolButton <> nil) and (TabMenuToolButton is TToolButton) then
     begin
       if TabMenuToolButton.Down then
         CloseTabBitBtnClick(nil)
       else
-        begin
-          TabMenuToolButton.Free;
-          if ChatPageToolBar.ButtonCount = 0 then
-            Close
-          else
-            begin
-              ChatPageToolBar.Buttons[0].Down := True;
-              CreateNewChat(ChatPageToolBar.Buttons[0]);
-            end;
-        end;
+        TabMenuToolButton.Free;
     end;
 end;
 
@@ -833,34 +824,25 @@ end;
 procedure TChatForm.ToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Запоминаем таб кнопку над которой вызвано меню
-  TabMenuToolButton := (Sender as TToolButton);
+  if (Sender is TToolButton) then
+    TabMenuToolButton := (Sender as TToolButton);
 end;
 
 procedure TChatForm.ToolButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Определяем какой клавишей был выполнен клик по закладке
-  case Button of
-    MbLeft: begin
-        // Применяем параметры чата с этим контактом
-        CreateNewChat((Sender as TToolButton));
-      end;
-    MbMiddle: begin
-        // Закрываем эту закладку
-        if (Sender as TToolButton).Down then
-          CloseTabBitBtnClick(nil)
-        else
-          begin (Sender as TToolButton)
+  if (Sender is TToolButton) then
+    begin
+      case Button of
+        MbLeft: // Применяем параметры чата с этим контактом
+          CreateNewChat((Sender as TToolButton));
+        MbMiddle: // Закрываем эту закладку
+          if (Sender as TToolButton).Down then
+            CloseTabBitBtnClick(nil)
+          else (Sender as TToolButton)
             .Free;
-            if ChatPageToolBar.ButtonCount = 0 then
-              Close
-            else
-              begin
-                ChatPageToolBar.Buttons[0].Down := True;
-                CreateNewChat(ChatPageToolBar.Buttons[0]);
-              end;
-          end;
       end;
-  end;
+    end;
 end;
 
 procedure TChatForm.TranslateForm;
@@ -1133,9 +1115,8 @@ begin
       if not Assigned(GTransForm) then
         GTransForm := TGTransForm.Create(Self);
 
-
-
-      if GTransForm.ShowModal <> 1 then GtransSpeedButton.Down := false;
+      if GTransForm.ShowModal <> 1 then
+        GtransSpeedButton.Down := False;
     end
   else
     begin
@@ -1569,7 +1550,7 @@ begin
               SndPlaySound(PChar(MyPath + 'Sounds\' + CurrentSounds + '\Send.wav'), SND_ASYNC);
           end;
         // Копируем текст сообщения
-        Msg := InputRichEdit.Text;
+        Msg := Trim(InputRichEdit.Text);
         HMsg := Msg;
         // Добавляем сообщение в файл истории и в чат
         MsgD := YouAt + ' [' + DateTimeChatMess + ']';
@@ -1593,7 +1574,7 @@ begin
             else
               ICQ_SendMessage_0406(InfoPanel2.Caption, Msg, True);
             // Формируем файл с историей
-            HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + ICQ_LoginUIN + ' ' + InfoPanel2.Caption + '.htm';
+            HistoryFile := ProfilePath + HistoryFileName + UserType + ' ' + ICQ_LoginUIN + ' ' + InfoPanel2.Caption + '.htm';
           end
         else if UserType = 'Jabber' then
           begin
@@ -1603,16 +1584,15 @@ begin
             // Отправляем сообщение
             Jabber_SendMessage(InfoPanel2.Caption, Msg);
             // Формируем файл с историей
-            HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + Jabber_LoginUIN + ' ' + InfoPanel2.Caption + '.htm';
+            HistoryFile := ProfilePath + HistoryFileName + UserType + ' ' + Jabber_LoginUIN + ' ' + InfoPanel2.Caption + '.htm';
           end
         else if UserType = 'Mra' then
           begin
             // Если нет подключения к серверу MRA, то выходим
             if NotProtoOnline('Mra') then
               Exit;
-
             // Формируем файл с историей
-            HistoryFile := ProfilePath + 'Profile\History\' + UserType + ' ' + MRA_LoginUIN + ' ' + InfoPanel2.Caption + '.htm';
+            HistoryFile := ProfilePath + HistoryFileName + UserType + ' ' + MRA_LoginUIN + ' ' + InfoPanel2.Caption + '.htm';
           end
         else
           Exit;

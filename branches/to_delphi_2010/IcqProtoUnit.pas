@@ -2720,9 +2720,11 @@ const
 var
   Len1, Len2: Integer;
   Pkt, Pkt1, Pkt2: RawByteString;
-  OrigMsg, Utf8Mess, AnsiMsg: string;
+  OrigMsg: string;
   CoocId: RawByteString;
   CoocId1: RawByteString;
+  AnsiMsg: AnsiString;
+  Utf8Mess: Utf8String;
 begin
   // Запоминаем текст сообщения
   OrigMsg := SMsg;
@@ -2833,7 +2835,7 @@ begin
         end;
     end;
   // Записываем история в файл истории с этим контактов
-  HistoryFile := ProfilePath + 'Profile\History\Icq ' + ICQ_LoginUIN + ' ' + UIN + '.htm';
+  HistoryFile := ProfilePath + HistoryFileName + 'Icq ' + ICQ_LoginUIN + ' ' + UIN + '.htm';
   SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
   // Добавляем сообщение в текущий чат
   if ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, MsgD, Mess) then
@@ -2934,7 +2936,7 @@ begin
                   NextData(PktData, 2); // The encoding used for the message
                   // CharsetSubset := HexToInt(Text2Hex(NextData(PktData, 2))); //Unknown; seen: 0x0000 = 0, 0xffff = -1
                   NextData(PktData, 2);
-                  Msg := Utf8Decode(NextData(PktData, ULen));
+                  Msg := AnsiString(NextData(PktData, ULen));
                   if Msg <> EmptyStr then
                     XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
                   // if CharsetNumber = $0002 then Msg := UCS2BEToStr(Msg);

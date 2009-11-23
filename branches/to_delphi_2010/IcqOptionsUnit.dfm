@@ -17,6 +17,7 @@ object IcqOptionsForm: TIcqOptionsForm
   Scaled = False
   ScreenSnap = True
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object ICQOptionButtonGroup: TButtonGroup
@@ -106,7 +107,7 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = ParamsPage
+      ActivePage = BonusPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -551,7 +552,7 @@ object IcqOptionsForm: TIcqOptionsForm
             OnExit = SendCustomICQPaketTimerEditExit
             OnKeyPress = SendCustomICQPaketTimerEditKeyPress
           end
-          object RichEdit1: TRichEdit
+          object DumpInfoRichEdit: TRichEdit
             Left = 9
             Top = 18
             Width = 404
@@ -564,8 +565,6 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Height = -11
             Font.Name = 'MS Sans Serif'
             Font.Style = []
-            Lines.Strings = (
-              #1055#1086#1074#1090#1086#1088#1103#1090#1100)
             ParentFont = False
             TabOrder = 4
           end
