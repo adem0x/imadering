@@ -356,50 +356,50 @@ object MainForm: TMainForm
     Active = True
     Events = <
       item
-        Name = 'ProfileFormShowTimer'
+        Name = 'PFS Timer'
         Cycled = False
         Enabled = False
         Interval = 1
         OnTimer = JvTimerListEvents0Timer
       end
       item
-        Name = 'MessagesTimer'
+        Name = 'Messages Icons Timer'
         Enabled = False
         Interval = 700
         OnTimer = JvTimerListEvents1Timer
       end
       item
-        Name = 'CheckUpdateTimer'
+        Name = 'Check Update Timer'
         Cycled = False
         Enabled = False
         Interval = 60000
         OnTimer = JvTimerListEvents2Timer
       end
       item
-        Name = 'ConnectIconTimer'
+        Name = 'Connect Icon Timer'
         Enabled = False
         OnTimer = JvTimerListEvents3Timer
       end
       item
-        Name = 'ICQFuckStatusTimer'
+        Name = 'ICQ FStatus Timer'
         Enabled = False
         Interval = 20000
         OnTimer = JvTimerListEvents4Timer
       end
       item
-        Name = 'ICQAliveTimer'
+        Name = 'ICQ Alive Timer'
         Enabled = False
         Interval = 60000
         OnTimer = JvTimerListEvents5Timer
       end
       item
-        Name = 'AutoHideCLTimer'
+        Name = 'Auto Hide CL Timer'
         Enabled = False
         Interval = 10000
         OnTimer = JvTimerListEvents6Timer
       end
       item
-        Name = 'CSFandBRTimer'
+        Name = 'CSF & BR Timer'
         Cycled = False
         Enabled = False
         OnTimer = JvTimerListEvents7Timer
@@ -410,25 +410,25 @@ object MainForm: TMainForm
         Enabled = False
       end
       item
-        Name = 'JabberAliveTimer'
+        Name = 'Jabber Alive Timer'
         Enabled = False
         Interval = 60000
         OnTimer = JvTimerListEvents9Timer
       end
       item
-        Name = 'MRAAliveTimer'
+        Name = 'MRA Alive Timer'
         Enabled = False
         Interval = 60000
       end
       item
-        Name = 'RosterTimer'
+        Name = 'Roster Timer'
         Cycled = False
         Enabled = False
         Interval = 3000
         OnTimer = JvTimerListEvents11Timer
       end
       item
-        Name = 'TrayIconsRefresh'
+        Name = 'TIR & Swap Timer'
         Interval = 20000
         OnTimer = JvTimerListEvents12Timer
       end>

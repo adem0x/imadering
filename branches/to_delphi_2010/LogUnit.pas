@@ -17,7 +17,7 @@ uses
 type
   TLogForm = class(TForm)
     LogMemo: TMemo;
-    Panel1: TPanel;
+    BottomPanel: TPanel;
     ClearLogSpeedButton: TSpeedButton;
     Bevel: TBevel;
     ICQDumpSpeedButton: TSpeedButton;

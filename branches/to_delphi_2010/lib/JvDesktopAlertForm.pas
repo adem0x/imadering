@@ -611,7 +611,7 @@ begin
     //--Останавливам таймер Мыши
     MouseTimer.Enabled := False;
     //--Если учётная запись контакта не пустая
-    if zUIN <> '' then
+    if zUIN <> EmptyStr then
     begin
       //--Сбрасываем иконку сообщения в Ростере
       RosterItem := RosterForm.ReqRosterItem(zUIN);
@@ -625,7 +625,7 @@ begin
     end;
   end
   //--Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
-  else if Button = mbLeft then if zUIN <> '' then MainForm.OpenFromTrayMessage(zUIN);
+  else if Button = mbLeft then if zUIN <> EmptyStr then MainForm.OpenFromTrayMessage(zUIN);
   //--Закрываем всплывающее окно
   Close;
 end;

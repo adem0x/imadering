@@ -233,6 +233,9 @@ begin
     end;
   // Запускаем таймер индикации событий
   MainForm.JvTimerList.Events[1].Enabled := True;
+  // Высвобождаем общую память приложения (вспоминая qip)
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
   // Закрываем окно
   FClose := True;
   Close;
@@ -253,6 +256,7 @@ var
   N: Integer;
 begin
   // Удаляем профиль из списка
+  ProfileComboBox.Text := EmptyStr;
   N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
   if N > -1 then
     begin
@@ -296,6 +300,9 @@ begin
   // Переводим форму
   LangComboBox.OnChange := LangComboBoxChange;
   LangComboBoxChange(nil);
+  // Высвобождаем общую память приложения (вспоминая qip)
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
 end;
 
 procedure TProfileForm.LangComboBoxChange(Sender: TObject);

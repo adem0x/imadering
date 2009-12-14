@@ -419,7 +419,6 @@ type
   private
     { Private declarations }
     ButtonInd: Integer;
-    LastClick: Tdatetime;
     procedure LoadImageList(ImgList: TImageList; FName: string);
     procedure MainFormHideInTray;
     procedure AppActivate(Sender: TObject);
@@ -1312,14 +1311,14 @@ begin
       JabberTrayIcon.Tag := 0;
       Exit;
     end;
-  // -Получаем учётную запись отправителя сообщения с самого низа списка
+  // Получаем учётную запись отправителя сообщения с самого низа списка
   MUIN := InMessList.Strings[InMessList.Count - 1];
   // Если она вдруг пустая, то выходим
   if MUIN = EmptyStr then
     Exit;
 X :;
   // Открываем чат с этим контактом
-  // RosterForm.OpenChatPage(MUIN);
+  RosterForm.OpenChatPage(nil, MUIN);
 end;
 
 procedure TMainForm.ICQTrayIconClick(Sender: TObject);
@@ -2345,20 +2344,22 @@ begin
   ICQTrayIcon.Refresh;
   MRATrayIcon.Refresh;
   JabberTrayIcon.Refresh;
+  // Высвобождаем общую память приложения (вспоминая qip)
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
 end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
 var
   I, T: Integer;
-  YesMsgICQ, YesMsgJabber
-  { , YesMsgMRA } : Boolean;
+  YesMsgICQ, YesMsgJabber, YesMsgMRA: Boolean;
   CLItem: TButtonItem;
-  ChatItem: TTabSheet;
+  ChatItem: TToolButton;
 begin
   // Отображаем иконки мигающих сообщений и события
   YesMsgICQ := False;
   YesMsgJabber := False;
-  // YesMsgMRA := false;
+  YesMsgMRA := false;
   // Сканируем и управляем иконками контактов с флагами сообщений в КЛ
   if Assigned(RosterForm) then
     begin
@@ -2413,9 +2414,11 @@ begin
                     YesMsgICQ := True;
                   if Items[I].SubItems[3] = 'Jabber' then
                     YesMsgJabber := True;
+                  if Items[I].SubItems[3] = 'Mra' then
+                    YesMsgMRA := True;
                 end
               else
-              // Если таймер задержки Ростера активен, то игнорируем события статусов
+                // Если таймер задержки Ростера активен, то игнорируем события статусов
                 if not JvTimerList.Events[11].Enabled then
                 begin
                   // Если контакт вышел в онлайн, то отображаем это иконкой двери
@@ -3417,7 +3420,6 @@ begin
           with RosterItem do
             begin
               // Ищем не создано ли уже это плавающее окно
-
               if (SubItems[17] <> EmptyStr) and (IsWindow(StrToInt(SubItems[17]))) then
                 begin
                   for I := 0 to Screen.FormCount - 1 do
@@ -3431,23 +3433,19 @@ begin
                         end;
                     end;
                 end;
-
               FloatingFrm := TFloatingForm.Create(Self);
               SubItems[17] := IntToStr(FloatingFrm.Handle);
               FloatingFrm.NickLabel.Caption := SubItems[0];
+              FloatingFrm.NickLabel.Hint := RosterItem.Caption;
               MainForm.AllImageList.GetBitmap(StrToInt(SubItems[6]), FloatingFrm.StatusImage.Picture.Bitmap);
-
               FloatingFrm.XStatusImage.Visible := False;
               FloatingFrm.ClientImage.Visible := False;
-
               FloatingFrm.Width := FloatingFrm.NickLabel.Width + 28;
               if FloatingFrm.XStatusImage.Visible then
                 FloatingFrm.Width := FloatingFrm.Width + 18;
               if FloatingFrm.ClientImage.Visible then
                 FloatingFrm.Width := FloatingFrm.Width + 20;
-
               FloatingFrm.Show;
-
             end;
         end;
     end;
@@ -4090,8 +4088,6 @@ begin
         FreeAndNil(OutMessage3);
       if Assigned(XStatusImg) then
         FreeAndNil(XStatusImg);
-      if Assigned(XStatusGif) then
-        FreeAndNil(XStatusGif);
       if Assigned(XStatusMem) then
         FreeAndNil(XStatusMem);
       // Уничтожаем окно смайлов

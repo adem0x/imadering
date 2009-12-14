@@ -28,7 +28,7 @@ object LogForm: TLogForm
     ScrollBars = ssVertical
     TabOrder = 0
   end
-  object Panel1: TPanel
+  object BottomPanel: TPanel
     Left = 0
     Top = 371
     Width = 586
@@ -97,6 +97,7 @@ object LogForm: TLogForm
       Width = 23
       Height = 22
       AllowAllUp = True
+      Anchors = [akTop, akRight]
       GroupIndex = 4
       Down = True
       Flat = True

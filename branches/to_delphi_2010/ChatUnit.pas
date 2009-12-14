@@ -186,6 +186,7 @@ type
     TabMenuToolButton: TToolButton;
     // Zundo: string;
     procedure QuickMessClick(Sender: TObject);
+    procedure RemoveChatPageButton(ChatButton: TToolButton);
 
   public
     { Public declarations }
@@ -317,23 +318,21 @@ begin
           // Выводим текст доп. статуса и иконку доп статуса
           if SubItems[31] <> EmptyStr then
             begin
-              Doc := HTMLChatViewer.DocumentSource;
+              Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
               // Если есть и иконка доп. статуса
               if SubItems[7] <> '-1' then
                 Doc := Doc + '<IMG NAME=x SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
               Doc := Doc + '<span class=d>' + SubItems[31] + '</span><br><br>';
               HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
               // Преобразуем и подгружаем иконку доп. статуса
-              { if SubItems[7] > '-1' then
+              if SubItems[7] > '-1' then
                 begin
-                XStatusImg.Assign(nil);
-                MainForm.AllImageList.GetBitmap(StrToInt(SubItems[7]), XStatusImg);
-                XStatusGif.Assign(nil);
-                XStatusGif.Add(XStatusImg);
-                XStatusMem.Clear;
-                XStatusGif.SaveToStream(XStatusMem);
-                HTMLChatViewer.ReplaceImage('x', XStatusMem);
-                end; }
+                  XStatusImg.Assign(nil);
+                  MainForm.AllImageList.GetBitmap(StrToInt(SubItems[7]), XStatusImg);
+                  XStatusMem.Clear;
+                  XStatusImg.SaveToStream(XStatusMem);
+                  HTMLChatViewer.ReplaceImage('x', XStatusMem);
+                end;
             end;
           // Ставим каретку в самый низ текста
           HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
@@ -661,7 +660,7 @@ begin
       if TabMenuToolButton.Down then
         CloseTabBitBtnClick(nil)
       else
-        TabMenuToolButton.Free;
+        RemoveChatPageButton(TabMenuToolButton);
     end;
 end;
 
@@ -839,8 +838,8 @@ begin
         MbMiddle: // Закрываем эту закладку
           if (Sender as TToolButton).Down then
             CloseTabBitBtnClick(nil)
-          else (Sender as TToolButton)
-            .Free;
+          else
+            RemoveChatPageButton((Sender as TToolButton));
       end;
     end;
 end;
@@ -1032,7 +1031,6 @@ begin
   ContactAvatarImage.Picture.Assign(NoAvatar.Picture);
   MyAvatarImage.Picture.Assign(NoAvatar.Picture);
   XStatusImg := TBitmap.Create;
-  XStatusGif := TGifImage.Create;
   XStatusMem := TMemoryStream.Create;
   // Переводим форму на другие языки
   TranslateForm;
@@ -1272,7 +1270,7 @@ begin
         begin
           if Buttons[I].Down then
             begin
-              Buttons[I].Free;
+              RemoveChatPageButton(Buttons[I]);
               Break;
             end;
         end;
@@ -1619,6 +1617,16 @@ begin
   // Если нажата кнопка "отправить" сообщение
   if (Key = #13) and (not EnterKeyToolButton.Down) and (Sender.ClassName = 'TBitBtn') then
     goto X;
+end;
+
+procedure TChatForm.RemoveChatPageButton(ChatButton: TToolButton);
+begin
+  ChatPageToolBar.RemoveControl(ChatButton);
+  ChatButton.Parent := nil;
+  ChatButton.OnMouseDown := nil;
+  ChatButton.OnContextPopup := nil;
+  ChatButton.PopupMenu := nil;
+  FreeAndNil(ChatButton);
 end;
 
 end.

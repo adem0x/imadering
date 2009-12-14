@@ -47,9 +47,9 @@ type
     procedure UpdateFullCL;
     function ReqRosterItem(CId: string): TListItem;
     function ReqCLContact(CId: string): TButtonItem;
-    function ReqChatPage(CId: string): TTabSheet;
+    function ReqChatPage(CId: string): TToolButton;
     procedure RosterItemSetFull(SItem: TListItem);
-    procedure OpenChatPage(cButton: TButtonItem);
+    procedure OpenChatPage(CButton: TButtonItem; UIN: string = '');
     procedure DellcIdInMessList(CId: string);
   end;
 
@@ -68,27 +68,27 @@ uses
   ChatUnit,
   RXML;
 
-function TRosterForm.ReqChatPage(CId: string): TTabSheet;
+function TRosterForm.ReqChatPage(CId: string): TToolButton;
 var
   I: Integer;
 begin
   Result := nil;
   // Ищем вкладку в окне чата
-  { if Assigned(ChatForm) then
+  if Assigned(ChatForm) then
     begin
-    with ChatForm.ChatPageControl do
-    begin
-    for I := 0 to PageCount - 1 do
-    begin
-    if Pages[I].HelpKeyword = CId then
-    begin
-    Result := Pages[I];
-    // Выходим из цикла
-    Break;
+      with ChatForm.ChatPageToolBar do
+        begin
+          for I := 0 to ButtonCount - 1 do
+            begin
+              if Buttons[I].HelpKeyword = CId then
+                begin
+                  Result := Buttons[I];
+                  // Выходим из цикла
+                  Break;
+                end;
+            end;
+        end;
     end;
-    end;
-    end;
-    end; }
 end;
 
 procedure TRosterForm.DellcIdInMessList(CId: string);
@@ -97,69 +97,107 @@ var
 begin
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
   if Assigned(InMessList) then
-  begin
-    with InMessList do
     begin
-      for I := 0 to Count - 1 do
-      begin
-        if Strings[I] = CId then
+      with InMessList do
         begin
-          Delete(I);
-          Break;
+          for I := 0 to Count - 1 do
+            begin
+              if Strings[I] = CId then
+                begin
+                  Delete(I);
+                  Break;
+                end;
+            end;
         end;
-      end;
     end;
-  end;
 end;
 
-procedure TRosterForm.OpenChatPage(cButton: TButtonItem);
-label A;
+procedure TRosterForm.OpenChatPage(CButton: TButtonItem; UIN: string = '');
+label
+  A;
 var
   Sheet: TToolButton;
   I: Integer;
+  RosterItem: TListItem;
 begin
   // Если окно чата не создано, то создаём его
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(Self);
-  // Ищем вкладку в табе
   with ChatForm do
-  begin
-    with ChatPageToolBar do
     begin
-      for I := 0 to ButtonCount - 1 do
-      begin
-        if Buttons[I].HelpKeyword = cButton.UIN then
+      with ChatPageToolBar do
         begin
-          Buttons[I].Down := true;
-          CreateNewChat(Buttons[I]);
-          // Выходим из цикла
-          goto A;
+          // Если это кнопка
+          if (CButton <> nil) and (UIN = EmptyStr) then
+            begin
+              // Ищем вкладку в табе
+              for I := 0 to ButtonCount - 1 do
+                begin
+                  if Buttons[I].HelpKeyword = CButton.UIN then
+                    begin
+                      Buttons[I].Down := True;
+                      CreateNewChat(Buttons[I]);
+                      // Выходим из цикла
+                      goto A;
+                    end;
+                end;
+              // Если вкладку не нашли, то создаём её
+              Sheet := TToolButton.Create(Self);
+              Sheet.Parent := ChatPageToolBar;
+              Sheet.Caption := CButton.Caption;
+              Sheet.HelpKeyword := CButton.UIN;
+              Sheet.ShowHint := True;
+              Sheet.Hint := CButton.Hint;
+              Sheet.AutoSize := True;
+              Sheet.Style := TbsCheck;
+              Sheet.Grouped := True;
+              Sheet.ImageIndex := CButton.Status;
+              Sheet.OnMouseDown := ToolButtonMouseDown;
+              Sheet.OnContextPopup := ToolButtonContextPopup;
+              Sheet.Down := True;
+              Sheet.PopupMenu := TabPopupMenu;
+              CreateNewChat(Sheet);
+            end
+          else if (CButton = nil) and (UIN <> EmptyStr) then
+            begin
+              // Ищем вкладку в табе
+              for I := 0 to ButtonCount - 1 do
+                begin
+                  if Buttons[I].HelpKeyword = UIN then
+                    begin
+                      Buttons[I].Down := True;
+                      CreateNewChat(Buttons[I]);
+                      // Выходим из цикла
+                      goto A;
+                    end;
+                end;
+              // Ищем этот UIN в Ростере
+              RosterItem := RosterForm.ReqRosterItem(UIN);
+              // Если вкладку не нашли, то создаём её
+              Sheet := TToolButton.Create(Self);
+              Sheet.Parent := ChatPageToolBar;
+              Sheet.Caption := RosterItem.SubItems[0];
+              Sheet.HelpKeyword := RosterItem.Caption;
+              Sheet.ShowHint := True;
+              Sheet.Hint := RosterItem.SubItems[34];
+              Sheet.AutoSize := True;
+              Sheet.Style := TbsCheck;
+              Sheet.Grouped := True;
+              Sheet.ImageIndex := StrToInt(RosterItem.SubItems[6]);
+              Sheet.OnMouseDown := ToolButtonMouseDown;
+              Sheet.OnContextPopup := ToolButtonContextPopup;
+              Sheet.Down := True;
+              Sheet.PopupMenu := TabPopupMenu;
+              CreateNewChat(Sheet);
+            end;
         end;
-      end;
+    A :;
+      // Отображаем окно сообщений
+      XShowForm(ChatForm);
+      // Ставим фокус в поле ввода текста
+      if (InputRichEdit.CanFocus) and (Visible) then
+        InputRichEdit.SetFocus;
     end;
-    // Если вкладку не нашли, то создаём её
-    Sheet := TToolButton.Create(Self);
-    Sheet.Parent := ChatPageToolBar;
-    Sheet.Caption := cButton.Caption;
-    Sheet.HelpKeyword := cButton.UIN;
-    Sheet.ShowHint := true;
-    Sheet.Hint := cButton.Hint;
-    Sheet.AutoSize := true;
-    Sheet.Style := tbsCheck;
-    Sheet.Grouped := true;
-    Sheet.ImageIndex := cButton.Status;
-    Sheet.OnMouseDown := ToolButtonMouseDown;
-    Sheet.OnContextPopup := ToolButtonContextPopup;
-    Sheet.Down := true;
-    Sheet.PopupMenu := TabPopupMenu;
-    CreateNewChat(Sheet);
-  A :;
-    // Отображаем окно сообщений
-    XShowForm(ChatForm);
-    // Ставим фокус в поле ввода текста
-    if (InputRichEdit.CanFocus) and (Visible) then
-      InputRichEdit.SetFocus;
-  end;
 end;
 
 procedure TRosterForm.RosterItemSetFull(SItem: TListItem);
@@ -167,16 +205,13 @@ var
   I: Integer;
 begin
   for I := 1 to RosterJvListView.Columns.Count - 1 do
-  begin
-    case I of
-      7, 8, 9:
-        SItem.SubItems.Add('-1');
-      19, 20, 36:
-        SItem.SubItems.Add('0');
-    else
-      SItem.SubItems.Add('');
+    begin
+      case I of
+        7, 8, 9: SItem.SubItems.Add('-1');
+        19, 20, 36: SItem.SubItems.Add('0');
+      else SItem.SubItems.Add('');
+      end;
     end;
-  end;
 end;
 
 procedure TRosterForm.RosterJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
@@ -193,291 +228,294 @@ begin
 end;
 
 procedure TRosterForm.UpdateFullCL;
-label X, A;
+label
+  X,
+  A;
 var
   I, C, Cc, S: Integer;
 begin
   // Обрабатываем весь Ростер
   with RosterJvListView do
-  begin
-    with MainForm.ContactList do
     begin
-      // Начинаем обновление КЛ
-      Categories.BeginUpdate;
-      // Сканируем Ростер
-      for I := 0 to Items.Count - 1 do
-      begin
-        // Получаем статус контакта заранее
-        S := StrToInt(Items[I].SubItems[6]);
-        // Добавляем Jabber контакты в КЛ
-        if Items[I].SubItems[3] = 'Jabber' then
+      with MainForm.ContactList do
         begin
-          // Ищем группу контакта в КЛ
-          for C := 0 to Categories.Count - 1 do
-          begin
-            // Если такую группу нашли
-            if (Categories[C].GroupCaption = Items[I].SubItems[1]) and (Categories[C].GroupType = 'Jabber') then
+          // Начинаем обновление КЛ
+          Categories.BeginUpdate;
+          // Сканируем Ростер
+          for I := 0 to Items.Count - 1 do
             begin
-              // Начинаем поиск в ней этого контакта
-              for Cc := 0 to Categories[C].Items.Count - 1 do
-              begin
-                if Categories[C].Items[Cc].UIN = Items[I].Caption then
+              // Получаем статус контакта заранее
+              S := StrToInt(Items[I].SubItems[6]);
+              // Добавляем Jabber контакты в КЛ
+              if Items[I].SubItems[3] = 'Jabber' then
                 begin
-                  with Categories[C].Items[Cc] do
-                  begin
-                    // Обновляем информацию для этого контакта в КЛ
-                    Status := S;
-                    ImageIndex := S;
-                    // Если статус в сети
-                    if (Status <> 30) and (Status <> 41) and (Status <> 42) then
+                  // Ищем группу контакта в КЛ
+                  for C := 0 to Categories.Count - 1 do
                     begin
-                      // Поднимаем этот контакт вверх группы
-                      index := 0;
+                      // Если такую группу нашли
+                      if (Categories[C].GroupCaption = Items[I].SubItems[1]) and (Categories[C].GroupType = 'Jabber') then
+                        begin
+                          // Начинаем поиск в ней этого контакта
+                          for Cc := 0 to Categories[C].Items.Count - 1 do
+                            begin
+                              if Categories[C].Items[Cc].UIN = Items[I].Caption then
+                                begin
+                                  with Categories[C].Items[Cc] do
+                                    begin
+                                      // Обновляем информацию для этого контакта в КЛ
+                                      Status := S;
+                                      ImageIndex := S;
+                                      // Если статус в сети
+                                      if (Status <> 30) and (Status <> 41) and (Status <> 42) then
+                                        begin
+                                          // Поднимаем этот контакт вверх группы
+                                          index := 0;
+                                        end
+                                      else // Если статус не в сети и скрывать оффлайн контакты
+                                        begin
+                                          if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') then
+                                            Free
+                                          else
+                                            index := Categories[C].Items.Count - 1;
+                                        end;
+                                    end;
+                                  // Продолжаем сканирование Ростера
+                                  goto X;
+                                end;
+                            end;
+                          // Определяем режим КЛ
+                          if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
+                            ((S = 30) or (S = 41) or (S = 42)) then
+                            goto X;
+                          // Добавляем контакт в эту группу в КЛ
+                          with Categories[C].Items.Add do
+                            begin
+                              Caption := Items[I].SubItems[0];
+                              UIN := Items[I].Caption;
+                              Status := S;
+                              ImageIndex := S;
+                              XImageIndex := -1;
+                              CImageIndex := -1;
+                              ContactType := 'Jabber';
+                            end;
+                          // Продолжаем сканирование Ростера
+                          goto X;
+                        end;
+                    end;
+                  // Если такую группу не нашли
+                  // Добавляем группу и этот контакт в неё
+                  with Categories.Add do
+                    begin
+                      Caption := RosterJvListView.Items[I].SubItems[1];
+                      GroupCaption := RosterJvListView.Items[I].SubItems[1];
+                      GroupType := 'Jabber';
+                      // Определяем режим КЛ
+                      if (MainForm.OnlyOnlineContactsToolButton.Down) and (RosterJvListView.Items[I].Caption <> 'NoCL') and
+                        ((S = 30) or (S = 41) or (S = 42)) then
+                        goto X;
+                      // Добавляем контакт в эту группу в КЛ
+                      with Items.Add do
+                        begin
+                          Caption := RosterJvListView.Items[I].SubItems[0];
+                          UIN := RosterJvListView.Items[I].Caption;
+                          Status := S;
+                          ImageIndex := S;
+                          XImageIndex := -1;
+                          CImageIndex := -1;
+                          ContactType := 'Jabber';
+                        end;
+                    end;
+                end
+                // Добавляем ICQ контакты в КЛ
+              else if Items[I].SubItems[3] = 'Icq' then
+                begin
+                  if (Length(Items[I].Caption) = 4) and (Items[I].SubItems[0] = EmptyStr) then
+                    begin // Группа ICQ
+                      for C := 0 to Categories.Count - 1 do
+                        begin
+                          // Если такую группу нашли
+                          if (not ICQ_Show_HideContacts) and (Categories[C].GroupId = '0000') then
+                            begin
+                              Categories[C].Free;
+                              goto X;
+                            end;
+                          if (Categories[C].GroupId = Items[I].Caption) and (Categories[C].GroupType = 'Icq') then
+                            begin
+                              Categories[C].GroupCaption := Items[I].SubItems[1];
+                              goto X;
+                            end;
+                        end;
+                      // Если такую группу не нашли, то добавляем её
+                      if (not ICQ_Show_HideContacts) and (Items[I].Caption = '0000') then
+                        goto X;
+                      with Categories.Add do
+                        begin
+                          Caption := RosterJvListView.Items[I].SubItems[1];
+                          GroupCaption := RosterJvListView.Items[I].SubItems[1];
+                          GroupId := RosterJvListView.Items[I].Caption;
+                          GroupType := 'Icq';
+                          if GroupId = '0000' then
+                            Collapsed := True; // Сворачиваем группу временных контактов
+                        end;
                     end
-                    else // Если статус не в сети и скрывать оффлайн контакты
+                  else // Контакт
                     begin
-                      if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') then
-                        Free
-                      else
-                        index := Categories[C].Items.Count - 1;
+                      // Создаём подсказку для этого контакта
+                      Items[I].SubItems[34] := ICQ_CreateHint(Items[I]);
+                      if (not ICQ_Show_HideContacts) and (Items[I].SubItems[1] = '0000') then
+                        goto X;
+                      // Ищем группу контакта в КЛ
+                      for C := 0 to Categories.Count - 1 do
+                        begin
+                          // Если такую группу нашли
+                          if (Categories[C].GroupId = Items[I].SubItems[1]) and (Categories[C].GroupType = 'Icq') then
+                            begin
+                              // Начинаем поиск в ней этого контакта
+                              for Cc := 0 to Categories[C].Items.Count - 1 do
+                                begin
+                                  if Categories[C].Items[Cc].UIN = Items[I].Caption then
+                                    begin
+                                      with Categories[C].Items[Cc] do
+                                        begin
+                                          // Обновляем информацию для этого контакта в КЛ
+                                          Status := S;
+                                          ImageIndex := S;
+                                          XImageIndex := StrToInt(Items[I].SubItems[7]);
+                                          CImageIndex := StrToInt(Items[I].SubItems[8]);
+                                          Hint := Items[I].SubItems[34];
+                                          // Если статус в сети
+                                          if (Status <> 9) and (Status <> 80) and (Status <> 214) then
+                                            begin
+                                              // Поднимаем этот контакт вверх группы
+                                              index := 0;
+                                            end
+                                          else // Если статус не в сети и скрывать оффлайн контакты
+                                            begin
+                                              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
+                                                (Categories[C].GroupId <> '0000') then
+                                                Free
+                                              else
+                                                index := Categories[C].Items.Count - 1;
+                                            end;
+                                        end;
+                                      // Продолжаем сканирование Ростера
+                                      goto X;
+                                    end;
+                                end;
+                              // Определяем режим КЛ
+                              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
+                                (Categories[C].GroupId <> '0000') and ((S = 9) or (S = 80) or (S = 214)) then
+                                goto X;
+                              // Добавляем контакт в эту группу в КЛ
+                              with Categories[C].Items.Add do
+                                begin
+                                  Caption := Items[I].SubItems[0];
+                                  UIN := Items[I].Caption;
+                                  Status := S;
+                                  ImageIndex := S;
+                                  XImageIndex := StrToInt(Items[I].SubItems[7]);
+                                  CImageIndex := StrToInt(Items[I].SubItems[8]);
+                                  ContactType := 'Icq';
+                                  Hint := Items[I].SubItems[34];
+                                end;
+                              // Продолжаем сканирование Ростера
+                              goto X;
+                            end;
+                        end;
                     end;
-                  end;
-                  // Продолжаем сканирование Ростера
-                  goto X;
-                end;
-              end;
-              // Определяем режим КЛ
-              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and ((S = 30) or (S = 41) or (S = 42))
-                then
-                goto X;
-              // Добавляем контакт в эту группу в КЛ
-              with Categories[C].Items.Add do
-              begin
-                Caption := Items[I].SubItems[0];
-                UIN := Items[I].Caption;
-                Status := S;
-                ImageIndex := S;
-                XImageIndex := -1;
-                CImageIndex := -1;
-                ContactType := 'Jabber';
-              end;
-              // Продолжаем сканирование Ростера
-              goto X;
-            end;
-          end;
-          // Если такую группу не нашли
-          // Добавляем группу и этот контакт в неё
-          with Categories.Add do
-          begin
-            Caption := RosterJvListView.Items[I].SubItems[1];
-            GroupCaption := RosterJvListView.Items[I].SubItems[1];
-            GroupType := 'Jabber';
-            // Определяем режим КЛ
-            if (MainForm.OnlyOnlineContactsToolButton.Down) and (RosterJvListView.Items[I].Caption <> 'NoCL') and
-              ((S = 30) or (S = 41) or (S = 42)) then
-              goto X;
-            // Добавляем контакт в эту группу в КЛ
-            with Items.Add do
-            begin
-              Caption := RosterJvListView.Items[I].SubItems[0];
-              UIN := RosterJvListView.Items[I].Caption;
-              Status := S;
-              ImageIndex := S;
-              XImageIndex := -1;
-              CImageIndex := -1;
-              ContactType := 'Jabber';
-            end;
-          end;
-        end
-        // Добавляем ICQ контакты в КЛ
-        else if Items[I].SubItems[3] = 'Icq' then
-        begin
-          if (Length(Items[I].Caption) = 4) and (Items[I].SubItems[0] = EmptyStr) then
-          begin // Группа ICQ
-            for C := 0 to Categories.Count - 1 do
-            begin
-              // Если такую группу нашли
-              if (not ICQ_Show_HideContacts) and (Categories[C].GroupId = '0000') then
-              begin
-                Categories[C].Free;
-                goto X;
-              end;
-              if (Categories[C].GroupId = Items[I].Caption) and (Categories[C].GroupType = 'Icq') then
-              begin
-                Categories[C].GroupCaption := Items[I].SubItems[1];
-                goto X;
-              end;
-            end;
-            // Если такую группу не нашли, то добавляем её
-            if (not ICQ_Show_HideContacts) and (Items[I].Caption = '0000') then
-              goto X;
-            with Categories.Add do
-            begin
-              Caption := RosterJvListView.Items[I].SubItems[1];
-              GroupCaption := RosterJvListView.Items[I].SubItems[1];
-              GroupId := RosterJvListView.Items[I].Caption;
-              GroupType := 'Icq';
-              if GroupId = '0000' then
-                Collapsed := true; // Сворачиваем группу временных контактов
-            end;
-          end
-          else // Контакт
-          begin
-            // Создаём подсказку для этого контакта
-            Items[I].SubItems[34] := ICQ_CreateHint(Items[I]);
-            if (not ICQ_Show_HideContacts) and (Items[I].SubItems[1] = '0000') then
-              goto X;
-            // Ищем группу контакта в КЛ
-            for C := 0 to Categories.Count - 1 do
-            begin
-              // Если такую группу нашли
-              if (Categories[C].GroupId = Items[I].SubItems[1]) and (Categories[C].GroupType = 'Icq') then
-              begin
-                // Начинаем поиск в ней этого контакта
-                for Cc := 0 to Categories[C].Items.Count - 1 do
+                end
+                // Добавляем MRA контакты в КЛ
+              else if Items[I].SubItems[3] = 'Mra' then
                 begin
-                  if Categories[C].Items[Cc].UIN = Items[I].Caption then
-                  begin
-                    with Categories[C].Items[Cc] do
-                    begin
-                      // Обновляем информацию для этого контакта в КЛ
-                      Status := S;
-                      ImageIndex := S;
-                      XImageIndex := StrToInt(Items[I].SubItems[7]);
-                      CImageIndex := StrToInt(Items[I].SubItems[8]);
-                      Hint := Items[I].SubItems[34];
-                      // Если статус в сети
-                      if (Status <> 9) and (Status <> 80) and (Status <> 214) then
-                      begin
-                        // Поднимаем этот контакт вверх группы
-                        index := 0;
-                      end
-                      else // Если статус не в сети и скрывать оффлайн контакты
-                      begin
-                        if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
-                          (Categories[C].GroupId <> '0000') then
-                          Free
-                        else
-                          index := Categories[C].Items.Count - 1;
-                      end;
-                    end;
-                    // Продолжаем сканирование Ростера
-                    goto X;
-                  end;
-                end;
-                // Определяем режим КЛ
-                if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and (Categories[C].GroupId <> '0000')
-                  and ((S = 9) or (S = 80) or (S = 214)) then
-                  goto X;
-                // Добавляем контакт в эту группу в КЛ
-                with Categories[C].Items.Add do
-                begin
-                  Caption := Items[I].SubItems[0];
-                  UIN := Items[I].Caption;
-                  Status := S;
-                  ImageIndex := S;
-                  XImageIndex := StrToInt(Items[I].SubItems[7]);
-                  CImageIndex := StrToInt(Items[I].SubItems[8]);
-                  ContactType := 'Icq';
-                  Hint := Items[I].SubItems[34];
-                end;
-                // Продолжаем сканирование Ростера
-                goto X;
-              end;
-            end;
-          end;
-        end
-        // Добавляем MRA контакты в КЛ
-        else if Items[I].SubItems[3] = 'Mra' then
-        begin
 
-        end;
-      X :;
-      end;
-      // Если активен режим "Скрывать пустые группы"
-      if MainForm.HideEmptyGroups.Checked then
-      begin
-        // Сканируем КЛ и удаляем пустые группы
-      A :;
-        for I := 0 to Categories.Count - 1 do
-          if Categories[I].Items.Count = 0 then
-          begin
-            Categories[I].Free;
-            goto A;
-          end;
-      end;
-      // Вычисляем количесво контактов и количество онлайн-контактов в группах локального КЛ
-      for C := 0 to Categories.Count - 1 do
-      begin
-        if (Categories[C].GroupId = '0000') or (Categories[C].GroupId = 'NoCL') or (Categories[C].Items.Count = 0) or
-          (MainForm.OnlyOnlineContactsToolButton.Down) then
-          Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(Categories[C].Items.Count)
-        else
-        begin
-          I := Categories[C].Items.Count;
-          for Cc := 0 to Categories[C].Items.Count - 1 do
-            case Categories[C].Items[Cc].Status of
-              9, 30, 41, 42, 80, 214:
-                Dec(I);
+                end;
+            X :;
             end;
-          Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(I) + GroupInv + IntToStr(Categories[C].Items.Count);
-        end;
-      end;
-      // Восстанавливаем состояние свёрнутых групп
-      if CollapseGroupsRestore then
-      begin
-        with TrXML.Create() do
-          try
-            if FileExists(ProfilePath + GroupsFileName) then
-              LoadFromFile(ProfilePath + GroupsFileName);
-            for C := 0 to Categories.Count - 1 do
+          // Если активен режим "Скрывать пустые группы"
+          if MainForm.HideEmptyGroups.Checked then
             begin
-              if OpenKey('groups\' + Categories[C].GroupCaption + '-' + Categories[C].GroupType + '-' + Categories[C].GroupId) then
-                try
-                  Categories[C].Collapsed := ReadBool('collapsed');
-                finally
-                  CloseKey();
+              // Сканируем КЛ и удаляем пустые группы
+            A :;
+              for I := 0 to Categories.Count - 1 do
+                if Categories[I].Items.Count = 0 then
+                  begin
+                    Categories[I].Free;
+                    goto A;
+                  end;
+            end;
+          // Вычисляем количесво контактов и количество онлайн-контактов в группах локального КЛ
+          for C := 0 to Categories.Count - 1 do
+            begin
+              if (Categories[C].GroupId = '0000') or (Categories[C].GroupId = 'NoCL') or (Categories[C].Items.Count = 0) or
+                (MainForm.OnlyOnlineContactsToolButton.Down) then
+                Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(Categories[C].Items.Count)
+              else
+                begin
+                  I := Categories[C].Items.Count;
+                  for Cc := 0 to Categories[C].Items.Count - 1 do
+                    case Categories[C].Items[Cc].Status of
+                      9, 30, 41, 42, 80, 214: Dec(I);
+                    end;
+                  Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(I) + GroupInv + IntToStr
+                    (Categories[C].Items.Count);
                 end;
             end;
-          finally
-            Free();
-          end;
-        CollapseGroupsRestore := False;
-      end;
-      // Заканчиваем обновление КЛ
-      Categories.EndUpdate;
+          // Восстанавливаем состояние свёрнутых групп
+          if CollapseGroupsRestore then
+            begin
+              with TrXML.Create() do
+                try
+                  if FileExists(ProfilePath + GroupsFileName) then
+                    LoadFromFile(ProfilePath + GroupsFileName);
+                  for C := 0 to Categories.Count - 1 do
+                    begin
+                      if OpenKey('groups\' + Categories[C].GroupCaption + '-' + Categories[C].GroupType + '-' + Categories[C].GroupId) then
+                        try
+                          Categories[C].Collapsed := ReadBool('collapsed');
+                        finally
+                          CloseKey();
+                        end;
+                    end;
+                finally
+                  Free();
+                end;
+              CollapseGroupsRestore := False;
+            end;
+          // Заканчиваем обновление КЛ
+          Categories.EndUpdate;
+        end;
     end;
-  end;
 end;
 
 function TRosterForm.ReqRosterItem(CId: string): TListItem;
 begin
   // Обрабатываем запись в Ростере
-  Result := RosterJvListView.FindCaption(0, CId, true, true, False);
+  Result := RosterJvListView.FindCaption(0, CId, True, True, False);
 end;
 
 function TRosterForm.ReqCLContact(CId: string): TButtonItem;
-label X;
+label
+  X;
 var
   I, II: Integer;
 begin
   Result := nil;
   // Ищем контакт в КЛ
   with MainForm.ContactList do
-  begin
-    for I := 0 to Categories.Count - 1 do
     begin
-      for II := 0 to Categories[I].Items.Count - 1 do
-      begin
-        if Categories[I].Items[II].UIN = CId then
+      for I := 0 to Categories.Count - 1 do
         begin
-          Result := Categories[I].Items[II];
-          // Выходим из циклов
-          goto X;
+          for II := 0 to Categories[I].Items.Count - 1 do
+            begin
+              if Categories[I].Items[II].UIN = CId then
+                begin
+                  Result := Categories[I].Items[II];
+                  // Выходим из циклов
+                  goto X;
+                end;
+            end;
         end;
-      end;
     end;
-  end;
 X :;
 end;
 
@@ -495,45 +533,47 @@ begin
 end;
 
 function TRosterForm.ClearContacts(CType: string): Boolean;
-label A, B;
+label
+  A,
+  B;
 var
   I: Integer;
 begin
   Result := False;
   // Удаляем контакты в Ростере
   with RosterJvListView do
-  begin
-    Items.BeginUpdate;
-  A :;
-    for I := 0 to Items.Count - 1 do
     begin
-      // Удаляем все контакты протокола
-      if Items[I].SubItems[3] = CType then
-      begin
-        Result := true;
-        Items[I].Delete;
-        goto A;
-      end;
+      Items.BeginUpdate;
+    A :;
+      for I := 0 to Items.Count - 1 do
+        begin
+          // Удаляем все контакты протокола
+          if Items[I].SubItems[3] = CType then
+            begin
+              Result := True;
+              Items[I].Delete;
+              goto A;
+            end;
+        end;
+      Items.EndUpdate;
     end;
-    Items.EndUpdate;
-  end;
   // Удаляем контакты в КЛ
   if Result then
-  begin
-    with MainForm.ContactList do
     begin
-    B :;
-      for I := 0 to Categories.Count - 1 do
-      begin
-        // Удаляем все группы протокола
-        if Categories[I].GroupType = CType then
+      with MainForm.ContactList do
         begin
-          Categories[I].Free;
-          goto B;
+        B :;
+          for I := 0 to Categories.Count - 1 do
+            begin
+              // Удаляем все группы протокола
+              if Categories[I].GroupType = CType then
+                begin
+                  Categories[I].Free;
+                  goto B;
+                end;
+            end;
         end;
-      end;
     end;
-  end;
 end;
 
 procedure TRosterForm.ClearICQClick(Sender: TObject);

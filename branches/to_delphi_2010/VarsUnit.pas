@@ -64,6 +64,7 @@ var
   CollapseGroupsRestore: Boolean = True;
   CompresHistoryProcess: Boolean = False;
   FloatingFrm: TFloatingForm;
+  LastClick: Tdatetime;
 
   // Статистика трафика
   TrafSend: Real;
@@ -328,7 +329,6 @@ var
   OutMessage2: TMemoryStream;
   OutMessage3: TMemoryStream;
   XStatusImg: TBitmap;
-  XStatusGif: TGifImage;
   XStatusMem: TMemoryStream;
   QReplyAutoSend: Boolean = False;
   SmilesList: TStringList;

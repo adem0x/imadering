@@ -39,17 +39,20 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure CloseFloatMenuClick(Sender: TObject);
+    procedure OpenChatFloatMenuClick(Sender: TObject);
 
   private
     { Private declarations }
     procedure WMNCHitTest(var Msg: TWMNCHitTest);
     message WM_NCHITTEST;
+
     procedure CreateParams(var Params: TCreateParams); override;
 
     procedure WMNCRBUTTONDOWN(var Msg: TMessage);
     message WM_NCRBUTTONDOWN;
-    { procedure WMNCLBUTTONDOWN(var Msg: TMessage);
-      message WM_NCLBUTTONDOWN; }
+
+    procedure NCLBUTTONDBLCLK(var Msg: TMessage);
+    message WM_NCLBUTTONDBLCLK;
 
   public
     { Public declarations }
@@ -65,27 +68,28 @@ implementation
 
 uses
   MainUnit,
-  UtilsUnit;
+  UtilsUnit,
+  RosterUnit;
 
 procedure TFloatingForm.WMNCRBUTTONDOWN(var Msg: TMessage);
 var
   FCursor: TPoint;
 begin
   // Если по форме был клик правой кнопокой мыши, то отображаем меню
-  if Msg.wParam = HTCAPTION then
-  begin
-    GetCursorPos(FCursor);
-    FloatPopupMenu.Popup(FCursor.X, FCursor.Y);
-  end;
+  if Msg.WParam = HTCAPTION then
+    begin
+      GetCursorPos(FCursor);
+      FloatPopupMenu.Popup(FCursor.X, FCursor.Y);
+    end;
   inherited;
 end;
 
-{ procedure TFloatingForm.WMNCLBUTTONDOWN(var Msg: TMessage);
-  begin
-  if Msg.wParam = HTCAPTION then
-  xlog('Left Click!');
+procedure TFloatingForm.NCLBUTTONDBLCLK(var Msg: TMessage);
+begin
+  // Открываем час с этим контактом если был двойной клик мышкой
+  if Msg.WParam = HTCAPTION then OpenChatFloatMenuClick(nil);
   inherited;
-  end; }
+end;
 
 procedure TFloatingForm.CreateParams(var Params: TCreateParams);
 begin
@@ -126,6 +130,12 @@ begin
   FloatShape.Left := Left;
   FloatShape.Height := Height;
   FloatShape.Width := Width;
+end;
+
+procedure TFloatingForm.OpenChatFloatMenuClick(Sender: TObject);
+begin
+  // Открываем чат с этим контактом
+  RosterForm.OpenChatPage(nil, NickLabel.Hint);
 end;
 
 procedure TFloatingForm.WMNCHitTest(var Msg: TWMNCHitTest);

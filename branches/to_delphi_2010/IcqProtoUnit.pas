@@ -2838,6 +2838,7 @@ begin
   HistoryFile := ProfilePath + HistoryFileName + 'Icq ' + ICQ_LoginUIN + ' ' + UIN + '.htm';
   SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
   // Добавляем сообщение в текущий чат
+  RosterItem.SubItems[36] := 'X';
   if ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, MsgD, Mess) then
     RosterItem.SubItems[36] := EmptyStr;
 end;
@@ -2851,7 +2852,7 @@ var
   UIN, Msg, UserClass, Status, TimeReg, IconHash, ConnTime: string;
   SubData, ExtIP, IntPort, IntIP, Desc, URL, TLV: string;
   I, Count, MsgLen: Integer;
-  Len, ULen: Word;
+  Len, ULen, CharsetNumber: Word;
   FSize: LongWord;
   MsgType: Word;
 begin
@@ -2932,14 +2933,13 @@ begin
                   NextData(PktData, 2); // x0101, Unknown, constant
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ULen := Len - 4; // Length of the message + 4
-                  // CharsetNumber := HexToInt(Text2Hex(NextData(PktData, 2))); //The encoding used for the message
-                  NextData(PktData, 2); // The encoding used for the message
+                  CharsetNumber := HexToInt(Text2Hex(NextData(PktData, 2))); //The encoding used for the message
                   // CharsetSubset := HexToInt(Text2Hex(NextData(PktData, 2))); //Unknown; seen: 0x0000 = 0, 0xffff = -1
                   NextData(PktData, 2);
-                  Msg := AnsiString(NextData(PktData, ULen));
+                  Msg := NextData(PktData, ULen);
+                  if CharsetNumber = $0002 then Msg := UCS2BEToStr(Msg);
                   if Msg <> EmptyStr then
                     XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
-                  // if CharsetNumber = $0002 then Msg := UCS2BEToStr(Msg);
                   Msg := RTF2Plain(Msg);
                 end
               else

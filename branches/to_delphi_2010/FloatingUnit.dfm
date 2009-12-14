@@ -27,7 +27,9 @@ object FloatingForm: TFloatingForm
     Top = 1
     Width = 65
     Height = 17
+    ParentShowHint = False
     Pen.Color = clActiveCaption
+    ShowHint = False
   end
   object StatusImage: TImage
     AlignWithMargins = True
@@ -90,7 +92,11 @@ object FloatingForm: TFloatingForm
     Margins.Bottom = 2
     Align = alLeft
     Caption = 'NickLabel'
+    Color = clWhite
+    ParentColor = False
+    ParentShowHint = False
     PopupMenu = FloatPopupMenu
+    ShowHint = False
     Layout = tlCenter
     ExplicitHeight = 13
   end
@@ -101,6 +107,7 @@ object FloatingForm: TFloatingForm
     object OpenChatFloatMenu: TMenuItem
       Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
       ImageIndex = 163
+      OnClick = OpenChatFloatMenuClick
     end
     object N2: TMenuItem
       Caption = '-'

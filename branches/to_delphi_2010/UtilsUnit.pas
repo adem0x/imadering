@@ -124,8 +124,28 @@ function CreateHistoryArhive(HFile: string): Boolean;
 procedure SaveTextInHistory(hString: string; hFileName: string);
 procedure CreateLang(Xform: Tform);
 procedure SetLang(Xform: Tform);
+function UnicodeCharCode2String(aCode: Word): string;
+function UCS2BEToStr(Value: string): string;
 
 implementation
+
+function UnicodeCharCode2String(aCode: Word): string;
+var
+  WChar: array [0 .. 1] of Word;
+begin
+  WChar[0] := aCode;
+  WChar[1] := 0;
+  Result := WideCharToString(@WChar);
+end;
+
+function UCS2BEToStr(Value: string): string;
+var
+  NWord: LongInt;
+begin
+  Result := EmptyStr;
+  for NWord := 1 to Length(Value) shr 1 do
+    Result := Result + UnicodeCharCode2String((Ord(Value[(NWord shl 1) - 1]) shl 8) + Ord(Value[NWord shl 1]));
+end;
 
 procedure SetLang(Xform: Tform);
 var
@@ -1003,8 +1023,8 @@ begin
                   Result := Result + #$0D#$0A
                 else if Control = 'tab' then
                   Result := Result + #$09
-                  { else if Control = 'u' then
-                    Result := Result + Unicodecharcode2ansistring(Strtoint(Numericvalue)) }
+                else if Control = 'u' then
+                    Result := Result + UnicodeCharCode2String(Strtoint(Numericvalue))
                 else if Control = 'colortbl' then
                   Textvalue := EmptyStr;
                 if Length(Textvalue) > 0 then
