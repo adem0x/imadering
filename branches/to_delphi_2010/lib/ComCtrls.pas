@@ -14582,7 +14582,7 @@ begin
 {$IF DEFINED(CLR)}
   ConversionFormatList.Add(TObject(NewRec));
 {$ELSE}
-  ConversionFormatList.Add(Pointer(@NewRec));
+  ConversionFormatList.Add(Pointer(NewRec));
 {$IFEND}
 end;
 
@@ -23284,7 +23284,7 @@ begin
   if not (csDesigning in ComponentState) then
   begin
     case Message.Msg of
-      (*WM_MOUSEMOVE:
+      WM_MOUSEMOVE:
         begin
           { Call default wndproc to get buttons to repaint when Flat = True. }
 {$IF DEFINED(CLR)}
@@ -23300,7 +23300,7 @@ begin
           end
           else
             DefaultHandler(Message);
-        end;*)
+        end;
       WM_LBUTTONUP:
         begin
           { Update button states after a click. }
@@ -26830,10 +26830,18 @@ begin
                 if dwFlags = GDT_VALID then
                 begin
                   FLastChange := st;
-                  DT := SystemTimeToDateTime(st);
-                  if Kind = dtkDate then SetDate(DT)
-                  else SetTime(DT);
-                  if FShowCheckbox then FChecked := True;
+                  FChanging := True;
+                  try
+                    DT := SystemTimeToDateTime(st);
+                    if Kind = dtkDate then
+                      SetDate(DT)
+                    else
+                      SetTime(DT);
+                  finally
+                    FChanging := False;
+                  end;
+                  if FShowCheckbox then
+                    FChecked := True;
                 end;
             end;
             Change;

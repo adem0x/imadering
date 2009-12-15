@@ -431,8 +431,8 @@ var
   Ln, Lf, La: string;
 begin
   Result := EmptyStr;
-  Getcitypanel := EmptyStr;
-  Getagepanel := EmptyStr;
+  Getcitypanel := '- -';
+  Getagepanel := '- -';
   // Ищем файл с анкетой этого контакта
   if FileExists(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml') then
     begin
