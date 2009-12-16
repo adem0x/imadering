@@ -116,17 +116,20 @@ procedure TRosterForm.OpenChatPage(CButton: TButtonItem; UIN: string = '');
 label
   A;
 var
-  Sheet: TToolButton;
+  ChatTab: TToolButton;
   I: Integer;
   RosterItem: TListItem;
 begin
   // Если окно чата не создано, то создаём его
   if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(Self);
+    ChatForm := TChatForm.Create(MainForm);
   with ChatForm do
     begin
       with ChatPageToolBar do
         begin
+          // Удаляем кнопку с меткой удаления (против глюка в Wine)
+          if (ButtonCount = 1) and (Buttons[0].AutoSize = false) then
+            RemoveChatPageButton(Buttons[0]);
           // Если это кнопка
           if (CButton <> nil) and (UIN = EmptyStr) then
             begin
@@ -142,21 +145,21 @@ begin
                     end;
                 end;
               // Если вкладку не нашли, то создаём её
-              Sheet := TToolButton.Create(Self);
-              Sheet.Parent := ChatPageToolBar;
-              Sheet.Caption := CButton.Caption;
-              Sheet.HelpKeyword := CButton.UIN;
-              Sheet.ShowHint := True;
-              Sheet.Hint := CButton.Hint;
-              Sheet.AutoSize := True;
-              Sheet.Style := TbsCheck;
-              Sheet.Grouped := True;
-              Sheet.ImageIndex := CButton.Status;
-              Sheet.OnMouseDown := ToolButtonMouseDown;
-              Sheet.OnContextPopup := ToolButtonContextPopup;
-              Sheet.Down := True;
-              Sheet.PopupMenu := TabPopupMenu;
-              CreateNewChat(Sheet);
+              ChatTab := TToolButton.Create(nil);
+              ChatTab.Parent := ChatPageToolBar;
+              ChatTab.Caption := CButton.Caption;
+              ChatTab.HelpKeyword := CButton.UIN;
+              ChatTab.ShowHint := True;
+              ChatTab.Hint := CButton.Hint;
+              ChatTab.AutoSize := True;
+              ChatTab.Style := TbsCheck;
+              ChatTab.Grouped := True;
+              ChatTab.ImageIndex := CButton.Status;
+              ChatTab.OnMouseDown := ToolButtonMouseDown;
+              ChatTab.OnContextPopup := ToolButtonContextPopup;
+              ChatTab.Down := True;
+              ChatTab.PopupMenu := TabPopupMenu;
+              CreateNewChat(ChatTab);
             end
           else if (CButton = nil) and (UIN <> EmptyStr) then
             begin
@@ -174,21 +177,21 @@ begin
               // Ищем этот UIN в Ростере
               RosterItem := RosterForm.ReqRosterItem(UIN);
               // Если вкладку не нашли, то создаём её
-              Sheet := TToolButton.Create(Self);
-              Sheet.Parent := ChatPageToolBar;
-              Sheet.Caption := RosterItem.SubItems[0];
-              Sheet.HelpKeyword := RosterItem.Caption;
-              Sheet.ShowHint := True;
-              Sheet.Hint := RosterItem.SubItems[34];
-              Sheet.AutoSize := True;
-              Sheet.Style := TbsCheck;
-              Sheet.Grouped := True;
-              Sheet.ImageIndex := StrToInt(RosterItem.SubItems[6]);
-              Sheet.OnMouseDown := ToolButtonMouseDown;
-              Sheet.OnContextPopup := ToolButtonContextPopup;
-              Sheet.Down := True;
-              Sheet.PopupMenu := TabPopupMenu;
-              CreateNewChat(Sheet);
+              ChatTab := TToolButton.Create(nil);
+              ChatTab.Parent := ChatPageToolBar;
+              ChatTab.Caption := RosterItem.SubItems[0];
+              ChatTab.HelpKeyword := RosterItem.Caption;
+              ChatTab.ShowHint := True;
+              ChatTab.Hint := RosterItem.SubItems[34];
+              ChatTab.AutoSize := True;
+              ChatTab.Style := TbsCheck;
+              ChatTab.Grouped := True;
+              ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
+              ChatTab.OnMouseDown := ToolButtonMouseDown;
+              ChatTab.OnContextPopup := ToolButtonContextPopup;
+              ChatTab.Down := True;
+              ChatTab.PopupMenu := TabPopupMenu;
+              CreateNewChat(ChatTab);
             end;
         end;
     A :;

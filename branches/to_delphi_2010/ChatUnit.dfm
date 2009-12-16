@@ -800,7 +800,7 @@ object ChatForm: TChatForm
     Height = 28
     AutoSize = True
     BorderWidth = 1
-    ButtonWidth = 85
+    ButtonWidth = 43
     DoubleBuffered = True
     EdgeBorders = [ebLeft, ebTop, ebRight]
     Images = MainForm.AllImageList

@@ -565,7 +565,8 @@ implementation
 
 uses
   Clipbrd,
-  Htmlgif2;
+  Htmlgif2,
+  VarsUnit;
 
 const
   ScrollGap = 20;
@@ -931,6 +932,7 @@ end;
 
 procedure THTMLViewer.LoadFromString(const WS: WideString; const Reference: string);
 begin
+  SetCurrentDir(MyPath); // Добавил
   LoadFromString(#$EF + #$BB + #$BF + UTF8Encode(WS), Reference);
 end;
 

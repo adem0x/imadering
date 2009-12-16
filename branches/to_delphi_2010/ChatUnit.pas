@@ -186,7 +186,6 @@ type
     TabMenuToolButton: TToolButton;
     // Zundo: string;
     procedure QuickMessClick(Sender: TObject);
-    procedure RemoveChatPageButton(ChatButton: TToolButton);
 
   public
     { Public declarations }
@@ -202,6 +201,7 @@ type
     procedure CreateFastReplyMenu;
     function AddMessInActiveChat(CNick, CPopMsg, CId, CMsgD, CMess: string): Boolean;
     procedure CreateNewChat(CButton: TToolButton);
+    procedure RemoveChatPageButton(ChatButton: TToolButton);
   end;
 
 var
@@ -552,7 +552,7 @@ end;
 
 begin
   // Определяем html тэги для вставки смайлов заместо их текстовых обозначений
-  ImgTag1 := '<img src="' + MyPath + 'Smilies\' + CurrentSmiles + '\';
+  ImgTag1 := '<img src="./Smilies/' + CurrentSmiles + '/';
   ImgTag2 := '" ALIGN=ABSMIDDLE BORDER="0">';
   // Сканируем список кодов смайлов на совпадения
   for I := 1 to SmilesList.Count - 1 do
@@ -586,11 +586,11 @@ var
 begin
   Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
   if MessIn then
-    Doc := Doc + '<IMG NAME=i SRC="' + MyPath + 'Icons\' + CurrentIcons + '\inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' +
+    Doc := Doc + '<IMG NAME=i SRC="./Icons/' + CurrentIcons + '/inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' +
       Nick_Time + '</span><br>'
   else
-    Doc := Doc + '<IMG NAME=o' + IntToStr(OutMessIndex) + ' SRC="' + MyPath + 'Icons\' + CurrentIcons +
-      '\outmess1.gif" ALIGN=ABSMIDDLE BORDER=0><span class=a> ' + Nick_Time + '</span><br>';
+    Doc := Doc + '<IMG NAME=o' + IntToStr(OutMessIndex) + ' SRC="./Icons/' + CurrentIcons +
+      '/outmess1.gif" ALIGN=ABSMIDDLE BORDER=0><span class=a> ' + Nick_Time + '</span><br>';
   Doc := Doc + '<span class=c>' + Mess_Text + '</span><br><br>';
   HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
 end;
@@ -1267,6 +1267,13 @@ begin
   // Закрываем вкладку чата
   with ChatPageToolBar do
   begin
+    if ButtonCount = 1 then
+    begin
+      ChatForm.Hide;
+      // Ставим метку для удаления кнопки (против глюка в wine)
+      Buttons[0].AutoSize := false;
+      Exit;
+    end;
     for I := 0 to ButtonCount - 1 do
     begin
       if Buttons[I].Down then
@@ -1275,13 +1282,8 @@ begin
         Break;
       end;
     end;
-    if ButtonCount = 0 then
-      Close
-    else
-    begin
-      Buttons[0].Down := True;
-      CreateNewChat(Buttons[0]);
-    end;
+    Buttons[0].Down := True;
+    CreateNewChat(Buttons[0]);
   end;
 end;
 
