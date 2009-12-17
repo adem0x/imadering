@@ -3847,7 +3847,7 @@ procedure TMainForm.CopyAccountContactClick(Sender: TObject);
 begin
   // Копируем имя учётной записи контакта в буфер обмена
   if ContactList.SelectedItem <> nil then
-    SetClipboardText(Handle, (ContactList.SelectedItem as TButtonItem).UIN);
+    SetClipboardText((ContactList.SelectedItem as TButtonItem).UIN);
 end;
 
 procedure TMainForm.DeleteContactClick(Sender: TObject);

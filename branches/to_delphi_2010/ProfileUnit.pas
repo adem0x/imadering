@@ -65,7 +65,8 @@ uses
   RXML,
   SettingsUnit,
   RosterUnit,
-  FirstStartUnit;
+  FirstStartUnit,
+  LogUnit;
 
 procedure TProfileForm.SaveSettings;
 var
@@ -233,6 +234,8 @@ begin
     end;
   // Запускаем таймер индикации событий
   MainForm.JvTimerList.Events[1].Enabled := True;
+  // Выключаем кнопку записи последующих событий в окно лога
+  LogForm.WriteLogSpeedButton.Down := false;
   // Высвобождаем общую память приложения (вспоминая qip)
   if Win32Platform = VER_PLATFORM_WIN32_NT then
     SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);

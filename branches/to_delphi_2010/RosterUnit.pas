@@ -151,8 +151,8 @@ begin
               ChatTab.HelpKeyword := CButton.UIN;
               ChatTab.ShowHint := True;
               ChatTab.Hint := CButton.Hint;
-              ChatTab.AutoSize := True;
               ChatTab.Style := TbsCheck;
+              ChatTab.AutoSize := True;
               ChatTab.Grouped := True;
               ChatTab.ImageIndex := CButton.Status;
               ChatTab.OnMouseDown := ToolButtonMouseDown;
@@ -183,8 +183,8 @@ begin
               ChatTab.HelpKeyword := RosterItem.Caption;
               ChatTab.ShowHint := True;
               ChatTab.Hint := RosterItem.SubItems[34];
-              ChatTab.AutoSize := True;
               ChatTab.Style := TbsCheck;
+              ChatTab.AutoSize := True;
               ChatTab.Grouped := True;
               ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
               ChatTab.OnMouseDown := ToolButtonMouseDown;
@@ -195,6 +195,8 @@ begin
             end;
         end;
     A :;
+      // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
+      ChatPageToolBar.Realign;
       // Отображаем окно сообщений
       XShowForm(ChatForm);
       // Ставим фокус в поле ввода текста

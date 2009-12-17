@@ -527,7 +527,7 @@ procedure TIcqSearchForm.AccountNameCopySMClick(Sender: TObject);
 begin
   // Копируем имя учётной записи в буфер обмена
   if SearchResultJvListView.Selected <> nil then
-    SetClipboardText(Handle, SearchResultJvListView.Selected.SubItems[1]);
+    SetClipboardText(SearchResultJvListView.Selected.SubItems[1]);
 end;
 
 procedure TIcqSearchForm.SendMessageSMClick(Sender: TObject);

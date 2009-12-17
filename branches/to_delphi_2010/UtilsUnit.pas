@@ -75,7 +75,7 @@ function Exisvalidcharacterstext(Value: string): Boolean;
 function Exisvalidcharactersdigit(Value: string): Boolean;
 function Hextoint64(Hex: string): Int64;
 function Calculateage(Birthday, Currentdate: Tdate): Integer;
-function Setclipboardtext(Wnd: Hwnd; Value: string): Boolean;
+procedure Setclipboardtext(Value: string);
 function Dump(Data: RawByteString): string;
 function Chop(I: Integer; var S: string): string; overload;
 function Chop(I, L: Integer; var S: string): string; overload;
@@ -103,8 +103,8 @@ function Errorhttpclient(Errcode: Integer): string;
 function Getfulltag(Adata: string): string;
 procedure Implaysnd(Snd: Integer);
 function SearchNickInCash(Ctype, Cid: string): string;
-//function Copydir(const Fromdir, Todir: string): Boolean;
-//function Cleardir(const Path: string; Delete: Boolean): Boolean;
+// function Copydir(const Fromdir, Todir: string): Boolean;
+// function Cleardir(const Path: string; Delete: Boolean): Boolean;
 procedure SetcustomWidthCombobox(Cb: Tcombobox);
 procedure Xshowform(Xform: Tform);
 procedure OpenUrl(Url: string);
@@ -121,19 +121,19 @@ procedure XLog(XLogData: string);
 function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 function CreateHistoryArhive(HFile: string): Boolean;
-procedure SaveTextInHistory(hString: string; hFileName: string);
+procedure SaveTextInHistory(HString: string; HFileName: string);
 procedure CreateLang(Xform: Tform);
 procedure SetLang(Xform: Tform);
-function UnicodeCharCode2String(aCode: Word): string;
+function UnicodeCharCode2String(ACode: Word): string;
 function UCS2BEToStr(Value: string): string;
 
 implementation
 
-function UnicodeCharCode2String(aCode: Word): string;
+function UnicodeCharCode2String(ACode: Word): string;
 var
   WChar: array [0 .. 1] of Word;
 begin
-  WChar[0] := aCode;
+  WChar[0] := ACode;
   WChar[1] := 0;
   Result := WideCharToString(@WChar);
 end;
@@ -180,20 +180,20 @@ begin
         begin
           // Если этот компонент меню
           if (Components[I] is TPopupMenu) then
-          begin
-            for M := 0 to (Components[I] as TPopupMenu).Items.Count - 1 do
             begin
-              for II := 0 to List.Count - 1 do
-              begin
-                if (Components[I] as TPopupMenu).Items[M].Name = IsolateTextString(List.Strings[II], '<', ' c="') then
+              for M := 0 to (Components[I] as TPopupMenu).Items.Count - 1 do
                 begin
-                  (Components[I] as TPopupMenu).Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"/>');
-                  Break;
+                  for II := 0 to List.Count - 1 do
+                    begin
+                      if (Components[I] as TPopupMenu).Items[M].name = IsolateTextString(List.Strings[II], '<', ' c="') then
+                        begin (Components[I] as TPopupMenu)
+                          .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"/>');
+                          Break;
+                        end;
+                    end;
                 end;
-              end;
+              Continue;
             end;
-            Continue;
-          end;
           // Если этот компонент ЛистВиев
 
           // Ищем компонент в списке по имени
@@ -279,20 +279,20 @@ begin
     end;
 end;
 
-procedure SaveTextInHistory(hString: string; hFileName: string);
+procedure SaveTextInHistory(HString: string; HFileName: string);
 var
   F: TFileStream;
   PStr: PChar;
   LengthLogString: Integer;
 begin
-  LengthLogString := (Length(hString) + 2) * SizeOf(Char);
-  hString := hString + #13#10;
+  LengthLogString := (Length(HString) + 2) * SizeOf(Char);
+  HString := HString + #13#10;
   PStr := StrAlloc(LengthLogString + 1);
-  StrPCopy(PStr, hString);
-  if FileExists(hFileName) then
-    F := TFileStream.Create(hFileName, FmOpenWrite)
+  StrPCopy(PStr, HString);
+  if FileExists(HFileName) then
+    F := TFileStream.Create(HFileName, FmOpenWrite)
   else
-    F := TFileStream.Create(hFileName, FmCreate);
+    F := TFileStream.Create(HFileName, FmCreate);
   F.Position := F.Size;
   F.write(PStr^, LengthLogString);
   StrDispose(PStr);
@@ -590,10 +590,10 @@ const
   Rarrayl = 'абвгдеёжзийклмнопрстуфхцчшщьыъэюя';
   Rarrayu = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ';
   Colchar = 33;
-  Arr: array [1 .. 2, 1 .. Colchar] of string =
-    (('a', 'b', 'v', 'g', 'd', 'e', 'yo', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'kh', 'ts', 'ch',
-      'sh', 'shch', '''', 'y', '''', 'e', 'yu', 'ya'), ('A', 'B', 'V', 'G', 'D', 'E', 'Yo', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O',
-      'P', 'R', 'S', 'T', 'U', 'F', 'Kh', 'Ts', 'Ch', 'Sh', 'Shch', '''', 'Y', '''', 'E', 'Yu', 'Ya'));
+  Arr: array [1 .. 2, 1 .. Colchar] of string = (('a', 'b', 'v', 'g', 'd', 'e', 'yo', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p',
+      'r', 's', 't', 'u', 'f', 'kh', 'ts', 'ch', 'sh', 'shch', '''', 'y', '''', 'e', 'yu', 'ya'),
+    ('A', 'B', 'V', 'G', 'D', 'E', 'Yo', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'Kh', 'Ts', 'Ch',
+      'Sh', 'Shch', '''', 'Y', '''', 'E', 'Yu', 'Ya'));
 var
   I: Integer;
   Lens: Integer;
@@ -820,37 +820,21 @@ begin
   Delete(S, 1, I - 1 + L);
 end;
 
-function Setclipboardtext(Wnd: Hwnd; Value: string): Boolean;
-var
-  Hdata: Hglobal;
-  Pdata: Pointer;
-  Len: Integer;
+procedure Setclipboardtext(Value: string);
 begin
-  Result := True;
-  if Openclipboard(Wnd) then
+  // Копируем строку в буфер обмена вот таким способом (тупо и универсально для wine)
+  with TEdit.Create(nil) do
     begin
       try
-        Len := Length(Value) + 1;
-        Hdata := Globalalloc(Gmem_moveable or Gmem_ddeshare, Len);
-        try
-          Pdata := Globallock(Hdata);
-          try
-            Move(PChar(Value)^, Pdata^, Len);
-            Emptyclipboard;
-            Setclipboarddata(Cf_text, Hdata);
-          finally
-            Globalunlock(Hdata);
-          end;
-        except
-          Globalfree(Hdata);
-          raise
-        end;
+        Visible := false;
+        Parent := LogForm;
+        Text := Value;
+        SelectAll;
+        CopyToClipboard;
       finally
-        Closeclipboard;
+        Free;
       end;
-    end
-  else
-    Result := False;
+    end;
 end;
 
 function Calculateage(Birthday, Currentdate: Tdate): Integer;
@@ -1024,7 +1008,7 @@ begin
                 else if Control = 'tab' then
                   Result := Result + #$09
                 else if Control = 'u' then
-                    Result := Result + UnicodeCharCode2String(Strtoint(Numericvalue))
+                  Result := Result + UnicodeCharCode2String(Strtoint(Numericvalue))
                 else if Control = 'colortbl' then
                   Textvalue := EmptyStr;
                 if Length(Textvalue) > 0 then
@@ -1484,15 +1468,13 @@ function Swap16(Value: Word): Word;
 assembler;
 asm
   rol   ax,8
-end
-;
+end;
 
 function Swap32(Value: Longword): Longword;
 assembler;
 asm
   bswap eax
-end
-;
+end;
 
 {$WARNINGS OFF}
 
@@ -1841,61 +1823,61 @@ end;
 
 (*
 
-function Copydir(const Fromdir, Todir: string): Boolean;
-var
+  function Copydir(const Fromdir, Todir: string): Boolean;
+  var
   Fos: Tshfileopstruct;
-begin
+  begin
   Zeromemory(@Fos, SizeOf(Fos));
   with Fos do
-    begin
-      Wfunc := Fo_copy;
-      Fflags := Fof_filesonly;
-      Pfrom := PChar(Fromdir + #0);
-      Pto := PChar(Todir)
-    end;
+  begin
+  Wfunc := Fo_copy;
+  Fflags := Fof_filesonly;
+  Pfrom := PChar(Fromdir + #0);
+  Pto := PChar(Todir)
+  end;
   Result := (0 = Shfileoperation(Fos));
-end;
+  end;
 
-{$WARNINGS OFF}
+  {$WARNINGS OFF}
 
-function Cleardir(const Path: string; Delete: Boolean): Boolean;
-const
+  function Cleardir(const Path: string; Delete: Boolean): Boolean;
+  const
   Filenotfound = 18;
-var
+  var
   Fileinfo: Tsearchrec;
   Doscode: Integer;
-begin
+  begin
   Result := Directoryexists(Path);
   if not Result then
-    Exit;
+  Exit;
   Doscode := Findfirst(Path + '*.*', Faanyfile, Fileinfo);
   try
-    while Doscode = 0 do
-      begin
-        if (Fileinfo.name[1] <> '.') then
-          begin
-            if (Fileinfo.Attr and Fadirectory = Fadirectory) then
-              Result := Cleardir(Path + Fileinfo.name, Delete) and Result
-            else
-              begin
-                if (Fileinfo.Attr and Fareadonly = Fareadonly) then
-                  Filesetattr(Path + Fileinfo.name, Faarchive);
-                Result := Deletefile(Path + Fileinfo.name) and Result;
-              end;
-          end;
-        Doscode := Findnext(Fileinfo);
-      end;
+  while Doscode = 0 do
+  begin
+  if (Fileinfo.name[1] <> '.') then
+  begin
+  if (Fileinfo.Attr and Fadirectory = Fadirectory) then
+  Result := Cleardir(Path + Fileinfo.name, Delete) and Result
+  else
+  begin
+  if (Fileinfo.Attr and Fareadonly = Fareadonly) then
+  Filesetattr(Path + Fileinfo.name, Faarchive);
+  Result := Deletefile(Path + Fileinfo.name) and Result;
+  end;
+  end;
+  Doscode := Findnext(Fileinfo);
+  end;
   finally
-    Findclose(Fileinfo);
+  Findclose(Fileinfo);
   end;
   if Delete and Result and (Doscode = Filenotfound) and not((Length(Path) = 2) and (Path[2] = ':')) then
-    begin
-      Rmdir(Path);
-      Result := (Ioresult = 0) and Result;
-    end;
-end;
+  begin
+  Rmdir(Path);
+  Result := (Ioresult = 0) and Result;
+  end;
+  end;
 
-{$WARNINGS ON}
+  {$WARNINGS ON}
 
 *)
 
@@ -1940,7 +1922,7 @@ begin
     end;
   if Ts = EmptyStr then
     begin
-      Setclipboardtext(Application.Handle, Url);
+      Setclipboardtext(Url);
       Dashow(Errorhead, Urlopenerrl, EmptyStr, 134, 2, 0);
       Exit;
     end;

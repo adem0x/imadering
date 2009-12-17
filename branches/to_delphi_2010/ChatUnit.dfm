@@ -742,10 +742,14 @@ object ChatForm: TChatForm
         Top = 6
         Width = 167
         Height = 22
+        Cursor = crHandPoint
         Margins.Top = 6
         Align = alTop
         BevelOuter = bvLowered
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
+        OnClick = InfoPanel2Click
       end
       object InfoPanel4: TPanel
         AlignWithMargins = True
@@ -773,11 +777,15 @@ object ChatForm: TChatForm
         Top = 6
         Width = 218
         Height = 22
+        Cursor = crHandPoint
         Margins.Left = 1
         Margins.Top = 6
         Align = alTop
         BevelOuter = bvLowered
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
+        OnClick = InfoPanel1Click
       end
       object InfoPanel3: TPanel
         AlignWithMargins = True
@@ -800,7 +808,6 @@ object ChatForm: TChatForm
     Height = 28
     AutoSize = True
     BorderWidth = 1
-    ButtonWidth = 43
     DoubleBuffered = True
     EdgeBorders = [ebLeft, ebTop, ebRight]
     Images = MainForm.AllImageList
