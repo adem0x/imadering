@@ -408,6 +408,7 @@ var
   Log_Msg_Text: string = 'Текст сообщения:';
   Log_Connect_Count: string = 'Количество подключений к серверу: ';
   Log_Lang_Code: string = 'Код языка системы: ';
+  Log_Contact_Info: string = 'Получен пакет информации о контакте: ';
 
   // Подсказки <b></b><br>
   H_Log_Clear: string = '<b>Очистить</b><br>Удалить все сообщения лога';

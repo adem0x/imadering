@@ -304,7 +304,6 @@ begin
   // Определяем что за ошибка произошла при подключении
   Result := SocketConnErrorInfo_1 + RN + WSocketErrorDesc(Errcode) + RN + Format(HttpSocketErrCodeL, [Errcode])
     + RN + '[ ' + SocketL + ' ' + SName + ' ]';
-  XLog(SName + ' | ' + Result);
 end;
 
 // На случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
@@ -708,6 +707,8 @@ var
   Da: Tjvdesktopalert;
   Ico: Ticon;
 begin
+  // Пишем в окно лога
+  Xlog(Dahead + RN + Datext);
   // Применяем параметры для всплывающего окна
   if Davisible = 0 then
     Davisible := Datimeshow;

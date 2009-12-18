@@ -258,6 +258,9 @@ type
     AllStatusDepres: TMenuItem;
     AllStatusEvil: TMenuItem;
     AllStatusFFC: TMenuItem;
+    PingICQServer: TMenuItem;
+    PingMRAServer: TMenuItem;
+    PingJabberServer: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -415,6 +418,7 @@ type
     procedure HideProfileInTrayClick(Sender: TObject);
     procedure XTrayIconClick(Sender: TObject);
     procedure CloseProgramClick(Sender: TObject);
+    procedure PingICQServerClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -1382,14 +1386,12 @@ begin
         if AnsiStartsStr('HTTP/1.0 407', Pkt) then
       begin
         ProxyErr := 1;
-        DAShow(ErrorHead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
-        XLog('ICQ get | ' + ProxyConnectErrL1);
+        DAShow(ErrorHead, ProxyConnectErrL1 + RN + '[ ' + SocketL + ' ' + ICQWSocket.Name + ' ]', EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(ErrorHead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
-        XLog('ICQ get | ' + ProxyConnectErrL2);
+        DAShow(ErrorHead, ProxyConnectErrL2 + RN + '[ ' + SocketL + ' ' + ICQWSocket.Name + ' ]', EmptyStr, 134, 2, 0);
       end;
       // Забираем из буфера пакет с данными ICQ
       Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1418,8 +1420,7 @@ begin
       ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
     begin
       // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-      DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
-      XLog('ICQ get | ' + ParsingPktError);
+      DAShow(ErrorHead, ParsingPktError + RN + '[ ' + SocketL + ' ' + ICQWSocket.Name + ' ]', EmptyStr, 134, 2, 0);
       ICQ_GoOffline;
       Exit;
     end;
@@ -1578,21 +1579,21 @@ begin
                             // Пропускаем раздел флагов
                             NextData(HexPkt, 6);
                             // Разбираем пакет с нотификацией о наборе сообщения контактом
-                            // ICQ_UserSentTyping_0414(HexPkt);
+                            ICQ_UserSentTyping_0414(HexPkt);
                           end;
                         $000C:
                           begin
                             // Пропускаем раздел флагов
                             NextData(HexPkt, 6);
                             // Разбираем пакет с сообщением о принятии нашего сообщения сервером
-                            // ICQ_SRV_MSGACK_ADVANCED(HexPkt, False);
+                            ICQ_SRV_MSGACK_ADVANCED(HexPkt, False);
                           end;
                         $000B:
                           begin
                             // Пропускаем раздел флагов
                             NextData(HexPkt, 6);
                             // Разбираем пакет с сообщением о принятии нашего сообщения контактом
-                            // ICQ_SRV_MSGACK_ADVANCED(HexPkt, True);
+                            ICQ_SRV_MSGACK_ADVANCED(HexPkt, True);
                           end;
                       end;
                     end;
@@ -1728,8 +1729,8 @@ begin
                                 begin
                                   // Пропускаем ещё данные о счётчике
                                   NextData(HexPkt, 2);
-                                  // Разбираем пакет с инфой для данного UIN
-                                  // ICQ_Parse_SNAC_1503(HexPkt);
+                                  // Разбираем пакет с инфой для данного UIN (и другие сервисные пакеты)
+                                  ICQ_Parse_SNAC_1503(HexPkt);
                                 end;
                             end;
                           end;
@@ -1843,7 +1844,6 @@ begin
                       begin
                         // Выводим сообщение о том, что наш номер используется кем то другим
                         DAShow(ErrorHead, ICQxUIN, EmptyStr, 134, 2, 100000000);
-                        XLog('ICQ get | ' + ICQxUIN);
                         // Активиуем режим оффлайн
                         ICQ_GoOffline;
                       end;
@@ -1859,8 +1859,7 @@ begin
         begin
           // Если начальная метка пакета не правильная,
           // то выводим сообщение об ошибке разбора и выходим в оффлайн
-          DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
-          XLog('ICQ get | ' + ParsingPktError);
+          DAShow(ErrorHead, ParsingPktError + RN + '[ ' + SocketL + ' ' + ICQWSocket.Name + ' ]', EmptyStr, 134, 2, 0);
           ICQ_GoOffline;
           Exit;
         end;
@@ -3487,6 +3486,12 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TMainForm.PingICQServerClick(Sender: TObject);
+begin
+  // Отправляем пакет для проверки связи с сервером ICQ
+  //if not NotProtoOnline('Icq') then
 end;
 
 procedure TMainForm.PrivatListMenuClick(Sender: TObject);

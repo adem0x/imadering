@@ -1175,6 +1175,11 @@ object MainForm: TMainForm
     OnPopup = RightICQPopupMenuPopup
     Left = 48
     Top = 296
+    object PingICQServer: TMenuItem
+      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+      ImageIndex = 267
+      OnClick = PingICQServerClick
+    end
     object UnstableICQStatus: TMenuItem
       Caption = '#'#1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 230
@@ -1210,6 +1215,10 @@ object MainForm: TMainForm
     Images = AllImageList
     Left = 80
     Top = 296
+    object PingMRAServer: TMenuItem
+      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+      ImageIndex = 267
+    end
     object UnstableMRAStatus: TMenuItem
       Caption = '#'#1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 230
@@ -1219,6 +1228,10 @@ object MainForm: TMainForm
     Images = AllImageList
     Left = 112
     Top = 296
+    object PingJabberServer: TMenuItem
+      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+      ImageIndex = 267
+    end
     object UnstableJabberStatus: TMenuItem
       Caption = '#'#1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 230

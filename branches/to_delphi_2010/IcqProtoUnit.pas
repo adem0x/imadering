@@ -544,13 +544,20 @@ begin
   PktSub := EmptyStr;
   // Формируем код возраста
   case AgeRange of
-    1: PktSub := '0011000D';
-    2: PktSub := '00160012';
-    3: PktSub := '001D0017';
-    4: PktSub := '0027001E';
-    5: PktSub := '00310028';
-    6: PktSub := '003B0032';
-    7: PktSub := '0078003C';
+    1:
+      PktSub := '0011000D';
+    2:
+      PktSub := '00160012';
+    3:
+      PktSub := '001D0017';
+    4:
+      PktSub := '0027001E';
+    5:
+      PktSub := '00310028';
+    6:
+      PktSub := '003B0032';
+    7:
+      PktSub := '0078003C';
   end;
   if PktSub <> EmptyStr then
     PktSub := '01540004' + PktSub;
@@ -684,55 +691,55 @@ var
 begin
   // Формируем всплывающую подсказку для контакта ICQ
   if RosterItem <> nil then
-    begin
-      // Учётная запись
-      Result := '<b>UIN: ' + RosterItem.Caption + '</b>';
-      // Ник
-      if RosterItem.SubItems[0] <> RosterItem.Caption then
-        Result := Result + '<br><b>' + RosterItem.SubItems[0] + '</b>';
-      Result := Result + '<br>';
-      // Имя и Фамилия
-      LnLf := NameAndLast(RosterItem.Caption, RosterItem.SubItems[3]);
-      if LnLf <> EmptyStr then
-        Result := Result + '<b>' + LnLf + '</b><br>';
-      // Если стасут оффлайн или неизвестный, то пишем "Не в сети"
-      if (RosterItem.SubItems[6] = '9') or (RosterItem.SubItems[6] = '214') then
-        Result := Result + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
-        // Если статус требует авторизации, то пишем об этом
-      else if RosterItem.SubItems[6] = '80' then
-        Result := Result + '<font color=clred>' + LStatus17
-        // Определяем статус и пишем его словами
-      else
-        Result := Result + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
-      Result := Result + '</font>';
-      // Если есть текст доп. статуса, то пишем его
-      if RosterItem.SubItems[31] <> EmptyStr then
-        Result := Result + '<br><font color=clred>' + RosterItem.SubItems[31] + '</font>';
-      // Время подключения
-      if RosterItem.SubItems[30] <> EmptyStr then
-        Result := Result + '<br>' + ConnTimeL + ' ' + RosterItem.SubItems[30];
-      // Дата регистрации UIN
-      if RosterItem.SubItems[26] <> EmptyStr then
-        Result := Result + '<br>' + RegDateL + ' ' + RosterItem.SubItems[26];
-      // Версия протокола
-      if RosterItem.SubItems[25] <> EmptyStr then
-        Result := Result + '<br>' + ProtoVerL + ' ' + RosterItem.SubItems[25];
-      // Клиент
-      if RosterItem.SubItems[32] <> EmptyStr then
-        Result := Result + '<br>' + ClientVariableL + ' ' + RosterItem.SubItems[32];
-      // Телефон
-      if RosterItem.SubItems[9] <> EmptyStr then
-        Result := Result + '<br>' + CellularPhoneL + ' ' + RosterItem.SubItems[9];
-      // Заметка
-      if RosterItem.SubItems[10] <> EmptyStr then
-        Result := Result + '<br>' + NoteL + ' ' + RosterItem.SubItems[10];
-      // Email
-      if RosterItem.SubItems[11] <> EmptyStr then
-        Result := Result + '<br>' + EmailL + ' ' + RosterItem.SubItems[11];
-      // Флаг подключения
-      if RosterItem.SubItems[24] <> EmptyStr then
-        Result := Result + '<br>' + ConnectFlagL + ' ' + RosterItem.SubItems[20] + ' ' + RosterItem.SubItems[24];
-    end;
+  begin
+    // Учётная запись
+    Result := '<b>UIN: ' + RosterItem.Caption + '</b>';
+    // Ник
+    if RosterItem.SubItems[0] <> RosterItem.Caption then
+      Result := Result + '<br><b>' + RosterItem.SubItems[0] + '</b>';
+    Result := Result + '<br>';
+    // Имя и Фамилия
+    LnLf := NameAndLast(RosterItem.Caption, RosterItem.SubItems[3]);
+    if LnLf <> EmptyStr then
+      Result := Result + '<b>' + LnLf + '</b><br>';
+    // Если стасут оффлайн или неизвестный, то пишем "Не в сети"
+    if (RosterItem.SubItems[6] = '9') or (RosterItem.SubItems[6] = '214') then
+      Result := Result + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
+      // Если статус требует авторизации, то пишем об этом
+    else if RosterItem.SubItems[6] = '80' then
+      Result := Result + '<font color=clred>' + LStatus17
+      // Определяем статус и пишем его словами
+    else
+      Result := Result + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
+    Result := Result + '</font>';
+    // Если есть текст доп. статуса, то пишем его
+    if RosterItem.SubItems[31] <> EmptyStr then
+      Result := Result + '<br><font color=clred>' + RosterItem.SubItems[31] + '</font>';
+    // Время подключения
+    if RosterItem.SubItems[30] <> EmptyStr then
+      Result := Result + '<br>' + ConnTimeL + ' ' + RosterItem.SubItems[30];
+    // Дата регистрации UIN
+    if RosterItem.SubItems[26] <> EmptyStr then
+      Result := Result + '<br>' + RegDateL + ' ' + RosterItem.SubItems[26];
+    // Версия протокола
+    if RosterItem.SubItems[25] <> EmptyStr then
+      Result := Result + '<br>' + ProtoVerL + ' ' + RosterItem.SubItems[25];
+    // Клиент
+    if RosterItem.SubItems[32] <> EmptyStr then
+      Result := Result + '<br>' + ClientVariableL + ' ' + RosterItem.SubItems[32];
+    // Телефон
+    if RosterItem.SubItems[9] <> EmptyStr then
+      Result := Result + '<br>' + CellularPhoneL + ' ' + RosterItem.SubItems[9];
+    // Заметка
+    if RosterItem.SubItems[10] <> EmptyStr then
+      Result := Result + '<br>' + NoteL + ' ' + RosterItem.SubItems[10];
+    // Email
+    if RosterItem.SubItems[11] <> EmptyStr then
+      Result := Result + '<br>' + EmailL + ' ' + RosterItem.SubItems[11];
+    // Флаг подключения
+    if RosterItem.SubItems[24] <> EmptyStr then
+      Result := Result + '<br>' + ConnectFlagL + ' ' + RosterItem.SubItems[20] + ' ' + RosterItem.SubItems[24];
+  end;
 end;
 
 procedure ICQ_Send_SMS(CNumber, Smstext: string);
@@ -759,151 +766,105 @@ var
   Len: Integer;
 begin
   // Пропускаем 16 символов кукисов и 4 символа канала
-  NextData(PktData, 20);
+  NextData(PktData, 10);
   // Получаем длинну UIN получателя сообщения
-  Len := HexToInt(NextData(PktData, 2));
-  Len := Len * 2;
+  Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   // Получаем UIN
-  UIN := Hex2Text(NextData(PktData, Len));
+  UIN := NextData(PktData, Len);
   // Если окно чата создано и UIN совпадает с активной закладкой, то заменяем иконку сообщения
   if Assigned(ChatForm) then
+  begin
+    with ChatForm do
     begin
       // Если UIN активной вкладки совпадает с UIN из подтверждения
-      if ChatForm.InfoPanel2.Caption = UIN then
-        begin
-          if not ClientOk then
-            // Заменяем последнюю икоку исходящих сообщений на зелёную
-            ChatForm.HTMLChatViewer.ReplaceImage('o' + IntToStr(ChatForm.OutMessIndex), OutMessage2)
-          else
-            // Если это уже подтвержение от клиента, то заменяем на зелёную с галочкой
-            ChatForm.HTMLChatViewer.ReplaceImage('o' + IntToStr(ChatForm.OutMessIndex), OutMessage3);
-        end;
+      if InfoPanel2.Caption = UIN then
+      begin
+        if not ClientOk then
+          // Заменяем последнюю икоку исходящих сообщений на зелёную
+          HTMLChatViewer.ReplaceImage('o' + IntToStr(OutMessIndex), OutMessage2)
+        else
+          // Если это уже подтвержение от клиента, то заменяем на зелёную с галочкой
+          HTMLChatViewer.ReplaceImage('o' + IntToStr(OutMessIndex), OutMessage3);
+      end;
     end;
+  end;
 end;
 
 procedure ICQ_UserSentTyping_0414(PktData: string);
-{ label
-  x, y;
-  var
+var
   UIN, Doc: string;
-  Typing, CloseW: boolean;
-  Len, i, ii: integer; }
+  Typing, CloseW: Boolean;
+  Len: Integer;
+  RosterItem: TListItem;
 begin
-  { Typing := false;
-    CloseW := false;
-    //--Пропускаем кукисы 16 символов и канал 4 символа
-    NextData(PktData, 20);
-    //--Получаем длинну UIN отправителям нотификации о печати сообщения
-    Len := HexToInt(NextData(PktData, 2));
-    Len := Len * 2;
-    //--Получаем UIN
-    UIN := Hex2Text(NextData(PktData, Len));
-    case HexToInt(NextData(PktData, 4)) of
-    $0001: Typing := true; //--Начал печатать
-    $0002: Typing := true; //--Печатает
-    $000F: CloseW := true; //--Закрыл окно чата ICQ6
+  Typing := False;
+  CloseW := False;
+  // Пропускаем кукисы 16 символов и канал 4 символа
+  NextData(PktData, 10);
+  // Получаем длинну UIN отправителя нотификации о печати сообщения
+  Len := HexToInt(Text2Hex(NextData(PktData, 1)));
+  // Получаем UIN
+  UIN := NextData(PktData, Len);
+  case HexToInt(Text2Hex(NextData(PktData, 2))) of
+    $0001, $0002:
+      Typing := True; // Начал печатать или продолжает печатать
+    $000F:
+      CloseW := True // Закрыл окно чата (приходит от ICQ 6)
     else
     begin
-    Typing := false;
-    CloseW := false;
+      Typing := False;
+      CloseW := False;
     end;
-    end;
-    //--Ставим иконку о печати сообщения в КЛ
-    with MainForm.ContactList do
-    begin
-    //--Сканируем контакты в поиске совпадающего UIN
-    for i := 0 to Categories.Count - 1 do
-    begin
-    for ii := 0 to Categories[i].Items.Count - 1 do
-    begin
-    if Categories[i].Items[ii].UIN = UIN then
-    begin
+  end;
+  // Ставим метку о печати сообщения в Ростере
+  RosterItem := RosterForm.ReqRosterItem(UIN);
+  if RosterItem <> nil then
+  begin
     if Typing then
-    begin
-    //--Ставим флаг о печати сообщения
-    Categories[i].Items[ii].Typing := true;
-    Categories[i].Items[ii].TypingTime := 0;
-    end
+      RosterItem.SubItems[35] := '30'
     else
+      RosterItem.SubItems[35] := '0';
+  end;
+  // Отображаем событие о печати сообщения в окне чата
+  if Assigned(ChatForm) then
+  begin
+    with ChatForm do
     begin
-    //--Снимаем флаг о печати сообщения
-    Categories[i].Items[ii].Typing := false;
-    Categories[i].Items[ii].TypingTime := 0;
+      if InfoPanel2.Caption = UIN then
+      begin
+        if CloseW then
+        begin
+          // Добавляем в чат сообщение о закрытиеи чата собеседником
+          Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
+          Doc := Doc + '<span class=d>' + CloseChatWindowsL + '</span><br><br>';
+          HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+          // Прокручиваем чат до конца
+          HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+        end;
+        // Ставим сообщение о наборе текста
+        if Typing then
+        begin
+          NotifyPanel.Font.Color := clBlue;
+          NotifyPanel.Caption := TypingTextL;
+        end
+        else // Сбрасываем сообщение о наборе текста
+        begin
+          NotifyPanel.Font.Color := clWindowText;
+          if RosterItem <> nil then
+          begin
+            if RosterItem.SubItems[8] <> EmptyStr then
+              NotifyPanel.Caption := RosterItem.SubItems[8]
+            else
+              NotifyPanel.Caption := '...';
+          end
+          else
+            NotifyPanel.Caption := '...';
+        end;
+      end;
     end;
-    //--Выходим из цыкла
-    goto x;
-    end;
-    end;
-    end;
-    end;
-    //--Set Chat typing ico
-    x: ;
-    if Assigned(ChatForm) then
-    begin
-    with ChatForm.ChatPageControl do
-    begin
-    if Visible then
-    begin
-    //--Отображаем в текущем чате сообщение о закрытии окна чата
-    if (ActivePage.HelpKeyword = UIN) and (CloseW) then
-    begin
-    //--Добавляем в чат сообщение о закрытиеи чата собеседником
-    Doc := ChatForm.HTMLChatViewer.DocumentSource;
-    Doc := Doc + '<span class=d>' + CloseChatWindowsL + '</span><br><br>';
-    ChatForm.HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-    //--Прокручиваем чат до конца
-    ChatForm.HTMLChatViewer.VScrollBarPosition := ChatForm.HTMLChatViewer.VScrollBar.Max;
-    end;
-    //--Если активная вкладка совпадает с этим UIN
-    if ActivePage.HelpKeyword = UIN then
-    begin
-    if Typing then
-    begin
-    //--Ставим флаг о печати сообщения
-    ActivePage.Margins.Top := 1;
-    ActivePage.Margins.Right := 0;
-    //--Ставим сообщение о наборе текста
-    ChatForm.NotifyPanel.Font.Color := clBlue;
-    ChatForm.NotifyPanel.Caption := TypingTextL;
-    end
-    else
-    begin
-    //--Снимаем флаг о печати сообщения
-    ActivePage.Margins.Top := 0;
-    ActivePage.Margins.Right := 0;
-    //--Сбрасываем сообщение о наборе текста
-    ChatForm.NotifyPanel.Font.Color := clWindowText;
-    ChatForm.NotifyPanel.Caption := '...';
-    end;
-    goto y;
-    end;
-    //--Сканируем вкладки в поиске совпадающего UIN
-    for i := 0 to PageCount - 1 do
-    begin
-    if Pages[i].HelpKeyword = UIN then
-    begin
-    if Typing then
-    begin
-    //--Ставим флаг о печати сообщения
-    Pages[i].Margins.Top := 1;
-    Pages[i].Margins.Right := 0;
-    end
-    else
-    begin
-    //--Снимаем флаг о печати сообщения
-    Pages[i].Margins.Top := 0;
-    Pages[i].Margins.Right := 0;
-    end;
-    //--Выходим из цыкла
-    goto y;
-    end;
-    end;
-    end;
-    end;
-    end;
-    y: ;
-    //--Выводим нотификации о печати и закрытии окна чата всплывающими сообщениями
-    }
+  end;
+  // --Выводим нотификации о печати и закрытии окна чата всплывающими сообщениями
+
 end;
 
 procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCity, CState, CZip, OCity, OState, Phone1, Phone2, Phone3,
@@ -1206,10 +1167,9 @@ var
   ZTCL: TStringList;
 
 function CreateDelTempContsPkt: string;
-label
-  X;
+label x;
 var
-  I, C, A, ZLen: Integer;
+  i, C, A, ZLen: Integer;
   ZUIN, ZId, ZType, ZTimeId: string;
 begin
   Pkt := EmptyStr;
@@ -1219,31 +1179,31 @@ begin
     C := 50
   else
     C := ZTCL.Count - 1;
-  for I := 0 to C do
-    begin
-      ZUIN := EmptyStr;
-      ZId := EmptyStr;
-      ZType := EmptyStr;
-      ZTimeId := EmptyStr;
-      Pkt2 := EmptyStr;
-      ZUIN := Parse(';', ZTCL.Strings[I], 1);
-      ZId := Parse(';', ZTCL.Strings[I], 2);
-      ZType := Parse(';', ZTCL.Strings[I], 3);
-      ZTimeId := Parse(';', ZTCL.Strings[I], 4);
-      Pkt2 := '006d' + ZTimeId;
-      if ZTimeId = EmptyStr then
-        Pkt2 := Pkt2 + '000100';
-      ZLen := Length(Hex2Text(Pkt2));
-      Pkt1 := Pkt1 + IntToHex(Length(ZUIN), 4) + Text2Hex(ZUIN) + '0000' + ZId + ZType + IntToHex(ZLen, 4) + Pkt2;
-    end;
+  for i := 0 to C do
+  begin
+    ZUIN := EmptyStr;
+    ZId := EmptyStr;
+    ZType := EmptyStr;
+    ZTimeId := EmptyStr;
+    Pkt2 := EmptyStr;
+    ZUIN := Parse(';', ZTCL.Strings[i], 1);
+    ZId := Parse(';', ZTCL.Strings[i], 2);
+    ZType := Parse(';', ZTCL.Strings[i], 3);
+    ZTimeId := Parse(';', ZTCL.Strings[i], 4);
+    Pkt2 := '006d' + ZTimeId;
+    if ZTimeId = EmptyStr then
+      Pkt2 := Pkt2 + '000100';
+    ZLen := Length(Hex2Text(Pkt2));
+    Pkt1 := Pkt1 + IntToHex(Length(ZUIN), 4) + Text2Hex(ZUIN) + '0000' + ZId + ZType + IntToHex(ZLen, 4) + Pkt2;
+  end;
   A := 0;
-X :;
+x :;
   if A <= C then
-    begin
-      ZTCL.Delete(0);
-      A := A + 1;
-      goto X;
-    end;
+  begin
+    ZTCL.Delete(0);
+    A := A + 1;
+    goto x;
+  end;
   Pkt := '0013000A00000000000A' + Pkt1;
   Result := Pkt;
 end;
@@ -1254,9 +1214,9 @@ begin
   try
     ZTCL.Assign(TCList);
     while ZTCL.Count > 0 do
-      begin
-        SendFLAP('2', CreateDelTempContsPkt);
-      end;
+    begin
+      SendFLAP('2', CreateDelTempContsPkt);
+    end;
     //
   finally
     ZTCL.Free;
@@ -1313,16 +1273,16 @@ end;
 
 procedure ICQ_UpdateGroup_AddContact(GrCaption, IGroupId: string; CiDlist: TStringList);
 var
-  I, Len1, Len2: Integer;
+  i, Len1, Len2: Integer;
   Pkt, Pkt1, Pkt2: RawByteString;
   Utf8Capt: RawByteString;
 begin
   // Обновляем группу при добавлении контакта в серверном КЛ
   Utf8Capt := UTF8Encode(GrCaption);
-  for I := 0 to CiDlist.Count - 1 do
-    begin
-      Pkt2 := Pkt2 + CiDlist.Strings[I];
-    end;
+  for i := 0 to CiDlist.Count - 1 do
+  begin
+    Pkt2 := Pkt2 + CiDlist.Strings[i];
+  end;
   Len2 := Length(Hex2Text(Pkt2));
   Pkt1 := '00C8' + IntToHex(Len2, 4) + Pkt2;
   Len1 := Length(Hex2Text(Pkt1));
@@ -1347,14 +1307,14 @@ end;
 
 procedure ICQ_UpdateGroup_AddGroup(GiDlist: TStringList);
 var
-  I, Len1, Len2: Integer;
+  i, Len1, Len2: Integer;
   Pkt, Pkt1, Pkt2: string;
 begin
   // Обновляем группу при добавлении группы в серверном КЛ
-  for I := 0 to GiDlist.Count - 1 do
-    begin
-      Pkt2 := Pkt2 + GiDlist.Strings[I];
-    end;
+  for i := 0 to GiDlist.Count - 1 do
+  begin
+    Pkt2 := Pkt2 + GiDlist.Strings[i];
+  end;
   Pkt2 := Pkt2 + ICQ_Add_GroupId;
   Len2 := Length(Hex2Text(Pkt2));
   Pkt1 := '00c8' + IntToHex(Len2, 4) + Pkt2;
@@ -1391,7 +1351,8 @@ begin
   Utf8Zametka := UTF8Encode(Zametka);
   // Формируем пакет
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell)
-    + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex(Utf8Email);
+    + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex
+    (Utf8Email);
   Len := Length(Hex2Text(Pkt1));
   Pkt := '00130009000000000009' + IntToHex(Length(UIN), 4) + Text2Hex(UIN) + GroupId + Id + '0000' + IntToHex(Len, 4) + Pkt1;
   // Отсылаем пакет
@@ -1400,7 +1361,7 @@ end;
 
 procedure ICQ_Parse_130E_UpdateAck(PktData: string);
 var
-  I: Integer;
+  i: Integer;
   CliDL: TStringList;
   GrCap: string;
   ListItemD: TListItem;
@@ -1412,224 +1373,228 @@ begin
   NextData(PktData, 18);
   // Если это фаза добавления контакта
   if ICQ_Add_Contact_Phaze then
-    begin
-      // Смотрим на ответ сервера
-      case HexToInt(NextData(PktData, 2)) of
-        $00: begin
-            // Создаём список для занесения в него всех идентификаторов контактов
-            CliDL := TStringList.Create;
-            try
-              // Заносим в список все идентификаторы контактов из этой группы
-              with RosterForm.RosterJvListView do
-                begin
-                  for I := 0 to Items.Count - 1 do
-                    begin
-                      // Если идентификатор группы в которую добавляем новый контакт совпадает
-                      // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
-                      if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = 'Icq') then
-                        CliDL.Add(Items[I].SubItems[4]);
-                      // Получаем название группы в которую добавляем контакт
-                      if Items[I].Caption = ICQ_Add_GroupId then
-                        GrCap := Items[I].SubItems[1];
-                    end;
-                end;
-              // Добавляем в список новый идентификатор контакта
-              CliDL.Add(ICQ_Add_cId);
-              // Обновляем группу в серверном КЛ
-              ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-            finally
-              CliDL.Free;
-            end;
-            // Закрываем сессию добавления контакта
-            ICQ_AddEnd;
-            ICQ_Add_Contact_Phaze := False;
-            ICQ_SSI_Phaze := False;
-            // Успешно добавляем контакт в локальный список контактов
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
+  begin
+    // Смотрим на ответ сервера
+    case HexToInt(NextData(PktData, 2)) of
+      $00:
+        begin
+          // Создаём список для занесения в него всех идентификаторов контактов
+          CliDL := TStringList.Create;
+          try
+            // Заносим в список все идентификаторы контактов из этой группы
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
               begin
-                Caption := ICQ_Add_UIN;
-                // Подготавиливаем все значения
-                RosterForm.RosterItemSetFull(ListItemD);
-                // Обновляем субстроки
-                SubItems[0] := ICQ_Add_Nick;
-                SubItems[1] := ICQ_Add_GroupId;
-                SubItems[2] := 'both';
-                SubItems[3] := 'Icq';
-                SubItems[4] := ICQ_Add_cId;
-                SubItems[5] := '0000';
-                SubItems[6] := '9';
+                // Если идентификатор группы в которую добавляем новый контакт совпадает
+                // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
+                if (Items[i].SubItems[1] = ICQ_Add_GroupId) and (Items[i].SubItems[3] = 'Icq') then
+                  CliDL.Add(Items[i].SubItems[4]);
+                // Получаем название группы в которую добавляем контакт
+                if Items[i].Caption = ICQ_Add_GroupId then
+                  GrCap := Items[i].SubItems[1];
               end;
-            // Строим локальный КЛ
-            RosterForm.UpdateFullCL;
-            // Сообщаем об успешном добавлении контакта
-            DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
+            end;
+            // Добавляем в список новый идентификатор контакта
+            CliDL.Add(ICQ_Add_cId);
+            // Обновляем группу в серверном КЛ
+            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+          finally
+            CliDL.Free;
           end;
-        $0E: begin
-            // Создаём список для занесения в него всех идентификаторов контактов
-            CliDL := TStringList.Create;
-            try
-              // Заносим в список все идентификаторы контактов из этой группы
-              with RosterForm.RosterJvListView do
-                begin
-                  for I := 0 to Items.Count - 1 do
-                    begin
-                      // Если идентификатор группы в которую добавляем новый контакт совпадает
-                      // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
-                      if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = 'Icq') then
-                        CliDL.Add(Items[I].SubItems[4]);
-                      // Получаем название группы в которую добавляем контакт
-                      if Items[I].Caption = ICQ_Add_GroupId then
-                        GrCap := Items[I].SubItems[1];
-                    end;
-                end;
-              // Обновляем группу в серверном КЛ
-              ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-              // Закрываем сессию
-              ICQ_AddEnd;
-              // Добавляем контакт уже как неавторизованный
-              ICQ_AddContact(ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, True);
-              // Добавляем в список новый идентификатор контакта
-              CliDL.Add(ICQ_Add_cId);
-              // Обновляем группу в серверном КЛ
-              ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-            finally
-              CliDL.Free;
-            end;
-            // Закрываем сессию добавления контакта
-            ICQ_AddEnd;
-            ICQ_Add_Contact_Phaze := False;
-            ICQ_SSI_Phaze := False;
-            // Успешно добавляем контакт в локальный список контактов
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
-              begin
-                Caption := ICQ_Add_UIN;
-                // Подготавиливаем все значения
-                RosterForm.RosterItemSetFull(ListItemD);
-                // Обновляем субстроки
-                SubItems[0] := ICQ_Add_Nick;
-                SubItems[1] := ICQ_Add_GroupId;
-                SubItems[2] := 'none';
-                SubItems[3] := 'Icq';
-                SubItems[4] := ICQ_Add_cId;
-                SubItems[5] := '0000';
-                SubItems[6] := '80';
-                SubItems[8] := '220';
-              end;
-            // Строим локальный КЛ
-            RosterForm.UpdateFullCL;
-            // Сообщаем об успешном добавлении контакта
-            DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
-          end
-        else
+          // Закрываем сессию добавления контакта
+          ICQ_AddEnd;
+          ICQ_Add_Contact_Phaze := False;
+          ICQ_SSI_Phaze := False;
+          // Успешно добавляем контакт в локальный список контактов
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          with ListItemD do
           begin
-            // Закрываем сессию добавления контакта
-            ICQ_AddEnd;
-            ICQ_Add_Contact_Phaze := False;
-            ICQ_SSI_Phaze := False;
-            // Сообщаем об ошибке добавления нового контакта в серверный КЛ
-            DAShow(ErrorHead, AddContactErr4, EmptyStr, 134, 2, 0);
+            Caption := ICQ_Add_UIN;
+            // Подготавиливаем все значения
+            RosterForm.RosterItemSetFull(ListItemD);
+            // Обновляем субстроки
+            SubItems[0] := ICQ_Add_Nick;
+            SubItems[1] := ICQ_Add_GroupId;
+            SubItems[2] := 'both';
+            SubItems[3] := 'Icq';
+            SubItems[4] := ICQ_Add_cId;
+            SubItems[5] := '0000';
+            SubItems[6] := '9';
           end;
+          // Строим локальный КЛ
+          RosterForm.UpdateFullCL;
+          // Сообщаем об успешном добавлении контакта
+          DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
+        end;
+      $0E:
+        begin
+          // Создаём список для занесения в него всех идентификаторов контактов
+          CliDL := TStringList.Create;
+          try
+            // Заносим в список все идентификаторы контактов из этой группы
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
+              begin
+                // Если идентификатор группы в которую добавляем новый контакт совпадает
+                // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
+                if (Items[i].SubItems[1] = ICQ_Add_GroupId) and (Items[i].SubItems[3] = 'Icq') then
+                  CliDL.Add(Items[i].SubItems[4]);
+                // Получаем название группы в которую добавляем контакт
+                if Items[i].Caption = ICQ_Add_GroupId then
+                  GrCap := Items[i].SubItems[1];
+              end;
+            end;
+            // Обновляем группу в серверном КЛ
+            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+            // Закрываем сессию
+            ICQ_AddEnd;
+            // Добавляем контакт уже как неавторизованный
+            ICQ_AddContact(ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, True);
+            // Добавляем в список новый идентификатор контакта
+            CliDL.Add(ICQ_Add_cId);
+            // Обновляем группу в серверном КЛ
+            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+          finally
+            CliDL.Free;
+          end;
+          // Закрываем сессию добавления контакта
+          ICQ_AddEnd;
+          ICQ_Add_Contact_Phaze := False;
+          ICQ_SSI_Phaze := False;
+          // Успешно добавляем контакт в локальный список контактов
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          with ListItemD do
+          begin
+            Caption := ICQ_Add_UIN;
+            // Подготавиливаем все значения
+            RosterForm.RosterItemSetFull(ListItemD);
+            // Обновляем субстроки
+            SubItems[0] := ICQ_Add_Nick;
+            SubItems[1] := ICQ_Add_GroupId;
+            SubItems[2] := 'none';
+            SubItems[3] := 'Icq';
+            SubItems[4] := ICQ_Add_cId;
+            SubItems[5] := '0000';
+            SubItems[6] := '80';
+            SubItems[8] := '220';
+          end;
+          // Строим локальный КЛ
+          RosterForm.UpdateFullCL;
+          // Сообщаем об успешном добавлении контакта
+          DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
+        end
+      else
+      begin
+        // Закрываем сессию добавления контакта
+        ICQ_AddEnd;
+        ICQ_Add_Contact_Phaze := False;
+        ICQ_SSI_Phaze := False;
+        // Сообщаем об ошибке добавления нового контакта в серверный КЛ
+        DAShow(ErrorHead, AddContactErr4, EmptyStr, 134, 2, 0);
       end;
-    end
-    // Если это фаза добавления группы
+    end;
+  end
+  // Если это фаза добавления группы
   else if ICQ_Add_Group_Phaze then
-    begin
-      case HexToInt(NextData(PktData, 2)) of
-        $00: begin
-            // Создаём список для занесения в него идентификаторов групп
-            CliDL := TStringList.Create;
-            try
-              // Заносим в список идентификаторы групп
-              with RosterForm.RosterJvListView do
-                begin
-                  for I := 0 to Items.Count - 1 do
-                    begin
-                      // Добавляем идентификаторы групп в список
-                      if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
-                        Continue;
-                      if (Items[I].SubItems[3] = 'Icq') and (Length(Items[I].Caption) = 4) then
-                        CliDL.Add(Items[I].Caption);
-                    end;
-                end;
-              // Обновляем группы на сервере и закрываем сессию
-              ICQ_UpdateGroup_AddGroup(CliDL);
-              ICQ_AddEnd;
-              ICQ_Add_Group_Phaze := False;
-              ICQ_SSI_Phaze := False;
-            finally
-              CliDL.Free;
-            end;
-            // Добавляем группу в локальный КЛ
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
+  begin
+    case HexToInt(NextData(PktData, 2)) of
+      $00:
+        begin
+          // Создаём список для занесения в него идентификаторов групп
+          CliDL := TStringList.Create;
+          try
+            // Заносим в список идентификаторы групп
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
               begin
-                Caption := ICQ_Add_GroupId;
-                // Подготавиливаем все значения
-                RosterForm.RosterItemSetFull(ListItemD);
-                // Обновляем субстроки
-                SubItems[1] := ICQ_Add_Nick;
-                SubItems[3] := 'Icq';
-                SubItems[4] := ICQ_Add_GroupId;
+                // Добавляем идентификаторы групп в список
+                if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') then
+                  Continue;
+                if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) then
+                  CliDL.Add(Items[i].Caption);
               end;
-            // Строим локальный КЛ
-            RosterForm.UpdateFullCL;
-            // Сообщаем об успешном добавлении группы
-            DAShow(InformationHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
-          end
-        else
-          begin
-            // Закрываем сессию добавления группы
+            end;
+            // Обновляем группы на сервере и закрываем сессию
+            ICQ_UpdateGroup_AddGroup(CliDL);
             ICQ_AddEnd;
             ICQ_Add_Group_Phaze := False;
             ICQ_SSI_Phaze := False;
-            // Сообщаем об ошибке добавления новой группы в серверный КЛ
-            DAShow(ErrorHead, AddNewGroupErr2, EmptyStr, 134, 2, 0);
+          finally
+            CliDL.Free;
           end;
-      end;
-    end
-    // Если это фаза удаления группы
-  else if ICQ_Group_Delete_Phaze then
-    begin
-      case HexToInt(NextData(PktData, 2)) of
-        $00: begin
-            CliDL := TStringList.Create;
-            try
-              // Заносим в список идентификаторы групп
-              with RosterForm.RosterJvListView do
-                begin
-                  for I := 0 to Items.Count - 1 do
-                    begin
-                      // Добавляем идентификаторы групп в список
-                      if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
-                        Continue;
-                      if (Items[I].SubItems[3] = 'Icq') and (Length(Items[I].Caption) = 4) then
-                        CliDL.Add(Items[I].Caption);
-                    end;
-                end;
-              // Обновляем группы на сервере
-              ICQ_UpdateGroup_AddGroup(CliDL);
-              ICQ_AddEnd;
-            finally
-              CliDL.Free;
-            end;
-            // Закрываем сесиию удаления группы
-            ICQ_Group_Delete_Phaze := False;
-            ICQ_SSI_Phaze := False;
-            // Сообщаем об успешном добавлении группы
-            DAShow(InformationHead, DellGroupOKL, EmptyStr, 133, 3, 0);
-          end
-        else
+          // Добавляем группу в локальный КЛ
+          ListItemD := RosterForm.RosterJvListView.Items.Add;
+          with ListItemD do
           begin
-            // Закрываем сессию удаления группы
-            ICQ_AddEnd;
-            ICQ_Group_Delete_Phaze := False;
-            ICQ_SSI_Phaze := False;
-            DAShow(ErrorHead, DellGroupErrL, EmptyStr, 134, 2, 0);
+            Caption := ICQ_Add_GroupId;
+            // Подготавиливаем все значения
+            RosterForm.RosterItemSetFull(ListItemD);
+            // Обновляем субстроки
+            SubItems[1] := ICQ_Add_Nick;
+            SubItems[3] := 'Icq';
+            SubItems[4] := ICQ_Add_GroupId;
           end;
+          // Строим локальный КЛ
+          RosterForm.UpdateFullCL;
+          // Сообщаем об успешном добавлении группы
+          DAShow(InformationHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
+        end
+      else
+      begin
+        // Закрываем сессию добавления группы
+        ICQ_AddEnd;
+        ICQ_Add_Group_Phaze := False;
+        ICQ_SSI_Phaze := False;
+        // Сообщаем об ошибке добавления новой группы в серверный КЛ
+        DAShow(ErrorHead, AddNewGroupErr2, EmptyStr, 134, 2, 0);
       end;
     end;
+  end
+  // Если это фаза удаления группы
+  else if ICQ_Group_Delete_Phaze then
+  begin
+    case HexToInt(NextData(PktData, 2)) of
+      $00:
+        begin
+          CliDL := TStringList.Create;
+          try
+            // Заносим в список идентификаторы групп
+            with RosterForm.RosterJvListView do
+            begin
+              for i := 0 to Items.Count - 1 do
+              begin
+                // Добавляем идентификаторы групп в список
+                if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') then
+                  Continue;
+                if (Items[i].SubItems[3] = 'Icq') and (Length(Items[i].Caption) = 4) then
+                  CliDL.Add(Items[i].Caption);
+              end;
+            end;
+            // Обновляем группы на сервере
+            ICQ_UpdateGroup_AddGroup(CliDL);
+            ICQ_AddEnd;
+          finally
+            CliDL.Free;
+          end;
+          // Закрываем сесиию удаления группы
+          ICQ_Group_Delete_Phaze := False;
+          ICQ_SSI_Phaze := False;
+          // Сообщаем об успешном добавлении группы
+          DAShow(InformationHead, DellGroupOKL, EmptyStr, 133, 3, 0);
+        end
+      else
+      begin
+        // Закрываем сессию удаления группы
+        ICQ_AddEnd;
+        ICQ_Group_Delete_Phaze := False;
+        ICQ_SSI_Phaze := False;
+        DAShow(ErrorHead, DellGroupErrL, EmptyStr, 134, 2, 0);
+      end;
+    end;
+  end;
 end;
 
 procedure ICQ_AddContact(UIN, GroupId, CId, Nick: string; NoAuth: Boolean);
@@ -1669,7 +1634,8 @@ begin
   Utf8Zametka := UTF8Encode(Zametka);
   // Формируем пакет
   Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell)
-    + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex(Utf8Email);
+    + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex
+    (Utf8Email);
   Len := Length(Hex2Text(Pkt1));
   Pkt := '0013000A00000000000A' + IntToHex(Length(UIN), 4) + Text2Hex(UIN) + GroupId + Id + '0000' + IntToHex(Len, 4) + Pkt1;
   // Открываем сессию для работы с серверным списком контактов
@@ -1702,11 +1668,11 @@ var
 begin
   // Формируем пакет установки доп. статуса и подписи к нему
   if XText <> EmptyStr then
-    begin
-      Utf8XText := UTF8Encode(XText);
-      Pkt1 := '0002' + '04' + IntToHex(Length(Utf8XText) + 4, 2) + IntToHex(Length(Utf8XText), 4) + Text2Hex(Utf8XText)
-        + '0000' + '000E' + IntToHex(Length(XCode), 4) + Text2Hex(XCode);
-    end
+  begin
+    Utf8XText := UTF8Encode(XText);
+    Pkt1 := '0002' + '04' + IntToHex(Length(Utf8XText) + 4, 2) + IntToHex(Length(Utf8XText), 4) + Text2Hex(Utf8XText)
+      + '0000' + '000E' + IntToHex(Length(XCode), 4) + Text2Hex(XCode);
+  end
   else
     Pkt1 := '00020000000E0000';
   Len := Length(Hex2Text(Pkt1));
@@ -1739,78 +1705,82 @@ procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge, AEmail, A
 var
   ListItemD: TListItem;
   Gend: string;
-  I: Integer;
+  i: Integer;
 begin
   if Assigned(IcqSearchForm) then
+  begin
+    with IcqSearchForm do
     begin
-      with IcqSearchForm do
+      // Если UIN пустой и конец поиска, то сообщаем, что не найден
+      if (AUIN = EmptyStr) and (AEndSearch) then
+      begin
+        StatusPanel.Caption := SearchInfoNoL;
+        Exit;
+      end;
+      // Если конец поиска, то сообщаем, что поиск завершён
+      if AEndSearch then
+        StatusPanel.Caption := SearchInfoEndL;
+      // Проверяем есть ли уже такой контакт в списке найденных
+      for i := 0 to SearchResultJvListView.Items.Count - 1 do
+      begin
+        // Если нашли, то выходим
+        if SearchResultJvListView.Items[i].SubItems[1] = AUIN then
+          Exit;
+      end;
+      // Начинаем добавление записи в список найденных
+      SearchResultJvListView.Items.BeginUpdate;
+      try
+        ListItemD := SearchResultJvListView.Items.Add;
+        with ListItemD do
         begin
-          // Если UIN пустой и конец поиска, то сообщаем, что не найден
-          if (AUIN = EmptyStr) and (AEndSearch) then
-            begin
-              StatusPanel.Caption := SearchInfoNoL;
-              Exit;
-            end;
-          // Если конец поиска, то сообщаем, что поиск завершён
-          if AEndSearch then
-            StatusPanel.Caption := SearchInfoEndL;
-          // Проверяем есть ли уже такой контакт в списке найденных
-          for I := 0 to SearchResultJvListView.Items.Count - 1 do
-            begin
-              // Если нашли, то выходим
-              if SearchResultJvListView.Items[I].SubItems[1] = AUIN then
-                Exit;
-            end;
-          // Начинаем добавление записи в список найденных
-          SearchResultJvListView.Items.BeginUpdate;
-          try
-            ListItemD := SearchResultJvListView.Items.Add;
-            with ListItemD do
-              begin
-                Checked := False;
-                Caption := EmptyStr; // Иконка анкеты
-                SubItems.Add(EmptyStr); // Иконка чата
-                SubItems.Add(AUIN);
-                case AStatus of
-                  0: SubItemImages[1] := 241;
-                  1: SubItemImages[1] := 242;
-                  2: SubItemImages[1] := 243
-                  else
-                    SubItemImages[1] := 243;
-                end;
-                SubItems.Add(ANick);
-                SubItems.Add(AFirst);
-                SubItems.Add(ALast);
-                case AGender of
-                  0: Gend := EmptyStr;
-                  1: Gend := GenderComboBox.Items.Strings[1];
-                  2: Gend := GenderComboBox.Items.Strings[2];
-                end;
-                if (Gend <> EmptyStr) and (AAge <> '0') then
-                  Gend := Gend + ' - ' + AAge
-                else if AAge <> '0' then
-                  Gend := AAge;
-                SubItems.Add(Gend);
-                if AAuth then
-                  SubItems.Add(SearchInfoAuthL)
-                else
-                  SubItems.Add(SearchInfoAuthNoL);
-                SubItems.Add(EmptyStr); // Иконка быстрых сообщений
-                SubItems.Add(ACountry);
-                SubItems.Add(ACity);
-                SubItems.Add(AEmail);
-              end;
-          finally
-            SearchResultJvListView.Items.EndUpdate;
+          Checked := False;
+          Caption := EmptyStr; // Иконка анкеты
+          SubItems.Add(EmptyStr); // Иконка чата
+          SubItems.Add(AUIN);
+          case AStatus of
+            0:
+              SubItemImages[1] := 241;
+            1:
+              SubItemImages[1] := 242;
+            2:
+              SubItemImages[1] := 243
+            else
+              SubItemImages[1] := 243;
           end;
+          SubItems.Add(ANick);
+          SubItems.Add(AFirst);
+          SubItems.Add(ALast);
+          case AGender of
+            0:
+              Gend := EmptyStr;
+            1:
+              Gend := GenderComboBox.Items.Strings[1];
+            2:
+              Gend := GenderComboBox.Items.Strings[2];
+          end;
+          if (Gend <> EmptyStr) and (AAge <> '0') then
+            Gend := Gend + ' - ' + AAge
+          else if AAge <> '0' then
+            Gend := AAge;
+          SubItems.Add(Gend);
+          if AAuth then
+            SubItems.Add(SearchInfoAuthL)
+          else
+            SubItems.Add(SearchInfoAuthNoL);
+          SubItems.Add(EmptyStr); // Иконка быстрых сообщений
+          SubItems.Add(ACountry);
+          SubItems.Add(ACity);
+          SubItems.Add(AEmail);
         end;
+      finally
+        SearchResultJvListView.Items.EndUpdate;
+      end;
     end;
+  end;
 end;
 
 procedure ICQ_Parse_SNAC_1503(PktData: string);
-label
-  X,
-  Y;
+label x, y;
 var
   UIN, Nick, First, Last, City, State, Phone, Fax, Address: string;
   Cellular, WPhone, WFax, Zip, HomePage, OCity, OState: string;
@@ -1820,59 +1790,60 @@ var
   Email, Email1, Email2, Email3, WSite, WAddress, WCity, WState, WZip: string;
   Smok, Height, Hair: Word;
   IYear, IMonth, IDay: Word;
-  I, Ii, MsgLen, Count, Age, SStatus, BMRes: Integer;
+  i, ii, MsgLen, Count, Age, SStatus, BMRes: Integer;
   Auth, EndSearch, WebAware: Boolean;
   Date64: Int64;
   SDate64: TDateTime absolute Date64;
-  SubPkt, LastUpdateInfo, ACountry: string;
+  TLV, SubPkt, LastUpdateInfo, ACountry: string;
 begin
   // Сканируем тело пакета на нужные нам TLV
-  case HexToInt(NextData(PktData, 4)) of
+  case HexToInt(Text2Hex(NextData(PktData, 2))) of
     $AA00: // Пароль на учётную запись успешно изменён
       begin
-        if HexToInt(NextData(PktData, 2)) = $0A then
-          begin
-            ICQ_LoginPassword := ICQ_ChangePassword;
-            // Информируем об успешной смене пароля
-            DAShow(InformationHead, PassChangeOKL, EmptyStr, 133, 3, 0);
-            Exit;
-          end;
+        if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
+        begin
+          ICQ_LoginPassword := ICQ_ChangePassword;
+          // Информируем об успешной смене пароля
+          DAShow(InformationHead, PassChangeOKL, EmptyStr, 133, 3, 0);
+          Exit;
+        end;
       end;
     $DC0F: // Анкетная информация успешно изменена
       begin
-        if HexToInt(NextData(PktData, 2)) = $0A then
-          begin
-            SendFLAP('2', ICQ_CreateShortStatusPkt);
-            DAShow(InformationHead, AnketaSaveOKL, EmptyStr, 133, 3, 0);
-            Exit;
-          end;
+        if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
+        begin
+          SendFLAP('2', ICQ_CreateShortStatusPkt);
+          DAShow(InformationHead, AnketaSaveOKL, EmptyStr, 133, 3, 0);
+          Exit;
+        end;
       end;
     $B40F, $AA0F: // Большая информация о контакте и в поиске тоже она же
       begin
         // Проверяем метку о наличие положительных данных 1
-        if HexToInt(NextData(PktData, 2)) <> $0A then
-          begin
-            // Заканчиваем поиск
-            EndSearch := True;
-            ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False,
-              EndSearch);
-            Exit;
-          end;
+        if HexToInt(Text2Hex(NextData(PktData, 1))) <> $0A then
+        begin
+          // Заканчиваем поиск
+          EndSearch := True;
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False,
+            EndSearch);
+          Exit;
+        end;
         // Сбрасываем флаг об авторизации
         Auth := False;
         // Проверяем метку о наличие положительных данных 2
-        if HexToInt(NextData(PktData, 4)) = $1D00 then
-          begin
-            // Заканчиваем поиск
-            EndSearch := True;
-            ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False,
-              EndSearch);
-            Exit;
-          end;
+        if HexToInt(Text2Hex(NextData(PktData, 2))) = $1D00 then
+        begin
+          // Заканчиваем поиск
+          EndSearch := True;
+          ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False,
+            EndSearch);
+          Exit;
+        end;
+        XLog('ICQ get | ' + Log_Contact_Info);
         // Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := BMSearch(0, PktData, '003200');
         if BMRes > -1 then
-          NextData(PktData, BMRes - 1)
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, BMRes - 1))))
         else
           Exit;
         // Сбрасываем все переменные
@@ -1903,689 +1874,683 @@ begin
         WebAware := False;
         // Начинаем сканировать нужные нам TLV пока длинна пакета больше нуля
         while Length(PktData) > 0 do
-          begin
-            case HexToInt(NextData(PktData, 4)) of
-              $0032: // Получаем UIN
+        begin
+          TLV := Text2Hex(NextData(PktData, 2));
+          case HexToInt(TLV) of
+            $0032: // Получаем UIN
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                UIN := NextData(PktData, MsgLen);
+              end;
+            $0050: // Получаем Email
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Email := NextData(PktData, MsgLen);
+              end;
+            $0064: // Получаем Имя
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                First := NextData(PktData, MsgLen);
+              end;
+            $006E: // Получаем Фамилию
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Last := NextData(PktData, MsgLen);
+              end;
+            $0078: // Получаем Ник
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Nick := NextData(PktData, MsgLen);
+              end;
+            $0082: // Получаем Пол
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Gender := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+              end;
+            $0190: // Получаем Статус
+              begin
+                NextData(PktData, 3);
+                SStatus := HexToInt(Text2Hex(NextData(PktData, 1)));
+              end;
+            $01A4: // Получаем Дату рождения в 64 битном формате
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Date64 := HexToInt64(Text2Hex(NextData(PktData, MsgLen)));
+                if Date64 > 0 then
                 begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  UIN := Hex2Text(NextData(PktData, MsgLen));
+                  SDate64 := SDate64 + (48 * Hour);
+                  // Вычисляем возраст
+                  Age := CalculateAge(SDate64, Date);
+                  // Разбираем дату на день - месяц - год
+                  DecodeDate(SDate64, IYear, IMonth, IDay);
                 end;
-              $0050: // Получаем Email
+              end;
+
+            $0096: // Получаем суб TLV с инфой о месте жительства
+              begin
+                // Получаем длинну суб TLV
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                // Если данные не пустые
+                if MsgLen > 4 then
                 begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Email := Hex2Text(NextData(PktData, MsgLen));
-                end;
-              $0064: // Получаем Имя
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  First := Hex2Text(NextData(PktData, MsgLen));
-                end;
-              $006E: // Получаем Фамилию
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Last := Hex2Text(NextData(PktData, MsgLen));
-                end;
-              $0078: // Получаем Ник
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Nick := Hex2Text(NextData(PktData, MsgLen));
-                end;
-              $0082: // Получаем Пол
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Gender := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $0190: // Получаем Статус
-                begin
-                  NextData(PktData, 6);
-                  SStatus := HexToInt(NextData(PktData, 2));
-                end;
-              $01A4: // Получаем Дату рождения в 64 битном формате
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Date64 := HexToInt64(NextData(PktData, MsgLen));
-                  if Date64 > 0 then
-                    begin
-                      SDate64 := SDate64 + (48 * Hour);
-                      // Вычисляем возраст
-                      Age := CalculateAge(SDate64, Date);
-                      // Разбираем дату на день - месяц - год
-                      DecodeDate(SDate64, IYear, IMonth, IDay);
+                  SubPkt := NextData(PktData, MsgLen);
+                  // Пропускаем данные
+                  NextData(SubPkt, 4);
+
+                  // Сканируем на нужные нам TLV
+                  while Length(SubPkt) > 0 do
+                  begin
+                    case HexToInt(NextData(SubPkt, 4)) of
+                      $008C: // Получаем код Страны
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          Country := HexToInt(NextData(SubPkt, MsgLen));
+                        end;
+                      $0078: // Получаем Штат
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          State := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $006E: // Получаем Город
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          City := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $0064: // Получаем Адрес
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          Address := Hex2Text(NextData(SubPkt, MsgLen));
+                        end
+                      else
+                      begin
+                        // Пропускаем все другие TLV
+                        MsgLen := HexToInt(NextData(SubPkt, 4));
+                        MsgLen := MsgLen * 2;
+                        NextData(SubPkt, MsgLen);
+                      end;
                     end;
-                end;
-              $0096: // Получаем суб TLV с инфой о месте жительства
-                begin
-                  // Получаем длинну суб TLV
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  // Если данные не пустые
-                  if MsgLen > 4 then
-                    begin
-                      SubPkt := NextData(PktData, MsgLen);
-                      // Пропускаем данные
-                      NextData(SubPkt, 8);
-                      // Сканируем на нужные нам TLV
-                      while Length(SubPkt) > 0 do
-                        begin
-                          case HexToInt(NextData(SubPkt, 4)) of
-                            $008C: // Получаем код Страны
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                Country := HexToInt(NextData(SubPkt, MsgLen));
-                              end;
-                            $0078: // Получаем Штат
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                State := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $006E: // Получаем Город
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                City := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $0064: // Получаем Адрес
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                Address := Hex2Text(NextData(SubPkt, MsgLen));
-                              end
-                            else
-                              begin
-                                // Пропускаем все другие TLV
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                NextData(SubPkt, MsgLen);
-                              end;
-                          end;
-                        end;
-                    end
-                    // Пропускаем пустые данные
-                  else
-                    NextData(PktData, MsgLen);
-                end;
-              $00AA: // Получаем Язык 1
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Lang1 := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $00B4: // Получаем Язык 2
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Lang2 := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $00BE: // Получаем Язык 3
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Lang3 := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $012C: // Получаем статус Брака (холост, женат и т.д.)
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Marital := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $0140: // Получаем количество Детей
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Children := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $014A: // Получаем Религию
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Relig := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $0154: // Получаем Сексуальную ориентацию
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Sexual := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $015E: // Получаем Курительный статус
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Smok := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $0168: // Получаем Рост
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Height := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $0172: // Получаем Цвет волос
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Hair := HexToInt(NextData(PktData, MsgLen));
-                end;
-              $0186: // Получаем "О себе..."
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  About := Hex2Text(NextData(PktData, MsgLen));
-                end;
-              $00A0: // Получаем суб TLV о месте рождения
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  // Если данные не пустые
-                  if MsgLen > 4 then
-                    begin
-                      SubPkt := NextData(PktData, MsgLen);
-                      // Пропускаем данные
-                      NextData(SubPkt, 8);
-                      // Сканируем на нужные TLV
-                      while Length(SubPkt) > 0 do
-                        begin
-                          case HexToInt(NextData(SubPkt, 4)) of
-                            $008C: // Получаем код Страны
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                OCountry := HexToInt(NextData(SubPkt, MsgLen));
-                              end;
-                            $0078: // Получаем Штат
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                OState := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $006E: // Получаем Город
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                OCity := Hex2Text(NextData(SubPkt, MsgLen));
-                              end
-                            else
-                              begin
-                                // Пропускаем все другие TLV
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                NextData(SubPkt, MsgLen);
-                              end;
-                          end;
-                        end;
-                    end
-                    // Пропускаем пустые данные
-                  else
-                    NextData(PktData, MsgLen);
-                end;
-              $0118: // Получаем суб TLV о месте работы
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  // Если данные не пустые
-                  if MsgLen > 4 then
-                    begin
-                      SubPkt := NextData(PktData, MsgLen);
-                      // Пропускаем данные
-                      NextData(SubPkt, 8);
-                      // Сканируем на нужные TLV
-                      while Length(SubPkt) > 0 do
-                        begin
-                          case HexToInt(NextData(SubPkt, 4)) of
-                            $00D2: // Получаем код Страны
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                WCountry := HexToInt(NextData(SubPkt, MsgLen));
-                              end;
-                            $00C8: // Получаем Зип
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                WZip := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $00BE: // Получаем Штат
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                WState := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $00B4: // Получаем Город
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                WCity := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $00AA: // Получаем Адрес
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                WAddress := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $0082: // Получаем Профессию
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                Occupation := HexToInt(NextData(SubPkt, MsgLen));
-                              end;
-                            $0078: // Получаем Сайт
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                WSite := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $007D: // Получаем Отдел
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                Department := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $006E: // Получаем Компанию
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                Company := Hex2Text(NextData(SubPkt, MsgLen));
-                              end;
-                            $0064: // Получаем Позицию
-                              begin
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                Position := Hex2Text(NextData(SubPkt, MsgLen));
-                              end
-                            else
-                              begin
-                                // Пропускаем другие TLV
-                                MsgLen := HexToInt(NextData(SubPkt, 4));
-                                MsgLen := MsgLen * 2;
-                                NextData(SubPkt, MsgLen);
-                              end;
-                          end;
-                        end;
-                    end
-                    // Пропускаем пустые данные
-                  else
-                    NextData(PktData, MsgLen);
-                end;
-              $008C: // Получаем суб TLV с Email ящиками
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  // Если данные не пустые
-                  if MsgLen > 4 then
-                    begin
-                      SubPkt := NextData(PktData, MsgLen);
-                      // В цикле смотрим сколько ящиков указано
-                      for I := 1 to HexToInt(NextData(SubPkt, 4)) do
-                        begin
-                          NextData(SubPkt, 8);
-                          MsgLen := HexToInt(NextData(SubPkt, 4));
-                          MsgLen := MsgLen * 2;
-                          if I = 1 then
-                            Email1 := Hex2Text(NextData(SubPkt, MsgLen));
-                          if I = 2 then
-                            Email2 := Hex2Text(NextData(SubPkt, MsgLen));
-                          if I = 3 then
-                            Email3 := Hex2Text(NextData(SubPkt, MsgLen));
-                          // Пропускаем какие-то данные
-                          NextData(SubPkt, 24);
-                        end;
-                    end
-                    // Пропускаем пустые данные
-                  else
-                    NextData(PktData, MsgLen);
-                end;
-              $0122: // Получаем суб TLV c Интересами
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  // Если данные не пустые
-                  if MsgLen > 4 then
-                    begin
-                      SubPkt := NextData(PktData, MsgLen);
-                      // Смотрим в цикле сколько указано интересов
-                      for I := 1 to HexToInt(NextData(SubPkt, 4)) do
-                        begin
-                          NextData(SubPkt, 8);
-                          MsgLen := HexToInt(NextData(SubPkt, 4));
-                          MsgLen := MsgLen * 2;
-                          if I = 1 then
-                            begin
-                              Int1 := Hex2Text(NextData(SubPkt, MsgLen));
-                              NextData(SubPkt, 8);
-                              I1 := HexToInt(NextData(SubPkt, 4));
-                            end;
-                          if I = 2 then
-                            begin
-                              Int2 := Hex2Text(NextData(SubPkt, MsgLen));
-                              NextData(SubPkt, 8);
-                              I2 := HexToInt(NextData(SubPkt, 4));
-                            end;
-                          if I = 3 then
-                            begin
-                              Int3 := Hex2Text(NextData(SubPkt, MsgLen));
-                              NextData(SubPkt, 8);
-                              I3 := HexToInt(NextData(SubPkt, 4));
-                            end;
-                          if I = 4 then
-                            begin
-                              Int4 := Hex2Text(NextData(SubPkt, MsgLen));
-                              NextData(SubPkt, 8);
-                              I4 := HexToInt(NextData(SubPkt, 4));
-                            end;
-                        end;
-                    end
-                    // Пропускаем пустые данные
-                  else
-                    NextData(PktData, MsgLen);
-                end;
-              $00C8: // Получаем суб TLV с телефонами
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  // Если данные не пустые
-                  if MsgLen > 4 then
-                    begin
-                      SubPkt := NextData(PktData, MsgLen);
-                      // В цикле смотрим сколько указано телефонов
-                      for I := 1 to HexToInt(NextData(SubPkt, 4)) do
-                        begin
-                          NextData(SubPkt, 8);
-                          MsgLen := HexToInt(NextData(SubPkt, 4));
-                          MsgLen := MsgLen * 2;
-                          if I = 1 then
-                            Phone := Hex2Text(NextData(SubPkt, MsgLen));
-                          if I = 2 then
-                            Fax := Hex2Text(NextData(SubPkt, MsgLen));
-                          if I = 3 then
-                            Cellular := Hex2Text(NextData(SubPkt, MsgLen));
-                          if I = 4 then
-                            WPhone := Hex2Text(NextData(SubPkt, MsgLen));
-                          if I = 5 then
-                            WFax := Hex2Text(NextData(SubPkt, MsgLen));
-                          // Пропускаем какие-то данные
-                          NextData(SubPkt, 12);
-                        end;
-                    end
-                    // Пропускаем пустые данные
-                  else
-                    NextData(PktData, MsgLen);
-                end;
-              $00FA: // Получаем Домашнюю страничку
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  HomePage := Hex2Text(NextData(PktData, MsgLen));
-                end;
-              $0212: // Получаем ВебАваре флаг
-                begin
-                  NextData(PktData, 4);
-                  if HexToInt(NextData(PktData, 2)) = $01 then
-                    WebAware := True;
-                end;
-              $019A: // Получаем флаг авторизации
-                begin
-                  NextData(PktData, 6);
-                  if HexToInt(NextData(PktData, 2)) = $00 then
-                    Auth := True;
-                end;
-              $01CC: // Получаем Время последнего изменения инфы
-                begin
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
-                  Date64 := HexToInt64(NextData(PktData, MsgLen));
-                  if Date64 > 0 then
-                    begin
-                      SDate64 := SDate64 + (48 * Hour);
-                      LastUpdateInfo := DateTimeToStr(SDate64);
-                    end;
+                  end;
                 end
-              else
-                begin
-                  // Пропускаем все другие TLV
-                  MsgLen := HexToInt(NextData(PktData, 4));
-                  MsgLen := MsgLen * 2;
+                // Пропускаем пустые данные
+                else
                   NextData(PktData, MsgLen);
+              end;
+            $00AA: // Получаем Язык 1
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Lang1 := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $00B4: // Получаем Язык 2
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Lang2 := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $00BE: // Получаем Язык 3
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Lang3 := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $012C: // Получаем статус Брака (холост, женат и т.д.)
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Marital := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $0140: // Получаем количество Детей
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Children := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $014A: // Получаем Религию
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Relig := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $0154: // Получаем Сексуальную ориентацию
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Sexual := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $015E: // Получаем Курительный статус
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Smok := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $0168: // Получаем Рост
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Height := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $0172: // Получаем Цвет волос
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Hair := HexToInt(NextData(PktData, MsgLen));
+              end;
+            $0186: // Получаем "О себе..."
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                About := Hex2Text(NextData(PktData, MsgLen));
+              end;
+            $00A0: // Получаем суб TLV о месте рождения
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                // Если данные не пустые
+                if MsgLen > 4 then
+                begin
+                  SubPkt := NextData(PktData, MsgLen);
+                  // Пропускаем данные
+                  NextData(SubPkt, 8);
+                  // Сканируем на нужные TLV
+                  while Length(SubPkt) > 0 do
+                  begin
+                    case HexToInt(NextData(SubPkt, 4)) of
+                      $008C: // Получаем код Страны
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          OCountry := HexToInt(NextData(SubPkt, MsgLen));
+                        end;
+                      $0078: // Получаем Штат
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          OState := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $006E: // Получаем Город
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          OCity := Hex2Text(NextData(SubPkt, MsgLen));
+                        end
+                      else
+                      begin
+                        // Пропускаем все другие TLV
+                        MsgLen := HexToInt(NextData(SubPkt, 4));
+                        MsgLen := MsgLen * 2;
+                        NextData(SubPkt, MsgLen);
+                      end;
+                    end;
+                  end;
+                end
+                // Пропускаем пустые данные
+                else
+                  NextData(PktData, MsgLen);
+              end;
+            $0118: // Получаем суб TLV о месте работы
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                // Если данные не пустые
+                if MsgLen > 4 then
+                begin
+                  SubPkt := NextData(PktData, MsgLen);
+                  // Пропускаем данные
+                  NextData(SubPkt, 8);
+                  // Сканируем на нужные TLV
+                  while Length(SubPkt) > 0 do
+                  begin
+                    case HexToInt(NextData(SubPkt, 4)) of
+                      $00D2: // Получаем код Страны
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          WCountry := HexToInt(NextData(SubPkt, MsgLen));
+                        end;
+                      $00C8: // Получаем Зип
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          WZip := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $00BE: // Получаем Штат
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          WState := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $00B4: // Получаем Город
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          WCity := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $00AA: // Получаем Адрес
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          WAddress := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $0082: // Получаем Профессию
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          Occupation := HexToInt(NextData(SubPkt, MsgLen));
+                        end;
+                      $0078: // Получаем Сайт
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          WSite := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $007D: // Получаем Отдел
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          Department := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $006E: // Получаем Компанию
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          Company := Hex2Text(NextData(SubPkt, MsgLen));
+                        end;
+                      $0064: // Получаем Позицию
+                        begin
+                          MsgLen := HexToInt(NextData(SubPkt, 4));
+                          MsgLen := MsgLen * 2;
+                          Position := Hex2Text(NextData(SubPkt, MsgLen));
+                        end
+                      else
+                      begin
+                        // Пропускаем другие TLV
+                        MsgLen := HexToInt(NextData(SubPkt, 4));
+                        MsgLen := MsgLen * 2;
+                        NextData(SubPkt, MsgLen);
+                      end;
+                    end;
+                  end;
+                end
+                // Пропускаем пустые данные
+                else
+                  NextData(PktData, MsgLen);
+              end;
+            $008C: // Получаем суб TLV с Email ящиками
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                // Если данные не пустые
+                if MsgLen > 4 then
+                begin
+                  SubPkt := NextData(PktData, MsgLen);
+                  // В цикле смотрим сколько ящиков указано
+                  for i := 1 to HexToInt(NextData(SubPkt, 4)) do
+                  begin
+                    NextData(SubPkt, 8);
+                    MsgLen := HexToInt(NextData(SubPkt, 4));
+                    MsgLen := MsgLen * 2;
+                    if i = 1 then
+                      Email1 := Hex2Text(NextData(SubPkt, MsgLen));
+                    if i = 2 then
+                      Email2 := Hex2Text(NextData(SubPkt, MsgLen));
+                    if i = 3 then
+                      Email3 := Hex2Text(NextData(SubPkt, MsgLen));
+                    // Пропускаем какие-то данные
+                    NextData(SubPkt, 24);
+                  end;
+                end
+                // Пропускаем пустые данные
+                else
+                  NextData(PktData, MsgLen);
+              end;
+            $0122: // Получаем суб TLV c Интересами
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                // Если данные не пустые
+                if MsgLen > 4 then
+                begin
+                  SubPkt := NextData(PktData, MsgLen);
+                  // Смотрим в цикле сколько указано интересов
+                  for i := 1 to HexToInt(NextData(SubPkt, 4)) do
+                  begin
+                    NextData(SubPkt, 8);
+                    MsgLen := HexToInt(NextData(SubPkt, 4));
+                    MsgLen := MsgLen * 2;
+                    if i = 1 then
+                    begin
+                      Int1 := Hex2Text(NextData(SubPkt, MsgLen));
+                      NextData(SubPkt, 8);
+                      I1 := HexToInt(NextData(SubPkt, 4));
+                    end;
+                    if i = 2 then
+                    begin
+                      Int2 := Hex2Text(NextData(SubPkt, MsgLen));
+                      NextData(SubPkt, 8);
+                      I2 := HexToInt(NextData(SubPkt, 4));
+                    end;
+                    if i = 3 then
+                    begin
+                      Int3 := Hex2Text(NextData(SubPkt, MsgLen));
+                      NextData(SubPkt, 8);
+                      I3 := HexToInt(NextData(SubPkt, 4));
+                    end;
+                    if i = 4 then
+                    begin
+                      Int4 := Hex2Text(NextData(SubPkt, MsgLen));
+                      NextData(SubPkt, 8);
+                      I4 := HexToInt(NextData(SubPkt, 4));
+                    end;
+                  end;
+                end
+                // Пропускаем пустые данные
+                else
+                  NextData(PktData, MsgLen);
+              end;
+            $00C8: // Получаем суб TLV с телефонами
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                // Если данные не пустые
+                if MsgLen > 4 then
+                begin
+                  SubPkt := NextData(PktData, MsgLen);
+                  // В цикле смотрим сколько указано телефонов
+                  for i := 1 to HexToInt(NextData(SubPkt, 4)) do
+                  begin
+                    NextData(SubPkt, 8);
+                    MsgLen := HexToInt(NextData(SubPkt, 4));
+                    MsgLen := MsgLen * 2;
+                    if i = 1 then
+                      Phone := Hex2Text(NextData(SubPkt, MsgLen));
+                    if i = 2 then
+                      Fax := Hex2Text(NextData(SubPkt, MsgLen));
+                    if i = 3 then
+                      Cellular := Hex2Text(NextData(SubPkt, MsgLen));
+                    if i = 4 then
+                      WPhone := Hex2Text(NextData(SubPkt, MsgLen));
+                    if i = 5 then
+                      WFax := Hex2Text(NextData(SubPkt, MsgLen));
+                    // Пропускаем какие-то данные
+                    NextData(SubPkt, 12);
+                  end;
+                end
+                // Пропускаем пустые данные
+                else
+                  NextData(PktData, MsgLen);
+              end;
+            $00FA: // Получаем Домашнюю страничку
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                HomePage := Hex2Text(NextData(PktData, MsgLen));
+              end;
+            $0212: // Получаем ВебАваре флаг
+              begin
+                NextData(PktData, 4);
+                if HexToInt(NextData(PktData, 2)) = $01 then
+                  WebAware := True;
+              end;
+            $019A: // Получаем флаг авторизации
+              begin
+                NextData(PktData, 6);
+                if HexToInt(NextData(PktData, 2)) = $00 then
+                  Auth := True;
+              end;
+            $01CC: // Получаем Время последнего изменения инфы
+              begin
+                MsgLen := HexToInt(NextData(PktData, 4));
+                MsgLen := MsgLen * 2;
+                Date64 := HexToInt64(NextData(PktData, MsgLen));
+                if Date64 > 0 then
+                begin
+                  SDate64 := SDate64 + (48 * Hour);
+                  LastUpdateInfo := DateTimeToStr(SDate64);
                 end;
+              end
+            else
+            begin
+              // Если пакет содержит другие TLV, то пропускаем их
+              MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+              XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, MsgLen))));
             end;
           end;
+        end;
         // Начинаем обработку данных полученных из пакета с инфой
         // Проверяем делали ли мы запрос на информацию о контакте или это был поиск
         // При поиске контактов запрошенный UIN должен быть пустой
         if ICQ_ReqInfo_UIN <> EmptyStr then
+        begin
+          // Добавляем ник контакта в список ников
+          if Assigned(AccountToNick) then
           begin
-            // Добавляем ник контакта в список ников
-            if Assigned(AccountToNick) then
+            // Если такого контакта ещё нет в списке ников, то добавляем его ник
+            if AccountToNick.IndexOf('Icq_' + UIN) = -1 then
+            begin
+              // Если ник не пустой и ник не равен UIN
+              if (Nick > EmptyStr) and (Nick <> UIN) then
               begin
-                // Если такого контакта ещё нет в списке ников, то добавляем его ник
-                if AccountToNick.IndexOf('Icq_' + UIN) = -1 then
-                  begin
-                    // Если ник не пустой и ник не равен UIN
-                    if (Nick > EmptyStr) and (Nick <> UIN) then
-                      begin
-                        AccountToNick.Add('Icq_' + UIN);
-                        AccountToNick.Add(Nick);
-                        AccountToNick.SaveToFile(ProfilePath + 'Profile\' + 'Nicks.txt');
-                      end;
-                  end;
+                AccountToNick.Add('Icq_' + UIN);
+                AccountToNick.Add(Nick);
+                AccountToNick.SaveToFile(ProfilePath + 'Profile\' + 'Nicks.txt');
               end;
-            // Если ник не пустой и ник не равен UIN
-            if (Nick > EmptyStr) and (Nick <> UIN) then
-              begin
-                // Присваиваем этот ник контакту не из нашего КЛ
-                with MainForm.ContactList do
-                  begin
-                    for I := 0 to Categories.Count - 1 do
-                      begin
-                        if (Categories.Items[I].GroupId = '0000') or (Categories.Items[I].GroupId = 'NoCL') then
-                          begin
-                            for Ii := 0 to Categories[I].Items.Count - 1 do
-                              begin
-                                if Categories[I].Items[Ii].UIN = UIN then
-                                  begin
-                                    Categories[I].Items[Ii].Caption := Nick;
-                                    // Выходим из цыклов
-                                    goto Y;
-                                  end;
-                              end;
-                          end;
-                      end;
-                  end;
-              Y :;
-                // Ищем вкладку в окне чата и ей присваиваем Ник
-                if Assigned(ChatForm) then
-                  begin
-                    { with ChatForm.ChatPageControl do
-                      begin
-                      if Visible then
-                      begin
-                      for I := 0 to PageCount - 1 do
-                      begin
-                      if Pages[I].HelpKeyword = UIN then
-                      begin
-                      Pages[I].Caption := Nick;
-                      // Выходим из цыкла
-                      Break;
-                      end;
-                      end;
-                      end;
-                      end; }
-                  end;
-              end;
-            // Сохраняем полученные данные в локальный файл инфы о контакте
-            with TrXML.Create() do
-              try
-                if OpenKey('profile\name-info', True) then
-                  try
-                    WriteString('nick', Nick);
-                    WriteString('first', First);
-                    WriteString('last', Last);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\personal-info', True) then
-                  try
-                    WriteInteger('gender', Gender);
-                    WriteBool('auth', Auth);
-                    WriteBool('webaware', WebAware);
-                    WriteString('homapage', HomePage);
-                    WriteString('lastchange', LastUpdateInfo);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\home-info', True) then
-                  try
-                    WriteString('address', Address);
-                    WriteString('city', City);
-                    WriteString('state', State);
-                    WriteString('zip', Zip);
-                    WriteInteger('country', Country);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\orig-home-info', True) then
-                  try
-                    WriteInteger('country', OCountry);
-                    WriteString('city', OCity);
-                    WriteString('state', OState);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\lang-info', True) then
-                  try
-                    WriteInteger('lang1', Lang1);
-                    WriteInteger('lang2', Lang2);
-                    WriteInteger('lang3', Lang3);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\phone-info', True) then
-                  try
-                    WriteString('phone1', Phone);
-                    WriteString('phone2', Fax);
-                    WriteString('phone3', Cellular);
-                    WriteString('phone4', WPhone);
-                    WriteString('phone5', WFax);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\work-info', True) then
-                  try
-                    WriteString('city', WCity);
-                    WriteString('state', WState);
-                    WriteString('zip', WZip);
-                    WriteString('address', WAddress);
-                    WriteString('corp', Company);
-                    WriteString('dep', Department);
-                    WriteString('prof', Position);
-                    WriteString('site', WSite);
-                    WriteInteger('country', WCountry);
-                    WriteInteger('occup', Occupation);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\interests-info', True) then
-                  try
-                    WriteString('int1', Int1);
-                    WriteString('int2', Int2);
-                    WriteString('int3', Int3);
-                    WriteString('int4', Int4);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\about-info', True) then
-                  try
-                    WriteString('info', Base64Encode(About));
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\age-info', True) then
-                  try
-                    WriteInteger('age', Age);
-                    WriteInteger('day', IDay);
-                    WriteInteger('month', IMonth);
-                    WriteInteger('year', IYear);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\emails-info', True) then
-                  try
-                    WriteString('email1', Email1);
-                    WriteString('email2', Email2);
-                    WriteString('email3', Email3);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\interests-id-info', True) then
-                  try
-                    WriteInteger('int_id1', I1);
-                    WriteInteger('int_id2', I2);
-                    WriteInteger('int_id3', I3);
-                    WriteInteger('int_id4', I4);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\personal-x-info', True) then
-                  try
-                    WriteInteger('marital', Marital);
-                    WriteInteger('sexual', Sexual);
-                    WriteInteger('height', Height);
-                    WriteInteger('relig', Relig);
-                    WriteInteger('smok', Smok);
-                    WriteInteger('hair', Hair);
-                    WriteInteger('children', Children);
-                  finally
-                    CloseKey();
-                  end;
-                // Создаём необходимые папки
-                ForceDirectories(ProfilePath + AnketaFileName);
-                // Записываем сам файл
-                SaveToFile(ProfilePath + AnketaFileName + 'Icq_' + UIN + '.xml');
-              finally
-                Free();
-              end;
-            // Отображаем в окне информации о контакте полученные данные
-            if Assigned(IcqContactInfoForm) then
-              begin
-                if IcqContactInfoForm.ReqUIN = UIN then
-                  IcqContactInfoForm.LoadUserUnfo;
-              end;
-            // Отображаем параметры настройки Авторизации и Вебаваре статуса в настройках ICQ
-            if Assigned(IcqOptionsForm) then
-              begin
-                if UIN = ICQ_LoginUIN then
-                  begin
-                    IcqOptionsForm.NoAutoAuthRadioButton.Checked := Auth;
-                    if not IcqOptionsForm.NoAutoAuthRadioButton.Checked then
-                      IcqOptionsForm.YesAutoAuthRadioButton.Checked := True;
-                    IcqOptionsForm.ShowWebAwareCheckBox.Checked := WebAware;
-                  end;
-              end;
-            // Активируем статус Вебаваре если он включён
-            if UIN = ICQ_LoginUIN then
-              begin
-                if WebAware then
-                  ICQ_WebAware_Enabled := True
-                else
-                  ICQ_WebAware_Enabled := False;
-                SendFLAP('2', ICQ_CreateShortStatusPkt);
-              end;
-          end
-        else
-          begin
-            // Получаем текст страны из кода
-            if Assigned(IcqOptionsForm) then
-              ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf
-                (IntToStr(Country))];
-            // Обрабатываем результаты поиска
-            ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, ACountry, City, Gender, SStatus, Auth, True);
+            end;
           end;
+          // Если ник не пустой и ник не равен UIN
+          if (Nick > EmptyStr) and (Nick <> UIN) then
+          begin
+            // Присваиваем этот ник контакту не из нашего КЛ
+            with MainForm.ContactList do
+            begin
+              for i := 0 to Categories.Count - 1 do
+              begin
+                if (Categories.Items[i].GroupId = '0000') or (Categories.Items[i].GroupId = 'NoCL') then
+                begin
+                  for ii := 0 to Categories[i].Items.Count - 1 do
+                  begin
+                    if Categories[i].Items[ii].UIN = UIN then
+                    begin
+                      Categories[i].Items[ii].Caption := Nick;
+                      // Выходим из цыклов
+                      goto y;
+                    end;
+                  end;
+                end;
+              end;
+            end;
+          y :;
+            // Ищем вкладку в окне чата и ей присваиваем Ник
+            if Assigned(ChatForm) then
+            begin
+              { with ChatForm.ChatPageControl do
+                begin
+                if Visible then
+                begin
+                for I := 0 to PageCount - 1 do
+                begin
+                if Pages[I].HelpKeyword = UIN then
+                begin
+                Pages[I].Caption := Nick;
+                // Выходим из цыкла
+                Break;
+                end;
+                end;
+                end;
+                end; }
+            end;
+          end;
+          // Сохраняем полученные данные в локальный файл инфы о контакте
+          with TrXML.Create() do
+            try
+              if OpenKey('profile\name-info', True) then
+                try
+                  WriteString('nick', Nick);
+                  WriteString('first', First);
+                  WriteString('last', Last);
+                finally
+                  CloseKey;
+                end;
+              if OpenKey('profile\personal-info', True) then
+                try
+                  WriteInteger('gender', Gender);
+                  WriteBool('auth', Auth);
+                  WriteBool('webaware', WebAware);
+                  WriteString('homapage', HomePage);
+                  WriteString('lastchange', LastUpdateInfo);
+                finally
+                  CloseKey;
+                end;
+              if OpenKey('profile\home-info', True) then
+                try
+                  WriteString('address', Address);
+                  WriteString('city', City);
+                  WriteString('state', State);
+                  WriteString('zip', Zip);
+                  WriteInteger('country', Country);
+                finally
+                  CloseKey;
+                end;
+              if OpenKey('profile\orig-home-info', True) then
+                try
+                  WriteInteger('country', OCountry);
+                  WriteString('city', OCity);
+                  WriteString('state', OState);
+                finally
+                  CloseKey;
+                end;
+              if OpenKey('profile\lang-info', True) then
+                try
+                  WriteInteger('lang1', Lang1);
+                  WriteInteger('lang2', Lang2);
+                  WriteInteger('lang3', Lang3);
+                finally
+                  CloseKey;
+                end;
+              if OpenKey('profile\phone-info', True) then
+                try
+                  WriteString('phone1', Phone);
+                  WriteString('phone2', Fax);
+                  WriteString('phone3', Cellular);
+                  WriteString('phone4', WPhone);
+                  WriteString('phone5', WFax);
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\work-info', True) then
+                try
+                  WriteString('city', WCity);
+                  WriteString('state', WState);
+                  WriteString('zip', WZip);
+                  WriteString('address', WAddress);
+                  WriteString('corp', Company);
+                  WriteString('dep', Department);
+                  WriteString('prof', Position);
+                  WriteString('site', WSite);
+                  WriteInteger('country', WCountry);
+                  WriteInteger('occup', Occupation);
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\interests-info', True) then
+                try
+                  WriteString('int1', Int1);
+                  WriteString('int2', Int2);
+                  WriteString('int3', Int3);
+                  WriteString('int4', Int4);
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\about-info', True) then
+                try
+                  WriteString('info', Base64Encode(About));
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\age-info', True) then
+                try
+                  WriteInteger('age', Age);
+                  WriteInteger('day', IDay);
+                  WriteInteger('month', IMonth);
+                  WriteInteger('year', IYear);
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\emails-info', True) then
+                try
+                  WriteString('email1', Email1);
+                  WriteString('email2', Email2);
+                  WriteString('email3', Email3);
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\interests-id-info', True) then
+                try
+                  WriteInteger('int_id1', I1);
+                  WriteInteger('int_id2', I2);
+                  WriteInteger('int_id3', I3);
+                  WriteInteger('int_id4', I4);
+                finally
+                  CloseKey();
+                end;
+              if OpenKey('profile\personal-x-info', True) then
+                try
+                  WriteInteger('marital', Marital);
+                  WriteInteger('sexual', Sexual);
+                  WriteInteger('height', Height);
+                  WriteInteger('relig', Relig);
+                  WriteInteger('smok', Smok);
+                  WriteInteger('hair', Hair);
+                  WriteInteger('children', Children);
+                finally
+                  CloseKey();
+                end;
+              // Создаём необходимые папки
+              ForceDirectories(ProfilePath + AnketaFileName);
+              // Записываем сам файл
+              SaveToFile(ProfilePath + AnketaFileName + 'Icq_' + UIN + '.xml');
+            finally
+              Free();
+            end;
+          // Отображаем в окне информации о контакте полученные данные
+          if Assigned(IcqContactInfoForm) then
+          begin
+            if IcqContactInfoForm.ReqUIN = UIN then
+              IcqContactInfoForm.LoadUserUnfo;
+          end;
+          // Отображаем параметры настройки Авторизации и Вебаваре статуса в настройках ICQ
+          if Assigned(IcqOptionsForm) then
+          begin
+            if UIN = ICQ_LoginUIN then
+            begin
+              IcqOptionsForm.NoAutoAuthRadioButton.Checked := Auth;
+              if not IcqOptionsForm.NoAutoAuthRadioButton.Checked then
+                IcqOptionsForm.YesAutoAuthRadioButton.Checked := True;
+              IcqOptionsForm.ShowWebAwareCheckBox.Checked := WebAware;
+            end;
+          end;
+          // Активируем статус Вебаваре если он включён
+          if UIN = ICQ_LoginUIN then
+          begin
+            if WebAware then
+              ICQ_WebAware_Enabled := True
+            else
+              ICQ_WebAware_Enabled := False;
+            SendFLAP('2', ICQ_CreateShortStatusPkt);
+          end;
+        end
+        else
+        begin
+          // Получаем текст страны из кода
+          if Assigned(IcqOptionsForm) then
+            ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf
+              (IntToStr(Country))];
+          // Обрабатываем результаты поиска
+          ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, ACountry, City, Gender, SStatus, Auth, True);
+        end;
       end;
   end;
 end;
@@ -2730,36 +2695,34 @@ begin
   OrigMsg := SMsg;
   // Отправляем сообщение кусками (ограничения протокола)
   while Length(OrigMsg) > 0 do
+  begin
+    if Old then
+      AnsiMsg := NextData(OrigMsg, 1200)
+    else
+      Utf8Mess := UTF8Encode(NextData(OrigMsg, 3000));
+    Randomize;
+    CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4);
+    CoocId1 := IntToHex(Random($AAAA), 4);
+    // Старый формат сообщений (анси кодировка)
+    if Old then
     begin
-      if Old then
-        AnsiMsg := NextData(OrigMsg, 1200)
-      else
-        Utf8Mess := UTF8Encode(NextData(OrigMsg, 3000));
-      Randomize;
-      CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4);
-      CoocId1 := IntToHex(Random($AAAA), 4);
-      // Старый формат сообщений (анси кодировка)
-      if Old then
-        begin
-          Pkt := '00040006000000000006' + CoocId + '0001' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0002' + IntToHex
-            ((Length(AnsiMsg) + 13), 4) + '05010001010101' + IntToHex((Length(AnsiMsg) + 4), 4) + '00000000' + Text2Hex(AnsiMsg)
-            + '00060000';
-        end
-      else
-        begin
-          // Новый формат сообщений (UTF-8 кодировка)
-          Pkt2 := '1b000a000000000000000000000000000000000000000300000000' + CoocId1 + '0e00' + CoocId1 +
-            '00000000000000000000000001000000' + '0400' + IntToHex(Swap16((Length(Utf8Mess) + 1)), 4) + Text2Hex(Utf8Mess)
-            + '0000000000ffffff0026000000' + Text2Hex(Cap1);
-          Len2 := Length(Hex2Text(Pkt2));
-          Pkt1 := '0000' + CoocId + Cap + '000a00020001' + '000f0000' + '2711' + IntToHex(Len2, 4) + Pkt2;
-          Len1 := Length(Hex2Text(Pkt1));
-          Pkt := '00040006000000000006' + CoocId + '0002' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0005' + IntToHex(Len1, 4)
-            + Pkt1 + '00030000';
-        end;
-      // Отправляем пакет
-      SendFLAP('2', Pkt);
+      Pkt := '00040006000000000006' + CoocId + '0001' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0002' + IntToHex
+        ((Length(AnsiMsg) + 13), 4) + '05010001010101' + IntToHex((Length(AnsiMsg) + 4), 4) + '00000000' + Text2Hex(AnsiMsg) + '00060000';
+    end
+    else
+    begin
+      // Новый формат сообщений (UTF-8 кодировка)
+      Pkt2 := '1b000a000000000000000000000000000000000000000300000000' + CoocId1 + '0e00' + CoocId1 + '00000000000000000000000001000000' +
+        '0400' + IntToHex(Swap16((Length(Utf8Mess) + 1)), 4) + Text2Hex(Utf8Mess) + '0000000000ffffff0026000000' + Text2Hex(Cap1);
+      Len2 := Length(Hex2Text(Pkt2));
+      Pkt1 := '0000' + CoocId + Cap + '000a00020001' + '000f0000' + '2711' + IntToHex(Len2, 4) + Pkt2;
+      Len1 := Length(Hex2Text(Pkt1));
+      Pkt := '00040006000000000006' + CoocId + '0002' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0005' + IntToHex(Len1, 4)
+        + Pkt1 + '00030000';
     end;
+    // Отправляем пакет
+    SendFLAP('2', Pkt);
+  end;
 end;
 
 procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string);
@@ -2783,57 +2746,57 @@ begin
   // Ищем эту запись в Ростере
   RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
+  begin
+    // Выставляем параметры сообщения в этой записи
+    with RosterItem do
     begin
-      // Выставляем параметры сообщения в этой записи
-      with RosterItem do
-        begin
-          // Ник контакта из Ростера
-          Nick := SubItems[0];
-          // Дата сообщения
-          MsgD := Nick + ' [' + DateTimeChatMess + ']';
-          // Записываем историю в этот контакт если он уже найден в списке контактов
-          SubItems[15] := PopMsg;
-          SubItems[35] := '0';
-        end;
-    end
-  else // Если такой контакт не найден в Ростере, то добавляем его
-    begin
-      // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-      Nick := SearchNickInCash('Icq', UIN);
+      // Ник контакта из Ростера
+      Nick := SubItems[0];
       // Дата сообщения
       MsgD := Nick + ' [' + DateTimeChatMess + ']';
-      // Ищем группу "Не в списке" в Ростере
-      RosterItem := RosterForm.ReqRosterItem('NoCL');
-      if RosterItem = nil then // Если группу не нашли
-        begin
-          // Добавляем такую группу в Ростер
-          RosterItem := RosterForm.RosterJvListView.Items.Add;
-          RosterItem.Caption := 'NoCL';
-          // Подготавиливаем все значения
-          RosterForm.RosterItemSetFull(RosterItem);
-          RosterItem.SubItems[1] := NoInListGroupCaption;
-        end;
-      // Добавляем этот контакт в Ростер
-      RosterItem := RosterForm.RosterJvListView.Items.Add;
-      with RosterItem do
-        begin
-          Caption := UIN;
-          // Подготавиливаем все значения
-          RosterForm.RosterItemSetFull(RosterItem);
-          // Обновляем субстроки
-          SubItems[0] := Nick;
-          SubItems[1] := 'NoCL';
-          SubItems[2] := 'none';
-          SubItems[3] := 'Icq';
-          SubItems[6] := '214';
-          SubItems[15] := PopMsg;
-          SubItems[35] := '0';
-          // Запрашиваем анкету неопознанных контактов
-          if Nick = UIN then
-            if ICQ_Work_Phaze then
-              ICQ_ReqInfo_New_Pkt(UIN);
-        end;
+      // Записываем историю в этот контакт если он уже найден в списке контактов
+      SubItems[15] := PopMsg;
+      SubItems[35] := '0';
     end;
+  end
+  else // Если такой контакт не найден в Ростере, то добавляем его
+  begin
+    // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
+    Nick := SearchNickInCash('Icq', UIN);
+    // Дата сообщения
+    MsgD := Nick + ' [' + DateTimeChatMess + ']';
+    // Ищем группу "Не в списке" в Ростере
+    RosterItem := RosterForm.ReqRosterItem('NoCL');
+    if RosterItem = nil then // Если группу не нашли
+    begin
+      // Добавляем такую группу в Ростер
+      RosterItem := RosterForm.RosterJvListView.Items.Add;
+      RosterItem.Caption := 'NoCL';
+      // Подготавиливаем все значения
+      RosterForm.RosterItemSetFull(RosterItem);
+      RosterItem.SubItems[1] := NoInListGroupCaption;
+    end;
+    // Добавляем этот контакт в Ростер
+    RosterItem := RosterForm.RosterJvListView.Items.Add;
+    with RosterItem do
+    begin
+      Caption := UIN;
+      // Подготавиливаем все значения
+      RosterForm.RosterItemSetFull(RosterItem);
+      // Обновляем субстроки
+      SubItems[0] := Nick;
+      SubItems[1] := 'NoCL';
+      SubItems[2] := 'none';
+      SubItems[3] := 'Icq';
+      SubItems[6] := '214';
+      SubItems[15] := PopMsg;
+      SubItems[35] := '0';
+      // Запрашиваем анкету неопознанных контактов
+      if Nick = UIN then
+        if ICQ_Work_Phaze then
+          ICQ_ReqInfo_New_Pkt(UIN);
+    end;
+  end;
   // Записываем история в файл истории с этим контактов
   HistoryFile := ProfilePath + HistoryFileName + 'Icq ' + ICQ_LoginUIN + ' ' + UIN + '.htm';
   SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
@@ -2844,14 +2807,11 @@ begin
 end;
 
 procedure ICQ_ReqMessage_0407(PktData: string);
-label
-  X,
-  Y,
-  Z;
+label x, y, Z;
 var
   UIN, Msg, UserClass, Status, TimeReg, IconHash, ConnTime: string;
   SubData, ExtIP, IntPort, IntIP, Desc, URL, TLV: string;
-  I, Count, MsgLen: Integer;
+  i, Count, MsgLen: Integer;
   Len, ULen, CharsetNumber: Word;
   FSize: LongWord;
   MsgType: Word;
@@ -2861,7 +2821,8 @@ begin
   // Начинаем разбор входящего сообщения
   TLV := Text2Hex(NextData(PktData, 2));
   case HexToInt(TLV) of
-    $0001: begin
+    $0001:
+      begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
         XLog('ICQ get | ' + Log_ReqMessage + UIN);
@@ -2869,89 +2830,92 @@ begin
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
-          goto X;
-        for I := 0 to Count - 1 do
-          begin
-            TLV := Text2Hex(NextData(PktData, 2));
-            case HexToInt(TLV) of
-              $0001: // Класс контакта (вдруг админ постучит)
-                begin
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  UserClass := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_UserClass + UserClass);
-                end;
-              $0006: // Статус
-                begin
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  Status := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_Status + Status);
-                end;
-              $0005: // Дата регистраций UIN
-                begin
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
-                end;
-              $001D: // Аватар хэш и другие доп. статусы
-                begin
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  IconHash := NextData(PktData, Len);
-                  XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
-                end;
-              $000F: // Время в сети
-                begin
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
-                end;
-              $0003: // Время подключения
-                begin
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
-                end
-              else
-                begin
-                  // Если есть другие TLV, то пропускаем их
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-                end;
+          goto x;
+        for i := 0 to Count - 1 do
+        begin
+          TLV := Text2Hex(NextData(PktData, 2));
+          case HexToInt(TLV) of
+            $0001: // Класс контакта (вдруг админ постучит)
+              begin
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                UserClass := Text2Hex(NextData(PktData, Len));
+                XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+              end;
+            $0006: // Статус
+              begin
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Status := Text2Hex(NextData(PktData, Len));
+                XLog('ICQ parsing | ' + Log_Status + Status);
+              end;
+            $0005: // Дата регистраций UIN
+              begin
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+              end;
+            $001D: // Аватар хэш и другие доп. статусы
+              begin
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                IconHash := NextData(PktData, Len);
+                XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+              end;
+            $000F: // Время в сети
+              begin
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+              end;
+            $0003: // Время подключения
+              begin
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+              end
+            else
+            begin
+              // Если есть другие TLV, то пропускаем их
+              Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+              XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
             end;
           end;
-      X :;
+        end;
+      x :;
         while Length(PktData) > 0 do
-          begin
-            // 0000: US-ASCII
-            // 0001: Plain
-            // 0002: UCS-2BE
-            // 0003: local 8bit encoding, iso-8859-1, cp-1257, cp-1251
-            TLV := Text2Hex(NextData(PktData, 2));
-            case HexToInt(TLV) of
-              $0002: begin
-                  NextData(PktData, 4); // TLV length + Unknown const
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  NextData(PktData, Len); // Counts of following bytes + following bytes
-                  NextData(PktData, 2); // x0101, Unknown, constant
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  ULen := Len - 4; // Length of the message + 4
-                  CharsetNumber := HexToInt(Text2Hex(NextData(PktData, 2))); //The encoding used for the message
-                  // CharsetSubset := HexToInt(Text2Hex(NextData(PktData, 2))); //Unknown; seen: 0x0000 = 0, 0xffff = -1
-                  NextData(PktData, 2);
-                  Msg := NextData(PktData, ULen);
-                  if CharsetNumber = $0002 then Msg := UCS2BEToStr(Msg);
-                  if Msg <> EmptyStr then
-                    XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
-                  Msg := RTF2Plain(Msg);
-                end
-              else
-                begin
-                  // Если есть другие TLV, то пропускаем их
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-                end;
+        begin
+          // 0000: US-ASCII
+          // 0001: Plain
+          // 0002: UCS-2BE
+          // 0003: local 8bit encoding, iso-8859-1, cp-1257, cp-1251
+          TLV := Text2Hex(NextData(PktData, 2));
+          case HexToInt(TLV) of
+            $0002:
+              begin
+                NextData(PktData, 4); // TLV length + Unknown const
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                NextData(PktData, Len); // Counts of following bytes + following bytes
+                NextData(PktData, 2); // x0101, Unknown, constant
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                ULen := Len - 4; // Length of the message + 4
+                CharsetNumber := HexToInt(Text2Hex(NextData(PktData, 2))); // The encoding used for the message
+                // CharsetSubset := HexToInt(Text2Hex(NextData(PktData, 2))); //Unknown; seen: 0x0000 = 0, 0xffff = -1
+                NextData(PktData, 2);
+                Msg := NextData(PktData, ULen);
+                if CharsetNumber = $0002 then
+                  Msg := UCS2BEToStr(Msg);
+                if Msg <> EmptyStr then
+                  XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
+                Msg := RTF2Plain(Msg);
+              end
+            else
+            begin
+              // Если есть другие TLV, то пропускаем их
+              Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+              XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
             end;
           end;
+        end;
       end;
-    $0002, $0005, $0006: begin
+    $0002, $0005, $0006:
+      begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
         XLog('ICQ get | ' + Log_ReqMessage + UIN);
@@ -2959,146 +2923,158 @@ begin
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
-          goto Y;
-        for I := 0 to Count - 1 do
-          begin
-            TLV := Text2Hex(NextData(PktData, 2));
-            case HexToInt(TLV) of
-              $0001: begin // Класс контакта (вдруг админ постучит)
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  UserClass := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_UserClass + UserClass);
-                end;
-              $0006: begin // Статус
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  Status := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_Status + Status);
-                end;
-              $0005: begin // Дата регистраций UIN
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
-                end;
-              $001D: begin // Аватар хэш и другие доп. статусы
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  IconHash := NextData(PktData, Len);
-                  XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
-                end;
-              $000F: begin // Время в сети
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
-                end;
-              $0003: begin // Время подключения
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
-                end
-              else
-                begin
-                  // Если есть другие TLV, то пропускаем их
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-                end;
+          goto y;
+        for i := 0 to Count - 1 do
+        begin
+          TLV := Text2Hex(NextData(PktData, 2));
+          case HexToInt(TLV) of
+            $0001:
+              begin // Класс контакта (вдруг админ постучит)
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                UserClass := Text2Hex(NextData(PktData, Len));
+                XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+              end;
+            $0006:
+              begin // Статус
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Status := Text2Hex(NextData(PktData, Len));
+                XLog('ICQ parsing | ' + Log_Status + Status);
+              end;
+            $0005:
+              begin // Дата регистраций UIN
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+              end;
+            $001D:
+              begin // Аватар хэш и другие доп. статусы
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                IconHash := NextData(PktData, Len);
+                XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+              end;
+            $000F:
+              begin // Время в сети
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+              end;
+            $0003:
+              begin // Время подключения
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+              end
+            else
+            begin
+              // Если есть другие TLV, то пропускаем их
+              Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+              XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
             end;
           end;
-      Y :;
+        end;
+      y :;
         while Length(PktData) > 0 do
-          begin
-            case HexToInt(Text2Hex(NextData(PktData, 2))) of
-              $0005: begin
-                  FSize := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  if HexToInt(Text2Hex(NextData(PktData, 2))) <> 0 then
-                    begin
-                      NextData(PktData, (FSize) - 2);
-                      Continue;
-                    end;
-                  NextData(PktData, 8);
-                  NextData(PktData, 16);
-                  while Length(PktData) > 0 do
-                    begin
-                      TLV := Text2Hex(NextData(PktData, 2));
-                      case HexToInt(TLV) of
-                        $0003: begin // Внутренний IP
-                            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                            IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                          end;
-                        $0004: begin // Внешний IP
-                            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                            ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                            XLog('ICQ parsing | ' + Log_Ext_IP + ExtIP);
-                          end;
-                        $0005: begin // Внутренний порт
-                            IntPort := IntToStr(HexToInt(Text2Hex(NextData(PktData, 4))));
-                            XLog('ICQ parsing | ' + Log_Int_IP + IntIP + ':' + IntPort);
-                          end;
-                        $2711: begin // Сообщение
-                            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                            SubData := NextData(PktData, Len);
-                            // If this value is not present, this is not a message packet.
-                            // Also, ICQ2001b does not send an ACK, SNAC(4,B), if this is not 0x1B.
-                            if NextData(SubData, 1) <> #$1B then
-                              Exit;
-                            NextData(SubData, 26);
-                            NextData(SubData, 2); // FFSeq
-                            NextData(SubData, 16);
-                            MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
-                            XLog('ICQ parsing | ' + Log_Msg_Type + IntToHex(MsgType, 1));
-                            NextData(SubData, 1); // MsgFlag
-                            NextData(SubData, 2); // status code
-                            NextData(SubData, 2); // priority code
-                            if MsgType = M_FILE then // File request
-                              begin
-                                Exit;
-                              end
-                            else if MsgType = M_CONTACTS then // Contact list message
-                              begin
-                                Exit;
-                              end
-                            else if MsgType = M_ADVANCED then
-                              begin
-                                Exit;
-                              end
-                            else
-                              begin
-                                MsgLen := Swap16(HexToInt(Text2Hex(NextData(SubData, 2))));
-                                Dec(MsgLen);
-                                Msg := Utf8Decode(NextData(SubData, MsgLen));
-                                if Msg <> EmptyStr then
-                                  XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
-                                if Length(Msg) > 0 then
-                                  begin
-                                    if MsgType = M_PLAIN then
-                                      begin
-                                        Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
-                                      end
-                                    else if MsgType = M_URL then
-                                      begin
-                                        Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
-                                        URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
-                                        Msg := URL + RN + Desc;
-                                      end;
-                                  end;
-                              end;
-                          end
-                        else
-                          begin
-                            // Если есть другие TLV, то пропускаем их
-                            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-                          end;
+        begin
+          case HexToInt(Text2Hex(NextData(PktData, 2))) of
+            $0005:
+              begin
+                FSize := HexToInt(Text2Hex(NextData(PktData, 2)));
+                if HexToInt(Text2Hex(NextData(PktData, 2))) <> 0 then
+                begin
+                  NextData(PktData, (FSize) - 2);
+                  Continue;
+                end;
+                NextData(PktData, 8);
+                NextData(PktData, 16);
+                while Length(PktData) > 0 do
+                begin
+                  TLV := Text2Hex(NextData(PktData, 2));
+                  case HexToInt(TLV) of
+                    $0003:
+                      begin // Внутренний IP
+                        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                        IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
                       end;
+                    $0004:
+                      begin // Внешний IP
+                        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                        ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                        XLog('ICQ parsing | ' + Log_Ext_IP + ExtIP);
+                      end;
+                    $0005:
+                      begin // Внутренний порт
+                        IntPort := IntToStr(HexToInt(Text2Hex(NextData(PktData, 4))));
+                        XLog('ICQ parsing | ' + Log_Int_IP + IntIP + ':' + IntPort);
+                      end;
+                    $2711:
+                      begin // Сообщение
+                        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                        SubData := NextData(PktData, Len);
+                        // If this value is not present, this is not a message packet.
+                        // Also, ICQ2001b does not send an ACK, SNAC(4,B), if this is not 0x1B.
+                        if NextData(SubData, 1) <> #$1B then
+                          Exit;
+                        NextData(SubData, 26);
+                        NextData(SubData, 2); // FFSeq
+                        NextData(SubData, 16);
+                        MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
+                        XLog('ICQ parsing | ' + Log_Msg_Type + IntToHex(MsgType, 1));
+                        NextData(SubData, 1); // MsgFlag
+                        NextData(SubData, 2); // status code
+                        NextData(SubData, 2); // priority code
+                        if MsgType = M_FILE then // File request
+                        begin
+                          Exit;
+                        end
+                        else if MsgType = M_CONTACTS then // Contact list message
+                        begin
+                          Exit;
+                        end
+                        else if MsgType = M_ADVANCED then
+                        begin
+                          Exit;
+                        end
+                        else
+                        begin
+                          MsgLen := Swap16(HexToInt(Text2Hex(NextData(SubData, 2))));
+                          Dec(MsgLen);
+                          Msg := Utf8Decode(NextData(SubData, MsgLen));
+                          if Msg <> EmptyStr then
+                            XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
+                          if Length(Msg) > 0 then
+                          begin
+                            if MsgType = M_PLAIN then
+                            begin
+                              Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
+                            end
+                            else if MsgType = M_URL then
+                            begin
+                              Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
+                              URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
+                              Msg := URL + RN + Desc;
+                            end;
+                          end;
+                        end;
+                      end
+                    else
+                    begin
+                      // Если есть другие TLV, то пропускаем их
+                      Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                      XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
                     end;
-                end
-              else
-                begin
-                  // Если есть другие TLV, то пропускаем их
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, Len))));
+                  end;
                 end;
+              end
+            else
+            begin
+              // Если есть другие TLV, то пропускаем их
+              Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+              XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, Len))));
             end;
           end;
+        end;
       end;
-    $0004: begin
+    $0004:
+      begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
         XLog('ICQ get | ' + Log_ReqMessage + UIN);
@@ -3107,84 +3083,90 @@ begin
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
           goto Z;
-        for I := 0 to Count - 1 do
-          begin
-            TLV := Text2Hex(NextData(PktData, 2));
-            case HexToInt(TLV) of
-              $0001: begin // Класс контакта (вдруг админ постучит)
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  UserClass := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_UserClass + UserClass);
-                end;
-              $0006: begin // Статус
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  Status := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_Status + Status);
-                end;
-              $0005: begin // Дата регистраций UIN
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
-                end;
-              $001D: begin // Аватар хэш и другие доп. статусы
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  IconHash := NextData(PktData, Len);
-                  XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
-                end;
-              $000F: begin // Время в сети
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
-                end;
-              $0003: begin // Время подключения
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
-                end
-              else
-                begin
-                  // Если есть другие TLV, то пропускаем их
-                  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-                end;
+        for i := 0 to Count - 1 do
+        begin
+          TLV := Text2Hex(NextData(PktData, 2));
+          case HexToInt(TLV) of
+            $0001:
+              begin // Класс контакта (вдруг админ постучит)
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                UserClass := Text2Hex(NextData(PktData, Len));
+                XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+              end;
+            $0006:
+              begin // Статус
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                Status := Text2Hex(NextData(PktData, Len));
+                XLog('ICQ parsing | ' + Log_Status + Status);
+              end;
+            $0005:
+              begin // Дата регистраций UIN
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+              end;
+            $001D:
+              begin // Аватар хэш и другие доп. статусы
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                IconHash := NextData(PktData, Len);
+                XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+              end;
+            $000F:
+              begin // Время в сети
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+              end;
+            $0003:
+              begin // Время подключения
+                Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+                ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+                XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+              end
+            else
+            begin
+              // Если есть другие TLV, то пропускаем их
+              Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+              XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
             end;
           end;
+        end;
       Z :;
         if HexToInt(Text2Hex(NextData(PktData, 2))) = $0005 then
+        begin
+          NextData(PktData, 2);
+          NextData(PktData, 4); // UIN
+          MsgType := HexToInt(Text2Hex(NextData(PktData, 1)));
+          XLog('ICQ parsing | ' + Log_Msg_Type + IntToHex(MsgType, 1));
+          NextData(PktData, 1); // MsgFlag
+          MsgLen := Swap16(HexToInt(Text2Hex(NextData(PktData, 2))));
+          Dec(MsgLen);
+          Msg := Utf8Decode(NextData(PktData, MsgLen));
+          if Msg <> EmptyStr then
+            XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
+          if Length(Msg) > 0 then
           begin
-            NextData(PktData, 2);
-            NextData(PktData, 4); // UIN
-            MsgType := HexToInt(Text2Hex(NextData(PktData, 1)));
-            XLog('ICQ parsing | ' + Log_Msg_Type + IntToHex(MsgType, 1));
-            NextData(PktData, 1); // MsgFlag
-            MsgLen := Swap16(HexToInt(Text2Hex(NextData(PktData, 2))));
-            Dec(MsgLen);
-            Msg := Utf8Decode(NextData(PktData, MsgLen));
-            if Msg <> EmptyStr then
-              XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
-            if Length(Msg) > 0 then
-              begin
-                if MsgType = M_PLAIN then
-                  begin
-                    Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
-                  end
-                else if MsgType = M_URL then
-                  begin
-                    Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
-                    URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
-                    Msg := URL + RN + Desc;
-                  end
-                else if MsgType = M_WEB_PAGE then
-                  begin
-                    Exit;
-                  end;
-              end;
+            if MsgType = M_PLAIN then
+            begin
+              Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
+            end
+            else if MsgType = M_URL then
+            begin
+              Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
+              URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
+              Msg := URL + RN + Desc;
+            end
+            else if MsgType = M_WEB_PAGE then
+            begin
+              Exit;
+            end;
           end;
+        end;
       end
     else
-      begin
-        XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(PktData)));
-        Exit;
-      end;
+    begin
+      XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(PktData)));
+      Exit;
+    end;
   end;
   // Передаём полученные данные для события входящего сообщения
   ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime);
@@ -3209,40 +3191,41 @@ begin
   IClient := -1;
   // Разбираем субпакет с хэш аватары и доп. статусами
   while Length(IconHash) > 0 do
+  begin
+    // Получаем идентификатор Bart_ID
+    BartID := HexToInt(Text2Hex(NextData(IconHash, 2)));
+    // Проверяем флаг
+    if BartID <> 15 then
+      NextData(IconHash, 1);
+    // Получаем длинну барт данных
+    BartLength := HexToInt(Text2Hex(NextData(IconHash, 1)));
+    // Если длинна барт данных больше нуля, то сканируем на нужные нам TLV
+    if BartLength <> 0 then
     begin
-      // Получаем идентификатор Bart_ID
-      BartID := HexToInt(Text2Hex(NextData(IconHash, 2)));
-      // Проверяем флаг
-      if BartID <> 15 then
-        NextData(IconHash, 1);
-      // Получаем длинну барт данных
-      BartLength := HexToInt(Text2Hex(NextData(IconHash, 1)));
-      // Если длинна барт данных больше нуля, то сканируем на нужные нам TLV
-      if BartLength <> 0 then
-        begin
-          case BartID of
-            BUDDY_ICON: // Хэш-аватара
-              IHash := NextData(IconHash, BartLength);
-            STATUS_MOOD: // Название x-статуса (картинка)
-              begin
-                IXStatNew := NextData(IconHash, BartLength);
-                // Преобразуем новый тип доп. статуса в номер иконки
-                NextData(IXStatNew, 7);
-                IXStat := StrToInt(IXStatNew);
-              end;
-            STATUS_STR: // Текст x-статуса
-              begin
-                BartSubLen := HexToInt(Text2Hex(NextData(IconHash, 2)));
-                IXText := UTF8Decode(NextData(IconHash, BartSubLen));
-                if BartLength - BartSubLen > 0 then
-                  NextData(IconHash, BartLength - BartSubLen); // Тупые байты
-              end;
-          else begin
-              XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(IconHash, BartLength))));
-            end;
+      case BartID of
+        BUDDY_ICON: // Хэш-аватара
+          IHash := NextData(IconHash, BartLength);
+        STATUS_MOOD: // Название x-статуса (картинка)
+          begin
+            IXStatNew := NextData(IconHash, BartLength);
+            // Преобразуем новый тип доп. статуса в номер иконки
+            NextData(IXStatNew, 7);
+            IXStat := StrToInt(IXStatNew);
           end;
+        STATUS_STR: // Текст x-статуса
+          begin
+            BartSubLen := HexToInt(Text2Hex(NextData(IconHash, 2)));
+            IXText := Utf8Decode(NextData(IconHash, BartSubLen));
+            if BartLength - BartSubLen > 0 then
+              NextData(IconHash, BartLength - BartSubLen); // Тупые байты
+          end;
+      else
+        begin
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(IconHash, BartLength))));
         end;
+      end;
     end;
+  end;
   // Ищем доп. статус в капабилитисах (старый способ передачи доп. статусов)
   if BMSearch(0, Caps, XS1) > -1 then
     IXStat := 1
@@ -3320,162 +3303,162 @@ begin
     IXStat := 180;
   // Ищем идентификаторы клиентов в капабилитисах
   if BMSearch(0, Caps, CAP_IMADERING) > -1 then
-    begin
-      IClient := 1;
-      PClient := 'IMadering';
-    end
+  begin
+    IClient := 1;
+    PClient := 'IMadering';
+  end
   else if BMSearch(0, Caps, CAP_QIP) > -1 then
-    begin
-      IClient := 2;
-      PClient := 'QIP';
-    end
+  begin
+    IClient := 2;
+    PClient := 'QIP';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'Smaper') > -1 then
-    begin
-      IClient := 8;
-      PClient := 'Smaper';
-    end
+  begin
+    IClient := 8;
+    PClient := 'Smaper';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'MirandaM') > -1 then
-    begin
-      IClient := 3;
-      PClient := 'Miranda';
-    end
+  begin
+    IClient := 3;
+    PClient := 'Miranda';
+  end
   else if BMSearch(0, Hex2Text(Caps), '&RQinside') > -1 then
-    begin
-      IClient := 4;
-      PClient := '&RQ';
-    end
+  begin
+    IClient := 4;
+    PClient := '&RQ';
+  end
   else if BMSearch(0, Caps, CAP_RNQ) > -1 then
-    begin
-      IClient := 5;
-      PClient := 'R&Q';
-    end
+  begin
+    IClient := 5;
+    PClient := 'R&Q';
+  end
   else if BMSearch(0, Caps, CAP_MACICQ) > -1 then
-    begin
-      IClient := 10;
-      PClient := 'MacICQ';
-    end
+  begin
+    IClient := 10;
+    PClient := 'MacICQ';
+  end
   else if BMSearch(0, Caps, CAP_KXICQ) > -1 then
-    begin
-      IClient := 12;
-      PClient := 'KXICQ';
-    end
+  begin
+    IClient := 12;
+    PClient := 'KXICQ';
+  end
   else if BMSearch(0, Caps, CAP_PUSH2TALK) > -1 then
-    begin
-      IClient := 14;
-      PClient := 'ICQ Lite';
-    end
+  begin
+    IClient := 14;
+    PClient := 'ICQ Lite';
+  end
   else if BMSearch(0, Caps, CAP_ICQLITE) > -1 then
-    begin
-      IClient := 15;
-      PClient := 'ICQ Lite';
-    end
+  begin
+    IClient := 15;
+    PClient := 'ICQ Lite';
+  end
   else if BMSearch(0, Caps, CAP_NETVIGATOR) > -1 then
-    begin
-      IClient := 16;
-      PClient := 'ICQ Net';
-    end
+  begin
+    IClient := 16;
+    PClient := 'ICQ Net';
+  end
   else if BMSearch(0, Caps, CAP_IMPLUS) > -1 then
-    begin
-      IClient := 18;
-      PClient := 'IM plus';
-    end
+  begin
+    IClient := 18;
+    PClient := 'IM plus';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'Jimm') > -1 then
-    begin
-      IClient := 19;
-      PClient := 'Jimm';
-    end
+  begin
+    IClient := 19;
+    PClient := 'Jimm';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'Kopete') > -1 then
-    begin
-      IClient := 20;
-      PClient := 'Kopete';
-    end
+  begin
+    IClient := 20;
+    PClient := 'Kopete';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'Licq client') > -1 then
-    begin
-      IClient := 21;
-      PClient := 'Licq';
-    end
+  begin
+    IClient := 21;
+    PClient := 'Licq';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'mChat icq') > -1 then
-    begin
-      IClient := 22;
-      PClient := 'mChat';
-    end
+  begin
+    IClient := 22;
+    PClient := 'mChat';
+  end
   else if BMSearch(0, Caps, CAP_RAMBLER_RU) > -1 then
-    begin
-      IClient := 23;
-      PClient := 'Rambler ICQ';
-    end
+  begin
+    IClient := 23;
+    PClient := 'Rambler ICQ';
+  end
   else if BMSearch(0, Hex2Text(Caps), 'SIM client') > -1 then
-    begin
-      IClient := 24;
-      PClient := 'SIM';
-    end
+  begin
+    IClient := 24;
+    PClient := 'SIM';
+  end
   else if BMSearch(0, Caps, CAP_TRILL_CRYPT) > -1 then
-    begin
-      IClient := 25;
-      PClient := 'Trillian';
-    end
+  begin
+    IClient := 25;
+    PClient := 'Trillian';
+  end
   else if BMSearch(0, Caps, CAP_QIP_INFIUM) > -1 then
-    begin
-      IClient := 26;
-      PClient := 'QIP Infium';
-    end;
+  begin
+    IClient := 26;
+    PClient := 'QIP Infium';
+  end;
   // Ищем поддержку UTF-8 сообщений
   if (BMSearch(0, Caps, CAP_UTF8) > -1) or (BMSearch(0, CapsId, '134E') > -1) then
     Utf8Sup := True;
   // Обновляем отображение контакта в Ростере
   RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
+  begin
+    with RosterItem do
     begin
-      with RosterItem do
+      // Если контакт не требует авторизации, то назначаем иконку статуса
+      if SubItems[2] = 'both' then
+        SubItems[6] := IntToStr(StatusIcoInd)
+      else
+      begin
+        // Если контакт не авторизован, но пришел его статус, то считаем что он уже авторизован
+        // и назначаем ему иконку статуса
+        if (SubItems[2] = 'none') and (StatusIcoInd <> 9) then
         begin
-          // Если контакт не требует авторизации, то назначаем иконку статуса
-          if SubItems[2] = 'both' then
-            SubItems[6] := IntToStr(StatusIcoInd)
-          else
-            begin
-              // Если контакт не авторизован, но пришел его статус, то считаем что он уже авторизован
-              // и назначаем ему иконку статуса
-              if (SubItems[2] = 'none') and (StatusIcoInd <> 9) then
-                begin
-                  SubItems[6] := IntToStr(StatusIcoInd);
-                  // Снимаем флаг о необходимости авторизации и иконку предупреждения об этом
-                  SubItems[2] := 'both';
-                  SubItems[8] := '-1';
-                end;
-            end;
-          // Ставим иконки доп. статуса
-          if IXStat > -1 then
-            SubItems[7] := IntToStr(IXStat + 44)
-          else
-            SubItems[7] := '-1';
-          // Ставим иконку клиента
-          if IClient > -1 then
-            SubItems[8] := IntToStr(IClient + 186)
-          else
-            SubItems[8] := '-1';
-          // Присваиваем онлайн переменные контакту
-          SubItems[20] := UserClass;
-          SubItems[21] := IntIP;
-          SubItems[22] := IntPort;
-          SubItems[23] := ExtIP;
-          SubItems[24] := ConnFlag;
-          SubItems[25] := ProtoVer;
-          // Если протокол версия ноль, то отправляем сообщения в старом формате
-          if ProtoVer = '0' then
-            Utf8Sup := False;
-          SubItems[26] := TimeReg;
-          SubItems[27] := CapsId;
-          SubItems[28] := Caps;
-          SubItems[29] := Text2Hex(IHash);
-          SubItems[30] := ConnTime;
-          SubItems[31] := IXText;
-          SubItems[32] := PClient;
-          if Utf8Sup then
-            SubItems[33] := 'X'
-          else
-            SubItems[33] := EmptyStr;
+          SubItems[6] := IntToStr(StatusIcoInd);
+          // Снимаем флаг о необходимости авторизации и иконку предупреждения об этом
+          SubItems[2] := 'both';
+          SubItems[8] := '-1';
         end;
+      end;
+      // Ставим иконки доп. статуса
+      if IXStat > -1 then
+        SubItems[7] := IntToStr(IXStat + 44)
+      else
+        SubItems[7] := '-1';
+      // Ставим иконку клиента
+      if IClient > -1 then
+        SubItems[8] := IntToStr(IClient + 186)
+      else
+        SubItems[8] := '-1';
+      // Присваиваем онлайн переменные контакту
+      SubItems[20] := UserClass;
+      SubItems[21] := IntIP;
+      SubItems[22] := IntPort;
+      SubItems[23] := ExtIP;
+      SubItems[24] := ConnFlag;
+      SubItems[25] := ProtoVer;
+      // Если протокол версия ноль, то отправляем сообщения в старом формате
+      if ProtoVer = '0' then
+        Utf8Sup := False;
+      SubItems[26] := TimeReg;
+      SubItems[27] := CapsId;
+      SubItems[28] := Caps;
+      SubItems[29] := Text2Hex(IHash);
+      SubItems[30] := ConnTime;
+      SubItems[31] := IXText;
+      SubItems[32] := PClient;
+      if Utf8Sup then
+        SubItems[33] := 'X'
+      else
+        SubItems[33] := EmptyStr;
     end;
+  end;
   // Запускаем таймер задержку событий Ростера
   MainForm.JvTimerList.Events[11].Enabled := False;
   MainForm.JvTimerList.Events[11].Enabled := True;
@@ -3495,12 +3478,11 @@ begin
 end;
 
 procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
-label
-  X;
+label x;
 var
   UIN, IconHash, UserClass, TimeReg, ConnTime, Status: string;
   CapsId, Caps, IntPort, ProtoVer, IntIP, ExtIP, ConnFlag: string;
-  Count, I: Word;
+  Count, i: Word;
   Len: Integer;
   TLV, DCInfo, Temp1, Temp2: string;
 begin
@@ -3517,116 +3499,116 @@ begin
   Count := HexToInt(Text2Hex(NextData(PktData, 2)));
   // Если ноль TLV, то прыгаем в конец процедуры
   if Count < 1 then
-    goto X;
+    goto x;
   // Сканируем TLV в цикле
-  for I := 0 to Count - 1 do
-    begin
-      TLV := Text2Hex(NextData(PktData, 2));
-      case HexToInt(TLV) of
-        $0001: // Класс контакта (вдруг админ постучит)
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            UserClass := Text2Hex(NextData(PktData, Len));
-            XLog('ICQ parsing | ' + Log_UserClass + UserClass);
-          end;
-        $000C: // DC информация
-          begin
-            // Узнаём длинну пакета с DC информацией
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            DCInfo := NextData(PktData, Len);
-            // Внутрений IP адрес и порт
-            IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(DCInfo, 4)))));
-            IntPort := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Int_IP + IntIP + ':' + IntPort);
-            // Флаг подключения и версия протокола
-            ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
-            XLog('ICQ parsing | ' + Log_ConnFlag + ConnFlag);
-            ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
-            XLog('ICQ parsing | ' + Log_ProtoVer + ProtoVer);
-            // Дополнительные поля для как правило для нужд программистов
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 8))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 6))));
-          end;
-        $000A: // Внешний IP адрес
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_Ext_IP + ExtIP);
-          end;
-        $0006: // Статус
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            Status := Text2Hex(NextData(PktData, Len));
-            XLog('ICQ parsing | ' + Log_Status + Status);
-          end;
-        $0005: // Дата регистраций UIN
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
-          end;
-        $0019: // Укороченные капабилитисы
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            CapsId := Text2Hex(NextData(PktData, Len));
-            Temp1 := CapsId;
-            Temp2 := EmptyStr;
-            while Length(Temp1) > 0 do
-              Temp2 := Temp2 + NextData(Temp1, 4) + RN;
-            XLog('ICQ parsing | ' + 'CapsId:' + RN + Temp2);
-          end;
-        $000D: // Полные капабилитисы
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            Caps := Text2Hex(NextData(PktData, Len));
-            Temp1 := Caps;
-            Temp2 := EmptyStr;
-            while Length(Temp1) > 0 do
-              Temp2 := Temp2 + NextData(Temp1, 32) + RN;
-            XLog('ICQ parsing | ' + 'Caps:' + RN + Temp2);
-          end;
-        $001D: // Аватар хэш и другие доп. статусы
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            IconHash := NextData(PktData, Len);
-            XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
-          end;
-        $000F: // Время в сети
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
-          end;
-        $0003: // Время подключения
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
-          end
-        else
-          begin
-            // Если есть другие TLV, то пропускаем их
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-          end;
+  for i := 0 to Count - 1 do
+  begin
+    TLV := Text2Hex(NextData(PktData, 2));
+    case HexToInt(TLV) of
+      $0001: // Класс контакта (вдруг админ постучит)
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          UserClass := Text2Hex(NextData(PktData, Len));
+          XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+        end;
+      $000C: // DC информация
+        begin
+          // Узнаём длинну пакета с DC информацией
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          DCInfo := NextData(PktData, Len);
+          // Внутрений IP адрес и порт
+          IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(DCInfo, 4)))));
+          IntPort := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 4))));
+          XLog('ICQ parsing | ' + Log_Int_IP + IntIP + ':' + IntPort);
+          // Флаг подключения и версия протокола
+          ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
+          XLog('ICQ parsing | ' + Log_ConnFlag + ConnFlag);
+          ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
+          XLog('ICQ parsing | ' + Log_ProtoVer + ProtoVer);
+          // Дополнительные поля для как правило для нужд программистов
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 8))));
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
+          XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 6))));
+        end;
+      $000A: // Внешний IP адрес
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          XLog('ICQ parsing | ' + Log_Ext_IP + ExtIP);
+        end;
+      $0006: // Статус
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          Status := Text2Hex(NextData(PktData, Len));
+          XLog('ICQ parsing | ' + Log_Status + Status);
+        end;
+      $0005: // Дата регистраций UIN
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+        end;
+      $0019: // Укороченные капабилитисы
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          CapsId := Text2Hex(NextData(PktData, Len));
+          Temp1 := CapsId;
+          Temp2 := EmptyStr;
+          while Length(Temp1) > 0 do
+            Temp2 := Temp2 + NextData(Temp1, 4) + RN;
+          XLog('ICQ parsing | ' + 'CapsId:' + RN + Temp2);
+        end;
+      $000D: // Полные капабилитисы
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          Caps := Text2Hex(NextData(PktData, Len));
+          Temp1 := Caps;
+          Temp2 := EmptyStr;
+          while Length(Temp1) > 0 do
+            Temp2 := Temp2 + NextData(Temp1, 32) + RN;
+          XLog('ICQ parsing | ' + 'Caps:' + RN + Temp2);
+        end;
+      $001D: // Аватар хэш и другие доп. статусы
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          IconHash := NextData(PktData, Len);
+          XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+        end;
+      $000F: // Время в сети
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+        end;
+      $0003: // Время подключения
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+        end
+      else
+      begin
+        // Если есть другие TLV, то пропускаем их
+        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+        XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
       end;
     end;
-X :;
+  end;
+x :;
   // Если это была проверка статуса то выводим сообщение
   if CheckStatus then
-    begin
-      if Status <> 'FFFFFFFF' then
-        ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), ICQ_ClientCap2String(Caps), 0)
-      else
-        ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), EmptyStr, 2);
-    end
+  begin
+    if Status <> 'FFFFFFFF' then
+      ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), ICQ_ClientCap2String(Caps), 0)
+    else
+      ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), EmptyStr, 2);
+  end
   else
-    begin
-      // Передаём полученные данные другой процедуре для их финальной обработки
-      ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash, ConnTime);
-    end;
+  begin
+    // Передаём полученные данные другой процедуре для их финальной обработки
+    ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash, ConnTime);
+  end;
 end;
 
 procedure ICQ_UserOffline_030C(PktData: string);
@@ -3670,21 +3652,36 @@ begin
     Xxxx := '1009';
   // Формируем флаги для второй половины статуса
   case ImgId of
-    7: Result := Xxxx + ICQ_Status_ONLINE;
-    8: Result := Xxxx + ICQ_Status_AWAY;
-    9: Result := Ffff + ICQ_Status_OFFLINE;
-    10: Result := Xxxx + ICQ_Status_INVISIBLE;
-    11: Result := Xxxx + ICQ_Status_INVISIBLE;
-    12: Result := Xxxx + ICQ_Status_OCCUPIED;
-    13: Result := Xxxx + ICQ_Status_DND;
-    14: Result := Xxxx + ICQ_Status_NA;
-    15: Result := Xxxx + ICQ_Status_LUNCH;
-    16: Result := Xxxx + ICQ_Status_FFC;
-    17: Result := Xxxx + ICQ_Status_DEPRESSION;
-    18: Result := Xxxx + ICQ_Status_EVIL;
-    19: Result := Xxxx + ICQ_Status_ATHOME;
-    20: Result := Xxxx + ICQ_Status_ATWORK;
-  else Result := Xxxx + ICQ_Status_ONLINE;
+    7:
+      Result := Xxxx + ICQ_Status_ONLINE;
+    8:
+      Result := Xxxx + ICQ_Status_AWAY;
+    9:
+      Result := Ffff + ICQ_Status_OFFLINE;
+    10:
+      Result := Xxxx + ICQ_Status_INVISIBLE;
+    11:
+      Result := Xxxx + ICQ_Status_INVISIBLE;
+    12:
+      Result := Xxxx + ICQ_Status_OCCUPIED;
+    13:
+      Result := Xxxx + ICQ_Status_DND;
+    14:
+      Result := Xxxx + ICQ_Status_NA;
+    15:
+      Result := Xxxx + ICQ_Status_LUNCH;
+    16:
+      Result := Xxxx + ICQ_Status_FFC;
+    17:
+      Result := Xxxx + ICQ_Status_DEPRESSION;
+    18:
+      Result := Xxxx + ICQ_Status_EVIL;
+    19:
+      Result := Xxxx + ICQ_Status_ATHOME;
+    20:
+      Result := Xxxx + ICQ_Status_ATWORK;
+  else
+    Result := Xxxx + ICQ_Status_ONLINE;
   end;
 end;
 
@@ -3708,18 +3705,18 @@ var
 begin
   // В зависимости от приватного статуса отсылаем пакет видимости для групп
   if (ICQ_CurrentStatus = 10) or (ICQ_CurrentStatus = 11) then
-    begin
-      ICQ_PrivatStatus_Enabled := True;
-      if ICQ_CurrentStatus = 10 then
-        ICQ_UpdatePrivate_Group('03');
-      if ICQ_CurrentStatus = 11 then
-        ICQ_UpdatePrivate_Group('02');
-    end
+  begin
+    ICQ_PrivatStatus_Enabled := True;
+    if ICQ_CurrentStatus = 10 then
+      ICQ_UpdatePrivate_Group('03');
+    if ICQ_CurrentStatus = 11 then
+      ICQ_UpdatePrivate_Group('02');
+  end
   else if ICQ_PrivatStatus_Enabled then
-    begin
-      ICQ_PrivatStatus_Enabled := False;
-      ICQ_UpdatePrivate_Group('04');
-    end;
+  begin
+    ICQ_PrivatStatus_Enabled := False;
+    ICQ_UpdatePrivate_Group('04');
+  end;
   // Формируем пакет
   Pkt := '0001001E000000000000' + '00060004' + ICQ_StatusImgId2Code(ICQ_CurrentStatus);
   Result := Pkt;
@@ -3754,7 +3751,7 @@ end;
 
 function ICQ_Parse_1306(PktData: string): Boolean;
 var
-  Len, Count, I: Integer;
+  Len, Count, i: Integer;
   CLTimeStamp: DWord;
   SubData, QSN, QGroupId, QID, QType, QTimeId, Rsu, QNick, TLV: string;
   Dt: TDateTime;
@@ -3772,257 +3769,258 @@ begin
   // Начинаем добаление записей контактов в Ростер
   RosterForm.RosterJvListView.Items.BeginUpdate;
   try
-    for I := 0 to Count - 1 do
-      begin
-        // Длинна записи
-        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        // Получаем имя записи
-        QSN := Utf8Decode(NextData(PktData, Len));
-        // Получаем идентификатор группы
-        QGroupId := Text2Hex(NextData(PktData, 2));
-        // Идентификатор записи
-        QID := Text2Hex(NextData(PktData, 2));
-        // Тип записи
-        QType := Text2Hex(NextData(PktData, 2));
-        // Длинна TLV записи
-        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        // Получаем субпакет записи
-        SubData := NextData(PktData, Len);
-        // Определяем действие по типу записи
-        case HexToInt(QType) of
-          BUDDY_NORMAL: // Нормальный контакт
+    for i := 0 to Count - 1 do
+    begin
+      // Длинна записи
+      Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+      // Получаем имя записи
+      QSN := Utf8Decode(NextData(PktData, Len));
+      // Получаем идентификатор группы
+      QGroupId := Text2Hex(NextData(PktData, 2));
+      // Идентификатор записи
+      QID := Text2Hex(NextData(PktData, 2));
+      // Тип записи
+      QType := Text2Hex(NextData(PktData, 2));
+      // Длинна TLV записи
+      Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+      // Получаем субпакет записи
+      SubData := NextData(PktData, Len);
+      // Определяем действие по типу записи
+      case HexToInt(QType) of
+        BUDDY_NORMAL: // Нормальный контакт
+          begin
+            // Добавляем контакт в Ростер
+            ListItemD := RosterForm.RosterJvListView.Items.Add;
+            with ListItemD do
             begin
-              // Добавляем контакт в Ростер
-              ListItemD := RosterForm.RosterJvListView.Items.Add;
-              with ListItemD do
-                begin
-                  Caption := QSN;
-                  // Подготавиливаем все значения
-                  RosterForm.RosterItemSetFull(ListItemD);
-                  // Обновляем субстроки
-                  SubItems[0] := QSN;
-                  SubItems[1] := QGroupId;
-                  SubItems[2] := 'both';
-                  SubItems[3] := 'Icq';
-                  SubItems[4] := QID;
-                  SubItems[5] := QType;
-                  SubItems[6] := '9';
-                  // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
-                  while Length(SubData) > 0 do
-                    begin
-                      TLV := Text2Hex(SubData[1] + SubData[2]);
-                      case HexToInt(Text2Hex(NextData(SubData, 2))) of
-                        $0131: // Ник контакта
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            QNick := Utf8Decode(NextData(SubData, Len));
-                            if QNick <> EmptyStr then
-                              SubItems[0] := QNick;
-                          end;
-                        $013A: // Номер сотового телефона
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[9] := NextData(SubData, Len);
-                          end;
-                        $0066: // Авторизован ли контакт для нашего КЛ
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            NextData(SubData, Len);
-                            // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
-                            SubItems.Strings[2] := 'none';
-                            SubItems.Strings[6] := '80';
-                            SubItems.Strings[8] := '220';
-                          end;
-                        $013C: // Заметка о контакте
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[10] := NextData(SubData, Len);
-                          end;
-                        $0137: // Email контакта
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[11] := NextData(SubData, Len);
-                          end;
-                        $006D: // TimeId
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            QTimeId := Text2Hex(NextData(SubData, Len));
-                            SubItems[12] := QTimeId;
-                            // DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                          end
-                        else
-                          begin
-                            // Если пакет содержит другие TLV, то пропускаем их
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))));
-                          end;
-                      end;
-                    end;
-                end;
-            end;
-          BUDDY_GROUP: // Группа
-            begin
-              // Нулевая группа для временных контактов в серверном КЛ
-              if QGroupId = '0000' then
-                begin
-                  // Добавляем группу в Ростер
-                  ListItemD := RosterForm.RosterJvListView.Items.Add;
-                  with ListItemD do
-                    begin
-                      Caption := QGroupId;
-                      // Подготавиливаем все значения
-                      RosterForm.RosterItemSetFull(ListItemD);
-                      // Обновляем субстроки
-                      SubItems[1] := HideContactGroupCaption;
-                      SubItems[3] := 'Icq';
-                      SubItems[4] := QGroupId;
-                    end;
-                end
-                // Стандартная група
-              else if QGroupId <> '0000' then
-                begin
-                  // Если есть хоть одна группа, то отключаем режим "нового" КЛ
-                  NewKL := False;
-                  // Добавляем группу в Ростер
-                  ListItemD := RosterForm.RosterJvListView.Items.Add;
-                  with ListItemD do
-                    begin
-                      Caption := QGroupId;
-                      // Подготавиливаем все значения
-                      RosterForm.RosterItemSetFull(ListItemD);
-                      // Обновляем субстроки
-                      SubItems[1] := QSN;
-                      SubItems[3] := 'Icq';
-                      SubItems[4] := QGroupId;
-                    end;
-                end;
-            end;
-          BUDDY_UPGROUP: // Код для приватных групп
-            begin
-              ICQ_UpdatePrivateGroup_Code := QID;
-            end;
-          BUDDY_IGNORE: // Игнорируемые контакты
-            begin
-              //
-            end;
-          BUDDY_INVISIBLE: // Невидящие контакты
-            begin
-              //
-            end;
-          BUDDY_VISIBLE: // Видящие контакты
-            begin
-              //
-            end;
-          BUDDY_DELETE, BUDDY_AUTORIZ: // Временные контакты из нулевой группы
-            begin
-              ListItemD := RosterForm.RosterJvListView.Items.Add;
-              with ListItemD do
-                begin
-                  Caption := QSN;
-                  // Подготавиливаем все значения
-                  RosterForm.RosterItemSetFull(ListItemD);
-                  // Обновляем субстроки
-                  // Делаем поиск ника в кэше ников
-                  if ICQ_Show_HideContacts then
-                    SubItems[0] := SearchNickInCash('Icq', QSN)
-                  else
-                    SubItems[0] := QSN;
-                  SubItems[1] := QGroupId;
-                  SubItems[2] := 'none';
-                  SubItems[3] := 'Icq';
-                  SubItems[4] := QID;
-                  SubItems[5] := QType;
-                  // Назначаем такому контакту серый неизвестный статус и иконку
-                  SubItems[6] := '214';
-                  // Сканируем пакет на нужные нам TLV
-                  while Length(SubData) > 0 do
-                    begin
-                      TLV := Text2Hex(NextData(SubData, 2));
-                      case HexToInt(TLV) of
-                        $006D: // TimeId
-                          begin
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            QTimeId := Text2Hex(NextData(SubData, Len));
-                            SubItems[12] := QTimeId;
-                            // DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
-                          end
-                        else
-                          begin
-                            // Если пакет содержит другие TLV, то пропускаем их
-                            Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            NextData(SubData, Len);
-                          end;
-                      end;
-                    end;
-                end;
-            end;
-          BUDDY_VANITY: // Информация о нашей деятельности на этом UIN
-            begin
-              // Сканируем пакет на нужные нам TLV
+              Caption := QSN;
+              // Подготавиливаем все значения
+              RosterForm.RosterItemSetFull(ListItemD);
+              // Обновляем субстроки
+              SubItems[0] := QSN;
+              SubItems[1] := QGroupId;
+              SubItems[2] := 'both';
+              SubItems[3] := 'Icq';
+              SubItems[4] := QID;
+              SubItems[5] := QType;
+              SubItems[6] := '9';
+              // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
               while Length(SubData) > 0 do
-                begin
-                  TLV := Text2Hex(NextData(SubData, 2));
-                  case HexToInt(TLV) of
-                    $0067: // Начало сбора статистики
-                      begin
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                      end;
-                    $0150: // Всего отправлено сообщений
-                      begin
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                      end;
-                    $0151: // Дней проведено в сети
-                      begin
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        Dt := HexToInt(Text2Hex(NextData(SubData, Len))) / 86400;
-                        if Trunc(Dt) > 0 then
-                          begin
-                            Rsu := IntToStr(Trunc(Dt)) + ' day';
-                            if Trunc(Dt) > 1 then
-                              Rsu := Rsu + 's';
-                            Rsu := Rsu + ', ';
-                          end;
-                        DecodeTime(Dt, Hour, Min, Sec, MSec);
-                        if Hour > 0 then
-                          Rsu := Rsu + Format('%d h, ', [Hour]);
-                        if Min > 0 then
-                          Rsu := Rsu + Format('%d m, ', [Min]);
-                        if Sec > 0 then
-                          Rsu := Rsu + Format('%d s, ', [Sec]);
-                        Delete(Rsu, Length(Rsu) - 1, 2);
-                        ICQ_OnlineTime := Rsu;
-                      end;
-                    $0152: // Всего отправлено Away сообщений
-                      begin
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                      end;
-                    $0153: // Всего получено сообщений
-                      begin
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                      end;
-                    $0160: // Активность
-                      begin
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                      end
-                    else
-                      begin
-                        // Если пакет содержит другие TLV, то пропускаем их
-                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))));
-                      end;
+              begin
+                TLV := Text2Hex(SubData[1] + SubData[2]);
+                case HexToInt(Text2Hex(NextData(SubData, 2))) of
+                  $0131: // Ник контакта
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      QNick := Utf8Decode(NextData(SubData, Len));
+                      if QNick <> EmptyStr then
+                        SubItems[0] := QNick;
+                    end;
+                  $013A: // Номер сотового телефона
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      SubItems[9] := NextData(SubData, Len);
+                    end;
+                  $0066: // Авторизован ли контакт для нашего КЛ
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      NextData(SubData, Len);
+                      // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
+                      SubItems.Strings[2] := 'none';
+                      SubItems.Strings[6] := '80';
+                      SubItems.Strings[8] := '220';
+                    end;
+                  $013C: // Заметка о контакте
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      SubItems[10] := NextData(SubData, Len);
+                    end;
+                  $0137: // Email контакта
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      SubItems[11] := NextData(SubData, Len);
+                    end;
+                  $006D: // TimeId
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      QTimeId := Text2Hex(NextData(SubData, Len));
+                      SubItems[12] := QTimeId;
+                      // DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                    end
+                  else
+                  begin
+                    // Если пакет содержит другие TLV, то пропускаем их
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len)))
+                      );
                   end;
                 end;
-              // Отображаем эти переменные в окне настроек ICQ
-              if Assigned(IcqOptionsForm) then
-                IcqOptionsForm.SetOnlineVars;
+              end;
             end;
-        end;
+          end;
+        BUDDY_GROUP: // Группа
+          begin
+            // Нулевая группа для временных контактов в серверном КЛ
+            if QGroupId = '0000' then
+            begin
+              // Добавляем группу в Ростер
+              ListItemD := RosterForm.RosterJvListView.Items.Add;
+              with ListItemD do
+              begin
+                Caption := QGroupId;
+                // Подготавиливаем все значения
+                RosterForm.RosterItemSetFull(ListItemD);
+                // Обновляем субстроки
+                SubItems[1] := HideContactGroupCaption;
+                SubItems[3] := 'Icq';
+                SubItems[4] := QGroupId;
+              end;
+            end
+            // Стандартная група
+            else if QGroupId <> '0000' then
+            begin
+              // Если есть хоть одна группа, то отключаем режим "нового" КЛ
+              NewKL := False;
+              // Добавляем группу в Ростер
+              ListItemD := RosterForm.RosterJvListView.Items.Add;
+              with ListItemD do
+              begin
+                Caption := QGroupId;
+                // Подготавиливаем все значения
+                RosterForm.RosterItemSetFull(ListItemD);
+                // Обновляем субстроки
+                SubItems[1] := QSN;
+                SubItems[3] := 'Icq';
+                SubItems[4] := QGroupId;
+              end;
+            end;
+          end;
+        BUDDY_UPGROUP: // Код для приватных групп
+          begin
+            ICQ_UpdatePrivateGroup_Code := QID;
+          end;
+        BUDDY_IGNORE: // Игнорируемые контакты
+          begin
+            //
+          end;
+        BUDDY_INVISIBLE: // Невидящие контакты
+          begin
+            //
+          end;
+        BUDDY_VISIBLE: // Видящие контакты
+          begin
+            //
+          end;
+        BUDDY_DELETE, BUDDY_AUTORIZ: // Временные контакты из нулевой группы
+          begin
+            ListItemD := RosterForm.RosterJvListView.Items.Add;
+            with ListItemD do
+            begin
+              Caption := QSN;
+              // Подготавиливаем все значения
+              RosterForm.RosterItemSetFull(ListItemD);
+              // Обновляем субстроки
+              // Делаем поиск ника в кэше ников
+              if ICQ_Show_HideContacts then
+                SubItems[0] := SearchNickInCash('Icq', QSN)
+              else
+                SubItems[0] := QSN;
+              SubItems[1] := QGroupId;
+              SubItems[2] := 'none';
+              SubItems[3] := 'Icq';
+              SubItems[4] := QID;
+              SubItems[5] := QType;
+              // Назначаем такому контакту серый неизвестный статус и иконку
+              SubItems[6] := '214';
+              // Сканируем пакет на нужные нам TLV
+              while Length(SubData) > 0 do
+              begin
+                TLV := Text2Hex(NextData(SubData, 2));
+                case HexToInt(TLV) of
+                  $006D: // TimeId
+                    begin
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      QTimeId := Text2Hex(NextData(SubData, Len));
+                      SubItems[12] := QTimeId;
+                      // DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                    end
+                  else
+                  begin
+                    // Если пакет содержит другие TLV, то пропускаем их
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    NextData(SubData, Len);
+                  end;
+                end;
+              end;
+            end;
+          end;
+        BUDDY_VANITY: // Информация о нашей деятельности на этом UIN
+          begin
+            // Сканируем пакет на нужные нам TLV
+            while Length(SubData) > 0 do
+            begin
+              TLV := Text2Hex(NextData(SubData, 2));
+              case HexToInt(TLV) of
+                $0067: // Начало сбора статистики
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
+                  end;
+                $0150: // Всего отправлено сообщений
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                  end;
+                $0151: // Дней проведено в сети
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    Dt := HexToInt(Text2Hex(NextData(SubData, Len))) / 86400;
+                    if Trunc(Dt) > 0 then
+                    begin
+                      Rsu := IntToStr(Trunc(Dt)) + ' day';
+                      if Trunc(Dt) > 1 then
+                        Rsu := Rsu + 's';
+                      Rsu := Rsu + ', ';
+                    end;
+                    DecodeTime(Dt, Hour, Min, Sec, MSec);
+                    if Hour > 0 then
+                      Rsu := Rsu + Format('%d h, ', [Hour]);
+                    if Min > 0 then
+                      Rsu := Rsu + Format('%d m, ', [Min]);
+                    if Sec > 0 then
+                      Rsu := Rsu + Format('%d s, ', [Sec]);
+                    Delete(Rsu, Length(Rsu) - 1, 2);
+                    ICQ_OnlineTime := Rsu;
+                  end;
+                $0152: // Всего отправлено Away сообщений
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                  end;
+                $0153: // Всего получено сообщений
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                  end;
+                $0160: // Активность
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                    ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
+                  end
+                else
+                begin
+                  // Если пакет содержит другие TLV, то пропускаем их
+                  Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))));
+                end;
+              end;
+            end;
+            // Отображаем эти переменные в окне настроек ICQ
+            if Assigned(IcqOptionsForm) then
+              IcqOptionsForm.SetOnlineVars;
+          end;
       end;
+    end;
   finally
     // Заканчиваем добаление записей контактов в Ростер
     RosterForm.RosterJvListView.Items.EndUpdate;
@@ -4031,30 +4029,30 @@ begin
   CLTimeStamp := HexToInt(Text2Hex(NextData(PktData, 4)));
   // Если время больше нуля, то заканчиваем с наполнением КЛ
   if CLTimeStamp <> 0 then
+  begin
+    // Если это обсолютно пустой и новый КЛ, то создаём первую в его жизни группу (обязательное условие)
+    if NewKL then
     begin
-      // Если это обсолютно пустой и новый КЛ, то создаём первую в его жизни группу (обязательное условие)
-      if NewKL then
-        begin
-          // Стартуем фазу добавления группы
-          ICQ_Add_Nick := 'General';
-          // Рандомизируем случайный идентификатор
-          Randomize;
-          ICQ_Add_GroupId := IntToHex(Random($7FFF), 4);
-          ICQ_Add_Group_Phaze := True;
-          ICQ_SSI_Phaze := True;
-          ICQ_AddGroup('General', ICQ_Add_GroupId);
-        end;
-      // Объявляем финальный результат разбора всего пакета
-      Result := True;
-      // Запускаем обработку Ростера
-      CollapseGroupsRestore := True;
-      RosterForm.UpdateFullCL;
+      // Стартуем фазу добавления группы
+      ICQ_Add_Nick := 'General';
+      // Рандомизируем случайный идентификатор
+      Randomize;
+      ICQ_Add_GroupId := IntToHex(Random($7FFF), 4);
+      ICQ_Add_Group_Phaze := True;
+      ICQ_SSI_Phaze := True;
+      ICQ_AddGroup('General', ICQ_Add_GroupId);
     end;
+    // Объявляем финальный результат разбора всего пакета
+    Result := True;
+    // Запускаем обработку Ростера
+    CollapseGroupsRestore := True;
+    RosterForm.UpdateFullCL;
+  end;
 end;
 
 procedure ICQ_Parse_010F(PktData: string);
 var
-  Len, Count, I: Integer;
+  Len, Count, i: Integer;
   TLV: string;
 begin
   // Если пакет пустой, то выходим
@@ -4069,52 +4067,52 @@ begin
   NextData(PktData, 2); // Пропускаем уровень предупреждений (в icq протоколе всегда равен 0)
   // Получаем количесво вложенных в пакет TLV
   Count := HexToInt(Text2Hex(NextData(PktData, 2)));
-  for I := 0 to Count - 1 do
-    begin
-      TLV := Text2Hex(NextData(PktData, 2));
-      // Сканируем пакет на наличие нужных нам TLV
-      case HexToInt(TLV) of
-        $0003: // Время подключения
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            MyConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_ConnTime + MyConnTime);
-            // Отображаем это в окне настроек ICQ
-            if Assigned(IcqOptionsForm) then
-              IcqOptionsForm.ConnectTimeInfoEdit.Text := MyConnTime;
-          end;
-        $0005: // Дата регистрации нашего UIN
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_UIN_RegTime + ICQ_MyUIN_RegTime);
-            // Отображаем это в окне настроек ICQ
-            if Assigned(IcqOptionsForm) then
-              IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
-          end;
-        $000A: // Наш внешний IP адрес
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_Ext_IP + ICQ_Online_IP);
-            // Отображаем это в окне настроек ICQ
-            if Assigned(IcqOptionsForm) then
-              IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
-          end;
-        $0028:
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            ICQ_Connect_Count := IntToStr(HexToInt(Text2Hex(NextData(PktData, Len))));
-            XLog('ICQ parsing | ' + Log_Connect_Count + ICQ_Connect_Count);
-          end
-        else
-          begin
-            // Если пакет содержит другие TLV, то пропускаем их
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
-          end;
+  for i := 0 to Count - 1 do
+  begin
+    TLV := Text2Hex(NextData(PktData, 2));
+    // Сканируем пакет на наличие нужных нам TLV
+    case HexToInt(TLV) of
+      $0003: // Время подключения
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          MyConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          XLog('ICQ parsing | ' + Log_ConnTime + MyConnTime);
+          // Отображаем это в окне настроек ICQ
+          if Assigned(IcqOptionsForm) then
+            IcqOptionsForm.ConnectTimeInfoEdit.Text := MyConnTime;
+        end;
+      $0005: // Дата регистрации нашего UIN
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          XLog('ICQ parsing | ' + Log_UIN_RegTime + ICQ_MyUIN_RegTime);
+          // Отображаем это в окне настроек ICQ
+          if Assigned(IcqOptionsForm) then
+            IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
+        end;
+      $000A: // Наш внешний IP адрес
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          XLog('ICQ parsing | ' + Log_Ext_IP + ICQ_Online_IP);
+          // Отображаем это в окне настроек ICQ
+          if Assigned(IcqOptionsForm) then
+            IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
+        end;
+      $0028:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          ICQ_Connect_Count := IntToStr(HexToInt(Text2Hex(NextData(PktData, Len))));
+          XLog('ICQ parsing | ' + Log_Connect_Count + ICQ_Connect_Count);
+        end
+      else
+      begin
+        // Если пакет содержит другие TLV, то пропускаем их
+        Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+        XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
       end;
     end;
+  end;
 end;
 
 function ICQ_CliFamilyPkt: string;
@@ -4125,8 +4123,8 @@ end;
 function ICQ_CliCookiePkt(Cookie: string): string;
 begin
   Result := '000000010006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex
-    ('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001a0002' + IntToHex
-    (102, 4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000f' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
+    ('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001a0002' + IntToHex(102,
+    4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000f' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
     + '000e' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100' + '8003000400100000';
 end;
 
@@ -4154,10 +4152,10 @@ begin
   MD5hash := PacketToHex(@Digest, SizeOf(TMD5Digest));
   // Формируем пакет
   Result := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN)
-    + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client') + '00170002' + IntToHex(6, 4)
-    + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001A0002' + IntToHex(102, 4) + '00160002' + IntToHex(266, 4)
-    + '00140004' + IntToHex(30007, 8) + '000F' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '000E' + IntToHex(Length('ru'), 4) + Text2Hex
-    ('ru') + '0094000100';
+    + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client')
+    + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001A0002' + IntToHex(102, 4)
+    + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000F' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
+    + '000E' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100';
 end;
 
 procedure ICQ_NotifyUserStatus(UIN, IStatus, IClient: string; IColor: Integer);
@@ -4251,29 +4249,29 @@ end;
 
 procedure ICQ_GoOffline;
 var
-  I: Integer;
+  i: Integer;
 begin
   // Отключаем таймер факстатуса, пингов
   MainForm.UnstableICQStatus.Checked := False;
   with MainForm.JvTimerList do
-    begin
-      Events[4].Enabled := False;
-      Events[5].Enabled := False;
-    end;
+  begin
+    Events[4].Enabled := False;
+    Events[5].Enabled := False;
+  end;
   // Если существует форма настроек протокола ICQ, то блокируем там контролы
   if Assigned(IcqOptionsForm) then
+  begin
+    with IcqOptionsForm do
     begin
-      with IcqOptionsForm do
-        begin
-          NoAutoAuthRadioButton.Enabled := False;
-          YesAutoAuthRadioButton.Enabled := False;
-          ShowWebAwareCheckBox.Enabled := False;
-          ICQUINEdit.Enabled := True;
-          ICQUINEdit.Color := ClWindow;
-          PassEdit.Enabled := True;
-          PassEdit.Color := ClWindow;
-        end;
+      NoAutoAuthRadioButton.Enabled := False;
+      YesAutoAuthRadioButton.Enabled := False;
+      ShowWebAwareCheckBox.Enabled := False;
+      ICQUINEdit.Enabled := True;
+      ICQUINEdit.Color := ClWindow;
+      PassEdit.Enabled := True;
+      PassEdit.Color := ClWindow;
     end;
+  end;
   // Активируем фазу оффлайн и обнуляем буферы пакетов
   ICQ_Connect_Phaze := False;
   ICQ_HTTP_Connect_Phaze := False;
@@ -4296,47 +4294,47 @@ begin
   ICQ_LastActive := EmptyStr;
   // Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do
-    begin
-      if ICQWSocket.State = WsConnected then
-        ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq, 4) + '0000'));
-      // Закрываем сокет
-      ICQWSocket.Abort;
-      // Ставим иконку и значение статуса оффлайн
-      ICQ_CurrentStatus := 9;
-      ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-      ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
-      // Подсвечиваем в меню статуса ICQ статус оффлайн
-      ICQStatusOffline.default := True;
-    end;
+  begin
+    if ICQWSocket.State = WsConnected then
+      ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq, 4) + '0000'));
+    // Закрываем сокет
+    ICQWSocket.Abort;
+    // Ставим иконку и значение статуса оффлайн
+    ICQ_CurrentStatus := 9;
+    ICQToolButton.ImageIndex := ICQ_CurrentStatus;
+    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    // Подсвечиваем в меню статуса ICQ статус оффлайн
+    ICQStatusOffline.default := True;
+  end;
   // Обнуляем счётчики пакетов
   ICQ_Seq := $1000;
   ICQ_Avatar_Seq := $2000;
   // Обнуляем события и переменные в Ростере
   with RosterForm.RosterJvListView do
+  begin
+    for i := 0 to Items.Count - 1 do
     begin
-      for I := 0 to Items.Count - 1 do
-        begin
-          if Items[I].SubItems[3] = 'Icq' then
-            begin
-              if Items[I].SubItems[6] <> '214' then
-                Items[I].SubItems[6] := '9';
-              Items[I].SubItems[7] := '-1';
-              Items[I].SubItems[8] := '-1';
-              Items[I].SubItems[13] := '';
-              Items[I].SubItems[15] := '';
-              Items[I].SubItems[16] := '';
-              Items[I].SubItems[18] := '0';
-              Items[I].SubItems[19] := '0';
-              Items[I].SubItems[20] := '';
-              Items[I].SubItems[24] := '';
-              Items[I].SubItems[25] := '';
-              Items[I].SubItems[30] := '';
-              Items[I].SubItems[31] := '';
-              Items[I].SubItems[32] := '';
-              Items[I].SubItems[35] := '0';
-            end;
-        end;
+      if Items[i].SubItems[3] = 'Icq' then
+      begin
+        if Items[i].SubItems[6] <> '214' then
+          Items[i].SubItems[6] := '9';
+        Items[i].SubItems[7] := '-1';
+        Items[i].SubItems[8] := '-1';
+        Items[i].SubItems[13] := '';
+        Items[i].SubItems[15] := '';
+        Items[i].SubItems[16] := '';
+        Items[i].SubItems[18] := '0';
+        Items[i].SubItems[19] := '0';
+        Items[i].SubItems[20] := '';
+        Items[i].SubItems[24] := '';
+        Items[i].SubItems[25] := '';
+        Items[i].SubItems[30] := '';
+        Items[i].SubItems[31] := '';
+        Items[i].SubItems[32] := '';
+        Items[i].SubItems[35] := '0';
+      end;
     end;
+  end;
   // Запускаем обработку Ростера
   RosterForm.UpdateFullCL;
 end;
@@ -4345,113 +4343,113 @@ function ICQ_GenerateClientCaps(ClientName, CVer: string): string;
 begin
   Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
   if ClientName = 'IMadering' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_IMADERING;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_IMADERING;
+  end
   else if ClientName = 'QIP 2005' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_QIP +
-        CAP_ICQDEVILS + CAP_QIP_PROTECTMSG + CAP_ICQ_XTRAZ_SUPPORT;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_QIP +
+      CAP_ICQDEVILS + CAP_QIP_PROTECTMSG + CAP_ICQ_XTRAZ_SUPPORT;
+  end
   else if ClientName = 'Miranda' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_MIRANDA;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_MIRANDA;
+  end
   else if ClientName = '&RQ' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_ANDRQ;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_ANDRQ;
+  end
   else if ClientName = 'R&Q' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_RNQ;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_RNQ;
+  end
   else if ClientName = 'AIM' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
+  end
   else if ClientName = 'Compad' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION;
+  end
   else if ClientName = 'QIP mobile' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
+  end
   else if ClientName = 'ICQ 6.0' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
+  end
   else if ClientName = 'MacICQ' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_MACICQ;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_MACICQ;
+  end
   else if ClientName = 'Pidgin' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
+  end
   else if ClientName = 'ICQKX' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_KXICQ;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_KXICQ;
+  end
   else if ClientName = 'ICQ 2001' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
+  end
   else if ClientName = 'ICQ 5.1' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION +
-        CAP_PUSH2TALK + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_PUSH2TALK +
+      CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
+  end
   else if ClientName = 'ICQ lite' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_ICQLITE;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_ICQLITE;
+  end
   else if ClientName = 'ICQnet' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_PUSH2TALK +
-        CAP_MULTI_USER + CAP_ICQ_XTRAZ_SUPPORT + CAP_NETVIGATOR;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_PUSH2TALK +
+      CAP_MULTI_USER + CAP_ICQ_XTRAZ_SUPPORT + CAP_NETVIGATOR;
+  end
   else if ClientName = 'icq2go' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION;
+  end
   else if ClientName = 'ImPlus' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_IMPLUS;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_IMPLUS;
+  end
   else if ClientName = 'jimm' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_JIMM + CAP_TYPING_NOTIFICATION;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_JIMM + CAP_TYPING_NOTIFICATION;
+  end
   else if ClientName = 'Kopete' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_ICQ_XTRAZ_SUPPORT + CAP_KOPETE;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_ICQ_XTRAZ_SUPPORT + CAP_KOPETE;
+  end
   else if ClientName = 'Licq' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_LICQ2;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_LICQ2;
+  end
   else if ClientName = 'mChat' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_MCHAT;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_MCHAT;
+  end
   else if ClientName = 'Rambler ICQ' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION +
-        CAP_RAMBLER_RU + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_RAMBLER_RU +
+      CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
+  end
   else if ClientName = 'SIM' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_SIM;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_SIM;
+  end
   else if ClientName = 'Trillian' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_TRILL_UNK + CAP_TRILL_CRYPT;
-    end
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_TRILL_UNK + CAP_TRILL_CRYPT;
+  end
   else if ClientName = 'QIP infium' then
-    begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_QIP_INFIUM;
-    end;
+  begin
+    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_QIP_INFIUM;
+  end;
 end;
 
 end.
