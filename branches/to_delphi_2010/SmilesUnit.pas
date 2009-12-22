@@ -93,7 +93,7 @@ end;
 procedure TSmilesForm.FormDeactivate(Sender: TObject);
 begin
   // Закрываем окно
-  Close;
+  Hide;
 end;
 
 procedure TSmilesForm.FormDestroy(Sender: TObject);

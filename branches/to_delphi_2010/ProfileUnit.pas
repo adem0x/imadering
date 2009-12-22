@@ -208,8 +208,8 @@ begin
   AccountToNick := TStringList.Create;
   InMessList := TStringList.Create;
   SmilesList := TStringList.Create;
-  if FileExists(ProfilePath + 'Profile\' + 'Nicks.txt') then
-    AccountToNick.LoadFromFile(ProfilePath + 'Profile\' + 'Nicks.txt');
+  if FileExists(ProfilePath + Nick_BD_FileName) then
+    AccountToNick.LoadFromFile(ProfilePath + Nick_BD_FileName);
   XLog(LogNickCash + IntToStr(AccountToNick.Count));
   if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt') then
     SmilesList.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt');

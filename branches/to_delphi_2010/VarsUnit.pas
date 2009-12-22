@@ -37,6 +37,7 @@ const
   HistoryFileName: string = 'History\';
   LangPath: string = 'Langs\%s.xml';
   ContactListFileName: string = 'Contacts.txt';
+  Nick_BD_FileName: string = 'Nicks.txt';
 
 var
   // Переменные общие для всей программы

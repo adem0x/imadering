@@ -4336,7 +4336,7 @@ begin
   // Окно смайлов убрать (глюк в вайн)
   if Assigned(SmilesForm) then
     if SmilesForm.Visible then
-      SmilesForm.Close;
+      SmilesForm.Hide;
 end;
 
 procedure TMainForm.GrandAuthContactClick(Sender: TObject);

@@ -612,7 +612,7 @@ begin
         begin
           case Buttons[I].Tag of
             9, 23, 25, 30, 41, 42, 214: begin
-                Buttons[I].Free;
+                RemoveChatPageButton(Buttons[I]);
                 // Прорисовываем интерфейс
                 Update;
                 // Прыгаем на повторение скана
@@ -622,7 +622,7 @@ begin
         end;
       // Если вкладки все закрыты, то закрываем окно чата
       if ButtonCount = 0 then
-        Close
+        ChatForm.Hide
       else
         begin
           Buttons[0].Down := True;
@@ -646,11 +646,13 @@ begin
           for I := 0 to ButtonCount - 1 do
             if not Buttons[I].Down then
               begin
-                Buttons[I].Free;
+                RemoveChatPageButton(Buttons[I]);
                 Update;
                 goto X;
               end;
         end;
+      // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
+      Realign;
     end;
 end;
 
@@ -668,14 +670,11 @@ end;
 
 procedure TChatForm.CloseTabAllClick(Sender: TObject);
 begin
+  // Закрываем окно чата
+  Hide;
   // Закрываем все вкладки чата
   while ChatPageToolBar.ButtonCount > 0 do
-    begin
-      ChatPageToolBar.Buttons[0].Free;
-      Update;
-    end;
-  // Закрываем окно чата
-  Close;
+    RemoveChatPageButton(ChatPageToolBar.Buttons[0]);
 end;
 
 procedure TChatForm.CopyMemoClick(Sender: TObject);
