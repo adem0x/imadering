@@ -52,7 +52,7 @@ type
     FAcceptedCertsList: TStringList;
     FCertHash: string;
     procedure SaveAcceptedCertsList;
-    procedure LoadAcceptedCertsList;
+    //procedure LoadAcceptedCertsList;
 
   public
     // Принял ли пользователь сертификат
@@ -73,7 +73,6 @@ implementation
 
 uses
   MainUnit,
-  EncdDecd,
   VarsUnit;
 
 {$R *.dfm}
@@ -115,7 +114,7 @@ end;
 
 constructor TShowCertForm.Create(const Cert: TX509Base);
 begin
-  inherited Create(nil);
+{  inherited Create(nil);
   // Создаём лист для загрузки хэшей сертификатов
   FAcceptedCertsList := TStringList.Create;
   // Загружаем файл сертификатов
@@ -132,7 +131,7 @@ begin
       LblShaHash.Caption := LblShaHash.Caption + FCertHash;
       // Отображаем сообщение если сертификат просрочен
       LblCertExpired.Visible := HasExpired;
-    end;
+    end;}
 end;
 
 procedure TShowCertForm.FormCreate(Sender: TObject);
@@ -143,12 +142,12 @@ begin
   MainForm.AllImageList.GetBitmap(140, AcceptCertButton.Glyph);
 end;
 
-procedure TShowCertForm.LoadAcceptedCertsList;
+{procedure TShowCertForm.LoadAcceptedCertsList;
 var
   EncryptedDataStream: TFileStream;
   DecryptedDataStream: TStream;
 begin
-  { if not FileExists(ProfilePath + AcceptedCertsFile) then
+   if not FileExists(ProfilePath + AcceptedCertsFile) then
     Exit;
     try
     EncryptedDataStream := TFileStream.Create(ProfilePath + AcceptedCertsFile,
@@ -163,14 +162,14 @@ begin
     end;
     finally
     FreeAndNil(EncryptedDataStream);
-    end; }
-end;
+    end;
+end;}
 
 procedure TShowCertForm.SaveAcceptedCertsList;
-var
+{var
   EncryptedFileStream: TFileStream;
   DecryptedDataStream: TMemoryStream;
-  EncryptedDataStream: TStream;
+  EncryptedDataStream: TStream;}
 begin
   // Сохраняем список принятых сертификатов в файл
   { DecryptedDataStream := TMemoryStream.Create;

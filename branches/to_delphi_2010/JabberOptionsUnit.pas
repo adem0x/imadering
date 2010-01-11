@@ -125,7 +125,8 @@ uses
   UtilsUnit,
   VarsUnit,
   RosterUnit,
-  OverbyteIcsMimeUtils;
+  OverbyteIcsMimeUtils,
+  OverbyteIcsUrl;
 
 resourcestring
   StrSettingsJabberConnection = 'settings\jabber\connection';
@@ -146,7 +147,6 @@ begin
 end;
 
 // APPLY SETTINGS--------------------------------------------------------------
-
 procedure TJabberOptionsForm.ApplySettings;
 var
   SettingsXml: TrXML;
@@ -172,7 +172,6 @@ begin
 end;
 
 // LOAD SETTINGS---------------------------------------------------------------
-
 procedure TJabberOptionsForm.LoadSettings;
 var
   SettingsXml: TrXML;
@@ -250,7 +249,7 @@ begin
         WriteString(StrKeyLogin, JabberJIDEdit.Text);
         WriteBool(StrKeySavePassword, SavePassCheckBox.Checked);
         if SavePassCheckBox.Checked then
-          WriteString(StrKeyPassword, Base64Encode(PassEdit.Hint))
+          WriteString(StrKeyPassword, Base64Encode(URLEncode(PassEdit.Hint)))
         else
           WriteString(StrKeyPassword, EmptyStr);
         // Маскируем пароль
@@ -318,7 +317,7 @@ begin
         PassEdit.Text := ReadString(StrKeyPassword);
         if PassEdit.Text <> EmptyStr then
           begin
-            PassEdit.Hint := Base64Decode(PassEdit.Text);
+            PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
             Jabber_LoginPassword := PassEdit.Hint;
             PassEdit.Text := StrPassMask;
           end;
@@ -356,6 +355,7 @@ end;
 
 procedure TJabberOptionsForm.FormShow(Sender: TObject);
 begin
+  // Прокручиваем на первую вкладку
   OptionJvPageList.ActivePage := AccountPage;
   JabberOptionButtonGroup.ItemIndex := 0;
 end;

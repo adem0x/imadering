@@ -121,7 +121,7 @@ type
 
   THTMLViewer = class(TWinControl)
   private
-    FScaleX, FScaleY: Single;
+    //FScaleX, FScaleY: Single;
     FCodePage: Integer;
     function GetCursor: TCursor;
     procedure SetCursor(Value: TCursor);
@@ -1796,9 +1796,9 @@ var
   InText: Boolean;
   Tmp: WideString;
 
-function AlphaNum(Ch: WideChar): Boolean;
+function AlphaNum(Ch: Char): Boolean;
 begin
-  Result := (Ch in [WideChar('a') .. WideChar('z'), WideChar('A') .. WideChar('Z'), WideChar('0') .. WideChar('9')]) or (Ch >= #192);
+  Result := CharInSet(Ch, [Char('a') .. Char('z'), Char('A') .. Char('Z'), Char('0') .. Char('9')]) or (Ch >= #192);
 end;
 
 function GetCh(Pos: Integer): WideChar;

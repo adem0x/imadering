@@ -148,7 +148,7 @@ begin
   // Вставляем выбранный смайлик в поле ввода в окне чата
   with ChatForm.InputRichEdit do
     begin
-      Text := Text + ' ' + SmiliesHTMLViewer.TitleAttr;
+      Text := Text + BN + SmiliesHTMLViewer.TitleAttr;
       SelStart := GetTextLen;
       if SmiliesHTMLViewer.CanFocus then
         SmiliesHTMLViewer.SetFocus;

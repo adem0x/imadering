@@ -24,7 +24,10 @@ uses
   JvExComCtrls,
   JvListView,
   CategoryButtons,
-  Menus;
+  Menus,
+  ExtCtrls,
+  StdCtrls,
+  Buttons;
 
 type
   TRosterForm = class(TForm)
@@ -33,16 +36,31 @@ type
     ClearICQ: TMenuItem;
     ClearJabber: TMenuItem;
     ClearMRA: TMenuItem;
+    BottomPanel: TPanel;
+    UINEdit: TEdit;
+    SearchBitBtn: TBitBtn;
+    UINLabel: TLabel;
+    N1: TMenuItem;
+    RosterSendMessMenu: TMenuItem;
+    N2: TMenuItem;
+    ClearTempIcqContacts: TMenuItem;
+    ClearNoCLContacts: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClearICQClick(Sender: TObject);
     procedure ClearJabberClick(Sender: TObject);
     procedure RosterJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
     procedure ClearMRAClick(Sender: TObject);
+    procedure SearchBitBtnClick(Sender: TObject);
+    procedure RosterSendMessMenuClick(Sender: TObject);
+    procedure RosterPopupMenuPopup(Sender: TObject);
+    procedure ClearNoCLContactsClick(Sender: TObject);
+    procedure ClearTempIcqContactsClick(Sender: TObject);
 
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure TranslateForm;
     function ClearContacts(CType: string): Boolean;
     procedure UpdateFullCL;
     function ReqRosterItem(CId: string): TListItem;
@@ -66,7 +84,16 @@ uses
   UtilsUnit,
   VarsUnit,
   ChatUnit,
-  RXML;
+  RXML,
+  OverbyteIcsUrl;
+
+procedure TRosterForm.TranslateForm;
+begin
+  // Создаём шаблон для перевода
+  //CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+end;
 
 function TRosterForm.ReqChatPage(CId: string): TToolButton;
 var
@@ -128,7 +155,7 @@ begin
       with ChatPageToolBar do
         begin
           // Удаляем кнопку с меткой удаления (против глюка в Wine)
-          if (ButtonCount = 1) and (Buttons[0].AutoSize = false) then
+          if (ButtonCount = 1) and (Buttons[0].AutoSize = False) then
             RemoveChatPageButton(Buttons[0]);
           // Если это кнопка
           if (CButton <> nil) and (UIN = EmptyStr) then
@@ -222,14 +249,50 @@ end;
 procedure TRosterForm.RosterJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
 begin
   // Выставляем иконки в Ростере
-  if (Item.SubItems[3] = 'Icq') and (Length(Item.Caption) = 4) then
+  if (Item.SubItems[3] = S_Icq) and (Length(Item.Caption) = 4) then
     Item.ImageIndex := 227
-  else if Item.SubItems[3] = 'Icq' then
+  else if Item.SubItems[3] = S_Icq then
     Item.ImageIndex := 81
-  else if Item.SubItems[3] = 'Jabber' then
+  else if Item.SubItems[3] = S_Jabber then
     Item.ImageIndex := 43
   else if Item.Caption = 'NoCL' then
     Item.ImageIndex := 227;
+end;
+
+procedure TRosterForm.RosterPopupMenuPopup(Sender: TObject);
+begin
+  // Проверяем условия доступности действий
+  if RosterJvListView.Selected <> nil then
+    begin
+      if (Length(RosterJvListView.Selected.Caption) = 4) and (RosterJvListView.Selected.SubItems[0] = EmptyStr) then
+        RosterSendMessMenu.Enabled := False
+      else
+        RosterSendMessMenu.Enabled := True;
+    end
+  else
+    RosterSendMessMenu.Enabled := False;
+end;
+
+procedure TRosterForm.RosterSendMessMenuClick(Sender: TObject);
+begin
+  // Открываем чат с этим контактом (если это контакт)
+  OpenChatPage(nil, RosterJvListView.Selected.Caption);
+end;
+
+procedure TRosterForm.SearchBitBtnClick(Sender: TObject);
+var
+  RosterItem: TListItem;
+begin
+  // Выделяем в списке искомую строку
+  RosterItem := ReqRosterItem(UINEdit.Text);
+  RosterJvListView.Selected := RosterItem;
+  if RosterItem <> nil then
+    begin
+      RosterItem.MakeVisible(True);
+      RosterJvListView.ItemFocused := RosterItem;
+      if RosterJvListView.CanFocus then
+        RosterJvListView.SetFocus;
+    end;
 end;
 
 procedure TRosterForm.UpdateFullCL;
@@ -238,6 +301,7 @@ label
   A;
 var
   I, C, Cc, S: Integer;
+  XmlFile: TrXML;
 begin
   // Обрабатываем весь Ростер
   with RosterJvListView do
@@ -252,13 +316,13 @@ begin
               // Получаем статус контакта заранее
               S := StrToInt(Items[I].SubItems[6]);
               // Добавляем Jabber контакты в КЛ
-              if Items[I].SubItems[3] = 'Jabber' then
+              if Items[I].SubItems[3] = S_Jabber then
                 begin
                   // Ищем группу контакта в КЛ
                   for C := 0 to Categories.Count - 1 do
                     begin
                       // Если такую группу нашли
-                      if (Categories[C].GroupCaption = Items[I].SubItems[1]) and (Categories[C].GroupType = 'Jabber') then
+                      if (Categories[C].GroupCaption = Items[I].SubItems[1]) and (Categories[C].GroupType = S_Jabber) then
                         begin
                           // Начинаем поиск в ней этого контакта
                           for Cc := 0 to Categories[C].Items.Count - 1 do
@@ -301,7 +365,7 @@ begin
                               ImageIndex := S;
                               XImageIndex := -1;
                               CImageIndex := -1;
-                              ContactType := 'Jabber';
+                              ContactType := S_Jabber;
                             end;
                           // Продолжаем сканирование Ростера
                           goto X;
@@ -313,7 +377,7 @@ begin
                     begin
                       Caption := RosterJvListView.Items[I].SubItems[1];
                       GroupCaption := RosterJvListView.Items[I].SubItems[1];
-                      GroupType := 'Jabber';
+                      GroupType := S_Jabber;
                       // Определяем режим КЛ
                       if (MainForm.OnlyOnlineContactsToolButton.Down) and (RosterJvListView.Items[I].Caption <> 'NoCL') and
                         ((S = 30) or (S = 41) or (S = 42)) then
@@ -327,12 +391,12 @@ begin
                           ImageIndex := S;
                           XImageIndex := -1;
                           CImageIndex := -1;
-                          ContactType := 'Jabber';
+                          ContactType := S_Jabber;
                         end;
                     end;
                 end
                 // Добавляем ICQ контакты в КЛ
-              else if Items[I].SubItems[3] = 'Icq' then
+              else if Items[I].SubItems[3] = S_Icq then
                 begin
                   if (Length(Items[I].Caption) = 4) and (Items[I].SubItems[0] = EmptyStr) then
                     begin // Группа ICQ
@@ -344,7 +408,7 @@ begin
                               Categories[C].Free;
                               goto X;
                             end;
-                          if (Categories[C].GroupId = Items[I].Caption) and (Categories[C].GroupType = 'Icq') then
+                          if (Categories[C].GroupId = Items[I].Caption) and (Categories[C].GroupType = S_Icq) then
                             begin
                               Categories[C].GroupCaption := Items[I].SubItems[1];
                               goto X;
@@ -358,7 +422,7 @@ begin
                           Caption := RosterJvListView.Items[I].SubItems[1];
                           GroupCaption := RosterJvListView.Items[I].SubItems[1];
                           GroupId := RosterJvListView.Items[I].Caption;
-                          GroupType := 'Icq';
+                          GroupType := S_Icq;
                           if GroupId = '0000' then
                             Collapsed := True; // Сворачиваем группу временных контактов
                         end;
@@ -373,7 +437,7 @@ begin
                       for C := 0 to Categories.Count - 1 do
                         begin
                           // Если такую группу нашли
-                          if (Categories[C].GroupId = Items[I].SubItems[1]) and (Categories[C].GroupType = 'Icq') then
+                          if (Categories[C].GroupId = Items[I].SubItems[1]) and (Categories[C].GroupType = S_Icq) then
                             begin
                               // Начинаем поиск в ней этого контакта
                               for Cc := 0 to Categories[C].Items.Count - 1 do
@@ -420,7 +484,7 @@ begin
                                   ImageIndex := S;
                                   XImageIndex := StrToInt(Items[I].SubItems[7]);
                                   CImageIndex := StrToInt(Items[I].SubItems[8]);
-                                  ContactType := 'Icq';
+                                  ContactType := S_Icq;
                                   Hint := Items[I].SubItems[34];
                                 end;
                               // Продолжаем сканирование Ростера
@@ -430,7 +494,7 @@ begin
                     end;
                 end
                 // Добавляем MRA контакты в КЛ
-              else if Items[I].SubItems[3] = 'Mra' then
+              else if Items[I].SubItems[3] = S_Mra then
                 begin
 
                 end;
@@ -468,22 +532,29 @@ begin
           // Восстанавливаем состояние свёрнутых групп
           if CollapseGroupsRestore then
             begin
-              with TrXML.Create() do
-                try
-                  if FileExists(ProfilePath + GroupsFileName) then
-                    LoadFromFile(ProfilePath + GroupsFileName);
-                  for C := 0 to Categories.Count - 1 do
-                    begin
-                      if OpenKey('groups\' + Categories[C].GroupCaption + '-' + Categories[C].GroupType + '-' + Categories[C].GroupId) then
-                        try
-                          Categories[C].Collapsed := ReadBool('collapsed');
-                        finally
-                          CloseKey();
-                        end;
-                    end;
-                finally
-                  Free();
-                end;
+              XmlFile := TrXML.Create;
+              try
+                with XmlFile do
+                  begin
+                    if FileExists(ProfilePath + GroupsFileName) then
+                      begin
+                        LoadFromFile(ProfilePath + GroupsFileName);
+                        for C := 0 to Categories.Count - 1 do
+                          begin
+                            if OpenKey
+                              ('groups\' + 'Z' + ChangeCP
+                                (URLEncode(Categories[C].GroupCaption + Categories[C].GroupType + Categories[C].GroupId))) then
+                              try
+                                Categories[C].Collapsed := ReadBool('collapsed');
+                              finally
+                                CloseKey;
+                              end;
+                          end;
+                      end;
+                  end;
+              finally
+                FreeAndNil(XmlFile);
+              end;
               CollapseGroupsRestore := False;
             end;
           // Заканчиваем обновление КЛ
@@ -495,7 +566,7 @@ end;
 function TRosterForm.ReqRosterItem(CId: string): TListItem;
 begin
   // Обрабатываем запись в Ростере
-  Result := RosterJvListView.FindCaption(0, CId, True, True, False);
+  Result := RosterJvListView.FindCaption(-1, CId, False, False, False);
 end;
 
 function TRosterForm.ReqCLContact(CId: string): TButtonItem;
@@ -526,11 +597,14 @@ end;
 
 procedure TRosterForm.FormCreate(Sender: TObject);
 begin
-  // Устанавливаем иконку окна
+  // Устанавливаем иконку окна и кнопок
   MainForm.AllImageList.GetIcon(1, Icon);
+  MainForm.AllImageList.GetBitmap(221, SearchBitBtn.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  // Переводим форму
+  TranslateForm;
   // Загружаем копию локальную списка контактов
   if FileExists(ProfilePath + ContactListFileName) then
     RosterJvListView.LoadFromCSV(ProfilePath + ContactListFileName);
@@ -584,25 +658,32 @@ end;
 procedure TRosterForm.ClearICQClick(Sender: TObject);
 begin
   // Стираем в Ростере все ICQ контакты
-  if ClearContacts('Icq') then
-    if RoasterReady then
-      RosterForm.UpdateFullCL;
+  if ClearContacts(S_Icq) then
+    RosterForm.UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearJabberClick(Sender: TObject);
 begin
   // Стираем в Ростере все Jabber контакты
-  if ClearContacts('Jabber') then
-    if RoasterReady then
-      RosterForm.UpdateFullCL;
+  if ClearContacts(S_Jabber) then
+    RosterForm.UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearMRAClick(Sender: TObject);
 begin
   // Стираем в Ростере все MRA контакты
-  if ClearContacts('Mra') then
-    if RoasterReady then
-      RosterForm.UpdateFullCL;
+  if ClearContacts(S_Mra) then
+    RosterForm.UpdateFullCL;
+end;
+
+procedure TRosterForm.ClearNoCLContactsClick(Sender: TObject);
+begin
+  ShowMessage(S_DevelMess);
+end;
+
+procedure TRosterForm.ClearTempIcqContactsClick(Sender: TObject);
+begin
+  ShowMessage(S_DevelMess);
 end;
 
 end.

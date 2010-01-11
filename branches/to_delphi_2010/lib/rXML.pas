@@ -69,7 +69,7 @@ type
     procedure WriteTime(const Name: string; Value: TDateTime);
     function GetKeyValue(const AName: string): string;
     procedure SetKeyValue(const AName, aValue: string);
-    function GetCurrentPath(): string;
+    function GetCurrentPath: string;
     procedure Merge(const aText: string);
     procedure SetXMLVersionEnabled(aEnabled: Boolean);
     // XML текст для данной ветки
@@ -581,12 +581,12 @@ end;
 
 begin
   OpenKey('\');
-  x := TrXML.Create();
+  x := TrXML.Create;
   try
     x.Text := aText;
     __appendxml(False);
   finally
-    x.Free();
+    x.Free;
   end;
 end;
 

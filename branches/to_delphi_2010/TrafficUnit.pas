@@ -11,8 +11,17 @@ unit TrafficUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  Buttons;
 
 type
   TTrafficForm = class(TForm)
@@ -29,10 +38,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ResetCurTrafButtonClick(Sender: TObject);
     procedure ResetAllTrafButtonClick(Sender: TObject);
+
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure TranslateForm;
   end;
 
 var
@@ -43,7 +54,20 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, VarsUnit;
+  MainUnit,
+  VarsUnit,
+  UtilsUnit;
+
+procedure TTrafficForm.TranslateForm;
+begin
+  // Создаём шаблон для перевода
+  //CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CloseBitBtn.Caption := S_Close;
+  ResetAllTrafButton.Caption := ResetCurTrafButton.Caption;
+end;
 
 procedure TTrafficForm.CloseBitBtnClick(Sender: TObject);
 begin
@@ -56,10 +80,9 @@ begin
   // Обнуляем текущий трафик
   TrafSend := 0;
   TrafRecev := 0;
-  SesDataTraf := now;
+  SesDataTraf := Now;
   // Показываем сколько трафика передано за эту сессию
-  CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, ffFixed, 18, 3)
-    + ' KB | ' + FloatToStrF(TrafSend / 1000, ffFixed, 18, 3)
+  CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(TrafSend / 1000, FfFixed, 18, 3)
     + ' KB | ' + DateTimeToStr(SesDataTraf);
 end;
 
@@ -68,22 +91,23 @@ begin
   // Обнуляем общий трафик
   AllTrafSend := 0;
   AllTrafRecev := 0;
-  AllSesDataTraf := DateTimeToStr(now);
+  AllSesDataTraf := DateTimeToStr(Now);
   // Показываем сколько трафика передано всего
-  AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, ffFixed, 18, 3)
-    + ' MB | ' + FloatToStrF(AllTrafSend / 1000000, ffFixed, 18, 3)
+  AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(AllTrafSend / 1000000, FfFixed, 18, 3)
     + ' MB | ' + AllSesDataTraf;
 end;
 
 procedure TTrafficForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Указываем что форма должна уничтожиться после закрытия
-  Action := caFree;
+  Action := CaFree;
   TrafficForm := nil;
 end;
 
 procedure TTrafficForm.FormCreate(Sender: TObject);
 begin
+  // Переводим форму на язык
+  TranslateForm;
   // Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetIcon(226, Icon);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);

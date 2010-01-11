@@ -31,9 +31,9 @@ uses
   JabberOptionsUnit,
   RosterUnit;
 
-{const
+{ const
   CONST_Jabber_DefaultServerSSLPort: string = '5223';
-  CONST_Jabber_DefaultServerNoSecurePort: string = '5222';}
+  CONST_Jabber_DefaultServerNoSecurePort: string = '5222'; }
 
 var
   Jabber_UseSSL: Boolean = False;
@@ -220,7 +220,7 @@ begin
     begin
       for I := 0 to Items.Count - 1 do
         begin
-          if Items[I].SubItems[3] = 'Jabber' then
+          if Items[I].SubItems[3] = S_Jabber then
             begin
               if Items[I].SubItems[6] <> '42' then
                 Items[I].SubItems[6] := '30';
@@ -290,22 +290,24 @@ procedure Jabber_ParseRoster(XmlData: string);
 var
   Cnt, I: Integer;
   ListItemD: TListItem;
+  XmlDoc: TrXML;
 begin
   Cnt := 0;
   // Инициализируем XML
-  with TrXML.Create() do
-    try
+  XmlDoc := TrXML.Create;
+  // Начинаем добаление записей контактов в Ростер
+  RosterForm.RosterJvListView.Items.BeginUpdate;
+  try
+    with XmlDoc do
       begin
         Text := XmlData;
         if OpenKey('query') then
           try
             Cnt := GetKeyCount('item');
           finally
-            CloseKey();
+            CloseKey;
           end;
         // Разбираем список контктов Jabber
-        // Начинаем добаление записей контактов в Ростер
-        RosterForm.RosterJvListView.Items.BeginUpdate;
         for I := 0 to Cnt - 1 do
           begin
             if OpenKey('query\item', False, I) then
@@ -324,28 +326,31 @@ begin
                 ListItemD.SubItems[1] := GetKeyText;
                 if ListItemD.SubItems[1] = EmptyStr then
                   ListItemD.SubItems[1] := JabberNullGroup;
-                ListItemD.SubItems[3] := 'Jabber';
+                ListItemD.SubItems[3] := S_Jabber;
                 ListItemD.SubItems[6] := '30';
               finally
-                CloseKey();
+                CloseKey;
               end;
           end;
       end;
-    finally
-      Free();
-      // Заканчиваем добаление записей контактов в Ростер
-      RosterForm.RosterJvListView.Items.EndUpdate;
-    end;
+  finally
+    FreeAndNil(XmlDoc);
+    // Заканчиваем добаление записей контактов в Ростер
+    RosterForm.RosterJvListView.Items.EndUpdate;
+  end;
   // Запускаем обработку Ростера
   CollapseGroupsRestore := True;
   RosterForm.UpdateFullCL;
 end;
 
 procedure Jabber_ParseFeatures(XmlData: string);
+var
+  XmlDoc: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
+  XmlDoc := TrXML.Create;
+  try
+    with XmlDoc do
       begin
         Text := XmlData;
         if OpenKey('stream:features\bind') then
@@ -353,26 +358,29 @@ begin
             // Устанавливаем bind
             Sendflap_jabber(Jabber_SetBind);
           finally
-            CloseKey();
+            CloseKey;
           end;
         if OpenKey('stream:features\session') then
           try
             // Устанавливаем session
             Sendflap_jabber(Jabber_SetSession);
           finally
-            CloseKey();
+            CloseKey;
           end;
       end;
-    finally
-      Free();
-    end;
+  finally
+    FreeAndNil(XmlDoc);
+  end;
 end;
 
 procedure Jabber_ParseIQ(XmlData: string);
+var
+  XmlDoc: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
+  XmlDoc := TrXML.Create;
+  try
+    with XmlDoc do
       begin
         Text := XmlData;
         if OpenKey('iq\session') then
@@ -384,7 +392,7 @@ begin
               Sendflap_jabber(Jabber_SetStatus(Jabber_CurrentStatus));
             end;
           finally
-            CloseKey();
+            CloseKey;
           end
         else if OpenKey('iq\query') then
           try
@@ -394,7 +402,7 @@ begin
                 Jabber_ParseRoster(GetKeyXML);
             end;
           finally
-            CloseKey();
+            CloseKey;
           end
         else
         // Такое можно было ожидать только от google talk
@@ -410,12 +418,12 @@ begin
                 end;
             end;
           finally
-            CloseKey();
+            CloseKey;
           end;
       end;
-    finally
-      Free();
-    end;
+  finally
+    FreeAndNil(XmlDoc);
+  end;
 end;
 
 procedure Jabber_SendMessage(MJID, Msg: string);
@@ -433,10 +441,12 @@ procedure Jabber_ParsePresence(XmlData: string);
 var
   PJID: string;
   RosterItem: TListItem;
+  XmlDoc: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
+  XmlDoc := TrXML.Create;
+  try
+    with XmlDoc do
       begin
         Text := XmlData;
         if OpenKey('presence') then
@@ -480,25 +490,27 @@ begin
                 end;
             end;
           finally
-            CloseKey();
+            CloseKey;
           end;
       end;
-    finally
-      Free();
-    end;
+  finally
+    FreeAndNil(XmlDoc);
+  end;
 end;
 
 procedure Jabber_ParseMessage(XmlData: string);
 var
   PJID, InMsg, Nick, Mess, MsgD, PopMsg: string;
   RosterItem: TListItem;
+  XmlDoc: TrXML;
 begin
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
   // Инициализируем XML
-  with TrXML.Create() do
-    try
+  XmlDoc := TrXML.Create;
+  try
+    with XmlDoc do
       begin
         Text := XmlData;
         if OpenKey('message') then
@@ -535,13 +547,13 @@ begin
                           SubItems[17] := 'X';
                           SubItems[35] := '0';
                           // Добавляем историю в эту запись
-                          //RosterForm.AddHistory(RosterItem, MsgD, Mess);
+                          // RosterForm.AddHistory(RosterItem, MsgD, Mess);
                         end;
                     end
                   else // Если такой контакт не найден в Ростере, то добавляем его
                     begin
                       // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-                      Nick := SearchNickInCash('Jabber', PJID);
+                      Nick := SearchNickInCash(S_Jabber, PJID);
                       // Дата сообщения
                       MsgD := Nick + ' [' + DateTimeChatMess + ']';
                       // Ищем группу "Не в списке" в Ростере
@@ -566,13 +578,13 @@ begin
                           SubItems[0] := Nick;
                           SubItems[1] := 'NoCL';
                           SubItems[2] := 'none';
-                          SubItems[3] := 'Jabber';
+                          SubItems[3] := S_Jabber;
                           SubItems[6] := '214';
                           SubItems[15] := PopMsg;
                           SubItems[17] := 'X';
                           SubItems[35] := '0';
                           // Добавляем историю в эту запись
-                          //RosterForm.AddHistory(RosterItem, MsgD, Mess);
+                          // RosterForm.AddHistory(RosterItem, MsgD, Mess);
                         end;
                     end;
                   // Добавляем сообщение в текущий чат
@@ -581,12 +593,12 @@ begin
                 end;
             end;
           finally
-            CloseKey();
+            CloseKey;
           end;
       end;
-    finally
-      Free();
-    end;
+  finally
+    FreeAndNil(XmlDoc);
+  end;
 end;
 
 end.

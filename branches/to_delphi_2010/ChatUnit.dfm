@@ -1,7 +1,6 @@
 object ChatForm: TChatForm
   Left = 93
   Top = 94
-  Caption = #1054#1082#1085#1086' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
   ClientHeight = 414
   ClientWidth = 502
   Color = clBtnFace
@@ -291,7 +290,6 @@ object ChatForm: TChatForm
         object KeySoundToolButton: TToolButton
           Left = 138
           Top = 0
-          Caption = 'KeySoundToolButton'
           ImageIndex = 183
           ParentShowHint = False
           ShowHint = True
@@ -304,7 +302,6 @@ object ChatForm: TChatForm
         Width = 91
         Height = 25
         Anchors = [akLeft, akBottom]
-        Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
         DoubleBuffered = True
         ParentDoubleBuffered = False
         TabOrder = 1
@@ -317,7 +314,6 @@ object ChatForm: TChatForm
         Width = 87
         Height = 25
         Anchors = [akRight, akBottom]
-        Caption = #1047#1072#1082#1088#1099#1090#1100
         DoubleBuffered = True
         ParentDoubleBuffered = False
         TabOrder = 2
@@ -564,6 +560,7 @@ object ChatForm: TChatForm
         ParentShowHint = False
         ShowHint = True
         OnClick = GtransSpeedButtonClick
+        OnMouseDown = GtransSpeedButtonMouseDown
       end
       object TextLenPanel: TPanel
         AlignWithMargins = True
@@ -823,19 +820,16 @@ object ChatForm: TChatForm
     Top = 104
     object CloseTabAllOffline: TMenuItem
       Tag = 1
-      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1089#1077', '#1082#1090#1086' '#1085#1077' '#1074' '#1089#1077#1090#1080
       ImageIndex = 158
       OnClick = CloseTabAllOfflineClick
     end
     object CloseTabAllNoCurrent: TMenuItem
       Tag = 2
-      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1089#1077', '#1082#1088#1086#1084#1077' '#1090#1077#1082#1091#1097#1077#1075#1086
       ImageIndex = 158
       OnClick = CloseTabAllNoCurrentClick
     end
     object CloseTabAll: TMenuItem
       Tag = 3
-      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1089#1077
       ImageIndex = 158
       OnClick = CloseTabAllClick
     end
@@ -847,25 +841,21 @@ object ChatForm: TChatForm
     Top = 192
     object ShowAllHistory: TMenuItem
       Tag = 1
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1102' '#1080#1089#1090#1086#1088#1080#1102
       ImageIndex = 147
       OnClick = ShowAllHistoryClick
     end
     object Show100History: TMenuItem
       Tag = 2
-      Caption = #1055#1086#1089#1083#1077#1076#1085#1080#1077' 100 '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
       OnClick = ShowAllHistoryClick
     end
     object Show50History: TMenuItem
       Tag = 3
-      Caption = #1055#1086#1089#1083#1077#1076#1085#1080#1077' 50 '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
       OnClick = ShowAllHistoryClick
     end
     object Show20History: TMenuItem
       Tag = 4
-      Caption = #1055#1086#1089#1083#1077#1076#1085#1080#1077' 20 '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
       OnClick = ShowAllHistoryClick
     end
@@ -878,7 +868,6 @@ object ChatForm: TChatForm
     Top = 288
     object QRepMess: TMenuItem
       Tag = 1
-      Caption = #1054#1090#1074#1077#1090
       ImageIndex = 157
     end
     object N1: TMenuItem
@@ -886,25 +875,21 @@ object ChatForm: TChatForm
     end
     object CutMemo: TMenuItem
       Tag = 2
-      Caption = #1042#1099#1088#1077#1079#1072#1090#1100
       ImageIndex = 145
       OnClick = CutMemoClick
     end
     object CopyMemo: TMenuItem
       Tag = 3
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 144
       OnClick = CopyMemoClick
     end
     object CopyAllMemo: TMenuItem
       Tag = 4
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
       ImageIndex = 144
       OnClick = CopyAllMemoClick
     end
     object PasteMemo: TMenuItem
       Tag = 5
-      Caption = #1042#1089#1090#1072#1074#1080#1090#1100
       ImageIndex = 146
       OnClick = PasteMemoClick
     end
@@ -917,19 +902,16 @@ object ChatForm: TChatForm
     Top = 152
     object ChatHTMLTextCopy: TMenuItem
       Tag = 1
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 144
       OnClick = ChatHTMLTextCopyClick
     end
     object ChatHTMLAllTextCopy: TMenuItem
       Tag = 2
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
       ImageIndex = 144
       OnClick = ChatHTMLAllTextCopyClick
     end
     object ChatHTMLQText: TMenuItem
       Tag = 3
-      Caption = #1062#1080#1090#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 216
       OnClick = ChatHTMLQTextClick
     end
@@ -945,12 +927,10 @@ object ChatForm: TChatForm
     Left = 8
     Top = 104
     object SendAllOnline: TMenuItem
-      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1074#1089#1077#1084', '#1082#1090#1086' '#1074' '#1089#1077#1090#1080
       ImageIndex = 166
       OnClick = SendAllOnlineClick
     end
     object SendAll: TMenuItem
-      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1074#1089#1077#1084
       ImageIndex = 166
       OnClick = SendAllClick
     end
@@ -961,7 +941,6 @@ object ChatForm: TChatForm
     Left = 160
     Top = 112
     object CloseChatTabMenu: TMenuItem
-      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1082#1083#1072#1076#1082#1091
       ImageIndex = 158
       OnClick = CloseChatTabMenuClick
     end
@@ -976,7 +955,6 @@ object ChatForm: TChatForm
     Left = 48
     Top = 288
     object CloseLastChatMenu: TMenuItem
-      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1101#1090#1086#1090' '#1095#1072#1090
       ImageIndex = 158
       OnClick = CloseTabBitBtnClick
     end
@@ -985,11 +963,10 @@ object ChatForm: TChatForm
     Images = MainForm.AllImageList
     Left = 200
     Top = 192
-    object UpWapru1: TMenuItem
+    object SendUpWapRu: TMenuItem
       Tag = 1
-      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1095#1077#1088#1077#1079' UpWap.ru'
-      ImageIndex = 149
-      OnClick = UpWapru1Click
+      ImageIndex = 225
+      OnClick = SendUpWapRuClick
     end
   end
 end

@@ -356,7 +356,7 @@ object MainForm: TMainForm
     Active = True
     Events = <
       item
-        Name = 'PFS Timer'
+        Name = 'Profile Form Timer'
         Cycled = False
         Enabled = False
         Interval = 1
@@ -365,7 +365,6 @@ object MainForm: TMainForm
       item
         Name = 'Messages Icons Timer'
         Enabled = False
-        Interval = 700
         OnTimer = JvTimerListEvents1Timer
       end
       item
@@ -399,15 +398,15 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents6Timer
       end
       item
-        Name = 'CSF & BR Timer'
+        Name = 'Create Smilies Timer'
         Cycled = False
         Enabled = False
         OnTimer = JvTimerListEvents7Timer
       end
       item
-        Name = '-'
-        Cycled = False
-        Enabled = False
+        Name = 'Gtranslation Timer'
+        Interval = 3000
+        OnTimer = JvTimerListEvents8Timer
       end
       item
         Name = 'Jabber Alive Timer'
@@ -428,7 +427,7 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents11Timer
       end
       item
-        Name = 'TIR & Swap Timer'
+        Name = 'TIR and Swap Timer'
         Interval = 20000
         OnTimer = JvTimerListEvents12Timer
       end>
@@ -442,10 +441,11 @@ object MainForm: TMainForm
     Top = 328
     object OpenTest: TMenuItem
       Caption = 'Test'
+      Visible = False
       OnClick = OpenTestClick
     end
     object RosterMainMenu: TMenuItem
-      Caption = '#'#1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
+      Caption = '#'#1041#1044' '#1089#1087#1080#1089#1082#1072' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 1
       OnClick = RosterMainMenuClick
     end
@@ -1082,7 +1082,7 @@ object MainForm: TMainForm
       object SendFileUpWapru: TMenuItem
         Tag = 1
         Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1095#1077#1088#1077#1079' UpWap.ru'
-        ImageIndex = 149
+        ImageIndex = 225
         OnClick = SendFileUpWapruClick
       end
     end

@@ -1,4 +1,12 @@
-﻿unit LogUnit;
+﻿{ *******************************************************************************
+  Copyright (c) 2004-2009 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+  ******************************************************************************* }
+
+unit LogUnit;
 
 interface
 
@@ -49,12 +57,10 @@ uses
 
 procedure TLogForm.TranslateForm;
 begin
-  // Устанавливаем хинты
-  ClearLogSpeedButton.Hint := H_Log_Clear;
-  ICQDumpSpeedButton.Hint := H_Log_ICQ;
-  JabberDumpSpeedButton.Hint := H_Log_Jabber;
-  MRADumpSpeedButton.Hint := H_Log_MRA;
-  WriteLogSpeedButton.Hint := H_Log_Write;
+  // Создаём шаблон для перевода
+  //CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
 end;
 
 procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);
@@ -65,8 +71,6 @@ end;
 
 procedure TLogForm.FormCreate(Sender: TObject);
 begin
-  // Переводим окно на другие языки
-  TranslateForm;
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);

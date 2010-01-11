@@ -11,8 +11,18 @@ unit IcqGroupManagerUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, VarsUnit, ComCtrls;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  VarsUnit,
+  ComCtrls;
 
 type
   TIcqGroupManagerForm = class(TForm)
@@ -23,13 +33,14 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+
   private
     { Private declarations }
   public
     { Public declarations }
     Name_Group: string;
     GroupType: string;
-    Create_Group: boolean;
+    Create_Group: Boolean;
     Id_Group: string;
     procedure TranslateForm;
   end;
@@ -42,7 +53,10 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, IcqProtoUnit, UtilsUnit, RosterUnit;
+  MainUnit,
+  IcqProtoUnit,
+  UtilsUnit,
+  RosterUnit;
 
 procedure TIcqGroupManagerForm.TranslateForm;
 begin
@@ -51,127 +65,124 @@ begin
 end;
 
 procedure TIcqGroupManagerForm.OKButtonClick(Sender: TObject);
-label x, y;
+label
+  X,
+  Y;
 var
-  iClId: TStringList;
-  i: integer;
-  newId: string;
+  IClId: TStringList;
+  I: Integer;
+  NewId: string;
 begin
   // Управляем группой по протоколу ICQ
-  if GroupType = 'Icq' then
-  begin
-    // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
-    if ICQ_SSI_Phaze then
+  if GroupType = S_Icq then
     begin
-      DAShow(WarningHead, AddContactErr2, EmptyStr, 134, 2, 0);
-      Exit;
-    end;
-    // Если это добавление новой групы
-    if Create_Group then
-    begin
-      // Если название группы пустое, то выходим
-      if GNameEdit.Text = EmptyStr then
-        goto y;
-      // Ищем есть ли такая группа уже в Ростере
-      with RosterForm.RosterJvListView do
-      begin
-        for i := 0 to Items.Count - 1 do
+      // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+      if ICQ_SSI_Phaze then
         begin
-          if (Items[i].SubItems[3] = 'Icq') and
-            (LowerCase(GNameEdit.Text, loUserLocale) = LowerCase
-              (Items[i].SubItems[1], loUserLocale)) then
-          begin
-            DAShow(WarningHead, AddNewGroupErr1, EmptyStr, 133, 0, 0);
-            Exit;
-          end;
+          DAShow(S_WarningHead, AddContactErr2, EmptyStr, 134, 2, 0);
+          Exit;
         end;
-      end;
-      // Генерируем идентификатор для этой группы
-    x :;
-      Randomize;
-      newId := IntToHex(Random($7FFF), 4);
-      // Ищем нет ли уже такого идентификатора в списке контактов
-      with RosterForm.RosterJvListView do
-      begin
-        for i := 0 to Items.Count - 1 do
+      // Если это добавление новой групы
+      if Create_Group then
         begin
-          if newId = Items[i].SubItems[4] then
-            goto x;
-        end;
-      end;
-      // Открываем сессию и добавляем группу
-      ICQ_Add_Nick := GNameEdit.Text;
-      ICQ_Add_GroupId := newId;
-      ICQ_Add_Group_Phaze := true;
-      ICQ_SSI_Phaze := true;
-      ICQ_AddGroup(GNameEdit.Text, newId);
-    end
-    // Переименовывание группы
-    else
-    begin
-      // Если это нередактируемые группы, то выходим
-      if (GNameEdit.Text = EmptyStr) or (GNameEdit.Text = Name_Group) or
-        (Id_Group = EmptyStr) or (Id_Group = 'NoCL') or (Id_Group = '0000') or
-        (Id_Group = '0001') then
-        goto y;
-      // Запоминаем переменные для группы
-      ICQ_Add_Nick := GNameEdit.Text;
-      ICQ_Add_GroupId := Id_Group;
-      // Создаём список для идентификаторов групп
-      iClId := TStringList.Create;
-      try
-        // Заносим в список идентификаторы групп
-        with RosterForm.RosterJvListView do
-        begin
-          for i := 0 to Items.Count - 1 do
-          begin
-            // Добавляем идентификаторы групп в список
-            if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') then
-              Continue;
-            if (Items[i].SubItems[3] = 'Icq') and
-              (Length(Items[i].Caption) = 4) then
-              iClId.Add(Items[i].Caption);
-          end;
-        end;
-        // Обновляем имя группы на сервере
-        ICQ_UpdateGroup_AddContact(GNameEdit.Text, Id_Group, iClId);
-        // Переименовываем группу в локальном КЛ
-        with RosterForm.RosterJvListView do
-        begin
-          for i := 0 to Items.Count - 1 do
-          begin
-            // Ищем в Ростере эту группу
-            if (Items[i].Caption = 'NoCL') or (Items[i].Caption = '0000') or
-              (Items[i].Caption = '0001') then
-              Continue;
-            if (Items[i].SubItems[3] = 'Icq') and (Items[i].Caption = Id_Group)
-              then
+          // Если название группы пустое, то выходим
+          if GNameEdit.Text = EmptyStr then
+            goto Y;
+          // Ищем есть ли такая группа уже в Ростере
+          with RosterForm.RosterJvListView do
             begin
-              Items[i].SubItems[1] := GNameEdit.Text;
-              // Строим локальный КЛ
-              RosterForm.UpdateFullCL;
-              Break;
+              for I := 0 to Items.Count - 1 do
+                begin
+                  if (Items[I].SubItems[3] = S_Icq) and (LowerCase(GNameEdit.Text, LoUserLocale) = LowerCase(Items[I].SubItems[1],
+                      LoUserLocale)) then
+                    begin
+                      DAShow(S_WarningHead, AddNewGroupErr1, EmptyStr, 133, 0, 0);
+                      Exit;
+                    end;
+                end;
             end;
+          // Генерируем идентификатор для этой группы
+        X :;
+          Randomize;
+          NewId := IntToHex(Random($7FFF), 4);
+          // Ищем нет ли уже такого идентификатора в списке контактов
+          with RosterForm.RosterJvListView do
+            begin
+              for I := 0 to Items.Count - 1 do
+                begin
+                  if NewId = Items[I].SubItems[4] then
+                    goto X;
+                end;
+            end;
+          // Открываем сессию и добавляем группу
+          ICQ_Add_Nick := GNameEdit.Text;
+          ICQ_Add_GroupId := NewId;
+          ICQ_Add_Group_Phaze := True;
+          ICQ_SSI_Phaze := True;
+          ICQ_AddGroup(GNameEdit.Text, NewId);
+        end
+        // Переименовывание группы
+      else
+        begin
+          // Если это нередактируемые группы, то выходим
+          if (GNameEdit.Text = EmptyStr) or (GNameEdit.Text = Name_Group) or (Id_Group = EmptyStr) or (Id_Group = 'NoCL') or
+            (Id_Group = '0000') or (Id_Group = '0001') then
+            goto Y;
+          // Запоминаем переменные для группы
+          ICQ_Add_Nick := GNameEdit.Text;
+          ICQ_Add_GroupId := Id_Group;
+          // Создаём список для идентификаторов групп
+          IClId := TStringList.Create;
+          try
+            // Заносим в список идентификаторы групп
+            with RosterForm.RosterJvListView do
+              begin
+                for I := 0 to Items.Count - 1 do
+                  begin
+                    // Добавляем идентификаторы групп в список
+                    if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
+                      Continue;
+                    if (Items[I].SubItems[3] = S_Icq) and (Length(Items[I].Caption) = 4) then
+                      IClId.Add(Items[I].Caption);
+                  end;
+              end;
+            // Обновляем имя группы на сервере
+            ICQ_UpdateGroup_AddContact(GNameEdit.Text, Id_Group, IClId);
+            // Переименовываем группу в локальном КЛ
+            with RosterForm.RosterJvListView do
+              begin
+                for I := 0 to Items.Count - 1 do
+                  begin
+                    // Ищем в Ростере эту группу
+                    if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') or (Items[I].Caption = '0001') then
+                      Continue;
+                    if (Items[I].SubItems[3] = S_Icq) and (Items[I].Caption = Id_Group) then
+                      begin
+                        Items[I].SubItems[1] := GNameEdit.Text;
+                        // Строим локальный КЛ
+                        RosterForm.UpdateFullCL;
+                        Break;
+                      end;
+                  end;
+              end;
+          finally
+            IClId.Free;
           end;
         end;
-      finally
-        iClId.Free;
-      end;
+    end
+    // Управляем группой по протоколу Jabber
+  else if GroupType = S_Jabber then
+    begin
+
+    end
+    // Управляем группой по протоколу MRA
+  else if GroupType = S_Mra then
+    begin
+
     end;
-  end
-  // Управляем группой по протоколу Jabber
-  else if GroupType = 'Jabber' then
-  begin
-
-  end
-  // Управляем группой по протоколу MRA
-  else if GroupType = 'Mra' then
-  begin
-
-  end;
   // Выходим и закрываем модальное окно
-y :;
-  ModalResult := mrOk;
+Y :;
+  ModalResult := MrOk;
 end;
 
 procedure TIcqGroupManagerForm.FormCreate(Sender: TObject);

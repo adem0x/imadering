@@ -1,7 +1,6 @@
 object IcqSearchForm: TIcqSearchForm
   Left = 0
   Top = 0
-  Caption = #1055#1086#1080#1089#1082' '#1085#1086#1074#1099#1093' '#1082#1086#1085#1090#1072#1082#1090#1086#1074' ICQ'
   ClientHeight = 526
   ClientWidth = 593
   Color = clBtnFace
@@ -32,7 +31,7 @@ object IcqSearchForm: TIcqSearchForm
       Top = 7
       Width = 231
       Height = 17
-      Caption = #1053#1077' '#1086#1095#1080#1097#1072#1090#1100' '#1087#1088#1077#1076#1099#1076#1091#1097#1080#1077' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1099
+      TabStop = False
       TabOrder = 0
     end
     object OnlyOnlineCheckBox: TCheckBox
@@ -40,7 +39,7 @@ object IcqSearchForm: TIcqSearchForm
       Top = 7
       Width = 113
       Height = 17
-      Caption = #1058#1086#1083#1100#1082#1086' "'#1042' '#1089#1077#1090#1080'"'
+      TabStop = False
       TabOrder = 1
     end
     object SearchBitBtn: TBitBtn
@@ -48,11 +47,11 @@ object IcqSearchForm: TIcqSearchForm
       Top = 3
       Width = 94
       Height = 25
-      Caption = #1048#1089#1082#1072#1090#1100
       Default = True
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      TabStop = False
       OnClick = SearchBitBtnClick
     end
     object SearchNextPageBitBtn: TBitBtn
@@ -60,10 +59,10 @@ object IcqSearchForm: TIcqSearchForm
       Top = 3
       Width = 117
       Height = 25
-      Caption = #1044#1072#1083#1077#1077
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 3
+      TabStop = False
       OnClick = SearchNextPageBitBtnClick
     end
   end
@@ -80,7 +79,6 @@ object IcqSearchForm: TIcqSearchForm
       Top = 6
       Width = 23
       Height = 22
-      Hint = '<b>'#1054#1095#1080#1089#1090#1080#1090#1100' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1099' '#1087#1086#1080#1089#1082#1072'</b>'
       Flat = True
       ParentShowHint = False
       ShowHint = True
@@ -91,7 +89,6 @@ object IcqSearchForm: TIcqSearchForm
       Top = 6
       Width = 23
       Height = 22
-      Hint = '<b>'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1073#1099#1089#1090#1088#1086#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077' '#1074#1099#1076#1077#1083#1077#1085#1085#1086#1084#1091' '#1082#1086#1085#1090#1072#1082#1090#1091'</b>'
       Flat = True
       ParentShowHint = False
       ShowHint = True
@@ -104,7 +101,6 @@ object IcqSearchForm: TIcqSearchForm
       Height = 22
       BevelKind = bkTile
       BevelOuter = bvNone
-      Caption = #1057#1090#1072#1090#1091#1089' '#1087#1086#1080#1089#1082#1072
       TabOrder = 0
     end
     object ResultPanel: TPanel
@@ -123,6 +119,7 @@ object IcqSearchForm: TIcqSearchForm
       Top = 6
       Width = 268
       Height = 21
+      TabStop = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -130,7 +127,6 @@ object IcqSearchForm: TIcqSearchForm
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 2
-      Text = ' '#1041#1099#1089#1090#1088#1086#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
       OnEnter = QMessageEditEnter
       OnExit = QMessageEditExit
     end
@@ -149,42 +145,33 @@ object IcqSearchForm: TIcqSearchForm
         Width = 18
       end
       item
-        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         Width = 115
       end
       item
-        Caption = #1053#1080#1082
         Width = 80
       end
       item
-        Caption = #1048#1084#1103
         Width = 80
       end
       item
-        Caption = #1060#1072#1084#1080#1083#1080#1103
         Width = 80
       end
       item
-        Caption = #1055#1086#1083' - '#1042#1086#1079#1088#1072#1089#1090
         Width = 80
       end
       item
-        Caption = #1040#1074#1090#1086#1088#1080#1079#1072#1094#1080#1103
         Width = 80
       end
       item
         Width = 18
       end
       item
-        Caption = #1057#1090#1088#1072#1085#1072
         Width = 80
       end
       item
-        Caption = #1043#1086#1088#1086#1076
         Width = 80
       end
       item
-        Caption = 'E-mail'
         Width = 80
       end>
     Groups = <>
@@ -194,10 +181,10 @@ object IcqSearchForm: TIcqSearchForm
     PopupMenu = SearchResultPopupMenu
     SmallImages = MainForm.AllImageList
     TabOrder = 2
+    TabStop = False
     ViewStyle = vsReport
     OnChanging = SearchResultJvListViewChanging
     OnColumnClick = SearchResultJvListViewColumnClick
-    OnContextPopup = SearchResultJvListViewContextPopup
     OnDblClick = SearchResultJvListViewDblClick
     OnGetImageIndex = SearchResultJvListViewGetImageIndex
     OnGetSubItemImage = SearchResultJvListViewGetSubItemImage
@@ -272,84 +259,74 @@ object IcqSearchForm: TIcqSearchForm
       Height = 179
       TabOrder = 0
       object NickLabel: TLabel
-        Left = 33
+        Left = 55
         Top = 40
-        Width = 23
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1053#1080#1082':'
       end
       object NameLabel: TLabel
-        Left = 33
+        Left = 55
         Top = 66
-        Width = 23
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1048#1084#1103':'
       end
       object FamilyLabel: TLabel
-        Left = 8
+        Left = 55
         Top = 93
-        Width = 48
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1060#1072#1084#1080#1083#1080#1103':'
       end
       object GenderLabel: TLabel
-        Left = 33
+        Left = 55
         Top = 120
-        Width = 23
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1055#1086#1083':'
       end
       object AgeLabel: TLabel
-        Left = 12
+        Left = 55
         Top = 147
-        Width = 44
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1042#1086#1079#1088#1072#1089#1090':'
       end
       object MaritalLabel: TLabel
-        Left = 218
+        Left = 245
         Top = 120
-        Width = 28
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1041#1088#1072#1082':'
       end
-      object Label25: TLabel
-        Left = 205
+      object CountryLabel: TLabel
+        Left = 245
         Top = 39
-        Width = 41
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1057#1090#1088#1072#1085#1072':'
       end
       object CityLabel: TLabel
-        Left = 211
+        Left = 245
         Top = 66
-        Width = 35
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1043#1086#1088#1086#1076':'
       end
       object LangLabel: TLabel
-        Left = 216
+        Left = 245
         Top = 93
-        Width = 30
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1071#1079#1099#1082':'
       end
       object KeyWordLabel: TLabel
-        Left = 178
+        Left = 245
         Top = 147
-        Width = 68
+        Width = 3
         Height = 13
         Alignment = taRightJustify
-        Caption = #1050#1083#1102#1095'. '#1089#1083#1086#1074#1072':'
       end
       object Bevel3: TBevel
         Left = 169
@@ -363,6 +340,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 36
         Width = 101
         Height = 21
+        TabStop = False
         TabOrder = 0
         OnChange = NickEditChange
       end
@@ -371,6 +349,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 63
         Width = 101
         Height = 21
+        TabStop = False
         TabOrder = 1
         OnChange = NickEditChange
       end
@@ -379,6 +358,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 90
         Width = 101
         Height = 21
+        TabStop = False
         TabOrder = 2
         OnChange = NickEditChange
       end
@@ -389,6 +369,7 @@ object IcqSearchForm: TIcqSearchForm
         Height = 21
         Style = csDropDownList
         TabOrder = 3
+        TabStop = False
         OnChange = NickEditChange
         Items.Strings = (
           ''
@@ -402,6 +383,7 @@ object IcqSearchForm: TIcqSearchForm
         Height = 21
         Style = csDropDownList
         TabOrder = 4
+        TabStop = False
         OnChange = NickEditChange
         Items.Strings = (
           ''
@@ -421,6 +403,7 @@ object IcqSearchForm: TIcqSearchForm
         Style = csDropDownList
         DropDownCount = 20
         TabOrder = 5
+        TabStop = False
         OnChange = NickEditChange
       end
       object CountryComboBox: TComboBox
@@ -431,6 +414,7 @@ object IcqSearchForm: TIcqSearchForm
         Style = csDropDownList
         DropDownCount = 20
         TabOrder = 6
+        TabStop = False
         OnChange = NickEditChange
       end
       object CityEdit: TEdit
@@ -438,6 +422,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 63
         Width = 101
         Height = 21
+        TabStop = False
         TabOrder = 7
         OnChange = NickEditChange
       end
@@ -449,6 +434,7 @@ object IcqSearchForm: TIcqSearchForm
         Style = csDropDownList
         DropDownCount = 20
         TabOrder = 8
+        TabStop = False
         OnChange = NickEditChange
       end
       object KeyWordEdit: TEdit
@@ -456,15 +442,16 @@ object IcqSearchForm: TIcqSearchForm
         Top = 144
         Width = 101
         Height = 21
+        TabStop = False
         TabOrder = 9
         OnChange = NickEditChange
       end
       object GlobalSearchCheckBox: TCheckBox
-        Left = 11
-        Top = 9
+        Left = 10
+        Top = 8
         Width = 302
         Height = 17
-        Caption = #1043#1083#1086#1073#1072#1083#1100#1085#1099#1081' '#1087#1086#1080#1089#1082
+        TabStop = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -483,10 +470,10 @@ object IcqSearchForm: TIcqSearchForm
       TabOrder = 1
       object UINSearchCheckBox: TCheckBox
         Left = 9
-        Top = 5
+        Top = 8
         Width = 196
         Height = 17
-        Caption = #1048#1089#1082#1072#1090#1100' '#1087#1086' ICQ#'
+        TabStop = False
         Checked = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -515,10 +502,10 @@ object IcqSearchForm: TIcqSearchForm
       TabOrder = 2
       object EmailSearchCheckBox: TCheckBox
         Left = 9
-        Top = 6
+        Top = 9
         Width = 196
         Height = 17
-        Caption = #1048#1089#1082#1072#1090#1100' '#1087#1086' E-mail'
+        TabStop = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -533,6 +520,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 29
         Width = 196
         Height = 21
+        TabStop = False
         TabOrder = 1
         OnChange = EmailSearchEditChange
       end
@@ -545,10 +533,10 @@ object IcqSearchForm: TIcqSearchForm
       TabOrder = 3
       object KeyWordSearchCheckBox: TCheckBox
         Left = 9
-        Top = 5
+        Top = 8
         Width = 196
         Height = 17
-        Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1083#1102#1095'. '#1089#1083#1086#1074#1091
+        TabStop = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -563,6 +551,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 28
         Width = 196
         Height = 21
+        TabStop = False
         TabOrder = 1
         OnChange = KeyWordSearchEditChange
       end
@@ -571,37 +560,59 @@ object IcqSearchForm: TIcqSearchForm
   object SearchResultPopupMenu: TPopupMenu
     Alignment = paCenter
     Images = MainForm.AllImageList
-    Left = 216
-    Top = 344
+    OnPopup = SearchResultPopupMenuPopup
+    Left = 280
+    Top = 312
     object ICQStatusCheckSM: TMenuItem
       Tag = 1
-      Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1089#1090#1072#1090#1091#1089#1072
       ImageIndex = 172
       OnClick = ICQStatusCheckSMClick
     end
     object AccountNameCopySM: TMenuItem
       Tag = 2
-      Caption = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1080#1084#1103' '#1091#1095#1105#1090#1085#1086#1081' '#1079#1072#1087#1080#1089#1080
       ImageIndex = 144
       OnClick = AccountNameCopySMClick
     end
     object SendMessageSM: TMenuItem
       Tag = 3
-      Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
       ImageIndex = 163
       OnClick = SendMessageSMClick
     end
     object ContactInfoSM: TMenuItem
       Tag = 4
-      Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1082#1086#1085#1090#1072#1082#1090#1077
       ImageIndex = 178
       OnClick = ContactInfoSMClick
     end
     object AddContactInCLSM: TMenuItem
       Tag = 5
-      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' '#1074' '#1089#1087#1080#1089#1086#1082
       ImageIndex = 143
       OnClick = AddContactInCLSMClick
     end
+    object SaveSM: TMenuItem
+      ImageIndex = 225
+      OnClick = SaveSMClick
+    end
+    object LoadSM: TMenuItem
+      ImageIndex = 227
+      OnClick = LoadSMClick
+    end
+  end
+  object SearchResultSaveDialog: TSaveTextFileDialog
+    DefaultExt = '.txt'
+    FileName = 'ICQ search result'
+    Filter = 'Text Files (*.txt)|*.txt'
+    Encodings.Strings = (
+      'Unicode')
+    Left = 248
+    Top = 312
+  end
+  object LoadSearchResultFileDialog: TOpenTextFileDialog
+    DefaultExt = '.txt'
+    FileName = 'ICQ search result'
+    Filter = 'Text Files (*.txt)|*.txt'
+    Encodings.Strings = (
+      'Unicode')
+    Left = 312
+    Top = 312
   end
 end

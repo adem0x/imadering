@@ -45,8 +45,8 @@ type
     HeadJvBehaviorLabel: TJvBehaviorLabel;
     SubJvBehaviorLabel: TJvBehaviorLabel;
     AboutListTimer: TTimer;
-    Label1: TLabel;
-    Label2: TLabel;
+    HistoryLabel: TLabel;
+    LegalLabel: TLabel;
     AboutRichEdit: TRichEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -61,13 +61,14 @@ type
     procedure SubJvBehaviorLabelStart(Sender: TObject);
     procedure SubJvBehaviorLabelStop(Sender: TObject);
     procedure AboutListTimerTimer(Sender: TObject);
-    procedure Label1Click(Sender: TObject);
-    procedure Label2Click(Sender: TObject);
+    procedure HistoryLabelClick(Sender: TObject);
+    procedure LegalLabelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
 
   private
     { Private declarations }
     AboutLen: Integer;
+    AboutList: array [1 .. 14] of string;
 
   public
     { Public declarations }
@@ -83,12 +84,55 @@ implementation
 
 uses
   MainUnit,
-  VarsUnit;
+  VarsUnit,
+  RXML;
+
+resourcestring
+  RS_InfoAbout = 'language\Infos\About';
+  RS_InfoDev = 'language\Devels';
 
 procedure TAboutForm.TranslateForm;
+var
+  I: Integer;
+  XmlFile: TrXML;
 begin
-  // Присваиваем текстовые значения
-  AboutRichEdit.Lines.Append(Info_About);
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Инициализируем XML
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        // Загружаем настройки
+        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+          begin
+            // Загружаем файл языка
+            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            // Загружаем "о программе"
+            if OpenKey(RS_InfoAbout) then
+              try
+                // Загружаем инфу о программе
+                AboutRichEdit.Lines.Append(CheckText_RN(ReadString('c')));
+              finally
+                CloseKey;
+              end;
+            // Загружаем список разработчиков
+            for I := 1 to Length(AboutList) do
+              begin
+                if OpenKey(RS_InfoDev + '\c' + IntToStr(I)) then
+                  try
+                    AboutList[I] := ReadString('c');
+                  finally
+                    CloseKey;
+                  end;
+              end;
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure TAboutForm.OKBitBtnClick(Sender: TObject);
@@ -164,6 +208,8 @@ begin
 end;
 
 procedure TAboutForm.FormCreate(Sender: TObject);
+var
+  LogoFile: string;
 begin
   // Присваиваем иконку окну и кнопкам
   MainForm.AllImageList.GetIcon(0, Icon);
@@ -173,15 +219,16 @@ begin
   // Переводим форму на другие языки
   TranslateForm;
   // Загружаем логотип программы
-  if FileExists(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif') then
-    LogoImage.Picture.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif');
+  LogoFile := MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif';
+  if FileExists(LogoFile) then
+    LogoImage.Picture.LoadFromFile(LogoFile);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Сведения о версии программы
-  VersionLabel.Caption := Format(VersionL, [InitBuildInfo]);
+  VersionLabel.Caption := Format(S_Version, [InitBuildInfo]);
   // Получаем дату компиляци файла
-  DataLabel.Caption := DataLabel.Caption + ' ' + DateToStr(GetFileDateTime(MyPath + 'Imadering.exe'));
+  DataLabel.Caption := DataLabel.Caption + BN + DateToStr(GetFileDateTime(MyPath + 'Imadering.exe'));
   // Присваиваем начальное значение длинны списка титров
   AboutLen := 1;
   // Стартуем показ титров
@@ -207,13 +254,13 @@ begin
   SubJvBehaviorLabel.BehaviorOptions.Active := True;
 end;
 
-procedure TAboutForm.Label1Click(Sender: TObject);
+procedure TAboutForm.HistoryLabelClick(Sender: TObject);
 begin
   // Открываем на просмотр файл истории изменений
   OpenURL(MyPath + 'Changes.txt');
 end;
 
-procedure TAboutForm.Label2Click(Sender: TObject);
+procedure TAboutForm.LegalLabelClick(Sender: TObject);
 begin
   // Открываем на просмотр файл лицензии
   OpenURL(MyPath + 'GPL_ru.txt');

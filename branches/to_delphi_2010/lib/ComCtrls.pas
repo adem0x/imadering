@@ -14,6 +14,8 @@ unit ComCtrls;
 
 {$HPPEMIT '#pragma link "dwmapi.lib"'}
 
+{$HINTS OFF}
+
 interface
 
 uses

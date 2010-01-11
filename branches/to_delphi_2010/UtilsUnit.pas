@@ -41,10 +41,13 @@ uses
   LogUnit,
   JclCompression,
   Buttons,
-  TypInfo;
+  TypInfo,
+  OverbyteIcsUrl,
+  JvListView,
+  ComCtrls;
 
 function Parse(Char, S: string; Count: Integer): string;
-procedure Listfiledirhist(Path, Ext, Eext: string; Filelist: Tstrings);
+procedure ListFileInDir(Path, Eext: string; Filelist: Tstrings);
 procedure Gettreedirs(Root: string; out Outstring: Tstringlist);
 function Hex2text(HexText: string): string;
 function Text2hex(Msg: RawByteString): string;
@@ -56,7 +59,7 @@ function Swap16(Value: Word): Word;
 assembler;
 function Swap32(Value: Longword): Longword;
 assembler;
-function Deletespaces(const Value: string): string;
+function DeleteSpaces(const Value: string): string;
 function Deletelinebreaks(const S: string): string;
 function Exnormalizescreenname(Sn: string): string;
 function Exnormalizeicqnumber(Sn: string): string;
@@ -103,8 +106,6 @@ function Errorhttpclient(Errcode: Integer): string;
 function Getfulltag(Adata: string): string;
 procedure Implaysnd(Snd: Integer);
 function SearchNickInCash(Ctype, Cid: string): string;
-// function Copydir(const Fromdir, Todir: string): Boolean;
-// function Cleardir(const Path: string; Delete: Boolean): Boolean;
 procedure SetcustomWidthCombobox(Cb: Tcombobox);
 procedure Xshowform(Xform: Tform);
 procedure OpenUrl(Url: string);
@@ -113,9 +114,10 @@ function Changeslash(const Value: string): string;
 procedure Sendflap_mra(Pkttype, Data: string; Nolen: Boolean = False);
 function Getfilefname(Filename: string): string;
 procedure CheckMessage_BR(var Msg: string);
-procedure CheckText_RN(var Msg: string);
+procedure CheckMessage_GAPI(var Msg: string);
+function CheckText_RN(Msg: string): string;
 function NotProtoOnline(Proto: string): Boolean;
-function Getfiledatetime(Filename: string): Tdatetime;
+function GetFileDateTime(Filename: string): Tdatetime;
 procedure Sendflap_jabber(Xmldata: string);
 procedure XLog(XLogData: string);
 function RafinePath(const Path: string): string;
@@ -126,6 +128,9 @@ procedure CreateLang(Xform: Tform);
 procedure SetLang(Xform: Tform);
 function UnicodeCharCode2String(ACode: Word): string;
 function UCS2BEToStr(Value: string): string;
+procedure CheckMessage_Smilies(var Msg: string);
+function ChangeCP(const Value: string): string;
+function CheckText_Hint(Msg: string): string;
 
 implementation
 
@@ -153,27 +158,32 @@ var
   List: Tstringlist;
   PropInfo: PPropInfo;
   TK: TTypeKind;
+  XmlFile: TrXML;
+  Str: string;
 begin
   List := Tstringlist.Create;
   try
-    with TrXML.Create() do
-      try
-        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
-          begin
-            // Загружаем файл языка
-            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
-            // Переводим заголовок формы и получаем все остальные пункты
-            if OpenKey('language\' + Xform.name) then
-              try
-                Xform.Caption := ReadString('c');
-                List.Text := GetKeyXML;
-              finally
-                CloseKey();
-              end;
-          end;
-      finally
-        Free();
-      end;
+    XmlFile := TrXML.Create;
+    try
+      with XmlFile do
+        begin
+          if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+            begin
+              // Загружаем файл языка
+              LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+              // Переводим заголовок формы и получаем все остальные пункты
+              if OpenKey('language\' + Xform.name) then
+                try
+                  Xform.Caption := ReadString('c');
+                  List.Text := GetKeyXML;
+                finally
+                  CloseKey;
+                end;
+            end;
+        end;
+    finally
+      FreeAndNil(XmlFile);
+    end;
     // Переводим компоненты формы с Caption
     with Xform do
       for I := 0 to ComponentCount - 1 do
@@ -185,9 +195,9 @@ begin
                 begin
                   for II := 0 to List.Count - 1 do
                     begin
-                      if (Components[I] as TPopupMenu).Items[M].name = IsolateTextString(List.Strings[II], '<', ' c="') then
+                      if (Components[I] as TPopupMenu).Items[M].name = IsolateTextString(List.Strings[II], '<', BN) then
                         begin (Components[I] as TPopupMenu)
-                          .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"/>');
+                          .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
                           Break;
                         end;
                     end;
@@ -195,19 +205,68 @@ begin
               Continue;
             end;
           // Если этот компонент ЛистВиев
-
+          if (Xform.Components[I] is TJvListView) then
+            begin
+              for M := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
+                begin
+                  for II := 0 to List.Count - 1 do
+                    begin
+                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[M].index))
+                        = IsolateTextString(List.Strings[II], '<', BN) then
+                        begin (Components[I] as TJvListView)
+                          .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                          Break;
+                        end;
+                    end;
+                end;
+              Continue;
+            end;
+          if (Xform.Components[I] is TListView) then
+            begin
+              for M := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
+                begin
+                  for II := 0 to List.Count - 1 do
+                    begin
+                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[M].index))
+                        = IsolateTextString(List.Strings[II], '<', BN) then
+                        begin (Components[I] as TListView)
+                          .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                          Break;
+                        end;
+                    end;
+                end;
+              Continue;
+            end;
           // Ищем компонент в списке по имени
           for II := 0 to List.Count - 1 do
             begin
-              if Components[I].name = IsolateTextString(List.Strings[II], '<', ' c="') then
+              if Components[I].name = IsolateTextString(List.Strings[II], '<', BN) then
                 begin
                   // Устанавливаем Caption через технологию RTTI
-                  PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
-                  if PropInfo <> nil then
+                  Str := EmptyStr;
+                  Str := IsolateTextString(List.Strings[II], 'c="', '"');
+                  if Str <> EmptyStr then
                     begin
-                      TK := PropInfo^.PropType^.Kind;
-                      if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                        SetStrProp(Components[I], PropInfo, IsolateTextString(List.Strings[II], 'c="', '"/>'));
+                      PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
+                      if PropInfo <> nil then
+                        begin
+                          TK := PropInfo^.PropType^.Kind;
+                          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                            SetStrProp(Components[I], PropInfo, Str);
+                        end;
+                    end;
+                  // Устанавливаем Hint через технологию RTTI
+                  Str := EmptyStr;
+                  Str := IsolateTextString(List.Strings[II], 'h="', '"');
+                  if Str <> EmptyStr then
+                    begin
+                      PropInfo := GetPropInfo(Components[I].ClassInfo, 'Hint');
+                      if PropInfo <> nil then
+                        begin
+                          TK := PropInfo^.PropType^.Kind;
+                          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                            SetStrProp(Components[I], PropInfo, CheckText_Hint(Str));
+                        end;
                     end;
                   Break;
                 end;
@@ -224,59 +283,91 @@ var
   Cf: string;
   PropInfo: PPropInfo;
   TK: TTypeKind;
+  XmlFile: TrXML;
 begin
   // Создаём необходимые папки
   ForceDirectories(MyPath + 'Langs\Forms\');
-  with TrXML.Create() do
-    try
-      // Записываем заголовок формы
-      Cf := 'language\' + Xform.name + '\';
-      if OpenKey(Cf, True) then
-        try
-          WriteString('c', Xform.Caption);
-        finally
-          CloseKey();
-        end;
-      // Просматриваем все контролы на форме
-      for I := 0 to Xform.ComponentCount - 1 do
-        begin
-          // Пишем в файл всплывающие меню
-          if (Xform.Components[I] is TPopupMenu) then
-            begin
-              for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
-                begin
-                  if OpenKey(Cf + Xform.Components[I].name, True) then
-                    try
-                      WriteString('c', (Xform.Components[I] as TPopupMenu).Items.Caption);
-                    finally
-                      CloseKey();
-                    end;
-                end;
-              Continue;
-            end;
-          // Пишем в файл ЛистВиев
-
-          // Пишем в файл все компоненты которые имеют Caption
-          PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
-          if PropInfo <> nil then
-            begin
-              TK := PropInfo^.PropType^.Kind;
-              if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                begin
-                  if OpenKey(Cf + Xform.Components[I].name, True) then
-                    try
-                      WriteString('c', GetStrProp(Xform.Components[I], PropInfo));
-                    finally
-                      CloseKey();
-                    end;
-                end;
-            end;
-        end;
-      // Записываем сам файл
-      SaveToFile(MyPath + 'Langs\Forms\' + Xform.name + '.xml');
-    finally
-      Free();
-    end;
+  // Инициализируем XML
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        // Записываем заголовок формы
+        Cf := 'language\' + Xform.name + '\';
+        if OpenKey(Cf, True) then
+          try
+            WriteString('c', Xform.Caption);
+          finally
+            CloseKey;
+          end;
+        // Просматриваем все контролы на форме
+        for I := 0 to Xform.ComponentCount - 1 do
+          begin
+            // Пишем в файл всплывающие меню
+            if (Xform.Components[I] is TPopupMenu) then
+              begin
+                for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
+                  begin
+                    if OpenKey(Cf + Xform.Components[I].name, True) then
+                      try
+                        WriteString('c', (Xform.Components[I] as TPopupMenu).Items.Caption);
+                      finally
+                        CloseKey;
+                      end;
+                  end;
+                Continue;
+              end;
+            // Пишем в файл ЛистВиев
+            if (Xform.Components[I] is TJvListView) then
+              begin
+                for MI := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
+                  begin
+                    if OpenKey(Cf + Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[MI].index),
+                      True) then
+                      try
+                        WriteString('c', (Xform.Components[I] as TJvListView).Columns[MI].Caption);
+                      finally
+                        CloseKey;
+                      end;
+                  end;
+                Continue;
+              end;
+            if (Xform.Components[I] is TListView) then
+              begin
+                for MI := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
+                  begin
+                    if OpenKey(Cf + Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[MI].index),
+                      True) then
+                      try
+                        WriteString('c', (Xform.Components[I] as TListView).Columns[MI].Caption);
+                      finally
+                        CloseKey;
+                      end;
+                  end;
+                Continue;
+              end;
+            // Пишем в файл все компоненты которые имеют Caption
+            PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
+            if PropInfo <> nil then
+              begin
+                TK := PropInfo^.PropType^.Kind;
+                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                  begin
+                    if OpenKey(Cf + Xform.Components[I].name, True) then
+                      try
+                        WriteString('c', GetStrProp(Xform.Components[I], PropInfo));
+                      finally
+                        CloseKey;
+                      end;
+                  end;
+              end;
+          end;
+        // Записываем сам файл
+        SaveToFile(MyPath + 'Langs\Forms\' + Xform.name + '.xml');
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure SaveTextInHistory(HString: string; HFileName: string);
@@ -286,7 +377,7 @@ var
   LengthLogString: Integer;
 begin
   LengthLogString := (Length(HString) + 2) * SizeOf(Char);
-  HString := HString + #13#10;
+  HString := HString + RN;
   PStr := StrAlloc(LengthLogString + 1);
   StrPCopy(PStr, HString);
   if FileExists(HFileName) then
@@ -303,7 +394,7 @@ function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
   Result := SocketConnErrorInfo_1 + RN + WSocketErrorDesc(Errcode) + RN + Format(HttpSocketErrCodeL, [Errcode])
-    + RN + '[ ' + SocketL + ' ' + SName + ' ]';
+    + RN + '[ ' + SocketL + BN + SName + ' ]';
 end;
 
 // На случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
@@ -344,15 +435,15 @@ end;
 
 {$WARNINGS OFF}
 
-function Getfiledatetime(Filename: string): Tdatetime;
+function GetFileDateTime(Filename: string): Tdatetime;
 var
-  Intfileage: Longint;
+  IntFileAge: Longint;
 begin
-  Intfileage := Fileage(Filename);
+  Intfileage := FileAge(Filename);
   if Intfileage = -1 then
     Result := 0
   else
-    Result := Filedatetodatetime(Intfileage);
+    Result := FileDateToDateTime(IntFileAge);
 end;
 
 {$WARNINGS ON}
@@ -361,33 +452,58 @@ function NotProtoOnline(Proto: string): Boolean;
 begin
   Result := False;
   // Проверяем онлайн ли клиент для этого протокола
-  if (Proto = 'Icq') and (not Icq_work_phaze) then
-    begin
-      Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
-      Result := True;
-    end
-  else if (Proto = 'Jabber') and (not Jabber_work_phaze) then
-    begin
-      Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
-      Result := True;
-    end
-  else if (Proto = 'Mra') and (not Mra_work_phaze) then
-    begin
-      Dashow(Alerthead, Onlinealert, EmptyStr, 133, 3, 0);
-      Result := True;
-    end;
+  if (Proto = S_Icq) and (not Icq_work_phaze) then
+    Result := True
+  else if (Proto = S_Jabber) and (not Jabber_work_phaze) then
+    Result := True
+  else if (Proto = S_Mra) and (not Mra_work_phaze) then
+    Result := True;
+  if Result then
+    Dashow(S_AlertHead, Onlinealert, EmptyStr, 133, 3, 0);
 end;
 
 procedure CheckMessage_BR(var Msg: string);
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  Msg := Ansireplacetext(Msg, #13#10, '<BR>');
+  Msg := Ansireplacetext(Msg, RN, '<BR>');
 end;
 
-procedure CheckText_RN(var Msg: string);
+procedure CheckMessage_GAPI(var Msg: string);
+begin
+
+  { (("\\u0026lt;" . "<")
+    ("\\u0026gt;" . ">")
+    ("\\u0026#39;" . "'")
+    ("\\u003d" . "=")
+    ("\\u0026quot;" . "\"")
+    ("\\u0026amp;" . "&")
+    ("\\\\" . "")) ; should be last to remove remaining "\"
+    "Characters returned escaped by the google api.") }
+
+  // Заменяем все коды спецсимволов в сообщении на соответствующий символ
+  Msg := Ansireplacetext(Msg, '\u0026lt;', '<');
+  Msg := Ansireplacetext(Msg, '\u0026gt;', '>');
+  Msg := Ansireplacetext(Msg, '\u0026#39;', '''');
+  Msg := Ansireplacetext(Msg, '\u003d', '=');
+  Msg := Ansireplacetext(Msg, '\u0026quot;', '"');
+  Msg := Ansireplacetext(Msg, '\u0026amp;', '&');
+  Msg := Ansireplacetext(Msg, '\\\', '');
+end;
+
+function CheckText_RN(Msg: string): string;
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  Msg := Ansireplacetext(Msg, '<RN>', #13#10);
+  Result := Ansireplacetext(Msg, '_r_', RN);
+end;
+
+function CheckText_Hint(Msg: string): string;
+var
+  S: string;
+begin
+  // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
+  S := Ansireplacetext(Msg, '_b_', '<b>');
+  S := Ansireplacetext(S, '_d_', '</b>');
+  Result := Ansireplacetext(S, '_r_', '<br>');
 end;
 
 procedure Xshowform(Xform: Tform);
@@ -397,6 +513,8 @@ begin
   if Xform.Visible then
     Showwindow(Xform.Handle, Sw_restore);
   Setforegroundwindow(Xform.Handle);
+  // Играем звук открытия окна
+  ImPlaySnd(4);
 end;
 
 function Getfilesize(Filename: string): Longint;
@@ -427,50 +545,55 @@ end;
 
 function Nameandlast(Cid, Cproto: string): string;
 var
-  Ln, Lf, La: string;
+  AFile, Ln, Lf, La: string;
+  XmlFile: TrXML;
 begin
   Result := EmptyStr;
-  Getcitypanel := '- -';
-  Getagepanel := '- -';
+  Getcitypanel := '---';
+  Getagepanel := '---';
   // Ищем файл с анкетой этого контакта
-  if FileExists(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml') then
+  AFile := ProfilePath + Anketafilename + Cproto + BN + Cid + '.xml';
+  if FileExists(AFile) then
     begin
       // Инициализируем XML
-      with TrXML.Create() do
-        try
-          LoadFromFile(ProfilePath + Anketafilename + Cproto + '_' + Cid + '.xml');
-          // Загружаем Имя и Фамилию
-          if OpenKey('profile\name-info') then
-            try
-              Ln := ReadString('first');
-              Lf := ReadString('last');
-            finally
-              CloseKey;
-            end;
-          // Загружаем Город
-          if OpenKey('profile\home-info') then
-            try
-              Getcitypanel := ReadString('city');
-            finally
-              CloseKey;
-            end;
-          // Загружаем Возраст
-          if OpenKey('profile\age-info') then
-            try
-              La := ReadString('age');
-              if La <> '0' then
-                Getagepanel := Infoagel + ' ' + La;
-            finally
-              CloseKey;
-            end;
-        finally
-          Free();
-        end;
+      XmlFile := TrXML.Create;
+      try
+        with XmlFile do
+          begin
+            LoadFromFile(AFile);
+            // Загружаем Имя и Фамилию
+            if OpenKey('profile\name-info') then
+              try
+                Ln := URLDecode(ReadString('first'));
+                Lf := URLDecode(ReadString('last'));
+              finally
+                CloseKey;
+              end;
+            // Загружаем Город
+            if OpenKey('profile\home-info') then
+              try
+                Getcitypanel := URLDecode(ReadString('city'));
+              finally
+                CloseKey;
+              end;
+            // Загружаем Возраст
+            if OpenKey('profile\age-info') then
+              try
+                La := ReadString('age');
+                if La <> '0' then
+                  Getagepanel := Infoagel + BN + La;
+              finally
+                CloseKey;
+              end;
+          end;
+      finally
+        FreeAndNil(XmlFile);
+      end;
       // Формируем строку
       if Ln > EmptyStr then
         Result := Result + Ln;
       if (Ln > EmptyStr) and (Lf > EmptyStr) then
-        Result := Result + ' ' + Lf
+        Result := Result + BN + Lf
       else if (Ln = EmptyStr) and (Lf > EmptyStr) then
         Result := Result + Lf;
     end;
@@ -486,17 +609,17 @@ begin
     begin
       S := Ltext;
       Delete(S, 1, Pos('http://', S) - 1);
-      if Pos(' ', S) > 0 then
+      if Pos(BN, S) > 0 then
         begin
-          S := Copy(S, 1, Pos(' ', S) - 1);
+          S := Copy(S, 1, Pos(BN, S) - 1);
           if Pos('<br>', S) > 0 then
             S := Copy(S, 1, Pos('<br>', S) - 1);
         end
       else if Pos('<br>', S) > 0 then
         begin
           S := Copy(S, 1, Pos('<br>', S) - 1);
-          if Pos(' ', S) > 0 then
-            S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos(BN, S) > 0 then
+            S := Copy(S, 1, Pos(BN, S) - 1);
         end
       else
         S := Copy(S, 1, Length(S));
@@ -508,17 +631,17 @@ begin
     begin
       S := Ltext;
       Delete(S, 1, Pos('https://', S) - 1);
-      if Pos(' ', S) > 0 then
+      if Pos(BN, S) > 0 then
         begin
-          S := Copy(S, 1, Pos(' ', S) - 1);
+          S := Copy(S, 1, Pos(BN, S) - 1);
           if Pos('<br>', S) > 0 then
             S := Copy(S, 1, Pos('<br>', S) - 1);
         end
       else if Pos('<br>', S) > 0 then
         begin
           S := Copy(S, 1, Pos('<br>', S) - 1);
-          if Pos(' ', S) > 0 then
-            S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos(BN, S) > 0 then
+            S := Copy(S, 1, Pos(BN, S) - 1);
         end
       else
         S := Copy(S, 1, Length(S));
@@ -530,17 +653,17 @@ begin
     begin
       S := Ltext;
       Delete(S, 1, Pos('www.', S) - 1);
-      if Pos(' ', S) > 0 then
+      if Pos(BN, S) > 0 then
         begin
-          S := Copy(S, 1, Pos(' ', S) - 1);
+          S := Copy(S, 1, Pos(BN, S) - 1);
           if Pos('<br>', S) > 0 then
             S := Copy(S, 1, Pos('<br>', S) - 1);
         end
       else if Pos('<br>', S) > 0 then
         begin
           S := Copy(S, 1, Pos('<br>', S) - 1);
-          if Pos(' ', S) > 0 then
-            S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos(BN, S) > 0 then
+            S := Copy(S, 1, Pos(BN, S) - 1);
         end
       else
         S := Copy(S, 1, Length(S));
@@ -552,17 +675,17 @@ begin
     begin
       S := Ltext;
       Delete(S, 1, Pos('ftp://', S) - 1);
-      if Pos(' ', S) > 0 then
+      if Pos(BN, S) > 0 then
         begin
-          S := Copy(S, 1, Pos(' ', S) - 1);
+          S := Copy(S, 1, Pos(BN, S) - 1);
           if Pos('<br>', S) > 0 then
             S := Copy(S, 1, Pos('<br>', S) - 1);
         end
       else if Pos('<br>', S) > 0 then
         begin
           S := Copy(S, 1, Pos('<br>', S) - 1);
-          if Pos(' ', S) > 0 then
-            S := Copy(S, 1, Pos(' ', S) - 1);
+          if Pos(BN, S) > 0 then
+            S := Copy(S, 1, Pos(BN, S) - 1);
         end
       else
         S := Copy(S, 1, Length(S));
@@ -729,21 +852,29 @@ begin
       begin
         Da.Colors.Windowfrom := Tcolor($00FFC688);
         Da.Colors.Windowto := Tcolor($00FFE3C7);
+        // Воспроизводим звук события
+        ImPlaySnd(3);
       end;
     1: // Жёлтый
       begin
         Da.Colors.Windowfrom := Tcolor($0092FFFF);
         Da.Colors.Windowto := Tcolor($00B6FFFF);
+        // Воспроизводим звук входящего сообщения
+        ImPlaySnd(1);
       end;
     2: // Красный
       begin
         Da.Colors.Windowfrom := Tcolor($009DCDFF);
         Da.Colors.Windowto := Tcolor($00DAF4FF);
+        // Воспроизводим звук ошибки
+        ImPlaySnd(2);
       end;
     3: // Зелёный
       begin
         Da.Colors.Windowfrom := Tcolor($0092FF92);
         Da.Colors.Windowto := Tcolor($00B6FFB6);
+        // Воспроизводим звук события
+        ImPlaySnd(3);
       end;
   end;
   // Применяем иконку и текст сообщения
@@ -827,7 +958,7 @@ begin
   with TEdit.Create(nil) do
     begin
       try
-        Visible := false;
+        Visible := False;
         Parent := LogForm;
         Text := Value;
         SelectAll;
@@ -878,30 +1009,30 @@ begin
   end;
 end;
 
-function Exisvalidcharacterstext(Value: string): Boolean;
+function ExisValidCharactersText(Value: string): Boolean;
 const
-  Validasciichars = ['a' .. 'z', 'A' .. 'Z'];
+  ValidChars = ['a' .. 'z', 'A' .. 'Z'];
 var
   I: Integer;
 begin
   Result := True;
   for I := 1 to Length(Value) do
-    if not(Value[I] in Validasciichars) then
+    if not CharInSet(Value[I], ValidChars) then
       begin
         Result := False;
         Exit;
       end;
 end;
 
-function Exisvalidcharactersdigit(Value: string): Boolean;
+function ExisValidCharactersDigit(Value: string): Boolean;
 const
-  Validasciichars = ['0' .. '9'];
+  ValidChars = ['0' .. '9'];
 var
   I: Integer;
 begin
   Result := True;
   for I := 1 to Length(Value) do
-    if not(Value[I] in Validasciichars) then
+    if not CharInSet(Value[I], ValidChars) then
       begin
         Result := False;
         Exit;
@@ -975,7 +1106,7 @@ begin
             '*': Skipstar;
             'a' .. 'z': begin
                 Control := EmptyStr;
-                while Source[Nchar] in ['a' .. 'z'] do
+                while CharInSet(Source[Nchar], ['a' .. 'z']) do
                   begin
                     Control := Control + Source[Nchar];
                     Inc(Nchar);
@@ -987,7 +1118,7 @@ begin
                   end
                 else
                   Numericvalue := EmptyStr;
-                while Source[Nchar] in ['0' .. '9'] do
+                while CharInSet(Source[Nchar], ['0' .. '9']) do
                   begin
                     Numericvalue := Numericvalue + Source[Nchar];
                     Inc(Nchar);
@@ -995,10 +1126,10 @@ begin
                 if Source[Nchar] = '{' then
                   Processgrouprecursevly;
                 Textvalue := EmptyStr;
-                if not(Source[Nchar] in ['a' .. 'z', '{', '}', '\']) then
+                if not CharInSet(Source[Nchar], ['a' .. 'z', '{', '}', '\']) then
                   begin
                     Inc(Nchar);
-                    while not(Source[Nchar] in ['{', '}', '\']) do
+                    while not CharInSet(Source[Nchar], ['{', '}', '\']) do
                       begin
                         Textvalue := Textvalue + Source[Nchar];
                         Inc(Nchar);
@@ -1047,7 +1178,7 @@ begin
       Nchar := 1;
       while (Nchar <= Length(Asource)) and (Bracescount >= 0) do
         begin
-          if not(Asource[Nchar] in [#$0D, #$0A]) then
+          if not CharInSet(Asource[Nchar], [#$0D, #$0A]) then
             begin
               Source := Source + Asource[Nchar];
               case Asource[Nchar] of
@@ -1138,14 +1269,14 @@ begin
     F := List.Count - F;
     // Запускаем цикл граббинда посдежних сообщений из истории
     for I := List.Count - 1 downto F do
-      Result := Result + List.Strings[I] + #13#10;
+      Result := Result + List.Strings[I] + RN;
     // Заносим результат снова в список
     List.Text := Result;
     // Обнуляем результат
     Result := EmptyStr;
     // Переворачиваем строки в списке
     for I := List.Count - 1 downto 0 do
-      Result := Result + List.Strings[I] + #13#10;
+      Result := Result + List.Strings[I] + RN;
   finally
     List.Free;
   end;
@@ -1195,15 +1326,15 @@ begin
           begin
             S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
             if I = 8 then
-              S1 := S1 + '  '
+              S1 := S1 + BN + BN
             else
-              S1 := S1 + ' ';
+              S1 := S1 + BN;
             if Data[Ofs + I] < #32 then
               S2 := S2 + '.'
             else
               S2 := S2 + Data[Ofs + I];
           end;
-      S1 := S1 + StringOfChar(' ', Cols * 3 + 4 - Length(S1));
+      S1 := S1 + StringOfChar(BN, Cols * 3 + 4 - Length(S1));
       Result := Result + S1 + S2 + RN;
       Inc(Ofs, Cols);
     end;
@@ -1293,7 +1424,7 @@ end;
 function Datetimechatmess: string;
 begin
   // YYYYMMDDHHNNSS
-  Result := Formatdatetime('HH:NN:SS', Time) + ' ' + Formatdatetime('DD.MM.YYYY', Date);
+  Result := Formatdatetime('HH:NN:SS', Time) + BN + Formatdatetime('DD.MM.YYYY', Date);
 end;
 
 function Exnormalizeicqnumber(Sn: string): string;
@@ -1317,21 +1448,21 @@ begin
   Result := Deletedashes(Sn);
 end;
 
-function Changespaces(const Value: string): string;
+function ChangeSpaces(const Value: string): string;
 var
   I: Integer;
 begin
   Result := EmptyStr;
   for I := 1 to Length(Value) do
     begin
-      if Value[I] = ' ' then
+      if Value[I] = BN then
         Result := Result + '%20'
       else
         Result := Result + Value[I];
     end;
 end;
 
-function Changeslash(const Value: string): string;
+function ChangeSlash(const Value: string): string;
 var
   I: Integer;
 begin
@@ -1345,14 +1476,28 @@ begin
     end;
 end;
 
-function Deletespaces(const Value: string): string;
+function ChangeCP(const Value: string): string;
+var
+  I: Integer;
+begin
+  Result := EmptyStr;
+  for I := 1 to Length(Value) do
+    begin
+      if Value[I] = '%' then
+        Result := Result + '_'
+      else
+        Result := Result + Value[I];
+    end;
+end;
+
+function DeleteSpaces(const Value: string): string;
 var
   Counter, I: Integer;
 begin
   Counter := 0;
   SetLength(Result, Length(Value));
   for I := 1 to Length(Value) do
-    if Value[I] <> ' ' then
+    if Value[I] <> BN then
       begin
         Inc(Counter);
         Result[Counter] := Value[I];
@@ -1372,7 +1517,7 @@ begin
   Counter := 0;
   SetLength(Result, Length(Value));
   for I := 1 to Length(Value) do
-    if (Value[I] <> ' ') and (Value[I] <> '-') and (Value[I] <> '(') and (Value[I] <> ')') and (Value[I] <> 'S') and (Value[I] <> 'M') then
+    if (Value[I] <> BN) and (Value[I] <> '-') and (Value[I] <> '(') and (Value[I] <> ')') and (Value[I] <> 'S') and (Value[I] <> 'M') then
       begin
         Inc(Counter);
         Result[Counter] := Value[I];
@@ -1479,11 +1624,11 @@ end;
 
 {$WARNINGS OFF}
 
-procedure Gettreedirs(Root: string; out Outstring: Tstringlist);
+procedure GetTreeDirs(Root: string; out Outstring: Tstringlist);
 var
   Sresult: Tsearchrec;
 begin
-  Outstring := Tstringlist.Create();
+  Outstring := Tstringlist.Create;
   if not Directoryexists(Root) then
     Exit;
   Root := Includetrailingbackslash(Root);
@@ -1526,11 +1671,11 @@ begin
   Result := T;
 end;
 
-procedure Listfiledirhist(Path, Ext, Eext: string; Filelist: Tstrings);
+procedure ListFileInDir(Path, Eext: string; Filelist: Tstrings);
 var
   Sr: Tsearchrec;
 begin
-  if Findfirst(Path + '\' + Ext, Faanyfile, Sr) = 0 then
+  if Findfirst(Path, Faanyfile, Sr) = 0 then
     begin
       repeat
         if (Sr.Attr <> Fadirectory) then
@@ -1651,7 +1796,7 @@ begin
     else
       Result := SocketConnErrorInfo_1;
   end;
-  Result := Result + #13#10 + Format(HttpSocketErrCodeL, [Errcode]);
+  Result := Result + BN + RN + Format(HttpSocketErrCodeL, [Errcode]);
 end;
 
 function Min(const A, B: Integer): Integer;
@@ -1700,7 +1845,7 @@ begin
   P := Pos('<', Sbuff);
   if P <= 0 then
     begin
-      Dashow(Errorhead, Parsingpkterror, EmptyStr, 134, 2, 0);
+      Dashow(S_Errorhead, Parsingpkterror, EmptyStr, 134, 2, 0);
       Exit;
     end;
   Tmps := Copy(Sbuff, P, L - P + 1);
@@ -1710,7 +1855,7 @@ begin
     Exit;
   if Froot = EmptyStr then
     begin
-      Sp := Pos(' ', Tmps);
+      Sp := Pos(BN, Tmps);
       Tb := Pos(#09, Tmps);
       Cr := Pos(#10, Tmps);
       Nl := Pos(#13, Tmps);
@@ -1777,25 +1922,31 @@ begin
   Result := R;
 end;
 
-procedure Implaysnd(Snd: Integer);
+procedure ImPlaySnd(Snd: Integer);
 begin
-  // Играем звуки imadering
+  // Играем звуки IMadering
   {
     0 - Старт программы
     1 - Входящее сообщение
+    2 - Ошибка
+    3 - Событие
+    4 - Открытие окон
     }
-  try
-    if Soundon then
-      begin
-        case Snd of
-          0: if (Soundstartprog) and (FileExists(Soundstartprogpath)) then
-              Sndplaysound(PChar(Soundstartprogpath), Snd_async);
-          1: if (Soundincmsg) and (FileExists(Soundincmsgpath)) then
-              Sndplaysound(PChar(Soundincmsgpath), Snd_async);
-        end;
+  if SoundON then
+    begin
+      case Snd of
+        0: if (SoundStartProg) and (FileExists(SoundStartProgPath)) then
+            Sndplaysound(PChar(SoundStartProgPath), Snd_async);
+        1: if (SoundIncMsg) and (FileExists(SoundIncMsgpath)) then
+            Sndplaysound(PChar(SoundIncMsgpath), Snd_async);
+        2: if (SoundError) and (FileExists(SoundErrorPath)) then
+            Sndplaysound(PChar(SoundErrorPath), Snd_async);
+        3: if (SoundEvent) and (FileExists(SoundEventPath)) then
+            Sndplaysound(PChar(SoundEventPath), Snd_async);
+        4: if (SoundOpen) and (FileExists(SoundOpenPath)) then
+            Sndplaysound(PChar(SoundOpenPath), Snd_async);
       end;
-  except
-  end;
+    end;
 end;
 
 function Searchnickincash(Ctype, Cid: string): string;
@@ -1810,7 +1961,7 @@ begin
         // Находим ники в списке ников по учётной записи
         for I := 0 to Accounttonick.Count - 1 do
           begin
-            if (Ctype + '_' + Cid) = Accounttonick.Strings[I] then
+            if (Ctype + BN + Cid) = Accounttonick.Strings[I] then
               begin
                 Result := Accounttonick.Strings[I + 1];
                 // Выходим из цикла
@@ -1821,66 +1972,6 @@ begin
   except
   end;
 end;
-
-(*
-
-  function Copydir(const Fromdir, Todir: string): Boolean;
-  var
-  Fos: Tshfileopstruct;
-  begin
-  Zeromemory(@Fos, SizeOf(Fos));
-  with Fos do
-  begin
-  Wfunc := Fo_copy;
-  Fflags := Fof_filesonly;
-  Pfrom := PChar(Fromdir + #0);
-  Pto := PChar(Todir)
-  end;
-  Result := (0 = Shfileoperation(Fos));
-  end;
-
-  {$WARNINGS OFF}
-
-  function Cleardir(const Path: string; Delete: Boolean): Boolean;
-  const
-  Filenotfound = 18;
-  var
-  Fileinfo: Tsearchrec;
-  Doscode: Integer;
-  begin
-  Result := Directoryexists(Path);
-  if not Result then
-  Exit;
-  Doscode := Findfirst(Path + '*.*', Faanyfile, Fileinfo);
-  try
-  while Doscode = 0 do
-  begin
-  if (Fileinfo.name[1] <> '.') then
-  begin
-  if (Fileinfo.Attr and Fadirectory = Fadirectory) then
-  Result := Cleardir(Path + Fileinfo.name, Delete) and Result
-  else
-  begin
-  if (Fileinfo.Attr and Fareadonly = Fareadonly) then
-  Filesetattr(Path + Fileinfo.name, Faarchive);
-  Result := Deletefile(Path + Fileinfo.name) and Result;
-  end;
-  end;
-  Doscode := Findnext(Fileinfo);
-  end;
-  finally
-  Findclose(Fileinfo);
-  end;
-  if Delete and Result and (Doscode = Filenotfound) and not((Length(Path) = 2) and (Path[2] = ':')) then
-  begin
-  Rmdir(Path);
-  Result := (Ioresult = 0) and Result;
-  end;
-  end;
-
-  {$WARNINGS ON}
-
-*)
 
 procedure SetcustomWidthCombobox(Cb: Tcombobox);
 var
@@ -1924,7 +2015,7 @@ begin
   if Ts = EmptyStr then
     begin
       Setclipboardtext(Url);
-      Dashow(Errorhead, Urlopenerrl, EmptyStr, 134, 2, 0);
+      Dashow(S_Errorhead, Urlopenerrl, EmptyStr, 134, 2, 0);
       Exit;
     end;
   if Bmsearch(0, Ts, '"') > -1 then
@@ -1987,6 +2078,34 @@ begin
           CompresHistoryProcess := False;
         end;
       Result := True;
+    end;
+end;
+
+procedure CheckMessage_Smilies(var Msg: string);
+var
+  ImgTag1, ImgTag2, Cod: string;
+  I, II: Integer;
+
+function GenTag(Path: string): string;
+begin
+  Result := ImgTag1 + Path + ImgTag2;
+end;
+
+begin
+  // Определяем html тэги для вставки смайлов заместо их текстовых обозначений
+  ImgTag1 := '<img src="./Smilies/' + CurrentSmiles + '/';
+  ImgTag2 := '" ALIGN=ABSMIDDLE BORDER="0">';
+  // Сканируем список кодов смайлов на совпадения
+  for I := 1 to SmilesList.Count - 1 do
+    begin
+      for II := 1 to 20 do
+        begin
+          Cod := Parse(',', SmilesList.Strings[I], II);
+          if Cod > EmptyStr then
+            Msg := ReplaceText(Msg, Cod, GenTag(IntToStr(I) + '.gif'))
+          else
+            Break;
+        end;
     end;
 end;
 

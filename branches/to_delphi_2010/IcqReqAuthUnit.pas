@@ -89,7 +89,7 @@ begin
   // Отображаем информацию и запрос на закачку новой версии
   Caption := UpDate3L;
   HeadLabel.Caption := UpDate1L;
-  InfoMemo.Text := UpDate2L + #13#10 + #13#10 + M;
+  InfoMemo.Text := UpDate2L + RN + RN + M;
   // Ставим флаги функции окна
   UpDate := True;
   Invite := False;
@@ -120,7 +120,7 @@ begin
     if Invite then
     begin
     Sini := TIniFile.Create(Mypath + 'Config.ini');
-    Sini.WriteString('ICQ', 'Invite', Encrypt(Memo1.Text, 12345));
+    Sini.WriteString('qwe', 'Invite', Encrypt(Memo1.Text, 12345));
     Sini.Free;
     //
     if (RoasterForm.Roaster_Sel_Button.Status <> 20) and (RoasterForm.Roaster_Sel_Button.Utf8Supported) then

@@ -3,7 +3,6 @@ object ProfileForm: TProfileForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'IMadering'
   ClientHeight = 281
   ClientWidth = 259
   Color = clBtnFace
@@ -33,9 +32,8 @@ object ProfileForm: TProfileForm
   object VersionLabel: TLabel
     Left = 9
     Top = 260
-    Width = 43
+    Width = 3
     Height = 13
-    Caption = '#Version'
   end
   object CenterPanel: TPanel
     Left = 8
@@ -49,9 +47,8 @@ object ProfileForm: TProfileForm
     object ProfileLabel: TLabel
       Left = 11
       Top = 51
-      Width = 131
+      Width = 3
       Height = 13
-      Caption = '#'#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1087#1088#1086#1092#1080#1083#1100':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -79,9 +76,8 @@ object ProfileForm: TProfileForm
     object LangLabel: TLabel
       Left = 11
       Top = 5
-      Width = 115
+      Width = 3
       Height = 13
-      Caption = '#'#1071#1079#1099#1082' '#1080#1085#1090#1077#1088#1092#1077#1081#1089#1072':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -94,15 +90,17 @@ object ProfileForm: TProfileForm
       Top = 70
       Width = 218
       Height = 21
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
       Text = 'Profile1'
+      OnChange = ProfileComboBoxChange
     end
     object LoginButton: TButton
       Left = 10
       Top = 120
       Width = 102
       Height = 25
-      Caption = '#'#1042#1086#1081#1090#1080
       Default = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -120,7 +118,6 @@ object ProfileForm: TProfileForm
       Top = 120
       Width = 102
       Height = 25
-      Caption = '#'#1059#1076#1072#1083#1080#1090#1100
       TabOrder = 2
       OnClick = DeleteButtonClick
     end
@@ -144,7 +141,6 @@ object ProfileForm: TProfileForm
       Top = 97
       Width = 218
       Height = 17
-      Caption = '#'#1042#1093#1086#1076#1080#1090#1100' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
       TabOrder = 4
     end
   end

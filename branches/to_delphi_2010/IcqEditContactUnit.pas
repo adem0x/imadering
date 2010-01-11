@@ -11,8 +11,17 @@ unit IcqEditContactUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, CategoryButtons;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  CategoryButtons;
 
 type
   TIcqEditContactForm = class(TForm)
@@ -28,6 +37,7 @@ type
     Button2: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Edit2KeyPress(Sender: TObject; var Key: Char);
+
   private
     { Private declarations }
   public
@@ -42,7 +52,8 @@ implementation
 {$R *.dfm}
 
 uses
-  IcqProtoUnit, VarsUnit;
+  IcqProtoUnit,
+  VarsUnit;
 
 procedure TIcqEditContactForm.Button1Click(Sender: TObject);
 { label
@@ -89,9 +100,9 @@ end;
 
 procedure TIcqEditContactForm.Edit2KeyPress(Sender: TObject; var Key: Char);
 const
-  ValidAsciiChars = ['0' .. '9', '+'];
+  ValidChars = ['0' .. '9', '+'];
 begin
-  if (not(Key in ValidAsciiChars)) and (Key <> #8) then
+  if (not CharInSet(Key, ValidChars)) and (Key <> #8) then
     Key := #0;
 end;
 

@@ -205,114 +205,170 @@ end;
 procedure TSettingsForm.LoadSettings;
 var
   ListItemD: TListItem;
+  XmlFile: TrXML;
 begin
   // Считываем настройки из xml файла
   if FileExists(ProfilePath + SettingsFileName) then
     begin
-      with TrXML.Create() do
-        try
-          LoadFromFile(ProfilePath + SettingsFileName);
-          // Загружаем и отображаем настройки прокси
-          if OpenKey('settings\proxy\address') then
-            try
-              ProxyAddressEdit.Text := ReadString('host');
-              ProxyPortEdit.Text := ReadString('port');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\proxy\type') then
-            try
-              ProxyTypeComboBox.ItemIndex := ReadInteger('type-index');
-              ProxyVersionComboBox.ItemIndex := ReadInteger('version-index');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\proxy\auth') then
-            try
-              ProxyAuthCheckBox.Checked := ReadBool('auth-enable');
-              ProxyLoginEdit.Text := ReadString('login');
-              ProxyPasswordEdit.Text := Base64Decode(ReadString('password'));
-              NTLMCheckBox.Checked := ReadBool('ntlm-auth');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\proxy\main') then
-            try
-              ProxyEnableCheckBox.Checked := ReadBool('enable');
-              ProxyEnableCheckBoxClick(nil);
-            finally
-              CloseKey();
-            end;
-          // ----------------------------------------------------------------------
-          // Загружаем и отображаем другие настройки
-          if OpenKey('settings\main\hide-in-tray-program-start') then
-            try
-              // Загружаем запуск свёрнутой в трэй
-              HideInTrayProgramStartCheckBox.Checked := ReadBool('value');
-              // Загружаем автозапуск при старте Windows
-              StartOnWinStartCheckBox.Checked := IsAppInRun('IMadering');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\auto-update-check') then
-            try
-              // Загружаем проверять наличие новой версии при запуске
-              AutoUpdateCheckBox.Checked := ReadBool('value');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\always-top') then
-            try
-              // Загружаем поверх всех окон
-              AlwaylTopCheckBox.Checked := ReadBool('value');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\transparent-value') then
-            try
-              // Загружаем настройки прозрачности списка контактов
-              TransparentTrackBar.Position := ReadInteger('value');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\transparent-active') then
-            try
-              // Загружаем прозрачность неактивноно окна списка контактов
-              TransparentNotActiveCheckBox.Checked := ReadBool('value');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\auto-hide-cl') then
-            try
-              // Загружаем автоскрытие списка контактов
-              AutoHideCLCheckBox.Checked := ReadBool('value');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\auto-hide-cl-value') then
-            try
-              // Загружаем автоскрытие списка контактов
-              AutoHideClEdit.Text := ReadString('value');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\header-cl-form') then
-            try
-              // Загружаем заголовок окна списка контактов
-              HeaderTextEdit.Text := ReadString('text');
-            finally
-              CloseKey();
-            end;
-          if OpenKey('settings\main\reconnect') then
-            try
-              // Загружаем пересоединение при разрыве соединения
-              ReconnectCheckBox.Checked := ReadBool('value');
-            finally
-              CloseKey();
-            end;
-        finally
-          Free();
-        end;
+      XmlFile := TrXML.Create;
+      try
+        with XmlFile do
+          begin
+            LoadFromFile(ProfilePath + SettingsFileName);
+            // Загружаем и отображаем настройки Прокси
+            if OpenKey('settings\proxy\address') then
+              try
+                ProxyAddressEdit.Text := ReadString('host');
+                ProxyPortEdit.Text := ReadString('port');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\proxy\type') then
+              try
+                ProxyTypeComboBox.ItemIndex := ReadInteger('type-index');
+                ProxyVersionComboBox.ItemIndex := ReadInteger('version-index');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\proxy\auth') then
+              try
+                ProxyAuthCheckBox.Checked := ReadBool('auth-enable');
+                ProxyLoginEdit.Text := ReadString('login');
+                ProxyPasswordEdit.Text := Base64Decode(ReadString('password'));
+                NTLMCheckBox.Checked := ReadBool('ntlm-auth');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\proxy') then
+              try
+                ProxyEnableCheckBox.Checked := ReadBool('enable');
+                ProxyEnableCheckBoxClick(nil);
+              finally
+                CloseKey;
+              end;
+            // ----------------------------------------------------------------------
+            // Загружаем и отображаем Общие настройки
+            if OpenKey('settings\main\hide-in-tray-program-start') then
+              try
+                // Загружаем запуск свёрнутой в трэй
+                HideInTrayProgramStartCheckBox.Checked := ReadBool(S_Value);
+                // Загружаем автозапуск при старте Windows
+                StartOnWinStartCheckBox.Checked := IsAppInRun('IMadering');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\main\auto-update-check') then
+              try
+                // Загружаем проверять наличие новой версии при запуске
+                AutoUpdateCheckBox.Checked := ReadBool(S_Value);
+              finally
+                CloseKey;
+              end;
+            // ----------------------------------------------------------------------
+            // Загружаем и отображаем настройки КЛ
+            if OpenKey('settings\clform\always-top') then
+              try
+                // Загружаем поверх всех окон
+                AlwaylTopCheckBox.Checked := ReadBool(S_Value);
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\clform\transparent-value') then
+              try
+                // Загружаем настройки прозрачности списка контактов
+                TransparentTrackBar.Position := ReadInteger(S_Value);
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\clform\transparent-active') then
+              try
+                // Загружаем прозрачность неактивноно окна списка контактов
+                TransparentNotActiveCheckBox.Checked := ReadBool(S_Value);
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\clform\auto-hide-cl') then
+              try
+                // Загружаем автоскрытие списка контактов
+                AutoHideCLCheckBox.Checked := ReadBool(S_Value);
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\clform\auto-hide-cl-value') then
+              try
+                // Загружаем время автоскрытия списка контактов
+                AutoHideClEdit.Text := ReadString(S_Value);
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\clform\header-cl-form') then
+              try
+                // Загружаем заголовок окна списка контактов
+                HeaderTextEdit.Text := ReadString('text');
+              finally
+                CloseKey;
+              end;
+            // ----------------------------------------------------------------------
+            // Загружаем и отображаем Другие настройки
+            if OpenKey('settings\main\reconnect') then
+              try
+                // Загружаем пересоединение при разрыве соединения
+                ReconnectCheckBox.Checked := ReadBool(S_Value);
+              finally
+                CloseKey;
+              end;
+            // ----------------------------------------------------------------------
+            // Загружаем и отображаем настройки Звука
+            if OpenKey('settings\sounds\sound-start-prog-path') then
+              try
+                // Загружаем путь к файлу
+                SoundStartProgPath := ReadString('path');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\sounds\sound-incmsg-path') then
+              try
+                // Загружаем путь к файлу
+                SoundIncMsgPath := ReadString('path');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\sounds\sound-error-path') then
+              try
+                // Загружаем путь к файлу
+                SoundErrorPath := ReadString('path');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\sounds\sound-event-path') then
+              try
+                // Загружаем путь к файлу
+                SoundEventPath := ReadString('path');
+              finally
+                CloseKey;
+              end;
+            if OpenKey('settings\sounds\sound-open-path') then
+              try
+                // Загружаем путь к файлу
+                SoundOpenPath := ReadString('path');
+              finally
+                CloseKey;
+              end;
+            // Если пути к файлам звуков пустые, то назначаем их по умолчанию
+            if SoundStartProgPath = EmptyStr then
+              SoundStartProgPath := MyPath + 'Sounds\' + CurrentSounds + '\Start.wav';
+            if SoundIncMsgPath = EmptyStr then
+              SoundIncMsgPath := MyPath + 'Sounds\' + CurrentSounds + '\IncMsg.wav';
+            if SoundErrorPath = EmptyStr then
+              SoundErrorPath := MyPath + 'Sounds\' + CurrentSounds + '\Error.wav';
+            if SoundEventPath = EmptyStr then
+              SoundEventPath := MyPath + 'Sounds\' + CurrentSounds + '\Event.wav';
+            if SoundOpenPath = EmptyStr then
+              SoundOpenPath := MyPath + 'Sounds\' + CurrentSounds + '\Open.wav';
+          end;
+      finally
+        FreeAndNil(XmlFile);
+      end;
     end;
   // Устанавливаем галочки включенных протоколов
   ProtocolsListView.Clear;
@@ -341,6 +397,8 @@ end;
 // Apply Settings --------------------------------------------------------------
 
 procedure TSettingsForm.ApplySettings;
+var
+  XmlFile: TrXML;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
@@ -364,16 +422,16 @@ begin
         end;
       // HTTP сокет для передачи файлов
       if (Assigned(FileTransferForm)) and (FileTransferForm.SendFileHttpClient.State <> HttpConnected) then
-      begin
-        FileTransferForm.SendFileHttpClient.Abort;
-        ApplyProxyHttpClient(FileTransferForm.SendFileHttpClient);
-      end;
+        begin
+          FileTransferForm.SendFileHttpClient.Abort;
+          ApplyProxyHttpClient(FileTransferForm.SendFileHttpClient);
+        end;
       // HTTP сокет для переводчика
       if (Assigned(GtransForm)) and (GtransForm.GtransHttpClient.State <> HttpConnected) then
-      begin
-        GtransForm.GtransHttpClient.Abort;
-        ApplyProxyHttpClient(GtransForm.GtransHttpClient);
-      end;
+        begin
+          GtransForm.GtransHttpClient.Abort;
+          ApplyProxyHttpClient(GtransForm.GtransHttpClient);
+        end;
       // Сокет для протокола ICQ
       if ICQWSocket.State <> WsConnected then
         begin
@@ -401,13 +459,13 @@ begin
     end;
   // --------------------------------------------------------------------------
   // Применяем общие настройки
-  // Если "Запускать при старте системы", то ставим это в реестре
-  if StartOnWinStartCheckBox.Checked then
+  if StartOnWinStartCheckBox.Checked then // Если "Запускать при старте системы", то ставим это в реестре
     DoAppToRun('IMadering', MyPath + 'Imadering.exe')
   else
     DelAppFromRun('IMadering');
+  // --------------------------------------------------------------------------
   // Применяем настройки для списка контактов
-  if AlwaylTopCheckBox.Checked then
+  if AlwaylTopCheckBox.Checked then // Применяем "Поверх всех окон"
     MainForm.FormStyle := FsStayOnTop
   else
     MainForm.FormStyle := FsNormal;
@@ -437,109 +495,115 @@ begin
     begin
       if not NoReSave then // Если разрешена перезапись настроек
         begin
-          with TrXML.Create() do
-            try
-              if FileExists(ProfilePath + SettingsFileName) then
-                LoadFromFile(ProfilePath + SettingsFileName);
-              // Записываем настройки прокси
-              if OpenKey('settings\proxy\main', True) then
-                try
-                  WriteBool('enable', ProxyEnableCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              if OpenKey('settings\proxy\address', True) then
-                try
-                  WriteString('host', ProxyAddressEdit.Text);
-                  WriteString('port', ProxyPortEdit.Text);
-                finally
-                  CloseKey();
-                end;
-              if OpenKey('settings\proxy\type', True) then
-                try
-                  WriteString('type', ProxyTypeComboBox.Text);
-                  WriteInteger('type-index', ProxyTypeComboBox.ItemIndex);
-                  WriteString('version', ProxyVersionComboBox.Text);
-                  WriteInteger('version-index', ProxyVersionComboBox.ItemIndex);
-                finally
-                  CloseKey();
-                end;
-              if OpenKey('settings\proxy\auth', True) then
-                try
-                  WriteBool('auth-enable', ProxyAuthCheckBox.Checked);
-                  WriteString('login', ProxyLoginEdit.Text);
-                  WriteString('password', Base64Encode(ProxyPasswordEdit.Text));
-                  WriteBool('ntlm-auth', NTLMCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              // --------------------------------------------------------------------
-              // Сохраняем запуск свёрнутой в трэй
-              if OpenKey('settings\main\hide-in-tray-program-start', True) then
-                try
-                  WriteBool('value', HideInTrayProgramStartCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем пересоединяться при разрыве соединения
-              if OpenKey('settings\main\reconnect', True) then
-                try
-                  WriteBool('value', ReconnectCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем проверять наличие новой версии при запуске
-              if OpenKey('settings\main\auto-update-check', True) then
-                try
-                  WriteBool('value', AutoUpdateCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем поверх всех окон
-              if OpenKey('settings\main\always-top', True) then
-                try
-                  WriteBool('value', AlwaylTopCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем настройки прозрачности списка контактов
-              if OpenKey('settings\main\transparent-value', True) then
-                try
-                  WriteInteger('value', TransparentTrackBar.Position);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем прозрачность неактивноно окна списка контактов
-              if OpenKey('settings\main\transparent-active', True) then
-                try
-                  WriteBool('value', TransparentNotActiveCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем автоскрытие списка контактов
-              if OpenKey('settings\main\auto-hide-cl', True) then
-                try
-                  WriteBool('value', AutoHideCLCheckBox.Checked);
-                finally
-                  CloseKey();
-                end;
-              if OpenKey('settings\main\auto-hide-cl-value', True) then
-                try
-                  WriteString('value', AutoHideClEdit.Text);
-                finally
-                  CloseKey();
-                end;
-              // Сохраняем заголовок окна списка контактов
-              if OpenKey('settings\main\header-cl-form', True) then
-                try
-                  WriteString('text', HeaderTextEdit.Text);
-                finally
-                  CloseKey();
-                end;
-              SaveToFile(ProfilePath + SettingsFileName);
-            finally
-              Free();
-            end;
+          XmlFile := TrXML.Create;
+          try
+            with XmlFile do
+              begin
+                if FileExists(ProfilePath + SettingsFileName) then
+                  LoadFromFile(ProfilePath + SettingsFileName);
+                // --------------------------------------------------------------------------
+                // Записываем настройки прокси
+                if OpenKey('settings\proxy', True) then
+                  try
+                    WriteBool('enable', ProxyEnableCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                if OpenKey('settings\proxy\address', True) then
+                  try
+                    WriteString('host', ProxyAddressEdit.Text);
+                    WriteString('port', ProxyPortEdit.Text);
+                  finally
+                    CloseKey;
+                  end;
+                if OpenKey('settings\proxy\type', True) then
+                  try
+                    WriteString('type', ProxyTypeComboBox.Text);
+                    WriteInteger('type-index', ProxyTypeComboBox.ItemIndex);
+                    WriteString('version', ProxyVersionComboBox.Text);
+                    WriteInteger('version-index', ProxyVersionComboBox.ItemIndex);
+                  finally
+                    CloseKey;
+                  end;
+                if OpenKey('settings\proxy\auth', True) then
+                  try
+                    WriteBool('auth-enable', ProxyAuthCheckBox.Checked);
+                    WriteString('login', ProxyLoginEdit.Text);
+                    WriteString('password', Base64Encode(ProxyPasswordEdit.Text));
+                    WriteBool('ntlm-auth', NTLMCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                // --------------------------------------------------------------------
+                // Сохраняем запуск свёрнутой в трэй
+                if OpenKey('settings\main\hide-in-tray-program-start', True) then
+                  try
+                    WriteBool(S_Value, HideInTrayProgramStartCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                // Сохраняем пересоединяться при разрыве соединения
+                if OpenKey('settings\main\reconnect', True) then
+                  try
+                    WriteBool(S_Value, ReconnectCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                // Сохраняем проверять наличие новой версии при запуске
+                if OpenKey('settings\main\auto-update-check', True) then
+                  try
+                    WriteBool(S_Value, AutoUpdateCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                // --------------------------------------------------------------------
+                // Сохраняем поверх всех окон
+                if OpenKey('settings\clform\always-top', True) then
+                  try
+                    WriteBool(S_Value, AlwaylTopCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                // Сохраняем настройки прозрачности списка контактов
+                if OpenKey('settings\clform\transparent-value', True) then
+                  try
+                    WriteInteger(S_Value, TransparentTrackBar.Position);
+                  finally
+                    CloseKey;
+                  end;
+                // Сохраняем прозрачность неактивноно окна списка контактов
+                if OpenKey('settings\clform\transparent-active', True) then
+                  try
+                    WriteBool(S_Value, TransparentNotActiveCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                // Сохраняем автоскрытие списка контактов
+                if OpenKey('settings\clform\auto-hide-cl', True) then
+                  try
+                    WriteBool(S_Value, AutoHideCLCheckBox.Checked);
+                  finally
+                    CloseKey;
+                  end;
+                if OpenKey('settings\clform\auto-hide-cl-value', True) then
+                  try
+                    WriteString(S_Value, AutoHideClEdit.Text);
+                  finally
+                    CloseKey;
+                  end;
+                // Сохраняем заголовок окна списка контактов
+                if OpenKey('settings\clform\header-cl-form', True) then
+                  try
+                    WriteString('text', HeaderTextEdit.Text);
+                  finally
+                    CloseKey;
+                  end;
+                // Записываем сам файл
+                SaveToFile(ProfilePath + SettingsFileName);
+              end;
+          finally
+            FreeAndNil(XmlFile);
+          end;
         end;
     end;
   // Деактивируем кнопку применения настроек
@@ -558,7 +622,7 @@ const
   ValidAsciiChars = ['0' .. '9'];
 begin
   // Делаем так, что вводить можно только цифры
-  if (not(Key in ValidAsciiChars)) and (Key <> #8) then
+  if (not CharInSet(Key, ValidAsciiChars)) and (Key <> #8) then
     Key := #0;
 end;
 
@@ -571,7 +635,7 @@ end;
 procedure TSettingsForm.DeleteProtoBitBtnClick(Sender: TObject);
 begin
   // В будущем удаляем протоколы в активный список
-  ShowMessage(DevelMess);
+  ShowMessage(S_DevelMess);
 end;
 
 procedure TSettingsForm.OKBitBtnClick(Sender: TObject);
@@ -586,7 +650,7 @@ end;
 procedure TSettingsForm.AddProtoBitBtnClick(Sender: TObject);
 begin
   // В будущем добавляем протоколы в активный список
-  ShowMessage(DevelMess);
+  ShowMessage(S_DevelMess);
 end;
 
 procedure TSettingsForm.ApplyBitBtnClick(Sender: TObject);
@@ -814,7 +878,7 @@ end;
 procedure TSettingsForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
 end;

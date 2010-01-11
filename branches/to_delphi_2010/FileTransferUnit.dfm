@@ -3,7 +3,6 @@ object FileTransferForm: TFileTransferForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1055#1077#1088#1077#1076#1072#1095#1072' '#1092#1072#1081#1083#1086#1074
   ClientHeight = 222
   ClientWidth = 498
   Color = clBtnFace
@@ -21,38 +20,33 @@ object FileTransferForm: TFileTransferForm
   object FileNameLabel: TLabel
     Left = 9
     Top = 30
-    Width = 78
+    Width = 3
     Height = 13
-    Caption = #1058#1077#1082#1091#1097#1080#1081' '#1092#1072#1081#1083':'
   end
   object FileSizeLabel: TLabel
     Left = 240
     Top = 30
-    Width = 74
+    Width = 3
     Height = 13
-    Caption = #1056#1072#1079#1084#1077#1088' '#1092#1072#1081#1083#1072':'
   end
   object ProgressLabel: TLabel
     Left = 9
     Top = 76
-    Width = 75
+    Width = 3
     Height = 13
-    Caption = #1061#1086#1076' '#1087#1077#1088#1077#1076#1072#1095#1080':'
   end
   object DescLabel: TLabel
     Left = 9
     Top = 121
-    Width = 97
+    Width = 3
     Height = 13
-    Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1082' '#1092#1072#1081#1083#1091':'
   end
   object PassLabel: TLabel
-    Left = 25
+    Left = 63
     Top = 172
-    Width = 41
+    Width = 3
     Height = 13
     Alignment = taRightJustify
-    Caption = #1055#1072#1088#1086#1083#1100':'
   end
   object TopInfoPanel: TPanel
     AlignWithMargins = True
@@ -92,7 +86,6 @@ object FileTransferForm: TFileTransferForm
     Top = 31
     Width = 92
     Height = 25
-    Caption = #1054#1090#1084#1077#1085#1072
     DoubleBuffered = True
     Enabled = False
     ParentDoubleBuffered = False
@@ -105,7 +98,6 @@ object FileTransferForm: TFileTransferForm
     Top = 62
     Width = 92
     Height = 25
-    Caption = #1047#1072#1082#1088#1099#1090#1100
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 4
@@ -157,7 +149,6 @@ object FileTransferForm: TFileTransferForm
     Top = 167
     Width = 130
     Height = 25
-    Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
     Default = True
     DoubleBuffered = True
     ParentDoubleBuffered = False

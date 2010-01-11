@@ -101,7 +101,7 @@ begin
         // Запрашиваем страницу с кодом сессии
         SendProgressBar.Position := 0;
         SendFileHttpClient.Tag := 0;
-        SendFileHttpClient.URL := 'http://upwap.ru/upload/';
+        SendFileHttpClient.URL := UpWapRootURL + '/upload/';
         BottomInfoPanel.Caption := FileTransfer2L;
         SendFileHttpClient.GetASync;
       end;
@@ -165,8 +165,8 @@ begin
                         // Записываем переменные в память
                         SendStream.write(Buf[1], Length(Buf));
                         // Создаём блок памяти для файла
+                        FileToSend := TMemoryStream.Create;
                         try
-                          FileToSend := TMemoryStream.Create;
                           FileToSend.LoadFromFile(FileNamePanel.Hint);
                           FileToSend.SaveToStream(SendStream);
                         finally
@@ -197,14 +197,14 @@ begin
                         OKURL := UpWapRootURL + IsolateTextString(Doc, 'action="', '"');
                         // Формируем текст со ссылкой
                         case Tag of
-                          1: OKURL := Format(FileTransfer5L, [FileSizePanel.Hint, OKURL, 'upwap.ru', 'http://upwap.ru']);
+                          1: OKURL := Format(FileTransfer5L, [FileSizePanel.Hint, OKURL, 'upwap.ru', UpWapRootURL]);
                         end;
                         // Ищем такой контакт в Ростере
                         RosterItem := RosterForm.ReqRosterItem(TopInfoPanel.Hint);
                         if RosterItem <> nil then
                           begin
                             // Отсылаем контакту ссылку и записываем это в историю сообщений
-                            if RosterItem.SubItems[3] = 'Icq' then
+                            if RosterItem.SubItems[3] = S_Icq then
                               begin
                                 if ICQ_Work_Phaze then
                                   begin
@@ -215,11 +215,11 @@ begin
                                     SendYES := True;
                                   end;
                               end
-                            else if RosterItem.SubItems[3] = 'Jabber' then
+                            else if RosterItem.SubItems[3] = S_Jabber then
                               begin
 
                               end
-                            else if RosterItem.SubItems[3] = 'Mra' then
+                            else if RosterItem.SubItems[3] = S_Mra then
                               begin
 
                               end;
@@ -340,8 +340,13 @@ end;
 
 procedure TFileTransferForm.TranslateForm;
 begin
-  // Переводим окно на другие языки
-
+  // Создаём шаблон для перевода
+  //CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CancelBitBtn.Caption := S_Cancel;
+  CloseBitBtn.Caption := S_Close;
 end;
 
 end.

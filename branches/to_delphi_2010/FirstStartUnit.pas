@@ -112,15 +112,28 @@ begin
   // Проверяем выбран ли хоть один протокол
   if (not ICQEnableCheckBox.Checked) and (not MRAEnableCheckBox.Checked) and (not JabberEnableCheckBox.Checked) then
     begin
-      ShowMessage(FirstStartProtoSelectAlert);
+      ShowMessage(S_ProtoSelectAlert);
       ICQEnableCheckBox.Checked := True;
     end;
 end;
 
 procedure TFirstStartForm.TranslateForm;
 begin
-  // Перевод интерфейса окна на другой язык
-
+  // Создаём шаблон для перевода
+  //CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  NextButton.Caption := S_Next;
+  CancelButton.Caption := S_Cancel;
+  JabberGroupBox.Caption := ICQGroupBox.Caption;
+  MRAGroupBox.Caption := ICQGroupBox.Caption;
+  JabberPassLabel.Caption := ICQPassLabel.Caption;
+  MRAPassLabel.Caption := ICQPassLabel.Caption;
+  JabberShowPassCheckBox.Caption := ICQShowPassCheckBox.Caption;
+  MRAShowPassCheckBox.Caption := ICQShowPassCheckBox.Caption;
+  JabberSavePassCheckBox.Caption := ICQSavePassCheckBox.Caption;
+  MRASavePassCheckBox.Caption := ICQSavePassCheckBox.Caption;
 end;
 
 procedure TFirstStartForm.CancelButtonClick(Sender: TObject);
@@ -140,9 +153,11 @@ begin
             // Присваиваем логин
             IcqOptionsForm.ICQUINEdit.Text := ICQUINEdit.Text;
             IcqOptionsForm.PassEdit.Text := ICQPassEdit.Text;
+            IcqOptionsForm.PassEdit.Hint := ICQPassEdit.Text;
             IcqOptionsForm.SavePassCheckBox.Checked := ICQSavePassCheckBox.Checked;
             // Применяем и сохраняем настройки логина ICQ
             IcqOptionsForm.ApplySettings;
+            IcqOptionsForm.SaveSettings;
           end;
         // Переключаем на Jabber страницу
         ProtoJvPageList.ActivePageIndex := 1;
@@ -195,7 +210,7 @@ begin
         end;
     end;
   // Устанавливаем текст на кнопке управления
-  NextButton.Caption := FirstStartNextButton;
+  NextButton.Caption := S_Next;
 end;
 
 procedure TFirstStartForm.JabberEnableCheckBoxClick(Sender: TObject);
@@ -228,7 +243,7 @@ end;
 procedure TFirstStartForm.RegNewUINLabelClick(Sender: TObject);
 begin
   // Открываем регистрацию на веб сайте ICQ
-  OpenURL('http://www.icq.com/register');
+  OpenURL(RS_ICQReg);
 end;
 
 procedure TFirstStartForm.ICQEnableCheckBoxClick(Sender: TObject);
@@ -269,7 +284,7 @@ end;
 procedure TFirstStartForm.MRARegNewEmailLabelClick(Sender: TObject);
 begin
   // Открываем регистрацию на веб сайте mail.ru
-  OpenURL('http://win.mail.ru/cgi-bin/signup');
+  OpenURL(RS_MraReg);
 end;
 
 procedure TFirstStartForm.MRARegNewEmailLabelMouseEnter(Sender: TObject);

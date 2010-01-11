@@ -1,4 +1,4 @@
-// Изменения для проекта IMadering
+п»ї// РР·РјРµРЅРµРЅРёСЏ РґР»СЏ РїСЂРѕРµРєС‚Р° IMadering
 
 {*******************************************************}
 {                                                       }
@@ -4738,12 +4738,12 @@ const
     ((TPM_LEFTALIGN, TPM_RIGHTALIGN, TPM_CENTERALIGN),
      (TPM_RIGHTALIGN, TPM_LEFTALIGN, TPM_CENTERALIGN));}
 
-  // Мои изменения
+  // РњРѕРё РёР·РјРµРЅРµРЅРёСЏ
 
   Flags: array [Boolean, TPopupAlignment] of Word = ((TPM_BOTTOMALIGN + 10, TPM_CENTERALIGN, TPM_LEFTALIGN),
     (TPM_RIGHTALIGN, TPM_LEFTALIGN, TPM_CENTERALIGN));
 
-  // Конец изменений
+  // РљРѕРЅРµС† РёР·РјРµРЅРµРЅРёР№
 
   Buttons: array[TTrackButton] of Word = (TPM_RIGHTBUTTON, TPM_LEFTBUTTON);
 var

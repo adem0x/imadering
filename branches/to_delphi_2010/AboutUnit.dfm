@@ -3,7 +3,6 @@ object AboutForm: TAboutForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
   ClientHeight = 286
   ClientWidth = 285
   Color = clBtnFace
@@ -23,9 +22,8 @@ object AboutForm: TAboutForm
   object VersionLabel: TLabel
     Left = 64
     Top = 27
-    Width = 6
+    Width = 3
     Height = 13
-    Caption = 'V'
   end
   object URLLabel: TLabel
     Left = 139
@@ -45,11 +43,11 @@ object AboutForm: TAboutForm
     OnMouseLeave = URLLabelMouseLeave
   end
   object SiteLabel: TLabel
-    Left = 33
+    Left = 130
     Top = 226
-    Width = 100
+    Width = 3
     Height = 13
-    Caption = #1057#1072#1081#1090' '#1087#1088#1086#1075#1088#1072#1084#1084#1099':'
+    Alignment = taRightJustify
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -60,9 +58,8 @@ object AboutForm: TAboutForm
   object DataLabel: TLabel
     Left = 64
     Top = 46
-    Width = 68
+    Width = 3
     Height = 13
-    Caption = #1044#1072#1090#1072' '#1089#1073#1086#1088#1082#1080':'
   end
   object HeadLabel: TLabel
     Left = 64
@@ -138,39 +135,37 @@ object AboutForm: TAboutForm
     Transparent = False
     Layout = tlCenter
   end
-  object Label1: TLabel
-    Left = 229
+  object HistoryLabel: TLabel
+    Left = 274
     Top = 8
-    Width = 48
+    Width = 3
     Height = 13
     Cursor = crHandPoint
     Alignment = taRightJustify
-    Caption = #1048#1089#1090#1086#1088#1080#1103
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = Label1Click
+    OnClick = HistoryLabelClick
     OnMouseEnter = URLLabelMouseEnter
     OnMouseLeave = URLLabelMouseLeave
   end
-  object Label2: TLabel
-    Left = 222
+  object LegalLabel: TLabel
+    Left = 274
     Top = 27
-    Width = 55
+    Width = 3
     Height = 13
     Cursor = crHandPoint
     Alignment = taRightJustify
-    Caption = #1051#1080#1094#1077#1085#1079#1080#1103
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = Label2Click
+    OnClick = LegalLabelClick
     OnMouseEnter = URLLabelMouseEnter
     OnMouseLeave = URLLabelMouseLeave
   end
@@ -179,7 +174,6 @@ object AboutForm: TAboutForm
     Top = 65
     Width = 269
     Height = 25
-    Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
@@ -191,7 +185,6 @@ object AboutForm: TAboutForm
     Top = 253
     Width = 161
     Height = 25
-    Caption = #1055#1086#1076#1076#1077#1088#1078#1072#1090#1100' '#1087#1088#1086#1077#1082#1090
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
@@ -219,13 +212,11 @@ object AboutForm: TAboutForm
     BevelKind = bkFlat
     BorderStyle = bsNone
     Color = clBtnFace
-    Ctl3D = True
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    ParentCtl3D = False
     ParentFont = False
     PlainText = True
     ReadOnly = True

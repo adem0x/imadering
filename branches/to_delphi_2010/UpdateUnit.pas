@@ -11,8 +11,19 @@ unit UpdateUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Buttons;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ExtCtrls,
+  ComCtrls,
+  Buttons;
 
 type
   TUpdateForm = class(TForm)
@@ -28,6 +39,7 @@ type
     procedure StartBitBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+
   private
     { Private declarations }
   public
@@ -42,14 +54,16 @@ implementation
 {$R *.dfm}
 
 uses
-  MainUnit, UtilsUnit, VarsUnit;
+  MainUnit,
+  UtilsUnit,
+  VarsUnit;
 
 procedure TUpdateForm.AbortBitBtnClick(Sender: TObject);
 begin
   // Активируем кнопку Возобновить закачку
-  StartBitBtn.Enabled := true;
+  StartBitBtn.Enabled := True;
   // Деактивируем кнопку Прервать
-  AbortBitBtn.Enabled := false;
+  AbortBitBtn.Enabled := False;
   // Ставим флаг отбоя обработки закачки
   MainForm.UpdateHttpClient.Tag := 2;
   // Выводим информацию о прекрашении закачки обноления
@@ -65,7 +79,7 @@ end;
 procedure TUpdateForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Уничтожаем окно после закрытия
-  Action := caFree;
+  Action := CaFree;
   UpdateForm := nil;
 end;
 
@@ -78,7 +92,7 @@ end;
 procedure TUpdateForm.FormCreate(Sender: TObject);
 begin
   // Включаем двойную буферезацию графики окна
-  DoubleBuffered := true;
+  DoubleBuffered := True;
   // Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetIcon(225, Icon);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
@@ -86,16 +100,15 @@ begin
   MainForm.AllImageList.GetBitmap(140, StartBitBtn.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE)
-      or WS_EX_APPWINDOW);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TUpdateForm.StartBitBtnClick(Sender: TObject);
 begin
   // Деактивируем кнопку Возобновить закачку
-  StartBitBtn.Enabled := false;
+  StartBitBtn.Enabled := False;
   // Активируем кнопку Прервать
-  AbortBitBtn.Enabled := true;
+  AbortBitBtn.Enabled := True;
   // Ставим флаг обработки закачки файла обновления
   MainForm.UpdateHttpClient.Tag := 1;
   // Вставляем в мемо пробел
@@ -109,13 +122,12 @@ begin
   // Запускаем закачку файла обновления с сайта
   MainForm.UpdateHttpClient.Abort;
   try
-    MainForm.UpdateHttpClient.URL :=
-      'http://imadering.googlecode.com/files/' + UpdateVersionPath;
+    MainForm.UpdateHttpClient.URL := 'http://imadering.googlecode.com/files/' + UpdateVersionPath;
     MainForm.UpdateHttpClient.GetASync;
   except
     on E: Exception do
       // Если при подключении произошла ошибка, то сообщаем об этом
-      InfoMemo.Lines.Add(E.Message);
+      InfoMemo.Lines.Add(E.message);
   end;
 end;
 

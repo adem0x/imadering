@@ -3,7 +3,6 @@ object FirstStartForm: TFirstStartForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = #1053#1072#1095#1072#1083#1100#1085#1072#1103' '#1085#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
   ClientHeight = 246
   ClientWidth = 329
   Color = clBtnFace
@@ -37,7 +36,6 @@ object FirstStartForm: TFirstStartForm
       Width = 88
       Height = 25
       Anchors = [akLeft, akBottom]
-      Caption = #1054#1090#1084#1077#1085#1072
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 0
@@ -50,7 +48,6 @@ object FirstStartForm: TFirstStartForm
       Width = 88
       Height = 25
       Anchors = [akRight, akBottom]
-      Caption = #1044#1072#1083#1077#1077
       Default = True
       DoubleBuffered = True
       Layout = blGlyphRight
@@ -64,7 +61,6 @@ object FirstStartForm: TFirstStartForm
       Top = 6
       Width = 88
       Height = 25
-      Caption = #1053#1072#1079#1072#1076
       DoubleBuffered = True
       Enabled = False
       ParentDoubleBuffered = False
@@ -102,7 +98,6 @@ object FirstStartForm: TFirstStartForm
         Width = 284
         Height = 17
         TabStop = False
-        Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1087#1086#1076#1076#1077#1088#1078#1082#1091' ICQ '#1087#1088#1086#1090#1086#1082#1086#1083#1072
         Checked = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -119,7 +114,6 @@ object FirstStartForm: TFirstStartForm
         Top = 32
         Width = 311
         Height = 169
-        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -128,12 +122,11 @@ object FirstStartForm: TFirstStartForm
         ParentFont = False
         TabOrder = 1
         object ICQUINLabel: TLabel
-          Left = 11
+          Left = 100
           Top = 26
-          Width = 92
+          Width = 3
           Height = 13
           Alignment = taRightJustify
-          Caption = 'ICQ# '#1080#1083#1080' E-mail:'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -142,12 +135,11 @@ object FirstStartForm: TFirstStartForm
           ParentFont = False
         end
         object ICQPassLabel: TLabel
-          Left = 57
+          Left = 100
           Top = 53
-          Width = 46
+          Width = 3
           Height = 13
           Alignment = taRightJustify
-          Caption = #1055#1072#1088#1086#1083#1100':'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -158,10 +150,9 @@ object FirstStartForm: TFirstStartForm
         object RegNewUINLabel: TLabel
           Left = 14
           Top = 136
-          Width = 180
+          Width = 3
           Height = 13
           Cursor = crHandPoint
-          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' ICQ#'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clNavy
           Font.Height = -11
@@ -177,7 +168,6 @@ object FirstStartForm: TFirstStartForm
           Top = 23
           Width = 188
           Height = 21
-          TabStop = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -191,7 +181,6 @@ object FirstStartForm: TFirstStartForm
           Top = 50
           Width = 188
           Height = 21
-          TabStop = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -207,7 +196,6 @@ object FirstStartForm: TFirstStartForm
           Width = 283
           Height = 17
           TabStop = False
-          Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -223,7 +211,6 @@ object FirstStartForm: TFirstStartForm
           Width = 283
           Height = 17
           TabStop = False
-          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -254,7 +241,6 @@ object FirstStartForm: TFirstStartForm
         Width = 284
         Height = 17
         TabStop = False
-        Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1087#1086#1076#1076#1077#1088#1078#1082#1091' Jabber '#1087#1088#1086#1090#1086#1082#1086#1083#1072
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -269,7 +255,6 @@ object FirstStartForm: TFirstStartForm
         Top = 32
         Width = 311
         Height = 169
-        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -278,28 +263,25 @@ object FirstStartForm: TFirstStartForm
         ParentFont = False
         TabOrder = 1
         object JabberIDLabel: TLabel
-          Left = 45
+          Left = 100
           Top = 26
-          Width = 58
+          Width = 3
           Height = 13
           Alignment = taRightJustify
-          Caption = 'Jabber ID:'
         end
         object JabberPassLabel: TLabel
-          Left = 57
+          Left = 100
           Top = 53
-          Width = 46
+          Width = 3
           Height = 13
           Alignment = taRightJustify
-          Caption = #1055#1072#1088#1086#1083#1100':'
         end
         object RegNewJIDLabel: TLabel
           Left = 14
           Top = 136
-          Width = 229
+          Width = 3
           Height = 13
           Cursor = crHandPoint
-          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1101#1090#1091' '#1091#1095#1105#1090#1085#1091#1102' '#1079#1072#1087#1080#1089#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clNavy
           Font.Height = -11
@@ -314,7 +296,6 @@ object FirstStartForm: TFirstStartForm
           Top = 23
           Width = 188
           Height = 21
-          TabStop = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -328,7 +309,6 @@ object FirstStartForm: TFirstStartForm
           Top = 50
           Width = 188
           Height = 21
-          TabStop = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -344,7 +324,6 @@ object FirstStartForm: TFirstStartForm
           Width = 283
           Height = 17
           TabStop = False
-          Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -359,7 +338,6 @@ object FirstStartForm: TFirstStartForm
           Width = 283
           Height = 17
           TabStop = False
-          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -390,7 +368,6 @@ object FirstStartForm: TFirstStartForm
         Width = 284
         Height = 17
         TabStop = False
-        Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1087#1086#1076#1076#1077#1088#1078#1082#1091' MRA '#1087#1088#1086#1090#1086#1082#1086#1083#1072
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -405,7 +382,6 @@ object FirstStartForm: TFirstStartForm
         Top = 32
         Width = 311
         Height = 169
-        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -414,28 +390,25 @@ object FirstStartForm: TFirstStartForm
         ParentFont = False
         TabOrder = 1
         object MRAEmailLabel: TLabel
-          Left = 65
+          Left = 100
           Top = 26
-          Width = 38
+          Width = 3
           Height = 13
           Alignment = taRightJustify
-          Caption = 'E-mail:'
         end
         object MRAPassLabel: TLabel
-          Left = 57
+          Left = 100
           Top = 53
-          Width = 46
+          Width = 3
           Height = 13
           Alignment = taRightJustify
-          Caption = #1055#1072#1088#1086#1083#1100':'
         end
         object MRARegNewEmailLabel: TLabel
           Left = 14
           Top = 136
-          Width = 275
+          Width = 3
           Height = 13
           Cursor = crHandPoint
-          Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' E-mail '#1085#1072' www.mail.ru'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clNavy
           Font.Height = -11
@@ -451,7 +424,6 @@ object FirstStartForm: TFirstStartForm
           Top = 23
           Width = 188
           Height = 21
-          TabStop = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -465,7 +437,6 @@ object FirstStartForm: TFirstStartForm
           Top = 50
           Width = 188
           Height = 21
-          TabStop = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -481,7 +452,6 @@ object FirstStartForm: TFirstStartForm
           Width = 283
           Height = 17
           TabStop = False
-          Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -497,7 +467,6 @@ object FirstStartForm: TFirstStartForm
           Width = 283
           Height = 17
           TabStop = False
-          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11

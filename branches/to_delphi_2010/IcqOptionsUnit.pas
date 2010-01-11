@@ -48,7 +48,6 @@ type
     PassChangePage: TJvStandardPage;
     AnketaPage: TJvStandardPage;
     ClientIDGroupBox: TGroupBox;
-    ClientIDInfoMemo: TMemo;
     ClientIDComboBox: TComboBox;
     ClientIDLabel: TLabel;
     ClientProtoVerEdit: TEdit;
@@ -71,13 +70,11 @@ type
     WorkPage: TJvStandardPage;
     PersonalPage: TJvStandardPage;
     InterestsPage: TJvStandardPage;
-    AboutPage: TJvStandardPage;
     AvatarPage: TJvStandardPage;
     AuthAndWebStatusGroupBox: TGroupBox;
     NoAutoAuthRadioButton: TRadioButton;
     YesAutoAuthRadioButton: TRadioButton;
     ShowWebAwareCheckBox: TCheckBox;
-    WebAwareTestButton: TButton;
     PrivatLevelGroupBox: TGroupBox;
     PrivatLevelLabel: TLabel;
     PrivatLevelInfoLabel: TLabel;
@@ -98,7 +95,6 @@ type
     ReqPassChangeLabel: TLabel;
     CurrentPassChangeEdit: TEdit;
     CurrentPassChangeLabel: TLabel;
-    PassChangeInfoMemo: TMemo;
     FamilyInfoEdit: TEdit;
     FamilyInfoLabel: TLabel;
     NameInfoEdit: TEdit;
@@ -221,7 +217,6 @@ type
     Interest2InfoEdit: TEdit;
     Interest3InfoEdit: TEdit;
     Interest4InfoEdit: TEdit;
-    AboutInfoGroupBox: TGroupBox;
     AvatarInfoGroupBox: TGroupBox;
     AvatarInfoPanel: TPanel;
     AvatarInfoImage: TImage;
@@ -230,7 +225,6 @@ type
     SendCustomICQPaketTimerCheckBox: TCheckBox;
     SendCustomICQPaketTimerEdit: TEdit;
     SendCustomICQPaketTimer: TTimer;
-    AboutInfoRichEdit: TRichEdit;
     ParamInfoRichEdit: TRichEdit;
     CountryCodesComboBox: TComboBox;
     OccupationCodeComboBox: TComboBox;
@@ -246,6 +240,11 @@ type
     RegNewUINLabel: TLabel;
     ConnectPage: TJvStandardPage;
     DumpInfoRichEdit: TRichEdit;
+    AboutInfoGroupBox: TGroupBox;
+    AboutInfoRichEdit: TRichEdit;
+    Bevel1: TBevel;
+    ClientIdInfoRichEdit: TRichEdit;
+    PassChangeInfoRichEdit: TRichEdit;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -258,9 +257,7 @@ type
     procedure ReqPassLabelClick(Sender: TObject);
     procedure ShowPassChangeCheckBoxClick(Sender: TObject);
     procedure ChangePassButtonClick(Sender: TObject);
-    procedure WebAwareTestButtonClick(Sender: TObject);
     procedure PassEditClick(Sender: TObject);
-    procedure ClientIDInfoMemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure SendCustomICQPaketTimerEditExit(Sender: TObject);
     procedure SendCustomICQPaketTimerEditKeyPress(Sender: TObject; var Key: Char);
     procedure SendCustomICQPacketButtonClick(Sender: TObject);
@@ -268,6 +265,7 @@ type
     procedure RegNewUINLabelClick(Sender: TObject);
     procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
+    procedure PassEditChange(Sender: TObject);
 
   private
     { Private declarations }
@@ -275,8 +273,9 @@ type
 
   public
     { Public declarations }
-    procedure ApplySettings;
     procedure TranslateForm;
+    procedure ApplySettings;
+    procedure SaveSettings;
     procedure SetOnlineVars;
   end;
 
@@ -293,13 +292,60 @@ uses
   SettingsUnit,
   UtilsUnit,
   RosterUnit,
-  OverbyteIcsMimeUtils;
+  OverbyteIcsMimeUtils,
+  OverbyteIcsUrl;
 
-// APPLY SETTINGS--------------------------------------------------------------
+resourcestring
+  RS_IcqAccount = 'settings\icq\account';
+  RS_IcqSHC = 'settings\icq\show-hide-contacts';
+  RS_ClientId = 'language\Infos\ClientId';
+  RS_PassChange = 'language\Infos\PassChange';
+  RS_SendDump = 'language\Infos\SendDump';
+
+procedure TIcqOptionsForm.SaveSettings;
+var
+  XmlFile: TrXML;
+begin
+  // Записываем настройки ICQ протокола в файл
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        if FileExists(ProfilePath + SettingsFileName) then
+          LoadFromFile(ProfilePath + SettingsFileName);
+        // --------------------------------------------------------------------------
+        if OpenKey(RS_IcqAccount, True) then
+          try
+            WriteString(RS_Login, ICQUINEdit.Text);
+            WriteBool(RS_SavePass, SavePassCheckBox.Checked);
+            if (SavePassCheckBox.Checked) and (PassEdit.Text <> RS_MaskPass) then
+              WriteString(RS_Pass, Base64Encode(URLEncode(ICQ_LoginPassword)))
+            else
+              WriteString(RS_Pass, EmptyStr);
+            // Маскируем пароль
+            if PassEdit.Text <> EmptyStr then
+              PassEdit.Text := RS_MaskPass;
+          finally
+            CloseKey;
+          end;
+        // --------------------------------------------------------------------------
+        if OpenKey(RS_IcqSHC, True) then
+          try
+            WriteBool(S_Value, ShowHideContactsCheckBox.Checked);
+          finally
+            CloseKey;
+          end;
+        // --------------------------------------------------------------------------
+        SaveToFile(ProfilePath + SettingsFileName);
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
+end;
 
 procedure TIcqOptionsForm.ApplySettings;
 begin
-  // Применяем настройки ICQ протокола
+  // --------------------------------------------------------------------------
   // Нормализуем ICQ логин
   ICQUINEdit.Text := Trim(ICQUINEdit.Text);
   ICQUINEdit.Text := ExNormalizeIcqNumber(ICQUINEdit.Text);
@@ -308,96 +354,74 @@ begin
   if ICQUINEdit.Enabled then
     begin
       if ICQUINEdit.Text <> ICQ_LoginUIN then
-        RosterForm.ClearICQClick(Self); // Очищаем контакты
-      ICQ_LoginUIN := ICQUINEdit.Text;
-      if PassEdit.Text <> '----------------------' then
         begin
-          PassEdit.Hint := PassEdit.Text;
-          ICQ_LoginPassword := PassEdit.Hint;
+          if Assigned(RosterForm) then
+            RosterForm.ClearICQClick(Self); // Очищаем контакты предыдущего UIN
+          ICQ_LoginUIN := ICQUINEdit.Text;
         end;
+      ICQ_LoginPassword := PassEdit.Hint;
     end;
   // --------------------------------------------------------------------------
-  // Записываем настройки ICQ протокола в файл
-  with TrXML.Create() do
-    try
-      if FileExists(ProfilePath + SettingsFileName) then
-        LoadFromFile(ProfilePath + SettingsFileName);
-      if OpenKey('settings\icq\account', True) then
-        try
-          WriteString('login', ICQUINEdit.Text);
-          WriteBool('save-password', SavePassCheckBox.Checked);
-          if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
-            WriteString('password', Base64Encode(PassEdit.Hint))
-          else
-            WriteString('password', EmptyStr);
-          // Маскируем пароль
-          if PassEdit.Text <> EmptyStr then
-            PassEdit.Text := '----------------------';
-        finally
-          CloseKey();
-        end;
-      if OpenKey('settings\icq\show-hide-contacts', True) then
-        try
-          WriteBool('value', ShowHideContactsCheckBox.Checked);
-          ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
-          // Запускаем обработку Ростера
-          RosterForm.UpdateFullCL;
-        finally
-          CloseKey();
-        end;
-      SaveToFile(ProfilePath + SettingsFileName);
-    finally
-      Free();
-    end;
+  // Отображение временных контактов в КЛ
+  ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
+  // Запускаем обработку Ростера
+  if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;
+  // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
 end;
 
-// LOAD SETTINGS---------------------------------------------------------------
-
 procedure TIcqOptionsForm.RegNewUINLabelClick(Sender: TObject);
 begin
   // Открываем регистрацию на веб сайте ICQ
-  OpenURL('http://www.icq.com/register');
+  OpenURL(RS_IcqReg);
 end;
 
 procedure TIcqOptionsForm.LoadSettings;
+var
+  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
-      if FileExists(ProfilePath + SettingsFileName) then
-        begin
-          LoadFromFile(ProfilePath + SettingsFileName);
-          // Загружаем данные логина
-          if OpenKey('settings\icq\account') then
-            try
-              ICQUINEdit.Text := ReadString('login');
-              if ICQUINEdit.Text <> EmptyStr then
-                ICQ_LoginUIN := ICQUINEdit.Text;
-              SavePassCheckBox.Checked := ReadBool('save-password');
-              PassEdit.Text := ReadString('password');
-              if PassEdit.Text <> EmptyStr then
-                begin
-                  PassEdit.Hint := Base64Decode(PassEdit.Text);
-                  ICQ_LoginPassword := PassEdit.Hint;
-                  PassEdit.Text := '----------------------';
-                end;
-            finally
-              CloseKey();
-            end;
-          // Загружаем остальные настройки
-          if OpenKey('settings\icq\show-hide-contacts') then
-            try
-              ShowHideContactsCheckBox.Checked := ReadBool('value');
-              ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
-            finally
-              CloseKey();
-            end;
-        end;
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        if FileExists(ProfilePath + SettingsFileName) then
+          begin
+            LoadFromFile(ProfilePath + SettingsFileName);
+            // --------------------------------------------------------------------------
+            // Загружаем данные логина
+            if OpenKey(RS_IcqAccount) then
+              try
+                ICQUINEdit.Text := ReadString(RS_Login);
+                SavePassCheckBox.Checked := ReadBool(RS_SavePass);
+                // Загружаем пароль
+                PassEdit.OnChange := nil;
+                PassEdit.Text := ReadString(RS_Pass);
+                if PassEdit.Text <> EmptyStr then
+                  begin
+                    PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
+                    PassEdit.Text := RS_MaskPass;
+                  end;
+                PassEdit.OnChange := PassEditChange;
+              finally
+                CloseKey;
+              end;
+            // --------------------------------------------------------------------------
+            // Загружаем остальные настройки
+            if OpenKey(RS_IcqSHC) then
+              try
+                ShowHideContactsCheckBox.Checked := ReadBool(S_Value);
+              finally
+                CloseKey;
+              end;
+            // --------------------------------------------------------------------------
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure TIcqOptionsForm.ReqPassLabelClick(Sender: TObject);
@@ -417,33 +441,80 @@ begin (Sender as TLabel)
 end;
 
 procedure TIcqOptionsForm.TranslateForm;
+var
+  XmlFile: TrXML;
 begin
-  // Переводим форму на другие языки
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Инициализируем XML
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        // Загружаем настройки
+        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+          begin
+            // Загружаем файл языка
+            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            // Загружаем инфы
+            if OpenKey(RS_ClientId) then
+              try
+                ClientIdInfoRichEdit.Lines.Append(CheckText_RN(ReadString('c')));
+              finally
+                CloseKey;
+              end;
+            if OpenKey(RS_PassChange) then
+              try
+                PassChangeInfoRichEdit.Lines.Append(CheckText_RN(ReadString('c')));
+              finally
+                CloseKey;
+              end;
+            if OpenKey(RS_SendDump) then
+              try
+                DumpInfoRichEdit.Lines.Append(CheckText_RN(ReadString('c')));
+              finally
+                CloseKey;
+              end;
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 
-  // Присваиваем список стран другим комбобоксам отображающим такой же список
-  OCountryInfoComboBox.Items.Assign(CountryInfoComboBox.Items);
-  WorkCountryInfoComboBox.Items.Assign(CountryInfoComboBox.Items);
-  // Присваиваем список интересов другим комбобоксам отображающим такой же список
-  Interest2InfoComboBox.Items.Assign(Interest1InfoComboBox.Items);
-  Interest3InfoComboBox.Items.Assign(Interest1InfoComboBox.Items);
-  Interest4InfoComboBox.Items.Assign(Interest1InfoComboBox.Items);
-  // Присваиваем список языков другим комбобоксам отображающим такой же список
-  Lang2InfoComboBox.Items.Assign(Lang1InfoComboBox.Items);
-  Lang3InfoComboBox.Items.Assign(Lang1InfoComboBox.Items);
+  { // Присваиваем список стран другим комбобоксам отображающим такой же список
+    OCountryInfoComboBox.Items.Assign(CountryInfoComboBox.Items);
+    WorkCountryInfoComboBox.Items.Assign(CountryInfoComboBox.Items);
+    // Присваиваем список интересов другим комбобоксам отображающим такой же список
+    Interest2InfoComboBox.Items.Assign(Interest1InfoComboBox.Items);
+    Interest3InfoComboBox.Items.Assign(Interest1InfoComboBox.Items);
+    Interest4InfoComboBox.Items.Assign(Interest1InfoComboBox.Items);
+    // Присваиваем список языков другим комбобоксам отображающим такой же список
+    Lang2InfoComboBox.Items.Assign(Lang1InfoComboBox.Items);
+    Lang3InfoComboBox.Items.Assign(Lang1InfoComboBox.Items); }
 end;
 
 procedure TIcqOptionsForm.OKButtonClick(Sender: TObject);
 begin
   // Если были изменения, то применяем настройки и закрываем окно
   if ApplyButton.Enabled then
-    ApplySettings;
+    ApplyButtonClick(Self);
+  // Закрываем окно
   Close;
+end;
+
+procedure TIcqOptionsForm.PassEditChange(Sender: TObject);
+begin
+  PassEdit.Hint := PassEdit.Text;
+  // Активируем кнопку применения настроек
+  ApplyButton.Enabled := True;
 end;
 
 procedure TIcqOptionsForm.PassEditClick(Sender: TObject);
 begin
   // Если уже заменитель пароля, то очищаем поле ввода пароля
-  if PassEdit.Text = '----------------------' then
+  if PassEdit.Text = RS_MaskPass then
     PassEdit.Text := EmptyStr;
 end;
 
@@ -457,20 +528,18 @@ procedure TIcqOptionsForm.ApplyButtonClick(Sender: TObject);
 begin
   // Применяем настройки
   ApplySettings;
+  // Сохраняем настройки
+  SaveSettings;
 end;
 
 procedure TIcqOptionsForm.ChangePassButtonClick(Sender: TObject);
 begin
   if ICQ_Work_Phaze then
     begin
-      if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) then
-        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-      else if NewPassChangeEdit.Text = EmptyStr then
-        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-      else if Length(NewPassChangeEdit.Text) < 6 then
-        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
-      else if (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
-        DAShow(AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+      if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) or
+        (NewPassChangeEdit.Text = EmptyStr) or (Length(NewPassChangeEdit.Text) < 6) or (RetypeNewPassEdit.Text = EmptyStr) or
+        (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
+        DAShow(S_AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
       else
         begin
           ICQ_PassChange(RetypeNewPassEdit.Text);
@@ -478,12 +547,7 @@ begin
         end;
     end
   else
-    DAShow(AlertHead, OnlineAlert, EmptyStr, 134, 2, 0);
-end;
-
-procedure TIcqOptionsForm.ClientIDInfoMemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-begin
-  // ClientIDInfoMemo.
+    DAShow(S_AlertHead, OnlineAlert, EmptyStr, 134, 2, 0);
 end;
 
 procedure TIcqOptionsForm.SendCustomICQPacketButtonClick(Sender: TObject);
@@ -493,7 +557,9 @@ begin
   // Копируем текст пакета из рича (используем ричедит против глюка с отрисовкой мемо в виндовс 7)
   Pkt := Trim(SendCustomICQPacketRichEdit.Text);
   // Если пакет больше нуля и рабочая фаза icq подключения
-  if (Pkt > EmptyStr) and ICQ_Work_Phaze then
+  if NotProtoOnline(S_Icq) then
+    Exit;
+  if Pkt <> EmptyStr then
     begin
       // Удаляем все переносы строк из пакета
       Pkt := DeleteLineBreaks(Pkt);
@@ -519,7 +585,7 @@ begin
         end;
     end;
   // Сохраняем пакет локально для дальнейшего использования
-  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Profile\IcqPacket.txt');
+  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Icq Packet.txt');
 end;
 
 procedure TIcqOptionsForm.SendCustomICQPaketTimerEditExit(Sender: TObject);
@@ -534,7 +600,7 @@ const
   ValidAsciiChars = ['0' .. '9'];
 begin
   // Делаем так, что вводить можно только цифры
-  if (not(Key in ValidAsciiChars)) and (Key <> #8) then
+  if (not CharInSet(Key, ValidAsciiChars)) and (Key <> #8) then
     Key := #0;
 end;
 
@@ -604,10 +670,7 @@ begin
   TranslateForm;
   // Загружаем настройки
   LoadSettings;
-  // Применяем онлайн переменные
-  SetOnlineVars;
-  // Деактивируем кнопку "применить"
-  ApplyButton.Enabled := False;
+  ApplySettings;
   // Выставляем иконки формы и кнопок
   MainForm.AllImageList.GetIcon(81, Icon);
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
@@ -620,15 +683,13 @@ end;
 
 procedure TIcqOptionsForm.FormShow(Sender: TObject);
 begin
+  // Прокручиваем на первую вкладку
+  OptionJvPageList.ActivePage := AccountPage;
+  IcqOptionButtonGroup.ItemIndex := 0;
   // Прокручиваем рич в верх против глюка в вайн
+  SendMessage(ClientIdInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+  SendMessage(PassChangeInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
   SendMessage(DumpInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
-end;
-
-procedure TIcqOptionsForm.WebAwareTestButtonClick(Sender: TObject);
-begin
-  // Открываем браузер для проверки веб-статуса на сайте ICQ
-  if ICQ_LoginUIN <> EmptyStr then
-    OpenURL('http://status.icq.com/online.gif?icq=' + ICQ_LoginUIN + '&img=5');
 end;
 
 procedure TIcqOptionsForm.SetOnlineVars;

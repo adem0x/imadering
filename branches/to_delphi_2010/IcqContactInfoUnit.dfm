@@ -3,7 +3,6 @@ object IcqContactInfoForm: TIcqContactInfoForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1082#1086#1085#1090#1072#1082#1090#1077
   ClientHeight = 418
   ClientWidth = 561
   Color = clBtnFace
@@ -31,6 +30,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Height = 64
     Center = True
     Proportional = True
+    Transparent = True
   end
   object HoroImage: TImage
     Left = 521
@@ -50,7 +50,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Top = 385
     Width = 121
     Height = 25
-    Caption = #1047#1072#1087#1088#1086#1089#1080#1090#1100
+    Caption = '#'#1047#1072#1087#1088#1086#1089#1080#1090#1100
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
@@ -76,6 +76,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Height = 293
     Cursor = crDefault
     TabOrder = 2
+    PopupMenu = BottomPopupMenu
     BorderStyle = htNone
     HistoryMaxCount = 0
     DefFontName = 'Times New Roman'
@@ -88,6 +89,8 @@ object IcqContactInfoForm: TIcqContactInfoForm
     PrintMarginTop = 2.000000000000000000
     PrintMarginBottom = 2.000000000000000000
     PrintScale = 1.000000000000000000
+    OnMouseDown = BottomHTMLViewerMouseDown
+    OnKeyDown = BottomHTMLViewerKeyDown
   end
   object TopHTMLViewer: THTMLViewer
     Left = 78
@@ -96,6 +99,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Height = 64
     Cursor = crDefault
     TabOrder = 3
+    PopupMenu = TopPopupMenu
     BorderStyle = htNone
     HistoryMaxCount = 0
     DefFontName = 'Times New Roman'
@@ -108,5 +112,41 @@ object IcqContactInfoForm: TIcqContactInfoForm
     PrintMarginTop = 2.000000000000000000
     PrintMarginBottom = 2.000000000000000000
     PrintScale = 1.000000000000000000
+    OnMouseDown = TopHTMLViewerMouseDown
+    OnKeyDown = TopHTMLViewerKeyDown
+  end
+  object TopPopupMenu: TPopupMenu
+    Alignment = paCenter
+    Images = MainForm.AllImageList
+    OnPopup = TopPopupMenuPopup
+    Left = 240
+    Top = 16
+    object TopCopyHTML: TMenuItem
+      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 144
+      OnClick = TopCopyHTMLClick
+    end
+    object TopAllCopyHTML: TMenuItem
+      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
+      ImageIndex = 144
+      OnClick = TopAllCopyHTMLClick
+    end
+  end
+  object BottomPopupMenu: TPopupMenu
+    Alignment = paCenter
+    Images = MainForm.AllImageList
+    OnPopup = BottomPopupMenuPopup
+    Left = 240
+    Top = 168
+    object BottomCopyHTML: TMenuItem
+      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 144
+      OnClick = BottomCopyHTMLClick
+    end
+    object BottomAllCopyHTML: TMenuItem
+      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
+      ImageIndex = 144
+      OnClick = BottomAllCopyHTMLClick
+    end
   end
 end

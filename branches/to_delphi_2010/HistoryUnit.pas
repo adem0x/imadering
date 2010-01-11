@@ -68,13 +68,16 @@ type
 
   private
     { Private declarations }
-    ReqHUIN: string;
-    ReqCType: string;
+    HTMLStyle: string;
+    MyHUIN: string;
+    HistoryFile: string;
 
   public
     { Public declarations }
+    ReqHUIN: string;
+    ReqCType: string;
     procedure TranslateForm;
-    procedure LoadHistoryFromFile(HUIN: string; Fullpath: Boolean = False);
+    procedure LoadHistoryFromFile;
   end;
 
 var
@@ -89,123 +92,70 @@ uses
   ChatUnit,
   UtilsUnit,
   VarsUnit,
-  RXML;
+  RXML,
+  IcqProtoUnit,
+  MraProtoUnit,
+  JabberProtoUnit;
 
-procedure THistoryForm.LoadHistoryFromFile(HUIN: string; Fullpath: Boolean = False);
-{ label
-  x;
-  var
-  HistoryFile, Doc: string;
-  I, II: integer; }
+resourcestring
+  RS_HistoryFormPos = 'settings\forms\historyform\position';
+
+procedure THistoryForm.LoadHistoryFromFile;
+var
+  Doc, H: string;
 begin
-  { if fullpath then
+  ContactsComboBox.OnChange := nil;
+  // Вычисляем нашу текущую учётную запись
+  if ReqCType = S_Icq then
+    MyHUIN := ICQ_LoginUIN
+  else if ReqCType = S_Mra then
+    MyHUIN := Mra_LoginUIN
+  else if ReqCType = S_Jabber then
+    MyHUIN := Jabber_LoginUIN;
+  // --Очистили компонент истории и выводим надпись, что история загружается
+  Doc := HTMLStyle;
+  Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+  HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+  HTMLHistoryViewer.Refresh;
+  // Загружаем файл истории сообщений
+  HistoryFile := ProfilePath + HistoryFileName + ReqCType + BN + MyHUIN + BN + ReqHUIN + '.htm';
+  if FileExists(HistoryFile) then
     begin
-    //--Получаем тип и идентификатор контакта
-    ReqHUIN := Parse('_', hUIN, 2);
-    ReqCType := Parse('_', hUIN, 1);
-    //--Очистили компонент истории и выводим надпись, что история загружается
-    Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-    Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-    HTMLHistoryViewer.Refresh;
-    //--Загружаем файл истории сообщений
-    HistoryFile := ProfilePath + 'Profile\History\' + hUIN + '.z';
-    if FileExists(HistoryFile) then
-    begin
-    try
-    //--Распаковываем файл с историей
-    UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
-    //--Добавляем стили
-    Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-    //--Записываем историю
-    Doc := Doc + ReadFromFile(ProfilePath + 'Profile\History\Icq_History.htm');
-    //--Удаляем уже не нужный распакованный файл с историей
-    if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
-    if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
-    SetLength(Doc, Length(Doc) - 6);
-    Doc := Doc + '<HR>';
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-    //--Ставим каретку в самый низ текста
-    HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
-    HTMLHistoryViewer.CaretPos := Length(Doc);
-    except
-    on E: Exception do
-    TLogger.Instance.WriteMessage(E);
-    end;
-    end;
+      // Находим этот контакт в списке файлов историй
+      H := GetFileFName(HistoryFile);
+      H := Copy(H, 1, Length(H) - 4);
+      ContactsComboBox.ItemIndex := ContactsComboBox.Items.IndexOf(H);
+      // Ичищаем компонент просмотра истории
+      HTMLHistoryViewer.Clear;
+      // Добавляем стили
+      Doc := HTMLStyle;
+      // Загружаем весь текст истории
+      Doc := Doc + ReadFromFile(HistoryFile);
+      // Применяем смайлы
+      if not TextSmilies then
+        CheckMessage_Smilies(Doc);
+      // Отображаем историю в компоненте
+      SetLength(Doc, Length(Doc) - 6);
+      Doc := Doc + '<HR>';
+      HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+      // Ставим каретку в самый низ текста
+      HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
+      HTMLHistoryViewer.CaretPos := Length(Doc);
     end
-    else
+  else
     begin
-    //--Запоминаем идентификатор контакта
-    ReqHUIN := hUIN;
-    //--Проверяем состояние истории для этого контакта
-    with MainForm.ContactList do
-    begin
-    for I := 0 to Categories.Count - 1 do
-    begin
-    for II := 0 to Categories[I].Items.Count - 1 do
-    begin
-    if Categories[I].Items[II].UIN = hUIN then
-    begin
-    //--Запоминаем тип контакта
-    ReqCType := Categories[I].Items[II].ContactType;
-    //--Прокручиваем список на эту учётную запись
-    ContactsComboBox.ItemIndex := ContactsComboBox.Items.IndexOf(ReqCType + '_' + hUIN);
-    //--Проверяем загружена ли история уже
-    if Categories[I].Items[II].History = EmptyStr then
-    begin
-    //--Загружаем файл истории сообщений
-    HistoryFile := ProfilePath + 'Profile\History\' + ReqCType + '_' + hUIN + '.z';
-    if FileExists(HistoryFile) then
-    begin
-    try
-    //--Распаковываем файл с историей
-    UnZip_File(HistoryFile, ProfilePath + 'Profile\History\');
-    //--Записываем историю в хранилище у этого контакта
-    Categories[I].Items[II].History := ReadFromFile(ProfilePath + 'Profile\History\Icq_History.htm');
-    //--Удаляем уже не нужный распакованный файл с историей
-    if FileExists(ProfilePath + 'Profile\History\Icq_History.htm') then DeleteFile(ProfilePath + 'Profile\History\Icq_History.htm');
-    except
-    on E: Exception do
-    TLogger.Instance.WriteMessage(E);
+      ContactsComboBox.ItemIndex := -1;
+      // Очистили компонент истории и выводим сообщение, что история не найдена
+      HTMLHistoryViewer.Clear;
+      Doc := HTMLStyle;
+      Doc := Doc + '<span class=d>' + HistoryNotFileL + '</span>';
+      HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
     end;
-    end;
-    end;
-    //--Отображаем историю в чате
-    if Categories[I].Items[II].History <> EmptyStr then
-    begin
-    //--Очистили компонент истории и выводим надпись, что история загружается
-    Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-    Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-    HTMLHistoryViewer.Refresh;
-    //--Добавляем стили
-    Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-    //--Загружаем из файла истории указанное количесво сообщений
-    Doc := Doc + Categories[I].Items[II].History;
-    if not TextSmilies then ChatForm.CheckMessage_Smilies(Doc);
-    SetLength(Doc, Length(Doc) - 6);
-    Doc := Doc + '<HR>';
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-    //--Ставим каретку в самый низ текста
-    HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
-    HTMLHistoryViewer.CaretPos := Length(Doc);
-    end
-    else
-    begin
-    //--Очистили компонент истории и выводим сообщение, что история не найдена
-    Doc := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
-    Doc := Doc + '<span class=d>' + HistoryNotFileL + '</span>';
-    HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
-    end;
-    //--Выходим из цыкла если нашли контакт
-    goto x;
-    end;
-    end;
-    end;
-    end;
-    end;
-    x: ; }
+  // Ищем архивы истории с этим контактом
+  ArhiveComboBox.Clear;
+  if ContactsComboBox.Text <> EmptyStr then
+    ListFileInDir(ProfilePath + HistoryFileName + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
+  ContactsComboBox.OnChange := ContactsComboBoxChange;
 end;
 
 procedure THistoryForm.CopyHistorySelTextClick(Sender: TObject);
@@ -225,19 +175,19 @@ procedure THistoryForm.HistoryPopupMenuPopup(Sender: TObject);
 begin
   // Определяем есть ли выделенный текст
   if HTMLHistoryViewer.SelLength = 0 then
-    begin
-      CopyHistorySelText.Enabled := False;
-    end
+    CopyHistorySelText.Enabled := False
   else
-    begin
-      CopyHistorySelText.Enabled := True;
-    end;
+    CopyHistorySelText.Enabled := True;
 end;
 
 procedure THistoryForm.TranslateForm;
 begin
-  // Переводим форму на другие языки
-
+  // Создаём шаблон для перевода
+  //CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CloseBitBtn.Caption := S_Close;
 end;
 
 procedure THistoryForm.SearchTextBitBtnClick(Sender: TObject);
@@ -251,8 +201,11 @@ end;
 
 procedure THistoryForm.ReloadHistoryBitBtnClick(Sender: TObject);
 begin
+  // Если путь к файлу пустой, то выходим
+  if ContactsComboBox.Text = EmptyStr then
+    Exit;
   // Перезагружаем файл истории
-  LoadHistoryFromFile(ReqHUIN);
+  ContactsComboBoxChange(nil);
 end;
 
 procedure THistoryForm.SaveHistoryAsBitBtnClick(Sender: TObject);
@@ -260,10 +213,10 @@ var
   List: TStringList;
 begin
   // Если путь к файлу пустой, то выходим
-  if (ReqHUIN = EmptyStr) or (ReqCType = EmptyStr) then
+  if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Указываем начальное имя файла
-  SaveTextAsFileDialog.FileName := 'History_' + ReqCType + '_' + ReqHUIN;
+  SaveTextAsFileDialog.FileName := 'History ' + ContactsComboBox.Text;
   // Открываем диалог сохранения файла
   if SaveTextAsFileDialog.Execute then
     begin
@@ -277,7 +230,7 @@ begin
         // Сбрасываем выделение текста
         HTMLHistoryViewer.SelLength := 0;
         // Сохраняем текст из листа в файл из диалога
-        List.SaveToFile(SaveTextAsFileDialog.FileName);
+        List.SaveToFile(SaveTextAsFileDialog.FileName, TEncoding.Unicode);
       finally
         List.Free;
       end;
@@ -286,24 +239,23 @@ end;
 
 procedure THistoryForm.DeleteHistoryBitBtnClick(Sender: TObject);
 var
-  Doc: string;
   I: Integer;
 begin
   // Если путь к файлу пустой, то выходим
-  if (ReqHUIN = EmptyStr) or (ReqCType = EmptyStr) then
+  if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Выводим запрос на удаление файла истории
-  I := MessageBox(Handle, PChar(HistoryDelL), PChar(WarningHead), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
+  I := MessageBox(Handle, PChar(HistoryDelL), PChar(S_WarningHead), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
   // Если ответ положительный
-  if I = 6 then
+  if I = IDYES then
     begin
       // Удаляем файл
-      if FileExists(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z') then
-        DeleteFile(ProfilePath + 'Profile\History\' + ReqCType + '_' + ReqHUIN + '.z');
+      if FileExists(HistoryFile) then
+        DeleteFile(HistoryFile);
       // Очищаем компонент истории
       HTMLHistoryViewer.Clear;
-      Doc := EmptyStr;
-      HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+      // Удаляем эту запись из списка файлов истори
+      ContactsComboBox.Items.Delete(ContactsComboBox.ItemIndex);
     end;
 end;
 
@@ -314,9 +266,40 @@ begin
 end;
 
 procedure THistoryForm.ContactsComboBoxChange(Sender: TObject);
+var
+  Doc: string;
 begin
   // Загружаем файл с историей выбранного контакта
-  LoadHistoryFromFile(ContactsComboBox.Text, True);
+  // --Очистили компонент истории и выводим надпись, что история загружается
+  Doc := HTMLStyle;
+  Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+  HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+  HTMLHistoryViewer.Refresh;
+  // Загружаем файл истории сообщений
+  HistoryFile := ProfilePath + HistoryFileName + ContactsComboBox.Text + '.htm';
+  if FileExists(HistoryFile) then
+    begin
+      // Ичищаем компонент просмотра истории
+      HTMLHistoryViewer.Clear;
+      // Добавляем стили
+      Doc := HTMLStyle;
+      // Загружаем весь текст истории
+      Doc := Doc + ReadFromFile(HistoryFile);
+      // Применяем смайлы
+      if not TextSmilies then
+        CheckMessage_Smilies(Doc);
+      // Отображаем историю в компоненте
+      SetLength(Doc, Length(Doc) - 6);
+      Doc := Doc + '<HR>';
+      HTMLHistoryViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
+      // Ставим каретку в самый низ текста
+      HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
+      HTMLHistoryViewer.CaretPos := Length(Doc);
+    end;
+  // Ищем архивы истории с этим контактом
+  ArhiveComboBox.Clear;
+  ListFileInDir(ProfilePath + HistoryFileName + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
+  // Ставим фокус в поле поиска текста
   if SearchTextEdit.CanFocus then
     SearchTextEdit.SetFocus;
 end;
@@ -329,32 +312,39 @@ begin
 end;
 
 procedure THistoryForm.FormCreate(Sender: TObject);
+var
+  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
-      // Загружаем настройки
-      if FileExists(ProfilePath + SettingsFileName) then
-        begin
-          LoadFromFile(ProfilePath + SettingsFileName);
-          // Загружаем позицию окна
-          if OpenKey('settings\forms\historyform\position') then
-            try
-              Top := ReadInteger('top');
-              Left := ReadInteger('left');
-              Height := ReadInteger('height');
-              Width := ReadInteger('width');
-              // Определяем не находится ли окно за пределами экрана
-              MainForm.FormSetInWorkArea(Self); ;
-            finally
-              CloseKey();
-            end;
-        end;
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        // Загружаем настройки
+        if FileExists(ProfilePath + SettingsFileName) then
+          begin
+            LoadFromFile(ProfilePath + SettingsFileName);
+            // Загружаем позицию окна
+            if OpenKey(RS_HistoryFormPos) then
+              try
+                Top := ReadInteger('top');
+                Left := ReadInteger('left');
+                Height := ReadInteger('height');
+                Width := ReadInteger('width');
+                // Определяем не находится ли окно за пределами экрана
+                MainForm.FormSetInWorkArea(Self); ;
+              finally
+                CloseKey;
+              end;
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
   // Переводим окно на другие языки
   TranslateForm;
+  // Формируем строку стиля
+  HTMLStyle := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
   // Назначаем иконки окну и кнопкам
   MainForm.AllImageList.GetIcon(147, Icon);
   MainForm.AllImageList.GetBitmap(221, SearchTextBitBtn.Glyph);
@@ -363,36 +353,43 @@ begin
   MainForm.AllImageList.GetBitmap(148, DeleteHistoryBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
   // Создаём список имеющихся файлов истории для выбора
-  ListFileDirHist(ProfilePath + 'Profile\History', '*.z', '.z', ContactsComboBox.Items);
+  ListFileInDir(ProfilePath + HistoryFileName + '*.htm', '.htm', ContactsComboBox.Items);
   // Делаем окно независимым и ставим его кнопку в панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  // Назначаем событие выбора файла истории
+  ContactsComboBox.OnChange := ContactsComboBoxChange;
 end;
 
 procedure THistoryForm.FormDestroy(Sender: TObject);
+var
+  XmlFile: TrXML;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath + 'Profile');
+  ForceDirectories(ProfilePath);
   // Сохраняем настройки положения окна истории в xml
-  with TrXML.Create() do
-    try
-      if FileExists(ProfilePath + SettingsFileName) then
-        LoadFromFile(ProfilePath + SettingsFileName);
-      // Сохраняем позицию окна
-      if OpenKey('settings\forms\historyform\position', True) then
-        try
-          WriteInteger('top', Top);
-          WriteInteger('left', Left);
-          WriteInteger('height', Height);
-          WriteInteger('width', Width);
-        finally
-          CloseKey();
-        end;
-      // Записываем сам файл
-      SaveToFile(ProfilePath + SettingsFileName);
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        if FileExists(ProfilePath + SettingsFileName) then
+          LoadFromFile(ProfilePath + SettingsFileName);
+        // Сохраняем позицию окна
+        if OpenKey(RS_HistoryFormPos, True) then
+          try
+            WriteInteger('top', Top);
+            WriteInteger('left', Left);
+            WriteInteger('height', Height);
+            WriteInteger('width', Width);
+          finally
+            CloseKey;
+          end;
+        // Записываем сам файл
+        SaveToFile(ProfilePath + SettingsFileName);
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure THistoryForm.HTMLHistoryViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

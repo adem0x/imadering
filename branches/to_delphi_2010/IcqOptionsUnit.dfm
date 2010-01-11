@@ -3,7 +3,7 @@ object IcqOptionsForm: TIcqOptionsForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1054#1087#1094#1080#1080': ICQ'
+  Caption = '#'#1054#1087#1094#1080#1080': ICQ'
   ClientHeight = 413
   ClientWidth = 597
   Color = clBtnFace
@@ -32,63 +32,60 @@ object IcqOptionsForm: TIcqOptionsForm
     Images = MainForm.AllImageList
     Items = <
       item
-        Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
+        Caption = '#'#1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
         ImageIndex = 81
       end
       item
-        Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+        Caption = '#'#1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
         ImageIndex = 162
       end
       item
-        Caption = #1055#1088#1080#1074#1072#1090#1085#1086#1089#1090#1100
+        Caption = '#'#1055#1088#1080#1074#1072#1090#1085#1086#1089#1090#1100
         ImageIndex = 170
       end
       item
-        Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
-        ImageIndex = 171
-      end
-      item
-        Caption = 'ID '#1082#1083#1080#1077#1085#1090#1072
+        Caption = '#ID '#1082#1083#1080#1077#1085#1090#1072
         ImageIndex = 172
       end
       item
-        Caption = #1057#1084#1077#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
+        Caption = '#'#1057#1084#1077#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
         ImageIndex = 173
       end
       item
-        Caption = #1052#1086#1103' '#1072#1085#1082#1077#1090#1072
+        Caption = '#'#1052#1086#1103' '#1072#1085#1082#1077#1090#1072
         ImageIndex = 174
       end
       item
-        Caption = #1044#1086#1084
+        Caption = '#'#1044#1086#1084
         ImageIndex = 85
       end
       item
-        Caption = #1056#1072#1073#1086#1090#1072
+        Caption = '#'#1056#1072#1073#1086#1090#1072
         ImageIndex = 175
       end
       item
-        Caption = #1051#1080#1095#1085#1086#1077
+        Caption = '#'#1051#1080#1095#1085#1086#1077
         ImageIndex = 176
       end
       item
-        Caption = #1048#1085#1090#1077#1088#1077#1089#1099
-        ImageIndex = 179
-      end
-      item
-        Caption = #1054' '#1089#1077#1073#1077
+        Caption = '#'#1054' '#1089#1077#1073#1077
         ImageIndex = 177
       end
       item
-        Caption = #1040#1074#1072#1090#1072#1088
+        Caption = '#'#1040#1074#1072#1090#1072#1088
         ImageIndex = 178
       end
       item
-        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
+        Caption = '#'#1055#1072#1088#1072#1084#1077#1090#1088#1099
         ImageIndex = 180
+      end
+      item
+        Caption = '#'#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
+        ImageIndex = 171
       end>
     ItemIndex = 0
     TabOrder = 0
+    TabStop = False
     OnButtonClicked = ICQOptionButtonGroupButtonClicked
     OnKeyDown = ICQOptionButtonGroupKeyDown
   end
@@ -107,7 +104,7 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = BonusPage
+      ActivePage = AccountPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -118,11 +115,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 238
-          Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 232
+          Caption = '#'#1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -133,10 +130,10 @@ object IcqOptionsForm: TIcqOptionsForm
           object ReqPassLabel: TLabel
             Left = 80
             Top = 175
-            Width = 95
+            Width = 104
             Height = 13
             Cursor = crHandPoint
-            Caption = #1047#1072#1073#1099#1083#1080' '#1087#1072#1088#1086#1083#1100'?'
+            Caption = '#'#1047#1072#1073#1099#1083#1080' '#1087#1072#1088#1086#1083#1100'?'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clNavy
             Font.Height = -11
@@ -150,9 +147,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object ICQUINLabel: TLabel
             Left = 80
             Top = 25
-            Width = 92
+            Width = 87
             Height = 13
-            Caption = 'ICQ# '#1080#1083#1080' E-mail:'
+            Caption = '#UIN '#1080#1083#1080' Email:'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -163,9 +160,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object PassLabel: TLabel
             Left = 80
             Top = 75
-            Width = 46
+            Width = 55
             Height = 13
-            Caption = #1055#1072#1088#1086#1083#1100':'
+            Caption = '#'#1055#1072#1088#1086#1083#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -179,7 +176,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 180
             Height = 13
             Cursor = crHandPoint
-            Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' ICQ#'
+            Caption = '#'#1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100' '#1085#1086#1074#1099#1081' UIN'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clNavy
             Font.Height = -11
@@ -217,7 +214,7 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
             PasswordChar = '*'
             TabOrder = 1
-            OnChange = ICQUINEditChange
+            OnChange = PassEditChange
             OnClick = PassEditClick
           end
           object ShowPassCheckBox: TCheckBox
@@ -225,7 +222,8 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 123
             Width = 328
             Height = 17
-            Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
+            TabStop = False
+            Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -240,7 +238,8 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 146
             Width = 323
             Height = 17
-            Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
+            TabStop = False
+            Caption = '#'#1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -251,11 +250,11 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
         object GroupBox1: TGroupBox
-          Left = 3
-          Top = 247
-          Width = 422
-          Height = 106
-          Caption = #1054#1087#1094#1080#1080
+          Left = 0
+          Top = 238
+          Width = 428
+          Height = 118
+          Caption = '#'#1054#1087#1094#1080#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -268,7 +267,8 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 21
             Width = 392
             Height = 17
-            Caption = #1054#1090#1086#1073#1088#1072#1078#1072#1090#1100' '#1074#1088#1077#1084#1077#1085#1085#1099#1077' '#1082#1086#1085#1090#1072#1082#1090#1099
+            TabStop = False
+            Caption = '#'#1054#1090#1086#1073#1088#1072#1078#1072#1090#1100' '#1074#1088#1077#1084#1077#1085#1085#1099#1077' '#1082#1086#1085#1090#1072#1082#1090#1099
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -294,11 +294,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'PrivatPage'
         object OtherOptionsGroupBox: TGroupBox
-          Left = 3
-          Top = 215
-          Width = 422
-          Height = 138
-          Caption = #1054#1087#1094#1080#1080
+          Left = 0
+          Top = 212
+          Width = 428
+          Height = 144
+          Caption = '#'#1054#1087#1094#1080#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -311,7 +311,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 22
             Width = 403
             Height = 17
-            Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1082#1086#1085#1090#1072#1082#1090#1072#1084' '#1074#1088#1077#1084#1103' '#1087#1088#1086#1089#1090#1086#1103' '#1080#1083#1080' '#1084#1086#1077#1075#1086' '#1086#1090#1089#1091#1090#1089#1090#1074#1080#1103
+            Caption = '#'#1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1082#1086#1085#1090#1072#1082#1090#1072#1084' '#1074#1088#1077#1084#1103' '#1087#1088#1086#1089#1090#1086#1103' '#1080#1083#1080' '#1084#1086#1077#1075#1086' '#1086#1090#1089#1091#1090#1089#1090#1074#1080#1103
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -326,7 +326,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 45
             Width = 403
             Height = 17
-            Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1072#1074#1090#1086#1088#1080#1079#1072#1094#1080#1102' '#1087#1088#1080' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1080' '#1082#1086#1085#1090#1072#1082#1090#1072
+            Caption = '#'#1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1072#1074#1090#1086#1088#1080#1079#1072#1094#1080#1102' '#1087#1088#1080' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1080' '#1082#1086#1085#1090#1072#1082#1090#1072
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -337,11 +337,11 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
         object AuthAndWebStatusGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
+          Left = 0
+          Top = 0
+          Width = 428
           Height = 101
-          Caption = #1040#1074#1090#1086#1088#1080#1079#1072#1094#1080#1103' '#1080' Web-'#1089#1090#1072#1090#1091#1089
+          Caption = '#'#1040#1074#1090#1086#1088#1080#1079#1072#1094#1080#1103' '#1080' Web-'#1089#1090#1072#1090#1091#1089
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -354,7 +354,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 23
             Width = 403
             Height = 17
-            Caption = #1047#1072#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1084#1086#1105' '#1088#1072#1079#1088#1077#1096#1077#1085#1080#1077' '#1085#1072' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1077
+            Caption = '#'#1047#1072#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1084#1086#1105' '#1088#1072#1079#1088#1077#1096#1077#1085#1080#1077' '#1085#1072' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1077
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -370,7 +370,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 46
             Width = 403
             Height = 17
-            Caption = #1042#1089#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080' '#1084#1086#1075#1091#1090' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1084#1077#1085#1103' '#1073#1077#1079' '#1088#1072#1079#1088#1077#1096#1077#1085#1080#1103
+            Caption = '#'#1042#1089#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080' '#1084#1086#1075#1091#1090' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1084#1077#1085#1103' '#1073#1077#1079' '#1088#1072#1079#1088#1077#1096#1077#1085#1080#1103
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -384,9 +384,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object ShowWebAwareCheckBox: TCheckBox
             Left = 16
             Top = 72
-            Width = 307
+            Width = 403
             Height = 17
-            Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1084#1086#1081' '#1086#1085#1083#1072#1081#1085'-'#1089#1090#1072#1090#1091#1089' '#1076#1083#1103' web '#1080' '#1087#1086#1080#1089#1082#1072
+            Caption = '#'#1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1084#1086#1081' '#1086#1085#1083#1072#1081#1085'-'#1089#1090#1072#1090#1091#1089' '#1076#1083#1103' web '#1080' '#1087#1086#1080#1089#1082#1072
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -397,28 +397,13 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 2
             OnClick = ICQUINEditChange
           end
-          object WebAwareTestButton: TButton
-            Left = 329
-            Top = 68
-            Width = 85
-            Height = 25
-            Caption = 'Web '#1058#1077#1089#1090
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 3
-            OnClick = WebAwareTestButtonClick
-          end
         end
         object PrivatLevelGroupBox: TGroupBox
-          Left = 3
-          Top = 110
-          Width = 422
+          Left = 0
+          Top = 107
+          Width = 428
           Height = 99
-          Caption = #1059#1088#1086#1074#1077#1085#1100' '#1087#1088#1080#1074#1072#1090#1085#1086#1089#1090#1080
+          Caption = '#'#1059#1088#1086#1074#1077#1085#1100' '#1087#1088#1080#1074#1072#1090#1085#1086#1089#1090#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -429,16 +414,16 @@ object IcqOptionsForm: TIcqOptionsForm
           object PrivatLevelLabel: TLabel
             Left = 83
             Top = 24
-            Width = 39
+            Width = 48
             Height = 13
-            Caption = #1053#1080#1079#1082#1080#1081
+            Caption = '#'#1053#1080#1079#1082#1080#1081
           end
           object PrivatLevelInfoLabel: TLabel
             Left = 83
             Top = 45
-            Width = 219
+            Width = 227
             Height = 13
-            Caption = #1052#1086#1080' '#1076#1072#1085#1085#1099#1077' '#1073#1091#1076#1091#1090' '#1074#1080#1076#1085#1099' '#1074#1089#1077#1084' '#1082#1086#1085#1090#1072#1082#1090#1072#1084'.'
+            Caption = '#'#1052#1086#1080' '#1076#1072#1085#1085#1099#1077' '#1073#1091#1076#1091#1090' '#1074#1080#1076#1085#1099' '#1074#1089#1077#1084' '#1082#1086#1085#1090#1072#1082#1090#1072#1084'.'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -462,114 +447,6 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object BonusPage: TJvStandardPage
-        Left = 0
-        Top = 0
-        Width = 428
-        Height = 356
-        Caption = 'BonusPage'
-        object CheckBox5: TCheckBox
-          Left = 16
-          Top = 377
-          Width = 425
-          Height = 17
-          Caption = 'CheckBox5'
-          Enabled = False
-          TabOrder = 0
-        end
-        object CustomICQPacketGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 350
-          Caption = #1054#1090#1089#1099#1083#1082#1072' '#1087#1088#1086#1080#1079#1074#1086#1083#1100#1085#1086#1075#1086' '#1087#1072#1082#1077#1090#1072' '#1076#1072#1085#1085#1099#1093
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          TabOrder = 1
-          object SendCustomICQPacketButton: TButton
-            Left = 9
-            Top = 318
-            Width = 88
-            Height = 25
-            Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-            OnClick = SendCustomICQPacketButtonClick
-          end
-          object SendCustomICQPacketRichEdit: TRichEdit
-            Left = 9
-            Top = 80
-            Width = 404
-            Height = 232
-            TabStop = False
-            Font.Charset = RUSSIAN_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
-            Font.Style = []
-            ParentFont = False
-            PlainText = True
-            ScrollBars = ssVertical
-            TabOrder = 1
-          end
-          object SendCustomICQPaketTimerCheckBox: TCheckBox
-            Left = 106
-            Top = 322
-            Width = 268
-            Height = 17
-            Caption = #1055#1086#1074#1090#1086#1088#1103#1090#1100' '#1086#1090#1087#1088#1072#1074#1082#1091' '#1074' '#1094#1080#1082#1083#1077' ('#1089#1077#1082#1091#1085#1076#1099'):'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 2
-          end
-          object SendCustomICQPaketTimerEdit: TEdit
-            Left = 380
-            Top = 320
-            Width = 33
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            MaxLength = 3
-            ParentFont = False
-            TabOrder = 3
-            Text = '10'
-            OnExit = SendCustomICQPaketTimerEditExit
-            OnKeyPress = SendCustomICQPaketTimerEditKeyPress
-          end
-          object DumpInfoRichEdit: TRichEdit
-            Left = 9
-            Top = 18
-            Width = 404
-            Height = 56
-            BevelKind = bkFlat
-            BorderStyle = bsNone
-            Color = clBtnFace
-            Font.Charset = RUSSIAN_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 4
-          end
-        end
-      end
       object IDClientPage: TJvStandardPage
         Left = 0
         Top = 0
@@ -577,11 +454,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'IDClientPage'
         object ClientIDGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 350
-          Caption = #1048#1076#1077#1085#1090#1080#1092#1080#1082#1072#1094#1080#1103' '#1082#1083#1080#1077#1085#1090#1072
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Caption = '#'#1048#1076#1077#1085#1090#1080#1092#1080#1082#1072#1094#1080#1103' '#1082#1083#1080#1077#1085#1090#1072
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -592,9 +469,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object ClientIDLabel: TLabel
             Left = 15
             Top = 115
-            Width = 153
+            Width = 161
             Height = 13
-            Caption = #1044#1086#1089#1090#1091#1087#1085#1099#1077' '#1080#1076#1077#1085#1090#1080#1092#1080#1082#1072#1090#1086#1088#1099':'
+            Caption = '#'#1044#1086#1089#1090#1091#1087#1085#1099#1077' '#1080#1076#1077#1085#1090#1080#1092#1080#1082#1072#1090#1086#1088#1099':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -605,9 +482,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object ClientProtoVerLabel: TLabel
             Left = 15
             Top = 170
-            Width = 94
+            Width = 104
             Height = 13
-            Caption = 'ClientProtoVerLabel'
+            Caption = '#'#1042#1077#1088#1089#1080#1103' '#1087#1088#1086#1090#1086#1082#1086#1083#1072':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -618,9 +495,11 @@ object IcqOptionsForm: TIcqOptionsForm
           object ClientCapsLabel: TLabel
             Left = 15
             Top = 233
-            Width = 355
+            Width = 363
             Height = 13
-            Caption = #1047#1076#1077#1089#1100' '#1084#1086#1078#1085#1086' '#1076#1086#1073#1072#1074#1080#1090#1100' '#1089#1074#1086#1080' '#1093#1072#1088#1072#1082#1090#1077#1088#1080#1089#1090#1080#1082#1080' '#1082#1083#1080#1077#1085#1090#1072' ('#1076#1086' 16 '#1079#1085#1072#1082#1086#1074'):'
+            Caption = 
+              '#'#1047#1076#1077#1089#1100' '#1084#1086#1078#1085#1086' '#1076#1086#1073#1072#1074#1080#1090#1100' '#1089#1074#1086#1080' '#1093#1072#1088#1072#1082#1090#1077#1088#1080#1089#1090#1080#1082#1080' '#1082#1083#1080#1077#1085#1090#1072' ('#1076#1086' 16 '#1079#1085#1072#1082#1086#1074')' +
+              ':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -629,44 +508,22 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object ClientVersionLabel: TLabel
-            Left = 233
+            Left = 240
             Top = 115
-            Width = 84
+            Width = 92
             Height = 13
-            Caption = #1042#1077#1088#1089#1080#1103' '#1082#1083#1080#1077#1085#1090#1072':'
+            Caption = '#'#1042#1077#1088#1089#1080#1103' '#1082#1083#1080#1077#1085#1090#1072':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-          end
-          object ClientIDInfoMemo: TMemo
-            Left = 13
-            Top = 21
-            Width = 396
-            Height = 76
-            Color = clBtnFace
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            Lines.Strings = (
-              #1042#1085#1080#1084#1072#1085#1080#1077'! '#1069#1090#1080' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1077#1076#1085#1072#1079#1085#1072#1095#1077#1085#1099' '#1076#1083#1103' '#1086#1087#1099#1090#1085#1099#1093' '
-              #1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081'. '#1045#1089#1083#1080' '#1074#1099' '#1085#1077' '#1079#1085#1072#1077#1090#1077', '#1095#1090#1086' '#1101#1090#1086' '#1090#1072#1082#1086#1077', '#1087#1086#1078#1072#1083#1091#1081#1089#1090#1072', '
-              #1086#1089#1090#1072#1074#1100#1090#1077' '#1074#1089#1105' '#1082#1072#1082' '#1077#1089#1090#1100'. '#1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1080#1076#1077#1085#1090#1080#1092#1080#1082#1072#1090#1086#1088#1072' '#1082#1083#1080#1077#1085#1090#1072' '#1084#1086#1078#1077#1090' '
-              #1089#1076#1077#1083#1072#1090#1100' '#1085#1077#1076#1086#1089#1090#1091#1087#1085#1099#1084#1080' '#1085#1077#1082#1086#1090#1086#1088#1099#1077' '#1092#1091#1085#1082#1094#1080#1080', '#1074#1082#1083#1102#1095#1072#1103' '#1087#1077#1088#1077#1076#1072#1095#1091' '
-              #1092#1072#1081#1083#1086#1074', '#1080#1083#1080' '#1089#1090#1072#1090#1100' '#1087#1088#1080#1095#1080#1085#1086#1081' '#1085#1077#1089#1090#1072#1073#1080#1083#1100#1085#1086#1081' '#1088#1072#1073#1086#1090#1099' '#1087#1088#1086#1075#1088#1072#1084#1084#1099'.')
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 0
-            OnMouseMove = ClientIDInfoMemoMouseMove
           end
           object ClientIDComboBox: TComboBox
             Left = 13
             Top = 134
-            Width = 204
+            Width = 210
             Height = 21
             AutoDropDown = True
             Style = csDropDownList
@@ -678,7 +535,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ItemIndex = 0
             ParentFont = False
-            TabOrder = 1
+            TabOrder = 0
             Text = 'IMadering'
             Items.Strings = (
               'IMadering')
@@ -686,7 +543,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object ClientProtoVerEdit: TEdit
             Left = 14
             Top = 189
-            Width = 204
+            Width = 209
             Height = 21
             Color = clBtnFace
             Enabled = False
@@ -696,13 +553,26 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 1
             Text = '9'
           end
           object ClientCaps1Edit: TEdit
             Left = 13
             Top = 251
-            Width = 396
+            Width = 403
+            Height = 21
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+          end
+          object ClientCaps2Edit: TEdit
+            Left = 13
+            Top = 284
+            Width = 403
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -712,10 +582,10 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
             TabOrder = 3
           end
-          object ClientCaps2Edit: TEdit
+          object ClientCaps3Edit: TEdit
             Left = 13
-            Top = 284
-            Width = 396
+            Top = 317
+            Width = 403
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -725,21 +595,8 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
             TabOrder = 4
           end
-          object ClientCaps3Edit: TEdit
-            Left = 13
-            Top = 317
-            Width = 396
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 5
-          end
           object ClientVersionEdit: TEdit
-            Left = 232
+            Left = 239
             Top = 134
             Width = 177
             Height = 21
@@ -749,6 +606,26 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
+            TabOrder = 5
+          end
+          object ClientIdInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 20
+            Width = 403
+            Height = 84
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
             TabOrder = 6
           end
         end
@@ -760,11 +637,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'PassChangePage'
         object PassChangeGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 350
-          Caption = #1057#1084#1077#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Caption = '#'#1057#1084#1077#1085#1080#1090#1100' '#1087#1072#1088#1086#1083#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -775,9 +652,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object RetypeNewPassLabel: TLabel
             Left = 113
             Top = 233
-            Width = 147
+            Width = 155
             Height = 13
-            Caption = #1055#1086#1076#1090#1074#1077#1088#1076#1080#1090#1100' '#1085#1086#1074#1099#1081' '#1087#1072#1088#1086#1083#1100':'
+            Caption = '#'#1055#1086#1076#1090#1074#1077#1088#1076#1080#1090#1100' '#1085#1086#1074#1099#1081' '#1087#1072#1088#1086#1083#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -788,9 +665,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object NewPassChangeLabel: TLabel
             Left = 113
             Top = 179
-            Width = 76
+            Width = 84
             Height = 13
-            Caption = #1053#1086#1074#1099#1081' '#1087#1072#1088#1086#1083#1100':'
+            Caption = '#'#1053#1086#1074#1099#1081' '#1087#1072#1088#1086#1083#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -801,10 +678,10 @@ object IcqOptionsForm: TIcqOptionsForm
           object ReqPassChangeLabel: TLabel
             Left = 113
             Top = 150
-            Width = 95
+            Width = 104
             Height = 13
             Cursor = crHandPoint
-            Caption = #1047#1072#1073#1099#1083#1080' '#1087#1072#1088#1086#1083#1100'?'
+            Caption = '#'#1047#1072#1073#1099#1083#1080' '#1087#1072#1088#1086#1083#1100'?'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clNavy
             Font.Height = -11
@@ -818,9 +695,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object CurrentPassChangeLabel: TLabel
             Left = 113
             Top = 104
-            Width = 88
+            Width = 96
             Height = 13
-            Caption = #1058#1077#1082#1091#1097#1080#1081' '#1087#1072#1088#1086#1083#1100':'
+            Caption = '#'#1058#1077#1082#1091#1097#1080#1081' '#1087#1072#1088#1086#1083#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -833,7 +710,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 309
             Width = 207
             Height = 25
-            Caption = #1057#1084#1077#1085#1080#1090#1100
+            Caption = '#'#1057#1084#1077#1085#1080#1090#1100
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -848,7 +725,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 279
             Width = 296
             Height = 17
-            Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
+            Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -902,24 +779,24 @@ object IcqOptionsForm: TIcqOptionsForm
             PasswordChar = '*'
             TabOrder = 4
           end
-          object PassChangeInfoMemo: TMemo
-            Left = 14
-            Top = 21
-            Width = 394
-            Height = 68
+          object PassChangeInfoRichEdit: TRichEdit
+            Left = 12
+            Top = 20
+            Width = 404
+            Height = 70
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
             Color = clBtnFace
-            Font.Charset = DEFAULT_CHARSET
+            Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            Lines.Strings = (
-              #1044#1083#1103' '#1089#1084#1077#1085#1099' '#1087#1072#1088#1086#1083#1103', '#1074#1072#1084' '#1085#1077#1086#1073#1093#1086#1076#1080#1084#1086' '#1074#1074#1077#1089#1090#1080' '#1090#1077#1082#1091#1097#1080#1081' '#1087#1072#1088#1086#1083#1100' '#1080' '#1085#1086#1074#1099#1081' '
-              #1087#1072#1088#1086#1083#1100' '#1076#1074#1072#1078#1076#1099'. '#1053#1072#1089#1090#1086#1103#1090#1077#1083#1100#1085#1086' '#1088#1077#1082#1086#1084#1077#1085#1076#1091#1077#1090#1089#1103' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1074' '#1085#1086#1074#1086#1084' '
-              #1087#1072#1088#1086#1083#1077' '#1082#1086#1084#1073#1080#1085#1072#1094#1080#1102' '#1094#1080#1092#1088' '#1080' '#1073#1091#1082#1074' '#1083#1072#1090#1080#1085#1089#1082#1086#1075#1086' '#1072#1083#1092#1072#1074#1080#1090#1072'. '#1044#1083#1080#1085#1072' '#1087#1072#1088#1086#1083#1103' '
-              #1076#1086#1083#1078#1085#1072' '#1073#1099#1090#1100' '#1074' '#1087#1088#1077#1076#1077#1083#1072#1093' '#1086#1090' 6 '#1076#1086' 8 '#1089#1080#1084#1074#1086#1083#1086#1074'.')
             ParentFont = False
+            PlainText = True
             ReadOnly = True
+            ScrollBars = ssVertical
             TabOrder = 5
           end
         end
@@ -931,11 +808,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'AnketaPage'
         object MyInfoNameGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 121
-          Caption = #1048#1084#1103
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 124
+          Caption = '#'#1048#1084#1103
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -944,11 +821,11 @@ object IcqOptionsForm: TIcqOptionsForm
           ParentFont = False
           TabOrder = 0
           object FamilyInfoLabel: TLabel
-            Left = 220
+            Left = 223
             Top = 18
-            Width = 48
+            Width = 56
             Height = 13
-            Caption = #1060#1072#1084#1080#1083#1080#1103':'
+            Caption = '#'#1060#1072#1084#1080#1083#1080#1103':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -959,9 +836,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object NameInfoLabel: TLabel
             Left = 16
             Top = 69
-            Width = 23
+            Width = 31
             Height = 13
-            Caption = #1048#1084#1103':'
+            Caption = '#'#1048#1084#1103':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -972,9 +849,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object NickInfoLabel: TLabel
             Left = 16
             Top = 18
-            Width = 23
+            Width = 31
             Height = 13
-            Caption = #1053#1080#1082':'
+            Caption = '#'#1053#1080#1082':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -983,11 +860,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object ConnectTimeInfoLabel: TLabel
-            Left = 220
+            Left = 223
             Top = 69
-            Width = 107
+            Width = 115
             Height = 13
-            Caption = #1042#1088#1077#1084#1103' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103':'
+            Caption = '#'#1042#1088#1077#1084#1103' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -996,9 +873,9 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object FamilyInfoEdit: TEdit
-            Left = 219
+            Left = 222
             Top = 37
-            Width = 188
+            Width = 192
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1012,7 +889,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object NameInfoEdit: TEdit
             Left = 15
             Top = 88
-            Width = 188
+            Width = 192
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1026,7 +903,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object NickInfoEdit: TEdit
             Left = 15
             Top = 37
-            Width = 188
+            Width = 192
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1038,9 +915,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 2
           end
           object ConnectTimeInfoEdit: TEdit
-            Left = 219
+            Left = 222
             Top = 88
-            Width = 188
+            Width = 192
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -1054,11 +931,11 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
         object EmailsInfoGroupBox: TGroupBox
-          Left = 3
+          Left = 0
           Top = 130
-          Width = 422
-          Height = 223
-          Caption = #1048#1085#1092#1086':'
+          Width = 428
+          Height = 226
+          Caption = '#'#1048#1085#1092#1086':'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -1069,9 +946,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object EmailInfo1Label: TLabel
             Left = 16
             Top = 19
-            Width = 41
+            Width = 45
             Height = 13
-            Caption = 'E-mail 1:'
+            Caption = '#Email 1:'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1103,9 +980,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object EmailInfo2Label: TLabel
             Left = 16
             Top = 70
-            Width = 41
+            Width = 45
             Height = 13
-            Caption = 'E-mail 2:'
+            Caption = '#Email 2:'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1116,9 +993,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object EmailInfo3Label: TLabel
             Left = 16
             Top = 121
-            Width = 41
+            Width = 45
             Height = 13
-            Caption = 'E-mail 3:'
+            Caption = '#Email 3:'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1127,11 +1004,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object RegDateInfoLabel: TLabel
-            Left = 220
+            Left = 223
             Top = 19
-            Width = 97
+            Width = 105
             Height = 13
-            Caption = #1044#1072#1090#1072' '#1088#1077#1075#1080#1089#1090#1088#1072#1094#1080#1080':'
+            Caption = '#'#1044#1072#1090#1072' '#1088#1077#1075#1080#1089#1090#1088#1072#1094#1080#1080':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1140,11 +1017,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object SendMessInfoLabel: TLabel
-            Left = 220
+            Left = 223
             Top = 70
-            Width = 154
+            Width = 162
             Height = 13
-            Caption = #1042#1089#1077#1075#1086' '#1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1086#1090#1087#1088#1072#1074#1083#1077#1085#1086':'
+            Caption = '#'#1042#1089#1077#1075#1086' '#1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1086#1090#1087#1088#1072#1074#1083#1077#1085#1086':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1153,11 +1030,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object InMessInfoLabel: TLabel
-            Left = 220
+            Left = 223
             Top = 121
-            Width = 142
+            Width = 150
             Height = 13
-            Caption = #1042#1089#1077#1075#1086' '#1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1087#1086#1083#1091#1095#1077#1085#1086':'
+            Caption = '#'#1042#1089#1077#1075#1086' '#1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1087#1086#1083#1091#1095#1077#1085#1086':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1168,9 +1045,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object ExternalIPInfoLabel: TLabel
             Left = 16
             Top = 171
-            Width = 94
+            Width = 102
             Height = 13
-            Caption = #1042#1085#1077#1096#1085#1080#1081' IP '#1072#1076#1088#1077#1089':'
+            Caption = '#'#1042#1085#1077#1096#1085#1080#1081' IP '#1072#1076#1088#1077#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1179,11 +1056,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object LastTimeInfoLabel: TLabel
-            Left = 220
+            Left = 223
             Top = 171
-            Width = 134
+            Width = 142
             Height = 13
-            Caption = #1055#1086#1089#1083#1077#1076#1085#1103#1103' '#1076#1077#1103#1090#1077#1083#1100#1085#1086#1089#1090#1100':'
+            Caption = '#'#1055#1086#1089#1083#1077#1076#1085#1103#1103' '#1076#1077#1103#1090#1077#1083#1100#1085#1086#1089#1090#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1194,7 +1071,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object EmailInfo1Edit: TEdit
             Left = 15
             Top = 38
-            Width = 188
+            Width = 192
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1208,7 +1085,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object EmailInfo2Edit: TEdit
             Left = 15
             Top = 90
-            Width = 188
+            Width = 192
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1222,7 +1099,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object EmailInfo3Edit: TEdit
             Left = 15
             Top = 140
-            Width = 188
+            Width = 192
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1234,9 +1111,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 2
           end
           object RegDateInfoEdit: TEdit
-            Left = 219
+            Left = 222
             Top = 38
-            Width = 188
+            Width = 192
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -1249,9 +1126,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 3
           end
           object SendMessInfoEdit: TEdit
-            Left = 219
+            Left = 222
             Top = 89
-            Width = 188
+            Width = 192
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -1264,9 +1141,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 4
           end
           object InMessInfoEdit: TEdit
-            Left = 219
+            Left = 222
             Top = 140
-            Width = 188
+            Width = 192
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -1281,7 +1158,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object ExternalIPInfoEdit: TEdit
             Left = 15
             Top = 190
-            Width = 188
+            Width = 192
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -1294,9 +1171,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 6
           end
           object LastTimeInfoEdit: TEdit
-            Left = 219
+            Left = 222
             Top = 190
-            Width = 188
+            Width = 192
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -1317,11 +1194,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'HomePage'
         object OriginalInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 232
-          Width = 422
-          Height = 121
-          Caption = #1052#1077#1089#1090#1086' '#1088#1086#1078#1076#1077#1085#1080#1103':'
+          Left = 0
+          Top = 231
+          Width = 428
+          Height = 125
+          Caption = '#'#1052#1077#1089#1090#1086' '#1088#1086#1078#1076#1077#1085#1080#1103':'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -1332,9 +1209,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object OCountryInfoLabel: TLabel
             Left = 16
             Top = 20
-            Width = 41
+            Width = 49
             Height = 13
-            Caption = #1057#1090#1088#1072#1085#1072':'
+            Caption = '#'#1057#1090#1088#1072#1085#1072':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1345,9 +1222,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object OCityInfoLabel: TLabel
             Left = 16
             Top = 69
-            Width = 35
+            Width = 43
             Height = 13
-            Caption = #1043#1086#1088#1086#1076':'
+            Caption = '#'#1043#1086#1088#1086#1076':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1356,11 +1233,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object OAreaInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 20
-            Width = 47
+            Width = 55
             Height = 13
-            Caption = #1054#1073#1083#1072#1089#1090#1100':'
+            Caption = '#'#1054#1073#1083#1072#1089#1090#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1371,7 +1248,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object OCountryInfoComboBox: TComboBox
             Left = 15
             Top = 39
-            Width = 204
+            Width = 214
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -1386,7 +1263,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object OCityInfoEdit: TEdit
             Left = 15
             Top = 88
-            Width = 204
+            Width = 214
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1398,7 +1275,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 1
           end
           object OAreaInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 39
             Width = 171
             Height = 21
@@ -1413,11 +1290,11 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
         object HomeInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 223
-          Caption = #1044#1086#1084#1072#1096#1085#1080#1081' '#1072#1076#1088#1077#1089
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 225
+          Caption = '#'#1044#1086#1084#1072#1096#1085#1080#1081' '#1072#1076#1088#1077#1089
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -1428,9 +1305,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object CountryInfoLabel: TLabel
             Left = 15
             Top = 19
-            Width = 41
+            Width = 49
             Height = 13
-            Caption = #1057#1090#1088#1072#1085#1072':'
+            Caption = '#'#1057#1090#1088#1072#1085#1072':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1441,9 +1318,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object CityInfoLabel: TLabel
             Left = 15
             Top = 68
-            Width = 35
+            Width = 43
             Height = 13
-            Caption = #1043#1086#1088#1086#1076':'
+            Caption = '#'#1043#1086#1088#1086#1076':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1454,9 +1331,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object AreaInfoLabel: TLabel
             Left = 15
             Top = 118
-            Width = 47
+            Width = 55
             Height = 13
-            Caption = #1054#1073#1083#1072#1089#1090#1100':'
+            Caption = '#'#1054#1073#1083#1072#1089#1090#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1465,11 +1342,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object ZipInfoLabel: TLabel
-            Left = 135
+            Left = 144
             Top = 118
-            Width = 41
+            Width = 49
             Height = 13
-            Caption = #1048#1085#1076#1077#1082#1089':'
+            Caption = '#'#1048#1085#1076#1077#1082#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1480,9 +1357,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object StreetInfoLabel: TLabel
             Left = 15
             Top = 169
-            Width = 35
+            Width = 43
             Height = 13
-            Caption = #1040#1076#1088#1077#1089':'
+            Caption = '#'#1040#1076#1088#1077#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1491,11 +1368,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PhoneInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 19
-            Width = 48
+            Width = 56
             Height = 13
-            Caption = #1058#1077#1083#1077#1092#1086#1085':'
+            Caption = '#'#1058#1077#1083#1077#1092#1086#1085':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1504,11 +1381,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object FaxInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 68
-            Width = 29
+            Width = 37
             Height = 13
-            Caption = #1060#1072#1082#1089':'
+            Caption = '#'#1060#1072#1082#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1517,11 +1394,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object CelularInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 118
-            Width = 49
+            Width = 57
             Height = 13
-            Caption = #1057#1086#1090#1086#1074#1099#1081':'
+            Caption = '#'#1057#1086#1090#1086#1074#1099#1081':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1532,7 +1409,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object CityInfoEdit: TEdit
             Left = 14
             Top = 87
-            Width = 206
+            Width = 215
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1546,7 +1423,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object AreaInfoEdit: TEdit
             Left = 14
             Top = 137
-            Width = 95
+            Width = 113
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1558,7 +1435,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 1
           end
           object ZipInfoEdit: TEdit
-            Left = 134
+            Left = 143
             Top = 137
             Width = 86
             Height = 21
@@ -1574,7 +1451,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object StreetInfoEdit: TEdit
             Left = 14
             Top = 188
-            Width = 393
+            Width = 401
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1586,7 +1463,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 3
           end
           object PhoneInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 38
             Width = 171
             Height = 21
@@ -1600,7 +1477,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 4
           end
           object FaxInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 87
             Width = 171
             Height = 21
@@ -1614,7 +1491,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 5
           end
           object CelularInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 137
             Width = 171
             Height = 21
@@ -1630,7 +1507,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object CountryInfoComboBox: TComboBox
             Left = 14
             Top = 38
-            Width = 206
+            Width = 215
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -2158,11 +2035,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'WorkPage'
         object WorkInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
+          Left = 0
+          Top = 0
+          Width = 428
           Height = 174
-          Caption = #1056#1072#1073#1086#1095#1080#1081' '#1072#1076#1088#1077#1089
+          Caption = '#'#1056#1072#1073#1086#1095#1080#1081' '#1072#1076#1088#1077#1089
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -2173,9 +2050,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object WorkCountryInfoLabel: TLabel
             Left = 15
             Top = 19
-            Width = 41
+            Width = 49
             Height = 13
-            Caption = #1057#1090#1088#1072#1085#1072':'
+            Caption = '#'#1057#1090#1088#1072#1085#1072':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2186,9 +2063,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object WorkCityInfoLabel: TLabel
             Left = 15
             Top = 68
-            Width = 35
+            Width = 43
             Height = 13
-            Caption = #1043#1086#1088#1086#1076':'
+            Caption = '#'#1043#1086#1088#1086#1076':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2199,9 +2076,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object WorkAreaInfoLabel: TLabel
             Left = 15
             Top = 118
-            Width = 47
+            Width = 55
             Height = 13
-            Caption = #1054#1073#1083#1072#1089#1090#1100':'
+            Caption = '#'#1054#1073#1083#1072#1089#1090#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2210,11 +2087,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object WorkZipInfoLabel: TLabel
-            Left = 135
+            Left = 144
             Top = 118
-            Width = 41
+            Width = 49
             Height = 13
-            Caption = #1048#1085#1076#1077#1082#1089':'
+            Caption = '#'#1048#1085#1076#1077#1082#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2223,11 +2100,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object WorkPhoneInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 19
-            Width = 48
+            Width = 56
             Height = 13
-            Caption = #1058#1077#1083#1077#1092#1086#1085':'
+            Caption = '#'#1058#1077#1083#1077#1092#1086#1085':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2236,11 +2113,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object WorkFaxInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 68
-            Width = 29
+            Width = 37
             Height = 13
-            Caption = #1060#1072#1082#1089':'
+            Caption = '#'#1060#1072#1082#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2249,11 +2126,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object WorkStreetInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 118
-            Width = 35
+            Width = 43
             Height = 13
-            Caption = #1040#1076#1088#1077#1089':'
+            Caption = '#'#1040#1076#1088#1077#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2264,7 +2141,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object WorkCityInfoEdit: TEdit
             Left = 14
             Top = 87
-            Width = 206
+            Width = 215
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2278,7 +2155,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object WorkAreaInfoEdit: TEdit
             Left = 14
             Top = 137
-            Width = 95
+            Width = 113
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2290,7 +2167,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 1
           end
           object WorkZipInfoEdit: TEdit
-            Left = 134
+            Left = 143
             Top = 137
             Width = 86
             Height = 21
@@ -2304,7 +2181,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 2
           end
           object WorkPhoneInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 38
             Width = 171
             Height = 21
@@ -2318,7 +2195,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 3
           end
           object WorkFaxInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 87
             Width = 171
             Height = 21
@@ -2332,7 +2209,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 4
           end
           object WorkStreetInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 137
             Width = 171
             Height = 21
@@ -2348,7 +2225,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object WorkCountryInfoComboBox: TComboBox
             Left = 14
             Top = 38
-            Width = 206
+            Width = 215
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -2362,11 +2239,11 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
         object CompanyInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 183
-          Width = 422
-          Height = 170
-          Caption = #1050#1086#1084#1087#1072#1085#1080#1103
+          Left = 0
+          Top = 180
+          Width = 429
+          Height = 176
+          Caption = '#'#1050#1086#1084#1087#1072#1085#1080#1103
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -2377,9 +2254,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object CompanyNameInfoLabel: TLabel
             Left = 15
             Top = 20
-            Width = 52
+            Width = 60
             Height = 13
-            Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
+            Caption = '#'#1053#1072#1079#1074#1072#1085#1080#1077':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2390,9 +2267,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object CompanyCabInfoLabel: TLabel
             Left = 15
             Top = 69
-            Width = 37
+            Width = 45
             Height = 13
-            Caption = #1054#1090#1076#1077#1083':'
+            Caption = '#'#1054#1090#1076#1077#1083':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2401,11 +2278,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object CompanyProfInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 20
-            Width = 59
+            Width = 67
             Height = 13
-            Caption = #1055#1088#1086#1092#1077#1089#1089#1080#1103':'
+            Caption = '#'#1055#1088#1086#1092#1077#1089#1089#1080#1103':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2414,11 +2291,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object CompanyMasteInfoLabel: TLabel
-            Left = 237
+            Left = 245
             Top = 69
-            Width = 61
+            Width = 69
             Height = 13
-            Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100':'
+            Caption = '#'#1044#1086#1083#1078#1085#1086#1089#1090#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2429,9 +2306,9 @@ object IcqOptionsForm: TIcqOptionsForm
           object CompanySiteInfoLabel: TLabel
             Left = 15
             Top = 119
-            Width = 49
+            Width = 57
             Height = 13
-            Caption = #1042#1077#1073'-'#1089#1072#1081#1090':'
+            Caption = '#'#1042#1077#1073'-'#1089#1072#1081#1090':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2442,7 +2319,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object CompanyNameInfoEdit: TEdit
             Left = 14
             Top = 39
-            Width = 206
+            Width = 215
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2456,7 +2333,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object CompanyCabInfoEdit: TEdit
             Left = 14
             Top = 88
-            Width = 206
+            Width = 215
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2468,9 +2345,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 1
           end
           object CompanyProfInfoComboBox: TComboBox
-            Left = 236
+            Left = 244
             Top = 39
-            Width = 170
+            Width = 171
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -2503,9 +2380,9 @@ object IcqOptionsForm: TIcqOptionsForm
               #1055#1088#1086#1095#1080#1077' '#1091#1089#1083#1091#1075#1080)
           end
           object CompanyMasteInfoEdit: TEdit
-            Left = 236
+            Left = 244
             Top = 88
-            Width = 170
+            Width = 171
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2519,7 +2396,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object CompanySiteInfoEdit: TEdit
             Left = 14
             Top = 138
-            Width = 392
+            Width = 401
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2568,11 +2445,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'PersonalPage'
         object PersonalInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 350
-          Caption = #1051#1080#1095#1085#1086#1077
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Caption = '#'#1051#1080#1095#1085#1086#1077
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -2581,11 +2458,11 @@ object IcqOptionsForm: TIcqOptionsForm
           ParentFont = False
           TabOrder = 0
           object PersonalGenderInfoLabel: TLabel
-            Left = 15
+            Left = 13
             Top = 20
-            Width = 23
+            Width = 31
             Height = 13
-            Caption = #1055#1086#1083':'
+            Caption = '#'#1055#1086#1083':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2594,11 +2471,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalMaritalInfoLabel: TLabel
-            Left = 137
+            Left = 146
             Top = 20
-            Width = 28
+            Width = 36
             Height = 13
-            Caption = #1041#1088#1072#1082':'
+            Caption = '#'#1041#1088#1072#1082':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2614,11 +2491,11 @@ object IcqOptionsForm: TIcqOptionsForm
             Flat = True
           end
           object PersonalHomePageInfoLabel: TLabel
-            Left = 137
+            Left = 146
             Top = 72
-            Width = 106
+            Width = 114
             Height = 13
-            Caption = #1044#1086#1084#1072#1096#1085#1103#1103' '#1089#1090#1088#1072#1085#1080#1094#1072':'
+            Caption = '#'#1044#1086#1084#1072#1096#1085#1103#1103' '#1089#1090#1088#1072#1085#1080#1094#1072':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2627,11 +2504,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalBirthDayInfoLabel: TLabel
-            Left = 15
-            Top = 127
-            Width = 80
+            Left = 12
+            Top = 126
+            Width = 88
             Height = 13
-            Caption = #1044#1072#1090#1072' '#1088#1086#1078#1076#1077#1085#1080#1103
+            Caption = '#'#1044#1072#1090#1072' '#1088#1086#1078#1076#1077#1085#1080#1103
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2640,17 +2517,17 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object HoroImage: TImage
-            Left = 376
+            Left = 380
             Top = 141
             Width = 32
             Height = 32
           end
           object PersonalAgeInfoLabel: TLabel
-            Left = 15
-            Top = 181
-            Width = 44
+            Left = 13
+            Top = 198
+            Width = 52
             Height = 13
-            Caption = #1042#1086#1079#1088#1072#1089#1090':'
+            Caption = '#'#1042#1086#1079#1088#1072#1089#1090':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2661,10 +2538,10 @@ object IcqOptionsForm: TIcqOptionsForm
           object PersonalDayInfoLabel: TLabel
             Left = 29
             Top = 151
-            Width = 30
+            Width = 38
             Height = 13
             Alignment = taRightJustify
-            Caption = #1044#1077#1085#1100':'
+            Caption = '#'#1044#1077#1085#1100':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2675,10 +2552,10 @@ object IcqOptionsForm: TIcqOptionsForm
           object PersonalMonInfoLabel: TLabel
             Left = 150
             Top = 151
-            Width = 35
+            Width = 43
             Height = 13
             Alignment = taRightJustify
-            Caption = #1052#1077#1089#1103#1094':'
+            Caption = '#'#1052#1077#1089#1103#1094':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2687,12 +2564,12 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalYearInfoLabel: TLabel
-            Left = 281
+            Left = 279
             Top = 151
-            Width = 23
+            Width = 31
             Height = 13
             Alignment = taRightJustify
-            Caption = #1043#1086#1076':'
+            Caption = '#'#1043#1086#1076':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2701,11 +2578,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalChildrenInfoLabel: TLabel
-            Left = 15
+            Left = 13
             Top = 72
-            Width = 30
+            Width = 38
             Height = 13
-            Caption = #1044#1077#1090#1080':'
+            Caption = '#'#1044#1077#1090#1080':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2714,11 +2591,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalReligionInfoLabel: TLabel
-            Left = 137
-            Top = 181
-            Width = 45
+            Left = 146
+            Top = 198
+            Width = 53
             Height = 13
-            Caption = #1056#1077#1083#1080#1075#1080#1103':'
+            Caption = '#'#1056#1077#1083#1080#1075#1080#1103':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2727,11 +2604,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalHeightInfoLabel: TLabel
-            Left = 15
-            Top = 234
-            Width = 27
+            Left = 13
+            Top = 251
+            Width = 35
             Height = 13
-            Caption = #1056#1086#1089#1090':'
+            Caption = '#'#1056#1086#1089#1090':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2740,11 +2617,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalSmokInfoLabel: TLabel
-            Left = 137
-            Top = 234
-            Width = 47
+            Left = 146
+            Top = 251
+            Width = 55
             Height = 13
-            Caption = #1050#1091#1088#1077#1085#1080#1077':'
+            Caption = '#'#1050#1091#1088#1077#1085#1080#1077':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2753,11 +2630,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalSexInfoLabel: TLabel
-            Left = 137
-            Top = 288
-            Width = 133
+            Left = 146
+            Top = 305
+            Width = 141
             Height = 13
-            Caption = #1057#1077#1082#1089#1091#1072#1083#1100#1085#1072#1103' '#1086#1088#1080#1077#1085#1090#1072#1094#1080#1103':'
+            Caption = '#'#1057#1077#1082#1089#1091#1072#1083#1100#1085#1072#1103' '#1086#1088#1080#1077#1085#1090#1072#1094#1080#1103':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2766,11 +2643,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object PersonalHairColourInfoLabel: TLabel
-            Left = 15
-            Top = 288
-            Width = 62
+            Left = 13
+            Top = 305
+            Width = 70
             Height = 13
-            Caption = #1062#1074#1077#1090' '#1074#1086#1083#1086#1089':'
+            Caption = '#'#1062#1074#1077#1090' '#1074#1086#1083#1086#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2778,10 +2655,17 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
           end
+          object Bevel1: TBevel
+            Left = 12
+            Top = 179
+            Width = 405
+            Height = 8
+            Shape = bsBottomLine
+          end
           object PersonalGenderInfoComboBox: TComboBox
-            Left = 14
+            Left = 12
             Top = 39
-            Width = 107
+            Width = 117
             Height = 21
             Style = csDropDownList
             Font.Charset = DEFAULT_CHARSET
@@ -2797,7 +2681,7 @@ object IcqOptionsForm: TIcqOptionsForm
               #1052#1091#1078#1089#1082#1086#1081)
           end
           object PersonalMaritalInfoComboBox: TComboBox
-            Left = 136
+            Left = 145
             Top = 39
             Width = 272
             Height = 21
@@ -2823,7 +2707,7 @@ object IcqOptionsForm: TIcqOptionsForm
               #1044#1088#1091#1075#1086#1077)
           end
           object PersonalHomePageInfoEdit: TEdit
-            Left = 136
+            Left = 145
             Top = 91
             Width = 272
             Height = 21
@@ -2837,7 +2721,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 2
           end
           object PersonalYearInfoEdit: TEdit
-            Left = 310
+            Left = 316
             Top = 147
             Width = 49
             Height = 21
@@ -2851,9 +2735,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 3
           end
           object PersonalAgeInfoEdit: TEdit
-            Left = 14
-            Top = 200
-            Width = 107
+            Left = 12
+            Top = 217
+            Width = 117
             Height = 21
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
@@ -2866,9 +2750,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 4
           end
           object PersonalChildrenInfoComboBox: TComboBox
-            Left = 14
+            Left = 12
             Top = 91
-            Width = 107
+            Width = 117
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -2893,8 +2777,8 @@ object IcqOptionsForm: TIcqOptionsForm
               #1053#1077#1090)
           end
           object PersonalReligionInfoComboBox: TComboBox
-            Left = 136
-            Top = 200
+            Left = 145
+            Top = 217
             Width = 272
             Height = 21
             Style = csDropDownList
@@ -2928,7 +2812,7 @@ object IcqOptionsForm: TIcqOptionsForm
               #1061#1088#1080#1089#1090#1080#1072#1085#1089#1082#1072#1103)
           end
           object PersonalDayInfoComboBox: TComboBox
-            Left = 65
+            Left = 73
             Top = 147
             Width = 56
             Height = 21
@@ -2976,7 +2860,7 @@ object IcqOptionsForm: TIcqOptionsForm
               '31')
           end
           object PersonalMonInfoComboBox: TComboBox
-            Left = 191
+            Left = 199
             Top = 147
             Width = 56
             Height = 21
@@ -3005,9 +2889,9 @@ object IcqOptionsForm: TIcqOptionsForm
               '12')
           end
           object PersonalHeightInfoComboBox: TComboBox
-            Left = 14
-            Top = 253
-            Width = 107
+            Left = 12
+            Top = 270
+            Width = 117
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -3038,8 +2922,8 @@ object IcqOptionsForm: TIcqOptionsForm
               '220cm')
           end
           object PersonalSmokInfoComboBox: TComboBox
-            Left = 136
-            Top = 253
+            Left = 145
+            Top = 270
             Width = 272
             Height = 21
             Style = csDropDownList
@@ -3061,8 +2945,8 @@ object IcqOptionsForm: TIcqOptionsForm
               #1044#1088#1091#1075#1086#1077)
           end
           object PersonalSexInfoComboBox: TComboBox
-            Left = 136
-            Top = 307
+            Left = 145
+            Top = 324
             Width = 272
             Height = 21
             Style = csDropDownList
@@ -3083,9 +2967,9 @@ object IcqOptionsForm: TIcqOptionsForm
               #1044#1088#1091#1075#1072#1103)
           end
           object PersonalHairColourInfoComboBox: TComboBox
-            Left = 14
-            Top = 307
-            Width = 107
+            Left = 12
+            Top = 324
+            Width = 117
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -3131,8 +3015,8 @@ object IcqOptionsForm: TIcqOptionsForm
               '255')
           end
           object HairColourCodesComboBox: TComboBox
-            Left = 65
-            Top = 280
+            Left = 73
+            Top = 297
             Width = 56
             Height = 21
             Style = csDropDownList
@@ -3153,8 +3037,8 @@ object IcqOptionsForm: TIcqOptionsForm
               '3')
           end
           object ReligionCodesComboBox: TComboBox
-            Left = 310
-            Top = 174
+            Left = 352
+            Top = 191
             Width = 56
             Height = 21
             Style = csDropDownList
@@ -3183,7 +3067,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object SmokCodesComboBox: TComboBox
             Left = 352
-            Top = 226
+            Top = 243
             Width = 56
             Height = 21
             Style = csDropDownList
@@ -3200,7 +3084,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object SexCodesComboBox: TComboBox
             Left = 352
-            Top = 280
+            Top = 297
             Width = 56
             Height = 21
             Style = csDropDownList
@@ -3223,11 +3107,11 @@ object IcqOptionsForm: TIcqOptionsForm
         Height = 356
         Caption = 'InterestsPage'
         object LangsInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 142
-          Width = 422
-          Height = 59
-          Caption = #1042#1083#1072#1076#1077#1085#1080#1077' '#1103#1079#1099#1082#1072#1084#1080
+          Left = 0
+          Top = 138
+          Width = 428
+          Height = 56
+          Caption = '#'#1042#1083#1072#1076#1077#1085#1080#1077' '#1103#1079#1099#1082#1072#1084#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -3238,7 +3122,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object Lang1InfoComboBox: TComboBox
             Left = 11
             Top = 24
-            Width = 129
+            Width = 131
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -3326,9 +3210,9 @@ object IcqOptionsForm: TIcqOptionsForm
               #1071#1087#1086#1085#1089#1082#1080#1081)
           end
           object Lang2InfoComboBox: TComboBox
-            Left = 146
+            Left = 148
             Top = 24
-            Width = 130
+            Width = 132
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -3341,9 +3225,9 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 1
           end
           object Lang3InfoComboBox: TComboBox
-            Left = 282
+            Left = 286
             Top = 24
-            Width = 129
+            Width = 131
             Height = 21
             Style = csDropDownList
             DropDownCount = 15
@@ -3441,11 +3325,11 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
         object InterestInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
+          Left = 0
+          Top = 0
+          Width = 428
           Height = 133
-          Caption = #1048#1085#1090#1077#1088#1077#1089#1099
+          Caption = '#'#1048#1085#1090#1077#1088#1077#1089#1099
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -3569,7 +3453,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object Interest1InfoEdit: TEdit
             Left = 162
             Top = 19
-            Width = 249
+            Width = 255
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -3583,7 +3467,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object Interest2InfoEdit: TEdit
             Left = 162
             Top = 46
-            Width = 249
+            Width = 255
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -3597,7 +3481,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object Interest3InfoEdit: TEdit
             Left = 162
             Top = 73
-            Width = 249
+            Width = 255
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -3611,7 +3495,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object Interest4InfoEdit: TEdit
             Left = 162
             Top = 100
-            Width = 249
+            Width = 255
             Height = 21
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -3685,31 +3569,24 @@ object IcqOptionsForm: TIcqOptionsForm
               '122')
           end
         end
-      end
-      object AboutPage: TJvStandardPage
-        Left = 0
-        Top = 0
-        Width = 428
-        Height = 356
-        Caption = 'AboutPage'
         object AboutInfoGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 422
-          Height = 350
-          Caption = #1054' '#1089#1077#1073#1077
+          Left = 0
+          Top = 200
+          Width = 428
+          Height = 156
+          Caption = '#'#1054' '#1089#1077#1073#1077
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 0
+          TabOrder = 2
           object AboutInfoRichEdit: TRichEdit
-            Left = 14
-            Top = 22
-            Width = 393
-            Height = 313
+            Left = 11
+            Top = 20
+            Width = 406
+            Height = 127
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -3789,17 +3666,132 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 22
             Width = 394
             Height = 313
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'MS Sans Serif'
             Font.Style = []
-            HideScrollBars = False
             ParentFont = False
+            PlainText = True
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 0
+          end
+        end
+      end
+      object BonusPage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'BonusPage'
+        object CheckBox5: TCheckBox
+          Left = 16
+          Top = 377
+          Width = 425
+          Height = 17
+          Caption = 'CheckBox5'
+          Enabled = False
+          TabOrder = 0
+        end
+        object CustomICQPacketGroupBox: TGroupBox
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Caption = '#'#1054#1090#1089#1099#1083#1082#1072' '#1087#1088#1086#1080#1079#1074#1086#1083#1100#1085#1086#1075#1086' '#1087#1072#1082#1077#1090#1072' '#1076#1072#1085#1085#1099#1093
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 1
+          object SendCustomICQPacketButton: TButton
+            Left = 9
+            Top = 324
+            Width = 88
+            Height = 25
+            Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnClick = SendCustomICQPacketButtonClick
+          end
+          object SendCustomICQPacketRichEdit: TRichEdit
+            Left = 9
+            Top = 80
+            Width = 409
+            Height = 238
+            TabStop = False
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ScrollBars = ssVertical
+            TabOrder = 1
+          end
+          object SendCustomICQPaketTimerCheckBox: TCheckBox
+            Left = 106
+            Top = 328
+            Width = 273
+            Height = 17
+            Caption = #1055#1086#1074#1090#1086#1088#1103#1090#1100' '#1086#1090#1087#1088#1072#1074#1082#1091' '#1074' '#1094#1080#1082#1083#1077' ('#1089#1077#1082#1091#1085#1076#1099'):'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+          end
+          object SendCustomICQPaketTimerEdit: TEdit
+            Left = 385
+            Top = 325
+            Width = 33
+            Height = 21
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            MaxLength = 3
+            ParentFont = False
+            TabOrder = 3
+            Text = '10'
+            OnExit = SendCustomICQPaketTimerEditExit
+            OnKeyPress = SendCustomICQPaketTimerEditKeyPress
+          end
+          object DumpInfoRichEdit: TRichEdit
+            Left = 9
+            Top = 18
+            Width = 409
+            Height = 56
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 4
           end
         end
       end
@@ -3810,7 +3802,7 @@ object IcqOptionsForm: TIcqOptionsForm
     Top = 380
     Width = 107
     Height = 25
-    Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
+    Caption = '#'#1055#1088#1080#1084#1077#1085#1080#1090#1100
     DoubleBuffered = True
     Enabled = False
     ParentDoubleBuffered = False
@@ -3823,7 +3815,7 @@ object IcqOptionsForm: TIcqOptionsForm
     Top = 380
     Width = 137
     Height = 25
-    Caption = #1054#1090#1084#1077#1085#1072
+    Caption = '#'#1054#1090#1084#1077#1085#1072
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 3

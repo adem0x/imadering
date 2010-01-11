@@ -31,10 +31,11 @@ uses
   CategoryButtons,
   RXML,
   RosterUnit,
-  OverbyteIcsMimeUtils;
+  OverbyteIcsUrl,
+  GtransUnit;
 
-const
-  DT2100miliseconds = 1 / (SecsPerDay * 10);
+{const
+  DT2100miliseconds = 1 / (SecsPerDay * 10);}
 
 const
   // Capabilities
@@ -324,7 +325,8 @@ procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
 procedure ICQ_UserOffline_030C(PktData: string);
 procedure ICQ_SendMessage_0406(SUIN, SMsg: string; Old: Boolean);
 procedure ICQ_ReqMessage_0407(PktData: string);
-procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string);
+procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string;
+  GTrans: Boolean = False);
 // procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
 procedure ICQ_SearchPoUIN_new(SUIN: string);
 procedure ICQ_SearchPoEmail_new(SEmail: string);
@@ -710,28 +712,28 @@ begin
         Result := Result + '<br><font color=clred>' + RosterItem.SubItems[31] + '</font>';
       // Время подключения
       if RosterItem.SubItems[30] <> EmptyStr then
-        Result := Result + '<br>' + ConnTimeL + ' ' + RosterItem.SubItems[30];
+        Result := Result + '<br>' + ConnTimeL + BN + RosterItem.SubItems[30];
       // Дата регистрации UIN
       if RosterItem.SubItems[26] <> EmptyStr then
-        Result := Result + '<br>' + RegDateL + ' ' + RosterItem.SubItems[26];
+        Result := Result + '<br>' + RegDateL + BN + RosterItem.SubItems[26];
       // Версия протокола
       if RosterItem.SubItems[25] <> EmptyStr then
-        Result := Result + '<br>' + ProtoVerL + ' ' + RosterItem.SubItems[25];
+        Result := Result + '<br>' + ProtoVerL + BN + RosterItem.SubItems[25];
       // Клиент
       if RosterItem.SubItems[32] <> EmptyStr then
-        Result := Result + '<br>' + ClientVariableL + ' ' + RosterItem.SubItems[32];
+        Result := Result + '<br>' + ClientVariableL + BN + RosterItem.SubItems[32];
       // Телефон
       if RosterItem.SubItems[9] <> EmptyStr then
-        Result := Result + '<br>' + CellularPhoneL + ' ' + RosterItem.SubItems[9];
+        Result := Result + '<br>' + CellularPhoneL + BN + RosterItem.SubItems[9];
       // Заметка
       if RosterItem.SubItems[10] <> EmptyStr then
-        Result := Result + '<br>' + NoteL + ' ' + RosterItem.SubItems[10];
+        Result := Result + '<br>' + NoteL + BN + RosterItem.SubItems[10];
       // Email
       if RosterItem.SubItems[11] <> EmptyStr then
-        Result := Result + '<br>' + EmailL + ' ' + RosterItem.SubItems[11];
+        Result := Result + '<br>' + EmailL + BN + RosterItem.SubItems[11];
       // Флаг подключения
       if RosterItem.SubItems[24] <> EmptyStr then
-        Result := Result + '<br>' + ConnectFlagL + ' ' + RosterItem.SubItems[20] + ' ' + RosterItem.SubItems[24];
+        Result := Result + '<br>' + ConnectFlagL + BN + RosterItem.SubItems[20] + BN + RosterItem.SubItems[24];
     end;
 end;
 
@@ -843,8 +845,8 @@ begin
                   NotifyPanel.Font.Color := ClWindowText;
                   if RosterItem <> nil then
                     begin
-                      if RosterItem.SubItems[8] <> EmptyStr then
-                        NotifyPanel.Caption := RosterItem.SubItems[8]
+                      if RosterItem.SubItems[32] <> EmptyStr then
+                        NotifyPanel.Caption := RosterItem.SubItems[32]
                       else
                         NotifyPanel.Caption := '...';
                     end
@@ -1379,7 +1381,7 @@ begin
                     begin
                       // Если идентификатор группы в которую добавляем новый контакт совпадает
                       // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
-                      if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = 'Icq') then
+                      if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = S_Icq) then
                         CliDL.Add(Items[I].SubItems[4]);
                       // Получаем название группы в которую добавляем контакт
                       if Items[I].Caption = ICQ_Add_GroupId then
@@ -1408,7 +1410,7 @@ begin
                 SubItems[0] := ICQ_Add_Nick;
                 SubItems[1] := ICQ_Add_GroupId;
                 SubItems[2] := 'both';
-                SubItems[3] := 'Icq';
+                SubItems[3] := S_Icq;
                 SubItems[4] := ICQ_Add_cId;
                 SubItems[5] := '0000';
                 SubItems[6] := '9';
@@ -1416,7 +1418,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении контакта
-            DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
+            DAShow(S_InfoHead, AddContactOKL, EmptyStr, 133, 3, 0);
           end;
         $0E: begin
             // Создаём список для занесения в него всех идентификаторов контактов
@@ -1429,7 +1431,7 @@ begin
                     begin
                       // Если идентификатор группы в которую добавляем новый контакт совпадает
                       // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
-                      if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = 'Icq') then
+                      if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = S_Icq) then
                         CliDL.Add(Items[I].SubItems[4]);
                       // Получаем название группы в которую добавляем контакт
                       if Items[I].Caption = ICQ_Add_GroupId then
@@ -1464,7 +1466,7 @@ begin
                 SubItems[0] := ICQ_Add_Nick;
                 SubItems[1] := ICQ_Add_GroupId;
                 SubItems[2] := 'none';
-                SubItems[3] := 'Icq';
+                SubItems[3] := S_Icq;
                 SubItems[4] := ICQ_Add_cId;
                 SubItems[5] := '0000';
                 SubItems[6] := '80';
@@ -1473,7 +1475,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении контакта
-            DAShow(InformationHead, AddContactOKL, EmptyStr, 133, 3, 0);
+            DAShow(S_InfoHead, AddContactOKL, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1482,7 +1484,7 @@ begin
             ICQ_Add_Contact_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об ошибке добавления нового контакта в серверный КЛ
-            DAShow(ErrorHead, AddContactErr4, EmptyStr, 134, 2, 0);
+            DAShow(S_Errorhead, AddContactErr4, EmptyStr, 134, 2, 0);
           end;
       end;
     end
@@ -1502,7 +1504,7 @@ begin
                       // Добавляем идентификаторы групп в список
                       if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
                         Continue;
-                      if (Items[I].SubItems[3] = 'Icq') and (Length(Items[I].Caption) = 4) then
+                      if (Items[I].SubItems[3] = S_Icq) and (Length(Items[I].Caption) = 4) then
                         CliDL.Add(Items[I].Caption);
                     end;
                 end;
@@ -1523,13 +1525,13 @@ begin
                 RosterForm.RosterItemSetFull(ListItemD);
                 // Обновляем субстроки
                 SubItems[1] := ICQ_Add_Nick;
-                SubItems[3] := 'Icq';
+                SubItems[3] := S_Icq;
                 SubItems[4] := ICQ_Add_GroupId;
               end;
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении группы
-            DAShow(InformationHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
+            DAShow(S_InfoHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1538,7 +1540,7 @@ begin
             ICQ_Add_Group_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об ошибке добавления новой группы в серверный КЛ
-            DAShow(ErrorHead, AddNewGroupErr2, EmptyStr, 134, 2, 0);
+            DAShow(S_Errorhead, AddNewGroupErr2, EmptyStr, 134, 2, 0);
           end;
       end;
     end
@@ -1557,7 +1559,7 @@ begin
                       // Добавляем идентификаторы групп в список
                       if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
                         Continue;
-                      if (Items[I].SubItems[3] = 'Icq') and (Length(Items[I].Caption) = 4) then
+                      if (Items[I].SubItems[3] = S_Icq) and (Length(Items[I].Caption) = 4) then
                         CliDL.Add(Items[I].Caption);
                     end;
                 end;
@@ -1571,7 +1573,7 @@ begin
             ICQ_Group_Delete_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об успешном добавлении группы
-            DAShow(InformationHead, DellGroupOKL, EmptyStr, 133, 3, 0);
+            DAShow(S_InfoHead, DellGroupOKL, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1579,7 +1581,7 @@ begin
             ICQ_AddEnd;
             ICQ_Group_Delete_Phaze := False;
             ICQ_SSI_Phaze := False;
-            DAShow(ErrorHead, DellGroupErrL, EmptyStr, 134, 2, 0);
+            DAShow(S_Errorhead, DellGroupErrL, EmptyStr, 134, 2, 0);
           end;
       end;
     end;
@@ -1781,6 +1783,7 @@ var
   RosterItem: TListItem;
   CLContact: TButtonItem;
   ChatPage: TToolButton;
+  XmlFile: TrXML;
 begin
   // Сканируем тело пакета на нужные нам TLV
   case HexToInt(Text2Hex(NextData(PktData, 2))) of
@@ -1790,7 +1793,7 @@ begin
           begin
             ICQ_LoginPassword := ICQ_ChangePassword;
             // Информируем об успешной смене пароля
-            DAShow(InformationHead, PassChangeOKL, EmptyStr, 133, 3, 0);
+            DAShow(S_InfoHead, PassChangeOKL, EmptyStr, 133, 3, 0);
             Exit;
           end;
       end;
@@ -1799,7 +1802,7 @@ begin
         if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
           begin
             SendFLAP('2', ICQ_CreateShortStatusPkt);
-            DAShow(InformationHead, AnketaSaveOKL, EmptyStr, 133, 3, 0);
+            DAShow(S_InfoHead, AnketaSaveOKL, EmptyStr, 133, 3, 0);
             Exit;
           end;
       end;
@@ -1825,11 +1828,11 @@ begin
               EndSearch);
             Exit;
           end;
-        XLog('ICQ get | ' + Log_Contact_Info);
+        XLog(Log_ICQGet + Log_Contact_Info);
         // Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := BMSearch(0, PktData, #$00#$32#$00);
         if BMRes > -1 then
-          XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, BMRes - 1))))
+          XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, BMRes - 1))))
         else
           Exit;
         // Сбрасываем все переменные
@@ -1871,22 +1874,22 @@ begin
               $0050: // Получаем Email
                 begin
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  Email := Utf8Decode(NextData(PktData, MsgLen));
+                  Email := Trim(Utf8ToString(NextData(PktData, MsgLen)));
                 end;
               $0064: // Получаем Имя
                 begin
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  First := Utf8Decode(NextData(PktData, MsgLen));
+                  First := Trim(Utf8ToString(NextData(PktData, MsgLen)));
                 end;
               $006E: // Получаем Фамилию
                 begin
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  Last := Utf8Decode(NextData(PktData, MsgLen));
+                  Last := Trim(Utf8ToString(NextData(PktData, MsgLen)));
                 end;
               $0078: // Получаем Ник
                 begin
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  Nick := Utf8Decode(NextData(PktData, MsgLen));
+                  Nick := Trim(Utf8ToString(NextData(PktData, MsgLen)));
                 end;
               $0082: // Получаем Пол
                 begin
@@ -1934,24 +1937,24 @@ begin
                             $0078: // Получаем Штат
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                State := Utf8Decode(NextData(SubPkt, MsgLen));
+                                State := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $006E: // Получаем Город
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                City := Utf8Decode(NextData(SubPkt, MsgLen));
+                                City := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $0064: // Получаем Адрес
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                Address := Utf8Decode(NextData(SubPkt, MsgLen));
+                                Address := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end
                             else
                               begin
                                 // Если пакет содержит другие TLV, то пропускаем их
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt,
-                                        MsgLen))));
+                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen)))
+                                  );
                               end;
                           end;
                         end;
@@ -2013,7 +2016,7 @@ begin
               $0186: // Получаем "О себе..."
                 begin
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  About := Utf8Decode(NextData(PktData, MsgLen));
+                  About := Trim(Utf8ToString(NextData(PktData, MsgLen)));
                 end;
               $00A0: // Получаем суб TLV о месте рождения
                 begin
@@ -2037,19 +2040,19 @@ begin
                             $0078: // Получаем Штат
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                OState := Utf8Decode(NextData(SubPkt, MsgLen));
+                                OState := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $006E: // Получаем Город
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                OCity := Utf8Decode(NextData(SubPkt, MsgLen));
+                                OCity := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end
                             else
                               begin
                                 // Если пакет содержит другие TLV, то пропускаем их
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt,
-                                        MsgLen))));
+                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen)))
+                                  );
                               end;
                           end;
                         end;
@@ -2080,22 +2083,22 @@ begin
                             $00C8: // Получаем Зип
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                WZip := Utf8Decode(NextData(SubPkt, MsgLen));
+                                WZip := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $00BE: // Получаем Штат
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                WState := Utf8Decode(NextData(SubPkt, MsgLen));
+                                WState := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $00B4: // Получаем Город
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                WCity := Utf8Decode(NextData(SubPkt, MsgLen));
+                                WCity := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $00AA: // Получаем Адрес
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                WAddress := Utf8Decode(NextData(SubPkt, MsgLen));
+                                WAddress := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $0082: // Получаем Профессию
                               begin
@@ -2105,29 +2108,29 @@ begin
                             $0078: // Получаем Сайт
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                WSite := Utf8Decode(NextData(SubPkt, MsgLen));
+                                WSite := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $007D: // Получаем Отдел
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                Department := Utf8Decode(NextData(SubPkt, MsgLen));
+                                Department := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $006E: // Получаем Компанию
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                Company := Utf8Decode(NextData(SubPkt, MsgLen));
+                                Company := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end;
                             $0064: // Получаем Позицию
                               begin
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                Position := Utf8Decode(NextData(SubPkt, MsgLen));
+                                Position := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               end
                             else
                               begin
                                 // Если пакет содержит другие TLV, то пропускаем их
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt,
-                                        MsgLen))));
+                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen)))
+                                  );
                               end;
                           end;
                         end;
@@ -2149,13 +2152,13 @@ begin
                           NextData(SubPkt, 4); // Пропускаем данные
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           if I = 1 then
-                            Email1 := Utf8Decode(NextData(SubPkt, MsgLen));
+                            Email1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           if I = 2 then
-                            Email2 := Utf8Decode(NextData(SubPkt, MsgLen));
+                            Email2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           if I = 3 then
-                            Email3 := Utf8Decode(NextData(SubPkt, MsgLen));
+                            Email3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           // Пропускаем какие-то данные
-                          XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(SubPkt, 12))));
+                          XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(SubPkt, 12))));
                         end;
                     end
                     // Пропускаем пустые данные
@@ -2176,25 +2179,25 @@ begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           if I = 1 then
                             begin
-                              Int1 := Utf8Decode(NextData(SubPkt, MsgLen));
+                              Int1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               NextData(SubPkt, 4);
                               I1 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                             end;
                           if I = 2 then
                             begin
-                              Int2 := Utf8Decode(NextData(SubPkt, MsgLen));
+                              Int2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               NextData(SubPkt, 4);
                               I2 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                             end;
                           if I = 3 then
                             begin
-                              Int3 := Utf8Decode(NextData(SubPkt, MsgLen));
+                              Int3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               NextData(SubPkt, 4);
                               I3 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                             end;
                           if I = 4 then
                             begin
-                              Int4 := Utf8Decode(NextData(SubPkt, MsgLen));
+                              Int4 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                               NextData(SubPkt, 4);
                               I4 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                             end;
@@ -2217,17 +2220,17 @@ begin
                           NextData(SubPkt, 4);
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           if I = 1 then
-                            Phone := Utf8Decode(NextData(SubPkt, MsgLen));
+                            Phone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           if I = 2 then
-                            Fax := Utf8Decode(NextData(SubPkt, MsgLen));
+                            Fax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           if I = 3 then
-                            Cellular := Utf8Decode(NextData(SubPkt, MsgLen));
+                            Cellular := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           if I = 4 then
-                            WPhone := Utf8Decode(NextData(SubPkt, MsgLen));
+                            WPhone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           if I = 5 then
-                            WFax := Utf8Decode(NextData(SubPkt, MsgLen));
+                            WFax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           // Пропускаем какие-то данные
-                          XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(SubPkt, 6))));
+                          XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(SubPkt, 6))));
                         end;
                     end
                     // Пропускаем пустые данные
@@ -2237,7 +2240,7 @@ begin
               $00FA: // Получаем Домашнюю страничку
                 begin
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  HomePage := Utf8Decode(NextData(PktData, MsgLen));
+                  HomePage := Trim(Utf8ToString(NextData(PktData, MsgLen)));
                 end;
               $0212: // Получаем ВебАваре флаг
                 begin
@@ -2265,7 +2268,7 @@ begin
                 begin
                   // Если пакет содержит другие TLV, то пропускаем их
                   MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, MsgLen))));
+                  XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, MsgLen))));
                 end;
             end;
           end;
@@ -2278,12 +2281,12 @@ begin
             if Assigned(AccountToNick) then
               begin
                 // Если такого контакта ещё нет в списке ников, то добавляем его ник
-                if AccountToNick.IndexOf('Icq ' + UIN) = -1 then
+                if AccountToNick.IndexOf(S_Icq + BN + UIN) = -1 then
                   begin
                     // Если ник не пустой и ник не равен UIN
                     if (Nick > EmptyStr) and (Nick <> UIN) then
                       begin
-                        AccountToNick.Add('Icq ' + UIN);
+                        AccountToNick.Add(S_Icq + BN + UIN);
                         AccountToNick.Add(Nick);
                         AccountToNick.SaveToFile(ProfilePath + Nick_BD_FileName, TEncoding.Unicode);
                       end;
@@ -2311,137 +2314,140 @@ begin
                   end;
               end;
             // Сохраняем полученные данные в локальный файл инфы о контакте
-            with TrXML.Create() do
-              try
-                if OpenKey('profile\name-info', True) then
-                  try
-                    WriteString('nick', Nick);
-                    WriteString('first', First);
-                    WriteString('last', Last);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\personal-info', True) then
-                  try
-                    WriteInteger('gender', Gender);
-                    WriteBool('auth', Auth);
-                    WriteBool('webaware', WebAware);
-                    WriteString('homapage', HomePage);
-                    WriteString('lastchange', LastUpdateInfo);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\home-info', True) then
-                  try
-                    WriteString('address', Address);
-                    WriteString('city', City);
-                    WriteString('state', State);
-                    WriteString('zip', Zip);
-                    WriteInteger('country', Country);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\orig-home-info', True) then
-                  try
-                    WriteInteger('country', OCountry);
-                    WriteString('city', OCity);
-                    WriteString('state', OState);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\lang-info', True) then
-                  try
-                    WriteInteger('lang1', Lang1);
-                    WriteInteger('lang2', Lang2);
-                    WriteInteger('lang3', Lang3);
-                  finally
-                    CloseKey;
-                  end;
-                if OpenKey('profile\phone-info', True) then
-                  try
-                    WriteString('phone1', Phone);
-                    WriteString('phone2', Fax);
-                    WriteString('phone3', Cellular);
-                    WriteString('phone4', WPhone);
-                    WriteString('phone5', WFax);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\work-info', True) then
-                  try
-                    WriteString('city', WCity);
-                    WriteString('state', WState);
-                    WriteString('zip', WZip);
-                    WriteString('address', WAddress);
-                    WriteString('corp', Company);
-                    WriteString('dep', Department);
-                    WriteString('prof', Position);
-                    WriteString('site', WSite);
-                    WriteInteger('country', WCountry);
-                    WriteInteger('occup', Occupation);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\interests-info', True) then
-                  try
-                    WriteString('int1', Int1);
-                    WriteString('int2', Int2);
-                    WriteString('int3', Int3);
-                    WriteString('int4', Int4);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\about-info', True) then
-                  try
-                    WriteString('info', Base64Encode(About));
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\age-info', True) then
-                  try
-                    WriteInteger('age', Age);
-                    WriteInteger('day', IDay);
-                    WriteInteger('month', IMonth);
-                    WriteInteger('year', IYear);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\emails-info', True) then
-                  try
-                    WriteString('email1', Email1);
-                    WriteString('email2', Email2);
-                    WriteString('email3', Email3);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\interests-id-info', True) then
-                  try
-                    WriteInteger('int_id1', I1);
-                    WriteInteger('int_id2', I2);
-                    WriteInteger('int_id3', I3);
-                    WriteInteger('int_id4', I4);
-                  finally
-                    CloseKey();
-                  end;
-                if OpenKey('profile\personal-x-info', True) then
-                  try
-                    WriteInteger('marital', Marital);
-                    WriteInteger('sexual', Sexual);
-                    WriteInteger('height', Height);
-                    WriteInteger('relig', Relig);
-                    WriteInteger('smok', Smok);
-                    WriteInteger('hair', Hair);
-                    WriteInteger('children', Children);
-                  finally
-                    CloseKey();
-                  end;
-                // Создаём необходимые папки
-                ForceDirectories(ProfilePath + AnketaFileName);
-                // Записываем сам файл
-                SaveToFile(ProfilePath + AnketaFileName + 'Icq ' + UIN + '.xml');
-              finally
-                Free();
-              end;
+            XmlFile := TrXML.Create;
+            try
+              with XmlFile do
+                begin
+                  if OpenKey(RS_NameInfo, True) then
+                    try
+                      WriteString(RS_Nick, URLEncode(Nick));
+                      WriteString(RS_First, URLEncode(First));
+                      WriteString(RS_Last, URLEncode(Last));
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_PerInfo, True) then
+                    try
+                      WriteInteger(RS_Gender, Gender);
+                      WriteBool(RS_Auth, Auth);
+                      WriteBool(RS_WebAware, WebAware);
+                      WriteString(RS_HomePage, URLEncode(HomePage));
+                      WriteString(RS_LastChange, LastUpdateInfo);
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_HomeInfo, True) then
+                    try
+                      WriteString(RS_Address, URLEncode(Address));
+                      WriteString(RS_City, URLEncode(City));
+                      WriteString(RS_State, URLEncode(State));
+                      WriteString(RS_Zip, URLEncode(Zip));
+                      WriteInteger(RS_Country, Country);
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_OHomeInfo, True) then
+                    try
+                      WriteInteger(RS_Country, OCountry);
+                      WriteString(RS_City, URLEncode(OCity));
+                      WriteString(RS_State, URLEncode(OState));
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_LangInfo, True) then
+                    try
+                      WriteInteger(RS_Lang1, Lang1);
+                      WriteInteger(RS_Lang2, Lang2);
+                      WriteInteger(RS_Lang3, Lang3);
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_PhoneInfo, True) then
+                    try
+                      WriteString(RS_Phone1, URLEncode(Phone));
+                      WriteString(RS_Phone2, URLEncode(Fax));
+                      WriteString(RS_Phone3, URLEncode(Cellular));
+                      WriteString(RS_Phone4, URLEncode(WPhone));
+                      WriteString(RS_Phone5, URLEncode(WFax));
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_WorkInfo, True) then
+                    try
+                      WriteString(RS_City, URLEncode(WCity));
+                      WriteString(RS_State, URLEncode(WState));
+                      WriteString(RS_Zip, URLEncode(WZip));
+                      WriteString(RS_Address, URLEncode(WAddress));
+                      WriteString(RS_Corp, URLEncode(Company));
+                      WriteString(RS_Dep, URLEncode(Department));
+                      WriteString(RS_Prof, URLEncode(Position));
+                      WriteString(RS_Site, URLEncode(WSite));
+                      WriteInteger(RS_Country, WCountry);
+                      WriteInteger(RS_Occup, Occupation);
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_IntInfo, True) then
+                    try
+                      WriteString(RS_Int1, URLEncode(Int1));
+                      WriteString(RS_Int2, URLEncode(Int2));
+                      WriteString(RS_Int3, URLEncode(Int3));
+                      WriteString(RS_Int4, URLEncode(Int4));
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_AboutInfo, True) then
+                    try
+                      WriteString(RS_Info, URLEncode(About));
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_AgeInfo, True) then
+                    try
+                      WriteInteger(RS_Age, Age);
+                      WriteInteger(RS_Day, IDay);
+                      WriteInteger(RS_Month, IMonth);
+                      WriteInteger(RS_Year, IYear);
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_EmailsInfo, True) then
+                    try
+                      WriteString(RS_Email1, URLEncode(Email1));
+                      WriteString(RS_Email2, URLEncode(Email2));
+                      WriteString(RS_Email3, URLEncode(Email3));
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_IntIdInfo, True) then
+                    try
+                      WriteInteger(RS_IntId1, I1);
+                      WriteInteger(RS_IntId2, I2);
+                      WriteInteger(RS_IntId3, I3);
+                      WriteInteger(RS_IntId4, I4);
+                    finally
+                      CloseKey;
+                    end;
+                  if OpenKey(RS_PersInfo, True) then
+                    try
+                      WriteInteger(RS_Marital, Marital);
+                      WriteInteger(RS_Sexual, Sexual);
+                      WriteInteger(RS_Height, Height);
+                      WriteInteger(RS_Relig, Relig);
+                      WriteInteger(RS_Smok, Smok);
+                      WriteInteger(RS_Hair, Hair);
+                      WriteInteger(RS_Children, Children);
+                    finally
+                      CloseKey;
+                    end;
+                  // Создаём необходимые папки
+                  ForceDirectories(ProfilePath + AnketaFileName);
+                  // Записываем сам файл
+                  SaveToFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.xml');
+                end;
+            finally
+              FreeAndNil(XmlFile);
+            end;
             // Отображаем в окне информации о контакте полученные данные
             if Assigned(IcqContactInfoForm) then
               begin
@@ -2654,19 +2660,65 @@ begin
     end;
 end;
 
-procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string);
+procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string;
+  GTrans: Boolean = False);
+label
+  X;
 var
   Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   RosterItem: TListItem;
+  GtransMsg: Boolean;
+  XmlFile: TrXML;
 begin
-  // Если окно сообщений не было создано, то создаём его
-  if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(MainForm);
+  GtransMsg := False;
   // Если сообщение пустое, то выходим
   if Msg = EmptyStr then
     Exit;
+  // Если это сообщение с переводом, то переходим дальше
+  if GTrans then
+    goto X;
+  // Если окно сообщений не было создано, то создаём его
+  if not Assigned(ChatForm) then
+    ChatForm := TChatForm.Create(MainForm);
+  // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        if FileExists(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr') then
+          begin
+            LoadFromFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr');
+            // Сохраняем позицию окна
+            if OpenKey(S_UniqGT) then
+              try
+                // Изменяем направление перевода для исходящих и входящих сообщений
+                GtransMsg := ReadBool('enable');
+              finally
+                CloseKey;
+              end;
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
+  if GtransMsg then
+    begin
+      if not Assigned(GTransForm) then
+        GTransForm := TGTransForm.Create(MainForm);
+      with GTransForm.GtransListView.Items.Add do
+        begin
+          ImageIndex := 167;
+          SubItems.Add(UIN);
+          SubItems.Add(Msg);
+          SubItems.Add(S_Icq);
+        end;
+      // Выходим
+      Exit;
+    end;
   // Обрабатываем сообщение
+X :;
   Mess := Msg;
+  PopMsg := Mess;
   CheckMessage_BR(Mess);
   ChatForm.CheckMessage_ClearTag(Mess);
   PopMsg := Mess;
@@ -2691,7 +2743,7 @@ begin
   else // Если такой контакт не найден в Ростере, то добавляем его
     begin
       // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-      Nick := SearchNickInCash('Icq', UIN);
+      Nick := SearchNickInCash(S_Icq, UIN);
       // Дата сообщения
       MsgD := Nick + ' [' + DateTimeChatMess + ']';
       // Ищем группу "Не в списке" в Ростере
@@ -2716,7 +2768,7 @@ begin
           SubItems[0] := Nick;
           SubItems[1] := 'NoCL';
           SubItems[2] := 'none';
-          SubItems[3] := 'Icq';
+          SubItems[3] := S_Icq;
           SubItems[6] := '214';
           SubItems[15] := PopMsg;
           SubItems[35] := '0';
@@ -2725,9 +2777,12 @@ begin
             if ICQ_Work_Phaze then
               ICQ_ReqInfo_New_Pkt(UIN);
         end;
+      // Запускаем таймер задержку событий Ростера
+      MainForm.JvTimerList.Events[11].Enabled := False;
+      MainForm.JvTimerList.Events[11].Enabled := True;
     end;
   // Записываем история в файл истории с этим контактов
-  HistoryFile := ProfilePath + HistoryFileName + 'Icq ' + ICQ_LoginUIN + ' ' + UIN + '.htm';
+  HistoryFile := ProfilePath + HistoryFileName + S_Icq + BN + ICQ_LoginUIN + BN + UIN + '.htm';
   SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
   // Добавляем сообщение в текущий чат
   RosterItem.SubItems[36] := 'X';
@@ -2756,8 +2811,8 @@ begin
     $0001: begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        XLog('ICQ get | ' + Log_ReqMessage + UIN);
-        XLog('ICQ get | ' + Log_Msg_Chanel + TLV);
+        XLog(Log_ICQGet + Log_ReqMessage + UIN);
+        XLog(Log_ICQGet + Log_Msg_Chanel + TLV);
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -2770,42 +2825,42 @@ begin
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   UserClass := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+                  XLog(Log_ICQParsing + Log_UserClass + UserClass);
                 end;
               $0006: // Статус
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   Status := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_Status + Status);
+                  XLog(Log_ICQParsing + Log_Status + Status);
                 end;
               $0005: // Дата регистраций UIN
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+                  XLog(Log_ICQParsing + Log_UIN_RegTime + TimeReg);
                 end;
               $001D: // Аватар хэш и другие доп. статусы
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   IconHash := NextData(PktData, Len);
-                  XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+                  XLog(Log_ICQParsing + Log_Icon_Hash + RN + Dump(IconHash));
                 end;
               $000F: // Время в сети
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+                  XLog(Log_ICQParsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
                 end;
               $0003: // Время подключения
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+                  XLog(Log_ICQParsing + Log_ConnTime + ConnTime);
                 end
               else
                 begin
                   // Если есть другие TLV, то пропускаем их
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+                  XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
                 end;
             end;
           end;
@@ -2832,14 +2887,14 @@ begin
                   if CharsetNumber = $0002 then
                     Msg := UCS2BEToStr(Msg);
                   if Msg <> EmptyStr then
-                    XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
+                    XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
                   Msg := RTF2Plain(Msg);
                 end
               else
                 begin
                   // Если есть другие TLV, то пропускаем их
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+                  XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
                 end;
             end;
           end;
@@ -2847,8 +2902,8 @@ begin
     $0002, $0005, $0006: begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        XLog('ICQ get | ' + Log_ReqMessage + UIN);
-        XLog('ICQ get | ' + Log_Msg_Chanel + TLV);
+        XLog(Log_ICQGet + Log_ReqMessage + UIN);
+        XLog(Log_ICQGet + Log_Msg_Chanel + TLV);
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -2860,37 +2915,37 @@ begin
               $0001: begin // Класс контакта (вдруг админ постучит)
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   UserClass := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+                  XLog(Log_ICQParsing + Log_UserClass + UserClass);
                 end;
               $0006: begin // Статус
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   Status := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_Status + Status);
+                  XLog(Log_ICQParsing + Log_Status + Status);
                 end;
               $0005: begin // Дата регистраций UIN
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+                  XLog(Log_ICQParsing + Log_UIN_RegTime + TimeReg);
                 end;
               $001D: begin // Аватар хэш и другие доп. статусы
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   IconHash := NextData(PktData, Len);
-                  XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+                  XLog(Log_ICQParsing + Log_Icon_Hash + RN + Dump(IconHash));
                 end;
               $000F: begin // Время в сети
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+                  XLog(Log_ICQParsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
                 end;
               $0003: begin // Время подключения
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+                  XLog(Log_ICQParsing + Log_ConnTime + ConnTime);
                 end
               else
                 begin
                   // Если есть другие TLV, то пропускаем их
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+                  XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
                 end;
             end;
           end;
@@ -2918,11 +2973,11 @@ begin
                         $0004: begin // Внешний IP
                             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                             ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                            XLog('ICQ parsing | ' + Log_Ext_IP + ExtIP);
+                            XLog(Log_ICQParsing + Log_Ext_IP + ExtIP);
                           end;
                         $0005: begin // Внутренний порт
                             IntPort := IntToStr(HexToInt(Text2Hex(NextData(PktData, 4))));
-                            XLog('ICQ parsing | ' + Log_Int_IP + IntIP + ':' + IntPort);
+                            XLog(Log_ICQParsing + Log_Int_IP + IntIP + ':' + IntPort);
                           end;
                         $2711: begin // Сообщение
                             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
@@ -2935,7 +2990,7 @@ begin
                             NextData(SubData, 2); // FFSeq
                             NextData(SubData, 16);
                             MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
-                            XLog('ICQ parsing | ' + Log_Msg_Type + IntToHex(MsgType, 1));
+                            XLog(Log_ICQParsing + Log_Msg_Type + IntToHex(MsgType, 1));
                             NextData(SubData, 1); // MsgFlag
                             NextData(SubData, 2); // status code
                             NextData(SubData, 2); // priority code
@@ -2955,9 +3010,9 @@ begin
                               begin
                                 MsgLen := Swap16(HexToInt(Text2Hex(NextData(SubData, 2))));
                                 Dec(MsgLen);
-                                Msg := Utf8Decode(NextData(SubData, MsgLen));
+                                Msg := Utf8ToString(NextData(SubData, MsgLen));
                                 if Msg <> EmptyStr then
-                                  XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
+                                  XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
                                 if Length(Msg) > 0 then
                                   begin
                                     if MsgType = M_PLAIN then
@@ -2977,7 +3032,7 @@ begin
                           begin
                             // Если есть другие TLV, то пропускаем их
                             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
                           end;
                       end;
                     end;
@@ -2986,7 +3041,7 @@ begin
                 begin
                   // Если есть другие TLV, то пропускаем их
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, Len))));
+                  XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, Len))));
                 end;
             end;
           end;
@@ -2994,8 +3049,8 @@ begin
     $0004: begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        XLog('ICQ get | ' + Log_ReqMessage + UIN);
-        XLog('ICQ get | ' + Log_Msg_Chanel + TLV);
+        XLog(Log_ICQGet + Log_ReqMessage + UIN);
+        XLog(Log_ICQGet + Log_Msg_Chanel + TLV);
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3007,37 +3062,37 @@ begin
               $0001: begin // Класс контакта (вдруг админ постучит)
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   UserClass := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+                  XLog(Log_ICQParsing + Log_UserClass + UserClass);
                 end;
               $0006: begin // Статус
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   Status := Text2Hex(NextData(PktData, Len));
-                  XLog('ICQ parsing | ' + Log_Status + Status);
+                  XLog(Log_ICQParsing + Log_Status + Status);
                 end;
               $0005: begin // Дата регистраций UIN
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+                  XLog(Log_ICQParsing + Log_UIN_RegTime + TimeReg);
                 end;
               $001D: begin // Аватар хэш и другие доп. статусы
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   IconHash := NextData(PktData, Len);
-                  XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+                  XLog(Log_ICQParsing + Log_Icon_Hash + RN + Dump(IconHash));
                 end;
               $000F: begin // Время в сети
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+                  XLog(Log_ICQParsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
                 end;
               $0003: begin // Время подключения
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+                  XLog(Log_ICQParsing + Log_ConnTime + ConnTime);
                 end
               else
                 begin
                   // Если есть другие TLV, то пропускаем их
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                  XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+                  XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
                 end;
             end;
           end;
@@ -3047,13 +3102,13 @@ begin
             NextData(PktData, 2);
             NextData(PktData, 4); // UIN
             MsgType := HexToInt(Text2Hex(NextData(PktData, 1)));
-            XLog('ICQ parsing | ' + Log_Msg_Type + IntToHex(MsgType, 1));
+            XLog(Log_ICQParsing + Log_Msg_Type + IntToHex(MsgType, 1));
             NextData(PktData, 1); // MsgFlag
             MsgLen := Swap16(HexToInt(Text2Hex(NextData(PktData, 2))));
             Dec(MsgLen);
-            Msg := Utf8Decode(NextData(PktData, MsgLen));
+            Msg := Utf8ToString(NextData(PktData, MsgLen));
             if Msg <> EmptyStr then
-              XLog('ICQ parsing | ' + Log_Msg_Text + RN + Msg);
+              XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
             if Length(Msg) > 0 then
               begin
                 if MsgType = M_PLAIN then
@@ -3075,7 +3130,7 @@ begin
       end
     else
       begin
-        XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(PktData)));
+        XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(PktData)));
         Exit;
       end;
   end;
@@ -3085,7 +3140,6 @@ end;
 
 procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash,
   ConnTime: string);
-
 var
   StatusIcoInd, IXStat, IClient: Integer;
   BartID, BartLength, BartSubLen: Integer;
@@ -3126,12 +3180,12 @@ begin
             STATUS_STR: // Текст x-статуса
               begin
                 BartSubLen := HexToInt(Text2Hex(NextData(IconHash, 2)));
-                IXText := Utf8Decode(NextData(IconHash, BartSubLen));
+                IXText := Utf8ToString(NextData(IconHash, BartSubLen));
                 if BartLength - BartSubLen > 0 then
                   NextData(IconHash, BartLength - BartSubLen); // Тупые байты
               end;
           else begin
-              XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(IconHash, BartLength))));
+              XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(IconHash, BartLength))));
             end;
           end;
         end;
@@ -3403,7 +3457,7 @@ begin
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   // Получаем UIN чей статус нам прислал сервак
   UIN := NextData(PktData, Len);
-  XLog('ICQ get | ' + Log_User_Online_Event + UIN);
+  XLog(Log_ICQGet + Log_User_Online_Event + UIN);
   // Пропускаем варнинглэвел (в icq всегда равен нулю)
   NextData(PktData, 2);
   // Получаем количество вложенных в пакет TLV
@@ -3420,7 +3474,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             UserClass := Text2Hex(NextData(PktData, Len));
-            XLog('ICQ parsing | ' + Log_UserClass + UserClass);
+            XLog(Log_ICQParsing + Log_UserClass + UserClass);
           end;
         $000C: // DC информация
           begin
@@ -3430,36 +3484,36 @@ begin
             // Внутрений IP адрес и порт
             IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(DCInfo, 4)))));
             IntPort := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Int_IP + IntIP + ':' + IntPort);
+            XLog(Log_ICQParsing + Log_Int_IP + IntIP + ':' + IntPort);
             // Флаг подключения и версия протокола
             ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
-            XLog('ICQ parsing | ' + Log_ConnFlag + ConnFlag);
+            XLog(Log_ICQParsing + Log_ConnFlag + ConnFlag);
             ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
-            XLog('ICQ parsing | ' + Log_ProtoVer + ProtoVer);
+            XLog(Log_ICQParsing + Log_ProtoVer + ProtoVer);
             // Дополнительные поля для как правило для нужд программистов
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 8))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 6))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 8))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 6))));
           end;
         $000A: // Внешний IP адрес
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_Ext_IP + ExtIP);
+            XLog(Log_ICQParsing + Log_Ext_IP + ExtIP);
           end;
         $0006: // Статус
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             Status := Text2Hex(NextData(PktData, Len));
-            XLog('ICQ parsing | ' + Log_Status + Status);
+            XLog(Log_ICQParsing + Log_Status + Status);
           end;
         $0005: // Дата регистраций UIN
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_UIN_RegTime + TimeReg);
+            XLog(Log_ICQParsing + Log_UIN_RegTime + TimeReg);
           end;
         $0019: // Укороченные капабилитисы
           begin
@@ -3469,7 +3523,7 @@ begin
             Temp2 := EmptyStr;
             while Length(Temp1) > 0 do
               Temp2 := Temp2 + NextData(Temp1, 4) + RN;
-            XLog('ICQ parsing | ' + 'CapsId:' + RN + Temp2);
+            XLog(Log_ICQParsing + 'CapsId:' + RN + Temp2);
           end;
         $000D: // Полные капабилитисы
           begin
@@ -3479,30 +3533,30 @@ begin
             Temp2 := EmptyStr;
             while Length(Temp1) > 0 do
               Temp2 := Temp2 + NextData(Temp1, 32) + RN;
-            XLog('ICQ parsing | ' + 'Caps:' + RN + Temp2);
+            XLog(Log_ICQParsing + 'Caps:' + RN + Temp2);
           end;
         $001D: // Аватар хэш и другие доп. статусы
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             IconHash := NextData(PktData, Len);
-            XLog('ICQ parsing | ' + Log_Icon_Hash + RN + Dump(IconHash));
+            XLog(Log_ICQParsing + Log_Icon_Hash + RN + Dump(IconHash));
           end;
         $000F: // Время в сети
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog('ICQ parsing | ' + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
+            XLog(Log_ICQParsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)));
           end;
         $0003: // Время подключения
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_ConnTime + ConnTime);
+            XLog(Log_ICQParsing + Log_ConnTime + ConnTime);
           end
         else
           begin
             // Если есть другие TLV, то пропускаем их
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
           end;
       end;
     end;
@@ -3530,7 +3584,7 @@ begin
   // Получаем длинну UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   UIN := NextData(PktData, Len);
-  XLog('ICQ get | ' + Log_User_Offline_Event + UIN);
+  XLog(Log_ICQGet + Log_User_Offline_Event + UIN);
   // Ещё есть данные для расшифровки
 
   // Запускаем событие контакт онлайн со статусом оффлайн номер иконки 9
@@ -3670,7 +3724,7 @@ begin
         // Длинна записи
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
         // Получаем имя записи
-        QSN := Utf8Decode(NextData(PktData, Len));
+        QSN := Utf8ToString(NextData(PktData, Len));
         // Получаем идентификатор группы
         QGroupId := Text2Hex(NextData(PktData, 2));
         // Идентификатор записи
@@ -3696,7 +3750,7 @@ begin
                   SubItems[0] := QSN;
                   SubItems[1] := QGroupId;
                   SubItems[2] := 'both';
-                  SubItems[3] := 'Icq';
+                  SubItems[3] := S_Icq;
                   SubItems[4] := QID;
                   SubItems[5] := QType;
                   SubItems[6] := '9';
@@ -3708,7 +3762,7 @@ begin
                         $0131: // Ник контакта
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            QNick := Utf8Decode(NextData(SubData, Len));
+                            QNick := Utf8ToString(NextData(SubData, Len));
                             if QNick <> EmptyStr then
                               SubItems[0] := QNick;
                           end;
@@ -3747,7 +3801,7 @@ begin
                           begin
                             // Если пакет содержит другие TLV, то пропускаем их
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim
+                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim
                                 (Dump(NextData(SubData, Len))));
                           end;
                       end;
@@ -3768,7 +3822,7 @@ begin
                       RosterForm.RosterItemSetFull(ListItemD);
                       // Обновляем субстроки
                       SubItems[1] := HideContactGroupCaption;
-                      SubItems[3] := 'Icq';
+                      SubItems[3] := S_Icq;
                       SubItems[4] := QGroupId;
                     end;
                 end
@@ -3786,7 +3840,7 @@ begin
                       RosterForm.RosterItemSetFull(ListItemD);
                       // Обновляем субстроки
                       SubItems[1] := QSN;
-                      SubItems[3] := 'Icq';
+                      SubItems[3] := S_Icq;
                       SubItems[4] := QGroupId;
                     end;
                 end;
@@ -3818,12 +3872,12 @@ begin
                   // Обновляем субстроки
                   // Делаем поиск ника в кэше ников
                   if ICQ_Show_HideContacts then
-                    SubItems[0] := SearchNickInCash('Icq', QSN)
+                    SubItems[0] := SearchNickInCash(S_Icq, QSN)
                   else
                     SubItems[0] := QSN;
                   SubItems[1] := QGroupId;
                   SubItems[2] := 'none';
-                  SubItems[3] := 'Icq';
+                  SubItems[3] := S_Icq;
                   SubItems[4] := QID;
                   SubItems[5] := QType;
                   // Назначаем такому контакту серый неизвестный статус и иконку
@@ -3907,7 +3961,7 @@ begin
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim
+                        XLog(Log_ICQParsing + Log_Unk_Data + RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim
                             (Dump(NextData(SubData, Len))));
                       end;
                   end;
@@ -3957,7 +4011,7 @@ begin
     Exit;
   // При ошибочных данных инкапсулированных в пакет O_o
   if PktData[1] = #$00 then
-    XLog('ICQ parsing | ' + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, 8))));
+    XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, 8))));
   // Пропускаем наш UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   NextData(PktData, Len);
@@ -3973,7 +4027,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             MyConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_ConnTime + MyConnTime);
+            XLog(Log_ICQParsing + Log_ConnTime + MyConnTime);
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.ConnectTimeInfoEdit.Text := MyConnTime;
@@ -3982,7 +4036,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_UIN_RegTime + ICQ_MyUIN_RegTime);
+            XLog(Log_ICQParsing + Log_UIN_RegTime + ICQ_MyUIN_RegTime);
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
@@ -3991,7 +4045,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog('ICQ parsing | ' + Log_Ext_IP + ICQ_Online_IP);
+            XLog(Log_ICQParsing + Log_Ext_IP + ICQ_Online_IP);
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
@@ -3999,13 +4053,13 @@ begin
         $0028: begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ICQ_Connect_Count := IntToStr(HexToInt(Text2Hex(NextData(PktData, Len))));
-            XLog('ICQ parsing | ' + Log_Connect_Count + ICQ_Connect_Count);
+            XLog(Log_ICQParsing + Log_Connect_Count + ICQ_Connect_Count);
           end
         else
           begin
             // Если пакет содержит другие TLV, то пропускаем их
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog('ICQ parsing | ' + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
+            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))));
           end;
       end;
     end;
@@ -4031,7 +4085,7 @@ var
   State: TMd5Context;
   Digest: TMD5Digest;
 begin
-  XLog('ICQ parsing | ' + Log_MD5_Nonce + CKey);
+  XLog(Log_ICQParsing + Log_MD5_Nonce + CKey);
   // Уменьшаем длинну пароля до 8 символов (ограничение протокола ICQ)
   if Length(ICQ_LoginPassword) > 8 then
     Setlength(ICQ_LoginPassword, 8);
@@ -4064,11 +4118,11 @@ begin
   if RosterItem <> nil then
     Nick := RosterItem.SubItems[0];
   if Nick > EmptyStr then
-    Nick := InfoNickL + ' ' + Nick;
+    Nick := InfoNickL + BN + Nick;
   if IClient > EmptyStr then
-    Client := ClientL + ' ' + IClient;
+    Client := ClientL + BN + IClient;
   // Отображаем всплывающим сообщением статус контакта
-  DAShow(InformationHead, Nick + #13#10 + 'ICQ#: ' + UIN + #13#10 + StatusL + ' ' + IStatus + #13#10 + Client, EmptyStr, 133, IColor, 0);
+  DAShow(S_InfoHead, Nick + RN + 'ICQ#: ' + UIN + RN + StatusL + BN + IStatus + RN + Client, EmptyStr, 133, IColor, 0);
 end;
 
 function ICQ_NotifyAuthCookieError(ErrCode: string): string;
@@ -4210,7 +4264,7 @@ begin
     begin
       for I := 0 to Items.Count - 1 do
         begin
-          if Items[I].SubItems[3] = 'Icq' then
+          if Items[I].SubItems[3] = S_Icq then
             begin
               if Items[I].SubItems[6] <> '214' then
                 Items[I].SubItems[6] := '9';

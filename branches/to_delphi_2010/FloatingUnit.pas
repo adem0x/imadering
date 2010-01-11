@@ -46,13 +46,14 @@ type
     procedure WMNCHitTest(var Msg: TWMNCHitTest);
     message WM_NCHITTEST;
 
-    procedure CreateParams(var Params: TCreateParams); override;
-
     procedure WMNCRBUTTONDOWN(var Msg: TMessage);
     message WM_NCRBUTTONDOWN;
 
     procedure NCLBUTTONDBLCLK(var Msg: TMessage);
     message WM_NCLBUTTONDBLCLK;
+
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
 
   public
     { Public declarations }

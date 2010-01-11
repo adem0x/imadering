@@ -116,9 +116,9 @@ object SettingsForm: TSettingsForm
         Height = 359
         Caption = 'GeneralPage'
         object GeneralOptionGroupBox: TGroupBox
-          Left = 3
-          Top = 3
-          Width = 426
+          Left = 0
+          Top = 0
+          Width = 432
           Height = 99
           Caption = #1054#1073#1097#1080#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
           Font.Charset = DEFAULT_CHARSET

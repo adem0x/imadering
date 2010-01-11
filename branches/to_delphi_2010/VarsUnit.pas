@@ -28,6 +28,17 @@ const
   DTseconds = 1 / (SecsPerDay);
   DblClickTime = 0.6 * DTseconds;
   RN = #13#10;
+  BN = ' ';
+  S_Value = 'value';
+  S_UniqGT = 'uniq\gtrans';
+  S_Icq = 'Icq';
+  S_Jabber = 'Jabber';
+  S_Mra = 'Mra';
+
+  ChatCSS = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' +
+    'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
+    '.a { font: bold 11px tahoma, verdana; color: blue; }' + '.b { font: bold 11px tahoma, verdana; color: red; }' +
+    '.c { font: 12px tahoma, verdana; color: black; }' + '.d { font: bold 11px tahoma, verdana; color: green; }' + '</style>';
 
   SettingsFileName: string = 'Settings.xml';
   ProfilesFileName: string = 'Profiles.xml';
@@ -36,14 +47,87 @@ const
   AvatarFileName: string = 'Avatars\';
   HistoryFileName: string = 'History\';
   LangPath: string = 'Langs\%s.xml';
+  SmiliesPath: string = 'Smilies\%s\smilies.txt';
   ContactListFileName: string = 'Contacts.txt';
   Nick_BD_FileName: string = 'Nicks.txt';
+  QReplyFileName: string = 'QReply.txt';
+
+resourcestring
+  RS_NameInfo = 'profile\name-info';
+  RS_Nick = 'nick';
+  RS_First = 'first';
+  RS_Last = 'last';
+  RS_PerInfo = 'profile\personal-info';
+  RS_Gender = 'gender';
+  RS_Auth = 'auth';
+  RS_WebAware = 'webaware';
+  RS_HomePage = 'homapage';
+  RS_LastChange = 'lastchange';
+  RS_HomeInfo = 'profile\home-info';
+  RS_Address = 'address';
+  RS_City = 'city';
+  RS_State = 'state';
+  RS_Zip = 'zip';
+  RS_Country = 'country';
+  RS_OHomeInfo = 'profile\orig-home-info';
+  RS_LangInfo = 'profile\lang-info';
+  RS_Lang1 = 'lang1';
+  RS_Lang2 = 'lang2';
+  RS_Lang3 = 'lang3';
+  RS_PhoneInfo = 'profile\phone-info';
+  RS_Phone1 = 'phone1';
+  RS_Phone2 = 'phone2';
+  RS_Phone3 = 'phone3';
+  RS_Phone4 = 'phone4';
+  RS_Phone5 = 'phone5';
+  RS_WorkInfo = 'profile\work-info';
+  RS_Corp = 'corp';
+  RS_Dep = 'dep';
+  RS_Prof = 'prof';
+  RS_Site = 'site';
+  RS_Occup = 'occup';
+  RS_IntInfo = 'profile\interests-info';
+  RS_Int1 = 'int1';
+  RS_Int2 = 'int2';
+  RS_Int3 = 'int3';
+  RS_Int4 = 'int4';
+  RS_AboutInfo = 'profile\about-info';
+  RS_Info = 'info';
+  RS_AgeInfo = 'profile\age-info';
+  RS_Age = 'age';
+  RS_Day = 'day';
+  RS_Month = 'month';
+  RS_Year = 'year';
+  RS_EmailsInfo = 'profile\emails-info';
+  RS_Email1 = 'email1';
+  RS_Email2 = 'email2';
+  RS_Email3 = 'email3';
+  RS_IntIdInfo = 'profile\interests-id-info';
+  RS_IntId1 = 'int_id1';
+  RS_IntId2 = 'int_id2';
+  RS_IntId3 = 'int_id3';
+  RS_IntId4 = 'int_id4';
+  RS_PersInfo = 'profile\personal-x-info';
+  RS_Marital = 'marital';
+  RS_Sexual = 'sexual';
+  RS_Height = 'height';
+  RS_Relig = 'relig';
+  RS_Smok = 'smok';
+  RS_Hair = 'hair';
+  RS_Children = 'children';
+  RS_IcqReg = 'http://www.icq.com/register';
+  RS_MraReg = 'http://win.mail.ru/cgi-bin/signup';
+  RS_MaskPass = '----------------------';
+  RS_Login = 'login';
+  RS_Pass = 'password';
+  RS_SavePass = 'save-password';
+  RS_LangVars = 'language\vars';
 
 var
   // Переменные общие для всей программы
   MyPath: string;
   ProfilePath: string;
-  Profile: string;
+  Profile: string = '';
   CurrentIcons: string = 'Imadering';
   CurrentLang: string = 'ru';
   CurrentSmiles: string = 'Imadering';
@@ -61,7 +145,6 @@ var
   UpdateFile: TMemoryStream;
   NoReSave: Boolean = True;
   GroupHeaderColor: TColor = $00FFDEFF;
-  RoasterReady: Boolean = False;
   CollapseGroupsRestore: Boolean = True;
   CompresHistoryProcess: Boolean = False;
   FloatingFrm: TFloatingForm;
@@ -81,30 +164,69 @@ var
   SoundStartProgPath: string = '';
   SoundIncMsg: Boolean = True;
   SoundIncMsgPath: string = '';
+  SoundError: Boolean = True;
+  SoundErrorPath: string = '';
+  SoundEvent: Boolean = True;
+  SoundEventPath: string = '';
+  SoundOpen: Boolean = True;
+  SoundOpenPath: string = '';
+
+  // Http прокси для сокетов протоколов
+  HttpProxy_Enable: Boolean = False;
+  HttpProxy_Address: string;
+  HttpProxy_Port: string;
+  HttpProxy_Auth: Boolean = False;
+  HttpProxy_Login: string;
+  HttpProxy_Password: string;
+
+  // Переменные оформления всплывающих подсказок
+  FDAOptions: TJvDesktopAlertOptions;
+  DACount: Integer = 0;
+  DATimeShow: Integer = 7000;
+  DAPos: Integer = 3;
+  DAStyle: Integer = 0;
+
+  // Переменные для окна чата
+  NoAvatar: TImage;
+  OutMessage2: TMemoryStream;
+  OutMessage3: TMemoryStream;
+  XStatusImg: TBitmap;
+  XStatusMem: TMemoryStream;
+  QReplyAutoSend: Boolean = False;
+  SmilesList: TStringList;
+  InMessList: TStringList;
+  TextSmilies: Boolean = False;
+  YouAt: string = 'I';
+  ChatFontSize: string = '9';
+  GetCityPanel: string;
+  GetAgePanel: string;
 
   // Переменные для языка
-  RestoreFromTrayStr: string;
-  HideInTrayStr: string;
-  RestoreProfileFromTrayStr: string;
-  HideProfileInTrayStr: string;
-
-  DevelMess: string = 'Данная функция находится в разработке! Следите за обновлениями проекта.';
-  FirstStartNextButton: string = 'Далее';
-  FirstStartProtoSelectAlert: string = 'Не выбран ни один протокол! В таком случае протокол ICQ будет выбран автоматически.';
-  NewVersionIMaderingYES1: string = 'Доступна новая версия IMadering.' + #13#10 + #13#10 +
-    'Для ознакомления зайдите на сайт www.imadering.com';
-  NewVersionIMaderingYES2: string = 'Доступна новая сборка IMadering.' + #13#10 + #13#10 +
-    'Для ознакомления зайдите на сайт www.imadering.com';
+  S_RestoreFromTray: string;
+  S_HideInTray: string;
+  S_RestoreProfileFromTray: string;
+  S_HideProfileInTray: string;
+  S_Version: string;
+  S_ProfileError: string;
+  S_DevelMess: string;
+  S_Next: string;
+  S_Close: string;
+  S_Cancel: string;
+  S_ProtoSelectAlert: string;
+  NewVersionIMaderingYES1: string = 'Доступна новая версия IMadering.' + RN + RN + 'Для ознакомления зайдите на сайт www.imadering.com';
+  NewVersionIMaderingYES2: string = 'Доступна новая сборка IMadering.' + RN + RN + 'Для ознакомления зайдите на сайт www.imadering.com';
   NewVersionIMaderingNO: string = 'Новой версии не обнаружено.';
   NewVersionIMaderingErr: string = 'Ошибка получения данных о новой версии.';
-  InformationHead: string = 'Информация';
-  ErrorHead: string = 'Ошибка';
-  AlertHead: string = 'Действие невозможно';
-  WarningHead: string = 'Внимание!';
-  ICQAccountInfo: string = 'Учётная запись ICQ#:';
+  S_InfoHead: string;
+  S_ErrorHead: string;
+  S_AlertHead: string;
+  S_WarningHead: string;
+  ICQAccountInfo: string = 'Учётная запись ICQ:';
   ICQAccountInfo_1: string = 'Перед тем как подключиться к ICQ серверу, сначала укажите в настройках свой ICQ номер и пароль!';
   JabberAccountInfo: string = 'Учётная запись JID:';
   JabberAccountInfo_1: string = 'Перед тем как подключиться к Jabber серверу, сначала укажите в настройках свой JID аккаунт и пароль!';
+  MRAAccountInfo: string = 'Учётная запись MRA:';
+  MRAAccountInfo_1: string = 'Перед тем как подключиться к MRA серверу, сначала укажите в настройках свой Email и пароль!';
   PassLabelInfo: string = 'Пароль:';
   ParsingPktError: string = 'Неудалось произвести разбор пакета данных полученных от сервера.';
   SocketConnErrorInfo_1: string = 'Соединение не установлено.';
@@ -199,7 +321,7 @@ var
   UpDateAbortL: string = 'Загрузка обновления прервана.';
   UpDateLoadL: string = 'Файл обновления успешно получен.';
   UpDateUnL: string = 'Установка обновления...';
-  UpDateOKL: string = 'Установка обновления завершена.' + #13#10 + #13#10 +
+  UpDateOKL: string = 'Установка обновления завершена.' + RN + RN +
     'Для завершения обновления необходимо перезапустить программу IMadering!';
   ProxyConnectErrL1: string = 'Неверный логин или пароль для прокси.';
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
@@ -207,7 +329,7 @@ var
   HttpSocketErrCodeL: string = 'Код ошибки: %d';
   SelectDirL: string = 'Выберите папку для хранения вашего профиля';
   DelProfile: string = 'Удалить старый профиль?';
-  URLOpenErrL: string = 'Браузер для открытия ссылки не найден.' + #13#10 + 'Ссылка скопирована в буфер обмена.';
+  URLOpenErrL: string = 'Браузер для открытия ссылки не найден.' + RN + 'Ссылка скопирована в буфер обмена.';
   SearchInfoGoL: string = 'Идёт поиск ...';
   SearchInfoEndL: string = 'Поиск завершён';
   SearchInfoNoL: string = 'Не найден';
@@ -215,7 +337,7 @@ var
   SearchInfoAuthNoL: string = 'Не нужна';
   SearchNextPage1: string = 'Далее';
   SearchNextPage2: string = 'Страница - %d';
-  SearchQMessL: string = 'Быстрое сообщение';
+  S_SearchQMess: string;
   AddContactErr1: string = 'Такой контакт уже существует в вашем списке контактов.';
   AddContactErr2: string = 'Пожалуйста, дождитесь окончания предыдущей операции с серверным списком контактов.';
   AddContactErr3: string = 'Сначала создайте хоть одну группу';
@@ -228,7 +350,7 @@ var
   DellGroupOKL: string = 'Группа успешно удалена из вашего списка контактов!';
   AddNewGroupOKL: string = 'Группа успешно добавлена в ваш список контактов!';
   JabberNullGroup: string = 'Общая';
-  FileTransfer1L: string = 'Отправка для:';
+  S_FileTransfer1: string;
   FileTransfer2L: string = 'Передача файла ...';
   FileTransfer3L: string = 'Передача файла завершена';
   FileTransfer4L: string = 'Передача файла отменена';
@@ -236,8 +358,10 @@ var
   SocketL: string = 'Сокет:';
   HistoryCompressedL: string =
     'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
-  VersionL: string;
-  ProfileErrorL: string;
+  GtransProcessL: string = 'Перевод ...';
+  GtransOKL: string = 'Переведено';
+  GtransErrL: string = 'Ошибка перевода: %s';
+  NewProgErrL: string = 'Ошибка запуска другого профиля программы.';
 
   // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
@@ -318,54 +442,6 @@ var
   Err504: string = 'Истекло время ожидания от шлюза.';
   Err505: string = 'Не поддерживаемая версия HTTP.';
 
-  // Переменные оформления всплывающих подсказок
-  FDAOptions: TJvDesktopAlertOptions;
-  DACount: Integer = 0;
-  DATimeShow: Integer = 7000;
-  DAPos: Integer = 3;
-  DAStyle: Integer = 0;
-
-  // Переменные для окна чата
-  NoAvatar: TImage;
-  OutMessage2: TMemoryStream;
-  OutMessage3: TMemoryStream;
-  XStatusImg: TBitmap;
-  XStatusMem: TMemoryStream;
-  QReplyAutoSend: Boolean = False;
-  SmilesList: TStringList;
-  InMessList: TStringList;
-  TextSmilies: Boolean = False;
-  YouAt: string = 'Я';
-  ChatFontSize: string = '9';
-  GetCityPanel: string;
-  GetAgePanel: string;
-
-  // Список для отображения в About
-  AboutList: array [1 .. 14] of string = (
-    'Автор проекта и ведущий программист;Эдуард Толмачёв',
-    'Программирование;Максим Нижник',
-    'Программирование;Francois PIETTE (Ics components)',
-    'Программирование;David Baldwin (HTML components)',
-    'Программирование;Project Jedi (jvcl components)',
-    'Программирование;Михаил Власов (SimpleXML компонент)',
-    'Программирование;Polaris Software (rXML компонент)',
-    'Программирование;Igor Pavlov (7-Zip компонент)',
-    'Дизайн;Пётр Степанов',
-    'Дизайн;Michael Niedermayr (www.greensmilies.com)',
-    'Тестирование и поддержка;Павел Новиков',
-    'Специальная благодарность;Маргарита Евдокимова',
-    'Специальная благодарность;Светлана Пономарева',
-    'IMadering;Спасибо всем!'
-  );
-
-  // Http прокси для сокетов протоколов
-  HttpProxy_Enable: Boolean = False;
-  HttpProxy_Address: string;
-  HttpProxy_Port: string;
-  HttpProxy_Auth: Boolean = False;
-  HttpProxy_Login: string;
-  HttpProxy_Password: string;
-
   // Для Лога
   LogMyPath: string = 'Путь к программе: ';
   LogProfile: string = 'Путь к профилю: ';
@@ -410,50 +486,14 @@ var
   Log_Connect_Count: string = 'Количество подключений к серверу: ';
   Log_Lang_Code: string = 'Код языка системы: ';
   Log_Contact_Info: string = 'Получен пакет информации о контакте: ';
+  Log_Gtrans_Req: string = 'Получены данные перевода: %s на %s';
+  Log_Gtrans_URL: string = 'Запрос для перевода: %s на %s';
+  Log_ICQGet: string = 'ICQ get | ';
+  Log_ICQParsing: string = 'ICQ parsing | ';
 
   // Подсказки <b></b><br>
-  H_Log_Clear: string = '<b>Очистить</b><br>Удалить все сообщения лога';
-  H_Log_Write: string = '<b>Запись в лог</b><br>Разрешить или приостановить запись событий в лог';
-  H_Log_ICQ: string = '<b>Дампы ICQ</b><br>Включить или выключить<br>отображение в логе данных протокола';
-  H_Log_Jabber: string = '<b>Дампы Jabber</b><br>Включить или выключить<br>отображение в логе данных протокола';
-  H_Log_MRA: string = '<b>Дампы MRA</b><br>Включить или выключить<br>отображение в логе данных протокола';
-  H_Sound: string = '<b>Звуки</b><br>Включить или выключить озвучивание событий';
-  H_OnlyOnline: string = '<b>Оффлайн контакты</b><br>Показывать или скрывать отключенные контакты';
-  H_GroupCL: string = '<b>Группы контактов</b><br>Показывать или скрывать группы';
-  H_TopPanel: string = '<b>Верхняя панель</b><br>Показать или скрыть панель';
-  H_Main_Button: string = '<b>Главное меню</b><br>Доступ к основным пунктам';
-  H_Privat_Button: string = '<b>Приватные списки</b><br>Управление списками приватности';
-  H_History_Button: string = '<b>История сообщений</b><br>Просмотр архивов переписки';
-  H_Setting_Button: string = '<b>Настройки</b><br>Открыть окно настроек программы';
-  H_Traf_Button: string = '<b>Трафик</b><br>Открыть статистику потраченного трафика';
-  H_Smilies_Button: string = '<b>Смайлы</b><br>Открыть окно выбора смайлика';
-  H_Q_Button: string = '<b>Цитировать</b><br>Вставить последнее полученное сообщение';
-  H_Qrep_Button: string = '<b>Готовые ответы</b><br>Открыть меню выбора шаблона ответа';
-  H_Chat_History_Button: string = '<b>История сообщений</b><br>Просмотр архивов переписки<br><br>' +
-    'Клик правой клавишей мыши откроет меню<br>выбора подгрузки истории сообщений в чат';
-  H_FileSend_Button: string = '<b>Отправить файл</b><br>Открыть меню выбора способа передачи файла';
-  H_Chat_Clear_Button: string = '<b>Очистить</b><br>Скрыть сообщения текущего чата';
-  H_Info_Button: string = '<b>Анкета</b><br>Открыть анкетную информацию о контакте';
-  H_CEdit_Button: string = '<b>Редактировать</b><br>Изменить параметры контакта';
-  H_Font_Button: string = '<b>Текст</b><br>Настройки шрифта и цвета текста';
-  H_CMenu_Chat: string = '<b>Меню контакта</b><br>Управление текущим контактом';
-  H_Chat_Setting: string = '<b>Настройки</b><br>Открыть настройки окна чата';
-  H_Send_Enter: string = '<b>Отправлять по Enter</b><br>Включить или выключить отправку сообщения клавишей Enter<br><br>' +
-    'Иначе отправка сообщения по нажатию клавиш Ctrl + Enter';
-  H_Typing_Notify: string = '<b>Уведомлять о наборе</b><br>Включить или выключить отправку<br>собеседнику уведомлений о наборе текста';
-  H_Sound_Key: string = '<b>Звук набора</b><br>Включить или выключить озвучку нажатия клавиш';
-  H_GTrans_Button: string =
-    '<b>Переводчик</b><br>Автоматически переводить сообщения на иностранные языки<br>используя онлайн сервис Google переводчик';
-  H_Uniq_Button: string = '<b>Уникальные настройки</b><br>Редактировать настройки для этого контакта';
   H_SelFolder_Button: string = '<b>Путь к файлу</b><br>Указать путь к файлу';
   H_PlaySound_Button: string = '<b>Воспроизвести</b><br>Прослушать звуковой файл';
-
-  // Информационные поля
-  Info_About: string =
-    'Эта программа создана для изучения и тестирования возможности взаимодействия с популярными протоколами передачи мгновенных сообщений в сети интернет.' +
-    RN + 'Проект с открытым исходным кодом.';
-  Info_SendICQDump: string =
-    'Внимание! Эта функция предназначена для очень опытных пользователей. Используйте её только если вы точно знаете, что вы делаете. Последствия могут быть непредсказуемые.';
 
 procedure SetLangVars;
 
@@ -462,44 +502,77 @@ implementation
 uses
   UtilsUnit;
 
+// Устанавливаем язык для переменных
 procedure SetLangVars;
 var
   I: Integer;
   List: Tstringlist;
+  XmlFile: TrXML;
 begin
   List := Tstringlist.Create;
   try
-    with TrXML.Create() do
-      try
-        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
-          begin
-            // Загружаем переменные из файла языка
-            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
-            if OpenKey('language\vars') then
-              try
-                List.Text := GetKeyXML;
-              finally
-                CloseKey();
-              end;
-          end;
-      finally
-        Free();
-      end;
+    XmlFile := TrXML.Create;
+    try
+      with XmlFile do
+        begin
+          if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+            begin
+              // Загружаем переменные из файла языка
+              LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+              if OpenKey(RS_LangVars) then
+                try
+                  List.Text := GetKeyXML;
+                finally
+                  CloseKey;
+                end;
+            end;
+        end;
+    finally
+      FreeAndNil(XmlFile);
+    end;
     // Присваиваем переменные в цикле (для переноса строк CheckText_RN)
     for I := 0 to List.Count - 1 do
       begin
-        if IsolateTextString(List.Strings[I], '<', ' c="') = 'RestoreFromTrayStr' then
-          RestoreFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'HideInTrayStr' then
-          HideInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'RestoreProfileFromTrayStr' then
-          RestoreProfileFromTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'HideProfileInTrayStr' then
-          HideProfileInTrayStr := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'VersionL' then
-          VersionL := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'ProfileErrorL' then
-          ProfileErrorL := IsolateTextString(List.Strings[I], 'c="', '"/>');
+        if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_RestoreFromTray' then
+          S_RestoreFromTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_HideInTray' then
+          S_HideInTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_RestoreProfileFromTray' then
+          S_RestoreProfileFromTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_HideProfileInTray' then
+          S_HideProfileInTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Version' then
+          S_Version := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_ProfileError' then
+          S_ProfileError := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_DevelMess' then
+          S_DevelMess := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Next' then
+          S_Next := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_ProtoSelectAlert' then
+          S_ProtoSelectAlert := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_InfoHead' then
+          S_InfoHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_ErrorHead' then
+          S_ErrorHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_AlertHead' then
+          S_AlertHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_WarningHead' then
+          S_WarningHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Close' then
+          S_Close := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Cancel' then
+          S_Cancel := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_SearchQMess' then
+          S_SearchQMess := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer1' then
+          S_FileTransfer1 := IsolateTextString(List.Strings[I], 'c="', '"/>');
+
+
+
+
+
+
       end;
   finally
     List.Free;

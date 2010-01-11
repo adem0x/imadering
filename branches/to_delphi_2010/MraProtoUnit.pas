@@ -171,7 +171,7 @@ begin
   with MainForm do
     begin
       { if MRAWSocket.State = wsConnected then
-        MRAWSocket.SendStr(); }
+        MRAWSocket.SendStr; }
       // Закрываем сокет
       MRAWSocket.Abort;
       // Ставим иконку и значение статуса оффлайн
@@ -188,7 +188,7 @@ begin
     begin
       for I := 0 to Items.Count - 1 do
         begin
-          if Items[I].SubItems[3] = 'Mra' then
+          if Items[I].SubItems[3] = S_Mra then
             begin
               Items[I].SubItems[6] := '23';
               Items[I].SubItems[7] := '-1';

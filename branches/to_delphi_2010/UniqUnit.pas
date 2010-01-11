@@ -1,3 +1,11 @@
+п»ї{ *******************************************************************************
+  Copyright (c) 2004-2009 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+  ******************************************************************************* }
+
 unit UniqUnit;
 
 interface
@@ -61,7 +69,7 @@ uses
 
 procedure TUniqForm.TranslateForm;
 begin
-  // Устанавливаем подсказки к кнопкам
+  // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕРґСЃРєР°Р·РєРё Рє РєРЅРѕРїРєР°Рј
   OnlineSoundPathSpeedButton.Hint := H_SelFolder_Button;
   OnlineSoundPlaySpeedButton.Hint := H_PlaySound_Button;
   MessSoundPathSpeedButton.Hint := H_SelFolder_Button;
@@ -70,20 +78,20 @@ end;
 
 procedure TUniqForm.CancelBitBtnClick(Sender: TObject);
 begin
-  // Закрываем окно
+  // Р—Р°РєСЂС‹РІР°РµРј РѕРєРЅРѕ
   Close;
 end;
 
 procedure TUniqForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // Уничтожаем форму после закрытия
+  // РЈРЅРёС‡С‚РѕР¶Р°РµРј С„РѕСЂРјСѓ РїРѕСЃР»Рµ Р·Р°РєСЂС‹С‚РёСЏ
   Action := CaFree;
   UniqForm := nil;
 end;
 
 procedure TUniqForm.FormCreate(Sender: TObject);
 begin
-  // Присваиваем иконку окну и кнопкам
+  // РџСЂРёСЃРІР°РёРІР°РµРј РёРєРѕРЅРєСѓ РѕРєРЅСѓ Рё РєРЅРѕРїРєР°Рј
   MainForm.AllImageList.GetIcon(247, Icon);
   MainForm.AllImageList.GetBitmap(139, CancelBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
@@ -91,18 +99,18 @@ begin
   MainForm.AllImageList.GetBitmap(252, OnlineSoundPlaySpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(227, MessSoundPathSpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(252, MessSoundPlaySpeedButton.Glyph);
-  // Помещаем кнопку формы в таскбар и делаем независимой
+  // РџРѕРјРµС‰Р°РµРј РєРЅРѕРїРєСѓ С„РѕСЂРјС‹ РІ С‚Р°СЃРєР±Р°СЂ Рё РґРµР»Р°РµРј РЅРµР·Р°РІРёСЃРёРјРѕР№
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
-  // Применяем строковые переменные
+  // РџСЂРёРјРµРЅСЏРµРј СЃС‚СЂРѕРєРѕРІС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
   TranslateForm;
 end;
 
 procedure TUniqForm.OKBitBtnClick(Sender: TObject);
 begin
-  // Сохраняем настройки
+  // РЎРѕС…СЂР°РЅСЏРµРј РЅР°СЃС‚СЂРѕР№РєРё
 
-  // Закрываем окно
+  // Р—Р°РєСЂС‹РІР°РµРј РѕРєРЅРѕ
   Close;
 end;
 

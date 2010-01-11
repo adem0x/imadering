@@ -1,3 +1,11 @@
+{ *******************************************************************************
+  Copyright (c) 2004-2009 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+  ******************************************************************************* }
+
 unit ProfileUnit;
 
 interface
@@ -39,6 +47,7 @@ type
     procedure LoginButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure DeleteButtonClick(Sender: TObject);
+    procedure ProfileComboBoxChange(Sender: TObject);
 
   private
     { Private declarations }
@@ -71,90 +80,99 @@ uses
 procedure TProfileForm.SaveSettings;
 var
   I: Integer;
+  XmlFile: TrXML;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения главного окна в xml
-  with TrXML.Create() do
-    try
-      // Сохраняем язык по умолчанию
-      if OpenKey('defaults\language', True) then
-        try
-          WriteString('locale', CurrentLang);
-        finally
-          CloseKey();
-        end;
-      // Сохраняем профиль по умолчанию
-      if OpenKey('defaults\profile', True) then
-        try
-          WriteString('name', Profile);
-          WriteBool('auto', AutoSignCheckBox.Checked);
-        finally
-          CloseKey();
-        end;
-      // Сохраняем список всех других профилей
-      for I := 0 to ProfileComboBox.Items.Count - 1 do
-        begin
-          if OpenKey('defaults\profile\items' + IntToStr(I), True) then
-            try
-              WriteString('name', ProfileComboBox.Items.Strings[I]);
-            finally
-              CloseKey();
-            end;
-        end;
-      // Записываем сам файл
-      SaveToFile(ProfilePath + ProfilesFileName);
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        // Сохраняем язык по умолчанию
+        if OpenKey('defaults\language', True) then
+          try
+            WriteString('locale', CurrentLang);
+          finally
+            CloseKey;
+          end;
+        // Сохраняем профиль по умолчанию
+        if OpenKey('defaults\profile', True) then
+          try
+            WriteString('name', Profile);
+            WriteBool('auto', AutoSignCheckBox.Checked);
+          finally
+            CloseKey;
+          end;
+        // Сохраняем список всех других профилей
+        for I := 0 to ProfileComboBox.Items.Count - 1 do
+          begin
+            if OpenKey('defaults\profile\items' + IntToStr(I), True) then
+              try
+                WriteString('name', ProfileComboBox.Items.Strings[I]);
+              finally
+                CloseKey;
+              end;
+          end;
+        // Записываем сам файл
+        SaveToFile(ProfilePath + ProfilesFileName);
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure TProfileForm.LoadSettings;
 var
   I, Cnt: Integer;
+  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
-      // Загружаем настройки
-      if FileExists(ProfilePath + ProfilesFileName) then
-        begin
-          LoadFromFile(ProfilePath + ProfilesFileName);
-          // Загружаем язык по умолчанию
-          if OpenKey('defaults\language') then
-            try
-              CurrentLang := ReadString('locale');
-            finally
-              CloseKey();
-            end;
-          // Получаем имя последнего профиля
-          if OpenKey('defaults\profile') then
-            try
-              ProfileComboBox.Text := ReadString('name');
-              AutoSignCheckBox.Checked := ReadBool('auto');
-            finally
-              CloseKey();
-            end;
-          // Получаем список других профилей
-          if OpenKey('defaults\profile') then
-            try
-              Cnt := GetKeyCount();
-            finally
-              CloseKey();
-            end;
-          for I := 0 to Cnt - 1 do
-            begin
-              if OpenKey('defaults\profile\items' + IntToStr(I)) then
-                try
-                  ProfileComboBox.Items.Add(ReadString('name'));
-                finally
-                  CloseKey();
-                end;
-            end;
-        end;
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        // Загружаем настройки
+        if FileExists(ProfilePath + ProfilesFileName) then
+          begin
+            LoadFromFile(ProfilePath + ProfilesFileName);
+            // Загружаем язык по умолчанию
+            if OpenKey('defaults\language') then
+              try
+                CurrentLang := ReadString('locale');
+              finally
+                CloseKey;
+              end;
+            // Получаем имя последнего профиля
+            if OpenKey('defaults\profile') then
+              try
+                ProfileComboBox.Text := ReadString('name');
+                AutoSignCheckBox.Checked := ReadBool('auto');
+              finally
+                CloseKey;
+              end;
+            // Получаем список других профилей
+            Cnt := 0;
+            if OpenKey('defaults\profile') then
+              try
+                Cnt := GetKeyCount;
+              finally
+                CloseKey;
+              end;
+            for I := 0 to Cnt - 1 do
+              begin
+                if OpenKey('defaults\profile\items' + IntToStr(I)) then
+                  try
+                    ProfileComboBox.Items.Add(ReadString('name'));
+                  finally
+                    CloseKey;
+                  end;
+              end;
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure TProfileForm.LoginButtonClick(Sender: TObject);
@@ -163,7 +181,7 @@ begin
   if ProfileComboBox.Text = EmptyStr then
     begin
       // Выводим сообщение о том, что нужно ввести или выбрать профиль
-      DAShow(ErrorHead, ProfileErrorL, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, S_ProfileError, EmptyStr, 134, 2, 0);
       Exit;
     end;
   Profile := ProfileComboBox.Text;
@@ -191,13 +209,13 @@ begin
       AllImageList.GetIcon(30, JabberTrayIcon.Icon);
     end;
   // Пока просто скрываем общую иконку в трэе (потом сделать отображение по настройке)
-  MainForm.XTrayIcon.Visible := false;
-  // Создаём окно Ростера
-  RosterForm := TRosterForm.Create(MainForm);
-  // Загружаем настройки окна
+  MainForm.XTrayIcon.Visible := False;
+  // Загружаем настройки главного окна
   MainForm.LoadMainFormSettings;
   if AllSesDataTraf = EmptyStr then
     AllSesDataTraf := DateTimeToStr(Now);
+  // Создаём окно Ростера и загружаем контакты в него
+  RosterForm := TRosterForm.Create(MainForm);
   // Если это первый старт программы, то по умолчанию активруем ICQ протокол
   if not FirstStart then
     MainForm.ICQEnable(True);
@@ -211,9 +229,11 @@ begin
   if FileExists(ProfilePath + Nick_BD_FileName) then
     AccountToNick.LoadFromFile(ProfilePath + Nick_BD_FileName);
   XLog(LogNickCash + IntToStr(AccountToNick.Count));
-  if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt') then
-    SmilesList.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.txt');
+  if FileExists(MyPath + Format(SmiliesPath, [CurrentSmiles])) then
+    SmilesList.LoadFromFile(MyPath + Format(SmiliesPath, [CurrentSmiles]));
   XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1));
+  // Запускаем обработку Ростера
+  RosterForm.UpdateFullCL;
   // Если не активно запускаться свёрнутой в трэй то показываем клавное окно
   if not SettingsForm.HideInTrayProgramStartCheckBox.Checked then
     begin
@@ -235,13 +255,21 @@ begin
   // Запускаем таймер индикации событий
   MainForm.JvTimerList.Events[1].Enabled := True;
   // Выключаем кнопку записи последующих событий в окно лога
-  LogForm.WriteLogSpeedButton.Down := false;
+  LogForm.WriteLogSpeedButton.Down := False;
   // Высвобождаем общую память приложения (вспоминая qip)
   if Win32Platform = VER_PLATFORM_WIN32_NT then
     SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
+  // Воспроизводим звук запуска программы
+  ImPlaySnd(0);
   // Закрываем окно
   FClose := True;
   Close;
+end;
+
+procedure TProfileForm.ProfileComboBoxChange(Sender: TObject);
+begin
+  // Пишем в всплывающей подсказке путь к профилю
+  ProfileComboBox.Hint := ProfilePath + ProfileComboBox.Text;
 end;
 
 procedure TProfileForm.TranslateForm;
@@ -251,7 +279,9 @@ begin
   // Применяем язык
   SetLang(Self);
   // Сведения о версии программы
-  VersionLabel.Caption := Format(VersionL, [InitBuildInfo]);
+  VersionLabel.Caption := Format(S_Version, [InitBuildInfo]);
+  // Применяем язык к форме лога
+  LogForm.TranslateForm;
 end;
 
 procedure TProfileForm.DeleteButtonClick(Sender: TObject);
@@ -260,6 +290,7 @@ var
 begin
   // Удаляем профиль из списка
   ProfileComboBox.Text := EmptyStr;
+  ProfileComboBox.Hint := EmptyStr;
   N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
   if N > -1 then
     begin
@@ -295,6 +326,7 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Загружаем настройки
   LoadSettings;
+  ProfileComboBox.Hint := ProfilePath + ProfileComboBox.Text;
   // Устанавливаем язык
   if CurrentLang = 'ru' then
     LangComboBox.ItemIndex := 0

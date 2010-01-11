@@ -2775,6 +2775,8 @@ begin
     end
   end;
 
+{$WARNINGS OFF}
+
   function TXmlNode.GetDateTimeAttr(aNameID: Integer; aDefault: TDateTime): TDateTime;
   var
     anAttr: PXmlAttrData;
@@ -2790,6 +2792,8 @@ begin
     else
       Result := aDefault;
   end;
+
+{$WARNINGS ON}
 
   function TXmlNode.GetDateTimeAttr(const aName: TXmlString; aDefault: TDateTime): TDateTime;
   begin

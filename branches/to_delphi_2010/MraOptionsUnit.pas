@@ -104,6 +104,8 @@ end;
 // APPLY SETTINGS--------------------------------------------------------------
 
 procedure TMraOptionsForm.ApplySettings;
+var
+  XmlFile: TrXML;
 begin
   // Применяем настройки MRA протокола
   // Нормализуем MRA логин
@@ -126,38 +128,41 @@ begin
   MRA_LoginServerPort := MraLoginServerPortEdit.Text;
   // --------------------------------------------------------------------------
   // Записываем настройки MRA протокола в файл
-  with TrXML.Create() do
-    try
-      if FileExists(ProfilePath + SettingsFileName) then
-        LoadFromFile(ProfilePath + SettingsFileName);
-      // Данные логина
-      if OpenKey('settings\mra\account', True) then
-        try
-          WriteString('login', MRAEmailEdit.Text);
-          WriteBool('save-password', SavePassCheckBox.Checked);
-          if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
-            WriteString('password', Base64Encode(PassEdit.Hint))
-          else
-            WriteString('password', EmptyStr);
-          // Маскируем пароль
-          if PassEdit.Text <> EmptyStr then
-            PassEdit.Text := '----------------------';
-        finally
-          CloseKey();
-        end;
-      // Данные сервера подключения
-      if OpenKey('settings\mra\server', True) then
-        try
-          WriteString('login-server', MraLoginServerComboBox.Text);
-          WriteString('login-port', MraLoginServerPortEdit.Text);
-        finally
-          CloseKey();
-        end;
-      // Сохраняем файл настроек
-      SaveToFile(ProfilePath + SettingsFileName);
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        if FileExists(ProfilePath + SettingsFileName) then
+          LoadFromFile(ProfilePath + SettingsFileName);
+        // Данные логина
+        if OpenKey('settings\mra\account', True) then
+          try
+            WriteString('login', MRAEmailEdit.Text);
+            WriteBool('save-password', SavePassCheckBox.Checked);
+            if (SavePassCheckBox.Checked) and (PassEdit.Text <> '----------------------') then
+              WriteString('password', Base64Encode(PassEdit.Hint))
+            else
+              WriteString('password', EmptyStr);
+            // Маскируем пароль
+            if PassEdit.Text <> EmptyStr then
+              PassEdit.Text := '----------------------';
+          finally
+            CloseKey;
+          end;
+        // Данные сервера подключения
+        if OpenKey('settings\mra\server', True) then
+          try
+            WriteString('login-server', MraLoginServerComboBox.Text);
+            WriteString('login-port', MraLoginServerPortEdit.Text);
+          finally
+            CloseKey;
+          end;
+        // Сохраняем файл настроек
+        SaveToFile(ProfilePath + SettingsFileName);
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
 end;
@@ -165,42 +170,47 @@ end;
 // LOAD SETTINGS---------------------------------------------------------------
 
 procedure TMraOptionsForm.LoadSettings;
+var
+  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  with TrXML.Create() do
-    try
-      if FileExists(ProfilePath + SettingsFileName) then
-        begin
-          LoadFromFile(ProfilePath + SettingsFileName);
-          // Загружаем данные логина
-          if OpenKey('settings\mra\account') then
-            try
-              MRAEmailEdit.Text := ReadString('login');
-              if MRAEmailEdit.Text <> EmptyStr then
-                MRA_LoginUIN := MRAEmailEdit.Text;
-              SavePassCheckBox.Checked := ReadBool('save-password');
-              PassEdit.Text := ReadString('password');
-              if PassEdit.Text <> EmptyStr then
-                begin
-                  PassEdit.Hint := Base64Decode(PassEdit.Text);
-                  MRA_LoginPassword := PassEdit.Hint;
-                  PassEdit.Text := '----------------------';
-                end;
-            finally
-              CloseKey();
-            end;
-          // Загружаем данные сервера подключения
-          if OpenKey('settings\mra\server') then
-            try
-              MraLoginServerComboBox.Text := ReadString('login-server');
-              MraLoginServerPortEdit.Text := ReadString('login-port');
-            finally
-              CloseKey();
-            end;
-        end;
-    finally
-      Free();
-    end;
+  XmlFile := TrXML.Create;
+  try
+    with XmlFile do
+      begin
+        if FileExists(ProfilePath + SettingsFileName) then
+          begin
+            LoadFromFile(ProfilePath + SettingsFileName);
+            // Загружаем данные логина
+            if OpenKey('settings\mra\account') then
+              try
+                MRAEmailEdit.Text := ReadString('login');
+                if MRAEmailEdit.Text <> EmptyStr then
+                  MRA_LoginUIN := MRAEmailEdit.Text;
+                SavePassCheckBox.Checked := ReadBool('save-password');
+                PassEdit.Text := ReadString('password');
+                if PassEdit.Text <> EmptyStr then
+                  begin
+                    PassEdit.Hint := Base64Decode(PassEdit.Text);
+                    MRA_LoginPassword := PassEdit.Hint;
+                    PassEdit.Text := '----------------------';
+                  end;
+              finally
+                CloseKey;
+              end;
+            // Загружаем данные сервера подключения
+            if OpenKey('settings\mra\server') then
+              try
+                MraLoginServerComboBox.Text := ReadString('login-server');
+                MraLoginServerPortEdit.Text := ReadString('login-port');
+              finally
+                CloseKey;
+              end;
+          end;
+      end;
+  finally
+    FreeAndNil(XmlFile);
+  end;
 end;
 
 procedure TMraOptionsForm.TranslateForm;

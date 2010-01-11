@@ -1,7 +1,6 @@
 object HistoryForm: THistoryForm
   Left = 0
   Top = 0
-  Caption = #1048#1089#1090#1086#1088#1080#1103
   ClientHeight = 427
   ClientWidth = 521
   Color = clBtnFace
@@ -39,23 +38,20 @@ object HistoryForm: THistoryForm
     object ContactsLabel: TLabel
       Left = 7
       Top = 6
-      Width = 55
+      Width = 3
       Height = 13
-      Caption = #1050#1086#1085#1090#1072#1082#1090#1099':'
     end
     object ArhiveLabel: TLabel
       Left = 7
       Top = 52
-      Width = 35
+      Width = 3
       Height = 13
-      Caption = #1040#1088#1093#1080#1074':'
     end
     object SearchTextLabel: TLabel
       Left = 225
       Top = 6
-      Width = 72
+      Width = 3
       Height = 13
-      Caption = #1055#1086#1080#1089#1082' '#1090#1077#1082#1089#1090#1072':'
     end
     object ContactsComboBox: TComboBox
       Left = 6
@@ -66,7 +62,6 @@ object HistoryForm: THistoryForm
       DropDownCount = 20
       TabOrder = 0
       TabStop = False
-      OnChange = ContactsComboBoxChange
     end
     object ArhiveComboBox: TComboBox
       Left = 6
@@ -90,7 +85,6 @@ object HistoryForm: THistoryForm
       Top = 23
       Width = 109
       Height = 25
-      Caption = #1053#1072#1081#1090#1080' '#1076#1072#1083#1077#1077
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 3
@@ -102,7 +96,6 @@ object HistoryForm: THistoryForm
       Top = 54
       Width = 164
       Height = 17
-      Caption = #1059#1095#1080#1090#1099#1074#1072#1090#1100' '#1088#1077#1075#1080#1089#1090#1088
       TabOrder = 4
     end
     object FullSearchTextCheckBox: TCheckBox
@@ -110,7 +103,6 @@ object HistoryForm: THistoryForm
       Top = 77
       Width = 164
       Height = 17
-      Caption = #1048#1089#1082#1072#1090#1100' '#1074#1077#1079#1076#1077
       TabOrder = 5
     end
     object UpSearchCheckBox: TRadioButton
@@ -118,7 +110,6 @@ object HistoryForm: THistoryForm
       Top = 54
       Width = 116
       Height = 17
-      Caption = #1042#1074#1077#1088#1093
       Checked = True
       TabOrder = 6
       TabStop = True
@@ -128,7 +119,6 @@ object HistoryForm: THistoryForm
       Top = 77
       Width = 116
       Height = 17
-      Caption = #1042#1085#1080#1079
       TabOrder = 7
     end
   end
@@ -147,7 +137,6 @@ object HistoryForm: THistoryForm
       Top = 4
       Width = 109
       Height = 25
-      Caption = #1054#1073#1085#1086#1074#1080#1090#1100
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 0
@@ -159,7 +148,6 @@ object HistoryForm: THistoryForm
       Top = 4
       Width = 139
       Height = 25
-      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082' ...'
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 1
@@ -171,7 +159,6 @@ object HistoryForm: THistoryForm
       Top = 4
       Width = 102
       Height = 25
-      Caption = #1059#1076#1072#1083#1080#1090#1100
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
@@ -188,7 +175,6 @@ object HistoryForm: THistoryForm
       Margins.Right = 7
       Margins.Bottom = 4
       Align = alRight
-      Caption = #1047#1072#1082#1088#1099#1090#1100
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 3
@@ -220,27 +206,28 @@ object HistoryForm: THistoryForm
     OnKeyDown = HTMLHistoryViewerKeyDown
   end
   object HistoryPopupMenu: TPopupMenu
+    Alignment = paCenter
     Images = MainForm.AllImageList
     OnPopup = HistoryPopupMenuPopup
     Left = 264
     Top = 216
     object CopyHistorySelText: TMenuItem
       Tag = 1
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       Enabled = False
-      ImageIndex = 148
+      ImageIndex = 144
       OnClick = CopyHistorySelTextClick
     end
     object CopyAllHistoryText: TMenuItem
       Tag = 2
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
-      ImageIndex = 148
+      ImageIndex = 144
       OnClick = CopyAllHistoryTextClick
     end
   end
   object SaveTextAsFileDialog: TSaveTextFileDialog
     DefaultExt = '.txt'
     Filter = 'Text Files (*.txt)|*.txt'
+    Encodings.Strings = (
+      'Unicode')
     Left = 232
     Top = 216
   end
