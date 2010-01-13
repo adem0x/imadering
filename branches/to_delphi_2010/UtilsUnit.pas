@@ -71,7 +71,6 @@ function Numtoip(Addr: Longword): string;
 function Unixtodatetime(const Avalue: Int64): Tdatetime;
 function Gettimezone: Integer;
 function Taillinetail(Ahistory: string; Alinescount: Integer): string;
-function Bmsearch(Startpos: Integer; const S, P: string): Integer;
 function Rtf2plain(const Asource: string): string;
 procedure Formflash(Hnd: Hwnd);
 function Exisvalidcharacterstext(Value: string): Boolean;
@@ -131,8 +130,30 @@ function UCS2BEToStr(Value: string): string;
 procedure CheckMessage_Smilies(var Msg: string);
 function ChangeCP(const Value: string): string;
 function CheckText_Hint(Msg: string): string;
+function Text2UnicodeHex(Msg: string): string;
+function UnicodeHex2Text(HexText: string): string;
 
 implementation
+
+function Text2UnicodeHex(Msg: string): string;
+var
+  I: LongInt;
+begin
+  Result := EmptyStr;
+  for I := 1 to Length(Msg) do
+  begin
+    Result := Result + IntToHex(Ord(Msg[I]), 4);
+  end;
+end;
+
+function UnicodeHex2Text(HexText: string): string;
+var
+  I: LongInt;
+begin
+  Result := EmptyStr;
+  for I := 1 to Length(HexText) div 4 do
+    Result := Result + Char(StrToInt('$' + Copy(HexText, (I - 1) * 4 + 1, 4)));
+end;
 
 function UnicodeCharCode2String(ACode: Word): string;
 var
@@ -1210,46 +1231,6 @@ begin
     Result := Asource;
 end;
 
-function Bmsearch(Startpos: Integer; const S, P: string): Integer;
-type
-  Tbmtable = array [0 .. 255] of Integer;
-var
-  Pos, Lp, I: Integer;
-  Bmt: Tbmtable;
-begin
-  Result := -1;
-  if (S = EmptyStr) or (P = EmptyStr) then
-    Exit;
-  for I := 0 to 255 do
-    Bmt[I] := Length(P);
-  for I := Length(P) downto 1 do
-    if Bmt[Byte(P[I])] = Length(P) then
-      Bmt[Byte(P[I])] := Length(P) - I;
-  Lp := Length(P);
-  Pos := Startpos + Lp - 1;
-  while Pos <= Length(S) do
-    if P[Lp] <> S[Pos] then
-      Pos := Pos + Bmt[Byte(S[Pos])]
-    else if Lp = 1 then
-      begin
-        Result := Pos;
-        Exit;
-      end
-    else
-      for I := Lp - 1 downto 1 do
-        if P[I] <> S[Pos - Lp + I] then
-          begin
-            Inc(Pos);
-            Break;
-          end
-        else if I = 1 then
-          begin
-            Result := Pos - Lp + 1;
-            Exit;
-          end;
-  Result := -1;
-end;
-
 function Taillinetail(Ahistory: string; Alinescount: Integer): string;
 var
   List: Tstringlist;
@@ -1557,7 +1538,7 @@ end;
 
 function Hex2text(HexText: string): string;
 var
-  I: Integer;
+  I: LongInt;
 begin
   Result := EmptyStr;
   for I := 1 to Length(HexText) div 2 do
@@ -1566,7 +1547,7 @@ end;
 
 function Text2hex(Msg: RawByteString): string;
 var
-  I: Integer;
+  I: LongInt;
 begin
   Result := EmptyStr;
   for I := 1 to Length(Msg) do
@@ -2018,14 +1999,14 @@ begin
       Dashow(S_Errorhead, Urlopenerrl, EmptyStr, 134, 2, 0);
       Exit;
     end;
-  if Bmsearch(0, Ts, '"') > -1 then
+  if Pos('"', Ts) > 0 then
     Ts := Parse('"', Ts, 2);
   // Проверяем под wine запущена программа или нет
-  if Bmsearch(0, Ts, 'winebrowser.exe') = -1 then
+  if Pos('winebrowser.exe', Ts) = 0 then
     Url := Changespaces(Url) // Преобразуем пробелы в %20
   else
     begin
-      if Bmsearch(0, Url, ':\') > -1 then
+      if Pos(':\', Url) > 0 then
         Url := '"' + Changeslash(Url) + '"'; // Для открытия в winebrowser
     end;
   Shellexecute(0, 'open', PChar(Ts), PChar(Url), nil, Sw_show);

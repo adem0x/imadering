@@ -1015,12 +1015,6 @@ end;
 
 procedure TMainForm.UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
 begin
-  // Если был активирован аборт сессии, то выходим и отключаем сокет
-  if UpdateHttpClient.Tag = 2 then
-    begin
-      UpdateHttpClient.CloseAsync;
-      UpdateHttpClient.Abort;
-    end;
   // Отображаем процесс получения данных
   if Assigned(UpdateForm) then
     begin
@@ -1035,6 +1029,12 @@ begin
           // Обновляем форму и контролы чтобы видеть изменения
           Update;
         end;
+    end;
+  // Если был активирован аборт сессии, то выходим и отключаем сокет
+  if UpdateHttpClient.Tag = 2 then
+    begin
+      UpdateHttpClient.CloseAsync;
+      UpdateHttpClient.Abort;
     end;
 end;
 
@@ -2073,20 +2073,20 @@ begin
     Pkt := GetFullTag(Jabber_BuffPkt);
     if Pkt <> EmptyStr then
       begin
-        if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (BMSearch(0, Pkt, FRootTag) = -1) then
+        if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (Pos(FRootTag, Pkt) = 0) then
           begin
             // Если это стадия подключения к серверу жаббер
             if Jabber_Connect_Phaze then
               begin
                 // Ищем механизм авторизации DIGEST-MD5
-                if BMSearch(0, Pkt, '>DIGEST-MD5<') > -1 then
+                if Pos('>DIGEST-MD5<', Pkt) > 0 then
                   // Отсылаем запрос challenge
                   Sendflap_jabber('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>')
                   // Если только механизм авторизации PLAIN
-                else if BMSearch(0, Pkt, '>PLAIN<') > -1 then
+                else if Pos('>PLAIN<', Pkt) > 0 then
                   Sendflap_jabber(Format(JPlainMechanism, [JabberPlain_Auth]))
                   // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
-                else if BMSearch(0, Pkt, '</challenge>') > -1 then
+                else if Pos('</challenge>', Pkt) > 0 then
                   begin
                     // Получаем чистый challenge из пакета и расшифровываем
                     Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
@@ -2100,14 +2100,14 @@ begin
                       Sendflap_jabber(JabberDIGESTMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge,
                           GetRandomHexBytes(32)));
                   end
-                else if BMSearch(0, Pkt, '<not-authorized') > -1 then
+                else if Pos('<not-authorized', Pkt) > 0 then
                   begin
                     // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
                     DAShow(S_Errorhead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
                     Jabber_GoOffline;
                     Exit;
                   end
-                else if BMSearch(0, Pkt, '<success') > -1 then
+                else if Pos('<success', Pkt) > 0 then
                   begin
                     // Закрепляем сессию с жаббер сервером
                     // Если сервер и порт указаны вручную
@@ -3899,7 +3899,7 @@ begin
     RosterItem.SubItems[5], RosterItem.SubItems[12]);
     RosterItem.Delete;
     end
-    else if RosterItem.SubItems[1] = 'NoCL' then
+    else if RosterItem.SubItems[1] = S_NoCL then
     begin
     //--Если контакт из группы "Не в списке"
     RosterItem.Delete;
@@ -3972,7 +3972,7 @@ begin
               end;
           end;
         // Если это группа "Не в списке"
-        if GroupId = 'NoCL' then
+        if GroupId = S_NoCL then
           begin
             //
             Exit;
@@ -4698,14 +4698,15 @@ begin
     begin
       Tag := (Sender as TMenuItem).Tag;
       TopInfoPanel.Caption := S_FileTransfer1 + (ContactList.SelectedItem as TButtonItem).Caption;
-      TopInfoPanel.Hint := (ContactList.SelectedItem as TButtonItem).UIN;
-      BottomInfoPanel.Hint := (ContactList.SelectedItem as TButtonItem).ContactType;
+      T_UIN := (ContactList.SelectedItem as TButtonItem).UIN;
+      T_UserType := (ContactList.SelectedItem as TButtonItem).ContactType;
       // --Открываем диалог выбора файла для передачи
       if SendFileOpenDialog.Execute then
         begin
-          FileNamePanel.Hint := SendFileOpenDialog.FileName;
-          FileSizePanel.Hint := GetFileFName(SendFileOpenDialog.FileName);
-          FileNamePanel.Caption := BN + FileSizePanel.Hint;
+          T_FilePath := SendFileOpenDialog.FileName;
+          T_FileName := GetFileFName(SendFileOpenDialog.FileName);
+          FileNamePanel.Caption := BN + T_FileName;
+          FileNamePanel.Hint := T_FileName;
           // --Вычисляем размер файла
           Fsize := GetFileSize(SendFileOpenDialog.FileName);
           if Fsize > 1000000 then

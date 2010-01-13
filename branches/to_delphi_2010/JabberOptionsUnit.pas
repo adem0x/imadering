@@ -215,7 +215,7 @@ end;
 procedure TJabberOptionsForm.Set_JabberOrgClick(Sender: TObject);
 begin
   // Автоматом подстраиваем учётные записи под серверы
-  if BMSearch(0, JabberJIDEdit.Text, '@') > -1 then
+  if Pos('@', JabberJIDEdit.Text) > 0 then
     JabberJIDEdit.Text := Parse('@', JabberJIDEdit.Text, 1);
   JabberJIDEdit.Text := JabberJIDEdit.Text + (Sender as TMenuItem).Hint;
   // Правим параметры серверов

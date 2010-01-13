@@ -31,6 +31,7 @@ const
   BN = ' ';
   S_Value = 'value';
   S_UniqGT = 'uniq\gtrans';
+  S_NoCL = 'NoCL';
   S_Icq = 'Icq';
   S_Jabber = 'Jabber';
   S_Mra = 'Mra';
@@ -351,10 +352,10 @@ var
   AddNewGroupOKL: string = 'Группа успешно добавлена в ваш список контактов!';
   JabberNullGroup: string = 'Общая';
   S_FileTransfer1: string;
-  FileTransfer2L: string = 'Передача файла ...';
-  FileTransfer3L: string = 'Передача файла завершена';
-  FileTransfer4L: string = 'Передача файла отменена';
-  FileTransfer5L: string = 'Ссылка для скачивания файла: %s' + RN + '%s' + RN + '[ Файл отправлен через %s. Подробнее на сайте: %s ]';
+  S_FileTransfer2: string;
+  S_FileTransfer3: string;
+  S_FileTransfer4: string;
+  S_FileTransfer5: string;
   SocketL: string = 'Сокет:';
   HistoryCompressedL: string =
     'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
@@ -566,11 +567,15 @@ begin
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_SearchQMess' then
           S_SearchQMess := IsolateTextString(List.Strings[I], 'c="', '"/>')
         else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer1' then
-          S_FileTransfer1 := IsolateTextString(List.Strings[I], 'c="', '"/>');
-
-
-
-
+          S_FileTransfer1 := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer2' then
+          S_FileTransfer2 := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer3' then
+          S_FileTransfer3 := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer4' then
+          S_FileTransfer4 := IsolateTextString(List.Strings[I], 'c="', '"/>')
+        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer5' then
+          S_FileTransfer5 := CheckText_RN(IsolateTextString(List.Strings[I], 'c="', '"/>'));
 
 
       end;

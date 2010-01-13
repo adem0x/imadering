@@ -85,11 +85,11 @@ begin
           for I := 0 to Items.Count - 1 do
             begin
               // Если это группы ICQ или NoCL, то пропускаем
-              if ((Length(Items[I].Caption) = 4) and (Items[I].SubItems[3] = S_Icq)) or (Items[I].Caption = 'NoCL') then
+              if ((Length(Items[I].Caption) = 4) and (Items[I].SubItems[3] = S_Icq)) or (Items[I].Caption = S_NoCL) then
                 Continue;
               // Если нашли текст в учётной записи или нике
-              if (BMSearch(0, UpperCase(Items[I].Caption, LoUserLocale), UpperCase(CLSearchEdit.Text, LoUserLocale)) > -1) or
-                (BMSearch(0, UpperCase(Items[I].SubItems[0], LoUserLocale), UpperCase(CLSearchEdit.Text, LoUserLocale)) > -1) then
+              if (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].Caption, LoUserLocale)) > 0) or
+                (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].SubItems[0], LoUserLocale)) > 0) then
                 begin
                   CLSearchJvListView.Items.Add.Caption := Items[I].Caption;
                   CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Items[I].SubItems[0]);

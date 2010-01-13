@@ -34,8 +34,8 @@ uses
   OverbyteIcsUrl,
   GtransUnit;
 
-{const
-  DT2100miliseconds = 1 / (SecsPerDay * 10);}
+{ const
+  DT2100miliseconds = 1 / (SecsPerDay * 10); }
 
 const
   // Capabilities
@@ -323,7 +323,7 @@ procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, Co
 function ICQ_StatusCode2ImgId(StatusCode: string): Integer;
 procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
 procedure ICQ_UserOffline_030C(PktData: string);
-procedure ICQ_SendMessage_0406(SUIN, SMsg: string; Old: Boolean);
+procedure ICQ_SendMessage_0406(SUIN, SMsg: string; InUnicode: Boolean);
 procedure ICQ_ReqMessage_0407(PktData: string);
 procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string;
   GTrans: Boolean = False);
@@ -590,47 +590,47 @@ end;
 
 function ICQ_ClientCap2String(ClientCap: string): string;
 begin
-  Result := EmptyStr;
+  Result := 'Unknown ICQ';
   // Определяем клиент по капабилитисам
-  if BMSearch(0, ClientCap, CAP_IMADERING) > -1 then
+  if Pos(CAP_IMADERING, ClientCap) > 0 then
     Result := 'IMadering'
-  else if BMSearch(0, ClientCap, CAP_QIP) > -1 then
+  else if Pos(CAP_QIP, ClientCap) > 0 then
     Result := 'QIP 2005'
-  else if BMSearch(0, Hex2Text(ClientCap), 'MirandaM') > -1 then
+  else if Pos('MirandaM', Hex2Text(ClientCap)) > 0 then
     Result := 'Miranda'
-  else if BMSearch(0, Hex2Text(ClientCap), '&RQinside') > -1 then
+  else if Pos('&RQinside', Hex2Text(ClientCap)) > 0 then
     Result := '&RQ'
-  else if BMSearch(0, Hex2Text(ClientCap), 'Smaper') > -1 then
+  else if Pos('Smaper', Hex2Text(ClientCap)) > 0 then
     Result := 'Smaper'
-  else if BMSearch(0, ClientCap, CAP_RNQ) > -1 then
+  else if Pos(CAP_RNQ, ClientCap) > 0 then
     Result := 'R&Q'
-  else if BMSearch(0, ClientCap, CAP_MACICQ) > -1 then
+  else if Pos(CAP_MACICQ, ClientCap) > 0 then
     Result := 'MacICQ'
-  else if BMSearch(0, ClientCap, CAP_KXICQ) > -1 then
+  else if Pos(CAP_KXICQ, ClientCap) > 0 then
     Result := 'KXICQ'
-  else if BMSearch(0, ClientCap, CAP_PUSH2TALK) > -1 then
+  else if Pos(CAP_PUSH2TALK, ClientCap) > 0 then
     Result := 'ICQ 5.1'
-  else if BMSearch(0, ClientCap, CAP_ICQLITE) > -1 then
+  else if Pos(CAP_ICQLITE, ClientCap) > 0 then
     Result := 'ICQ Lite'
-  else if BMSearch(0, ClientCap, CAP_NETVIGATOR) > -1 then
+  else if Pos(CAP_NETVIGATOR, ClientCap) > 0 then
     Result := 'Netvigator'
-  else if BMSearch(0, ClientCap, CAP_IMPLUS) > -1 then
+  else if Pos(CAP_IMPLUS, ClientCap) > 0 then
     Result := 'IM +'
-  else if BMSearch(0, Hex2Text(ClientCap), 'Jimm') > -1 then
+  else if Pos('Jimm', Hex2Text(ClientCap)) > 0 then
     Result := 'Jimm'
-  else if BMSearch(0, Hex2Text(ClientCap), 'Kopete') > -1 then
+  else if Pos('Kopete', Hex2Text(ClientCap)) > 0 then
     Result := 'Kopete'
-  else if BMSearch(0, Hex2Text(ClientCap), 'Licq client') > -1 then
+  else if Pos('Licq client', Hex2Text(ClientCap)) > 0 then
     Result := 'LICQ'
-  else if BMSearch(0, Hex2Text(ClientCap), 'mChat icq') > -1 then
+  else if Pos('mChat icq', Hex2Text(ClientCap)) > 0 then
     Result := 'mChat'
-  else if BMSearch(0, ClientCap, CAP_RAMBLER_RU) > -1 then
+  else if Pos(CAP_RAMBLER_RU, ClientCap) > 0 then
     Result := 'Rambler ICQ'
-  else if BMSearch(0, Hex2Text(ClientCap), 'SIM client') > -1 then
+  else if Pos('SIM client', Hex2Text(ClientCap)) > 0 then
     Result := 'SIM'
-  else if BMSearch(0, ClientCap, CAP_TRILL_CRYPT) > -1 then
+  else if Pos(CAP_TRILL_CRYPT, ClientCap) > 0 then
     Result := 'Trillian'
-  else if BMSearch(0, ClientCap, CAP_QIP_INFIUM) > -1 then
+  else if Pos(CAP_QIP_INFIUM, ClientCap) > 0 then
     Result := 'QIP Infium';
 end;
 
@@ -1502,7 +1502,7 @@ begin
                   for I := 0 to Items.Count - 1 do
                     begin
                       // Добавляем идентификаторы групп в список
-                      if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
+                      if (Items[I].Caption = S_NoCL) or (Items[I].Caption = '0000') then
                         Continue;
                       if (Items[I].SubItems[3] = S_Icq) and (Length(Items[I].Caption) = 4) then
                         CliDL.Add(Items[I].Caption);
@@ -1557,7 +1557,7 @@ begin
                   for I := 0 to Items.Count - 1 do
                     begin
                       // Добавляем идентификаторы групп в список
-                      if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
+                      if (Items[I].Caption = S_NoCL) or (Items[I].Caption = '0000') then
                         Continue;
                       if (Items[I].SubItems[3] = S_Icq) and (Length(Items[I].Caption) = 4) then
                         CliDL.Add(Items[I].Caption);
@@ -1830,8 +1830,8 @@ begin
           end;
         XLog(Log_ICQGet + Log_Contact_Info);
         // Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
-        BMRes := BMSearch(0, PktData, #$00#$32#$00);
-        if BMRes > -1 then
+        BMRes := Pos(#$00#$32#$00, PktData);
+        if BMRes > 0 then
           XLog(Log_ICQParsing + Log_Unk_Data + RN + Trim(Dump(NextData(PktData, BMRes - 1))))
         else
           Exit;
@@ -2611,7 +2611,7 @@ begin
     Result := 214;
 end;
 
-procedure ICQ_SendMessage_0406(SUIN, SMsg: string; Old: Boolean);
+procedure ICQ_SendMessage_0406(SUIN, SMsg: string; InUnicode: Boolean);
 const
   Cap = '094613494c7f11d18222444553540000';
   Cap1 = '{0946134E-4C7F-11D1-8222-444553540000}';
@@ -2621,7 +2621,7 @@ var
   OrigMsg: string;
   CoocId: RawByteString;
   CoocId1: RawByteString;
-  AnsiMsg: AnsiString;
+  UnicodeMess: string;
   Utf8Mess: Utf8String;
 begin
   // Запоминаем текст сообщения
@@ -2629,19 +2629,19 @@ begin
   // Отправляем сообщение кусками (ограничения протокола)
   while Length(OrigMsg) > 0 do
     begin
-      if Old then
-        AnsiMsg := NextData(OrigMsg, 1200)
+      if InUnicode then
+        UnicodeMess := NextData(OrigMsg, 1200)
       else
         Utf8Mess := UTF8Encode(NextData(OrigMsg, 3000));
       Randomize;
       CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4);
       CoocId1 := IntToHex(Random($AAAA), 4);
-      // Старый формат сообщений (анси кодировка)
-      if Old then
+      // Старый формат сообщений (псевдо юникод кодировка)
+      if InUnicode then
         begin
           Pkt := '00040006000000000006' + CoocId + '0001' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0002' + IntToHex
-            ((Length(AnsiMsg) + 13), 4) + '05010001010101' + IntToHex((Length(AnsiMsg) + 4), 4) + '00000000' + Text2Hex(AnsiMsg)
-            + '00060000';
+            (((Length(UnicodeMess) * SizeOf(Char)) + 14), 4) + '0501000201060101' + IntToHex(((Length(UnicodeMess) * SizeOf(Char)) + 4),
+            4) + '00020000' + Text2UnicodeHex(UnicodeMess) + '00060000';
         end
       else
         begin
@@ -2747,12 +2747,12 @@ X :;
       // Дата сообщения
       MsgD := Nick + ' [' + DateTimeChatMess + ']';
       // Ищем группу "Не в списке" в Ростере
-      RosterItem := RosterForm.ReqRosterItem('NoCL');
+      RosterItem := RosterForm.ReqRosterItem(S_NoCL);
       if RosterItem = nil then // Если группу не нашли
         begin
           // Добавляем такую группу в Ростер
           RosterItem := RosterForm.RosterJvListView.Items.Add;
-          RosterItem.Caption := 'NoCL';
+          RosterItem.Caption := S_NoCL;
           // Подготавиливаем все значения
           RosterForm.RosterItemSetFull(RosterItem);
           RosterItem.SubItems[1] := NoInListGroupCaption;
@@ -2766,7 +2766,7 @@ X :;
           RosterForm.RosterItemSetFull(RosterItem);
           // Обновляем субстроки
           SubItems[0] := Nick;
-          SubItems[1] := 'NoCL';
+          SubItems[1] := S_NoCL;
           SubItems[2] := 'none';
           SubItems[3] := S_Icq;
           SubItems[6] := '214';
@@ -2884,11 +2884,16 @@ begin
                   // CharsetSubset := HexToInt(Text2Hex(NextData(PktData, 2))); //Unknown; seen: 0x0000 = 0, 0xffff = -1
                   NextData(PktData, 2);
                   Msg := NextData(PktData, ULen);
-                  if CharsetNumber = $0002 then
-                    Msg := UCS2BEToStr(Msg);
+                  if CharsetNumber = $0002 then // Msg := UCS2BEToStr(Msg);
+                    begin
+                      Msg := Text2Hex(Msg);
+                      Msg := UnicodeHex2Text(Msg);
+                    end;
                   if Msg <> EmptyStr then
-                    XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
-                  Msg := RTF2Plain(Msg);
+                    begin
+                      XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
+                      Msg := RTF2Plain(Msg);
+                    end;
                 end
               else
                 begin
@@ -3012,18 +3017,20 @@ begin
                                 Dec(MsgLen);
                                 Msg := Utf8ToString(NextData(SubData, MsgLen));
                                 if Msg <> EmptyStr then
-                                  XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
-                                if Length(Msg) > 0 then
                                   begin
-                                    if MsgType = M_PLAIN then
+                                    XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
+                                    if Length(Msg) > 0 then
                                       begin
-                                        Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
-                                      end
-                                    else if MsgType = M_URL then
-                                      begin
-                                        Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
-                                        URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
-                                        Msg := URL + RN + Desc;
+                                        if MsgType = M_PLAIN then
+                                          begin
+                                            Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
+                                          end
+                                        else if MsgType = M_URL then
+                                          begin
+                                            Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
+                                            URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
+                                            Msg := URL + RN + Desc;
+                                          end;
                                       end;
                                   end;
                               end;
@@ -3191,183 +3198,184 @@ begin
         end;
     end;
   // Ищем доп. статус в капабилитисах (старый способ передачи доп. статусов)
-  if BMSearch(0, Caps, XS1) > -1 then
+  if Pos(XS1, Caps) > 0 then
     IXStat := 1
-  else if BMSearch(0, Caps, XS2) > -1 then
+  else if Pos(XS2, Caps) > 0 then
     IXStat := 2
-  else if BMSearch(0, Caps, XS3) > -1 then
+  else if Pos(XS3, Caps) > 0 then
     IXStat := 3
-  else if BMSearch(0, Caps, XS4) > -1 then
+  else if Pos(XS4, Caps) > 0 then
     IXStat := 4
-  else if BMSearch(0, Caps, XS5) > -1 then
+  else if Pos(XS5, Caps) > 0 then
     IXStat := 5
-  else if BMSearch(0, Caps, XS6) > -1 then
+  else if Pos(XS6, Caps) > 0 then
     IXStat := 6
-  else if BMSearch(0, Caps, XS7) > -1 then
+  else if Pos(XS7, Caps) > 0 then
     IXStat := 7
-  else if BMSearch(0, Caps, XS8) > -1 then
+  else if Pos(XS8, Caps) > 0 then
     IXStat := 8
-  else if BMSearch(0, Caps, XS9) > -1 then
+  else if Pos(XS9, Caps) > 0 then
     IXStat := 9
-  else if BMSearch(0, Caps, XS10) > -1 then
+  else if Pos(XS10, Caps) > 0 then
     IXStat := 10
-  else if BMSearch(0, Caps, XS11) > -1 then
+  else if Pos(XS11, Caps) > 0 then
     IXStat := 11
-  else if BMSearch(0, Caps, XS12) > -1 then
+  else if Pos(XS12, Caps) > 0 then
     IXStat := 12
-  else if BMSearch(0, Caps, XS13) > -1 then
+  else if Pos(XS13, Caps) > 0 then
     IXStat := 13
-  else if BMSearch(0, Caps, XS14) > -1 then
+  else if Pos(XS14, Caps) > 0 then
     IXStat := 14
-  else if BMSearch(0, Caps, XS15) > -1 then
+  else if Pos(XS15, Caps) > 0 then
     IXStat := 15
-  else if BMSearch(0, Caps, XS16) > -1 then
+  else if Pos(XS16, Caps) > 0 then
     IXStat := 16
-  else if BMSearch(0, Caps, XS17) > -1 then
+  else if Pos(XS17, Caps) > 0 then
     IXStat := 17
-  else if BMSearch(0, Caps, XS18) > -1 then
+  else if Pos(XS18, Caps) > 0 then
     IXStat := 18
-  else if BMSearch(0, Caps, XS19) > -1 then
+  else if Pos(XS19, Caps) > 0 then
     IXStat := 19
-  else if BMSearch(0, Caps, XS20) > -1 then
+  else if Pos(XS20, Caps) > 0 then
     IXStat := 20
-  else if BMSearch(0, Caps, XS21) > -1 then
+  else if Pos(XS21, Caps) > 0 then
     IXStat := 21
-  else if BMSearch(0, Caps, XS22) > -1 then
+  else if Pos(XS22, Caps) > 0 then
     IXStat := 22
-  else if BMSearch(0, Caps, XS23) > -1 then
+  else if Pos(XS23, Caps) > 0 then
     IXStat := 23
-  else if BMSearch(0, Caps, XS24) > -1 then
+  else if Pos(XS24, Caps) > 0 then
     IXStat := 24
-  else if BMSearch(0, Caps, XS25) > -1 then
+  else if Pos(XS25, Caps) > 0 then
     IXStat := 25
-  else if BMSearch(0, Caps, XS26) > -1 then
+  else if Pos(XS26, Caps) > 0 then
     IXStat := 26
-  else if BMSearch(0, Caps, XS27) > -1 then
+  else if Pos(XS27, Caps) > 0 then
     IXStat := 27
-  else if BMSearch(0, Caps, XS28) > -1 then
+  else if Pos(XS28, Caps) > 0 then
     IXStat := 28
-  else if BMSearch(0, Caps, XS29) > -1 then
+  else if Pos(XS29, Caps) > 0 then
     IXStat := 29
-  else if BMSearch(0, Caps, XS30) > -1 then
+  else if Pos(XS30, Caps) > 0 then
     IXStat := 30
-  else if BMSearch(0, Caps, XS31) > -1 then
+  else if Pos(XS31, Caps) > 0 then
     IXStat := 31
-  else if BMSearch(0, Caps, XS32) > -1 then
+  else if Pos(XS32, Caps) > 0 then
     IXStat := 32
-  else if BMSearch(0, Caps, XS33) > -1 then
+  else if Pos(XS33, Caps) > 0 then
     IXStat := 33
-  else if BMSearch(0, Caps, XS34) > -1 then
+  else if Pos(XS34, Caps) > 0 then
     IXStat := 34
-  else if BMSearch(0, Caps, XS35) > -1 then
+  else if Pos(XS35, Caps) > 0 then
     IXStat := 35
-  else if BMSearch(0, Caps, XS36) > -1 then
+  else if Pos(XS36, Caps) > 0 then
     IXStat := 179
-  else if BMSearch(0, Caps, XS37) > -1 then
+  else if Pos(XS37, Caps) > 0 then
     IXStat := 180;
   // Ищем идентификаторы клиентов в капабилитисах
-  if BMSearch(0, Caps, CAP_IMADERING) > -1 then
+  PClient := EmptyStr;
+  if Pos(CAP_IMADERING, Caps) > 0 then
     begin
       IClient := 1;
       PClient := 'IMadering';
     end
-  else if BMSearch(0, Caps, CAP_QIP) > -1 then
+  else if Pos(CAP_QIP, Caps) > 0 then
     begin
       IClient := 2;
       PClient := 'QIP';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'Smaper') > -1 then
+  else if Pos('Smaper', Hex2Text(Caps)) > 0 then
     begin
       IClient := 8;
       PClient := 'Smaper';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'MirandaM') > -1 then
+  else if Pos('MirandaM', Hex2Text(Caps)) > 0 then
     begin
       IClient := 3;
       PClient := 'Miranda';
     end
-  else if BMSearch(0, Hex2Text(Caps), '&RQinside') > -1 then
+  else if Pos('&RQinside', Hex2Text(Caps)) > 0 then
     begin
       IClient := 4;
       PClient := '&RQ';
     end
-  else if BMSearch(0, Caps, CAP_RNQ) > -1 then
+  else if Pos(CAP_RNQ, Caps) > 0 then
     begin
       IClient := 5;
       PClient := 'R&Q';
     end
-  else if BMSearch(0, Caps, CAP_MACICQ) > -1 then
+  else if Pos(CAP_MACICQ, Caps) > 0 then
     begin
       IClient := 10;
       PClient := 'MacICQ';
     end
-  else if BMSearch(0, Caps, CAP_KXICQ) > -1 then
+  else if Pos(CAP_KXICQ, Caps) > 0 then
     begin
       IClient := 12;
       PClient := 'KXICQ';
     end
-  else if BMSearch(0, Caps, CAP_PUSH2TALK) > -1 then
+  else if Pos(CAP_PUSH2TALK, Caps) > 0 then
     begin
       IClient := 14;
       PClient := 'ICQ Lite';
     end
-  else if BMSearch(0, Caps, CAP_ICQLITE) > -1 then
+  else if Pos(CAP_ICQLITE, Caps) > 0 then
     begin
       IClient := 15;
       PClient := 'ICQ Lite';
     end
-  else if BMSearch(0, Caps, CAP_NETVIGATOR) > -1 then
+  else if Pos(CAP_NETVIGATOR, Caps) > 0 then
     begin
       IClient := 16;
       PClient := 'ICQ Net';
     end
-  else if BMSearch(0, Caps, CAP_IMPLUS) > -1 then
+  else if Pos(CAP_IMPLUS, Caps) > 0 then
     begin
       IClient := 18;
       PClient := 'IM plus';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'Jimm') > -1 then
+  else if Pos('Jimm', Hex2Text(Caps)) > 0 then
     begin
       IClient := 19;
       PClient := 'Jimm';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'Kopete') > -1 then
+  else if Pos('Kopete', Hex2Text(Caps)) > 0 then
     begin
       IClient := 20;
       PClient := 'Kopete';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'Licq client') > -1 then
+  else if Pos('Licq client', Hex2Text(Caps)) > 0 then
     begin
       IClient := 21;
       PClient := 'Licq';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'mChat icq') > -1 then
+  else if Pos('mChat icq', Hex2Text(Caps)) > 0 then
     begin
       IClient := 22;
       PClient := 'mChat';
     end
-  else if BMSearch(0, Caps, CAP_RAMBLER_RU) > -1 then
+  else if Pos(CAP_RAMBLER_RU, Caps) > 0 then
     begin
       IClient := 23;
       PClient := 'Rambler ICQ';
     end
-  else if BMSearch(0, Hex2Text(Caps), 'SIM client') > -1 then
+  else if Pos('SIM client', Hex2Text(Caps)) > 0 then
     begin
       IClient := 24;
       PClient := 'SIM';
     end
-  else if BMSearch(0, Caps, CAP_TRILL_CRYPT) > -1 then
+  else if Pos(CAP_TRILL_CRYPT, Caps) > 0 then
     begin
       IClient := 25;
       PClient := 'Trillian';
     end
-  else if BMSearch(0, Caps, CAP_QIP_INFIUM) > -1 then
+  else if Pos(CAP_QIP_INFIUM, Caps) > 0 then
     begin
       IClient := 26;
       PClient := 'QIP Infium';
     end;
   // Ищем поддержку UTF-8 сообщений
-  if (BMSearch(0, Caps, CAP_UTF8) > -1) or (BMSearch(0, CapsId, '134E') > -1) then
+  if (Pos(CAP_UTF8, Caps) > 0) or (Pos('134E', CapsId) > 0) then
     Utf8Sup := True;
   // Обновляем отображение контакта в Ростере
   RosterItem := RosterForm.ReqRosterItem(UIN);
@@ -3399,7 +3407,12 @@ begin
           if IClient > -1 then
             SubItems[8] := IntToStr(IClient + 186)
           else
-            SubItems[8] := '-1';
+            begin
+              if (StatusIcoInd <> 9) and (StatusIcoInd <> 80) and (StatusIcoInd <> 214) then
+                SubItems[8] := IntToStr(16 + 186)
+              else
+                SubItems[8] := '-1';
+            end;
           // Присваиваем онлайн переменные контакту
           SubItems[20] := UserClass;
           SubItems[21] := IntIP;

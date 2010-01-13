@@ -71,6 +71,8 @@ object FileTransferForm: TFileTransferForm
     Height = 21
     Alignment = taLeftJustify
     BevelOuter = bvLowered
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 1
   end
   object FileSizePanel: TPanel
@@ -177,7 +179,10 @@ object FileTransferForm: TFileTransferForm
     OnDocEnd = SendFileHttpClientDocEnd
     OnSendData = SendFileHttpClientSendData
     OnSendEnd = SendFileHttpClientSendEnd
+    OnRequestDone = SendFileHttpClientRequestDone
     SocksAuthentication = socksNoAuthentication
+    OnSocksConnected = SendFileHttpClientSocksConnected
+    OnSocksError = SendFileHttpClientSocksError
     Left = 160
     Top = 8
   end

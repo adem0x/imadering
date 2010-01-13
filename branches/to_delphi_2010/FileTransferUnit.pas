@@ -55,11 +55,18 @@ type
     procedure SendFileHttpClientSessionClosed(Sender: TObject);
     procedure SendFileButtonClick(Sender: TObject);
     procedure SendFileHttpClientSendData(Sender: TObject; Buffer: Pointer; Len: Integer);
+    procedure SendFileHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
+    procedure SendFileHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
+    procedure SendFileHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 
   private
     { Private declarations }
   public
     { Public declarations }
+    T_UIN: string;
+    T_UserType: string;
+    T_FilePath: string;
+    T_FileName: string;
     procedure TranslateForm;
   end;
 
@@ -77,12 +84,25 @@ uses
   IcqProtoUnit,
   RosterUnit,
   JabberProtoUnit,
-  MraProtoUnit;
+  MraProtoUnit,
+  ChatUnit;
 
 {$R *.dfm}
 
 const
   UpWapRootURL = 'http://upwap.ru';
+
+resourcestring
+  RS_SF = 'Send_File_Http_Client ';
+  RS_DB = 'Doc_Begin; Rcvd_Stream Create';
+  RS_SDA = 'Send_Data; Abort';
+  RS_DE = 'Doc_End';
+  RS_SE = 'Send_End';
+  RS_SesClose = 'Session_Closed; Status_Code = ';
+  RS_ReqD = 'Request_Done; Error = ';
+  RS_RcvdSE = 'Rcvd_Stream; Enabled';
+  RS_RcvdSF = 'Rcvd_Stream; Free';
+  RS_SendSF = 'Send_Stream; Free';
 
 procedure TFileTransferForm.SendFileButtonClick(Sender: TObject);
 begin
@@ -97,12 +117,17 @@ begin
   SendFileHttpClient.Abort;
   SettingsForm.ApplyProxyHttpClient(SendFileHttpClient);
   case Tag of
-    1: begin
+    1: begin // Передача через сервис UpWap.ru
         // Запрашиваем страницу с кодом сессии
         SendProgressBar.Position := 0;
+        // Ставим флаг события для данных
         SendFileHttpClient.Tag := 0;
+        // Формируем URL запроса
         SendFileHttpClient.URL := UpWapRootURL + '/upload/';
-        BottomInfoPanel.Caption := FileTransfer2L;
+        // Выводим информацию о начале процесса
+        BottomInfoPanel.Caption := S_FileTransfer2;
+        Xlog(S_FileTransfer2 + BN + SendFileHttpClient.URL);
+        // Начинаем запрос данных
         SendFileHttpClient.GetASync;
       end;
   end;
@@ -111,159 +136,34 @@ end;
 procedure TFileTransferForm.SendFileHttpClientDocBegin(Sender: TObject);
 begin
   // Создаём блок памяти для приёма http данных
+  Xlog(RS_SF + RS_DB);
   SendFileHttpClient.RcvdStream := TMemoryStream.Create;
 end;
 
 procedure TFileTransferForm.SendFileHttpClientDocEnd(Sender: TObject);
-var
-  List: TStringList;
-  Doc, Skey, Buf, Boundry, OKURL: string;
-  FileToSend: TMemoryStream;
-  RosterItem: TListItem;
-  SendYES: Boolean;
 begin
-  SendYES := False;
-  // Читаем полученные http данные из блока памяти
-  if SendFileHttpClient.RcvdStream <> nil then
-    begin
-      try
-        // Увеличиваем статистику входящего трафика
-        TrafRecev := TrafRecev + SendFileHttpClient.RcvdCount;
-        AllTrafRecev := AllTrafRecev + SendFileHttpClient.RcvdCount;
-        if Assigned(TrafficForm) then
-          MainForm.OpenTrafficClick(nil);
-        // Определяем выполнение задания для данных по флагу
-        // Создаём временный лист
-        List := TStringList.Create;
-        try
-          // Обнуляем позицию начала чтения в блоке памяти
-          SendFileHttpClient.RcvdStream.Position := 0;
-          // Читаем данные в лист
-          List.LoadFromStream(SendFileHttpClient.RcvdStream);
-          // Разбираем данные в листе
-          if List.Text > EmptyStr then
-            begin
-              Doc := List.Text;
-              case SendFileHttpClient.Tag of
-                0: begin
-                    // Узнаём ключ сессии
-                    Skey := IsolateTextString(Doc, 'action="', '"');
-                    // Создаём блок памяти для отправки файла методом POST
-                    SendFileHttpClient.SendStream := TMemoryStream.Create;
-                    // Формируем данные для отправки
-                    with SendFileHttpClient do
-                      begin
-                        // Ссылка для приёма данных
-                        URL := UpWapRootURL + Skey;
-                        // Заполняем переменные для POST
-                        Boundry := '----------sZLbqiVRVfOO8NjlMuYJE3';
-                        { Specified in Multipart/form-data RFC }
-                        ContentTypePost := UTF8Encode('multipart/form-data; boundary=' + Copy(Boundry, 3, Length(Boundry)));
-                        Buf := UTF8Encode
-                          (Boundry + RN + 'Content-Disposition: form-data; name="file"; filename="' + FileSizePanel.Hint + '"' + RN +
-                            'Content-Type: image/jpeg' + RN + RN);
-                        // Записываем переменные в память
-                        SendStream.write(Buf[1], Length(Buf));
-                        // Создаём блок памяти для файла
-                        FileToSend := TMemoryStream.Create;
-                        try
-                          FileToSend.LoadFromFile(FileNamePanel.Hint);
-                          FileToSend.SaveToStream(SendStream);
-                        finally
-                          FileToSend.Free;
-                        end;
-                        // Записываем переменную описания файла
-                        Buf := UTF8Encode
-                          (RN + Boundry + RN + 'Content-Disposition: form-data; name="desc"' + RN + RN + DescEdit.Text + RN + Boundry +
-                            RN + 'Content-Disposition: form-data; name="password"' + RN + RN + PassEdit.Text + RN + Boundry + RN +
-                            'Content-Disposition: form-data; name="send"' + RN + RN + 'Отправить!' + RN + Boundry + '--' + RN);
-                        SendStream.write(Buf[1], Length(Buf));
-                        SendStream.Seek(0, SoFromBeginning);
-                        // Отправляем данные на сервер
-                        OnSessionClosed := nil;
-                        Abort;
-                        OnSessionClosed := SendFileHttpClientSessionClosed;
-                        SendFileHttpClient.Tag := 1;
-                        PostAsync;
-                      end;
-                  end;
-                1: begin
-                    // Блокируем кнопку отмены операции
-                    CancelBitBtnClick(nil);
-                    // Ищем информацию об успешной закачке файла на сервер
-                    if BMSearch(0, Doc, 'Файл размещен') > -1 then
-                      begin
-                        BottomInfoPanel.Caption := FileTransfer3L;
-                        OKURL := UpWapRootURL + IsolateTextString(Doc, 'action="', '"');
-                        // Формируем текст со ссылкой
-                        case Tag of
-                          1: OKURL := Format(FileTransfer5L, [FileSizePanel.Hint, OKURL, 'upwap.ru', UpWapRootURL]);
-                        end;
-                        // Ищем такой контакт в Ростере
-                        RosterItem := RosterForm.ReqRosterItem(TopInfoPanel.Hint);
-                        if RosterItem <> nil then
-                          begin
-                            // Отсылаем контакту ссылку и записываем это в историю сообщений
-                            if RosterItem.SubItems[3] = S_Icq then
-                              begin
-                                if ICQ_Work_Phaze then
-                                  begin
-                                    if (RosterItem.SubItems[6] <> '9') and (RosterItem.SubItems[33] = 'X') then
-                                      ICQ_SendMessage_0406(RosterItem.Caption, OKURL, False)
-                                    else
-                                      ICQ_SendMessage_0406(RosterItem.Caption, OKURL, True);
-                                    SendYES := True;
-                                  end;
-                              end
-                            else if RosterItem.SubItems[3] = S_Jabber then
-                              begin
-
-                              end
-                            else if RosterItem.SubItems[3] = S_Mra then
-                              begin
-
-                              end;
-                            // Добавляем в историю
-                            if SendYES then
-                              begin
-                                CheckMessage_BR(OKURL);
-                                DecorateURL(OKURL);
-                                RosterItem.SubItems[13] := RosterItem.SubItems[13] + '<span class=a>' + YouAt + ' [' + DateTimeChatMess +
-                                  ']' + '</span><br><span class=c>' + OKURL + '</span><br><br>' + RN;
-                              end;
-                          end;
-                      end;
-                  end;
-              end;
-            end;
-        finally
-          List.Free;
-        end;
-      finally
-        // Высвобождаем блок памяти
-        SendFileHttpClient.RcvdStream.Free;
-        SendFileHttpClient.RcvdStream := nil;
-      end;
-    end;
+  Xlog(RS_SF + RS_DE);
 end;
 
 procedure TFileTransferForm.SendFileHttpClientSendData(Sender: TObject; Buffer: Pointer; Len: Integer);
 begin
-  // Если прерывание передачи, то останавливаем сокет
-  if SendFileHttpClient.Tag = 2 then
-    begin
-      SendFileHttpClient.CloseAsync;
-      SendFileHttpClient.Abort;
-    end;
   // Отображаем процесс передачи файла
   SendProgressBar.Max := SendFileHttpClient.SendStream.Size;
   SendProgressBar.Position := SendFileHttpClient.SentCount;
   // Обновляем форму и контролы чтобы видеть изменения
   Update;
+  // Если прерывание передачи, то останавливаем сокет
+  if SendFileHttpClient.Tag = 2 then
+    begin
+      Xlog(RS_SF + RS_SDA);
+      SendFileHttpClient.CloseAsync;
+      SendFileHttpClient.Abort;
+    end;
 end;
 
 procedure TFileTransferForm.SendFileHttpClientSendEnd(Sender: TObject);
 begin
+  Xlog(RS_SF + RS_SE);
   // Увеличиваем статистику исходящего трафика
   TrafSend := TrafSend + SendFileHttpClient.SentCount;
   AllTrafSend := AllTrafSend + SendFileHttpClient.SentCount;
@@ -274,9 +174,31 @@ end;
 procedure TFileTransferForm.SendFileHttpClientSessionClosed(Sender: TObject);
 begin
   // Обрабатываем возможные ошибки в работе http сокета
-  if (SendFileHttpClient.StatusCode = 0) or (SendFileHttpClient.StatusCode >= 400) then
+  with SendFileHttpClient do
     begin
-      BottomInfoPanel.Caption := ErrorHttpClient(SendFileHttpClient.StatusCode);
+      if (StatusCode = 0) or (StatusCode >= 400) then
+        begin
+          BottomInfoPanel.Caption := ErrorHttpClient(StatusCode);
+          Xlog(RS_SF + RS_SesClose + IntToStr(StatusCode));
+        end;
+    end;
+end;
+
+procedure TFileTransferForm.SendFileHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
+begin
+  // Если возникла ошибка, то сообщаем об этом
+  if ErrCode <> 0 then
+    begin
+      DAShow(S_Errorhead, NotifyConnectError('Transfer', ErrCode), EmptyStr, 134, 2, 0);
+    end;
+end;
+
+procedure TFileTransferForm.SendFileHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
+begin
+  // Если возникла ошибка, то сообщаем об этом
+  if Error <> 0 then
+    begin
+      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -286,6 +208,7 @@ begin
   CancelBitBtn.Enabled := False;
   // Останавливаем передачу файла
   SendFileHttpClient.Tag := 2;
+  SendFileHttpClient.CloseAsync;
   SendFileHttpClient.Abort;
   // Разблокируем контролы Описания и Пароля
   DescEdit.Enabled := True;
@@ -294,7 +217,8 @@ begin
   PassEdit.Color := ClWindow;
   if Sender <> nil then
     begin
-      BottomInfoPanel.Caption := FileTransfer4L;
+      BottomInfoPanel.Caption := S_FileTransfer4;
+      Xlog(RS_SF + S_FileTransfer4);
       SendFileButton.Enabled := True;
     end;
 end;
@@ -310,12 +234,6 @@ begin
   // Если передача закончена, то уничтожаем окно
   if not CancelBitBtn.Enabled then
     begin
-      // Высвобождаем память
-      if SendFileHttpClient.SendStream <> nil then
-        begin
-          SendFileHttpClient.SendStream.Free;
-          SendFileHttpClient.SendStream := nil;
-        end;
       // Уничтожаем форму
       Action := CaFree;
       FileTransferForm := nil;
@@ -341,12 +259,183 @@ end;
 procedure TFileTransferForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  //CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Другое
   CancelBitBtn.Caption := S_Cancel;
   CloseBitBtn.Caption := S_Close;
+end;
+
+procedure TFileTransferForm.SendFileHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+label
+  X;
+var
+  List: TStringList;
+  Doc, Skey, OKURL, HistoryFile, MsgD: string;
+  FileToSend: TMemoryStream;
+  Buf, Boundry: Utf8String;
+begin
+  try
+    Xlog(RS_SF + RS_ReqD + IntToStr(ErrCode));
+    // Высвобождаем память отправки данных
+    if SendFileHttpClient.SendStream <> nil then
+      begin
+        SendFileHttpClient.SendStream.Free;
+        SendFileHttpClient.SendStream := nil;
+        Xlog(RS_SF + RS_SendSF);
+      end;
+    // Читаем полученные http данные из блока памяти
+    if SendFileHttpClient.RcvdStream <> nil then
+      begin
+        Xlog(RS_SF + RS_RcvdSE);
+        // Создаём временный лист
+        List := TStringList.Create;
+        try
+          // Увеличиваем статистику входящего трафика
+          TrafRecev := TrafRecev + SendFileHttpClient.RcvdCount;
+          AllTrafRecev := AllTrafRecev + SendFileHttpClient.RcvdCount;
+          if Assigned(TrafficForm) then
+            MainForm.OpenTrafficClick(nil);
+          // Обнуляем позицию начала чтения в блоке памяти
+          SendFileHttpClient.RcvdStream.Position := 0;
+          // Читаем данные в лист
+          List.LoadFromStream(SendFileHttpClient.RcvdStream);
+          // Разбираем данные в листе
+          if List.Text > EmptyStr then
+            begin
+              Doc := UTF8ToString(List.Text);
+              Xlog(RS_SF + RN + RN + Doc);
+              case SendFileHttpClient.Tag of // Определяем выполнение задания для данных по флагу
+                0: begin
+                    // Узнаём ключ сессии
+                    Skey := EmptyStr;
+                    Skey := IsolateTextString(Doc, 'action="', '"');
+                    // Формируем данные для отправки
+                    with SendFileHttpClient do
+                      begin
+                        // Создаём блок памяти для отправки файла методом POST
+                        SendStream := TMemoryStream.Create;
+                        // Ссылка для приёма данных
+                        URL := UpWapRootURL + Skey;
+                        Xlog(RS_SF + URL);
+                        // Заполняем переменные для POST
+                        Boundry := '------------sZLbqiVRVfOO8NjlMuYJE3';
+                        { Specified in Multipart/form-data RFC }
+                        ContentTypePost := UTF8Encode('multipart/form-data; boundary=' + Copy(Boundry, 3, Length(Boundry)));
+                        Buf := UTF8Encode(Boundry + RN + 'Content-Disposition: form-data; name="file"; filename="' + T_FileName + '"' +
+                            RN + 'Content-Type: image/jpeg' + RN + RN);
+                        // Записываем переменные в память
+                        SendStream.write(Buf[1], Length(Buf));
+                        // Создаём блок памяти для файла
+                        FileToSend := TMemoryStream.Create;
+                        try
+                          FileToSend.LoadFromFile(T_FilePath);
+                          FileToSend.SaveToStream(SendStream);
+                        finally
+                          FileToSend.Free;
+                        end;
+                        // Записываем переменную описания файла
+                        Buf := UTF8Encode
+                          (RN + Boundry + RN + 'Content-Disposition: form-data; name="desc"' + RN + RN + DescEdit.Text + RN + Boundry +
+                            RN + 'Content-Disposition: form-data; name="password"' + RN + RN + PassEdit.Text + RN + Boundry + RN +
+                            'Content-Disposition: form-data; name="send"' + RN + RN + 'Отправить!' + RN + Boundry + '--' + RN);
+                        SendStream.write(Buf[1], Length(Buf));
+                        SendStream.Seek(0, SoFromBeginning);
+                        // Отправляем данные на сервер
+                        SendFileHttpClient.Tag := 1;
+                        PostAsync;
+                      end;
+                  end;
+                1: begin
+                    // Ищем информацию об успешной закачке файла на сервер
+                    if Pos('Файл размещен', Doc) > 0 then
+                      begin
+                        BottomInfoPanel.Caption := S_FileTransfer3;
+                        OKURL := UpWapRootURL + IsolateTextString(Doc, 'action="', '"');
+                        // Формируем текст со ссылкой
+                        case Tag of
+                          1: OKURL := Format(S_FileTransfer5, [T_FileName, OKURL, 'UpWap.ru', FileSizePanel.Caption]);
+                        end;
+                        Xlog(RS_SF + RN + OKURL);
+                        MsgD := YouAt + ' [' + DateTimeChatMess + ']';
+                        CheckMessage_BR(OKURL);
+                        DecorateURL(OKURL);
+                        // Отправляем сообщение с сылкой на файл
+                        if T_UserType = S_Icq then
+                          begin
+                            // Если нет подключения к серверу ICQ, то выходим
+                            if NotProtoOnline(S_Icq) then
+                              goto X;
+                            // Отправляем сообщение в юникод формате
+                            ICQ_SendMessage_0406(T_UIN, OKURL, True);
+                            // Формируем файл с историей
+                            HistoryFile := ProfilePath + HistoryFileName + S_Icq + BN + ICQ_LoginUIN + BN + T_UIN + '.htm';
+                          end
+                        else if T_UserType = S_Jabber then
+                          begin
+                            // Если нет подключения к серверу Jabber, то выходим
+                            if NotProtoOnline(S_Jabber) then
+                              goto X;
+                            // Отправляем сообщение
+                            Jabber_SendMessage(T_UIN, OKURL);
+                            // Формируем файл с историей
+                            HistoryFile := ProfilePath + HistoryFileName + S_Jabber + BN + Jabber_LoginUIN + BN + T_UIN + '.htm';
+                          end
+                        else if T_UserType = S_Mra then
+                          begin
+                            // Если нет подключения к серверу MRA, то выходим
+                            if NotProtoOnline(S_Mra) then
+                              goto X;
+                            // Формируем файл с историей
+                            HistoryFile := ProfilePath + HistoryFileName + S_Mra + BN + MRA_LoginUIN + BN + T_UIN + '.htm';
+                          end
+                        else
+                          goto X;
+                        // Записываем историю в файл этого контакта
+                        SaveTextInHistory('<span class=a>' + MsgD + '</span><br><span class=c>' + OKURL + '</span><br><br>', HistoryFile);
+                        // Если окно сообщений не было создано, то создаём его
+                        if not Assigned(ChatForm) then
+                          ChatForm := TChatForm.Create(MainForm);
+                        // Если вкладка чата совпадает с UIN получателя
+                        with ChatForm do
+                          begin
+                            if InfoPanel2.Caption = T_UIN then
+                              begin
+                                // Оповещаем о удачной передаче файла
+                                NotifyPanel.Caption := S_FileTransfer3;
+                                // Увеличиваем счётчик исходящих сообщений
+                                Inc(OutMessIndex);
+                                // Добавляем в чат сообщение
+                                AddChatText(MsgD, OKURL);
+                                // Прокручиваем чат до конца
+                                HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+                                // Очищаем поле ввода теста
+                                InputRichEdit.Clear;
+                                InputRichEditChange(Self);
+                              end;
+                          end;
+                        // Возвращаем пункты управления в исходное состояние
+                        CancelBitBtn.Enabled := False;
+                        if not FileTransferForm.Visible then
+                          Close;
+                      end;
+                  end;
+              end;
+            end;
+        X :;
+        finally
+          Xlog(RS_SF + RS_RcvdSF);
+          // Высвобождаем блок памяти
+          List.Free;
+          SendFileHttpClient.RcvdStream.Free;
+          SendFileHttpClient.RcvdStream := nil;
+        end;
+      end;
+  except
+    on E: Exception do
+      MainForm.IMaderingEventsException(Self, E);
+  end;
 end;
 
 end.

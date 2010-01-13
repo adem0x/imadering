@@ -213,12 +213,12 @@ begin
   if RosterItem = nil then
     begin
       // Ищем группу "Не в списке" в Ростере
-      RosterItem := RosterForm.ReqRosterItem('NoCL');
+      RosterItem := RosterForm.ReqRosterItem(S_NoCL);
       if RosterItem = nil then // Если группу не нашли
         begin
           // Добавляем такую группу в Ростер
           RosterItem := RosterForm.RosterJvListView.Items.Add;
-          RosterItem.Caption := 'NoCL';
+          RosterItem.Caption := S_NoCL;
           // Подготавиливаем все значения
           RosterForm.RosterItemSetFull(RosterItem);
           RosterItem.SubItems[1] := NoInListGroupCaption;
@@ -235,7 +235,7 @@ begin
             SubItems[0] := SearchResultJvListView.Selected.SubItems[1]
           else
             SubItems[0] := SearchResultJvListView.Selected.SubItems[2];
-          SubItems[1] := 'NoCL';
+          SubItems[1] := S_NoCL;
           SubItems[2] := 'none';
           SubItems[3] := S_Icq;
           SubItems[6] := '214';

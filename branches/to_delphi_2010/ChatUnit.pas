@@ -196,7 +196,6 @@ type
     OutMessIndex: LongInt;
     ChatButton: TButtonItem;
     UserType: string;
-    UserUtf8Support: Boolean;
     UserAvatarHash: string;
     procedure TranslateForm;
     procedure CheckMessage_ClearTag(var Msg: string);
@@ -261,10 +260,6 @@ begin
           CButton.Tag := StrToInt(SubItems[6]);
           CButton.ImageIndex := CButton.Tag;
           CButton.Hint := SubItems[34];
-          if SubItems[33] = 'X' then
-            UserUtf8Support := True
-          else
-            UserUtf8Support := False;
           UserAvatarHash := Hex2Text(SubItems[29]);
           UserType := SubItems[3];
           InputRichEdit.Text := SubItems[14];
@@ -909,14 +904,15 @@ begin
     begin
       Tag := (Sender as TMenuItem).Tag; // 1 - UpWap.ru
       TopInfoPanel.Caption := S_FileTransfer1 + InfoPanel1.Caption;
-      TopInfoPanel.Hint := InfoPanel2.Caption;
-      BottomInfoPanel.Hint := UserType;
+      T_UIN := InfoPanel2.Caption;
+      T_UserType := UserType;
       // Открываем диалог выбора файла для передачи
       if MainForm.SendFileOpenDialog.Execute then
         begin
-          FileNamePanel.Hint := MainForm.SendFileOpenDialog.FileName;
-          FileSizePanel.Hint := GetFileFName(MainForm.SendFileOpenDialog.FileName);
-          FileNamePanel.Caption := BN + FileSizePanel.Hint;
+          T_FilePath := MainForm.SendFileOpenDialog.FileName;
+          T_FileName := GetFileFName(MainForm.SendFileOpenDialog.FileName);
+          FileNamePanel.Caption := BN + T_FileName;
+          FileNamePanel.Hint := T_FileName;
           // Вычисляем размер файла
           Fsize := GetFileSize(MainForm.SendFileOpenDialog.FileName);
           if Fsize > 1000000 then
@@ -1672,12 +1668,8 @@ begin
               Exit;
             // Заканчиваем оповещение о наборе текста
             // if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
-            // Если статус пользователя не оффлайн и есть поддержка UTF-8 сообщений, то отправляем сообщение в юникоде.
-            // Иначе отправляем сообщение в старом анси формате
-            if UserUtf8Support then
-              ICQ_SendMessage_0406(InfoPanel2.Caption, Msg, False)
-            else
-              ICQ_SendMessage_0406(InfoPanel2.Caption, Msg, True);
+            // Отправляем сообщение в юникод формате
+            ICQ_SendMessage_0406(InfoPanel2.Caption, Msg, True);
             // Формируем файл с историей
             HistoryFile := ProfilePath + HistoryFileName + UserType + BN + ICQ_LoginUIN + BN + InfoPanel2.Caption + '.htm';
           end

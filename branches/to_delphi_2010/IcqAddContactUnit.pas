@@ -76,7 +76,7 @@ begin
                 begin
                   if Items[I].Caption = '0000' then
                     Continue; // Группа временных контактов
-                  if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0001') then
+                  if (Items[I].Caption = S_NoCL) or (Items[I].Caption = '0001') then
                     Continue; // Группа "Не в списке"
                   GroupComboBox.Items.Add(Items[I].SubItems[1]);
                 end;

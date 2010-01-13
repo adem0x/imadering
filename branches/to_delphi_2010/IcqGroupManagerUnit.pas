@@ -125,7 +125,7 @@ begin
       else
         begin
           // Если это нередактируемые группы, то выходим
-          if (GNameEdit.Text = EmptyStr) or (GNameEdit.Text = Name_Group) or (Id_Group = EmptyStr) or (Id_Group = 'NoCL') or
+          if (GNameEdit.Text = EmptyStr) or (GNameEdit.Text = Name_Group) or (Id_Group = EmptyStr) or (Id_Group = S_NoCL) or
             (Id_Group = '0000') or (Id_Group = '0001') then
             goto Y;
           // Запоминаем переменные для группы
@@ -140,7 +140,7 @@ begin
                 for I := 0 to Items.Count - 1 do
                   begin
                     // Добавляем идентификаторы групп в список
-                    if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') then
+                    if (Items[I].Caption = S_NoCL) or (Items[I].Caption = '0000') then
                       Continue;
                     if (Items[I].SubItems[3] = S_Icq) and (Length(Items[I].Caption) = 4) then
                       IClId.Add(Items[I].Caption);
@@ -154,7 +154,7 @@ begin
                 for I := 0 to Items.Count - 1 do
                   begin
                     // Ищем в Ростере эту группу
-                    if (Items[I].Caption = 'NoCL') or (Items[I].Caption = '0000') or (Items[I].Caption = '0001') then
+                    if (Items[I].Caption = S_NoCL) or (Items[I].Caption = '0000') or (Items[I].Caption = '0001') then
                       Continue;
                     if (Items[I].SubItems[3] = S_Icq) and (Items[I].Caption = Id_Group) then
                       begin

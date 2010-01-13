@@ -283,12 +283,8 @@ begin
                                 goto X;
                               // Заканчиваем оповещение о наборе текста
                               // if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
-                              // Если статус пользователя не оффлайн и есть поддержка UTF-8 сообщений, то отправляем сообщение в юникоде.
-                              // Иначе отправляем сообщение в старом анси формате
-                              if UserUtf8Support then
-                                ICQ_SendMessage_0406(GUIN, Msg, False)
-                              else
-                                ICQ_SendMessage_0406(GUIN, Msg, True);
+                              // Отправляем сообщение в юникод формате
+                              ICQ_SendMessage_0406(GUIN, Msg, True);
                               // Формируем файл с историей
                               HistoryFile := ProfilePath + HistoryFileName + GUserType + BN + ICQ_LoginUIN + BN + GUIN + '.htm';
                             end

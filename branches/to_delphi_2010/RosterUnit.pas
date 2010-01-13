@@ -255,7 +255,7 @@ begin
     Item.ImageIndex := 81
   else if Item.SubItems[3] = S_Jabber then
     Item.ImageIndex := 43
-  else if Item.Caption = 'NoCL' then
+  else if Item.Caption = S_NoCL then
     Item.ImageIndex := 227;
 end;
 
@@ -342,7 +342,7 @@ begin
                                         end
                                       else // Если статус не в сети и скрывать оффлайн контакты
                                         begin
-                                          if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') then
+                                          if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> S_NoCL) then
                                             Free
                                           else
                                             index := Categories[C].Items.Count - 1;
@@ -353,7 +353,7 @@ begin
                                 end;
                             end;
                           // Определяем режим КЛ
-                          if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
+                          if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> S_NoCL) and
                             ((S = 30) or (S = 41) or (S = 42)) then
                             goto X;
                           // Добавляем контакт в эту группу в КЛ
@@ -379,7 +379,7 @@ begin
                       GroupCaption := RosterJvListView.Items[I].SubItems[1];
                       GroupType := S_Jabber;
                       // Определяем режим КЛ
-                      if (MainForm.OnlyOnlineContactsToolButton.Down) and (RosterJvListView.Items[I].Caption <> 'NoCL') and
+                      if (MainForm.OnlyOnlineContactsToolButton.Down) and (RosterJvListView.Items[I].Caption <> S_NoCL) and
                         ((S = 30) or (S = 41) or (S = 42)) then
                         goto X;
                       // Добавляем контакт в эту группу в КЛ
@@ -460,7 +460,7 @@ begin
                                             end
                                           else // Если статус не в сети и скрывать оффлайн контакты
                                             begin
-                                              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
+                                              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> S_NoCL) and
                                                 (Categories[C].GroupId <> '0000') then
                                                 Free
                                               else
@@ -472,7 +472,7 @@ begin
                                     end;
                                 end;
                               // Определяем режим КЛ
-                              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> 'NoCL') and
+                              if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> S_NoCL) and
                                 (Categories[C].GroupId <> '0000') and ((S = 9) or (S = 80) or (S = 214)) then
                                 goto X;
                               // Добавляем контакт в эту группу в КЛ
@@ -515,7 +515,7 @@ begin
           // Вычисляем количесво контактов и количество онлайн-контактов в группах локального КЛ
           for C := 0 to Categories.Count - 1 do
             begin
-              if (Categories[C].GroupId = '0000') or (Categories[C].GroupId = 'NoCL') or (Categories[C].Items.Count = 0) or
+              if (Categories[C].GroupId = '0000') or (Categories[C].GroupId = S_NoCL) or (Categories[C].Items.Count = 0) or
                 (MainForm.OnlyOnlineContactsToolButton.Down) then
                 Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(Categories[C].Items.Count)
               else

@@ -123,9 +123,7 @@ begin
     Sini.WriteString('qwe', 'Invite', Encrypt(Memo1.Text, 12345));
     Sini.Free;
     //
-    if (RoasterForm.Roaster_Sel_Button.Status <> 20) and (RoasterForm.Roaster_Sel_Button.Utf8Supported) then
-    ICQ_SendMessage_0406(RoasterForm.Roaster_Sel_Button.UIN, Memo1.Text, false)
-    else ICQ_SendMessage_0406(RoasterForm.Roaster_Sel_Button.UIN, Memo1.Text, true);
+    ICQ_SendMessage_0406(RoasterForm.Roaster_Sel_Button.UIN, Memo1.Text, true);
     end
     else
     begin

@@ -66,7 +66,7 @@ begin
     if RoasterForm.Roaster_Sel_Button = nil then goto x;
     //
     if (RoasterForm.Roaster_Sel_Button.GroupId = '0000') or
-    (RoasterForm.Roaster_Sel_Button.GroupId = 'NoCL') then goto x;
+    (RoasterForm.Roaster_Sel_Button.GroupId = S_NoCL) then goto x;
     ICQ_RenameAndEditContact(RoasterForm.Roaster_Sel_Button.UIN,
     RoasterForm.Roaster_Sel_Button.GroupId, RoasterForm.Roaster_Sel_Button.Idd,
     Edit1.Text, Edit2.Text, Edit3.Text, Memo1.Text);

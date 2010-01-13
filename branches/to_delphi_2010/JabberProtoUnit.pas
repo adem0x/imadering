@@ -522,7 +522,7 @@ begin
               if (PJID <> EmptyStr) and (InMsg <> EmptyStr) then
                 begin
                   // Отделяем ресурс
-                  if BMSearch(0, PJID, '/') > -1 then
+                  if Pos('/', PJID) > 0 then
                     PJID := Parse('/', PJID, 1);
                   // Обрабатываем сообщение
                   Mess := InMsg;
@@ -557,12 +557,12 @@ begin
                       // Дата сообщения
                       MsgD := Nick + ' [' + DateTimeChatMess + ']';
                       // Ищем группу "Не в списке" в Ростере
-                      RosterItem := RosterForm.ReqRosterItem('NoCL');
+                      RosterItem := RosterForm.ReqRosterItem(S_NoCL);
                       if RosterItem = nil then // Если группу не нашли
                         begin
                           // Добавляем такую группу в Ростер
                           RosterItem := RosterForm.RosterJvListView.Items.Add;
-                          RosterItem.Caption := 'NoCL';
+                          RosterItem.Caption := S_NoCL;
                           // Подготавиливаем все значения
                           RosterForm.RosterItemSetFull(RosterItem);
                           RosterItem.SubItems[1] := NoInListGroupCaption;
@@ -576,7 +576,7 @@ begin
                           RosterForm.RosterItemSetFull(RosterItem);
                           // Обновляем субстроки
                           SubItems[0] := Nick;
-                          SubItems[1] := 'NoCL';
+                          SubItems[1] := S_NoCL;
                           SubItems[2] := 'none';
                           SubItems[3] := S_Jabber;
                           SubItems[6] := '214';
