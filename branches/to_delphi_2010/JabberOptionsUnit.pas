@@ -27,7 +27,6 @@ uses
   ComCtrls,
   JvPageList,
   JvExControls,
-  RXML,
   Mask,
   JvExMask,
   JvSpin,
@@ -99,11 +98,11 @@ type
   private
     { Private declarations }
     procedure LoadSettings;
-    procedure LoadAccountSettings(SettingsXml: TrXML);
-    procedure LoadConnectionSettings(SettingsXml: TrXML);
+    {procedure LoadAccountSettings(SettingsXml: TrXML);
+    procedure LoadConnectionSettings(SettingsXml: TrXML);}
     procedure UpdateJabberSettings;
-    procedure SaveSettingsJabberAccount(SettingsXml: TrXML);
-    procedure SaveSettingsJabberConnection(SettingsXml: TrXML);
+    {procedure SaveSettingsJabberAccount(SettingsXml: TrXML);
+    procedure SaveSettingsJabberConnection(SettingsXml: TrXML);}
 
   public
     { Public declarations }
@@ -148,10 +147,8 @@ end;
 
 // APPLY SETTINGS--------------------------------------------------------------
 procedure TJabberOptionsForm.ApplySettings;
-var
-  SettingsXml: TrXML;
 begin
-  // Применяем настройки Jabber протокола
+  {// Применяем настройки Jabber протокола
   UpdateJabberSettings;
   // --------------------------------------------------------------------------
   SettingsXml := TrXML.Create;
@@ -168,15 +165,13 @@ begin
     FreeAndNil(SettingsXml);
   end;
   // Деактивируем кнопку применения настроек
-  ApplyButton.Enabled := False;
+  ApplyButton.Enabled := False; }
 end;
 
 // LOAD SETTINGS---------------------------------------------------------------
 procedure TJabberOptionsForm.LoadSettings;
-var
-  SettingsXml: TrXML;
 begin
-  // Инициализируем XML
+  {// Инициализируем XML
   SettingsXml := TrXML.Create;
   try
     if FileExists(ProfilePath + SettingsFileName) then
@@ -189,7 +184,7 @@ begin
       end;
   finally
     FreeAndNil(SettingsXml);
-  end;
+  end;}
 end;
 
 procedure TJabberOptionsForm.TranslateForm;
@@ -198,7 +193,7 @@ begin
 
 end;
 
-procedure TJabberOptionsForm.SaveSettingsJabberConnection(SettingsXml: TrXML);
+{procedure TJabberOptionsForm.SaveSettingsJabberConnection(SettingsXml: TrXML);
 begin
   with SettingsXml do
     if OpenKey(StrSettingsJabberConnection, True) then
@@ -210,7 +205,7 @@ begin
       finally
         CloseKey;
       end;
-end;
+end;}
 
 procedure TJabberOptionsForm.Set_JabberOrgClick(Sender: TObject);
 begin
@@ -241,7 +236,7 @@ begin
   end;
 end;
 
-procedure TJabberOptionsForm.SaveSettingsJabberAccount(SettingsXml: TrXML);
+{procedure TJabberOptionsForm.SaveSettingsJabberAccount(SettingsXml: TrXML);
 begin
   with SettingsXml do
     if OpenKey(StrSettingsJabberAccount, True) then
@@ -260,7 +255,7 @@ begin
       finally
         CloseKey;
       end;
-end;
+end;}
 
 procedure TJabberOptionsForm.UpdateJabberSettings;
 begin
@@ -289,7 +284,7 @@ begin
   Jabber_UseSSL := JUseSSLCheckBox.Checked;
 end;
 
-procedure TJabberOptionsForm.LoadConnectionSettings(SettingsXml: TrXML);
+{procedure TJabberOptionsForm.LoadConnectionSettings(SettingsXml: TrXML);
 begin
   with SettingsXml do
     if OpenKey(StrSettingsJabberConnection) then
@@ -325,7 +320,7 @@ begin
       finally
         CloseKey;
       end;
-end;
+end;}
 
 procedure TJabberOptionsForm.CancelButtonClick(Sender: TObject);
 begin

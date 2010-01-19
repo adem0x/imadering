@@ -100,8 +100,12 @@ end;
 
 procedure TIcqAddContactForm.TranslateForm;
 begin
-  // Переводим форму на другие языки
-
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CancelButton.Caption := S_Cancel;
 end;
 
 procedure TIcqAddContactForm.AddContactButtonClick(Sender: TObject);
@@ -194,6 +198,9 @@ begin
   TranslateForm;
   // Присваиваем иконку окну
   MainForm.AllImageList.GetIcon(143, Icon);
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TIcqAddContactForm.FormShow(Sender: TObject);

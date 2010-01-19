@@ -105,7 +105,7 @@ object SettingsForm: TSettingsForm
       Top = 3
       Width = 432
       Height = 359
-      ActivePage = GeneralPage
+      ActivePage = ThemesPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -473,6 +473,13 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
+          object Bevel1: TBevel
+            Left = 11
+            Top = 72
+            Width = 410
+            Height = 2
+            Shape = bsBottomLine
+          end
         end
       end
       object HotKeysPage: TJvStandardPage

@@ -120,7 +120,7 @@ end;
 procedure TFirstStartForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  //CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Другое

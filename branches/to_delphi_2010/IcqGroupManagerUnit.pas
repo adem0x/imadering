@@ -60,8 +60,12 @@ uses
 
 procedure TIcqGroupManagerForm.TranslateForm;
 begin
-  // Переводим форму на другие языки
-
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CancelButton.Caption := S_Cancel;
 end;
 
 procedure TIcqGroupManagerForm.OKButtonClick(Sender: TObject);
@@ -187,8 +191,13 @@ end;
 
 procedure TIcqGroupManagerForm.FormCreate(Sender: TObject);
 begin
+  // Присваиваем иконку окну и кнопкам
+  MainForm.AllImageList.GetIcon(153, Icon);
   // Переводим форму на другие языки
   TranslateForm;
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 procedure TIcqGroupManagerForm.FormShow(Sender: TObject);

@@ -28,7 +28,6 @@ uses
   VarsUnit,
   Graphics,
   CategoryButtons,
-  RXML,
   RosterUnit;
 
 const

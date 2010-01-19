@@ -50,7 +50,6 @@ object GTransForm: TGTransForm
     Caption = 'OK'
     Default = True
     DoubleBuffered = True
-    ModalResult = 1
     ParentDoubleBuffered = False
     TabOrder = 1
     TabStop = False
@@ -135,19 +134,19 @@ object GTransForm: TGTransForm
     Options = []
     OnSessionClosed = GtransHttpClientSessionClosed
     OnDocBegin = GtransHttpClientDocBegin
-    OnDocEnd = GtransHttpClientDocEnd
+    OnRequestDone = GtransHttpClientRequestDone
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = GtransHttpClientSocksConnected
     OnSocksError = GtransHttpClientSocksError
-    Left = 120
-    Top = 40
+    Left = 160
+    Top = 144
   end
   object ClearMessPopupMenu: TPopupMenu
     Alignment = paCenter
     Images = MainForm.AllImageList
     OnPopup = ClearMessPopupMenuPopup
-    Left = 152
-    Top = 160
+    Left = 192
+    Top = 144
     object GTClearList: TMenuItem
       ImageIndex = 139
       OnClick = GTClearListClick

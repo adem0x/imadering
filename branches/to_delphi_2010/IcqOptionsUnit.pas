@@ -29,8 +29,7 @@ uses
   ComCtrls,
   OverbyteIcsWSocket,
   VarsUnit,
-  ShellApi,
-  RXML;
+  ShellApi;
 
 type
   TIcqOptionsForm = class(TForm)
@@ -44,7 +43,6 @@ type
     ApplyButton: TBitBtn;
     CancelButton: TBitBtn;
     OKButton: TBitBtn;
-    CheckBox5: TCheckBox;
     PassChangePage: TJvStandardPage;
     AnketaPage: TJvStandardPage;
     ClientIDGroupBox: TGroupBox;
@@ -58,7 +56,7 @@ type
     MyInfoNameGroupBox: TGroupBox;
     OtherOptionsGroupBox: TGroupBox;
     ShowAwayTimeCheckBox: TCheckBox;
-    AccountGroupBox: TGroupBox;
+    AccountGroupBox1: TGroupBox;
     ReqPassLabel: TLabel;
     ICQUINLabel: TLabel;
     PassLabel: TLabel;
@@ -235,7 +233,7 @@ type
     ReligionCodesComboBox: TComboBox;
     SmokCodesComboBox: TComboBox;
     SexCodesComboBox: TComboBox;
-    GroupBox1: TGroupBox;
+    AccountGroupBox2: TGroupBox;
     ShowHideContactsCheckBox: TCheckBox;
     RegNewUINLabel: TLabel;
     ConnectPage: TJvStandardPage;
@@ -303,13 +301,10 @@ resourcestring
   RS_SendDump = 'language\Infos\SendDump';
 
 procedure TIcqOptionsForm.SaveSettings;
-var
-  XmlFile: TrXML;
 begin
   // Записываем настройки ICQ протокола в файл
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
@@ -337,10 +332,7 @@ begin
           end;
         // --------------------------------------------------------------------------
         SaveToFile(ProfilePath + SettingsFileName);
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end;}
 end;
 
 procedure TIcqOptionsForm.ApplySettings;
@@ -379,13 +371,10 @@ begin
 end;
 
 procedure TIcqOptionsForm.LoadSettings;
-var
-  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           begin
@@ -418,10 +407,8 @@ begin
               end;
             // --------------------------------------------------------------------------
           end;
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end;}
+
 end;
 
 procedure TIcqOptionsForm.ReqPassLabelClick(Sender: TObject);
@@ -441,17 +428,14 @@ begin (Sender as TLabel)
 end;
 
 procedure TIcqOptionsForm.TranslateForm;
-var
-  XmlFile: TrXML;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Инициализируем XML
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         // Загружаем настройки
         if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
@@ -478,10 +462,8 @@ begin
                 CloseKey;
               end;
           end;
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end;}
+
 
   { // Присваиваем список стран другим комбобоксам отображающим такой же список
     OCountryInfoComboBox.Items.Assign(CountryInfoComboBox.Items);
@@ -493,6 +475,10 @@ begin
     // Присваиваем список языков другим комбобоксам отображающим такой же список
     Lang2InfoComboBox.Items.Assign(Lang1InfoComboBox.Items);
     Lang3InfoComboBox.Items.Assign(Lang1InfoComboBox.Items); }
+
+  // Другое
+  ApplyButton.Caption := S_Apply;
+  CancelButton.Caption := S_Cancel;
 end;
 
 procedure TIcqOptionsForm.OKButtonClick(Sender: TObject);

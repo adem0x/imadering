@@ -26,8 +26,7 @@ uses
   ExtCtrls,
   ComCtrls,
   JvPageList,
-  JvExControls,
-  RXML;
+  JvExControls;
 
 type
   TMraOptionsForm = class(TForm)
@@ -104,8 +103,6 @@ end;
 // APPLY SETTINGS--------------------------------------------------------------
 
 procedure TMraOptionsForm.ApplySettings;
-var
-  XmlFile: TrXML;
 begin
   // Применяем настройки MRA протокола
   // Нормализуем MRA логин
@@ -128,9 +125,8 @@ begin
   MRA_LoginServerPort := MraLoginServerPortEdit.Text;
   // --------------------------------------------------------------------------
   // Записываем настройки MRA протокола в файл
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
@@ -159,10 +155,8 @@ begin
           end;
         // Сохраняем файл настроек
         SaveToFile(ProfilePath + SettingsFileName);
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end;}
+
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
 end;
@@ -170,13 +164,10 @@ end;
 // LOAD SETTINGS---------------------------------------------------------------
 
 procedure TMraOptionsForm.LoadSettings;
-var
-  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           begin
@@ -207,10 +198,8 @@ begin
                 CloseKey;
               end;
           end;
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end;}
+
 end;
 
 procedure TMraOptionsForm.TranslateForm;

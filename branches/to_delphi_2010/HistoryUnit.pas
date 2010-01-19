@@ -25,7 +25,8 @@ uses
   ExtCtrls,
   Buttons,
   Menus,
-  ExtDlgs;
+  ExtDlgs,
+  JvSimpleXml;
 
 type
   THistoryForm = class(TForm)
@@ -92,13 +93,12 @@ uses
   ChatUnit,
   UtilsUnit,
   VarsUnit,
-  RXML,
   IcqProtoUnit,
   MraProtoUnit,
   JabberProtoUnit;
 
 resourcestring
-  RS_HistoryFormPos = 'settings\forms\historyform\position';
+  RS_HistoryForm = 'history_form';
 
 procedure THistoryForm.LoadHistoryFromFile;
 var
@@ -183,7 +183,7 @@ end;
 procedure THistoryForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  //CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Другое
@@ -313,33 +313,36 @@ end;
 
 procedure THistoryForm.FormCreate(Sender: TObject);
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + SettingsFileName) then
           begin
             LoadFromFile(ProfilePath + SettingsFileName);
             // Загружаем позицию окна
-            if OpenKey(RS_HistoryFormPos) then
-              try
-                Top := ReadInteger('top');
-                Left := ReadInteger('left');
-                Height := ReadInteger('height');
-                Width := ReadInteger('width');
-                // Определяем не находится ли окно за пределами экрана
-                MainForm.FormSetInWorkArea(Self); ;
-              finally
-                CloseKey;
+            if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[RS_HistoryForm];
+                if XML_Node <> nil then
+                  begin
+                    Top := XML_Node.Properties.IntValue('t');
+                    Left := XML_Node.Properties.IntValue('l');
+                    Height := XML_Node.Properties.IntValue('h');
+                    Width := XML_Node.Properties.IntValue('w');
+                    // Определяем не находится ли окно за пределами экрана
+                    MainForm.FormSetInWorkArea(Self);
+                  end;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
   // Переводим окно на другие языки
   TranslateForm;
@@ -363,32 +366,38 @@ end;
 
 procedure THistoryForm.FormDestroy(Sender: TObject);
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения окна истории в xml
-  XmlFile := TrXML.Create;
+  // Инициализируем XML
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
-        // Сохраняем позицию окна
-        if OpenKey(RS_HistoryFormPos, True) then
-          try
-            WriteInteger('top', Top);
-            WriteInteger('left', Left);
-            WriteInteger('height', Height);
-            WriteInteger('width', Width);
-          finally
-            CloseKey;
+        if Root <> nil then
+          begin
+            // Очищаем раздел формы истории если он есть
+            XML_Node := Root.Items.ItemNamed[RS_HistoryForm];
+            if XML_Node <> nil then
+              XML_Node.Clear
+            else
+              XML_Node := Root.Items.Add(RS_HistoryForm);
+            // Сохраняем позицию окна
+            XML_Node.Properties.Add('t', Top);
+            XML_Node.Properties.Add('l', Left);
+            XML_Node.Properties.Add('h', Height);
+            XML_Node.Properties.Add('w', Width);
+            // Записываем сам файл
+            SaveToFile(ProfilePath + SettingsFileName);
           end;
-        // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 

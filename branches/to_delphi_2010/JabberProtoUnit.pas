@@ -26,7 +26,6 @@ uses
   VarsUnit,
   Graphics,
   CategoryButtons,
-  RXML,
   OverbyteIcsMimeUtils,
   JabberOptionsUnit,
   RosterUnit;
@@ -287,12 +286,11 @@ begin
 end;
 
 procedure Jabber_ParseRoster(XmlData: string);
-var
+{var
   Cnt, I: Integer;
-  ListItemD: TListItem;
-  XmlDoc: TrXML;
+  ListItemD: TListItem;}
 begin
-  Cnt := 0;
+  {Cnt := 0;
   // Инициализируем XML
   XmlDoc := TrXML.Create;
   // Начинаем добаление записей контактов в Ростер
@@ -340,15 +338,13 @@ begin
   end;
   // Запускаем обработку Ростера
   CollapseGroupsRestore := True;
-  RosterForm.UpdateFullCL;
+  RosterForm.UpdateFullCL; }
 end;
 
 procedure Jabber_ParseFeatures(XmlData: string);
-var
-  XmlDoc: TrXML;
 begin
   // Инициализируем XML
-  XmlDoc := TrXML.Create;
+  {XmlDoc := TrXML.Create;
   try
     with XmlDoc do
       begin
@@ -370,15 +366,13 @@ begin
       end;
   finally
     FreeAndNil(XmlDoc);
-  end;
+  end;}
 end;
 
 procedure Jabber_ParseIQ(XmlData: string);
-var
-  XmlDoc: TrXML;
 begin
   // Инициализируем XML
-  XmlDoc := TrXML.Create;
+  {XmlDoc := TrXML.Create;
   try
     with XmlDoc do
       begin
@@ -423,7 +417,7 @@ begin
       end;
   finally
     FreeAndNil(XmlDoc);
-  end;
+  end;}
 end;
 
 procedure Jabber_SendMessage(MJID, Msg: string);
@@ -438,13 +432,12 @@ begin
 end;
 
 procedure Jabber_ParsePresence(XmlData: string);
-var
+{var
   PJID: string;
-  RosterItem: TListItem;
-  XmlDoc: TrXML;
+  RosterItem: TListItem;}
 begin
   // Инициализируем XML
-  XmlDoc := TrXML.Create;
+  {XmlDoc := TrXML.Create;
   try
     with XmlDoc do
       begin
@@ -495,16 +488,15 @@ begin
       end;
   finally
     FreeAndNil(XmlDoc);
-  end;
+  end;}
 end;
 
 procedure Jabber_ParseMessage(XmlData: string);
-var
+{var
   PJID, InMsg, Nick, Mess, MsgD, PopMsg: string;
-  RosterItem: TListItem;
-  XmlDoc: TrXML;
+  RosterItem: TListItem;}
 begin
-  // Если окно сообщений не было создано, то создаём его
+  {// Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
   // Инициализируем XML
@@ -598,7 +590,7 @@ begin
       end;
   finally
     FreeAndNil(XmlDoc);
-  end;
+  end;}
 end;
 
 end.

@@ -18,7 +18,7 @@ uses
   Graphics,
   GifImg,
   FloatingUnit,
-  RXML;
+  JvSimpleXml;
 
 const
   SecsPerDay = 86400;
@@ -29,17 +29,15 @@ const
   DblClickTime = 0.6 * DTseconds;
   RN = #13#10;
   BN = ' ';
-  S_Value = 'value';
-  S_UniqGT = 'uniq\gtrans';
+  S_UniqGT = 'gtrans';
   S_NoCL = 'NoCL';
   S_Icq = 'Icq';
   S_Jabber = 'Jabber';
   S_Mra = 'Mra';
 
-  ChatCSS = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' +
-    'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
-    '.a { font: bold 11px tahoma, verdana; color: blue; }' + '.b { font: bold 11px tahoma, verdana; color: red; }' +
-    '.c { font: 12px tahoma, verdana; color: black; }' + '.d { font: bold 11px tahoma, verdana; color: green; }' + '</style>';
+  ChatCSS = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' + 'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
+    '.a { font: bold 11px tahoma, verdana; color: blue; }' + '.b { font: bold 11px tahoma, verdana; color: red; }' + '.c { font: 12px tahoma, verdana; color: black; }' +
+    '.d { font: bold 11px tahoma, verdana; color: green; }' + '</style>';
 
   SettingsFileName: string = 'Settings.xml';
   ProfilesFileName: string = 'Profiles.xml';
@@ -54,61 +52,60 @@ const
   QReplyFileName: string = 'QReply.txt';
 
 resourcestring
-  RS_NameInfo = 'profile\name-info';
+  RS_NameInfo = 'name_info';
   RS_Nick = 'nick';
   RS_First = 'first';
   RS_Last = 'last';
-  RS_PerInfo = 'profile\personal-info';
+  RS_PerInfo = 'personal_info';
   RS_Gender = 'gender';
   RS_Auth = 'auth';
-  RS_WebAware = 'webaware';
-  RS_HomePage = 'homapage';
-  RS_LastChange = 'lastchange';
-  RS_HomeInfo = 'profile\home-info';
+  RS_WebAware = 'web_aware';
+  RS_HomePage = 'home_page';
+  RS_LastChange = 'last_change';
+  RS_HomeInfo = 'home_info';
   RS_Address = 'address';
   RS_City = 'city';
   RS_State = 'state';
   RS_Zip = 'zip';
   RS_Country = 'country';
-  RS_OHomeInfo = 'profile\orig-home-info';
-  RS_LangInfo = 'profile\lang-info';
+  RS_OHomeInfo = 'orig_home_info';
+  RS_LangInfo = 'lang_info';
   RS_Lang1 = 'lang1';
   RS_Lang2 = 'lang2';
   RS_Lang3 = 'lang3';
-  RS_PhoneInfo = 'profile\phone-info';
+  RS_PhoneInfo = 'phone_info';
   RS_Phone1 = 'phone1';
   RS_Phone2 = 'phone2';
   RS_Phone3 = 'phone3';
   RS_Phone4 = 'phone4';
   RS_Phone5 = 'phone5';
-  RS_WorkInfo = 'profile\work-info';
+  RS_WorkInfo = 'work_info';
   RS_Corp = 'corp';
   RS_Dep = 'dep';
   RS_Prof = 'prof';
   RS_Site = 'site';
   RS_Occup = 'occup';
-  RS_IntInfo = 'profile\interests-info';
+  RS_IntInfo = 'interests_info';
   RS_Int1 = 'int1';
   RS_Int2 = 'int2';
   RS_Int3 = 'int3';
   RS_Int4 = 'int4';
-  RS_AboutInfo = 'profile\about-info';
-  RS_Info = 'info';
-  RS_AgeInfo = 'profile\age-info';
+  RS_AboutInfo = 'about_info';
+  RS_AgeInfo = 'age_info';
   RS_Age = 'age';
   RS_Day = 'day';
   RS_Month = 'month';
   RS_Year = 'year';
-  RS_EmailsInfo = 'profile\emails-info';
+  RS_EmailsInfo = 'emails_info';
   RS_Email1 = 'email1';
   RS_Email2 = 'email2';
   RS_Email3 = 'email3';
-  RS_IntIdInfo = 'profile\interests-id-info';
+  RS_IntIdInfo = 'interests_id_info';
   RS_IntId1 = 'int_id1';
   RS_IntId2 = 'int_id2';
   RS_IntId3 = 'int_id3';
   RS_IntId4 = 'int_id4';
-  RS_PersInfo = 'profile\personal-x-info';
+  RS_PersInfo = 'personal_x_info';
   RS_Marital = 'marital';
   RS_Sexual = 'sexual';
   RS_Height = 'height';
@@ -121,8 +118,9 @@ resourcestring
   RS_MaskPass = '----------------------';
   RS_Login = 'login';
   RS_Pass = 'password';
-  RS_SavePass = 'save-password';
-  RS_LangVars = 'language\vars';
+  RS_SavePass = 'save_password';
+  RS_LangVars = 'vars';
+  RS_Infos = 'Infos';
 
 var
   // Переменные общие для всей программы
@@ -155,8 +153,8 @@ var
   TrafSend: Real;
   TrafRecev: Real;
   SesDataTraf: TDateTime;
-  AllTrafSend: Real;
-  AllTrafRecev: Real;
+  AllTrafSend: Int64;
+  AllTrafRecev: Int64;
   AllSesDataTraf: string;
 
   // Переменные звуков
@@ -213,6 +211,7 @@ var
   S_Next: string;
   S_Close: string;
   S_Cancel: string;
+  S_Apply: string;
   S_ProtoSelectAlert: string;
   NewVersionIMaderingYES1: string = 'Доступна новая версия IMadering.' + RN + RN + 'Для ознакомления зайдите на сайт www.imadering.com';
   NewVersionIMaderingYES2: string = 'Доступна новая сборка IMadering.' + RN + RN + 'Для ознакомления зайдите на сайт www.imadering.com';
@@ -322,8 +321,7 @@ var
   UpDateAbortL: string = 'Загрузка обновления прервана.';
   UpDateLoadL: string = 'Файл обновления успешно получен.';
   UpDateUnL: string = 'Установка обновления...';
-  UpDateOKL: string = 'Установка обновления завершена.' + RN + RN +
-    'Для завершения обновления необходимо перезапустить программу IMadering!';
+  UpDateOKL: string = 'Установка обновления завершена.' + RN + RN + 'Для завершения обновления необходимо перезапустить программу IMadering!';
   ProxyConnectErrL1: string = 'Неверный логин или пароль для прокси.';
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
   JabberLoginErrorL: string = 'Неправильный JID или пароль.';
@@ -356,12 +354,13 @@ var
   S_FileTransfer3: string;
   S_FileTransfer4: string;
   S_FileTransfer5: string;
+  S_FileTransfer6: string;
   SocketL: string = 'Сокет:';
-  HistoryCompressedL: string =
-    'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
+  HistoryCompressedL: string = 'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
   GtransProcessL: string = 'Перевод ...';
   GtransOKL: string = 'Переведено';
   GtransErrL: string = 'Ошибка перевода: %s';
+  S_GtransErr2: string;
   NewProgErrL: string = 'Ошибка запуска другого профиля программы.';
 
   // Ошибки подключения ICQ протокола
@@ -399,23 +398,22 @@ var
   ConnectErrors_0022: string = 'Эта учётная запись недоступна из-за вашего возраста (меньше 13).';
 
   // Основные статусы плюс расширенные из QIP
-  LStatus1: string = 'Готов поболтать';
-  LStatus2: string = 'Злой';
-  LStatus3: string = 'Депрессия';
-  LStatus4: string = 'Дома';
-  LStatus5: string = 'На работе';
-  LStatus6: string = 'Кушаю';
-  LStatus7: string = 'Отошёл';
-  LStatus8: string = 'Недоступен';
-  LStatus9: string = 'Занят';
-  LStatus10: string = 'Не беспокоить';
-  LStatus11: string = 'В сети';
-  LStatus12: string = 'Невидимый';
-  LStatus13: string = 'Невидимый для всех';
-  LStatus14: string = 'Не в сети';
-  LStatus15: string = 'Неопределённый';
-  LStatus16: string = 'Нестабильный';
-  LStatus17: string = 'Необходима авторизация';
+  S_Status1: string; // Готов поболтать
+  S_Status2: string; // Злой
+  S_Status3: string; // Депрессия
+  S_Status4: string; // Дома
+  S_Status5: string; // На работе
+  S_Status6: string; // Кушаю
+  S_Status7: string; // Отошёл
+  S_Status8: string; // Недоступен
+  S_Status9: string; // Занят
+  S_Status10: string; // Не беспокоить
+  S_Status11: string; // В сети
+  S_Status12: string; // Невидимый
+  S_Status13: string; // Невидимый для всех
+  S_Status14: string; // Не в сети
+  S_Status15: string; // Неопределённый
+  S_Status16: string; // Необходима авторизация
 
   // Ошибки http сокетов
   Err400: string = 'Неверный запрос.';
@@ -501,81 +499,123 @@ procedure SetLangVars;
 implementation
 
 uses
-  UtilsUnit;
+  UtilsUnit,
+  MainUnit;
 
 // Устанавливаем язык для переменных
 procedure SetLangVars;
 var
   I: Integer;
   List: Tstringlist;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   List := Tstringlist.Create;
   try
-    XmlFile := TrXML.Create;
+    // Инициализируем XML
+    JvXML_Create(JvXML);
     try
-      with XmlFile do
+      with JvXML do
         begin
           if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
             begin
               // Загружаем переменные из файла языка
               LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
-              if OpenKey(RS_LangVars) then
-                try
-                  List.Text := GetKeyXML;
-                finally
-                  CloseKey;
+              if Root <> nil then
+                begin
+                  XML_Node := Root.Items.ItemNamed[RS_LangVars];
+                  if XML_Node <> nil then
+                    List.Text := XML_Node.SaveToString;
                 end;
             end;
         end;
     finally
-      FreeAndNil(XmlFile);
+      JvXML.Free;
     end;
     // Присваиваем переменные в цикле (для переноса строк CheckText_RN)
     for I := 0 to List.Count - 1 do
       begin
-        if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_RestoreFromTray' then
-          S_RestoreFromTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_HideInTray' then
-          S_HideInTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_RestoreProfileFromTray' then
-          S_RestoreProfileFromTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_HideProfileInTray' then
-          S_HideProfileInTray := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Version' then
-          S_Version := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_ProfileError' then
-          S_ProfileError := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_DevelMess' then
-          S_DevelMess := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Next' then
-          S_Next := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_ProtoSelectAlert' then
-          S_ProtoSelectAlert := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_InfoHead' then
-          S_InfoHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_ErrorHead' then
-          S_ErrorHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_AlertHead' then
-          S_AlertHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_WarningHead' then
-          S_WarningHead := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Close' then
-          S_Close := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_Cancel' then
-          S_Cancel := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_SearchQMess' then
-          S_SearchQMess := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer1' then
-          S_FileTransfer1 := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer2' then
-          S_FileTransfer2 := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer3' then
-          S_FileTransfer3 := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer4' then
-          S_FileTransfer4 := IsolateTextString(List.Strings[I], 'c="', '"/>')
-        else if IsolateTextString(List.Strings[I], '<', ' c="') = 'S_FileTransfer5' then
-          S_FileTransfer5 := CheckText_RN(IsolateTextString(List.Strings[I], 'c="', '"/>'));
+        if IsolateTextString(List.Strings[I], '<', ' ') = 'S_RestoreFromTray' then
+          S_RestoreFromTray := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_HideInTray' then
+          S_HideInTray := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_RestoreProfileFromTray' then
+          S_RestoreProfileFromTray := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_HideProfileInTray' then
+          S_HideProfileInTray := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Version' then
+          S_Version := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_ProfileError' then
+          S_ProfileError := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_DevelMess' then
+          S_DevelMess := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Next' then
+          S_Next := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_ProtoSelectAlert' then
+          S_ProtoSelectAlert := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_InfoHead' then
+          S_InfoHead := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_ErrorHead' then
+          S_ErrorHead := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_AlertHead' then
+          S_AlertHead := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_WarningHead' then
+          S_WarningHead := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Close' then
+          S_Close := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Cancel' then
+          S_Cancel := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_SearchQMess' then
+          S_SearchQMess := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_FileTransfer1' then
+          S_FileTransfer1 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_FileTransfer2' then
+          S_FileTransfer2 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_FileTransfer3' then
+          S_FileTransfer3 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_FileTransfer4' then
+          S_FileTransfer4 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_FileTransfer5' then
+          S_FileTransfer5 := CheckText_RN(IsolateTextString(List.Strings[I], 'c="', '"'))
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_FileTransfer6' then
+          S_FileTransfer6 := CheckText_RN(IsolateTextString(List.Strings[I], 'c="', '"'))
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status1' then
+          S_Status1 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status2' then
+          S_Status2 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status3' then
+          S_Status3 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status4' then
+          S_Status4 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status5' then
+          S_Status5 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status6' then
+          S_Status6 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status7' then
+          S_Status7 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status8' then
+          S_Status8 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status9' then
+          S_Status9 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status10' then
+          S_Status10 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status11' then
+          S_Status11 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status12' then
+          S_Status12 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status13' then
+          S_Status13 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status14' then
+          S_Status14 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status15' then
+          S_Status15 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Status16' then
+          S_Status16 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_GtransErr2' then
+          S_GtransErr2 := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Apply' then
+          S_Apply := IsolateTextString(List.Strings[I], 'c="', '"');
+
 
 
       end;

@@ -40,9 +40,9 @@ object IcqContactInfoForm: TIcqContactInfoForm
   end
   object Bevel1: TBevel
     Left = 8
-    Top = 377
+    Top = 376
     Width = 545
-    Height = 2
+    Height = 3
     Shape = bsBottomLine
   end
   object ReqInfoBitBtn: TBitBtn

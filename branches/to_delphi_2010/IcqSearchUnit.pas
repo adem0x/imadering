@@ -28,7 +28,7 @@ uses
   VarsUnit,
   JvExComCtrls,
   JvListView,
-  RXML, ExtDlgs;
+  ExtDlgs;
 
 type
   TIcqSearchForm = class(TForm)
@@ -443,13 +443,10 @@ begin
 end;
 
 procedure TIcqSearchForm.FormCreate(Sender: TObject);
-var
-  XmlFile: TrXML;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + SettingsFileName) then
@@ -466,10 +463,8 @@ begin
                 CloseKey;
               end;
           end;
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end; }
+
   // Переводим форму на другие языки
   TranslateForm;
   // Устанавливаем иконки на форму и кнопки
@@ -486,15 +481,12 @@ begin
 end;
 
 procedure TIcqSearchForm.FormDestroy(Sender: TObject);
-var
-  XmlFile: TrXML;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения окна в xml
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
+
+    {with XmlFile do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
@@ -508,10 +500,8 @@ begin
           end;
         // Записываем сам файл
         SaveToFile(ProfilePath + SettingsFileName);
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+      end;}
+
 end;
 
 procedure TIcqSearchForm.GlobalSearchCheckBoxClick(Sender: TObject);

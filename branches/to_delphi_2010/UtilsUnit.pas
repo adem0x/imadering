@@ -37,14 +37,15 @@ uses
   Jabberprotounit,
   Registry,
   Mraprotounit,
-  Rxml,
   LogUnit,
   JclCompression,
   Buttons,
   TypInfo,
   OverbyteIcsUrl,
   JvListView,
-  ComCtrls;
+  ComCtrls,
+  JvSimpleXml,
+  ButtonGroup;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileInDir(Path, Eext: string; Filelist: Tstrings);
@@ -61,9 +62,8 @@ function Swap32(Value: Longword): Longword;
 assembler;
 function DeleteSpaces(const Value: string): string;
 function Deletelinebreaks(const S: string): string;
-function Exnormalizescreenname(Sn: string): string;
-function Exnormalizeicqnumber(Sn: string): string;
-function Normalizecellularnumber(const Value: string): string;
+function ExnormalizeScreenName(Sn: string): string;
+function ExnormalizeIcqNumber(Sn: string): string;
 function Datetimechatmess: string;
 procedure Sendflap(Channel, Data: string);
 procedure Sendflap_avatar(Channel, Data: string);
@@ -132,8 +132,23 @@ function ChangeCP(const Value: string): string;
 function CheckText_Hint(Msg: string): string;
 function Text2UnicodeHex(Msg: string): string;
 function UnicodeHex2Text(HexText: string): string;
+procedure JvXML_Create(var JvXML: TJvSimpleXml);
 
 implementation
+
+procedure JvXML_Create(var JvXML: TJvSimpleXml);
+var
+  FOptions: TJvSimpleXMLOptions;
+begin
+  // Создаём XML объект и выставляем его параметры
+  JvXML := TJvSimpleXml.Create(MainForm);
+  FOptions := [];
+  Include(FOptions, SxoAutoIndent);
+  JvXML.Options := FOptions;
+  JvXML.Prolog.Encoding := 'UTF-8';
+  JvXML.Root.name := 'root';
+  JvXML.IndentString := BN + BN;
+end;
 
 function Text2UnicodeHex(Msg: string): string;
 var
@@ -141,9 +156,9 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Msg) do
-  begin
-    Result := Result + IntToHex(Ord(Msg[I]), 4);
-  end;
+    begin
+      Result := Result + IntToHex(Ord(Msg[I]), 4);
+    end;
 end;
 
 function UnicodeHex2Text(HexText: string): string;
@@ -179,31 +194,35 @@ var
   List: Tstringlist;
   PropInfo: PPropInfo;
   TK: TTypeKind;
-  XmlFile: TrXML;
   Str: string;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   List := Tstringlist.Create;
   try
-    XmlFile := TrXML.Create;
+    // Инициализируем XML
+    JvXML_Create(JvXML);
     try
-      with XmlFile do
+      with JvXML do
         begin
           if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
             begin
               // Загружаем файл языка
               LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
-              // Переводим заголовок формы и получаем все остальные пункты
-              if OpenKey('language\' + Xform.name) then
-                try
-                  Xform.Caption := ReadString('c');
-                  List.Text := GetKeyXML;
-                finally
-                  CloseKey;
+              if Root <> nil then
+                begin
+                  // Переводим заголовок формы и получаем все остальные пункты
+                  XML_Node := Root.Items.ItemNamed[Xform.name];
+                  if XML_Node <> nil then
+                    begin
+                      Xform.Caption := XML_Node.Properties.Value('c');
+                      List.Text := XML_Node.SaveToString;
+                    end;
                 end;
             end;
         end;
     finally
-      FreeAndNil(XmlFile);
+      JvXML.Free;
     end;
     // Переводим компоненты формы с Caption
     with Xform do
@@ -232,8 +251,7 @@ begin
                 begin
                   for II := 0 to List.Count - 1 do
                     begin
-                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[M].index))
-                        = IsolateTextString(List.Strings[II], '<', BN) then
+                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', BN) then
                         begin (Components[I] as TJvListView)
                           .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
                           Break;
@@ -248,8 +266,7 @@ begin
                 begin
                   for II := 0 to List.Count - 1 do
                     begin
-                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[M].index))
-                        = IsolateTextString(List.Strings[II], '<', BN) then
+                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', BN) then
                         begin (Components[I] as TListView)
                           .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
                           Break;
@@ -301,26 +318,21 @@ end;
 procedure CreateLang(Xform: Tform);
 var
   I, MI: Integer;
-  Cf: string;
   PropInfo: PPropInfo;
   TK: TTypeKind;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
   ForceDirectories(MyPath + 'Langs\Forms\');
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Записываем заголовок формы
-        Cf := 'language\' + Xform.name + '\';
-        if OpenKey(Cf, True) then
-          try
-            WriteString('c', Xform.Caption);
-          finally
-            CloseKey;
-          end;
+        XML_Node := Root.Items.Add(Xform.name);
+        XML_Node.Properties.Add('c', Xform.Caption);
         // Просматриваем все контролы на форме
         for I := 0 to Xform.ComponentCount - 1 do
           begin
@@ -328,43 +340,30 @@ begin
             if (Xform.Components[I] is TPopupMenu) then
               begin
                 for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
-                  begin
-                    if OpenKey(Cf + Xform.Components[I].name, True) then
-                      try
-                        WriteString('c', (Xform.Components[I] as TPopupMenu).Items.Caption);
-                      finally
-                        CloseKey;
-                      end;
-                  end;
+                  XML_Node.Items.Add((Xform.Components[I] as TPopupMenu).Items[MI].name).Properties.Add('c', (Xform.Components[I] as TPopupMenu).Items[MI].Caption);
                 Continue;
               end;
             // Пишем в файл ЛистВиев
             if (Xform.Components[I] is TJvListView) then
               begin
                 for MI := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
-                  begin
-                    if OpenKey(Cf + Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[MI].index),
-                      True) then
-                      try
-                        WriteString('c', (Xform.Components[I] as TJvListView).Columns[MI].Caption);
-                      finally
-                        CloseKey;
-                      end;
-                  end;
+                  XML_Node.Items.Add(Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[MI].index)).Properties.Add('c',
+                    (Xform.Components[I] as TJvListView).Columns[MI].Caption);
                 Continue;
               end;
             if (Xform.Components[I] is TListView) then
               begin
                 for MI := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
-                  begin
-                    if OpenKey(Cf + Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[MI].index),
-                      True) then
-                      try
-                        WriteString('c', (Xform.Components[I] as TListView).Columns[MI].Caption);
-                      finally
-                        CloseKey;
-                      end;
-                  end;
+                  XML_Node.Items.Add(Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[MI].index)).Properties.Add('c',
+                    (Xform.Components[I] as TListView).Columns[MI].Caption);
+                Continue;
+              end;
+            // Пишем в файл Категории кнопок
+            if (Xform.Components[I] is TButtonGroup) then
+              begin
+                for MI := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
+                  XML_Node.Items.Add(Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TButtonGroup).Items[MI].index)).Properties.Add('c',
+                    (Xform.Components[I] as TButtonGroup).Items[MI].Caption);
                 Continue;
               end;
             // Пишем в файл все компоненты которые имеют Caption
@@ -373,21 +372,14 @@ begin
               begin
                 TK := PropInfo^.PropType^.Kind;
                 if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                  begin
-                    if OpenKey(Cf + Xform.Components[I].name, True) then
-                      try
-                        WriteString('c', GetStrProp(Xform.Components[I], PropInfo));
-                      finally
-                        CloseKey;
-                      end;
-                  end;
+                  XML_Node.Items.Add(Xform.Components[I].name).Properties.Add('c', GetStrProp(Xform.Components[I], PropInfo));
               end;
           end;
         // Записываем сам файл
         SaveToFile(MyPath + 'Langs\Forms\' + Xform.name + '.xml');
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
@@ -414,8 +406,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := SocketConnErrorInfo_1 + RN + WSocketErrorDesc(Errcode) + RN + Format(HttpSocketErrCodeL, [Errcode])
-    + RN + '[ ' + SocketL + BN + SName + ' ]';
+  Result := SocketConnErrorInfo_1 + RN + WSocketErrorDesc(Errcode) + RN + Format(HttpSocketErrCodeL, [Errcode]) + RN + '[ ' + SocketL + BN + SName + ' ]';
 end;
 
 // На случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
@@ -567,7 +558,8 @@ end;
 function Nameandlast(Cid, Cproto: string): string;
 var
   AFile, Ln, Lf, La: string;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   Result := EmptyStr;
   Getcitypanel := '---';
@@ -577,38 +569,36 @@ begin
   if FileExists(AFile) then
     begin
       // Инициализируем XML
-      XmlFile := TrXML.Create;
+      JvXML_Create(JvXML);
       try
-        with XmlFile do
+        with JvXML do
           begin
             LoadFromFile(AFile);
-            // Загружаем Имя и Фамилию
-            if OpenKey('profile\name-info') then
-              try
-                Ln := URLDecode(ReadString('first'));
-                Lf := URLDecode(ReadString('last'));
-              finally
-                CloseKey;
-              end;
-            // Загружаем Город
-            if OpenKey('profile\home-info') then
-              try
-                Getcitypanel := URLDecode(ReadString('city'));
-              finally
-                CloseKey;
-              end;
-            // Загружаем Возраст
-            if OpenKey('profile\age-info') then
-              try
-                La := ReadString('age');
-                if La <> '0' then
-                  Getagepanel := Infoagel + BN + La;
-              finally
-                CloseKey;
+            if Root <> nil then
+              begin
+                // Загружаем Имя и Фамилию
+                XML_Node := Root.Items.ItemNamed[RS_NameInfo];
+                if XML_Node <> nil then
+                  begin
+                    Ln := URLDecode(XML_Node.Properties.Value(RS_First));
+                    Lf := URLDecode(XML_Node.Properties.Value(RS_Last));
+                  end;
+                // Загружаем Город
+                XML_Node := Root.Items.ItemNamed[RS_HomeInfo];
+                if XML_Node <> nil then
+                  Getcitypanel := URLDecode(XML_Node.Properties.Value(RS_City));
+                // Загружаем Возраст
+                XML_Node := Root.Items.ItemNamed[RS_AgeInfo];
+                if XML_Node <> nil then
+                  begin
+                    La := XML_Node.Properties.Value(RS_Age);
+                    if La <> '0' then
+                      Getagepanel := Infoagel + BN + La;
+                  end;
               end;
           end;
       finally
-        FreeAndNil(XmlFile);
+        JvXML.Free;
       end;
       // Формируем строку
       if Ln > EmptyStr then
@@ -733,10 +723,9 @@ const
   Rarrayl = 'абвгдеёжзийклмнопрстуфхцчшщьыъэюя';
   Rarrayu = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ';
   Colchar = 33;
-  Arr: array [1 .. 2, 1 .. Colchar] of string = (('a', 'b', 'v', 'g', 'd', 'e', 'yo', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p',
-      'r', 's', 't', 'u', 'f', 'kh', 'ts', 'ch', 'sh', 'shch', '''', 'y', '''', 'e', 'yu', 'ya'),
-    ('A', 'B', 'V', 'G', 'D', 'E', 'Yo', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'Kh', 'Ts', 'Ch',
-      'Sh', 'Shch', '''', 'Y', '''', 'E', 'Yu', 'Ya'));
+  Arr: array [1 .. 2, 1 .. Colchar] of string = (('a', 'b', 'v', 'g', 'd', 'e', 'yo', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'kh', 'ts', 'ch', 'sh', 'shch', '''',
+      'y', '''', 'e', 'yu', 'ya'), ('A', 'B', 'V', 'G', 'D', 'E', 'Yo', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'Kh', 'Ts', 'Ch', 'Sh', 'Shch', '''', 'Y', '''',
+      'E', 'Yu', 'Ya'));
 var
   I: Integer;
   Lens: Integer;
@@ -1408,25 +1397,16 @@ begin
   Result := Formatdatetime('HH:NN:SS', Time) + BN + Formatdatetime('DD.MM.YYYY', Date);
 end;
 
-function Exnormalizeicqnumber(Sn: string): string;
-
-function Deletedashes(const Value: string): string;
+function ExnormalizeIcqNumber(Sn: string): string;
+const
+  ValidChars = ['0' .. '9'];
 var
-  Counter, I: Integer;
+  I: Integer;
 begin
-  Counter := 0;
-  SetLength(Result, Length(Value));
-  for I := 1 to Length(Value) do
-    if Value[I] <> '-' then
-      begin
-        Inc(Counter);
-        Result[Counter] := Value[I];
-      end;
-  SetLength(Result, Counter);
-end;
-
-begin
-  Result := Deletedashes(Sn);
+  Result := EmptyStr;
+  for I := 1 to Length(Sn) do
+    if (Sn[I] <> '-') and (CharInSet(Sn[I], ValidChars)) then
+      Result := Result + Sn[I];
 end;
 
 function ChangeSpaces(const Value: string): string;
@@ -1473,40 +1453,20 @@ end;
 
 function DeleteSpaces(const Value: string): string;
 var
-  Counter, I: Integer;
+  I: Integer;
 begin
-  Counter := 0;
-  SetLength(Result, Length(Value));
+  Result := EmptyStr;
   for I := 1 to Length(Value) do
     if Value[I] <> BN then
-      begin
-        Inc(Counter);
-        Result[Counter] := Value[I];
-      end;
-  SetLength(Result, Counter);
+      Result := Result + Value[I];
 end;
 
-function Exnormalizescreenname(Sn: string): string;
+function ExnormalizeScreenName(Sn: string): string;
 begin
-  Result := Lowercase(Deletespaces(Sn));
+  Result := LowerCase(DeleteSpaces(Sn));
 end;
 
-function Normalizecellularnumber(const Value: string): string;
-var
-  Counter, I: Integer;
-begin
-  Counter := 0;
-  SetLength(Result, Length(Value));
-  for I := 1 to Length(Value) do
-    if (Value[I] <> BN) and (Value[I] <> '-') and (Value[I] <> '(') and (Value[I] <> ')') and (Value[I] <> 'S') and (Value[I] <> 'M') then
-      begin
-        Inc(Counter);
-        Result[Counter] := Value[I];
-      end;
-  SetLength(Result, Counter);
-end;
-
-function Deletelinebreaks(const S: string): string;
+function DeleteLineBreaks(const S: string): string;
 var
   Source, Sourceend: PChar;
 begin
@@ -1523,7 +1483,7 @@ begin
   Result := S;
 end;
 
-function Hextoint(Value: string): Longword;
+function HexToInt(Value: string): Longword;
 const
   Hexstr: string = '0123456789ABCDEF';
 var
@@ -1536,7 +1496,7 @@ begin
     Inc(Result, (Pos(Upcase(Value[I]), Hexstr) - 1) shl ((Length(Value) - I) shl 2));
 end;
 
-function Hex2text(HexText: string): string;
+function Hex2Text(HexText: string): string;
 var
   I: LongInt;
 begin
@@ -1545,7 +1505,7 @@ begin
     Result := Result + Ansichar(StrToInt('$' + Copy(HexText, (I - 1) * 2 + 1, 2)));
 end;
 
-function Text2hex(Msg: RawByteString): string;
+function Text2Hex(Msg: RawByteString): string;
 var
   I: LongInt;
 begin
@@ -1556,7 +1516,7 @@ begin
     end;
 end;
 
-function Rightstr(const Str: string; Size: Word): string;
+function RightStr(const Str: string; Size: Word): string;
 var
   Len: Integer;
 begin
@@ -1571,7 +1531,7 @@ begin
   Result := Copy(Str, 1, Size);
 end;
 
-function Nextdata(var Data: string; Count: Integer): string;
+function NextData(var Data: string; Count: Integer): string;
 var
   Blok: string;
 begin

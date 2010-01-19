@@ -23,7 +23,8 @@ uses
   ExtCtrls,
   Pngimage,
   Menus,
-  StdCtrls;
+  StdCtrls,
+  JvSimpleXml;
 
 type
   TProfileForm = class(TForm)
@@ -71,107 +72,81 @@ uses
   MainUnit,
   VarsUnit,
   UtilsUnit,
-  RXML,
   SettingsUnit,
   RosterUnit,
   FirstStartUnit,
   LogUnit;
 
+resourcestring
+  RS_Lang = 'language';
+  RS_Prof = 'profiles';
+  RS_Cur = 'current';
+  RS_Auto = 'auto_login';
+
 procedure TProfileForm.SaveSettings;
 var
   I: Integer;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения главного окна в xml
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Сохраняем язык по умолчанию
-        if OpenKey('defaults\language', True) then
-          try
-            WriteString('locale', CurrentLang);
-          finally
-            CloseKey;
-          end;
+        Root.Items.Add(RS_Lang, CurrentLang);
         // Сохраняем профиль по умолчанию
-        if OpenKey('defaults\profile', True) then
-          try
-            WriteString('name', Profile);
-            WriteBool('auto', AutoSignCheckBox.Checked);
-          finally
-            CloseKey;
-          end;
+        XML_Node := Root.Items.Add(RS_Prof);
+        XML_Node.Properties.Add(RS_Cur, Profile);
+        XML_Node.Properties.Add(RS_Auto, AutoSignCheckBox.Checked);
         // Сохраняем список всех других профилей
         for I := 0 to ProfileComboBox.Items.Count - 1 do
-          begin
-            if OpenKey('defaults\profile\items' + IntToStr(I), True) then
-              try
-                WriteString('name', ProfileComboBox.Items.Strings[I]);
-              finally
-                CloseKey;
-              end;
-          end;
+          XML_Node.Items.Add('i' + IntToStr(I), ProfileComboBox.Items.Strings[I]);
         // Записываем сам файл
         SaveToFile(ProfilePath + ProfilesFileName);
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
 procedure TProfileForm.LoadSettings;
 var
-  I, Cnt: Integer;
-  XmlFile: TrXML;
+  I: Integer;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + ProfilesFileName) then
           begin
             LoadFromFile(ProfilePath + ProfilesFileName);
-            // Загружаем язык по умолчанию
-            if OpenKey('defaults\language') then
-              try
-                CurrentLang := ReadString('locale');
-              finally
-                CloseKey;
-              end;
-            // Получаем имя последнего профиля
-            if OpenKey('defaults\profile') then
-              try
-                ProfileComboBox.Text := ReadString('name');
-                AutoSignCheckBox.Checked := ReadBool('auto');
-              finally
-                CloseKey;
-              end;
-            // Получаем список других профилей
-            Cnt := 0;
-            if OpenKey('defaults\profile') then
-              try
-                Cnt := GetKeyCount;
-              finally
-                CloseKey;
-              end;
-            for I := 0 to Cnt - 1 do
+            if Root <> nil then
               begin
-                if OpenKey('defaults\profile\items' + IntToStr(I)) then
-                  try
-                    ProfileComboBox.Items.Add(ReadString('name'));
-                  finally
-                    CloseKey;
+                // Загружаем язык по умолчанию
+                CurrentLang := Root.Items.Value(RS_Lang);
+                // Получаем имя последнего профиля
+                XML_Node := Root.Items.ItemNamed[RS_Prof];
+                if XML_Node <> nil then
+                  begin
+                    ProfileComboBox.Text := XML_Node.Properties.Value(RS_Cur);
+                    AutoSignCheckBox.Checked := XML_Node.Properties.BoolValue(RS_Auto);
+                    // Получаем список других профилей
+                    for I := 0 to XML_Node.Items.Count - 1 do
+                      ProfileComboBox.Items.Add(XML_Node.Items.Value('i' + IntToStr(I)));
                   end;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
@@ -280,8 +255,6 @@ begin
   SetLang(Self);
   // Сведения о версии программы
   VersionLabel.Caption := Format(S_Version, [InitBuildInfo]);
-  // Применяем язык к форме лога
-  LogForm.TranslateForm;
 end;
 
 procedure TProfileForm.DeleteButtonClick(Sender: TObject);
@@ -327,11 +300,10 @@ begin
   // Загружаем настройки
   LoadSettings;
   ProfileComboBox.Hint := ProfilePath + ProfileComboBox.Text;
+  // Назначаем разделитель значений для списков
+  LangComboBox.Items.NameValueSeparator := BN;
   // Устанавливаем язык
-  if CurrentLang = 'ru' then
-    LangComboBox.ItemIndex := 0
-  else
-    LangComboBox.ItemIndex := 1;
+  LangComboBox.ItemIndex := LangComboBox.Items.IndexOfName('[' + CurrentLang + ']');
   // Переводим форму
   LangComboBox.OnChange := LangComboBoxChange;
   LangComboBoxChange(nil);
@@ -343,13 +315,14 @@ end;
 procedure TProfileForm.LangComboBoxChange(Sender: TObject);
 begin
   // Устанавливаем язык
-  case LangComboBox.ItemIndex of
-    0: CurrentLang := 'ru';
-    1: CurrentLang := 'en';
-  end;
-  // Переводим форму
+  CurrentLang := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
+  // Подгружаем переменные языка
   SetLangVars;
+  // Переводим форму
   TranslateForm;
+  // Применяем язык к форме лога
+  LogForm.TranslateForm;
+  // Применяем язык к главной форме
   MainForm.TranslateForm;
 end;
 

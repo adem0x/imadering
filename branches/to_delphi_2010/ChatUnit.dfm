@@ -862,6 +862,7 @@ object ChatForm: TChatForm
   end
   object MemoPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = MemoPopupMenuPopup
     Left = 16
@@ -917,6 +918,7 @@ object ChatForm: TChatForm
     end
   end
   object QmessPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 120
     Top = 192

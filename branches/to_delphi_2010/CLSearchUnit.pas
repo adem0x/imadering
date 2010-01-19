@@ -23,12 +23,12 @@ uses
   StdCtrls,
   Buttons,
   VarsUnit,
-  RXML,
   JvExComCtrls,
   JvListView,
   CategoryButtons,
   ComCtrls,
-  ExtCtrls;
+  ExtCtrls,
+  JvSimpleXml;
 
 type
   TCLSearchForm = class(TForm)
@@ -64,7 +64,7 @@ uses
   RosterUnit;
 
 resourcestring
-  RS_CLSearchFormPos = 'settings\forms\clsearchform\position';
+  RS_CLSearchForm = 'cl_search_form';
 
 procedure TCLSearchForm.CLSearchEditChange(Sender: TObject);
 var
@@ -88,8 +88,8 @@ begin
               if ((Length(Items[I].Caption) = 4) and (Items[I].SubItems[3] = S_Icq)) or (Items[I].Caption = S_NoCL) then
                 Continue;
               // Если нашли текст в учётной записи или нике
-              if (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].Caption, LoUserLocale)) > 0) or
-                (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].SubItems[0], LoUserLocale)) > 0) then
+              if (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].Caption, LoUserLocale)) > 0) or (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale),
+                  UpperCase(Items[I].SubItems[0], LoUserLocale)) > 0) then
                 begin
                   CLSearchJvListView.Items.Add.Caption := Items[I].Caption;
                   CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Items[I].SubItems[0]);
@@ -156,33 +156,35 @@ end;
 
 procedure TCLSearchForm.FormCreate(Sender: TObject);
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + SettingsFileName) then
           begin
             LoadFromFile(ProfilePath + SettingsFileName);
-            // Загружаем позицию окна
-            if OpenKey(RS_CLSearchFormPos) then
-              try
-                Top := ReadInteger('top');
-                Left := ReadInteger('left');
-                Height := ReadInteger('height');
-                Width := ReadInteger('width');
-                // Определяем не находится ли окно за пределами экрана
-                MainForm.FormSetInWorkArea(Self);
-              finally
-                CloseKey;
+            if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[RS_CLSearchForm];
+                if XML_Node <> nil then
+                  begin
+                    Top := XML_Node.Properties.IntValue('t');
+                    Left := XML_Node.Properties.IntValue('l');
+                    Height := XML_Node.Properties.IntValue('h');
+                    Width := XML_Node.Properties.IntValue('w');
+                    // Определяем не находится ли окно за пределами экрана
+                    MainForm.FormSetInWorkArea(Self);
+                  end;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
   // Переводим окно на другие языки
   TranslateForm;
@@ -195,39 +197,45 @@ end;
 
 procedure TCLSearchForm.FormDestroy(Sender: TObject);
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения окна в xml
-  XmlFile := TrXML.Create;
+  // Инициализируем XML
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
-        // Сохраняем позицию окна
-        if OpenKey(RS_CLSearchFormPos, True) then
-          try
-            WriteInteger('top', Top);
-            WriteInteger('left', Left);
-            WriteInteger('height', Height);
-            WriteInteger('width', Width);
-          finally
-            CloseKey;
+        if Root <> nil then
+          begin
+            // Очищаем раздел главной формы если он есть
+            XML_Node := Root.Items.ItemNamed[RS_CLSearchForm];
+            if XML_Node <> nil then
+              XML_Node.Clear
+            else
+              XML_Node := Root.Items.Add(RS_CLSearchForm);
+            // Сохраняем позицию окна
+            XML_Node.Properties.Add('t', Top);
+            XML_Node.Properties.Add('l', Left);
+            XML_Node.Properties.Add('h', Height);
+            XML_Node.Properties.Add('w', Width);
           end;
         // Записываем сам файл
         SaveToFile(ProfilePath + SettingsFileName);
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
 procedure TCLSearchForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  //CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
 end;

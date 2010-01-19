@@ -154,11 +154,11 @@ begin
         SmiliesHTMLViewer.SetFocus;
       // Закрываем окно смайлов
       Close;
-      // Выводим на передний план окно чата и ставим фокус в поле ввода
-      SetForegroundWindow(ChatForm.Handle);
-      if CanFocus then
-        SetFocus;
     end;
+  // Выводим на передний план окно чата и ставим фокус в поле ввода
+  SetForegroundWindow(ChatForm.Handle);
+  if ChatForm.InputRichEdit.CanFocus then
+    ChatForm.InputRichEdit.SetFocus;
 end;
 
 procedure TSmilesForm.SmiliesHTMLViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);

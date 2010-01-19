@@ -30,7 +30,6 @@ uses
   OverbyteIcsWndControl,
   OverbyteIcsWSocket,
   OverbyteIcsHttpProt,
-  RXML,
   JvHint,
   StrUtils,
   OverbyteIcsMimeUtils,
@@ -39,7 +38,8 @@ uses
   ActnList,
   GifImg,
   AppEvnts,
-  JclDebug;
+  JclDebug,
+  JvSimpleXml;
 
 type
   TMainForm = class(TForm)
@@ -486,19 +486,20 @@ uses
   ProfileUnit,
   GTransUnit,
   OverbyteIcsUrl,
-  ShellApi;
+  ShellApi,
+  IcqEditContactUnit;
 
 resourcestring
-  RS_MainFormPos = 'settings\forms\mainform\position';
-  RS_MainFormSounds = 'settings\forms\mainform\sounds-on-off';
-  RS_MainFormOnlyOnline = 'settings\forms\mainform\only-online-on-off';
-  RS_MainFormGroup = 'settings\forms\mainform\group-on-off';
-  RS_MainFormFirst = 'settings\forms\mainform\first-start';
-  RS_MainFormProto = 'settings\forms\mainform\proto-select';
-  RS_Traffic = 'settings\traffic';
-  RS_MainFormHEG = 'settings\forms\mainform\hide-empty-group';
-  RS_MainFormTP = 'settings\forms\mainform\top-panel';
-  RS_MainFormBP = 'settings\forms\mainform\bottom-panel';
+  RS_MainForm = 'main_form';
+  RS_MainFormSounds = 'sounds';
+  RS_MainFormOnlyOnline = 'only_online';
+  RS_MainFormGroups = 'groups';
+  RS_MainFormFirst = 'first_start';
+  RS_MainFormProto = 'protos';
+  RS_Traffic = 'traffic';
+  RS_MainFormHEG = 'empty_group';
+  RS_MainFormTP = 'top_panel';
+  RS_MainFormBP = 'bottom_panel';
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -534,6 +535,75 @@ begin
   CheckUpdateTray1.Caption := CheckUpdateMenu.Caption;
   CheckUpdateTray2.Caption := CheckUpdateMenu.Caption;
   StatusTray2.Caption := StatusTray1.Caption;
+  LogFormMenu.Caption := ShowLogTray.Caption;
+  TopMainButtonONMenu.Caption := MainButtonONMenu.Caption;
+  TopOnlyOnlineONMenu.Caption := OnlyOnlineONMenu.Caption;
+  TopGroupONMenu.Caption := GroupONMenu.Caption;
+  TopSoundsONMenu.Caption := SoundsONMenu.Caption;
+  TopPrivatONMenu.Caption := PrivatONMenu.Caption;
+  TopHistoryONMenu.Caption := HistoryONMenu.Caption;
+  TopSettingsONMenu.Caption := SettingsONMenu.Caption;
+  TopTrafficONMenu.Caption := TrafficONMenu.Caption;
+  SearchInCL.Caption := SearchInCLMainMenu.Caption;
+  // Применяем перевод статусов в меню
+  ICQStatusFFC.Caption := S_Status1;
+  ICQStatusEvil.Caption := S_Status2;
+  ICQStatusDepres.Caption := S_Status3;
+  ICQStatusHome.Caption := S_Status4;
+  ICQStatusWork.Caption := S_Status5;
+  ICQStatusLunch.Caption := S_Status6;
+  ICQStatusAway.Caption := S_Status7;
+  ICQStatusNA.Caption := S_Status8;
+  ICQStatusOccupied.Caption := S_Status9;
+  ICQStatusDND.Caption := S_Status10;
+  ICQStatusOnline.Caption := S_Status11;
+  ICQStatusInvisible.Caption := S_Status12;
+  ICQStatusInvisibleForAll.Caption := S_Status13;
+  ICQStatusOffline.Caption := S_Status14;
+  //
+  MRASettings.Caption := ICQSettings.Caption;
+  MRAXStatus.Caption := ICQXStatus.Caption;
+  MRAStatusFFC.Caption := S_Status1;
+  MRAStatusAway.Caption := S_Status7;
+  MRAStatusDND.Caption := S_Status10;
+  MRAStatusOnline.Caption := S_Status11;
+  MRAStatusInvisible.Caption := S_Status12;
+  MRAStatusOffline.Caption := S_Status14;
+  PingMRAServer.Caption := PingICQServer.Caption;
+  UnstableMRAStatus.Caption := UnstableICQStatus.Caption;
+  //
+  JabberSettings.Caption := ICQSettings.Caption;
+  JabberSearchNewContact.Caption := ICQSearchNewContact.Caption;
+  JabberXStatus.Caption := ICQXStatus.Caption;
+  JabberStatusFFC.Caption := S_Status1;
+  JabberStatusEvil.Caption := S_Status2;
+  JabberStatusDepression.Caption := S_Status3;
+  JabberStatusHome.Caption := S_Status4;
+  JabberStatusWork.Caption := S_Status5;
+  JabberStatusLunch.Caption := S_Status6;
+  JabberStatusAway.Caption := S_Status7;
+  JabberStatusNA.Caption := S_Status8;
+  JabberStatusOccupied.Caption := S_Status9;
+  JabberStatusDND.Caption := S_Status10;
+  JabberStatusOnline.Caption := S_Status11;
+  JabberStatusInvisible.Caption := S_Status12;
+  JabberStatusOffline.Caption := S_Status14;
+  PingJabberServer.Caption := PingICQServer.Caption;
+  UnstableJabberStatus.Caption := UnstableICQStatus.Caption;
+  //
+  AllStatusFFC.Caption := S_Status1;
+  AllStatusEvil.Caption := S_Status2;
+  AllStatusDepres.Caption := S_Status3;
+  AllStatusHome.Caption := S_Status4;
+  AllStatusWork.Caption := S_Status5;
+  AllStatusLunch.Caption := S_Status6;
+  AllStatusAway.Caption := S_Status7;
+  AllStatusNA.Caption := S_Status8;
+  AllStatusOccupied.Caption := S_Status9;
+  AllStatusDND.Caption := S_Status10;
+  AllStatusOnline.Caption := S_Status11;
+  AllStatusInvisible.Caption := S_Status12;
+  AllStatusOffline.Caption := S_Status14;
 end;
 
 procedure TMainForm.FormShowInWorkArea(XForm: TForm);
@@ -946,7 +1016,8 @@ begin
         Checked := True;
     end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.HideInTrayClick(Sender: TObject);
@@ -1388,8 +1459,7 @@ begin
         ProxyErr := 0;
         // Если ответ положительный и прокси установил соединение,
         // то активируем фазу подключения через http прокси
-        if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr
-          ('HTTP/1.1 200', Pkt) then
+        if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
           begin
             ICQ_HTTP_Connect_Phaze := True;
             XLog(Log_ICQGet + Log_Proxy_OK);
@@ -1429,8 +1499,7 @@ begin
     // их к специальному буферу накопления таких преобразованных данных
     ICQ_BuffPkt := ICQ_BuffPkt + Pkt;
     // Ищем ошибки в буфере пакетов
-    if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or
-      ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
+    if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
         DAShow(S_Errorhead, ParsingPktError + RN + '[ ' + SocketL + BN + ICQWSocket.name + ' ]', EmptyStr, 134, 2, 0);
@@ -1442,8 +1511,7 @@ begin
   X :;
     PktSize := ICQ_BodySize;
     // Проверяем если ли в буфере хоть один целый пакет
-    if (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE + PktSize) or
-      ((ICQ_BuffPkt[2] = #$04) and (PktSize = 0)) then
+    if (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE + PktSize) or ((ICQ_BuffPkt[2] = #$04) and (PktSize = 0)) then
       begin
         // Забираем из буфера один целый пакет
         HexPkt := NextData(ICQ_BuffPkt, ICQ_FLAP_HEAD_SIZE + PktSize);
@@ -1663,8 +1731,7 @@ begin
                                       // Отсылаем подтверждение получения пакета с контактами
                                       SendFLAP('2', '00130007000000000007');
                                       // Отсылаем первоначальную онлайн инфу
-                                      SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr,
-                                          EmptyStr));
+                                      SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
                                       // Отсылаем параметры ограничений
                                       SendFLAP('2', ICQ_CliSetICBMparametersPkt);
                                       // Отсылаем первый пакет со статусом
@@ -1678,8 +1745,7 @@ begin
                                       // Если ещё есть доп. статус то отсылаем пакеты установки правильного доп. статуса как в ICQ 6
                                       if ICQ_X_CurrentStatus > 0 then
                                         begin
-                                          SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap,
-                                              EmptyStr, EmptyStr, EmptyStr));
+                                          SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
                                           ICQ_SetInfoP;
                                           ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
                                         end;
@@ -1744,8 +1810,7 @@ begin
                                       case HexToInt(TLV) of
                                         $0008: begin // TLV с ошибкой авторизации
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                            DAShow(S_Errorhead, ICQ_NotifyAuthCookieError(Text2Hex(NextData(HexPkt, Len))), EmptyStr, 134,
-                                              2, 0);
+                                            DAShow(S_Errorhead, ICQ_NotifyAuthCookieError(Text2Hex(NextData(HexPkt, Len))), EmptyStr, 134, 2, 0);
                                             ICQ_GoOffline;
                                           end;
                                         $0005: begin // TLV с адресом для коннекта к основному серверу
@@ -1763,8 +1828,7 @@ begin
                                         else // Если пакет содержит другие TLV, то пропускаем их
                                           begin
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim
-                                                (Dump(NextData(HexPkt, Len))));
+                                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(HexPkt, Len))));
                                           end;
                                       end;
                                     end;
@@ -1987,206 +2051,203 @@ end;
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 var
   PktZ: RawByteString;
-  Pkt, Challenge: string;
-  ProxyErr, CntPkt, I: Integer;
-  XmlDoc: TrXML;
+  { Pkt, Challenge: string;
+    ProxyErr, I: Integer; }
 begin
-  CntPkt := 0;
   // Получаем пришедшие от сервера данные с сокета
   PktZ := JabberWSocket.ReceiveStr;
-  // Указываем кодовую страницу UTF-8 для полученных данных
-  SetCodePage(PktZ, 65001, False);
-  Pkt := PktZ;
-  // Пишем в лог данные пакета
-  if LogForm.JabberDumpSpeedButton.Down then
+
+  (* // Указываем кодовую страницу UTF-8 для полученных данных
+    SetCodePage(PktZ, 65001, False);
+    Pkt := PktZ;
+    // Пишем в лог данные пакета
+    if LogForm.JabberDumpSpeedButton.Down then
     XLog('Jabber get | ' + RN + Trim(Dump(Pkt)));
-  // Если при получении данных возникла ошибка, то сообщаем об этом
-  if ErrCode <> 0 then
+    // Если при получении данных возникла ошибка, то сообщаем об этом
+    if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
-      // Активируем режим оффлайн
-      Jabber_GoOffline;
-      Exit;
-    end;
-  // HTTP прокси коннект
-  if (HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
-    begin
-      // Заносим данные в специальный буфер
-      Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
-      // Если нет ответа нормального от прокси, то выходим
-      if Pos(RN + RN, Jabber_myBeautifulSocketBuffer) = 0 then
-        Exit;
-      // Забираем из ответа прокси нужную информацию от прокси
-      Pkt := Chop(RN + RN, Jabber_myBeautifulSocketBuffer);
-      // Обнуляем ошибки прокси
-      ProxyErr := 0;
-      // Если ответ положительный и прокси установил соединение,
-      // то активируем фазу подключения через http прокси
-      if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr
-        ('HTTP/1.1 200', Pkt) then
-        begin
-          Jabber_HTTP_Connect_Phaze := True;
-          XLog('Jabber | ' + Log_Proxy_OK);
-        end
-      else
-      // Сообщаем об ошибках прокси
-        if AnsiStartsStr('HTTP/1.0 407', Pkt) then
-        begin
-          ProxyErr := 1;
-          DAShow(S_Errorhead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
-          XLog('Jabber | ' + ProxyConnectErrL1);
-        end
-      else
-        begin
-          ProxyErr := 2;
-          DAShow(S_Errorhead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
-          XLog('Jabber | ' + ProxyConnectErrL2);
-        end;
-      // Забираем из буфера пакет с данными Jabber
-      Pkt := Jabber_myBeautifulSocketBuffer;
-      // Очищаем буфер
-      Jabber_myBeautifulSocketBuffer := EmptyStr;
-      // Если в работе с прокси были ошибки, то уходим в оффлайн
-      if ProxyErr <> 0 then
-        begin
-          Jabber_GoOffline;
-          Exit;
-        end;
-    end;
-  // Если длинна этих данных равна нулю, выходим от сюда :)
-  if Length(Pkt) = 0 then
+    DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+    // Активируем режим оффлайн
+    Jabber_GoOffline;
     Exit;
-  // Увеличиваем статистику входящего трафика
-  TrafRecev := TrafRecev + Length(Pkt);
-  AllTrafRecev := AllTrafRecev + Length(Pkt);
-  if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
-  // Проверяем пакет окончания сессии
-  if Pkt = ('</' + FRootTag + '>') then
-    begin
-      Jabber_GoOffline;
-      Exit;
     end;
-  // Буферизируем данные пакетов из сокета и забираем цельные данные
-  Jabber_BuffPkt := Jabber_BuffPkt + Pkt;
-  repeat
+    // HTTP прокси коннект
+    if (HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
+    begin
+    // Заносим данные в специальный буфер
+    Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
+    // Если нет ответа нормального от прокси, то выходим
+    if Pos(RN + RN, Jabber_myBeautifulSocketBuffer) = 0 then
+    Exit;
+    // Забираем из ответа прокси нужную информацию от прокси
+    Pkt := Chop(RN + RN, Jabber_myBeautifulSocketBuffer);
+    // Обнуляем ошибки прокси
+    ProxyErr := 0;
+    // Если ответ положительный и прокси установил соединение,
+    // то активируем фазу подключения через http прокси
+    if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
+    begin
+    Jabber_HTTP_Connect_Phaze := True;
+    XLog('Jabber | ' + Log_Proxy_OK);
+    end
+    else
+    // Сообщаем об ошибках прокси
+    if AnsiStartsStr('HTTP/1.0 407', Pkt) then
+    begin
+    ProxyErr := 1;
+    DAShow(S_Errorhead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
+    XLog('Jabber | ' + ProxyConnectErrL1);
+    end
+    else
+    begin
+    ProxyErr := 2;
+    DAShow(S_Errorhead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
+    XLog('Jabber | ' + ProxyConnectErrL2);
+    end;
+    // Забираем из буфера пакет с данными Jabber
+    Pkt := Jabber_myBeautifulSocketBuffer;
+    // Очищаем буфер
+    Jabber_myBeautifulSocketBuffer := EmptyStr;
+    // Если в работе с прокси были ошибки, то уходим в оффлайн
+    if ProxyErr <> 0 then
+    begin
+    Jabber_GoOffline;
+    Exit;
+    end;
+    end;
+    // Если длинна этих данных равна нулю, выходим от сюда :)
+    if Length(Pkt) = 0 then
+    Exit;
+    // Увеличиваем статистику входящего трафика
+    TrafRecev := TrafRecev + Length(Pkt);
+    AllTrafRecev := AllTrafRecev + Length(Pkt);
+    if Assigned(TrafficForm) then
+    OpenTrafficClick(nil);
+    // Проверяем пакет окончания сессии
+    if Pkt = ('</' + FRootTag + '>') then
+    begin
+    Jabber_GoOffline;
+    Exit;
+    end;
+    // Буферизируем данные пакетов из сокета и забираем цельные данные
+    Jabber_BuffPkt := Jabber_BuffPkt + Pkt;
+    repeat
     Pkt := GetFullTag(Jabber_BuffPkt);
     if Pkt <> EmptyStr then
-      begin
-        if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (Pos(FRootTag, Pkt) = 0) then
-          begin
-            // Если это стадия подключения к серверу жаббер
-            if Jabber_Connect_Phaze then
-              begin
-                // Ищем механизм авторизации DIGEST-MD5
-                if Pos('>DIGEST-MD5<', Pkt) > 0 then
-                  // Отсылаем запрос challenge
-                  Sendflap_jabber('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>')
-                  // Если только механизм авторизации PLAIN
-                else if Pos('>PLAIN<', Pkt) > 0 then
-                  Sendflap_jabber(Format(JPlainMechanism, [JabberPlain_Auth]))
-                  // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
-                else if Pos('</challenge>', Pkt) > 0 then
-                  begin
-                    // Получаем чистый challenge из пакета и расшифровываем
-                    Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
-                    // Забираем из challenge ключ nonce
-                    Challenge := IsolateTextString(Challenge, 'nonce="', '"');
-                    // Если challenge пустой, то значит мы уже авторизовались
-                    if Challenge = EmptyStr then
-                      Sendflap_jabber('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>')
-                    else
-                      // Отсылаем пакет с авторизацией
-                      Sendflap_jabber(JabberDIGESTMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge,
-                          GetRandomHexBytes(32)));
-                  end
-                else if Pos('<not-authorized', Pkt) > 0 then
-                  begin
-                    // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                    DAShow(S_Errorhead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
-                    Jabber_GoOffline;
-                    Exit;
-                  end
-                else if Pos('<success', Pkt) > 0 then
-                  begin
-                    // Закрепляем сессию с жаббер сервером
-                    // Если сервер и порт указаны вручную
-                    if JabberOptionsForm.JUseCustomServerSettingsCheckBox.Checked then
-                      Sendflap_jabber(Format(StreamHead, [Parse('@', Jabber_JID, 2)]))
-                    else
-                      Sendflap_jabber(Format(StreamHead, [Jabber_ServerAddr]));
-                    // Активируем режим онлайн для Jabber
-                    Jabber_Connect_Phaze := False;
-                    Jabber_HTTP_Connect_Phaze := False;
-                    Jabber_Work_Phaze := True;
-                    Jabber_Offline_Phaze := False;
-                    // Отключаем метку пересоединения ведь мы уже и так онлайн!
-                    Jabber_Reconnect := False;
-                    // Запускаем таймер отсылки пинг пакетов
-                    if Jabber_KeepAlive then
-                      JvTimerList.Events[9].Enabled := True;
-                    // Выходим
-                    // Очищаем группы Jabber в Ростере
-                    RosterForm.ClearContacts(S_Jabber);
-                    Exit;
-                  end;
-              end;
-            // Разбираем пакеты рабочей фазы jabber
-            if Jabber_Work_Phaze then
-              begin
-                // Обрамляем в STREAM для корректной обработки братских узлов парсером
-                Pkt := '<istream>' + Pkt + '</istream>';
-                // Инициализируем XML
-                XmlDoc := TrXML.Create;
-                try
-                  with XmlDoc do
-                    begin
-                      // Загружаем пакет в объект xml
-                      Text := Pkt;
-                      // Начинаем пробег по возможным склеенным пакетам
-                      if OpenKey('istream') then
-                        try
-                          CntPkt := GetKeyCount;
-                        finally
-                          CloseKey;
-                        end;
-                      for I := 0 to CntPkt - 1 do
-                        begin
-                          if OpenKey('istream\stream:features', False, I) then
-                            try
-                              Jabber_ParseFeatures(GetKeyXML);
-                            finally
-                              CloseKey;
-                            end
-                            // Парсим пакеты iq
-                          else if OpenKey('istream\iq', False, I) then
-                            try
-                              Jabber_ParseIQ(GetKeyXML);
-                            finally
-                              CloseKey;
-                            end
-                            // Парсим пакеты presence
-                          else if OpenKey('istream\presence', False, I) then
-                            try
-                              Jabber_ParsePresence(GetKeyXML);
-                            finally
-                              CloseKey;
-                            end
-                          else if OpenKey('istream\message', False, I) then
-                            try
-                              Jabber_ParseMessage(GetKeyXML);
-                            finally
-                              CloseKey;
-                            end;
-                        end;
-                    end;
-                finally
-                  FreeAndNil(XmlDoc);
-                end;
-              end;
-          end;
-      end;
-  until ((Pkt = '') or (Jabber_BuffPkt = ''));
+    begin
+    if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (Pos(FRootTag, Pkt) = 0) then
+    begin
+    // Если это стадия подключения к серверу жаббер
+    if Jabber_Connect_Phaze then
+    begin
+    // Ищем механизм авторизации DIGEST-MD5
+    if Pos('>DIGEST-MD5<', Pkt) > 0 then
+    // Отсылаем запрос challenge
+    Sendflap_jabber('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>')
+    // Если только механизм авторизации PLAIN
+    else if Pos('>PLAIN<', Pkt) > 0 then
+    Sendflap_jabber(Format(JPlainMechanism, [JabberPlain_Auth]))
+    // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
+    else if Pos('</challenge>', Pkt) > 0 then
+    begin
+    // Получаем чистый challenge из пакета и расшифровываем
+    Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
+    // Забираем из challenge ключ nonce
+    Challenge := IsolateTextString(Challenge, 'nonce="', '"');
+    // Если challenge пустой, то значит мы уже авторизовались
+    if Challenge = EmptyStr then
+    Sendflap_jabber('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>')
+    else
+    // Отсылаем пакет с авторизацией
+    Sendflap_jabber(JabberDIGESTMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
+    end
+    else if Pos('<not-authorized', Pkt) > 0 then
+    begin
+    // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
+    DAShow(S_Errorhead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
+    Jabber_GoOffline;
+    Exit;
+    end
+    else if Pos('<success', Pkt) > 0 then
+    begin
+    // Закрепляем сессию с жаббер сервером
+    // Если сервер и порт указаны вручную
+    if JabberOptionsForm.JUseCustomServerSettingsCheckBox.Checked then
+    Sendflap_jabber(Format(StreamHead, [Parse('@', Jabber_JID, 2)]))
+    else
+    Sendflap_jabber(Format(StreamHead, [Jabber_ServerAddr]));
+    // Активируем режим онлайн для Jabber
+    Jabber_Connect_Phaze := False;
+    Jabber_HTTP_Connect_Phaze := False;
+    Jabber_Work_Phaze := True;
+    Jabber_Offline_Phaze := False;
+    // Отключаем метку пересоединения ведь мы уже и так онлайн!
+    Jabber_Reconnect := False;
+    // Запускаем таймер отсылки пинг пакетов
+    if Jabber_KeepAlive then
+    JvTimerList.Events[9].Enabled := True;
+    // Выходим
+    // Очищаем группы Jabber в Ростере
+    RosterForm.ClearContacts(S_Jabber);
+    Exit;
+    end;
+    end;
+    // Разбираем пакеты рабочей фазы jabber
+    if Jabber_Work_Phaze then
+    begin
+    // Обрамляем в STREAM для корректной обработки братских узлов парсером
+    Pkt := '<istream>' + Pkt + '</istream>';
+    // Инициализируем XML
+
+    { with XmlDoc do
+    begin
+    // Загружаем пакет в объект xml
+    Text := Pkt;
+    // Начинаем пробег по возможным склеенным пакетам
+    if OpenKey('istream') then
+    try
+    CntPkt := GetKeyCount;
+    finally
+    CloseKey;
+    end;
+    for I := 0 to CntPkt - 1 do
+    begin
+    if OpenKey('istream\stream:features', False, I) then
+    try
+    Jabber_ParseFeatures(GetKeyXML);
+    finally
+    CloseKey;
+    end
+    // Парсим пакеты iq
+    else if OpenKey('istream\iq', False, I) then
+    try
+    Jabber_ParseIQ(GetKeyXML);
+    finally
+    CloseKey;
+    end
+    // Парсим пакеты presence
+    else if OpenKey('istream\presence', False, I) then
+    try
+    Jabber_ParsePresence(GetKeyXML);
+    finally
+    CloseKey;
+    end
+    else if OpenKey('istream\message', False, I) then
+    try
+    Jabber_ParseMessage(GetKeyXML);
+    finally
+    CloseKey;
+    end;
+    end;
+    end; }
+
+    end;
+    end;
+    end;
+    until ((Pkt = '') or (Jabber_BuffPkt = ''));
+
+    *)
+
 end;
 
 procedure TMainForm.JabberWSocketError(Sender: TObject);
@@ -2358,7 +2419,8 @@ end;
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
 begin
   // Обрабатываем Ростер
-  RosterForm.UpdateFullCL;
+  if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.JvTimerListEvents12Timer(Sender: TObject);
@@ -2828,8 +2890,7 @@ begin
       ProxyErr := 0;
       // Если ответ положительный и прокси установил соединение,
       // то активируем фазу подключения через http прокси
-      if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr
-        ('HTTP/1.1 200', Pkt) then
+      if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
         begin
           MRA_HTTP_Connect_Phaze := True;
           XLog('MRA | ' + Log_Proxy_OK);
@@ -2911,8 +2972,7 @@ begin
       Exit;
     end;
   // Ищем ошибки в буфере пакетов
-  if ((MRA_HexPkt > EmptyStr) and ((LeftStr(MRA_HexPkt, 8)) <> MRA_MagKey)) or
-    ((Length(MRA_HexPkt) > 2) and ((HexToInt(MRA_HexPkt[3] + MRA_HexPkt[4]) = $0))) then
+  if ((MRA_HexPkt > EmptyStr) and ((LeftStr(MRA_HexPkt, 8)) <> MRA_MagKey)) or ((Length(MRA_HexPkt) > 2) and ((HexToInt(MRA_HexPkt[3] + MRA_HexPkt[4]) = $0))) then
     begin
       // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
       DAShow(S_Errorhead, ParsingPktError, EmptyStr, 134, 2, 0);
@@ -3437,11 +3497,9 @@ begin
   if not Assigned(TrafficForm) then
     TrafficForm := TTrafficForm.Create(Self);
   // Показываем сколько трафика передано за эту сессию
-  TrafficForm.CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(TrafSend / 1000, FfFixed, 18, 3)
-    + ' KB | ' + DateTimeToStr(SesDataTraf);
+  TrafficForm.CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(TrafSend / 1000, FfFixed, 18, 3) + ' KB | ' + DateTimeToStr(SesDataTraf);
   // Показываем сколько трафика передано всего
-  TrafficForm.AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(AllTrafSend / 1000000,
-    FfFixed, 18, 3) + ' MB | ' + AllSesDataTraf;
+  TrafficForm.AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(AllTrafSend / 1000000, FfFixed, 18, 3) + ' MB | ' + AllSesDataTraf;
   // Отображаем окно
   XShowForm(TrafficForm);
 end;
@@ -3526,7 +3584,8 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   // Место для запуска тестов
-
+  IcqGroupManagerForm := TIcqGroupManagerForm.Create(self);
+  xshowform(IcqGroupManagerForm);
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -3545,7 +3604,8 @@ begin
       OnlyOnlineContactsTopButton.ImageIndex := 138;
     end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.OnlyOnlineContactsTopButtonClick(Sender: TObject);
@@ -3581,9 +3641,8 @@ begin
   try
     with FrmAddGroup do
       begin
-        // Присваиваем иконку окну
-        AllImageList.GetIcon((Sender as TMenuItem).ImageIndex, Icon);
-        Caption := (Sender as TMenuItem).Hint;
+        Caption := (Sender as TMenuItem).Caption;
+        // Ставим флаг, что это не добавление группы, а переименование
         Create_Group := False;
         // Вставляем название группы которую хотим переименовать
         for I := 0 to ContactList.Categories.Count - 1 do
@@ -3680,35 +3739,27 @@ end;
 
 procedure TMainForm.ContactListCategoryCollapase(Sender: TObject; const Category: TButtonCategory);
 var
-  GroupXml: TrXML;
   I: Integer;
+  JvXML: TJvSimpleXml;
 begin
   if not CollapseGroupsRestore then
     begin
       // Запоминаем свёрнутые группы
-      GroupXml := TrXML.Create;
+      // Инициализируем XML
+      JvXML_Create(JvXML);
       try
-        with GroupXml do
+        with JvXML do
           begin
             with ContactList do
               begin
                 for I := 0 to Categories.Count - 1 do
-                  begin
-                    // Запоминаем состояние группы
-                    if OpenKey('groups\' + 'Z' + ChangeCP
-                        (URLEncode((Categories[I].GroupCaption) + Categories[I].GroupType + Categories[I].GroupId)), True) then
-                      try
-                        WriteBool('collapsed', Categories[I].Collapsed);
-                      finally
-                        CloseKey;
-                      end;
-                  end;
+                  Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId)), Categories[I].Collapsed);
               end;
             // Записываем файл
             SaveToFile(ProfilePath + GroupsFileName);
           end;
       finally
-        FreeAndNil(GroupXml);
+        JvXML.Free;
       end;
     end;
 end;
@@ -3959,8 +4010,7 @@ begin
           end;
       end;
     // Выводим диалог подтверждения удаления контакта
-    if MessageBox(Handle, PChar(Format(DellGroupL, [GroupName])), PChar((Sender as TMenuItem).Hint),
-      MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
+    if MessageBox(Handle, PChar(Format(DellGroupL, [GroupName])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
       begin
         // Удаляем группу вместе с контактами из локального КЛ
         for I := 0 to ContactList.Categories.Count - 1 do
@@ -3992,8 +4042,7 @@ begin
                         begin
                           if (Items[I].SubItems[3] = S_Icq) and (Items[I].SubItems[1] = '0000') then
                             begin
-                              TCL.Add(Items[I].Caption + ';' + Items[I].SubItems[4] + ';' + Items[I].SubItems[5] + ';' + Items[I].SubItems
-                                  [12]);
+                              TCL.Add(Items[I].Caption + ';' + Items[I].SubItems[4] + ';' + Items[I].SubItems[5] + ';' + Items[I].SubItems[12]);
                             end;
                         end;
                     end;
@@ -4059,8 +4108,7 @@ begin
       MainForm.Enabled := False;
       try
         // Выводим вопрос на подтверждение действия
-        if MessageBox(Handle, PChar(Format(DellYourSelfL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
-          MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
+        if MessageBox(Handle, PChar(Format(DellYourSelfL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
           if ICQ_Work_Phaze then
             ICQ_DellMyFromCL((ContactList.SelectedItem as TButtonItem).UIN)
           else
@@ -4196,9 +4244,7 @@ begin
   try
     with FrmAddGroup do
       begin
-        // Присваиваем иконку окну
-        AllImageList.GetIcon((Sender as TMenuItem).ImageIndex, Icon);
-        Caption := (Sender as TMenuItem).Hint;
+        Caption := (Sender as TMenuItem).Caption;
         // Добавляем название группы по умолчанию
         GNameEdit.Text := AddNewGroupL;
         // Ставим флаг, что это добавление новой группы
@@ -4330,8 +4376,6 @@ begin
   // Проверяем если ли старый файл после обновления, если есть, то удаляем
   if FileExists(MyPath + 'Imadering.old') then
     DeleteFile(MyPath + 'Imadering.old');
-  // Устанавливаем языковые подписи
-  TranslateForm;
   // Запускаем таймер отображения окна выбора профиля
   JvTimerList.Events[0].Enabled := True;
 end;
@@ -4383,7 +4427,8 @@ begin
       GroupOnOffToolTopButton.ImageIndex := 232;
     end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;
 end;
 
 procedure TMainForm.GroupOnOffToolTopButtonClick(Sender: TObject);
@@ -4395,271 +4440,221 @@ end;
 
 procedure TMainForm.LoadMainFormSettings;
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + SettingsFileName) then
           begin
             LoadFromFile(ProfilePath + SettingsFileName);
-            // Загружаем позицию окна
-            if OpenKey(RS_MainFormPos) then
-              try
-                Top := ReadInteger('top');
-                Left := ReadInteger('left');
-                Height := ReadInteger('height');
-                Width := ReadInteger('width');
-                // Определяем не находится ли окно за пределами экрана
-                FormSetInWorkArea(Self);
-              finally
-                CloseKey;
-              end;
-            // Загружаем состояние кнопки звуков
-            if OpenKey(RS_MainFormSounds) then
-              try
-                if ReadBool(S_Value) then
+            if Root <> nil then
+              begin
+                // Проверяем есть ли нода главной формы
+                XML_Node := Root.Items.ItemNamed[RS_MainForm];
+                if XML_Node <> nil then
                   begin
-                    SoundOnOffToolButton.Down := True;
-                    SoundOnOffToolButtonClick(Self);
+                    // Загружаем позицию окна
+                    Top := XML_Node.Properties.IntValue('t');
+                    Left := XML_Node.Properties.IntValue('l');
+                    Height := XML_Node.Properties.IntValue('h');
+                    Width := XML_Node.Properties.IntValue('w');
+                    // Определяем не находится ли окно за пределами экрана
+                    FormSetInWorkArea(Self);
+                    // Загружаем состояние кнопки звуков
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormSounds];
+                    if Sub_Node <> nil then
+                      if Sub_Node.BoolValue then
+                        begin
+                          SoundOnOffToolButton.Down := True;
+                          SoundOnOffToolButtonClick(Self);
+                        end;
+                    // Загружаем состояние кнопки только онлайн
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormOnlyOnline];
+                    if Sub_Node <> nil then
+                      if Sub_Node.BoolValue then
+                        begin
+                          OnlyOnlineContactsToolButton.Down := True;
+                          OnlyOnlineContactsToolButtonClick(Self);
+                        end;
+                    // Загружаем состояние кнопки отображения групп
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormGroups];
+                    if Sub_Node <> nil then
+                      if not Sub_Node.BoolValue then
+                        begin
+                          GroupOnOffToolButton.Down := False;
+                          GroupOnOffToolButtonClick(Self);
+                        end;
+                    // Загружаем был ли первый старт
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormFirst];
+                    if Sub_Node <> nil then
+                      FirstStart := Sub_Node.BoolValue;
+                    // Загружаем выбранные протоколы
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormProto];
+                    if Sub_Node <> nil then
+                      begin
+                        ICQEnable(Sub_Node.Properties.BoolValue(S_Icq, False));
+                        MRAEnable(Sub_Node.Properties.BoolValue(S_Mra, False));
+                        JabberEnable(Sub_Node.Properties.BoolValue(S_Jabber, False));
+                      end;
+                    // Загружаем данные трафика
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_Traffic];
+                    if Sub_Node <> nil then
+                      begin
+                        AllTrafSend := Sub_Node.Properties.IntValue('s', 0);
+                        AllTrafRecev := Sub_Node.Properties.IntValue('r', 0);
+                        AllSesDataTraf := Sub_Node.Properties.Value('d');
+                      end;
+                    // Загружаем пункты меню
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormHEG];
+                    if Sub_Node <> nil then
+                      HideEmptyGroups.Checked := Sub_Node.BoolValue;
+                    // Загружаем состояние верхней панели
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormTP];
+                    if Sub_Node <> nil then
+                      begin
+                        // Загружаем состояние кнопок
+                        MainToolTopButton.Visible := Sub_Node.Properties.BoolValue('b0');
+                        TopMainButtonONMenu.Checked := MainToolTopButton.Visible;
+                        //
+                        OnlyOnlineContactsTopButton.Visible := Sub_Node.Properties.BoolValue('b1');
+                        TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
+                        //
+                        GroupOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue('b2');
+                        TopGroupONMenu.Checked := GroupOnOffToolTopButton.Visible;
+                        //
+                        SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue('b3');
+                        TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
+                        //
+                        PrivatTopToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
+                        TopPrivatONMenu.Checked := PrivatTopToolButton.Visible;
+                        //
+                        HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
+                        TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
+                        //
+                        SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
+                        TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
+                        //
+                        TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+                        TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
+                        //
+                        if not Sub_Node.BoolValue then
+                          begin
+                            TopPanelToolButton.Down := False;
+                            TopToolBar.Visible := False;
+                          end;
+                      end;
+                    // Загружаем состояние нижней панели
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_MainFormBP];
+                    if Sub_Node <> nil then
+                      begin
+                        // Загружаем состояние кнопок
+                        MainToolButton.Visible := Sub_Node.Properties.BoolValue('b0');
+                        MainButtonONMenu.Checked := MainToolButton.Visible;
+                        //
+                        OnlyOnlineContactsToolButton.Visible := Sub_Node.Properties.BoolValue('b1');
+                        OnlyOnlineONMenu.Checked := OnlyOnlineContactsToolButton.Visible;
+                        //
+                        GroupOnOffToolButton.Visible := Sub_Node.Properties.BoolValue('b2');
+                        GroupONMenu.Checked := GroupOnOffToolButton.Visible;
+                        //
+                        SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue('b3');
+                        SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
+                        //
+                        PrivatToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
+                        PrivatONMenu.Checked := PrivatToolButton.Visible;
+                        //
+                        HistoryToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
+                        HistoryONMenu.Checked := HistoryToolButton.Visible;
+                        //
+                        SettingsToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
+                        SettingsONMenu.Checked := SettingsToolButton.Visible;
+                        //
+                        TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+                        TrafficONMenu.Checked := TrafficToolButton.Visible;
+                        //
+                        TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
+                        TopPanelONMenu.Checked := TopPanelToolButton.Visible;
+                      end;
                   end;
-              finally
-                CloseKey;
-              end;
-            // Загружаем состояние кнопки только онлайн
-            if OpenKey(RS_MainFormOnlyOnline) then
-              try
-                if ReadBool(S_Value) then
-                  begin
-                    OnlyOnlineContactsToolButton.Down := True;
-                    OnlyOnlineContactsToolButtonClick(Self);
-                  end;
-              finally
-                CloseKey;
-              end;
-            // Загружаем состояние кнопки отображения групп
-            if OpenKey(RS_MainFormGroup) then
-              try
-                if not ReadBool(S_Value) then
-                  begin
-                    GroupOnOffToolButton.Down := False;
-                    GroupOnOffToolButtonClick(Self);
-                  end;
-              finally
-                CloseKey;
-              end;
-            // Загружаем был ли первый старт
-            if OpenKey(RS_MainFormFirst) then
-              try
-                FirstStart := ReadBool(S_Value);
-              finally
-                CloseKey;
-              end;
-            // Загружаем выбранные протоколы
-            if OpenKey(RS_MainFormProto) then
-              try
-                ICQEnable(ReadBool('icq'));
-                MRAEnable(ReadBool('mra'));
-                JabberEnable(ReadBool('jabber'));
-              finally
-                CloseKey;
-              end;
-            // Загружаем данные трафика
-            if OpenKey(RS_Traffic) then
-              try
-                AllTrafSend := ReadFloat('send');
-                AllTrafRecev := ReadFloat('recev');
-                AllSesDataTraf := ReadString('start-date');
-              finally
-                CloseKey;
-              end;
-            // Загружаем пункты меню
-            if OpenKey(RS_MainFormHEG) then
-              try
-                HideEmptyGroups.Checked := ReadBool(S_Value);
-              finally
-                CloseKey;
-              end;
-            // Загружаем состояние верхней панели
-            if OpenKey(RS_MainFormTP) then
-              try
-                if not ReadBool(S_Value) then
-                  begin
-                    TopPanelToolButton.Down := False;
-                    TopToolBar.Visible := False;
-                  end;
-                // Загружаем состояние кнопок
-                MainToolTopButton.Visible := ReadBool('b0');
-                TopMainButtonONMenu.Checked := MainToolTopButton.Visible;
-                //
-                OnlyOnlineContactsTopButton.Visible := ReadBool('b1');
-                TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
-                //
-                GroupOnOffToolTopButton.Visible := ReadBool('b2');
-                TopGroupONMenu.Checked := GroupOnOffToolTopButton.Visible;
-                //
-                SoundOnOffToolTopButton.Visible := ReadBool('b3');
-                TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
-                //
-                PrivatTopToolButton.Visible := ReadBool('b4');
-                TopPrivatONMenu.Checked := PrivatTopToolButton.Visible;
-                //
-                HistoryTopToolButton.Visible := ReadBool('b5');
-                TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
-                //
-                SettingsTopToolButton.Visible := ReadBool('b6');
-                TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
-                //
-                TrafficTopToolButton.Visible := ReadBool('b7');
-                TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
-              finally
-                CloseKey;
-              end;
-            // Загружаем состояние верхней панели
-            if OpenKey(RS_MainFormBP) then
-              try
-                // Загружаем состояние кнопок
-                MainToolButton.Visible := ReadBool('b0');
-                MainButtonONMenu.Checked := MainToolButton.Visible;
-                //
-                OnlyOnlineContactsToolButton.Visible := ReadBool('b1');
-                OnlyOnlineONMenu.Checked := OnlyOnlineContactsToolButton.Visible;
-                //
-                GroupOnOffToolButton.Visible := ReadBool('b2');
-                GroupONMenu.Checked := GroupOnOffToolButton.Visible;
-                //
-                SoundOnOffToolButton.Visible := ReadBool('b3');
-                SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
-                //
-                PrivatToolButton.Visible := ReadBool('b4');
-                PrivatONMenu.Checked := PrivatToolButton.Visible;
-                //
-                HistoryToolButton.Visible := ReadBool('b5');
-                HistoryONMenu.Checked := HistoryToolButton.Visible;
-                //
-                SettingsToolButton.Visible := ReadBool('b6');
-                SettingsONMenu.Checked := SettingsToolButton.Visible;
-                //
-                TrafficToolButton.Visible := ReadBool('b7');
-                TrafficONMenu.Checked := TrafficToolButton.Visible;
-                //
-                TopPanelToolButton.Visible := ReadBool('b8');
-                TopPanelONMenu.Checked := TopPanelToolButton.Visible;
-              finally
-                CloseKey;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
 procedure TMainForm.SaveMainFormSettings;
 var
   I: Integer;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   if Profile = EmptyStr then
     Exit;
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения главного окна в xml
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
+        // Подгружаем файл с настройками если он есть
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
-        // Сохраняем позицию окна
-        if OpenKey(RS_MainFormPos, True) then
-          try
-            WriteInteger('top', Top);
-            WriteInteger('left', Left);
-            WriteInteger('height', Height);
-            WriteInteger('width', Width);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем звук вкл. выкл.
-        if OpenKey(RS_MainFormSounds, True) then
-          try
-            WriteBool(S_Value, SoundOnOffToolButton.Down);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем отображать только онлайн вкл. выкл.
-        if OpenKey(RS_MainFormOnlyOnline, True) then
-          try
-            WriteBool(S_Value, OnlyOnlineContactsToolButton.Down);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем отображать группы вкл. выкл.
-        if OpenKey(RS_MainFormGroup, True) then
-          try
-            WriteBool(S_Value, GroupOnOffToolButton.Down);
-          finally
-            CloseKey;
-          end;
-        // Записываем что первый запуск программы уже состоялся и показывать
-        // окно настройки протоколов больше не будем при запуске
-        if OpenKey(RS_MainFormFirst, True) then
-          try
-            WriteBool(S_Value, True);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем активные протоколы
-        if OpenKey(RS_MainFormProto, True) then
-          try
-            WriteBool('icq', ICQToolButton.Visible);
-            WriteBool('mra', MRAToolButton.Visible);
-            WriteBool('jabber', JabberToolButton.Visible);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем трафик
-        if OpenKey(RS_Traffic, True) then
-          try
-            WriteFloat('send', AllTrafSend);
-            WriteFloat('recev', AllTrafRecev);
-            WriteString('start-date', AllSesDataTraf);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем пункты меню
-        if OpenKey(RS_MainFormHEG, True) then
-          try
-            WriteBool(S_Value, HideEmptyGroups.Checked);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем состояние верхней панели
-        if OpenKey(RS_MainFormTP, True) then
-          try
-            WriteBool(S_Value, TopPanelToolButton.Down);
+        if Root <> nil then
+          begin
+            // Очищаем раздел главной формы если он есть
+            XML_Node := Root.Items.ItemNamed[RS_MainForm];
+            if XML_Node <> nil then
+              XML_Node.Clear
+            else
+              XML_Node := Root.Items.Add(RS_MainForm);
+            // Сохраняем позицию окна
+            XML_Node.Properties.Add('t', Top);
+            XML_Node.Properties.Add('l', Left);
+            XML_Node.Properties.Add('h', Height);
+            XML_Node.Properties.Add('w', Width);
+            // Сохраняем звук вкл. выкл.
+            XML_Node.Items.Add(RS_MainFormSounds, SoundOnOffToolButton.Down);
+            // Сохраняем отображать только онлайн вкл. выкл.
+            XML_Node.Items.Add(RS_MainFormOnlyOnline, OnlyOnlineContactsToolButton.Down);
+            // Сохраняем отображать группы вкл. выкл.
+            XML_Node.Items.Add(RS_MainFormGroups, GroupOnOffToolButton.Down);
+            // Записываем что первый запуск программы уже состоялся и показывать
+            // окно настройки протоколов больше не будем при запуске
+            XML_Node.Items.Add(RS_MainFormFirst, True);
+            // Сохраняем активные протоколы
+            Sub_Node := XML_Node.Items.Add(RS_MainFormProto);
+            Sub_Node.Properties.Add(S_Icq, ICQToolButton.Visible);
+            Sub_Node.Properties.Add(S_Mra, MRAToolButton.Visible);
+            Sub_Node.Properties.Add(S_Jabber, JabberToolButton.Visible);
+            // Сохраняем трафик
+            Sub_Node := XML_Node.Items.Add(RS_Traffic);
+            Sub_Node.Properties.Add('s', AllTrafSend);
+            Sub_Node.Properties.Add('r', AllTrafRecev);
+            Sub_Node.Properties.Add('d', AllSesDataTraf);
+            // Сохраняем пункты меню
+            XML_Node.Items.Add(RS_MainFormHEG, HideEmptyGroups.Checked);
+            // Сохраняем состояние верхней панели
+            Sub_Node := XML_Node.Items.Add(RS_MainFormTP, TopPanelToolButton.Down);
             for I := 0 to TopPanelPopupMenu.Items.Count - 1 do
-              WriteBool('b' + IntToStr(I), TopPanelPopupMenu.Items[I].Checked);
-          finally
-            CloseKey;
-          end;
-        // Сохраняем состояние нижней панели
-        if OpenKey(RS_MainFormBP, True) then
-          try
+              Sub_Node.Properties.Add('b' + IntToStr(I), TopPanelPopupMenu.Items[I].Checked);
+            // Сохраняем состояние нижней панели
+            Sub_Node := XML_Node.Items.Add(RS_MainFormBP);
             for I := 0 to BottomPanelPopupMenu.Items.Count - 1 do
-              WriteBool('b' + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
-          finally
-            CloseKey;
+              Sub_Node.Properties.Add('b' + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
+            // Записываем сам файл
+            SaveToFile(ProfilePath + SettingsFileName);
           end;
-        // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
@@ -4696,6 +4691,13 @@ begin
   // --Присваиваем переменную способа передачи
   with FileTransferForm do
     begin
+      if CancelBitBtn.Enabled then
+        begin
+          XShowForm(FileTransferForm);
+          DAShow(S_AlertHead, S_FileTransfer6, EmptyStr, 133, 3, 0);
+          Exit;
+        end;
+      // Выбираем способ передачи файла
       Tag := (Sender as TMenuItem).Tag;
       TopInfoPanel.Caption := S_FileTransfer1 + (ContactList.SelectedItem as TButtonItem).Caption;
       T_UIN := (ContactList.SelectedItem as TButtonItem).UIN;

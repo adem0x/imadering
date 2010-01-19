@@ -28,7 +28,8 @@ uses
   JvExStdCtrls,
   JvBehaviorLabel,
   UtilsUnit,
-  ComCtrls;
+  ComCtrls,
+  JvSimpleXml;
 
 type
   TAboutForm = class(TForm)
@@ -68,7 +69,7 @@ type
   private
     { Private declarations }
     AboutLen: Integer;
-    AboutList: array [1 .. 14] of string;
+    AboutList: array [1 .. 10] of string;
 
   public
     { Public declarations }
@@ -84,54 +85,56 @@ implementation
 
 uses
   MainUnit,
-  VarsUnit,
-  RXML;
+  VarsUnit;
 
 resourcestring
-  RS_InfoAbout = 'language\Infos\About';
-  RS_InfoDev = 'language\Devels';
+  RS_InfoAbout = 'About';
+  RS_InfoDev = 'Devels';
 
 procedure TAboutForm.TranslateForm;
 var
   I: Integer;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
           begin
             // Загружаем файл языка
             LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
-            // Загружаем "о программе"
-            if OpenKey(RS_InfoAbout) then
-              try
-                // Загружаем инфу о программе
-                AboutRichEdit.Lines.Append(CheckText_RN(ReadString('c')));
-              finally
-                CloseKey;
-              end;
-            // Загружаем список разработчиков
-            for I := 1 to Length(AboutList) do
+            if Root <> nil then
               begin
-                if OpenKey(RS_InfoDev + '\c' + IntToStr(I)) then
-                  try
-                    AboutList[I] := ReadString('c');
-                  finally
-                    CloseKey;
+                // Загружаем "о программе"
+                XML_Node := Root.Items.ItemNamed[RS_Infos];
+                if XML_Node <> nil then
+                  begin
+                    XML_Node := Root.Items.ItemNamed[RS_Infos].Items.ItemNamed[RS_InfoAbout];
+                    if XML_Node <> nil then
+                      AboutRichEdit.Lines.Append(CheckText_RN(XML_Node.Properties.Value('c')));
                   end;
+                // Загружаем список разработчиков
+                XML_Node := Root.Items.ItemNamed[RS_InfoDev];
+                if XML_Node <> nil then
+                  for I := 1 to Length(AboutList) do
+                    begin
+                      XML_Node := Root.Items.ItemNamed[RS_InfoDev].Items.ItemNamed['c' + IntToStr(I)];
+                      if XML_Node <> nil then
+                        AboutList[I] := XML_Node.Properties.Value('c');
+                    end;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 

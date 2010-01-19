@@ -29,10 +29,10 @@ uses
   VarsUnit,
   Graphics,
   CategoryButtons,
-  RXML,
   RosterUnit,
   OverbyteIcsUrl,
-  GtransUnit;
+  GtransUnit,
+  JvSimpleXml;
 
 { const
   DT2100miliseconds = 1 / (SecsPerDay * 10); }
@@ -318,22 +318,19 @@ function ICQ_StatusImgId2Code(ImgId: Integer): string;
 function ICQ_CliClientReadyPkt: string;
 function ICQ_CreateShortStatusPkt: string;
 procedure ICQ_UserUnkStatus_030A(PktData: string);
-procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash,
-  ConnTime: string);
+procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash, ConnTime: string);
 function ICQ_StatusCode2ImgId(StatusCode: string): Integer;
 procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
 procedure ICQ_UserOffline_030C(PktData: string);
 procedure ICQ_SendMessage_0406(SUIN, SMsg: string; InUnicode: Boolean);
 procedure ICQ_ReqMessage_0407(PktData: string);
-procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string;
-  GTrans: Boolean = False);
+procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string; GTrans: Boolean = False);
 // procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
 procedure ICQ_SearchPoUIN_new(SUIN: string);
 procedure ICQ_SearchPoEmail_new(SEmail: string);
 procedure ICQ_SearchPoText_new(SText: string; OnlyOn: Boolean);
 procedure ICQ_Parse_SNAC_1503(PktData: string);
-procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge, AEmail, ACountry, ACity: string; AGender, AStatus: Integer;
-  AAuth, AEndSearch: Boolean);
+procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge, AEmail, ACountry, ACity: string; AGender, AStatus: Integer; AAuth, AEndSearch: Boolean);
 procedure ICQ_ReqStatus0215(UIN: string);
 procedure ICQ_SetInfoP;
 procedure ICQ_SetStatusXText(XText, XCode: string);
@@ -355,17 +352,15 @@ procedure ICQ_DeleteTempContactMulti(TCList: TStringList);
 procedure ICQ_ReqAuthSend(UIN, Mess: string);
 procedure ICQ_ReqInfo_New_Pkt(SUIN: string);
 // procedure ICQ_ReqInfo_New_Pkt_1(sUIN: string);
-procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCity, CState, CZip, OCity, OState, Phone1, Phone2, Phone3,
-  Phone4, Phone5, CHomePage, WCity, WState, WZip, WAddress, WCorp, WDep, WProf, WSite, Int1, Int2, Int3, Int4, CAbout, CDay, CMon, CYear,
-  CEmail1, CEmail2, CEmail3: string; CCountry, OCountry, Lang1, Lang2, Lang3, WCountry, WOccup, Int_id1, Int_id2, Int_id3, Int_id4,
-  CMarital, CSexual, CHeight, CRelig, CSmok, CHair, CChildren: Integer);
+procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCity, CState, CZip, OCity, OState, Phone1, Phone2, Phone3, Phone4, Phone5, CHomePage, WCity, WState, WZip, WAddress,
+  WCorp, WDep, WProf, WSite, Int1, Int2, Int3, Int4, CAbout, CDay, CMon, CYear, CEmail1, CEmail2, CEmail3: string; CCountry, OCountry, Lang1, Lang2, Lang3, WCountry, WOccup, Int_id1, Int_id2,
+  Int_id3, Int_id4, CMarital, CSexual, CHeight, CRelig, CSmok, CHair, CChildren: Integer);
 procedure ICQ_UserSentTyping_0414(PktData: string);
 procedure ICQ_SRV_MSGACK_ADVANCED(PktData: string; ClientOk: Boolean);
-procedure ICQ_Send_SMS(CNumber, Smstext: string);
+// procedure ICQ_Send_SMS(CNumber, Smstext: string);
 function ICQ_StatusCode2String(StatusCode: string): string;
 function ICQ_ClientCap2String(ClientCap: string): string;
-procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language,
-  PageIndex: Integer; OnlineOnly: Boolean);
+procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language, PageIndex: Integer; OnlineOnly: Boolean);
 procedure ICQ_GetAvatarBosServer;
 procedure ICQ_Parse_0105(PktData: string);
 procedure ICQ_GetAvatarImage(AUIN, AHash: string);
@@ -387,8 +382,7 @@ var
   Pkt, Pkt1: string;
 begin
   // Собираем пакет для смены пароля
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'd007' + IntToHex(Random($9000), 4) + '2e04' + IntToHex(Swap16(Length(Pass)), 4)
-    + Text2Hex(Pass) + '00';
+  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'd007' + IntToHex(Random($9000), 4) + '2e04' + IntToHex(Swap16(Length(Pass)), 4) + Text2Hex(Pass) + '00';
   Len := Length(Hex2Text(Pkt1));
   Pkt1 := IntToHex((Len + 2), 4) + IntToHex(Swap16(Len), 4) + Pkt1;
   Pkt := '00150002000000000000' + '0001' + Pkt1;
@@ -529,8 +523,7 @@ begin
   // SendFLAP('2', '00010004000048C40004' + '0010');
 end;
 
-procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language,
-  PageIndex: Integer; OnlineOnly: Boolean);
+procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language, PageIndex: Integer; OnlineOnly: Boolean);
 var
   Pkt, PktSub, Utf8_Nick, Utf8_First, Utf8_Last, Utf8_City, Utf8_Key: RawByteString;
   Len: Integer;
@@ -579,8 +572,7 @@ begin
   if Keywords <> EmptyStr then
     Pkt := Pkt + '017C' + IntToHex(Length(Utf8_Key), 4) + Text2Hex(Utf8_Key);
   Pkt := '05B90FA0000000000000000004E3000000020002' + IntToHex(PageIndex, 4) + '0001' + IntToHex(Length(Hex2Text(Pkt)), 4) + Pkt;
-  Pkt := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) + 'A00F' + IntToHex(Length(Hex2Text(Pkt)), 4)
-    + Pkt;
+  Pkt := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) + 'A00F' + IntToHex(Length(Hex2Text(Pkt)), 4) + Pkt;
   Len := Length(Hex2Text(Pkt));
   Pkt := '00150002000000000002' + '0001' + IntToHex(Len + 2, 4) + IntToHex(Swap16(Len), 4) + Pkt;
   // Отправляем пакет
@@ -641,43 +633,43 @@ begin
   // Обрезаем статус до 4 символов для чистоты распознавания статуса
   ShortStatus := RightStr(StatusCode, 4);
   //
-  Result := LStatus15;
+  Result := S_Status15;
   if ShortStatus = ICQ_Status_ONLINE then
-    Result := LStatus11
+    Result := S_Status11
   else if ShortStatus = ICQ_Status_AWAY then
-    Result := LStatus7
+    Result := S_Status7
   else if ShortStatus = ICQ_Status_OFFLINE then
-    Result := LStatus14
+    Result := S_Status14
   else if ShortStatus = ICQ_Status_INVISIBLE then
-    Result := LStatus12
+    Result := S_Status12
   else if ShortStatus = ICQ_Status_OCCUPIED then
-    Result := LStatus9
+    Result := S_Status9
   else if ShortStatus = ICQ_Status_OCCUPIED1 then
-    Result := LStatus9
+    Result := S_Status9
   else if ShortStatus = ICQ_Status_DND then
-    Result := LStatus10
+    Result := S_Status10
   else if ShortStatus = ICQ_Status_DND1 then
-    Result := LStatus10
+    Result := S_Status10
   else if ShortStatus = ICQ_Status_DND2 then
-    Result := LStatus10
+    Result := S_Status10
   else if ShortStatus = ICQ_Status_NA then
-    Result := LStatus8
+    Result := S_Status8
   else if ShortStatus = ICQ_Status_NA1 then
-    Result := LStatus8
+    Result := S_Status8
   else if ShortStatus = ICQ_Status_LUNCH then
-    Result := LStatus6
+    Result := S_Status6
   else if ShortStatus = ICQ_Status_FFC then
-    Result := LStatus1
+    Result := S_Status1
   else if ShortStatus = ICQ_Status_DEPRESSION then
-    Result := LStatus3
+    Result := S_Status3
   else if ShortStatus = ICQ_Status_EVIL then
-    Result := LStatus2
+    Result := S_Status2
   else if ShortStatus = ICQ_Status_ATHOME then
-    Result := LStatus4
+    Result := S_Status4
   else if ShortStatus = ICQ_Status_ATWORK then
-    Result := LStatus5
+    Result := S_Status5
   else if ShortStatus = ICQ_Status_UNK then
-    Result := LStatus15;
+    Result := S_Status15;
 end;
 
 function ICQ_CreateHint(RosterItem: TListItem): string;
@@ -702,7 +694,7 @@ begin
         Result := Result + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
         // Если статус требует авторизации, то пишем об этом
       else if RosterItem.SubItems[6] = '80' then
-        Result := Result + '<font color=clred>' + LStatus17
+        Result := Result + '<font color=clred>' + S_Status16
         // Определяем статус и пишем его словами
       else
         Result := Result + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
@@ -737,23 +729,23 @@ begin
     end;
 end;
 
-procedure ICQ_Send_SMS(CNumber, Smstext: string);
-{ var
+{ procedure ICQ_Send_SMS(CNumber, Smstext: string);
+  var
   Pkt: string;
   Utf8Mess: string;
-  CoocId: string; }
-begin
-  { //--Собираем пакет для отправки SMS (в россии перехватывает рамблер)
-    Utf8Mess := StrToUtf8(smstext);
-    Randomize;
-    CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) +
-    IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4);
-    Pkt := '00040006000000000006' + CoocId +
-    '0001' + IntToHex(Length(cNumber), 2) + Text2Hex(cNumber) + '0002' + IntToHex((Length(Utf8Mess) + 13), 4) + '05010001010101' +
-    IntToHex((Length(Utf8Mess) + 4), 4) + '00000000' + Text2Hex(Utf8Mess) + '0003000000060000';
-    //--Отсылаем пакет
-    SendFLAP('2', Pkt); }
-end;
+  CoocId: string;
+  begin
+  //--Собираем пакет для отправки SMS (в россии перехватывает рамблер)
+  Utf8Mess := StrToUtf8(smstext);
+  Randomize;
+  CoocId := IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4) +
+  IntToHex(Random($AAAA), 4) + IntToHex(Random($AAAA), 4);
+  Pkt := '00040006000000000006' + CoocId +
+  '0001' + IntToHex(Length(cNumber), 2) + Text2Hex(cNumber) + '0002' + IntToHex((Length(Utf8Mess) + 13), 4) + '05010001010101' +
+  IntToHex((Length(Utf8Mess) + 4), 4) + '00000000' + Text2Hex(Utf8Mess) + '0003000000060000';
+  //--Отсылаем пакет
+  SendFLAP('2', Pkt);
+  end; }
 
 procedure ICQ_SRV_MSGACK_ADVANCED(PktData: string; ClientOk: Boolean);
 var
@@ -860,10 +852,9 @@ begin
 
 end;
 
-procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCity, CState, CZip, OCity, OState, Phone1, Phone2, Phone3,
-  Phone4, Phone5, CHomePage, WCity, WState, WZip, WAddress, WCorp, WDep, WProf, WSite, Int1, Int2, Int3, Int4, CAbout, CDay, CMon, CYear,
-  CEmail1, CEmail2, CEmail3: string; CCountry, OCountry, Lang1, Lang2, Lang3, WCountry, WOccup, Int_id1, Int_id2, Int_id3, Int_id4,
-  CMarital, CSexual, CHeight, CRelig, CSmok, CHair, CChildren: Integer);
+procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCity, CState, CZip, OCity, OState, Phone1, Phone2, Phone3, Phone4, Phone5, CHomePage, WCity, WState, WZip, WAddress,
+  WCorp, WDep, WProf, WSite, Int1, Int2, Int3, Int4, CAbout, CDay, CMon, CYear, CEmail1, CEmail2, CEmail3: string; CCountry, OCountry, Lang1, Lang2, Lang3, WCountry, WOccup, Int_id1, Int_id2,
+  Int_id3, Int_id4, CMarital, CSexual, CHeight, CRelig, CSmok, CHair, CChildren: Integer);
 { var
   Pkt, Pkt1, Pkt2, Pkt3: string;
   Len, Len1, Len2: integer;
@@ -1236,9 +1227,9 @@ begin
   Rand2 := IntToHex(Random($AAAA), 4);
   Rand3 := IntToHex(Random($AAAA), 4);
   // Формируем пакет
-  Pkt := '00040006000000000006' + '0000' + Rand1 + Rand2 + '00000002' + IntToHex(Length(UIN), 2) + Text2Hex(UIN)
-    + '0005005E00000000' + Rand1 + Rand2 + '0000094613494C7F11D18222444553540000000A00020001000F0000271100361B000A00000' +
-    '0000000000000000000000000000000000300000000' + Rand3 + '0E00' + Rand3 + '0000000000000000000000000C000000040001000000030000';
+  Pkt := '00040006000000000006' + '0000' + Rand1 + Rand2 + '00000002' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + '0005005E00000000' + Rand1 + Rand2 +
+    '0000094613494C7F11D18222444553540000000A00020001000F0000271100361B000A00000' + '0000000000000000000000000000000000300000000' + Rand3 + '0E00' + Rand3 +
+    '0000000000000000000000000C000000040001000000030000';
   // Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
@@ -1344,9 +1335,8 @@ begin
   Utf8Email := UTF8Encode(Email);
   Utf8Zametka := UTF8Encode(Zametka);
   // Формируем пакет
-  Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell)
-    + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex
-    (Utf8Email);
+  Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell) + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka)
+    + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex(Utf8Email);
   Len := Length(Hex2Text(Pkt1));
   Pkt := '00130009000000000009' + IntToHex(Length(UIN), 4) + Text2Hex(UIN) + GroupId + Id + '0000' + IntToHex(Len, 4) + Pkt1;
   // Отсылаем пакет
@@ -1623,9 +1613,8 @@ begin
   Utf8Email := UTF8Encode(Email);
   Utf8Zametka := UTF8Encode(Zametka);
   // Формируем пакет
-  Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell)
-    + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka) + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex
-    (Utf8Email);
+  Pkt1 := '0131' + IntToHex(Length(Utf8Nick), 4) + Text2Hex(Utf8Nick) + '013A' + IntToHex(Length(Utf8Cell), 4) + Text2Hex(Utf8Cell) + '013C' + IntToHex(Length(Utf8Zametka), 4) + Text2Hex(Utf8Zametka)
+    + '0137' + IntToHex(Length(Utf8Email), 4) + Text2Hex(Utf8Email);
   Len := Length(Hex2Text(Pkt1));
   Pkt := '0013000A00000000000A' + IntToHex(Length(UIN), 4) + Text2Hex(UIN) + GroupId + Id + '0000' + IntToHex(Len, 4) + Pkt1;
   // Открываем сессию для работы с серверным списком контактов
@@ -1660,8 +1649,7 @@ begin
   if XText <> EmptyStr then
     begin
       Utf8XText := UTF8Encode(XText);
-      Pkt1 := '0002' + '04' + IntToHex(Length(Utf8XText) + 4, 2) + IntToHex(Length(Utf8XText), 4) + Text2Hex(Utf8XText)
-        + '0000' + '000E' + IntToHex(Length(XCode), 4) + Text2Hex(XCode);
+      Pkt1 := '0002' + '04' + IntToHex(Length(Utf8XText) + 4, 2) + IntToHex(Length(Utf8XText), 4) + Text2Hex(Utf8XText) + '0000' + '000E' + IntToHex(Length(XCode), 4) + Text2Hex(XCode);
     end
   else
     Pkt1 := '00020000000E0000';
@@ -1690,8 +1678,7 @@ begin
   SendFLAP('2', Pkt);
 end;
 
-procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge, AEmail, ACountry, ACity: string; AGender, AStatus: Integer;
-  AAuth, AEndSearch: Boolean);
+procedure ICQ_NotifyAddSearchResults(AUIN, ANick, AFirst, ALast, AAge, AEmail, ACountry, ACity: string; AGender, AStatus: Integer; AAuth, AEndSearch: Boolean);
 var
   ListItemD: TListItem;
   Gend: string;
@@ -1783,7 +1770,8 @@ var
   RosterItem: TListItem;
   CLContact: TButtonItem;
   ChatPage: TToolButton;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Сканируем тело пакета на нужные нам TLV
   case HexToInt(Text2Hex(NextData(PktData, 2))) of
@@ -1813,8 +1801,7 @@ begin
           begin
             // Заканчиваем поиск
             EndSearch := True;
-            ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False,
-              EndSearch);
+            ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False, EndSearch);
             Exit;
           end;
         // Сбрасываем флаг об авторизации
@@ -1824,8 +1811,7 @@ begin
           begin
             // Заканчиваем поиск
             EndSearch := True;
-            ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False,
-              EndSearch);
+            ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False, EndSearch);
             Exit;
           end;
         XLog(Log_ICQGet + Log_Contact_Info);
@@ -1953,8 +1939,7 @@ begin
                               begin
                                 // Если пакет содержит другие TLV, то пропускаем их
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen)))
-                                  );
+                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen))));
                               end;
                           end;
                         end;
@@ -2051,8 +2036,7 @@ begin
                               begin
                                 // Если пакет содержит другие TLV, то пропускаем их
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen)))
-                                  );
+                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen))));
                               end;
                           end;
                         end;
@@ -2129,8 +2113,7 @@ begin
                               begin
                                 // Если пакет содержит другие TLV, то пропускаем их
                                 MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen)))
-                                  );
+                                XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen))));
                               end;
                           end;
                         end;
@@ -2314,131 +2297,94 @@ begin
                   end;
               end;
             // Сохраняем полученные данные в локальный файл инфы о контакте
-            XmlFile := TrXML.Create;
+            // Инициализируем XML
+            JvXML_Create(JvXML);
             try
-              with XmlFile do
+              with JvXML do
                 begin
-                  if OpenKey(RS_NameInfo, True) then
-                    try
-                      WriteString(RS_Nick, URLEncode(Nick));
-                      WriteString(RS_First, URLEncode(First));
-                      WriteString(RS_Last, URLEncode(Last));
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_PerInfo, True) then
-                    try
-                      WriteInteger(RS_Gender, Gender);
-                      WriteBool(RS_Auth, Auth);
-                      WriteBool(RS_WebAware, WebAware);
-                      WriteString(RS_HomePage, URLEncode(HomePage));
-                      WriteString(RS_LastChange, LastUpdateInfo);
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_HomeInfo, True) then
-                    try
-                      WriteString(RS_Address, URLEncode(Address));
-                      WriteString(RS_City, URLEncode(City));
-                      WriteString(RS_State, URLEncode(State));
-                      WriteString(RS_Zip, URLEncode(Zip));
-                      WriteInteger(RS_Country, Country);
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_OHomeInfo, True) then
-                    try
-                      WriteInteger(RS_Country, OCountry);
-                      WriteString(RS_City, URLEncode(OCity));
-                      WriteString(RS_State, URLEncode(OState));
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_LangInfo, True) then
-                    try
-                      WriteInteger(RS_Lang1, Lang1);
-                      WriteInteger(RS_Lang2, Lang2);
-                      WriteInteger(RS_Lang3, Lang3);
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_PhoneInfo, True) then
-                    try
-                      WriteString(RS_Phone1, URLEncode(Phone));
-                      WriteString(RS_Phone2, URLEncode(Fax));
-                      WriteString(RS_Phone3, URLEncode(Cellular));
-                      WriteString(RS_Phone4, URLEncode(WPhone));
-                      WriteString(RS_Phone5, URLEncode(WFax));
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_WorkInfo, True) then
-                    try
-                      WriteString(RS_City, URLEncode(WCity));
-                      WriteString(RS_State, URLEncode(WState));
-                      WriteString(RS_Zip, URLEncode(WZip));
-                      WriteString(RS_Address, URLEncode(WAddress));
-                      WriteString(RS_Corp, URLEncode(Company));
-                      WriteString(RS_Dep, URLEncode(Department));
-                      WriteString(RS_Prof, URLEncode(Position));
-                      WriteString(RS_Site, URLEncode(WSite));
-                      WriteInteger(RS_Country, WCountry);
-                      WriteInteger(RS_Occup, Occupation);
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_IntInfo, True) then
-                    try
-                      WriteString(RS_Int1, URLEncode(Int1));
-                      WriteString(RS_Int2, URLEncode(Int2));
-                      WriteString(RS_Int3, URLEncode(Int3));
-                      WriteString(RS_Int4, URLEncode(Int4));
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_AboutInfo, True) then
-                    try
-                      WriteString(RS_Info, URLEncode(About));
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_AgeInfo, True) then
-                    try
-                      WriteInteger(RS_Age, Age);
-                      WriteInteger(RS_Day, IDay);
-                      WriteInteger(RS_Month, IMonth);
-                      WriteInteger(RS_Year, IYear);
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_EmailsInfo, True) then
-                    try
-                      WriteString(RS_Email1, URLEncode(Email1));
-                      WriteString(RS_Email2, URLEncode(Email2));
-                      WriteString(RS_Email3, URLEncode(Email3));
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_IntIdInfo, True) then
-                    try
-                      WriteInteger(RS_IntId1, I1);
-                      WriteInteger(RS_IntId2, I2);
-                      WriteInteger(RS_IntId3, I3);
-                      WriteInteger(RS_IntId4, I4);
-                    finally
-                      CloseKey;
-                    end;
-                  if OpenKey(RS_PersInfo, True) then
-                    try
-                      WriteInteger(RS_Marital, Marital);
-                      WriteInteger(RS_Sexual, Sexual);
-                      WriteInteger(RS_Height, Height);
-                      WriteInteger(RS_Relig, Relig);
-                      WriteInteger(RS_Smok, Smok);
-                      WriteInteger(RS_Hair, Hair);
-                      WriteInteger(RS_Children, Children);
-                    finally
-                      CloseKey;
+                  if Root <> nil then
+                    begin
+                      XML_Node := Root.Items.Add(RS_NameInfo);
+                      XML_Node.Properties.Add(RS_Nick, URLEncode(Nick));
+                      XML_Node.Properties.Add(RS_First, URLEncode(First));
+                      XML_Node.Properties.Add(RS_Last, URLEncode(Last));
+                      //
+                      XML_Node := Root.Items.Add(RS_PerInfo);
+                      XML_Node.Properties.Add(RS_Gender, Gender);
+                      XML_Node.Properties.Add(RS_Auth, Auth);
+                      XML_Node.Properties.Add(RS_WebAware, WebAware);
+                      XML_Node.Properties.Add(RS_HomePage, URLEncode(HomePage));
+                      XML_Node.Properties.Add(RS_LastChange, LastUpdateInfo);
+                      //
+                      XML_Node := Root.Items.Add(RS_HomeInfo);
+                      XML_Node.Properties.Add(RS_Address, URLEncode(Address));
+                      XML_Node.Properties.Add(RS_City, URLEncode(City));
+                      XML_Node.Properties.Add(RS_State, URLEncode(State));
+                      XML_Node.Properties.Add(RS_Zip, URLEncode(Zip));
+                      XML_Node.Properties.Add(RS_Country, Country);
+                      //
+                      XML_Node := Root.Items.Add(RS_OHomeInfo);
+                      XML_Node.Properties.Add(RS_Country, OCountry);
+                      XML_Node.Properties.Add(RS_City, URLEncode(OCity));
+                      XML_Node.Properties.Add(RS_State, URLEncode(OState));
+                      //
+                      XML_Node := Root.Items.Add(RS_LangInfo);
+                      XML_Node.Properties.Add(RS_Lang1, Lang1);
+                      XML_Node.Properties.Add(RS_Lang2, Lang2);
+                      XML_Node.Properties.Add(RS_Lang3, Lang3);
+                      //
+                      XML_Node := Root.Items.Add(RS_PhoneInfo);
+                      XML_Node.Properties.Add(RS_Phone1, URLEncode(Phone));
+                      XML_Node.Properties.Add(RS_Phone2, URLEncode(Fax));
+                      XML_Node.Properties.Add(RS_Phone3, URLEncode(Cellular));
+                      XML_Node.Properties.Add(RS_Phone4, URLEncode(WPhone));
+                      XML_Node.Properties.Add(RS_Phone5, URLEncode(WFax));
+                      //
+                      XML_Node := Root.Items.Add(RS_WorkInfo);
+                      XML_Node.Properties.Add(RS_City, URLEncode(WCity));
+                      XML_Node.Properties.Add(RS_State, URLEncode(WState));
+                      XML_Node.Properties.Add(RS_Zip, URLEncode(WZip));
+                      XML_Node.Properties.Add(RS_Address, URLEncode(WAddress));
+                      XML_Node.Properties.Add(RS_Corp, URLEncode(Company));
+                      XML_Node.Properties.Add(RS_Dep, URLEncode(Department));
+                      XML_Node.Properties.Add(RS_Prof, URLEncode(Position));
+                      XML_Node.Properties.Add(RS_Site, URLEncode(WSite));
+                      XML_Node.Properties.Add(RS_Country, WCountry);
+                      XML_Node.Properties.Add(RS_Occup, Occupation);
+                      //
+                      XML_Node := Root.Items.Add(RS_IntInfo);
+                      XML_Node.Properties.Add(RS_Int1, URLEncode(Int1));
+                      XML_Node.Properties.Add(RS_Int2, URLEncode(Int2));
+                      XML_Node.Properties.Add(RS_Int3, URLEncode(Int3));
+                      XML_Node.Properties.Add(RS_Int4, URLEncode(Int4));
+                      //
+                      Root.Items.Add(RS_AboutInfo, URLEncode(About));
+                      //
+                      XML_Node := Root.Items.Add(RS_AgeInfo);
+                      XML_Node.Properties.Add(RS_Age, Age);
+                      XML_Node.Properties.Add(RS_Day, IDay);
+                      XML_Node.Properties.Add(RS_Month, IMonth);
+                      XML_Node.Properties.Add(RS_Year, IYear);
+                      //
+                      XML_Node := Root.Items.Add(RS_EmailsInfo);
+                      XML_Node.Properties.Add(RS_Email1, URLEncode(Email1));
+                      XML_Node.Properties.Add(RS_Email2, URLEncode(Email2));
+                      XML_Node.Properties.Add(RS_Email3, URLEncode(Email3));
+                      //
+                      XML_Node := Root.Items.Add(RS_IntIdInfo);
+                      XML_Node.Properties.Add(RS_IntId1, I1);
+                      XML_Node.Properties.Add(RS_IntId2, I2);
+                      XML_Node.Properties.Add(RS_IntId3, I3);
+                      XML_Node.Properties.Add(RS_IntId4, I4);
+                      //
+                      XML_Node := Root.Items.Add(RS_PersInfo);
+                      XML_Node.Properties.Add(RS_Marital, Marital);
+                      XML_Node.Properties.Add(RS_Sexual, Sexual);
+                      XML_Node.Properties.Add(RS_Height, Height);
+                      XML_Node.Properties.Add(RS_Relig, Relig);
+                      XML_Node.Properties.Add(RS_Smok, Smok);
+                      XML_Node.Properties.Add(RS_Hair, Hair);
+                      XML_Node.Properties.Add(RS_Children, Children);
                     end;
                   // Создаём необходимые папки
                   ForceDirectories(ProfilePath + AnketaFileName);
@@ -2446,7 +2392,7 @@ begin
                   SaveToFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.xml');
                 end;
             finally
-              FreeAndNil(XmlFile);
+              JvXML.Free;
             end;
             // Отображаем в окне информации о контакте полученные данные
             if Assigned(IcqContactInfoForm) then
@@ -2479,8 +2425,7 @@ begin
           begin
             // Получаем текст страны из кода
             if Assigned(IcqOptionsForm) then
-              ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf
-                (IntToStr(Country))];
+              ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(IntToStr(Country))];
             // Обрабатываем результаты поиска
             ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, ACountry, City, Gender, SStatus, Auth, True);
           end;
@@ -2639,36 +2584,31 @@ begin
       // Старый формат сообщений (псевдо юникод кодировка)
       if InUnicode then
         begin
-          Pkt := '00040006000000000006' + CoocId + '0001' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0002' + IntToHex
-            (((Length(UnicodeMess) * SizeOf(Char)) + 14), 4) + '0501000201060101' + IntToHex(((Length(UnicodeMess) * SizeOf(Char)) + 4),
-            4) + '00020000' + Text2UnicodeHex(UnicodeMess) + '00060000';
+          Pkt := '00040006000000000006' + CoocId + '0001' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0002' + IntToHex(((Length(UnicodeMess) * SizeOf(Char)) + 14), 4)
+            + '0501000201060101' + IntToHex(((Length(UnicodeMess) * SizeOf(Char)) + 4), 4) + '00020000' + Text2UnicodeHex(UnicodeMess) + '00060000';
         end
       else
         begin
           // Новый формат сообщений (UTF-8 кодировка)
-          Pkt2 := '1b000a000000000000000000000000000000000000000300000000' + CoocId1 + '0e00' + CoocId1 +
-            '00000000000000000000000001000000' + '0400' + IntToHex(Swap16((Length(Utf8Mess) + 1)), 4)
+          Pkt2 := '1b000a000000000000000000000000000000000000000300000000' + CoocId1 + '0e00' + CoocId1 + '00000000000000000000000001000000' + '0400' + IntToHex(Swap16((Length(Utf8Mess) + 1)), 4)
             + Text2Hex(Utf8Mess) + '0000000000ffffff0026000000' + Text2Hex(Cap1);
           Len2 := Length(Hex2Text(Pkt2));
           Pkt1 := '0000' + CoocId + Cap + '000a00020001' + '000f0000' + '2711' + IntToHex(Len2, 4) + Pkt2;
           Len1 := Length(Hex2Text(Pkt1));
-          Pkt := '00040006000000000006' + CoocId + '0002' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0005' + IntToHex(Len1, 4)
-            + Pkt1 + '00030000';
+          Pkt := '00040006000000000006' + CoocId + '0002' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0005' + IntToHex(Len1, 4) + Pkt1 + '00030000';
         end;
       // Отправляем пакет
       SendFLAP('2', Pkt);
     end;
 end;
 
-procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string;
-  GTrans: Boolean = False);
+procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string; GTrans: Boolean = False);
 label
   X;
 var
   Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   RosterItem: TListItem;
   GtransMsg: Boolean;
-  XmlFile: TrXML;
 begin
   GtransMsg := False;
   // Если сообщение пустое, то выходим
@@ -2681,26 +2621,23 @@ begin
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
   // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
-  XmlFile := TrXML.Create;
-  try
-    with XmlFile do
-      begin
-        if FileExists(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr') then
-          begin
-            LoadFromFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr');
-            // Сохраняем позицию окна
-            if OpenKey(S_UniqGT) then
-              try
-                // Изменяем направление перевода для исходящих и входящих сообщений
-                GtransMsg := ReadBool('enable');
-              finally
-                CloseKey;
-              end;
-          end;
-      end;
-  finally
-    FreeAndNil(XmlFile);
-  end;
+
+  { with XmlFile do
+    begin
+    if FileExists(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr') then
+    begin
+    LoadFromFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr');
+    // Сохраняем позицию окна
+    if OpenKey(S_UniqGT) then
+    try
+    // Изменяем направление перевода для исходящих и входящих сообщений
+    GtransMsg := ReadBool('enable');
+    finally
+    CloseKey;
+    end;
+    end;
+    end; }
+
   if GtransMsg then
     begin
       if not Assigned(GTransForm) then
@@ -3145,8 +3082,7 @@ begin
   ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime);
 end;
 
-procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash,
-  ConnTime: string);
+procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash, ConnTime: string);
 var
   StatusIcoInd, IXStat, IClient: Integer;
   BartID, BartLength, BartSubLen: Integer;
@@ -3450,8 +3386,7 @@ begin
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   UIN := NextData(PktData, Len);
   // Запускаем событие контакт онлайн с неизвестным статусом номер иконки 214
-  ICQ_UserOnline_Event(UIN, '88888888', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr,
-    EmptyStr);
+  ICQ_UserOnline_Event(UIN, '88888888', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
 end;
 
 procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
@@ -3601,16 +3536,15 @@ begin
   // Ещё есть данные для расшифровки
 
   // Запускаем событие контакт онлайн со статусом оффлайн номер иконки 9
-  ICQ_UserOnline_Event(UIN, 'FFFFFFFF', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr,
-    EmptyStr);
+  ICQ_UserOnline_Event(UIN, 'FFFFFFFF', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
 end;
 
 function ICQ_CliClientReadyPkt: string;
 var
   Pkt: string;
 begin
-  Pkt := '00010002000000000002' + '002200010110164f000100040110164f' + '001300040110164f000200010110164f' +
-    '000300010110164f001500010110164f' + '000400010110164f000600010110164f' + '000900010110164f000a00010110164f' + '000b00010110164f';
+  Pkt := '00010002000000000002' + '002200010110164f000100040110164f' + '001300040110164f000200010110164f' + '000300010110164f001500010110164f' + '000400010110164f000600010110164f' +
+    '000900010110164f000a00010110164f' + '000b00010110164f';
   Result := Pkt;
 end;
 
@@ -3656,8 +3590,7 @@ begin
   if ICQ_UpdatePrivateGroup_Code = EmptyStr then
     Exit;
   // Формируем пакет
-  Pkt := '00130009000000000009' + '00000000' + ICQ_UpdatePrivateGroup_Code + '0004002100CA0001' + InvizStatus +
-    '00CB0004FFFFFFFF00D000010100D10001' + '0100D200010100D3000101';
+  Pkt := '00130009000000000009' + '00000000' + ICQ_UpdatePrivateGroup_Code + '0004002100CA0001' + InvizStatus + '00CB0004FFFFFFFF00D000010100D10001' + '0100D200010100D3000101';
   // Отсылаем пакет
   SendFLAP('2', Pkt);
 end;
@@ -3814,8 +3747,7 @@ begin
                           begin
                             // Если пакет содержит другие TLV, то пропускаем их
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim
-                                (Dump(NextData(SubData, Len))));
+                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))));
                           end;
                       end;
                     end;
@@ -3974,8 +3906,7 @@ begin
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        XLog(Log_ICQParsing + Log_Unk_Data + RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim
-                            (Dump(NextData(SubData, Len))));
+                        XLog(Log_ICQParsing + Log_Unk_Data + RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))));
                       end;
                   end;
                 end;
@@ -4085,9 +4016,8 @@ end;
 
 function ICQ_CliCookiePkt(Cookie: string): string;
 begin
-  Result := '000000010006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex
-    ('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001a0002' + IntToHex(102,
-    4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000f' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
+  Result := '000000010006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex
+    (5, 4) + '00190002' + IntToHex(0, 4) + '001a0002' + IntToHex(102, 4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000f' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
     + '000e' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100' + '8003000400100000';
 end;
 
@@ -4114,11 +4044,9 @@ begin
   MD5Final(Digest, State);
   MD5hash := PacketToHex(@Digest, SizeOf(TMD5Digest));
   // Формируем пакет
-  Result := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN)
-    + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client')
-    + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001A0002' + IntToHex(102, 4)
-    + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000F' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
-    + '000E' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100';
+  Result := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN) + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex
+    ('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001A0002' + IntToHex(102, 4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex
+    (30007, 8) + '000F' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '000E' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100';
 end;
 
 procedure ICQ_NotifyUserStatus(UIN, IStatus, IClient: string; IColor: Integer);
@@ -4311,8 +4239,7 @@ begin
     end
   else if ClientName = 'QIP 2005' then
     begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_QIP +
-        CAP_ICQDEVILS + CAP_QIP_PROTECTMSG + CAP_ICQ_XTRAZ_SUPPORT;
+      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_QIP + CAP_ICQDEVILS + CAP_QIP_PROTECTMSG + CAP_ICQ_XTRAZ_SUPPORT;
     end
   else if ClientName = 'Miranda' then
     begin
@@ -4360,8 +4287,7 @@ begin
     end
   else if ClientName = 'ICQ 5.1' then
     begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION +
-        CAP_PUSH2TALK + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
+      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_PUSH2TALK + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
     end
   else if ClientName = 'ICQ lite' then
     begin
@@ -4369,8 +4295,7 @@ begin
     end
   else if ClientName = 'ICQnet' then
     begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_PUSH2TALK +
-        CAP_MULTI_USER + CAP_ICQ_XTRAZ_SUPPORT + CAP_NETVIGATOR;
+      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_PUSH2TALK + CAP_MULTI_USER + CAP_ICQ_XTRAZ_SUPPORT + CAP_NETVIGATOR;
     end
   else if ClientName = 'icq2go' then
     begin
@@ -4398,8 +4323,7 @@ begin
     end
   else if ClientName = 'Rambler ICQ' then
     begin
-      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION +
-        CAP_RAMBLER_RU + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
+      Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_RAMBLER_RU + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
     end
   else if ClientName = 'SIM' then
     begin

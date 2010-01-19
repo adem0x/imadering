@@ -26,7 +26,6 @@ uses
   ButtonGroup,
   StdCtrls,
   Buttons,
-  RXml,
   OverbyteIcsWndControl,
   OverbyteIcsWSocket,
   OverbyteIcsHttpProt,
@@ -103,6 +102,7 @@ type
     DeleteProtoBitBtn: TBitBtn;
     ShowPluginConfigButton: TButton;
     PluginsListView: TListView;
+    Bevel1: TBevel;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -205,14 +205,12 @@ end;
 procedure TSettingsForm.LoadSettings;
 var
   ListItemD: TListItem;
-  XmlFile: TrXML;
 begin
   // Считываем настройки из xml файла
   if FileExists(ProfilePath + SettingsFileName) then
     begin
-      XmlFile := TrXML.Create;
-      try
-        with XmlFile do
+
+        {with XmlFile do
           begin
             LoadFromFile(ProfilePath + SettingsFileName);
             // Загружаем и отображаем настройки Прокси
@@ -365,10 +363,8 @@ begin
               SoundEventPath := MyPath + 'Sounds\' + CurrentSounds + '\Event.wav';
             if SoundOpenPath = EmptyStr then
               SoundOpenPath := MyPath + 'Sounds\' + CurrentSounds + '\Open.wav';
-          end;
-      finally
-        FreeAndNil(XmlFile);
-      end;
+          end;}
+
     end;
   // Устанавливаем галочки включенных протоколов
   ProtocolsListView.Clear;
@@ -397,8 +393,6 @@ end;
 // Apply Settings --------------------------------------------------------------
 
 procedure TSettingsForm.ApplySettings;
-var
-  XmlFile: TrXML;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
@@ -495,9 +489,8 @@ begin
     begin
       if not NoReSave then // Если разрешена перезапись настроек
         begin
-          XmlFile := TrXML.Create;
-          try
-            with XmlFile do
+
+            {with XmlFile do
               begin
                 if FileExists(ProfilePath + SettingsFileName) then
                   LoadFromFile(ProfilePath + SettingsFileName);
@@ -600,10 +593,8 @@ begin
                   end;
                 // Записываем сам файл
                 SaveToFile(ProfilePath + SettingsFileName);
-              end;
-          finally
-            FreeAndNil(XmlFile);
-          end;
+              end;}
+
         end;
     end;
   // Деактивируем кнопку применения настроек
@@ -619,10 +610,10 @@ end;
 
 procedure TSettingsForm.AutoHideClEditKeyPress(Sender: TObject; var Key: Char);
 const
-  ValidAsciiChars = ['0' .. '9'];
+  ValidChars = ['0' .. '9'];
 begin
   // Делаем так, что вводить можно только цифры
-  if (not CharInSet(Key, ValidAsciiChars)) and (Key <> #8) then
+  if (not CharInSet(Key, ValidChars)) and (Key <> #8) then
     Key := #0;
 end;
 

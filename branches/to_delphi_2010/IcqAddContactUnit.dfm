@@ -3,7 +3,6 @@ object IcqAddContactForm: TIcqAddContactForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
   ClientHeight = 129
   ClientWidth = 281
   Color = clBtnFace
@@ -20,28 +19,25 @@ object IcqAddContactForm: TIcqAddContactForm
   PixelsPerInch = 96
   TextHeight = 13
   object AccountLabel: TLabel
-    Left = 21
+    Left = 102
     Top = 11
-    Width = 84
+    Width = 3
     Height = 13
     Alignment = taRightJustify
-    Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100':'
   end
   object NameLabel: TLabel
-    Left = 31
+    Left = 102
     Top = 38
-    Width = 74
+    Width = 3
     Height = 13
     Alignment = taRightJustify
-    Caption = #1048#1084#1103' '#1082#1086#1085#1090#1072#1082#1090#1072':'
   end
   object GroupLabel: TLabel
-    Left = 65
+    Left = 102
     Top = 65
-    Width = 40
+    Width = 3
     Height = 13
     Alignment = taRightJustify
-    Caption = #1043#1088#1091#1087#1087#1072':'
   end
   object AccountEdit: TEdit
     Left = 111
@@ -75,7 +71,6 @@ object IcqAddContactForm: TIcqAddContactForm
     Top = 96
     Width = 89
     Height = 25
-    Caption = #1054#1090#1084#1077#1085#1072
     ModalResult = 2
     TabOrder = 3
   end
@@ -84,7 +79,6 @@ object IcqAddContactForm: TIcqAddContactForm
     Top = 96
     Width = 97
     Height = 25
-    Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     Default = True
     TabOrder = 4
     OnClick = AddContactButtonClick

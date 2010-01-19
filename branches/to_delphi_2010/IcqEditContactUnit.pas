@@ -25,23 +25,25 @@ uses
 
 type
   TIcqEditContactForm = class(TForm)
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
-    Memo1: TMemo;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Button1: TButton;
-    Button2: TButton;
-    procedure Button1Click(Sender: TObject);
-    procedure Edit2KeyPress(Sender: TObject; var Key: Char);
+    NickEdit: TEdit;
+    PhoneEdit: TEdit;
+    EmailEdit: TEdit;
+    NoteMemo: TMemo;
+    NickLabel: TLabel;
+    PhoneLabel: TLabel;
+    EmailLabel: TLabel;
+    NoteLabel: TLabel;
+    OKButton: TButton;
+    CancelButton: TButton;
+    procedure OKButtonClick(Sender: TObject);
+    procedure PhoneEditKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
 
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure TranslateForm;
   end;
 
 var
@@ -53,9 +55,21 @@ implementation
 
 uses
   IcqProtoUnit,
-  VarsUnit;
+  VarsUnit,
+  UtilsUnit,
+  MainUnit;
 
-procedure TIcqEditContactForm.Button1Click(Sender: TObject);
+procedure TIcqEditContactForm.TranslateForm;
+begin
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CancelButton.Caption := S_Cancel;
+end;
+
+procedure TIcqEditContactForm.OKButtonClick(Sender: TObject);
 { label
   x;
   var
@@ -98,12 +112,23 @@ begin
     ModalResult := mrOk; }
 end;
 
-procedure TIcqEditContactForm.Edit2KeyPress(Sender: TObject; var Key: Char);
+procedure TIcqEditContactForm.PhoneEditKeyPress(Sender: TObject; var Key: Char);
 const
   ValidChars = ['0' .. '9', '+'];
 begin
   if (not CharInSet(Key, ValidChars)) and (Key <> #8) then
     Key := #0;
+end;
+
+procedure TIcqEditContactForm.FormCreate(Sender: TObject);
+begin
+  // Присваиваем иконку окну и кнопкам
+  MainForm.AllImageList.GetIcon(141, Icon);
+  // Переводим форму на другие языки
+  TranslateForm;
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 end.

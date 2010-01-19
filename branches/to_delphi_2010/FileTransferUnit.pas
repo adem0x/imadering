@@ -93,7 +93,7 @@ const
   UpWapRootURL = 'http://upwap.ru';
 
 resourcestring
-  RS_SF = 'Send_File_Http_Client ';
+  RS_SF = 'SFClient | ';
   RS_DB = 'Doc_Begin; Rcvd_Stream Create';
   RS_SDA = 'Send_Data; Abort';
   RS_DE = 'Doc_End';
@@ -355,7 +355,7 @@ begin
                         OKURL := UpWapRootURL + IsolateTextString(Doc, 'action="', '"');
                         // Формируем текст со ссылкой
                         case Tag of
-                          1: OKURL := Format(S_FileTransfer5, [T_FileName, OKURL, 'UpWap.ru', FileSizePanel.Caption]);
+                          1: OKURL := Format(S_FileTransfer5, [T_FileName, OKURL, 'upwap.ru', FileSizePanel.Caption]);
                         end;
                         Xlog(RS_SF + RN + OKURL);
                         MsgD := YouAt + ' [' + DateTimeChatMess + ']';

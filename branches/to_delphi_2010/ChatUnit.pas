@@ -32,7 +32,8 @@ uses
   MMsystem,
   GIFImg,
   ComCtrls,
-  ToolWin;
+  ToolWin,
+  JvSimpleXml;
 
 type
   TChatForm = class(TForm)
@@ -224,27 +225,24 @@ uses
   RosterUnit,
   JabberProtoUnit,
   FileTransferUnit,
-  RXML,
   GtransUnit,
   MraProtoUnit,
   UniqUnit;
 
 resourcestring
-  RS_ChatFormPos = 'settings\forms\chatform\position';
-  RS_ChatFormCS = 'chat-splitter';
-  RS_ChatFormGS = 'group-splitter';
-  RS_ChatFormSE = 'settings\forms\chatform\send-enter';
-  RS_ChatFormST = 'settings\forms\chatform\send-typing-notify';
-  RS_ChatFormKS = 'settings\forms\chatform\key-sound';
-  RS_ChatFormAP = 'settings\forms\chatform\avatar-panels';
-  RS_ChatFormCA = 'contact-avatar';
-  RS_ChatFormMA = 'my-avatar';
+  RS_ChatForm = 'chat_form';
+  RS_ChatFormSP = 'splits';
+  RS_ChatFormSE = 'send_enter';
+  RS_ChatFormST = 'typing_notify';
+  RS_ChatFormKS = 'key_sound';
+  RS_ChatFormAP = 'avatar_panels';
 
 procedure TChatForm.CreateNewChat(CButton: TToolButton);
 var
   UIN, HistoryFile, Doc, HistoryText: string;
   RosterItem: TListItem;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Применяем параметры нового чата
   UIN := CButton.HelpKeyword;
@@ -345,24 +343,24 @@ begin
           HTMLChatViewer.CaretPos := Length(Doc);
           // Выставляем параметры перевода для этого контакта
           GtransSpeedButton.Down := False;
-          XmlFile := TrXML.Create;
+          // Инициализируем XML
+          JvXML_Create(JvXML);
           try
-            with XmlFile do
+            with JvXML do
               begin
                 if FileExists(ProfilePath + AnketaFileName + UserType + BN + UIN + '.usr') then
                   begin
                     LoadFromFile(ProfilePath + AnketaFileName + UserType + BN + UIN + '.usr');
-                    // Сохраняем позицию окна
-                    if OpenKey(S_UniqGT) then
-                      try
-                        GtransSpeedButton.Down := ReadBool('enable');
-                      finally
-                        CloseKey;
+                    if Root <> nil then
+                      begin
+                        XML_Node := Root.Items.ItemNamed[S_UniqGT];
+                        if XML_Node <> nil then
+                          GtransSpeedButton.Down := XML_Node.BoolValue;
                       end;
                   end;
               end;
           finally
-            FreeAndNil(XmlFile);
+            JvXML.Free;
           end;
         end;
     end;
@@ -473,7 +471,12 @@ end;
 procedure TChatForm.QuickMessClick(Sender: TObject);
 begin
   // Вставляем в поле ввода текст из меню быстрых ответов
-  InputRichEdit.SelText := TMenuItem(Sender).Hint;
+  if InputRichEdit.SelText <> EmptyStr then
+    InputRichEdit.SelText := TMenuItem(Sender).Caption
+  else if InputRichEdit.Text <> EmptyStr then
+    InputRichEdit.SelText := ' ' + TMenuItem(Sender).Caption
+  else
+    InputRichEdit.SelText := TMenuItem(Sender).Caption;
 end;
 
 procedure TChatForm.CreateFastReplyMenu;
@@ -502,8 +505,6 @@ begin
             if List.Strings[I] <> EmptyStr then
               begin
                 Add(NewItem(List.Strings[I], 0, False, True, QuickMessClick, 0, 'MenuItem' + IntToStr(I)));
-                // Добавляем и в хинты, против глюка акселя
-                Items[I].Hint := List.Strings[I];
                 // Назначаем иконку для пункта меню
                 Items[I].ImageIndex := 157;
               end;
@@ -517,8 +518,6 @@ begin
             if List.Strings[I] <> EmptyStr then
               begin
                 Add(NewItem(List.Strings[I], 0, False, True, QuickMessClick, 0, 'MenuItem' + IntToStr(I)));
-                // Добавляем и в хинты, против глюка акселя
-                Items[I].Hint := List.Strings[I];
                 // Назначаем иконку для пункта меню
                 Items[I].ImageIndex := 157;
               end;
@@ -585,11 +584,9 @@ var
 begin
   Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
   if MessIn then
-    Doc := Doc + '<IMG NAME=i SRC="./Icons/' + CurrentIcons + '/inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' + Nick_Time +
-      '</span><br>'
+    Doc := Doc + '<IMG NAME=i SRC="./Icons/' + CurrentIcons + '/inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' + Nick_Time + '</span><br>'
   else
-    Doc := Doc + '<IMG NAME=o' + IntToStr(OutMessIndex) + ' SRC="./Icons/' + CurrentIcons +
-      '/outmess1.gif" ALIGN=ABSMIDDLE BORDER=0><span class=a> ' + Nick_Time + '</span><br>';
+    Doc := Doc + '<IMG NAME=o' + IntToStr(OutMessIndex) + ' SRC="./Icons/' + CurrentIcons + '/outmess1.gif" ALIGN=ABSMIDDLE BORDER=0><span class=a> ' + Nick_Time + '</span><br>';
   Doc := Doc + '<span class=c>' + Mess_Text + '</span><br><br>';
   HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
 end;
@@ -902,6 +899,14 @@ begin
   // Присваиваем переменную способа передачи
   with FileTransferForm do
     begin
+      // Проверяем закончена ли предыдушая сессия передачи файла
+      if CancelBitBtn.Enabled then
+        begin
+          XShowForm(FileTransferForm);
+          DAShow(S_AlertHead, S_FileTransfer6, EmptyStr, 133, 3, 0);
+          Exit;
+        end;
+      // Выбираем способ передачи файла
       Tag := (Sender as TMenuItem).Tag; // 1 - UpWap.ru
       TopInfoPanel.Caption := S_FileTransfer1 + InfoPanel1.Caption;
       T_UIN := InfoPanel2.Caption;
@@ -952,72 +957,69 @@ end;
 procedure TChatForm.FormCreate(Sender: TObject);
 var
   AvatarFile, OutMessage2File, OutMessage3File: string;
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  XmlFile := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + SettingsFileName) then
           begin
             LoadFromFile(ProfilePath + SettingsFileName);
-            // Загружаем позицию окна
-            if OpenKey(RS_ChatFormPos) then
-              try
-                Top := ReadInteger('top');
-                Left := ReadInteger('left');
-                Height := ReadInteger('height');
-                Width := ReadInteger('width');
-                // Загружаем позицию сплитеров
-                BottomChatFormPanel.Height := ReadInteger(RS_ChatFormCS, 130);
-                ChatCategoryButtons.Width := ReadInteger(RS_ChatFormGS, 130);
-                // Определяем не находится ли окно за пределами экрана
-                MainForm.FormSetInWorkArea(Self);
-              finally
-                CloseKey;
-              end;
-            // Загружаем "отправлять по интер"
-            if OpenKey(RS_ChatFormSE) then
-              try
-                EnterKeyToolButton.Down := ReadBool(S_Value);
-              finally
-                CloseKey;
-              end;
-            // Загружаем отправлять отчёт о печати текста
-            if OpenKey(RS_ChatFormST) then
-              try
-                TypingTextToolButton.Down := ReadBool(S_Value);
-              finally
-                CloseKey;
-              end;
-            // Загружаем "звук нажатия клавиш"
-            if OpenKey(RS_ChatFormKS) then
-              try
-                KeySoundToolButton.Down := ReadBool(S_Value);
-              finally
-                CloseKey;
-              end;
-            // Загружаем состояние панелей аватар
-            if OpenKey(RS_ChatFormAP) then
-              try
-                ContactAvatarPanel.Width := ReadInteger(RS_ChatFormCA, 68);
-                if ContactAvatarPanel.Width = 0 then
+            if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[RS_ChatForm];
+                if XML_Node <> nil then
                   begin
-                    ContactAvatarPanelSpeedButton.Left := 0;
-                    ContactAvatarPanelSpeedButton.NumGlyphs := 1;
+                    // Загружаем позицию окна
+                    Top := XML_Node.Properties.IntValue('t');
+                    Left := XML_Node.Properties.IntValue('l');
+                    Height := XML_Node.Properties.IntValue('h');
+                    Width := XML_Node.Properties.IntValue('w');
+                    // Определяем не находится ли окно за пределами экрана
+                    MainForm.FormSetInWorkArea(Self);
+                    // Загружаем позицию сплитеров
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_ChatFormSP];
+                    if Sub_Node <> nil then
+                      begin
+                        BottomChatFormPanel.Height := Sub_Node.Properties.IntValue('s1', 130);
+                        ChatCategoryButtons.Width := Sub_Node.Properties.IntValue('s2', 130);
+                      end;
+                    // Загружаем "отправлять по интер"
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_ChatFormSE];
+                    if Sub_Node <> nil then
+                      EnterKeyToolButton.Down := Sub_Node.BoolValue;
+                    // Загружаем отправлять отчёт о печати текста
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_ChatFormST];
+                    if Sub_Node <> nil then
+                      TypingTextToolButton.Down := Sub_Node.BoolValue;
+                    // Загружаем "звук нажатия клавиш"
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_ChatFormKS];
+                    if Sub_Node <> nil then
+                      KeySoundToolButton.Down := Sub_Node.BoolValue;
+                    // Загружаем состояние панелей аватар
+                    Sub_Node := XML_Node.Items.ItemNamed[RS_ChatFormAP];
+                    if Sub_Node <> nil then
+                      begin
+                        ContactAvatarPanel.Width := Sub_Node.Properties.IntValue('a1', 68);
+                        if ContactAvatarPanel.Width = 0 then
+                          begin
+                            ContactAvatarPanelSpeedButton.Left := 0;
+                            ContactAvatarPanelSpeedButton.NumGlyphs := 1;
+                          end;
+                        MyAvatarPanel.Width := Sub_Node.Properties.IntValue('a2', 68);
+                        if MyAvatarPanel.Width = 0 then
+                          MyAvatarPanelSpeedButton.NumGlyphs := 4;
+                      end;
                   end;
-                MyAvatarPanel.Width := ReadInteger(RS_ChatFormMA, 68);
-                if MyAvatarPanel.Width = 0 then
-                  MyAvatarPanelSpeedButton.NumGlyphs := 4;
-              finally
-                CloseKey;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
   // Присваиваем окну и кнопкам иконки
   MainForm.AllImageList.GetIcon(163, Icon);
@@ -1069,70 +1071,56 @@ end;
 
 procedure TChatForm.FormDestroy(Sender: TObject);
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения окна чата в xml
-  XmlFile := TrXML.Create;
+  // Инициализируем XML
+  JvXML_Create(JvXML);
   try
-    with XmlFile do
+    with JvXML do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
+        // Очищаем раздел чат формы если он есть
+        XML_Node := Root.Items.ItemNamed[RS_ChatForm];
+        if XML_Node <> nil then
+          XML_Node.Clear
+        else
+          XML_Node := Root.Items.Add(RS_ChatForm);
         // Сохраняем позицию окна
-        if OpenKey(RS_ChatFormPos, True) then
-          try
-            WriteInteger('top', Top);
-            WriteInteger('left', Left);
-            WriteInteger('height', Height);
-            WriteInteger('width', Width);
-            // Сохраняем позицию сплитеров
-            WriteInteger(RS_ChatFormCS, BottomChatFormPanel.Height);
-            WriteInteger(RS_ChatFormGS, ChatCategoryButtons.Width);
-          finally
-            CloseKey;
-          end;
+        XML_Node.Properties.Add('t', Top);
+        XML_Node.Properties.Add('l', Left);
+        XML_Node.Properties.Add('h', Height);
+        XML_Node.Properties.Add('w', Width);
+        // Сохраняем позицию сплитеров
+        Sub_Node := XML_Node.Items.Add(RS_ChatFormSP);
+        Sub_Node.Properties.Add('s1', BottomChatFormPanel.Height);
+        Sub_Node.Properties.Add('s2', ChatCategoryButtons.Width);
         // Сохраняем "отправлять по интер"
-        if OpenKey(RS_ChatFormSE, True) then
-          try
-            WriteBool(S_Value, EnterKeyToolButton.Down);
-          finally
-            CloseKey;
-          end;
+        XML_Node.Items.Add(RS_ChatFormSE, EnterKeyToolButton.Down);
         // Сохраняем отправлять отчёт о печати текста
-        if OpenKey(RS_ChatFormST, True) then
-          try
-            WriteBool(S_Value, TypingTextToolButton.Down);
-          finally
-            CloseKey;
-          end;
+        XML_Node.Items.Add(RS_ChatFormST, TypingTextToolButton.Down);
         // Сохраняем "звук нажатия клавиш"
-        if OpenKey(RS_ChatFormKS, True) then
-          try
-            WriteBool(S_Value, KeySoundToolButton.Down);
-          finally
-            CloseKey;
-          end;
+        XML_Node.Items.Add(RS_ChatFormKS, KeySoundToolButton.Down);
         // Сохраняем состояние панелей аватар
-        if OpenKey(RS_ChatFormAP, True) then
-          try
-            WriteInteger(RS_ChatFormCA, ContactAvatarPanel.Width);
-            WriteInteger(RS_ChatFormMA, MyAvatarPanel.Width);
-          finally
-            CloseKey;
-          end;
+        Sub_Node := XML_Node.Items.Add(RS_ChatFormAP);
+        Sub_Node.Properties.Add('a1', ContactAvatarPanel.Width);
+        Sub_Node.Properties.Add('a2', MyAvatarPanel.Width);
         // Записываем сам файл
         SaveToFile(ProfilePath + SettingsFileName);
       end;
   finally
-    FreeAndNil(XmlFile);
+    JvXML.Free;
   end;
 end;
 
 procedure TChatForm.GtransSpeedButtonClick(Sender: TObject);
 var
-  XmlFile: TrXML;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Включаем или отключаем автоматический перевод сообщений
   if GtransSpeedButton.Down then
@@ -1152,24 +1140,29 @@ begin
     begin
       // Создаём необходимые папки
       ForceDirectories(ProfilePath);
-      XmlFile := TrXML.Create;
+      // Инициализируем XML
+      JvXML_Create(JvXML);
       try
-        with XmlFile do
+        with JvXML do
           begin
             if FileExists(ProfilePath + AnketaFileName + UserType + BN + InfoPanel2.Caption + '.usr') then
               LoadFromFile(ProfilePath + AnketaFileName + UserType + BN + InfoPanel2.Caption + '.usr');
-            // Сохраняем состояние GTrans
-            if OpenKey(S_UniqGT, True) then
-              try
-                WriteBool('enable', False);
-              finally
-                CloseKey;
+            if Root <> nil then
+              begin
+                // Находим раздел gtrans если он есть
+                XML_Node := Root.Items.ItemNamed[S_UniqGT];
+                if XML_Node <> nil then
+                  XML_Node.Clear
+                else
+                  XML_Node := Root.Items.Add(S_UniqGT);
+                // Сохраняем состояние GTrans
+                XML_Node.BoolValue := False;
+                // Записываем сам файл
+                SaveToFile(ProfilePath + AnketaFileName + UserType + BN + InfoPanel2.Caption + '.usr');
               end;
-            // Записываем сам файл
-            SaveToFile(ProfilePath + AnketaFileName + UserType + BN + InfoPanel2.Caption + '.usr');
           end;
       finally
-        FreeAndNil(XmlFile);
+        JvXML.Free;
       end;
     end;
 end;
@@ -1274,8 +1267,7 @@ begin
       SmilesForm.Top := (Y - SmilesForm.Height) - 2;
     end;
   // Ставим флаги окну отображаться поверх всех (против глюка в вайн)
-  SetWindowPos(SmilesForm.Handle, HWND_TOPMOST, 0, 0, 0, 0,
-    SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOSENDCHANGING);
+  SetWindowPos(SmilesForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOSENDCHANGING);
   // Отображаем окно смайлов
   SmilesForm.Show;
 end;
@@ -1483,9 +1475,17 @@ procedure TChatForm.InputRichEditKeyDown(Sender: TObject; var Key: Word; Shift: 
   Str := self.InputMemo.Text;
   end; }
 begin
+  // Переносим каретку в самый конец текста
+  if (GetKeyState(VK_CONTROL) >= 0) and (Key = 13) and (EnterKeyToolButton.Down) then
+    InputRichEdit.SelStart := InputRichEdit.GetTextLen;
   // Если зажата клавиша контрл и нажата клавиша интер и не нажата кнопка отправки по интер, то отправляем сообщение
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 13) and (not EnterKeyToolButton.Down) then
+  begin
+    // Переносим каретку в самый конец текста
+    InputRichEdit.SelStart := InputRichEdit.GetTextLen;
+    // Отправляем сообщение
     SendMessageBitBtnClick(Self);
+  end;
   // Если зажата клавиша контрл и нажата клавиша "s", то открываем окно смайлов
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 83) then
     SmiliesSpeedButtonClick(Self);

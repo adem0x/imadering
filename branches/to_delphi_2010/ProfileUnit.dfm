@@ -93,6 +93,7 @@ object ProfileForm: TProfileForm
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
+      TabStop = False
       Text = 'Profile1'
       OnChange = ProfileComboBoxChange
     end
@@ -128,13 +129,11 @@ object ProfileForm: TProfileForm
       Height = 21
       Style = csDropDownList
       DropDownCount = 15
-      ItemIndex = 0
       TabOrder = 3
       TabStop = False
-      Text = #1056#1091#1089#1089#1082#1080#1081' [ru]'
       Items.Strings = (
-        #1056#1091#1089#1089#1082#1080#1081' [ru]'
-        'English [en]')
+        '[ru] '#1056#1091#1089#1089#1082#1080#1081
+        '[en] English')
     end
     object AutoSignCheckBox: TCheckBox
       Left = 10

@@ -29,9 +29,9 @@ object HistoryForm: THistoryForm
     BevelOuter = bvNone
     TabOrder = 0
     object Bevel1: TBevel
-      Left = 214
-      Top = 3
-      Width = 3
+      Left = 215
+      Top = 4
+      Width = 2
       Height = 93
       Shape = bsLeftLine
     end

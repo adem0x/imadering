@@ -2,7 +2,6 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
-  Caption = 'IMadering'
   ClientHeight = 401
   ClientWidth = 283
   Color = clWhite
@@ -302,7 +301,7 @@ object MainForm: TMainForm
     end
   end
   object ICQTrayIcon: TTrayIcon
-    Hint = '#ICQ'
+    Hint = 'ICQ'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
@@ -316,7 +315,6 @@ object MainForm: TMainForm
     Left = 16
     Top = 128
     object HideMainInTray1: TMenuItem
-      Caption = '#'#1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4
       OnClick = HideInTrayClick
     end
@@ -324,18 +322,15 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object StatusTray1: TMenuItem
-      Caption = '#'#1057#1090#1072#1090#1091#1089
     end
     object N1: TMenuItem
       Caption = '-'
     end
     object SettingsTray1: TMenuItem
-      Caption = '#'#1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
       OnClick = OpenSettingsClick
     end
     object CheckUpdateTray1: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077
       ImageIndex = 6
       OnClick = CheckUpdateTray1Click
     end
@@ -343,7 +338,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object CloseProgramTray1: TMenuItem
-      Caption = '#'#1042#1099#1081#1090#1080' '#1080#1079' IMadering'
       ImageIndex = 3
       OnClick = CloseProgramClick
     end
@@ -441,41 +435,33 @@ object MainForm: TMainForm
     Top = 328
     object OpenTest: TMenuItem
       Caption = 'Test'
-      Visible = False
       OnClick = OpenTestClick
     end
     object RosterMainMenu: TMenuItem
-      Caption = '#'#1041#1044' '#1089#1087#1080#1089#1082#1072' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 1
       OnClick = RosterMainMenuClick
     end
     object PrivatListMenu: TMenuItem
-      Caption = '#'#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080
       ImageIndex = 236
       OnClick = PrivatListMenuClick
     end
     object SearchInCLMainMenu: TMenuItem
-      Caption = '#'#1055#1086#1080#1089#1082' '#1087#1086' '#1089#1087#1080#1089#1082#1091' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 215
       OnClick = SearchInCLClick
     end
     object OpenTraffic: TMenuItem
-      Caption = '#'#1058#1088#1072#1092#1080#1082
       ImageIndex = 226
       OnClick = OpenTrafficClick
     end
     object OpenHistory: TMenuItem
-      Caption = '#'#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
       OnClick = OpenHistoryClick
     end
     object OpenSettings: TMenuItem
-      Caption = '#'#1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
       OnClick = OpenSettingsClick
     end
     object LogFormMenu: TMenuItem
-      Caption = '#'#1051#1086#1075' '#1089#1086#1073#1099#1090#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       ImageIndex = 245
       OnClick = LogFormMenuClick
     end
@@ -483,12 +469,10 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object CheckUpdateMenu: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077
       ImageIndex = 6
       OnClick = CheckUpdateTray1Click
     end
     object AboutIMadering: TMenuItem
-      Caption = '#'#1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
       ImageIndex = 0
       OnClick = AboutIMaderingClick
     end
@@ -496,23 +480,20 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ProfileOpenMenu: TMenuItem
-      Caption = '#'#1044#1088#1091#1075#1086#1081' '#1087#1088#1086#1092#1080#1083#1100
       ImageIndex = 253
       OnClick = ProfileOpenMenuClick
     end
     object HideInTray: TMenuItem
-      Caption = '#'#1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4
       OnClick = HideInTrayClick
     end
     object CloseProgram: TMenuItem
-      Caption = '#'#1042#1099#1081#1090#1080' '#1080#1079' IMadering'
       ImageIndex = 3
       OnClick = CloseProgramClick
     end
   end
   object MRATrayIcon: TTrayIcon
-    Hint = '#MRA'
+    Hint = 'MRA'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
@@ -521,7 +502,7 @@ object MainForm: TMainForm
     Top = 64
   end
   object JabberTrayIcon: TTrayIcon
-    Hint = '#Jabber'
+    Hint = 'Jabber'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = ICQTrayIconClick
@@ -710,22 +691,20 @@ object MainForm: TMainForm
   end
   object ContactListPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = ContactListPopupMenuPopup
     Left = 16
     Top = 232
     object OpenGroupsCL: TMenuItem
-      Caption = '#'#1054#1090#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
       ImageIndex = 151
       OnClick = OpenGroupsCLClick
     end
     object CloseGroupsCL: TMenuItem
-      Caption = '#'#1047#1072#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
       ImageIndex = 152
       OnClick = CloseGroupsCLClick
     end
     object HideEmptyGroups: TMenuItem
-      Caption = '#'#1057#1082#1088#1099#1074#1072#1090#1100' '#1087#1091#1089#1090#1099#1077' '#1075#1088#1091#1087#1087#1099
       ImageIndex = 230
       OnClick = HideEmptyGroupsClick
     end
@@ -734,34 +713,24 @@ object MainForm: TMainForm
     end
     object AddNewGroupICQ: TMenuItem
       Tag = 1
-      Caption = '#'#1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091' ICQ'
-      Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 153
       OnClick = AddNewGroupICQClick
     end
     object AddNewGroupJabber: TMenuItem
       Tag = 2
-      Caption = '#'#1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091' Jabber'
-      Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 153
       OnClick = AddNewGroupICQClick
     end
     object AddNewGroupMRA: TMenuItem
       Tag = 3
-      Caption = '#'#1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091' MRA'
-      Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 153
       OnClick = AddNewGroupICQClick
     end
     object RenemeGroupCL: TMenuItem
-      Caption = '#'#1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100' '#1075#1088#1091#1087#1087#1091
-      Hint = #1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 154
       OnClick = RenemeGroupCLClick
     end
     object DeleteGroupCL: TMenuItem
-      Caption = '#'#1059#1076#1072#1083#1080#1090#1100' '#1075#1088#1091#1087#1087#1091
-      Hint = #1059#1076#1072#1083#1080#1090#1100' '#1075#1088#1091#1087#1087#1091
       ImageIndex = 155
       OnClick = DeleteGroupCLClick
     end
@@ -769,7 +738,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object SearchInCL: TMenuItem
-      Caption = '#'#1055#1086#1080#1089#1082' '#1087#1086' '#1089#1087#1080#1089#1082#1091' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 215
       OnClick = SearchInCLClick
     end
@@ -778,19 +746,16 @@ object MainForm: TMainForm
     end
     object AddNewContactICQ: TMenuItem
       Tag = 1
-      Caption = '#'#1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' ICQ'
       ImageIndex = 143
       OnClick = AddNewContactICQClick
     end
     object AddNewContactJabber: TMenuItem
       Tag = 2
-      Caption = '#'#1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' Jabber'
       ImageIndex = 143
       OnClick = AddNewContactICQClick
     end
     object AddNewContactMRA: TMenuItem
       Tag = 3
-      Caption = '#'#1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' MRA'
       ImageIndex = 143
       OnClick = AddNewContactICQClick
     end
@@ -801,12 +766,10 @@ object MainForm: TMainForm
     Left = 48
     Top = 328
     object ICQSettings: TMenuItem
-      Caption = '#'#1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1089#1077#1090#1080
       ImageIndex = 160
       OnClick = ICQSettingsClick
     end
     object ICQSearchNewContact: TMenuItem
-      Caption = '#'#1055#1086#1080#1089#1082' '#1085#1086#1074#1099#1093' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 235
       OnClick = ICQSearchNewContactClick
     end
@@ -814,7 +777,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ICQXStatus: TMenuItem
-      Caption = '#'#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 44
       OnClick = ICQXStatusClick
     end
@@ -822,27 +784,22 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ICQStatusFFC: TMenuItem
-      Caption = '#'#1043#1086#1090#1086#1074' '#1087#1086#1073#1086#1083#1090#1072#1090#1100
       ImageIndex = 16
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusEvil: TMenuItem
-      Caption = '#'#1047#1083#1086#1081
       ImageIndex = 18
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusDepres: TMenuItem
-      Caption = '#'#1044#1077#1087#1088#1077#1089#1089#1080#1103
       ImageIndex = 17
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusHome: TMenuItem
-      Caption = '#'#1044#1086#1084#1072
       ImageIndex = 19
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusWork: TMenuItem
-      Caption = '#'#1053#1072' '#1088#1072#1073#1086#1090#1077
       ImageIndex = 20
       OnClick = ICQStatusOnlineClick
     end
@@ -850,27 +807,22 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ICQStatusLunch: TMenuItem
-      Caption = '#'#1050#1091#1096#1072#1102
       ImageIndex = 15
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusAway: TMenuItem
-      Caption = '#'#1054#1090#1086#1096#1105#1083
       ImageIndex = 8
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusNA: TMenuItem
-      Caption = '#'#1053#1077#1076#1086#1089#1090#1091#1087#1077#1085
       ImageIndex = 14
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusOccupied: TMenuItem
-      Caption = '#'#1047#1072#1085#1103#1090
       ImageIndex = 12
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusDND: TMenuItem
-      Caption = '#'#1053#1077' '#1073#1077#1089#1087#1086#1082#1086#1080#1090#1100
       ImageIndex = 13
       OnClick = ICQStatusOnlineClick
     end
@@ -878,17 +830,14 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ICQStatusOnline: TMenuItem
-      Caption = '#'#1042' '#1089#1077#1090#1080
       ImageIndex = 7
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusInvisible: TMenuItem
-      Caption = '#'#1053#1077#1074#1080#1076#1080#1084#1099#1081
       ImageIndex = 10
       OnClick = ICQStatusOnlineClick
     end
     object ICQStatusInvisibleForAll: TMenuItem
-      Caption = '#'#1053#1077#1074#1080#1076#1080#1084#1099#1081' '#1076#1083#1103' '#1074#1089#1077#1093
       ImageIndex = 11
       OnClick = ICQStatusOnlineClick
     end
@@ -896,7 +845,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ICQStatusOffline: TMenuItem
-      Caption = '#'#1053#1077' '#1074' '#1089#1077#1090#1080
       Default = True
       ImageIndex = 9
       OnClick = ICQStatusOfflineClick
@@ -908,7 +856,6 @@ object MainForm: TMainForm
     Left = 80
     Top = 328
     object MRASettings: TMenuItem
-      Caption = '#'#1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1089#1077#1090#1080
       ImageIndex = 160
       OnClick = MRASettingsClick
     end
@@ -916,7 +863,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MRAXStatus: TMenuItem
-      Caption = '#'#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 44
       OnClick = MRAXStatusClick
     end
@@ -924,7 +870,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MRAStatusFFC: TMenuItem
-      Caption = '#'#1043#1086#1090#1086#1074' '#1087#1086#1073#1086#1083#1090#1072#1090#1100
       ImageIndex = 26
       OnClick = MRAStatusOnlineClick
     end
@@ -932,12 +877,10 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MRAStatusAway: TMenuItem
-      Caption = '#'#1054#1090#1086#1096#1105#1083
       ImageIndex = 22
       OnClick = MRAStatusOnlineClick
     end
     object MRAStatusDND: TMenuItem
-      Caption = '#'#1053#1077' '#1073#1077#1089#1087#1086#1082#1086#1080#1090#1100
       ImageIndex = 27
       OnClick = MRAStatusOnlineClick
     end
@@ -945,12 +888,10 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MRAStatusOnline: TMenuItem
-      Caption = '#'#1042' '#1089#1077#1090#1080
       ImageIndex = 24
       OnClick = MRAStatusOnlineClick
     end
     object MRAStatusInvisible: TMenuItem
-      Caption = '#'#1053#1077#1074#1080#1076#1080#1084#1099#1081
       ImageIndex = 21
       OnClick = MRAStatusOnlineClick
     end
@@ -958,7 +899,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MRAStatusOffline: TMenuItem
-      Caption = '#'#1053#1077' '#1074' '#1089#1077#1090#1080
       Default = True
       ImageIndex = 23
       OnClick = MRAStatusOfflineClick
@@ -970,12 +910,10 @@ object MainForm: TMainForm
     Left = 112
     Top = 328
     object JabberSettings: TMenuItem
-      Caption = '#'#1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1089#1077#1090#1080
       ImageIndex = 160
       OnClick = JabberSettingsClick
     end
     object JabberSearchNewContact: TMenuItem
-      Caption = '#'#1055#1086#1080#1089#1082' '#1085#1086#1074#1099#1093' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
       ImageIndex = 235
       OnClick = JabberSearchNewContactClick
     end
@@ -983,7 +921,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object JabberXStatus: TMenuItem
-      Caption = '#'#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 44
       OnClick = JabberXStatusClick
     end
@@ -991,27 +928,22 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object JabberStatusFFC: TMenuItem
-      Caption = '#'#1043#1086#1090#1086#1074' '#1087#1086#1073#1086#1083#1090#1072#1090#1100
       ImageIndex = 36
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusEvil: TMenuItem
-      Caption = '#'#1047#1083#1086#1081
       ImageIndex = 38
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusDepression: TMenuItem
-      Caption = '#'#1044#1077#1087#1088#1077#1089#1089#1080#1103
       ImageIndex = 37
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusHome: TMenuItem
-      Caption = '#'#1044#1086#1084#1072
       ImageIndex = 39
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusWork: TMenuItem
-      Caption = '#'#1053#1072' '#1088#1072#1073#1086#1090#1077
       ImageIndex = 40
       OnClick = JabberStatusOnlineClick
     end
@@ -1019,27 +951,22 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object JabberStatusLunch: TMenuItem
-      Caption = '#'#1050#1091#1096#1072#1102
       ImageIndex = 35
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusAway: TMenuItem
-      Caption = '#'#1054#1090#1086#1096#1105#1083
       ImageIndex = 29
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusNA: TMenuItem
-      Caption = '#'#1053#1077#1076#1086#1089#1090#1091#1087#1077#1085
       ImageIndex = 34
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusOccupied: TMenuItem
-      Caption = '#'#1047#1072#1085#1103#1090
       ImageIndex = 32
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusDND: TMenuItem
-      Caption = '#'#1053#1077' '#1073#1077#1089#1087#1086#1082#1086#1080#1090#1100
       ImageIndex = 33
       OnClick = JabberStatusOnlineClick
     end
@@ -1047,12 +974,10 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object JabberStatusOnline: TMenuItem
-      Caption = '#'#1042' '#1089#1077#1090#1080
       ImageIndex = 28
       OnClick = JabberStatusOnlineClick
     end
     object JabberStatusInvisible: TMenuItem
-      Caption = '#'#1053#1077#1074#1080#1076#1080#1084#1099#1081
       ImageIndex = 31
       OnClick = JabberStatusOnlineClick
     end
@@ -1060,7 +985,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object JabberStatusOffline: TMenuItem
-      Caption = '#'#1053#1077' '#1074' '#1089#1077#1090#1080
       Default = True
       ImageIndex = 30
       OnClick = JabberStatusOfflineClick
@@ -1072,22 +996,18 @@ object MainForm: TMainForm
     Left = 48
     Top = 232
     object SendMessageForContact: TMenuItem
-      Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
       ImageIndex = 163
       OnClick = SendMessageForContactClick
     end
     object SendFileMenu: TMenuItem
-      Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1092#1072#1081#1083
       ImageIndex = 149
       object SendFileUpWapru: TMenuItem
         Tag = 1
-        Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1095#1077#1088#1077#1079' UpWap.ru'
         ImageIndex = 225
         OnClick = SendFileUpWapruClick
       end
     end
     object CheckStatusContact: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1082#1072' '#1089#1090#1072#1090#1091#1089#1072
       ImageIndex = 172
       OnClick = CheckStatusContactClick
     end
@@ -1095,22 +1015,18 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object AnketaContact: TMenuItem
-      Caption = '#'#1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1082#1086#1085#1090#1072#1082#1090#1077
       ImageIndex = 178
       OnClick = AnketaContactClick
     end
     object UniqContactSettingsMenu: TMenuItem
-      Caption = '#'#1059#1085#1080#1082#1072#1083#1100#1085#1099#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 247
       OnClick = UniqContactSettingsMenuClick
     end
     object HistoryContact: TMenuItem
-      Caption = '#'#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 147
       OnClick = HistoryContactClick
     end
     object CopyAccountContact: TMenuItem
-      Caption = '#'#1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1080#1084#1103' '#1091#1095#1105#1090#1085#1086#1081' '#1079#1072#1087#1080#1089#1080
       ImageIndex = 144
       OnClick = CopyAccountContactClick
     end
@@ -1118,19 +1034,15 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object AddNewContact: TMenuItem
-      Caption = '#'#1044#1086#1073#1072#1074#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090' '#1074' '#1089#1087#1080#1089#1086#1082
       ImageIndex = 143
       Visible = False
       OnClick = AddNewContactClick
     end
     object EditContact: TMenuItem
-      Caption = '#'#1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
       ImageIndex = 141
       OnClick = EditContactClick
     end
     object DeleteContact: TMenuItem
-      Caption = '#'#1059#1076#1072#1083#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
-      Hint = #1059#1076#1072#1083#1080#1090#1100' '#1082#1086#1085#1090#1072#1082#1090
       ImageIndex = 142
       OnClick = DeleteContactClick
     end
@@ -1138,7 +1050,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object FloatContactMenu: TMenuItem
-      Caption = '#'#1055#1083#1072#1074#1072#1102#1097#1080#1081' '#1082#1086#1085#1090#1072#1082#1090
       ImageIndex = 248
       OnClick = FloatContactMenuClick
     end
@@ -1146,25 +1057,19 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object NextContactMenu: TMenuItem
-      Caption = '#'#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
       ImageIndex = 222
       object GrandAuthContact: TMenuItem
-        Caption = '#'#1055#1086#1079#1074#1086#1083#1080#1090#1100' '#1076#1086#1073#1072#1074#1080#1090#1100' '#1074#1072#1089
         ImageIndex = 140
         OnClick = GrandAuthContactClick
       end
       object SendAddContact: TMenuItem
-        Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' "'#1042#1072#1089' '#1076#1086#1073#1072#1074#1080#1083#1080'"'
         OnClick = SendAddContactClick
       end
       object DelYourSelfContact: TMenuItem
-        Caption = '#'#1059#1076#1072#1083#1080#1090#1100' '#1089#1077#1073#1103' '#1080#1079' '#1089#1087#1080#1089#1082#1072' '#1082#1086#1085#1090#1072#1082#1090#1072
-        Hint = #1059#1076#1072#1083#1080#1090#1100' '#1089#1077#1073#1103' '#1080#1079' '#1089#1087#1080#1089#1082#1072' '#1082#1086#1085#1090#1072#1082#1090#1072
         ImageIndex = 139
         OnClick = DelYourSelfContactClick
       end
       object SendInviteContact: TMenuItem
-        Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1087#1088#1080#1075#1083#1072#1096#1077#1085#1080#1077
         OnClick = SendInviteContactClick
       end
     end
@@ -1176,12 +1081,10 @@ object MainForm: TMainForm
     Left = 48
     Top = 296
     object PingICQServer: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
       ImageIndex = 267
       OnClick = PingICQServerClick
     end
     object UnstableICQStatus: TMenuItem
-      Caption = '#'#1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 230
       OnClick = UnstableICQStatusClick
     end
@@ -1216,11 +1119,9 @@ object MainForm: TMainForm
     Left = 80
     Top = 296
     object PingMRAServer: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
       ImageIndex = 267
     end
     object UnstableMRAStatus: TMenuItem
-      Caption = '#'#1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 230
     end
   end
@@ -1229,11 +1130,9 @@ object MainForm: TMainForm
     Left = 112
     Top = 296
     object PingJabberServer: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
       ImageIndex = 267
     end
     object UnstableJabberStatus: TMenuItem
-      Caption = '#'#1053#1077#1089#1090#1072#1073#1080#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
       ImageIndex = 230
     end
   end
@@ -1258,48 +1157,40 @@ object MainForm: TMainForm
     Left = 160
     Top = 144
     object TopMainButtonONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102
       ImageIndex = 230
       OnClick = TopMainButtonONMenuClick
     end
     object TopOnlyOnlineONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1086#1092#1092#1083#1072#1081#1085' '#1082#1086#1085#1090#1072#1082#1090#1099
       Checked = True
       ImageIndex = 140
       OnClick = TopOnlyOnlineONMenuClick
     end
     object TopGroupONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
       Checked = True
       ImageIndex = 140
       OnClick = TopGroupONMenuClick
     end
     object TopSoundsONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1047#1074#1091#1082#1080
       Checked = True
       ImageIndex = 140
       OnClick = TopSoundsONMenuClick
     end
     object TopPrivatONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080
       Checked = True
       ImageIndex = 140
       OnClick = TopPrivatONMenuClick
     end
     object TopHistoryONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       Checked = True
       ImageIndex = 140
       OnClick = TopHistoryONMenuClick
     end
     object TopSettingsONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1053#1072#1089#1090#1088#1086#1081#1082#1080
       Checked = True
       ImageIndex = 140
       OnClick = TopSettingsONMenuClick
     end
     object TopTrafficONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1058#1088#1072#1092#1080#1082
       Checked = True
       ImageIndex = 140
       OnClick = TopTrafficONMenuClick
@@ -1311,48 +1202,39 @@ object MainForm: TMainForm
     Left = 160
     Top = 176
     object MainButtonONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1043#1083#1072#1074#1085#1086#1077' '#1084#1077#1085#1102
       Checked = True
       ImageIndex = 140
       OnClick = MainButtonONMenuClick
     end
     object OnlyOnlineONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1086#1092#1092#1083#1072#1081#1085' '#1082#1086#1085#1090#1072#1082#1090#1099
       ImageIndex = 230
       OnClick = OnlyOnlineONMenuClick
     end
     object GroupONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1057#1082#1088#1099#1090#1100' '#1075#1088#1091#1087#1087#1099
       ImageIndex = 230
       OnClick = GroupONMenuClick
     end
     object SoundsONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1047#1074#1091#1082#1080
       ImageIndex = 230
       OnClick = SoundsONMenuClick
     end
     object PrivatONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1055#1088#1080#1074#1072#1090#1085#1099#1077' '#1089#1087#1080#1089#1082#1080
       ImageIndex = 230
       OnClick = PrivatONMenuClick
     end
     object HistoryONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1048#1089#1090#1086#1088#1080#1103' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
       ImageIndex = 230
       OnClick = HistoryONMenuClick
     end
     object SettingsONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 230
       OnClick = SettingsONMenuClick
     end
     object TrafficONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1058#1088#1072#1092#1080#1082
       ImageIndex = 230
       OnClick = TrafficONMenuClick
     end
     object TopPanelONMenu: TMenuItem
-      Caption = '#'#1050#1085#1086#1087#1082#1072' - '#1042#1077#1088#1093#1085#1103#1103' '#1087#1072#1085#1077#1083#1100
       Checked = True
       ImageIndex = 140
       OnClick = TopPanelONMenuClick
@@ -1393,12 +1275,10 @@ object MainForm: TMainForm
     Left = 80
     Top = 200
     object HideProfileInTray: TMenuItem
-      Caption = '#'#1057#1082#1088#1099#1090#1100' '#1074#1099#1073#1086#1088' '#1087#1088#1086#1092#1080#1083#1103
       ImageIndex = 4
       OnClick = HideProfileInTrayClick
     end
     object HideMainInTray2: TMenuItem
-      Caption = '#'#1057#1082#1088#1099#1090#1100' IMadering'
       ImageIndex = 4
       Visible = False
       OnClick = HideInTrayClick
@@ -1407,68 +1287,54 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object StatusTray2: TMenuItem
-      Caption = '#'#1057#1090#1072#1090#1091#1089
       ImageIndex = 256
       Visible = False
       object AllStatusFFC: TMenuItem
-        Caption = '#'#1043#1086#1090#1086#1074' '#1087#1086#1073#1086#1083#1090#1072#1090#1100
         ImageIndex = 262
       end
       object AllStatusEvil: TMenuItem
-        Caption = '#'#1047#1083#1086#1081
         ImageIndex = 264
       end
       object AllStatusDepres: TMenuItem
-        Caption = '#'#1044#1077#1087#1088#1077#1089#1089#1080#1103
         ImageIndex = 263
       end
       object AllStatusHome: TMenuItem
-        Caption = '#'#1044#1086#1084#1072
         ImageIndex = 265
       end
       object AllStatusWork: TMenuItem
-        Caption = '#'#1053#1072' '#1088#1072#1073#1086#1090#1077
         ImageIndex = 266
       end
       object N41: TMenuItem
         Caption = '-'
       end
       object AllStatusLunch: TMenuItem
-        Caption = '#'#1050#1091#1096#1072#1102
         ImageIndex = 261
       end
       object AllStatusAway: TMenuItem
-        Caption = '#'#1054#1090#1086#1096#1105#1083
         ImageIndex = 255
       end
       object AllStatusNA: TMenuItem
-        Caption = '#'#1053#1077#1076#1086#1089#1090#1091#1087#1077#1085
         ImageIndex = 260
       end
       object AllStatusOccupied: TMenuItem
-        Caption = '#'#1047#1072#1085#1103#1090
         ImageIndex = 258
       end
       object AllStatusDND: TMenuItem
-        Caption = '#'#1053#1077' '#1073#1077#1089#1087#1086#1082#1086#1080#1090#1100
         ImageIndex = 259
       end
       object N35: TMenuItem
         Caption = '-'
       end
       object AllStatusOnline: TMenuItem
-        Caption = '#'#1042' '#1089#1077#1090#1080
         ImageIndex = 254
       end
       object AllStatusInvisible: TMenuItem
-        Caption = '#'#1053#1077#1074#1080#1076#1080#1084#1099#1081
         ImageIndex = 257
       end
       object N32: TMenuItem
         Caption = '-'
       end
       object AllStatusOffline: TMenuItem
-        Caption = '#'#1053#1077' '#1074' '#1089#1077#1090#1080
         Default = True
         ImageIndex = 256
       end
@@ -1477,18 +1343,15 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object ShowLogTray: TMenuItem
-      Caption = '#'#1051#1086#1075' '#1089#1086#1073#1099#1090#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       ImageIndex = 245
       OnClick = LogFormMenuClick
     end
     object SettingsTray2: TMenuItem
-      Caption = '#'#1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
       Visible = False
       OnClick = OpenSettingsClick
     end
     object CheckUpdateTray2: TMenuItem
-      Caption = '#'#1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077
       ImageIndex = 6
       Visible = False
       OnClick = CheckUpdateTray1Click
@@ -1497,7 +1360,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object CloseProgramTray2: TMenuItem
-      Caption = '#'#1042#1099#1081#1090#1080' '#1080#1079' IMadering'
       ImageIndex = 3
       OnClick = CloseProgramClick
     end

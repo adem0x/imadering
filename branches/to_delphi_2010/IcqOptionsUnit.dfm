@@ -114,7 +114,7 @@ object IcqOptionsForm: TIcqOptionsForm
         Width = 428
         Height = 356
         Caption = 'AccountPage'
-        object AccountGroupBox: TGroupBox
+        object AccountGroupBox1: TGroupBox
           Left = 0
           Top = 0
           Width = 428
@@ -249,7 +249,7 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 3
           end
         end
-        object GroupBox1: TGroupBox
+        object AccountGroupBox2: TGroupBox
           Left = 0
           Top = 238
           Width = 428
@@ -3689,15 +3689,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Width = 428
         Height = 356
         Caption = 'BonusPage'
-        object CheckBox5: TCheckBox
-          Left = 16
-          Top = 377
-          Width = 425
-          Height = 17
-          Caption = 'CheckBox5'
-          Enabled = False
-          TabOrder = 0
-        end
         object CustomICQPacketGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -3710,7 +3701,7 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 0
           object SendCustomICQPacketButton: TButton
             Left = 9
             Top = 324
@@ -3802,7 +3793,6 @@ object IcqOptionsForm: TIcqOptionsForm
     Top = 380
     Width = 107
     Height = 25
-    Caption = '#'#1055#1088#1080#1084#1077#1085#1080#1090#1100
     DoubleBuffered = True
     Enabled = False
     ParentDoubleBuffered = False
@@ -3815,7 +3805,6 @@ object IcqOptionsForm: TIcqOptionsForm
     Top = 380
     Width = 137
     Height = 25
-    Caption = '#'#1054#1090#1084#1077#1085#1072
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 3
