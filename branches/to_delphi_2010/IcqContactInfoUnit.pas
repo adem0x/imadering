@@ -137,6 +137,9 @@ begin
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
+  // Другое
+  BottomCopyHTML.Caption := TopCopyHTML.Caption;
+  BottomAllCopyHTML.Caption := TopAllCopyHTML.Caption;
 end;
 
 procedure TIcqContactInfoForm.AddHTML(const ToWhere: THTMLViewer; Text: string; TextClass: string = 'cdef'; InsertBR: Boolean = False; StupidInsert: Boolean = False; ClearIt: Boolean = False);
@@ -237,32 +240,15 @@ end;
 procedure TIcqContactInfoForm.CreateSummery;
 var
   Nick, First, Last, Age, IDay, IMonth, IYear: string;
-  Email1, Email2, Email3, OCity, OState, Gender: string;
+  Email0, Email1, Email2, Email3, OCity, OState, Gender: string;
   Address, City, State, Zip, Country, OCountry: string;
   // WebAware, Auth: boolean;
   WCity, WState, WZip, WAddress, Company, Department, Position, WSite, WCountry, Occupation: string;
   Phone, Fax, Cellular, WPhone, WFax, HomePage, LastUpdateInfo: string;
   Int1, Int2, Int3, Int4, I1, I2, I3, I4, About: string;
-  Lang1, Lang2, Lang3, Marital, Sexual, Height, Relig, Smok, Hair, Children: string;
+  Lang1, Lang2, Lang3, Marital, Sexual, xHeight, Relig, Smok, Hair, Children: string;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
-
-function StrArrayToStr(StrArr: array of string): string;
-var
-  I: Integer;
-  S, Ss: string;
-begin
-  Result := EmptyStr;
-  for I := low(StrArr) to high(StrArr) do
-    begin
-      S := StrArr[I];
-      if (S > EmptyStr) and (Ss > EmptyStr) then
-        Ss := Ss + ', ' + S
-      else if (S > EmptyStr) and (Ss = EmptyStr) then
-        Ss := S;
-    end;
-  Result := Ss;
-end;
 
 begin
   // Добавляем стили
@@ -305,11 +291,17 @@ begin
             XML_Node := Root.Items.ItemNamed[RS_EmailsInfo];
             if XML_Node <> nil then
               begin
+                Email0 := URLDecode(XML_Node.Properties.Value(RS_Email0));
                 Email1 := URLDecode(XML_Node.Properties.Value(RS_Email1));
                 Email2 := URLDecode(XML_Node.Properties.Value(RS_Email2));
                 Email3 := URLDecode(XML_Node.Properties.Value(RS_Email3));
-                if IsNotNull([Email1, Email2, Email3]) then
+                if IsNotNull([Email0, Email1, Email2, Email3]) then
                   begin
+                    if Trim(Email0) <> EmptyStr then
+                      begin
+                        AddHTML(BottomHTMLViewer, EmailL + BN, 'cbold');
+                        AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email0 + '">' + Email1 + '</a>', 'cmargin', True);
+                      end;
                     if Trim(Email1) <> EmptyStr then
                       begin
                         AddHTML(BottomHTMLViewer, EmailL + BN, 'cbold');
@@ -340,11 +332,14 @@ begin
                 Country := XML_Node.Properties.Value(RS_Country);
                 // Получаем текст страны из кода
                 if Assigned(IcqOptionsForm) then
-                  Country := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(Country)];
+                  Country := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + Country + ']'];
                 if IsNotNull([Country, City]) then
                   begin
                     AddHTML(BottomHTMLViewer, InfoHomeL + BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), 'cdef', True);
+                    if Country <> EmptyStr then
+                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Icons/Flags/' + XML_Node.Properties.Value(RS_Country) + '.gif" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([Country, City]), 'cdef', True)
+                    else
+                      AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), 'cdef', True);
                   end;
                 if IsNotNull([Address, State, Zip]) then
                   begin
@@ -417,13 +412,16 @@ begin
                 OCountry := XML_Node.Properties.Value(RS_Country);
                 // Получаем текст страны из кода
                 if Assigned(IcqOptionsForm) then
-                  OCountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(OCountry)];
+                  OCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + OCountry + ']'];
                 OCity := URLDecode(XML_Node.Properties.Value(RS_City));
                 OState := URLDecode(XML_Node.Properties.Value(RS_State));
                 if IsNotNull([OCountry, OCity]) then
                   begin
                     AddHTML(BottomHTMLViewer, InfoOHomeL + BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, StrArrayToStr([OCountry, OCity]), 'cdef', True);
+                    if OCountry <> EmptyStr then
+                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Icons/Flags/' + XML_Node.Properties.Value(RS_Country) + '.gif" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([OCountry, OCity]), 'cdef', True)
+                    else
+                      AddHTML(BottomHTMLViewer, StrArrayToStr([OCountry, OCity]), 'cdef', True);
                   end;
                 if Trim(OState) <> EmptyStr then
                   begin
@@ -450,14 +448,17 @@ begin
                 Occupation := XML_Node.Properties.Value(RS_Occup);
                 // Получаем текст страны из кода
                 if Assigned(IcqOptionsForm) then
-                  WCountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(WCountry)];
+                  WCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + WCountry + ']'];
                 // Получаем текст занятия из кода
                 if Assigned(IcqOptionsForm) then
-                  Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Strings[IcqOptionsForm.OccupationCodeComboBox.Items.IndexOf(Occupation)];
+                  Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Values['[' + Occupation + ']'];
                 if IsNotNull([WCountry, WCity]) then
                   begin
                     AddHTML(BottomHTMLViewer, InfoWorkL + BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, StrArrayToStr([WCountry, WCity]), 'cdef', True);
+                    if WCountry <> EmptyStr then
+                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Icons/Flags/' + XML_Node.Properties.Value(RS_Country) + '.gif" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([WCountry, WCity]), 'cdef', True)
+                    else
+                      AddHTML(BottomHTMLViewer, StrArrayToStr([WCountry, WCity]), 'cdef', True);
                   end;
                 if IsNotNull([WAddress, WState, WZip]) then
                   begin
@@ -570,10 +571,10 @@ begin
                   begin
                     with IcqOptionsForm do
                       begin
-                        I1 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I1)];
-                        I2 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I2)];
-                        I3 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I3)];
-                        I4 := Interest1InfoComboBox.Items.Strings[InterestsCodesComboBox.Items.IndexOf(I4)];
+                        I1 := Interest1InfoComboBox.Items.Values['[' + I1 + ']'];
+                        I2 := Interest1InfoComboBox.Items.Values['[' + I2 + ']'];
+                        I3 := Interest1InfoComboBox.Items.Values['[' + I3 + ']'];
+                        I4 := Interest1InfoComboBox.Items.Values['[' + I4 + ']'];
                       end;
                   end;
                 // Формируем отображение интересов
@@ -610,7 +611,7 @@ begin
               begin
                 Marital := XML_Node.Properties.Value(RS_Marital);
                 Sexual := XML_Node.Properties.Value(RS_Sexual);
-                Height := XML_Node.Properties.Value(RS_Height);
+                xHeight := XML_Node.Properties.Value(RS_Height);
                 Relig := XML_Node.Properties.Value(RS_Relig);
                 Smok := XML_Node.Properties.Value(RS_Smok);
                 Hair := XML_Node.Properties.Value(RS_Hair);
@@ -620,15 +621,15 @@ begin
                   begin
                     with IcqOptionsForm do
                       begin
-                        Marital := PersonalMaritalInfoComboBox.Items.Strings[MaritalCodesComboBox.Items.IndexOf(Marital)];
-                        Sexual := PersonalSexInfoComboBox.Items.Strings[SexCodesComboBox.Items.IndexOf(Sexual)];
-                        Relig := PersonalReligionInfoComboBox.Items.Strings[ReligionCodesComboBox.Items.IndexOf(Relig)];
-                        Smok := PersonalSmokInfoComboBox.Items.Strings[SmokCodesComboBox.Items.IndexOf(Smok)];
-                        Hair := PersonalHairColourInfoComboBox.Items.Strings[HairColourCodesComboBox.Items.IndexOf(Hair)];
+                        Marital := PersonalMaritalInfoComboBox.Items.Values['[' + Marital + ']'];
+                        Sexual := PersonalSexInfoComboBox.Items.Values['[' + Sexual + ']'];
+                        Relig := PersonalReligionInfoComboBox.Items.Values['[' + Relig + ']'];
+                        Smok := PersonalSmokInfoComboBox.Items.Values['[' + Smok + ']'];
+                        Hair := PersonalHairColourInfoComboBox.Items.Values['[' + Hair + ']'];
                       end;
                   end;
                 // Формируем отображение
-                if IsNotNull([Marital, Sexual, Height, Relig, Smok, Hair, Children]) then
+                if IsNotNull([Marital, Sexual, xHeight, Relig, Smok, Hair, Children]) then
                   begin
                     if Trim(Marital) <> EmptyStr then
                       begin
@@ -640,28 +641,13 @@ begin
                         AddHTML(BottomHTMLViewer, InfoSexualL + BN, 'cbold');
                         AddHTML(BottomHTMLViewer, Sexual, 'cdef', True);
                       end;
-                    if Height <> '0' then
+                    if xHeight <> '0' then
                       begin
-                        case StrToInt(Height) of
-                          140: Height := '140 cm';
-                          145: Height := '141-145 cm';
-                          150: Height := '146-150 cm';
-                          155: Height := '151-155 cm';
-                          160: Height := '156-160 cm';
-                          165: Height := '161-165 cm';
-                          170: Height := '166-170 cm';
-                          175: Height := '171-175 cm';
-                          180: Height := '176-180 cm';
-                          185: Height := '181-185 cm';
-                          190: Height := '186-190 cm';
-                          195: Height := '191-195 cm';
-                          200: Height := '196-200 cm';
-                          205: Height := '201-205 cm';
-                          210: Height := '206-210 cm';
-                          220: Height := '220 cm';
-                        end;
+                        if Assigned(IcqOptionsForm) then
+                          with IcqOptionsForm do
+                            xHeight := PersonalHeightInfoComboBox.Items.Values['[' + xHeight + ']'];
                         AddHTML(BottomHTMLViewer, InfoHeightL + BN, 'cbold');
-                        AddHTML(BottomHTMLViewer, Height, 'cdef', True);
+                        AddHTML(BottomHTMLViewer, xHeight, 'cdef', True);
                       end;
                     if Trim(Relig) <> EmptyStr then
                       begin
@@ -680,23 +666,14 @@ begin
                       end;
                     if Children <> '0' then
                       begin
-                        case StrToInt(Children) of
-                          1: Children := '1';
-                          2: Children := '2';
-                          3: Children := '3';
-                          4: Children := '4';
-                          5: Children := '5';
-                          6: Children := '6';
-                          7: Children := '7';
-                          8: Children := '8';
-                          9: Children := InfoChildrenL2;
-                          255: Children := InfoChildrenL3;
-                        end;
+                        if Assigned(IcqOptionsForm) then
+                          with IcqOptionsForm do
+                            Children := PersonalChildrenInfoComboBox.Items.Values['[' + Children + ']'];
                         AddHTML(BottomHTMLViewer, InfoChildrenL1 + BN, 'cbold');
                         AddHTML(BottomHTMLViewer, Children, 'cdef', True);
                       end;
                     // Вставляем разделитель
-                    if (IsNotNull([Marital, Sexual, Relig, Smok, Hair])) or (Height <> '0') or (Children <> '0') then
+                    if (IsNotNull([Marital, Sexual, Relig, Smok, Hair])) or (xHeight <> '0') or (Children <> '0') then
                       AddHTML(BottomHTMLViewer, '<hr>', EmptyStr, False, True);
                   end;
               end;
@@ -712,9 +689,9 @@ begin
                   begin
                     with IcqOptionsForm do
                       begin
-                        Lang1 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang1)];
-                        Lang2 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang2)];
-                        Lang3 := Lang1InfoComboBox.Items.Strings[LangsCodeComboBox.Items.IndexOf(Lang3)];
+                        Lang1 := Lang1InfoComboBox.Items.Values['[' + Lang1 + ']'];
+                        Lang2 := Lang1InfoComboBox.Items.Values['[' + Lang2 + ']'];
+                        Lang3 := Lang1InfoComboBox.Items.Values['[' + Lang3 + ']'];
                       end;
                   end;
                 // Формируем отображение языков

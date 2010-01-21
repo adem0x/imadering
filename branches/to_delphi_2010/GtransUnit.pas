@@ -244,8 +244,8 @@ begin
       Exit;
     end;
   // Активируем режим перевода для этого контакта
-  YouLangCode := IsolateTextString(YourLangComboBox.Items.Names[YourLangComboBox.ItemIndex], '[', ']');
-  ToLangCode := IsolateTextString(ToLangComboBox.Items.Names[ToLangComboBox.ItemIndex], '[', ']');
+  YouLangCode := IsolateTextString(YourLangComboBox.Text, '[', ']');
+  ToLangCode := IsolateTextString(ToLangComboBox.Text, '[', ']');
   // Запоминаем параметры перевода для этого контакта
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);

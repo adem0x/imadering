@@ -541,7 +541,7 @@ begin
                               begin
                                 XML_Node := Root.Items.ItemNamed[ChangeCP(URLEncode(Categories[C].GroupCaption + Categories[C].GroupType + Categories[C].GroupId))];
                                 if XML_Node <> nil then
-                                  Categories[C].Collapsed := XML_Node.BoolValue;
+                                  Categories[C].Collapsed := XML_Node.Properties.BoolValue('c');
                               end;
                           end;
                       end;

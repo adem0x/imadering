@@ -22,7 +22,8 @@ uses
   Dialogs,
   ButtonGroup,
   StdCtrls,
-  VarsUnit;
+  VarsUnit,
+  JvSimpleXml;
 
 type
   TIcqXStatusForm = class(TForm)
@@ -36,6 +37,7 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
+    procedure XButtonGroupButtonClicked(Sender: TObject; Index: Integer);
 
   private
     { Private declarations }
@@ -56,7 +58,12 @@ implementation
 uses
   MainUnit,
   IcqProtoUnit,
-  UtilsUnit;
+  UtilsUnit,
+  OverbyteIcsUrl,
+  StrUtils;
+
+resourcestring
+  RS_IcqXStatus = 'icq_x_status_form';
 
 procedure TIcqXStatusForm.FormCreate(Sender: TObject);
 begin
@@ -65,8 +72,8 @@ begin
   // Подсвечиваем текущий дополнительный статус и состояния контролов
   XButtonGroup.ItemIndex := ICQ_X_CurrentStatus;
   Xindex := ICQ_X_CurrentStatus;
-  XtextMemo.Text := ICQ_X_CurrentStatus_Text;
   BirthDayCheckBox.Checked := ICQ_BirthDay_Enabled;
+  XButtonGroupButtonClicked(nil, ICQ_X_CurrentStatus);
 end;
 
 procedure TIcqXStatusForm.FormDeactivate(Sender: TObject);
@@ -77,17 +84,57 @@ end;
 
 procedure TIcqXStatusForm.TranslateForm;
 begin
-  // Переводим интерфейс окна на другой язык
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CancelButton.Caption := S_Cancel;
+end;
 
+procedure TIcqXStatusForm.XButtonGroupButtonClicked(Sender: TObject; Index: Integer);
+var
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
+begin
+  // Подгружаем подписи к статусам
+  XtextMemo.Lines.Clear;
+  // Инициализируем XML
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
+      begin
+        // Загружаем настройки
+        if FileExists(ProfilePath + SettingsFileName) then
+          begin
+            LoadFromFile(ProfilePath + SettingsFileName);
+            if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[RS_IcqXStatus];
+                if XML_Node <> nil then
+                  begin
+                    Sub_Node := XML_Node.Items.ItemNamed['x' + IntToStr(Index)];
+                    if Sub_Node <> nil then
+                      XtextMemo.Lines.Text := URLDecode(Sub_Node.Value);
+                  end;
+              end;
+          end;
+      end;
+  finally
+    JvXML.Free;
+  end;
 end;
 
 procedure TIcqXStatusForm.OKButtonClick(Sender: TObject);
+var
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Присваиваем переменным протокола выбранный статус
   ICQ_X_CurrentStatus := XButtonGroup.ItemIndex;
   ICQ_X_CurrentStatus_Cap := XButtonGroup.Items[XButtonGroup.ItemIndex].Hint;
   ICQ_X_CurrentStatus_Code := XButtonGroup.Items[XButtonGroup.ItemIndex].Caption;
-  ICQ_X_CurrentStatus_Text := XtextMemo.Text;
+  ICQ_X_CurrentStatus_Text := ReplaceStr(XtextMemo.Text, #13#10, ' ');
   // Ставим иконку доп. статуса в меню icq
   MainForm.ICQXStatus.ImageIndex := XButtonGroup.Items[XButtonGroup.ItemIndex].ImageIndex;
   // Отправляем пакеты с инфой о новом статусе
@@ -101,7 +148,33 @@ begin
     ICQ_BirthDay_Enabled := False;
   SendFLAP('2', ICQ_CreateShortStatusPkt);
   // Сохраняем настройки доп. статуса
-  //
+  // Инициализируем XML
+  JvXML_Create(JvXML);
+  try
+   with JvXML do
+      begin
+        if FileExists(ProfilePath + SettingsFileName) then
+          LoadFromFile(ProfilePath + SettingsFileName);
+        if Root <> nil then
+          begin
+            // Очищаем раздел формы если он есть
+            XML_Node := Root.Items.ItemNamed[RS_IcqXStatus];
+            if XML_Node = nil then
+              XML_Node := Root.Items.Add(RS_IcqXStatus);
+            Sub_Node := XML_Node.Items.ItemNamed['x' + IntToStr(XButtonGroup.ItemIndex)];
+            if Sub_Node <> nil then
+              Sub_Node.Clear
+            else
+              Sub_Node := XML_Node.Items.Add('x' + IntToStr(XButtonGroup.ItemIndex));
+            // Сохраняем текст доп. статсов
+            Sub_Node.Value := URLEncode(XtextMemo.Text);
+          end;
+        // Записываем сам файл
+        SaveToFile(ProfilePath + SettingsFileName);
+      end;
+  finally
+    JvXML.Free;
+  end;
   // Закрываем окно
   Close;
 end;

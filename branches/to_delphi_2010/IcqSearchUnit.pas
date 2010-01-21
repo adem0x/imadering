@@ -145,17 +145,21 @@ uses
   IcqAddContactUnit,
   IcqContactInfoUnit,
   IcqOptionsUnit,
-  RosterUnit;
+  RosterUnit,
+  JvSimpleXml;
 
 {$R *.dfm}
+
+resourcestring
+  RS_IcqSearchF = 'icq_search_form';
 
 procedure TIcqSearchForm.GlobalSearch;
 var
   CountryInd, LangInd, MaritalInd: Integer;
 begin
   // Ищем новым способом
-  if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, KeyWordEdit.Text, GenderComboBox.Text, AgeComboBox.Text,
-    MaritalComboBox.Text, CountryComboBox.Text, LangComboBox.Text]) then
+  if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, KeyWordEdit.Text, GenderComboBox.Text, AgeComboBox.Text, MaritalComboBox.Text, CountryComboBox.Text, LangComboBox.Text])
+    then
     begin
       // Управляем счётчиком страниц
       if SPageInc then
@@ -169,25 +173,22 @@ begin
       CountryInd := -1;
       LangInd := -1;
       MaritalInd := -1;
-      if Assigned(IcqOptionsForm) then
+      with IcqOptionsForm do
         begin
-          with IcqOptionsForm do
-            begin
-              // Страна
-              if CountryComboBox.ItemIndex > 0 then
-                CountryInd := StrToInt(CountryCodesComboBox.Items.Strings[CountryInfoComboBox.Items.IndexOf(CountryComboBox.Text)]);
-              // Язык
-              if LangComboBox.ItemIndex > 0 then
-                LangInd := StrToInt(LangsCodeComboBox.Items.Strings[Lang1InfoComboBox.Items.IndexOf(LangComboBox.Text)]);
-              // Брак
-              if MaritalComboBox.ItemIndex > 0 then
-                MaritalInd := StrToInt(MaritalCodesComboBox.Items.Strings[PersonalMaritalInfoComboBox.Items.IndexOf(MaritalComboBox.Text)]);
-            end;
+          // Страна
+          if CountryComboBox.ItemIndex > 0 then
+            CountryInd := StrToInt(IsolateTextString(CountryComboBox.Text, '[', ']'));
+          // Язык
+          if LangComboBox.ItemIndex > 0 then
+            LangInd := StrToInt(IsolateTextString(LangComboBox.Text, '[', ']'));
+          // Брак
+          if MaritalComboBox.ItemIndex > 0 then
+            MaritalInd := StrToInt(IsolateTextString(MaritalComboBox.Text, '[', ']'));
         end;
       // Начинаем поиск
       StatusPanel.Caption := SearchInfoGoL;
-      ICQ_SearchNewBase(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, KeyWordEdit.Text, GenderComboBox.ItemIndex,
-        AgeComboBox.ItemIndex, MaritalInd, CountryInd, LangInd, SPage, OnlyOnlineCheckBox.Checked);
+      ICQ_SearchNewBase(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, KeyWordEdit.Text, GenderComboBox.ItemIndex, AgeComboBox.ItemIndex, MaritalInd, CountryInd, LangInd, SPage,
+        OnlyOnlineCheckBox.Checked);
     end;
 end;
 
@@ -251,13 +252,10 @@ end;
 procedure TIcqSearchForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
-  //CreateLang(Self);
+  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
-  // Другое
-  QMessageEdit.Text := S_SearchQMess;
-
-  {// Присваиваем списки комбобоксам
+  // Присваиваем списки комбобоксам
   if Assigned(IcqOptionsForm) then
     begin
       with IcqOptionsForm do
@@ -271,8 +269,13 @@ begin
           // Присваиваем Язык
           LangComboBox.Items.Assign(Lang1InfoComboBox.Items);
           SetCustomWidthComboBox(LangComboBox);
+          // Присваиваем Пол
+          GenderComboBox.Items.Assign(PersonalGenderInfoComboBox.Items);
+          SetCustomWidthComboBox(GenderComboBox);
         end;
-    end;}
+    end;
+  // Другое
+  QMessageEdit.Text := S_SearchQMess;
 end;
 
 procedure TIcqSearchForm.UINSearchCheckBoxClick(Sender: TObject);
@@ -443,28 +446,38 @@ begin
 end;
 
 procedure TIcqSearchForm.FormCreate(Sender: TObject);
+var
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-
-    {with XmlFile do
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
       begin
         // Загружаем настройки
         if FileExists(ProfilePath + SettingsFileName) then
           begin
             LoadFromFile(ProfilePath + SettingsFileName);
-            // Загружаем позицию окна
-            if OpenKey('settings\forms\icqsearchform\position') then
-              try
-                Top := ReadInteger('top');
-                Left := ReadInteger('left');
-                // Определяем не находится ли окно за пределами экрана
-                MainForm.FormSetInWorkArea(Self);
-              finally
-                CloseKey;
+            if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[RS_IcqSearchF];
+                if XML_Node <> nil then
+                  begin
+                    // Загружаем позицию окна
+                    Top := XML_Node.Properties.IntValue('t');
+                    Left := XML_Node.Properties.IntValue('l');
+                    Height := XML_Node.Properties.IntValue('h');
+                    Width := XML_Node.Properties.IntValue('w');
+                    // Определяем не находится ли окно за пределами экрана
+                    MainForm.FormSetInWorkArea(Self);
+                  end;
               end;
           end;
-      end; }
-
+      end;
+  finally
+    JvXML.Free;
+  end;
   // Переводим форму на другие языки
   TranslateForm;
   // Устанавливаем иконки на форму и кнопки
@@ -481,27 +494,40 @@ begin
 end;
 
 procedure TIcqSearchForm.FormDestroy(Sender: TObject);
+var
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
   ForceDirectories(ProfilePath);
   // Сохраняем настройки положения окна в xml
-
-    {with XmlFile do
+  // Инициализируем XML
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
       begin
         if FileExists(ProfilePath + SettingsFileName) then
           LoadFromFile(ProfilePath + SettingsFileName);
-        // Сохраняем позицию окна
-        if OpenKey('settings\forms\icqsearchform\position', True) then
-          try
-            WriteInteger('top', Top);
-            WriteInteger('left', Left);
-          finally
-            CloseKey;
+        if Root <> nil then
+          begin
+            // Очищаем раздел формы если он есть
+            XML_Node := Root.Items.ItemNamed[RS_IcqSearchF];
+            if XML_Node <> nil then
+              XML_Node.Clear
+            else
+              XML_Node := Root.Items.Add(RS_IcqSearchF);
+            // Сохраняем позицию окна
+            XML_Node.Properties.Add('t', Top);
+            XML_Node.Properties.Add('l', Left);
+            XML_Node.Properties.Add('h', Height);
+            XML_Node.Properties.Add('w', Width);
+            // Записываем сам файл
+            SaveToFile(ProfilePath + SettingsFileName);
           end;
-        // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
-      end;}
-
+      end;
+  finally
+    JvXML.Free;
+  end;
 end;
 
 procedure TIcqSearchForm.GlobalSearchCheckBoxClick(Sender: TObject);
@@ -587,8 +613,8 @@ begin
 end;
 
 procedure TIcqSearchForm.AddContactInCLSMClick(Sender: TObject);
-{var
-  FrmAddCnt: TIcqAddContactForm;}
+{ var
+  FrmAddCnt: TIcqAddContactForm; }
 begin
   // Создаём окно добавления контакта в КЛ
   { FrmAddCnt := TIcqAddContactForm.Create(Self);
@@ -720,25 +746,25 @@ procedure TIcqSearchForm.SearchResultPopupMenuPopup(Sender: TObject);
 begin
   // Блокируем нужные пункты меню
   if SearchResultJvListView.Selected <> nil then
-  begin
-    ICQStatusCheckSM.Enabled := true;
-    AccountNameCopySM.Enabled := true;
-    SendMessageSM.Enabled := true;
-    ContactInfoSM.Enabled := true;
-    AddContactInCLSM.Enabled := true;
-  end
+    begin
+      ICQStatusCheckSM.Enabled := True;
+      AccountNameCopySM.Enabled := True;
+      SendMessageSM.Enabled := True;
+      ContactInfoSM.Enabled := True;
+      AddContactInCLSM.Enabled := True;
+    end
   else
-  begin
-    ICQStatusCheckSM.Enabled := false;
-    AccountNameCopySM.Enabled := false;
-    SendMessageSM.Enabled := false;
-    ContactInfoSM.Enabled := false;
-    AddContactInCLSM.Enabled := false;
-  end;
+    begin
+      ICQStatusCheckSM.Enabled := False;
+      AccountNameCopySM.Enabled := False;
+      SendMessageSM.Enabled := False;
+      ContactInfoSM.Enabled := False;
+      AddContactInCLSM.Enabled := False;
+    end;
   if SearchResultJvListView.Items.Count > 0 then
-    SaveSM.Enabled := true
+    SaveSM.Enabled := True
   else
-    SaveSM.Enabled := false;
+    SaveSM.Enabled := False;
 end;
 
 procedure TIcqSearchForm.ResultClearSpeedButtonClick(Sender: TObject);

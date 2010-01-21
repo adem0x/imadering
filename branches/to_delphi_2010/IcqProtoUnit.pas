@@ -1726,8 +1726,8 @@ begin
                 SubItems.Add(ALast);
                 case AGender of
                   0: Gend := EmptyStr;
-                  1: Gend := GenderComboBox.Items.Strings[1];
-                  2: Gend := GenderComboBox.Items.Strings[2];
+                  1: Gend := Parse(' ', GenderComboBox.Items.Strings[1], 2);
+                  2: Gend := Parse(' ', GenderComboBox.Items.Strings[2], 2);
                 end;
                 if (Gend <> EmptyStr) and (AAge <> '0') then
                   Gend := Gend + ' - ' + AAge
@@ -2367,6 +2367,7 @@ begin
                       XML_Node.Properties.Add(RS_Year, IYear);
                       //
                       XML_Node := Root.Items.Add(RS_EmailsInfo);
+                      XML_Node.Properties.Add(RS_Email0, URLEncode(Email));
                       XML_Node.Properties.Add(RS_Email1, URLEncode(Email1));
                       XML_Node.Properties.Add(RS_Email2, URLEncode(Email2));
                       XML_Node.Properties.Add(RS_Email3, URLEncode(Email3));
@@ -2405,10 +2406,16 @@ begin
               begin
                 if UIN = ICQ_LoginUIN then
                   begin
-                    IcqOptionsForm.NoAutoAuthRadioButton.Checked := Auth;
-                    if not IcqOptionsForm.NoAutoAuthRadioButton.Checked then
-                      IcqOptionsForm.YesAutoAuthRadioButton.Checked := True;
-                    IcqOptionsForm.ShowWebAwareCheckBox.Checked := WebAware;
+                    with IcqOptionsForm do
+                      begin
+                        // Выстявляем значения приватности из пакета своей инфы
+                        NoAutoAuthRadioButton.Checked := Auth;
+                        if not NoAutoAuthRadioButton.Checked then
+                          YesAutoAuthRadioButton.Checked := True;
+                        ShowWebAwareCheckBox.Checked := WebAware;
+                        // Деактивируем кнопку
+                        ApplyButton.Enabled := false;
+                      end;
                   end;
               end;
             // Активируем статус Вебаваре если он включён
@@ -2425,9 +2432,9 @@ begin
           begin
             // Получаем текст страны из кода
             if Assigned(IcqOptionsForm) then
-              ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Strings[IcqOptionsForm.CountryCodesComboBox.Items.IndexOf(IntToStr(Country))];
+              ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + IntToStr(Country) + ']'];
             // Обрабатываем результаты поиска
-            ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), Email, ACountry, City, Gender, SStatus, Auth, True);
+            ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), StrArrayToStr([Email, Email1, Email2, Email3]), ACountry, City, Gender, SStatus, Auth, True);
           end;
       end;
   end;
@@ -2439,7 +2446,7 @@ var
   Pkt, Pkt1, Pkt2, Pkt3: string;
   Online: string;
 begin
-  { 0136-0002-0001 }// Добавочный к пакету TLV "только в сети"
+  { 0136-0002-0001 } // Добавочный к пакету TLV "только в сети"
   // Формируем пакет поиска по ключевым словам
   if OnlyOn then
     Online := '013600020001'
@@ -2609,6 +2616,8 @@ var
   Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   RosterItem: TListItem;
   GtransMsg: Boolean;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   GtransMsg := False;
   // Если сообщение пустое, то выходим
@@ -2621,29 +2630,32 @@ begin
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
   // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
-
-  { with XmlFile do
-    begin
-    if FileExists(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr') then
-    begin
-    LoadFromFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr');
-    // Сохраняем позицию окна
-    if OpenKey(S_UniqGT) then
-    try
-    // Изменяем направление перевода для исходящих и входящих сообщений
-    GtransMsg := ReadBool('enable');
-    finally
-    CloseKey;
-    end;
-    end;
-    end; }
-
+  // Инициализируем XML
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
+      begin
+        if FileExists(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr') then
+          begin
+            LoadFromFile(ProfilePath + AnketaFileName + S_Icq + BN + UIN + '.usr');
+            if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[S_UniqGT];
+                if XML_Node <> nil then
+                  GtransMsg := XML_Node.BoolValue;
+              end;
+          end;
+      end;
+  finally
+    JvXML.Free;
+  end;
   if GtransMsg then
     begin
       if not Assigned(GTransForm) then
         GTransForm := TGTransForm.Create(MainForm);
       with GTransForm.GtransListView.Items.Add do
         begin
+          // Изменяем направление перевода для исходящих и входящих сообщений
           ImageIndex := 167;
           SubItems.Add(UIN);
           SubItems.Add(Msg);

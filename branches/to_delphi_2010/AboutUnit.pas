@@ -119,7 +119,7 @@ begin
                   begin
                     XML_Node := Root.Items.ItemNamed[RS_Infos].Items.ItemNamed[RS_InfoAbout];
                     if XML_Node <> nil then
-                      AboutRichEdit.Lines.Append(CheckText_RN(XML_Node.Properties.Value('c')));
+                      AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value('c'));
                   end;
                 // Загружаем список разработчиков
                 XML_Node := Root.Items.ItemNamed[RS_InfoDev];

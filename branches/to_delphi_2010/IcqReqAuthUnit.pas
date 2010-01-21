@@ -42,6 +42,7 @@ type
     Invite: Boolean;
     UpDate: Boolean;
     procedure UpDateVersion(M: string);
+    procedure TranslateForm;
   end;
 
 var
@@ -58,6 +59,14 @@ uses
   UtilsUnit,
   UpdateUnit;
 
+procedure TIcqReqAuthForm.TranslateForm;
+begin
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+end;
+
 procedure TIcqReqAuthForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Автоматически уничтожаем форму при закрытии
@@ -70,6 +79,7 @@ end;
 
 procedure TIcqReqAuthForm.FormCreate(Sender: TObject);
 begin
+  TranslateForm;
   // Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetBitmap(139, NoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, YesBitBtn.Glyph);

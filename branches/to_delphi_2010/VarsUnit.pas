@@ -97,6 +97,7 @@ resourcestring
   RS_Month = 'month';
   RS_Year = 'year';
   RS_EmailsInfo = 'emails_info';
+  RS_Email0 = 'email0';
   RS_Email1 = 'email1';
   RS_Email2 = 'email2';
   RS_Email3 = 'email3';
@@ -308,8 +309,6 @@ var
   InfoSmokL: string = 'Курение:';
   InfoHairL: string = 'Цвет волос:';
   InfoChildrenL1: string = 'Детей:';
-  InfoChildrenL2: string = 'Более, чем 8';
-  InfoChildrenL3: string = 'Нет';
   DellContactL: string = 'Контакт "%s" будет удалён. Вы уверены?';
   DellGroupL: string = 'Группа "%s" будет удалёна. Вы уверены?';
   DellYourSelfL: string = 'Удалить себя из списка контакта: %s. Вы уверены?';

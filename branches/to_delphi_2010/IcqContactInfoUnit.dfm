@@ -50,7 +50,6 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Top = 385
     Width = 121
     Height = 25
-    Caption = '#'#1047#1072#1087#1088#1086#1089#1080#1090#1100
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
@@ -122,12 +121,10 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Left = 240
     Top = 16
     object TopCopyHTML: TMenuItem
-      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 144
       OnClick = TopCopyHTMLClick
     end
     object TopAllCopyHTML: TMenuItem
-      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
       ImageIndex = 144
       OnClick = TopAllCopyHTMLClick
     end
@@ -139,12 +136,10 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Left = 240
     Top = 168
     object BottomCopyHTML: TMenuItem
-      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 144
       OnClick = BottomCopyHTMLClick
     end
     object BottomAllCopyHTML: TMenuItem
-      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074#1089#1105
       ImageIndex = 144
       OnClick = BottomAllCopyHTMLClick
     end

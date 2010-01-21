@@ -371,10 +371,6 @@ object IcqSearchForm: TIcqSearchForm
         TabOrder = 3
         TabStop = False
         OnChange = NickEditChange
-        Items.Strings = (
-          ''
-          #1046#1077#1085#1089#1082#1080#1081
-          #1052#1091#1078#1089#1082#1086#1081)
       end
       object AgeComboBox: TComboBox
         Left = 62

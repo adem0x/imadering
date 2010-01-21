@@ -159,6 +159,9 @@ begin
       DAShow(S_Errorhead, S_ProfileError, EmptyStr, 134, 2, 0);
       Exit;
     end;
+  // Нормализуем имя профиля
+  ProfileComboBox.Text := RafinePath(ProfileComboBox.Text);
+  // Запоминаем имя профиля
   Profile := ProfileComboBox.Text;
   if ProfileComboBox.Items.IndexOf(Profile) = -1 then
     ProfileComboBox.Items.Add(Profile);

@@ -2,7 +2,6 @@ object IcqXStatusForm: TIcqXStatusForm
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = ' '#1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1089#1090#1072#1090#1091#1089
   ClientHeight = 298
   ClientWidth = 223
   Color = clBtnFace
@@ -221,6 +220,7 @@ object IcqXStatusForm: TIcqXStatusForm
       end>
     ItemIndex = 0
     TabOrder = 0
+    OnButtonClicked = XButtonGroupButtonClicked
   end
   object XtextMemo: TMemo
     Left = 8
@@ -235,13 +235,12 @@ object IcqXStatusForm: TIcqXStatusForm
     Top = 242
     Width = 207
     Height = 17
-    Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1096#1072#1088#1080#1082' '#1076#1085#1103' '#1088#1086#1078#1076#1077#1085#1080#1103
     TabOrder = 2
   end
   object OKButton: TButton
-    Left = 8
+    Left = 128
     Top = 265
-    Width = 97
+    Width = 87
     Height = 25
     Caption = 'OK'
     Default = True
@@ -249,11 +248,10 @@ object IcqXStatusForm: TIcqXStatusForm
     OnClick = OKButtonClick
   end
   object CancelButton: TButton
-    Left = 111
+    Left = 8
     Top = 265
-    Width = 104
+    Width = 89
     Height = 25
-    Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 4
     OnClick = CancelButtonClick
   end

@@ -133,8 +133,26 @@ function CheckText_Hint(Msg: string): string;
 function Text2UnicodeHex(Msg: string): string;
 function UnicodeHex2Text(HexText: string): string;
 procedure JvXML_Create(var JvXML: TJvSimpleXml);
+function StrArrayToStr(StrArr: array of string): string;
 
 implementation
+
+function StrArrayToStr(StrArr: array of string): string;
+var
+  I: Integer;
+  S, Ss: string;
+begin
+  Result := EmptyStr;
+  for I := low(StrArr) to high(StrArr) do
+    begin
+      S := StrArr[I];
+      if (S > EmptyStr) and (Ss > EmptyStr) then
+        Ss := Ss + ', ' + S
+      else if (S > EmptyStr) and (Ss = EmptyStr) then
+        Ss := S;
+    end;
+  Result := Ss;
+end;
 
 procedure JvXML_Create(var JvXML: TJvSimpleXml);
 var
@@ -275,6 +293,22 @@ begin
                 end;
               Continue;
             end;
+          // Если этот компонент Категория кнопок
+          if (Xform.Components[I] is TButtonGroup) then
+            begin
+              for M := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
+                begin
+                  for II := 0 to List.Count - 1 do
+                    begin
+                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TButtonGroup).Items[M].index)) = IsolateTextString(List.Strings[II], '<', BN) then
+                        begin (Components[I] as TButtonGroup)
+                          .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                          Break;
+                        end;
+                    end;
+                end;
+              Continue;
+            end;
           // Ищем компонент в списке по имени
           for II := 0 to List.Count - 1 do
             begin
@@ -409,14 +443,19 @@ begin
   Result := SocketConnErrorInfo_1 + RN + WSocketErrorDesc(Errcode) + RN + Format(HttpSocketErrCodeL, [Errcode]) + RN + '[ ' + SocketL + BN + SName + ' ]';
 end;
 
-// На случай, если в имени контакта символы, не поддерживаемые ФС (типа *\/,..)
+// На случай, если в имени контакта символы, не поддерживаемые ФС
 function RafinePath(const Path: string): string;
 begin
   Result := Path;
   Result := ReplaceStr(Result, '*', '_');
   Result := ReplaceStr(Result, '?', '_');
   Result := ReplaceStr(Result, '/', '_');
+  Result := ReplaceStr(Result, '\', '_');
   Result := ReplaceStr(Result, '|', '_');
+  Result := ReplaceStr(Result, '<', '_');
+  Result := ReplaceStr(Result, '>', '_');
+  Result := ReplaceStr(Result, '"', '_');
+  Result := ReplaceStr(Result, ':', '_');
 end;
 
 procedure XLog(XLogData: string);
@@ -477,7 +516,7 @@ end;
 procedure CheckMessage_BR(var Msg: string);
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  Msg := Ansireplacetext(Msg, RN, '<BR>');
+  Msg := ReplaceStr(Msg, RN, '<BR>');
 end;
 
 procedure CheckMessage_GAPI(var Msg: string);
@@ -493,19 +532,19 @@ begin
     "Characters returned escaped by the google api.") }
 
   // Заменяем все коды спецсимволов в сообщении на соответствующий символ
-  Msg := Ansireplacetext(Msg, '\u0026lt;', '<');
-  Msg := Ansireplacetext(Msg, '\u0026gt;', '>');
-  Msg := Ansireplacetext(Msg, '\u0026#39;', '''');
-  Msg := Ansireplacetext(Msg, '\u003d', '=');
-  Msg := Ansireplacetext(Msg, '\u0026quot;', '"');
-  Msg := Ansireplacetext(Msg, '\u0026amp;', '&');
-  Msg := Ansireplacetext(Msg, '\\\', '');
+  Msg := ReplaceStr(Msg, '\u0026lt;', '<');
+  Msg := ReplaceStr(Msg, '\u0026gt;', '>');
+  Msg := ReplaceStr(Msg, '\u0026#39;', '''');
+  Msg := ReplaceStr(Msg, '\u003d', '=');
+  Msg := ReplaceStr(Msg, '\u0026quot;', '"');
+  Msg := ReplaceStr(Msg, '\u0026amp;', '&');
+  Msg := ReplaceStr(Msg, '\\\', '');
 end;
 
 function CheckText_RN(Msg: string): string;
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  Result := Ansireplacetext(Msg, '_r_', RN);
+  Result := ReplaceStr(Msg, '_r_', RN);
 end;
 
 function CheckText_Hint(Msg: string): string;
@@ -513,9 +552,9 @@ var
   S: string;
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  S := Ansireplacetext(Msg, '_b_', '<b>');
-  S := Ansireplacetext(S, '_d_', '</b>');
-  Result := Ansireplacetext(S, '_r_', '<br>');
+  S := ReplaceStr(Msg, '_b_', '<b>');
+  S := ReplaceStr(S, '_d_', '</b>');
+  Result := ReplaceStr(S, '_r_', '<br>');
 end;
 
 procedure Xshowform(Xform: Tform);
@@ -556,14 +595,16 @@ begin
 end;
 
 function Nameandlast(Cid, Cproto: string): string;
+const
+  NoVal = '---';
 var
   AFile, Ln, Lf, La: string;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
   Result := EmptyStr;
-  Getcitypanel := '---';
-  Getagepanel := '---';
+  GetCityPanel := NoVal;
+  GetAgePanel := NoVal;
   // Ищем файл с анкетой этого контакта
   AFile := ProfilePath + Anketafilename + Cproto + BN + Cid + '.xml';
   if FileExists(AFile) then
@@ -587,6 +628,8 @@ begin
                 XML_Node := Root.Items.ItemNamed[RS_HomeInfo];
                 if XML_Node <> nil then
                   Getcitypanel := URLDecode(XML_Node.Properties.Value(RS_City));
+                if Getcitypanel = EmptyStr then
+                  Getcitypanel := NoVal;
                 // Загружаем Возраст
                 XML_Node := Root.Items.ItemNamed[RS_AgeInfo];
                 if XML_Node <> nil then

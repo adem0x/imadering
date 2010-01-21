@@ -212,7 +212,7 @@ begin
           LoadFromFile(ProfilePath + SettingsFileName);
         if Root <> nil then
           begin
-            // Очищаем раздел главной формы если он есть
+            // Очищаем раздел формы если он есть
             XML_Node := Root.Items.ItemNamed[RS_CLSearchForm];
             if XML_Node <> nil then
               XML_Node.Clear

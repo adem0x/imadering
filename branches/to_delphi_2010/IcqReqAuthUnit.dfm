@@ -3,7 +3,6 @@ object IcqReqAuthForm: TIcqReqAuthForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = #1047#1072#1075#1086#1083#1086#1074#1086#1082
   ClientHeight = 350
   ClientWidth = 491
   Color = clBtnFace
@@ -22,9 +21,8 @@ object IcqReqAuthForm: TIcqReqAuthForm
   object HeadLabel: TLabel
     Left = 9
     Top = 8
-    Width = 34
+    Width = 3
     Height = 13
-    Caption = #1058#1077#1082#1089#1090
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -46,7 +44,6 @@ object IcqReqAuthForm: TIcqReqAuthForm
     Top = 317
     Width = 97
     Height = 25
-    Caption = #1044#1072
     Default = True
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -59,7 +56,6 @@ object IcqReqAuthForm: TIcqReqAuthForm
     Top = 317
     Width = 97
     Height = 25
-    Caption = #1053#1077#1090
     DoubleBuffered = True
     ModalResult = 2
     ParentDoubleBuffered = False

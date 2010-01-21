@@ -3584,8 +3584,7 @@ end;
 procedure TMainForm.OpenTestClick(Sender: TObject);
 begin
   // Место для запуска тестов
-  IcqGroupManagerForm := TIcqGroupManagerForm.Create(self);
-  xshowform(IcqGroupManagerForm);
+
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -3753,7 +3752,7 @@ begin
             with ContactList do
               begin
                 for I := 0 to Categories.Count - 1 do
-                  Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId)), Categories[I].Collapsed);
+                  Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add('c', Categories[I].Collapsed);
               end;
             // Записываем файл
             SaveToFile(ProfilePath + GroupsFileName);
