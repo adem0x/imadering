@@ -152,6 +152,8 @@ begin
     ChatForm := TChatForm.Create(MainForm);
   with ChatForm do
     begin
+      // Сохраняем набранный текст для этой вкладки
+      Save_Input_Text(InfoPanel2.Caption);
       with ChatPageToolBar do
         begin
           // Удаляем кнопку с меткой удаления (против глюка в Wine)
@@ -209,7 +211,7 @@ begin
               ChatTab.Caption := RosterItem.SubItems[0];
               ChatTab.HelpKeyword := RosterItem.Caption;
               ChatTab.ShowHint := True;
-              ChatTab.Hint := RosterItem.SubItems[34];
+              ChatTab.Hint := URLDecode(RosterItem.SubItems[34]);
               ChatTab.Style := TbsCheck;
               ChatTab.AutoSize := True;
               ChatTab.Grouped := True;
@@ -429,7 +431,7 @@ begin
                   else // Контакт
                     begin
                       // Создаём подсказку для этого контакта
-                      Items[I].SubItems[34] := ICQ_CreateHint(Items[I]);
+                      Items[I].SubItems[34] := URLEncode(ICQ_CreateHint(Items[I]));
                       if (not ICQ_Show_HideContacts) and (Items[I].SubItems[1] = '0000') then
                         goto X;
                       // Ищем группу контакта в КЛ
@@ -450,7 +452,7 @@ begin
                                           ImageIndex := S;
                                           XImageIndex := StrToInt(Items[I].SubItems[7]);
                                           CImageIndex := StrToInt(Items[I].SubItems[8]);
-                                          Hint := Items[I].SubItems[34];
+                                          Hint := URLDecode(Items[I].SubItems[34]);
                                           // Если статус в сети
                                           if (Status <> 9) and (Status <> 80) and (Status <> 214) then
                                             begin
@@ -482,7 +484,7 @@ begin
                                   XImageIndex := StrToInt(Items[I].SubItems[7]);
                                   CImageIndex := StrToInt(Items[I].SubItems[8]);
                                   ContactType := S_Icq;
-                                  Hint := Items[I].SubItems[34];
+                                  Hint := URLDecode(Items[I].SubItems[34]);
                                 end;
                               // Продолжаем сканирование Ростера
                               goto X;

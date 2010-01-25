@@ -594,7 +594,7 @@ begin
     end;
 end;
 
-function Nameandlast(Cid, Cproto: string): string;
+function NameAndLast(Cid, Cproto: string): string;
 const
   NoVal = '---';
 var
@@ -605,6 +605,8 @@ begin
   Result := EmptyStr;
   GetCityPanel := NoVal;
   GetAgePanel := NoVal;
+  GetFlagImage := EmptyStr;
+  GetGenderImage := EmptyStr;
   // Ищем файл с анкетой этого контакта
   AFile := ProfilePath + Anketafilename + Cproto + BN + Cid + '.xml';
   if FileExists(AFile) then
@@ -624,19 +626,32 @@ begin
                     Ln := URLDecode(XML_Node.Properties.Value(RS_First));
                     Lf := URLDecode(XML_Node.Properties.Value(RS_Last));
                   end;
-                // Загружаем Город
+                // Загружаем Город и Страну для флага
                 XML_Node := Root.Items.ItemNamed[RS_HomeInfo];
                 if XML_Node <> nil then
-                  Getcitypanel := URLDecode(XML_Node.Properties.Value(RS_City));
-                if Getcitypanel = EmptyStr then
-                  Getcitypanel := NoVal;
+                  begin
+                    GetCityPanel := URLDecode(XML_Node.Properties.Value(RS_City));
+                    GetFlagImage := XML_Node.Properties.Value(RS_Country);
+                  end;
+                if GetCityPanel = EmptyStr then
+                  GetCityPanel := NoVal;
                 // Загружаем Возраст
                 XML_Node := Root.Items.ItemNamed[RS_AgeInfo];
                 if XML_Node <> nil then
                   begin
                     La := XML_Node.Properties.Value(RS_Age);
                     if La <> '0' then
-                      Getagepanel := Infoagel + BN + La;
+                      GetAgePanel := Infoagel + BN + La;
+                  end;
+                // Загружаем иконку пола
+                XML_Node := Root.Items.ItemNamed[RS_PerInfo];
+                if XML_Node <> nil then
+                  begin
+                    GetGenderImage := XML_Node.Properties.Value(RS_Gender);
+                    case GetGenderImage[1] of
+                      '1': GetGenderImage := 'girl';
+                      '2': GetGenderImage := 'boy';
+                    end;
                   end;
               end;
           end;

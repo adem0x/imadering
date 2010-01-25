@@ -375,12 +375,12 @@ begin
                 if Gender = '1' then
                   begin
                     AddHTML(BottomHTMLViewer, InfoGenderL + BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, InfoGender1L, 'cdef', True);
+                    AddHTML(BottomHTMLViewer, InfoGender1L + ' <IMG NAME=i SRC="./Icons/' + CurrentIcons + '/girl.gif" ALIGN=ABSMIDDLE BORDER=0>', 'cdef', True);
                   end
                 else if Gender = '2' then
                   begin
                     AddHTML(BottomHTMLViewer, InfoGenderL + BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, InfoGender2L, 'cdef', True);
+                    AddHTML(BottomHTMLViewer, InfoGender2L + ' <IMG NAME=i SRC="./Icons/' + CurrentIcons + '/boy.gif" ALIGN=ABSMIDDLE BORDER=0>', 'cdef', True);
                   end;
               end;
             // Дата рождения

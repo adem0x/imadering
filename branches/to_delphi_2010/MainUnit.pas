@@ -420,6 +420,7 @@ type
     procedure CloseProgramClick(Sender: TObject);
     procedure PingICQServerClick(Sender: TObject);
     procedure JvTimerListEvents8Timer(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
 
   private
     { Private declarations }
@@ -4389,6 +4390,61 @@ begin
   if Assigned(SmilesForm) then
     if SmilesForm.Visible then
       SmilesForm.Hide;
+end;
+
+procedure TMainForm.FormKeyPress(Sender: TObject; var Key: Char);
+label
+  X,
+  Y,
+  Z;
+var
+  I, Ii: Integer;
+  Capt: string;
+begin
+  // Делаем поиск по списку контактов
+  if PKeySearch <> Key then
+    begin
+      CurGroup := 0;
+      CurItem := 0;
+    end;
+  // Запоминаем клавишу
+  PKeySearch := Key;
+  xlog(PKeySearch);
+Z :;
+  with ContactList do
+    begin
+      for I := CurGroup to Categories.Count - 1 do
+        begin
+          for Ii := CurItem to Categories[I].Items.Count - 1 do
+            begin
+              Capt := Categories[I].Items[Ii].Caption[1];
+              if UpperCase(Capt, LoUserLocale) = UpperCase(Key, LoUserLocale) then
+                begin
+                  if Categories[I].Collapsed then
+                    Categories[I].Collapsed := False;
+                  Categories[I].Items.Items[Ii].ScrollIntoView;
+                  SelectedItem := Categories.Items[I].Items.Items[Ii];
+                  CurItem := Ii + 1;
+                  goto X;
+                end;
+            end;
+          CurItem := 0;
+          goto Y;
+        end;
+      FocusedItem := nil;
+      SelectedItem := nil;
+      CurGroup := 0;
+      CurItem := 0;
+      Exit;
+    X :;
+      Exit;
+    Y :;
+      CurGroup := CurGroup + 1;
+      if CurGroup > Categories.Count then
+        Exit
+      else
+        goto Z;
+    end;
 end;
 
 procedure TMainForm.GrandAuthContactClick(Sender: TObject);

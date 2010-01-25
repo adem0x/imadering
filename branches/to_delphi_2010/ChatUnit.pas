@@ -121,6 +121,9 @@ type
     InfoPanel1: TPanel;
     InfoPanel3: TPanel;
     UniqToolButton: TToolButton;
+    FlagImage: TImage;
+    ChatHTMLQTextTwitter: TMenuItem;
+    GenderImage: TImage;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -182,6 +185,7 @@ type
     procedure InfoPanel1Click(Sender: TObject);
     procedure InfoPanel2Click(Sender: TObject);
     procedure GtransSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ChatHTMLQTextTwitterClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -205,6 +209,7 @@ type
     function AddMessInActiveChat(CNick, CPopMsg, CId, CMsgD, CMess: string): Boolean;
     procedure CreateNewChat(CButton: TToolButton);
     procedure RemoveChatPageButton(ChatButton: TToolButton);
+    procedure Save_Input_Text(S_UIN: string);
   end;
 
 var
@@ -227,7 +232,8 @@ uses
   FileTransferUnit,
   GtransUnit,
   MraProtoUnit,
-  UniqUnit;
+  UniqUnit,
+  OverbyteIcsUrl;
 
 resourcestring
   RS_ChatForm = 'chat_form';
@@ -239,7 +245,7 @@ resourcestring
 
 procedure TChatForm.CreateNewChat(CButton: TToolButton);
 var
-  UIN, HistoryFile, Doc, HistoryText: string;
+  UIN, HistoryFile, Doc, HistoryText, ImageFile: string;
   RosterItem: TListItem;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
@@ -257,10 +263,11 @@ begin
           CButton.Caption := SubItems[0];
           CButton.Tag := StrToInt(SubItems[6]);
           CButton.ImageIndex := CButton.Tag;
-          CButton.Hint := SubItems[34];
+          CButton.Hint := URLDecode(SubItems[34]);
           UserAvatarHash := Hex2Text(SubItems[29]);
           UserType := SubItems[3];
-          InputRichEdit.Text := SubItems[14];
+          // Вставляем ранее набранный текст в поле набора
+          InputRichEdit.Text := URLDecode(SubItems[14]);
           // Загружаем файл истории сообщений
           if UserType = S_Icq then
             HistoryFile := ProfilePath + HistoryFileName + UserType + BN + ICQ_LoginUIN + BN + UIN + '.htm'
@@ -311,6 +318,18 @@ begin
           // Ставим город и возраст в информационное поле
           InfoPanel3.Caption := GetCityPanel;
           InfoPanel4.Caption := GetAgePanel;
+          // Ставим флаг страны
+          ImageFile := MyPath + 'Icons\Flags\' + GetFlagImage + '.gif';
+          if FileExists(ImageFile) then
+            FlagImage.Picture.LoadFromFile(ImageFile)
+          else
+            FlagImage.Picture.Assign(nil);
+          // Ставим иконку пола
+          ImageFile := MyPath + 'Icons\' + CurrentIcons + '\' + GetGenderImage + '.gif';
+          if FileExists(ImageFile) then
+            GenderImage.Picture.LoadFromFile(ImageFile)
+          else
+            GenderImage.Picture.Assign(nil);
           // Ставим клиент в информационное поле
           if SubItems[32] <> EmptyStr then
             begin
@@ -318,7 +337,10 @@ begin
               NotifyPanel.Hint := SubItems[32];
             end
           else
-            NotifyPanel.Caption := '...';
+            begin
+              NotifyPanel.Caption := '...';
+              NotifyPanel.Font.Color := ClWindowText;
+            end;
           // Выводим текст доп. статуса и иконку доп статуса
           if SubItems[31] <> EmptyStr then
             begin
@@ -326,7 +348,7 @@ begin
               // Если есть и иконка доп. статуса
               if SubItems[7] <> '-1' then
                 Doc := Doc + '<IMG NAME=x SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
-              Doc := Doc + '<span class=d>' + SubItems[31] + '</span><br><br>';
+              Doc := Doc + '<span class=d>' + URLDecode(SubItems[31]) + '</span><br><br>';
               HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
               // Преобразуем и подгружаем иконку доп. статуса
               if SubItems[7] > '-1' then
@@ -464,7 +486,7 @@ begin
   if RosterItem <> nil then
     begin
       if RosterItem.SubItems[15] <> EmptyStr then
-        InputRichEdit.Lines.Add('> ' + RosterItem.SubItems[15]);
+        InputRichEdit.Lines.Add('> ' + URLDecode(RosterItem.SubItems[15]));
     end;
 end;
 
@@ -700,6 +722,12 @@ begin
     InputRichEdit.SetFocus;
 end;
 
+procedure TChatForm.ChatHTMLQTextTwitterClick(Sender: TObject);
+begin
+  // Цетируем выделенный текст в twitter
+  ShowMessage(S_DevelMess);
+end;
+
 procedure TChatForm.CopyAllMemoClick(Sender: TObject);
 begin
   // Копируем весь текст из поля ввода в буфер обмена
@@ -842,6 +870,19 @@ begin
     TabMenuToolButton := (Sender as TToolButton);
 end;
 
+procedure TChatForm.Save_Input_Text(S_UIN: string);
+var
+  RosterItem: TListItem;
+begin
+  // Сохраняем набранный текст для этой вкладки
+  if S_UIN <> EmptyStr then
+    begin
+      RosterItem := RosterForm.ReqRosterItem(S_UIN);
+      if RosterItem <> nil then
+        RosterItem.SubItems[14] := URLEncode(InputRichEdit.Text);
+    end;
+end;
+
 procedure TChatForm.ToolButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Определяем какой клавишей был выполнен клик по закладке
@@ -849,7 +890,12 @@ begin
     begin
       case Button of
         MbLeft: // Применяем параметры чата с этим контактом
-          CreateNewChat((Sender as TToolButton));
+          begin
+            // Сохраняем набранный текст для этой вкладки
+            Save_Input_Text(InfoPanel2.Caption);
+            // Открываем новый чат
+            CreateNewChat((Sender as TToolButton));
+          end;
         MbMiddle: // Закрываем эту закладку
           if (Sender as TToolButton).Down then
             CloseTabBitBtnClick(nil)
@@ -1188,11 +1234,13 @@ begin
     begin
       ChatHTMLTextCopy.Enabled := False;
       ChatHTMLQText.Enabled := False;
+      ChatHTMLQTextTwitter.Enabled := False;
     end
   else
     begin
       ChatHTMLTextCopy.Enabled := True;
       ChatHTMLQText.Enabled := True;
+      ChatHTMLQTextTwitter.Enabled := True;
     end;
 end;
 
@@ -1480,12 +1528,12 @@ begin
     InputRichEdit.SelStart := InputRichEdit.GetTextLen;
   // Если зажата клавиша контрл и нажата клавиша интер и не нажата кнопка отправки по интер, то отправляем сообщение
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 13) and (not EnterKeyToolButton.Down) then
-  begin
-    // Переносим каретку в самый конец текста
-    InputRichEdit.SelStart := InputRichEdit.GetTextLen;
-    // Отправляем сообщение
-    SendMessageBitBtnClick(Self);
-  end;
+    begin
+      // Переносим каретку в самый конец текста
+      InputRichEdit.SelStart := InputRichEdit.GetTextLen;
+      // Отправляем сообщение
+      SendMessageBitBtnClick(Self);
+    end;
   // Если зажата клавиша контрл и нажата клавиша "s", то открываем окно смайлов
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 83) then
     SmiliesSpeedButtonClick(Self);

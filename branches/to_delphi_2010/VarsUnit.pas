@@ -149,6 +149,9 @@ var
   CompresHistoryProcess: Boolean = False;
   FloatingFrm: TFloatingForm;
   LastClick: Tdatetime;
+  PKeySearch: string;
+  CurGroup: integer;
+  CurItem: integer;
 
   // Статистика трафика
   TrafSend: Real;
@@ -200,6 +203,8 @@ var
   ChatFontSize: string = '9';
   GetCityPanel: string;
   GetAgePanel: string;
+  GetFlagImage: string;
+  GetGenderImage: string;
 
   // Переменные для языка
   S_RestoreFromTray: string;

@@ -535,7 +535,7 @@ begin
                           // Дата сообщения
                           MsgD := Nick + ' [' + DateTimeChatMess + ']';
                           // Записываем историю в этот контакт если он уже найден в списке контактов
-                          SubItems[15] := PopMsg;
+                          SubItems[15] := URLEncode(PopMsg);
                           SubItems[17] := 'X';
                           SubItems[35] := '0';
                           // Добавляем историю в эту запись
@@ -572,7 +572,7 @@ begin
                           SubItems[2] := 'none';
                           SubItems[3] := S_Jabber;
                           SubItems[6] := '214';
-                          SubItems[15] := PopMsg;
+                          SubItems[15] := URLEncode(PopMsg);
                           SubItems[17] := 'X';
                           SubItems[35] := '0';
                           // Добавляем историю в эту запись

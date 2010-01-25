@@ -758,6 +758,19 @@ object ChatForm: TChatForm
         Align = alBottom
         BevelOuter = bvLowered
         TabOrder = 1
+        object GenderImage: TImage
+          AlignWithMargins = True
+          Left = 4
+          Top = 1
+          Width = 20
+          Height = 20
+          Margins.Top = 0
+          Margins.Right = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          Center = True
+          Transparent = True
+        end
       end
     end
     object TopInfoPanelL: TPanel
@@ -795,6 +808,19 @@ object ChatForm: TChatForm
         Align = alBottom
         BevelOuter = bvLowered
         TabOrder = 1
+        object FlagImage: TImage
+          AlignWithMargins = True
+          Left = 4
+          Top = 1
+          Width = 20
+          Height = 20
+          Margins.Top = 0
+          Margins.Right = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          Center = True
+          ExplicitLeft = 1
+        end
       end
     end
   end
@@ -915,6 +941,10 @@ object ChatForm: TChatForm
       Tag = 3
       ImageIndex = 216
       OnClick = ChatHTMLQTextClick
+    end
+    object ChatHTMLQTextTwitter: TMenuItem
+      ImageIndex = 269
+      OnClick = ChatHTMLQTextTwitterClick
     end
   end
   object QmessPopupMenu: TPopupMenu

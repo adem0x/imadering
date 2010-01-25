@@ -10,6 +10,7 @@ object MainForm: TMainForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Scaled = False
   OnActivate = FormActivate
@@ -17,6 +18,7 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
+  OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
   object ContactList: TCategoryButtons
@@ -435,6 +437,7 @@ object MainForm: TMainForm
     Top = 328
     object OpenTest: TMenuItem
       Caption = 'Test'
+      Visible = False
       OnClick = OpenTestClick
     end
     object RosterMainMenu: TMenuItem

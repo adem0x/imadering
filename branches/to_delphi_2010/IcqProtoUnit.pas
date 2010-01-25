@@ -32,7 +32,8 @@ uses
   RosterUnit,
   OverbyteIcsUrl,
   GtransUnit,
-  JvSimpleXml;
+  JvSimpleXml,
+  OverbyteIcsUtils;
 
 { const
   DT2100miliseconds = 1 / (SecsPerDay * 10); }
@@ -701,7 +702,7 @@ begin
       Result := Result + '</font>';
       // Если есть текст доп. статуса, то пишем его
       if RosterItem.SubItems[31] <> EmptyStr then
-        Result := Result + '<br><font color=clred>' + RosterItem.SubItems[31] + '</font>';
+        Result := Result + '<br><font color=clred>' + URLDecode(RosterItem.SubItems[31]) + '</font>';
       // Время подключения
       if RosterItem.SubItems[30] <> EmptyStr then
         Result := Result + '<br>' + ConnTimeL + BN + RosterItem.SubItems[30];
@@ -2282,17 +2283,20 @@ begin
                 RosterItem := RosterForm.ReqRosterItem(UIN);
                 if RosterItem <> nil then
                   begin
-                    RosterItem.SubItems[0] := Nick;
+                    if RosterItem.SubItems[0] = UIN then
+                      RosterItem.SubItems[0] := Nick;
                     // Присваиваем этот ник контакту не из нашего КЛ
                     CLContact := RosterForm.ReqCLContact(UIN);
                     if CLContact <> nil then
-                      CLContact.Caption := Nick;
+                      if CLContact.Caption = UIN then
+                        CLContact.Caption := Nick;
                     // Ищем вкладку в окне чата и ей присваиваем Ник
                     if Assigned(ChatForm) then
                       begin
                         ChatPage := RosterForm.ReqChatPage(UIN);
                         if ChatPage <> nil then
-                          ChatPage.Caption := Nick;
+                          if ChatPage.Caption = UIN then
+                            ChatPage.Caption := Nick;
                       end;
                   end;
               end;
@@ -2414,7 +2418,7 @@ begin
                           YesAutoAuthRadioButton.Checked := True;
                         ShowWebAwareCheckBox.Checked := WebAware;
                         // Деактивируем кнопку
-                        ApplyButton.Enabled := false;
+                        ApplyButton.Enabled := False;
                       end;
                   end;
               end;
@@ -2623,12 +2627,16 @@ begin
   // Если сообщение пустое, то выходим
   if Msg = EmptyStr then
     Exit;
-  // Если это сообщение с переводом, то переходим дальше
-  if GTrans then
-    goto X;
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
+  // Обрабатываем сообщение
+  Mess := Msg;
+  CheckMessage_BR(Mess);
+  ChatForm.CheckMessage_ClearTag(Mess);
+  // Если это сообщение с переводом, то переходим дальше
+  if GTrans then
+    goto X;
   // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
   // Инициализируем XML
   JvXML_Create(JvXML);
@@ -2658,7 +2666,7 @@ begin
           // Изменяем направление перевода для исходящих и входящих сообщений
           ImageIndex := 167;
           SubItems.Add(UIN);
-          SubItems.Add(Msg);
+          SubItems.Add(Mess);
           SubItems.Add(S_Icq);
         end;
       // Выходим
@@ -2666,10 +2674,6 @@ begin
     end;
   // Обрабатываем сообщение
 X :;
-  Mess := Msg;
-  PopMsg := Mess;
-  CheckMessage_BR(Mess);
-  ChatForm.CheckMessage_ClearTag(Mess);
   PopMsg := Mess;
   CheckMessage_BR(Mess);
   DecorateURL(Mess);
@@ -2685,7 +2689,7 @@ X :;
           // Дата сообщения
           MsgD := Nick + ' [' + DateTimeChatMess + ']';
           // Записываем историю в этот контакт если он уже найден в списке контактов
-          SubItems[15] := PopMsg;
+          SubItems[15] := URLEncode(PopMsg);
           SubItems[35] := '0';
         end;
     end
@@ -2719,7 +2723,7 @@ X :;
           SubItems[2] := 'none';
           SubItems[3] := S_Icq;
           SubItems[6] := '214';
-          SubItems[15] := PopMsg;
+          SubItems[15] := URLEncode(PopMsg);
           SubItems[35] := '0';
           // Запрашиваем анкету неопознанных контактов
           if Nick = UIN then
@@ -2914,8 +2918,7 @@ begin
                       NextData(PktData, (FSize) - 2);
                       Continue;
                     end;
-                  NextData(PktData, 8);
-                  NextData(PktData, 16);
+                  NextData(PktData, 8 + 16); // Пропускаем msg-id cookie и capability
                   while Length(PktData) > 0 do
                     begin
                       TLV := Text2Hex(NextData(PktData, 2));
@@ -2940,14 +2943,10 @@ begin
                             // Also, ICQ2001b does not send an ACK, SNAC(4,B), if this is not 0x1B.
                             if NextData(SubData, 1) <> #$1B then
                               Exit;
-                            NextData(SubData, 26);
-                            NextData(SubData, 2); // FFSeq
-                            NextData(SubData, 16);
+                            NextData(SubData, 26 + 6 + 12); // 1B - 1 Len + FFSeq + Unknown
                             MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
                             XLog(Log_ICQParsing + Log_Msg_Type + IntToHex(MsgType, 1));
-                            NextData(SubData, 1); // MsgFlag
-                            NextData(SubData, 2); // status code
-                            NextData(SubData, 2); // priority code
+                            NextData(SubData, 1 + 2 + 2); // MsgFlag + status code + priority code
                             if MsgType = M_FILE then // File request
                               begin
                                 Exit;
@@ -2964,22 +2963,22 @@ begin
                               begin
                                 MsgLen := Swap16(HexToInt(Text2Hex(NextData(SubData, 2))));
                                 Dec(MsgLen);
-                                Msg := Utf8ToString(NextData(SubData, MsgLen));
+                                // Получаем сообщение
+                                Msg := NextData(SubData, MsgLen);
+                                if IsUtf8Valid(Msg) then
+                                  Msg := UTF8ToString(Msg);
+                                XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
                                 if Msg <> EmptyStr then
                                   begin
-                                    XLog(Log_ICQParsing + Log_Msg_Text + RN + Msg);
-                                    if Length(Msg) > 0 then
+                                    if MsgType = M_PLAIN then
                                       begin
-                                        if MsgType = M_PLAIN then
-                                          begin
-                                            Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
-                                          end
-                                        else if MsgType = M_URL then
-                                          begin
-                                            Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
-                                            URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
-                                            Msg := URL + RN + Desc;
-                                          end;
+                                        Msg := RTF2Plain(Msg); // Convert message from RTF to plaintext when needed
+                                      end
+                                    else if MsgType = M_URL then
+                                      begin
+                                        Desc := Copy(Msg, 0, Pos(#$FE, Msg) - 1);
+                                        URL := Copy(Msg, Pos(#$FE, Msg) + 1, Length(Msg) - Pos(#$FE, Msg));
+                                        Msg := URL + RN + Desc;
                                       end;
                                   end;
                               end;
@@ -3376,7 +3375,7 @@ begin
           SubItems[28] := Caps;
           SubItems[29] := Text2Hex(IHash);
           SubItems[30] := ConnTime;
-          SubItems[31] := IXText;
+          SubItems[31] := URLEncode(IXText);
           SubItems[32] := PClient;
           if Utf8Sup then
             SubItems[33] := 'X'
