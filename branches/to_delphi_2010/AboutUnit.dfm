@@ -11,11 +11,13 @@ object AboutForm: TAboutForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13

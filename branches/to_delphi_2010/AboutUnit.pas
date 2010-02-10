@@ -65,6 +65,7 @@ type
     procedure HistoryLabelClick(Sender: TObject);
     procedure LegalLabelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -163,7 +164,7 @@ end;
 procedure TAboutForm.URLLabelClick(Sender: TObject);
 begin
   // Открываем сайт в браузере по умолчанию
-  OpenURL('http://imadering.com');
+  OpenURL(RS_SitePage);
 end;
 
 procedure TAboutForm.URLLabelMouseEnter(Sender: TObject);
@@ -236,6 +237,12 @@ begin
   AboutLen := 1;
   // Стартуем показ титров
   HeadJvBehaviorLabel.BehaviorOptions.Active := True;
+end;
+
+procedure TAboutForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TAboutForm.FormShow(Sender: TObject);

@@ -43,6 +43,7 @@ type
     procedure CLSearchJvListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure CLSearchJvListViewDblClick(Sender: TObject);
     procedure CLSearchJvListViewColumnClick(Sender: TObject; Column: TListColumn);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -193,6 +194,12 @@ begin
   // Делаем окно независимым и помещаем его кнопку на панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+end;
+
+procedure TCLSearchForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TCLSearchForm.FormDestroy(Sender: TObject);

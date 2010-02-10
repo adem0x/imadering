@@ -66,6 +66,7 @@ type
     procedure CopyHistorySelTextClick(Sender: TObject);
     procedure CopyAllHistoryTextClick(Sender: TObject);
     procedure CloseBitBtnClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -362,6 +363,12 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Назначаем событие выбора файла истории
   ContactsComboBox.OnChange := ContactsComboBoxChange;
+end;
+
+procedure THistoryForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure THistoryForm.FormDestroy(Sender: TObject);

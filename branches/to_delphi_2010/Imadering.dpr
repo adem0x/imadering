@@ -55,7 +55,9 @@ uses
   htmlgif1 in 'lib\htmlgif1.pas',
   ComCtrls in 'lib\ComCtrls.pas',
   CategoryButtons in 'lib\CategoryButtons.pas',
-  ButtonGroup in 'lib\ButtonGroup.pas';
+  ButtonGroup in 'lib\ButtonGroup.pas',
+  LoginUnit in 'LoginUnit.pas' {LoginForm},
+  TwitterOptionsUnit in 'TwitterOptionsUnit.pas' {TwitterOptionsForm};
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -65,9 +67,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'IMadering';
-  // Устанавливаем приоритет приложению
-  // SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
-  // SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_HIGHEST);
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);

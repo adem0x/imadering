@@ -23,7 +23,7 @@ uses
   StdCtrls,
   Buttons,
   ExtCtrls,
-  mmsystem;
+  MmSystem;
 
 type
   TUniqForm = class(TForm)
@@ -46,6 +46,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CancelBitBtnClick(Sender: TObject);
     procedure OKBitBtnClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -69,11 +70,14 @@ uses
 
 procedure TUniqForm.TranslateForm;
 begin
-  // Устанавливаем подсказки к кнопкам
-  OnlineSoundPathSpeedButton.Hint := H_SelFolder_Button;
-  OnlineSoundPlaySpeedButton.Hint := H_PlaySound_Button;
-  MessSoundPathSpeedButton.Hint := H_SelFolder_Button;
-  MessSoundPlaySpeedButton.Hint := H_PlaySound_Button;
+  // Создаём шаблон для перевода
+  // CreateLang(Self);
+  // Применяем язык
+  SetLang(Self);
+  // Другое
+  CancelBitBtn.Caption := S_Cancel;
+  MessSoundPathSpeedButton.Hint := OnlineSoundPathSpeedButton.Hint;
+  MessSoundPlaySpeedButton.Hint := OnlineSoundPlaySpeedButton.Hint;
 end;
 
 procedure TUniqForm.CancelBitBtnClick(Sender: TObject);
@@ -99,10 +103,16 @@ begin
   MainForm.AllImageList.GetBitmap(252, OnlineSoundPlaySpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(227, MessSoundPathSpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(252, MessSoundPlaySpeedButton.Glyph);
+  // Применяем строковые переменные
+  TranslateForm;
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
-  // Применяем строковые переменные
+end;
+
+procedure TUniqForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
   TranslateForm;
 end;
 

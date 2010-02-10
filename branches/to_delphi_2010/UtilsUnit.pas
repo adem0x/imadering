@@ -45,11 +45,13 @@ uses
   JvListView,
   ComCtrls,
   JvSimpleXml,
-  ButtonGroup;
+  ButtonGroup,
+  UpdateUnit,
+  DateUtils;
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileInDir(Path, Eext: string; Filelist: Tstrings);
-procedure Gettreedirs(Root: string; out Outstring: Tstringlist);
+procedure GetTreeDirs(Root: string; out Outstring: Tstringlist);
 function Hex2text(HexText: string): string;
 function Text2hex(Msg: RawByteString): string;
 function Rightstr(const Str: string; Size: Word): string;
@@ -133,7 +135,14 @@ function CheckText_Hint(Msg: string): string;
 function Text2UnicodeHex(Msg: string): string;
 function UnicodeHex2Text(HexText: string): string;
 procedure JvXML_Create(var JvXML: TJvSimpleXml);
+procedure JvXML_LoadStr(var JvXML: TJvSimpleXml; DataStr: string);
 function StrArrayToStr(StrArr: array of string): string;
+function UnpackArhive(HFile: string): Boolean;
+function HtmlStrToString(const HtmlText: string): string;
+// function Twit_ParseDateTime(Sdate: string): TDateTime;
+
+var
+  FArchive: TJclCompressionArchive;
 
 implementation
 
@@ -166,6 +175,13 @@ begin
   JvXML.Prolog.Encoding := 'UTF-8';
   JvXML.Root.name := 'root';
   JvXML.IndentString := BN + BN;
+end;
+
+procedure JvXML_LoadStr(var JvXML: TJvSimpleXml; DataStr: string);
+begin
+  // Загружаем xml данные и выставляем параметры
+  DataStr := #$EF + #$BB + #$BF + UTF8Encode('<?xml version="1.0" encoding="UTF-8" ?>' + DataStr);
+  JvXML.LoadFromString(DataStr);
 end;
 
 function Text2UnicodeHex(Msg: string): string;
@@ -216,6 +232,7 @@ var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
+  Xlog(Log_SetLang + Xform.name);
   List := Tstringlist.Create;
   try
     // Инициализируем XML
@@ -476,10 +493,30 @@ begin
 end;
 
 procedure Sendflap_jabber(Xmldata: string);
+var
+  JvXML: TJvSimpleXml;
+  Pkt, S: string;
 begin
-  // Пишем в лог данные пакета
-  if LogForm.JabberDumpSpeedButton.Down then
-    XLog('Jabber send | ' + RN + Trim(Dump(Xmldata)));
+  S := Copy(Xmldata, 2, 1);
+  if (S <> '?') and (S <> '/') and (S <> #09) then
+    begin
+      // Форматируем данные пакета
+      Pkt := '<xml>' + Xmldata + '</xml>';
+      JvXML_Create(JvXML);
+      try
+        with JvXML do
+          begin
+            JvXML_LoadStr(JvXML, Pkt);
+            // Пишем в лог данные пакета
+            if LogForm.JabberDumpSpeedButton.Down then
+              XLog(S_Jabber + Log_Send + RN + Trim(Copy(XMLData, 4, Length(XMLData))));
+          end;
+      finally
+        JvXML.Free;
+      end;
+    end
+  else if LogForm.JabberDumpSpeedButton.Down then
+    XLog(S_Jabber + Log_Send + RN + XMLData);
   // Отправляем данные через сокет
   Mainform.JabberWSocket.SendStr(Utf8Encode(Xmldata));
 end;
@@ -565,7 +602,7 @@ begin
     Showwindow(Xform.Handle, Sw_restore);
   Setforegroundwindow(Xform.Handle);
   // Играем звук открытия окна
-  ImPlaySnd(4);
+  ImPlaySnd(8);
 end;
 
 function Getfilesize(Filename: string): Longint;
@@ -898,8 +935,6 @@ var
   Da: Tjvdesktopalert;
   Ico: Ticon;
 begin
-  // Пишем в окно лога
-  Xlog(Dahead + RN + Datext);
   // Применяем параметры для всплывающего окна
   if Davisible = 0 then
     Davisible := Datimeshow;
@@ -921,28 +956,30 @@ begin
         Da.Colors.Windowfrom := Tcolor($00FFC688);
         Da.Colors.Windowto := Tcolor($00FFE3C7);
         // Воспроизводим звук события
-        ImPlaySnd(3);
+        ImPlaySnd(5);
       end;
     1: // Жёлтый
       begin
         Da.Colors.Windowfrom := Tcolor($0092FFFF);
         Da.Colors.Windowto := Tcolor($00B6FFFF);
         // Воспроизводим звук входящего сообщения
-        ImPlaySnd(1);
+        ImPlaySnd(2);
       end;
     2: // Красный
       begin
         Da.Colors.Windowfrom := Tcolor($009DCDFF);
         Da.Colors.Windowto := Tcolor($00DAF4FF);
         // Воспроизводим звук ошибки
-        ImPlaySnd(2);
+        ImPlaySnd(7);
+        // Пишем в окно лога
+        Xlog(Dahead + RN + Datext);
       end;
     3: // Зелёный
       begin
         Da.Colors.Windowfrom := Tcolor($0092FF92);
         Da.Colors.Windowto := Tcolor($00B6FFB6);
         // Воспроизводим звук события
-        ImPlaySnd(3);
+        ImPlaySnd(5);
       end;
   end;
   // Применяем иконку и текст сообщения
@@ -1621,36 +1658,21 @@ asm
   bswap eax
 end;
 
-{$WARNINGS OFF}
-
-procedure GetTreeDirs(Root: string; out Outstring: Tstringlist);
+procedure GetTreeDirs(Root: string; out OutString: TStringList);
 var
-  Sresult: Tsearchrec;
+  SResult: TSearchRec;
 begin
-  Outstring := Tstringlist.Create;
-  if not Directoryexists(Root) then
+  OutString := TStringList.Create;
+  if not DirectoryExists(Root) then
     Exit;
-  Root := Includetrailingbackslash(Root);
-  Setcurrentdir(Root);
-  if Findfirst('*', Faanyfile, Sresult) = 0 then
+  if FindFirst(Root + '\*', FaAnyFile, SResult) = 0 then
     begin
       repeat
-        if (Sresult.name <> '.') and (Sresult.name <> '..') and ((Sresult.Attr and Fadirectory) = Fadirectory) then
-          Outstring.Add(Sresult.name);
-      until Findnext(Sresult) <> 0;
-      Findclose(Sresult);
+        if (SResult.name <> '.') and (SResult.name <> '..') and ((SResult.Attr and FaDirectory) = FaDirectory) then
+          OutString.Add(SResult.name);
+      until FindNext(SResult) <> 0;
+      FindClose(SResult);
     end;
-end;
-
-{$WARNINGS ON}
-
-function Initmixer: Hmixer;
-var
-  Err: Mmresult;
-begin
-  Err := Mixeropen(@Result, 0, 0, 0, 0);
-  if Err <> Mmsyserr_noerror then
-    Result := 0;
 end;
 
 function Parse(Char, S: string; Count: Integer): string;
@@ -1871,7 +1893,7 @@ begin
         Froot := Trim(Copy(Sbuff, P + 1, E - 2))
       else
         Froot := Trim(Copy(Sbuff, P + 1, Ws - 2));
-      if (Froot = '?xml') or (Froot = '!ENTITY') or (Froot = '!--') or (Froot = '!ATTLIST') or (Froot = Froottag) then
+      if (Froot = '?xml') or (Froot = '!ENTITY') or (Froot = '!--') or (Froot = '!ATTLIST') or (Froot = J_RootTag) then
         begin
           R := Copy(Sbuff, P, E);
           Froot := EmptyStr;
@@ -1921,29 +1943,70 @@ begin
   Result := R;
 end;
 
+function InitMixer: Hmixer;
+var
+  Err: MmResult;
+begin
+  Err := MixerOpen(@Result, 0, 0, 0, 0);
+  if Err <> MmSysErr_NoError then
+    Result := 0;
+end;
+
 procedure ImPlaySnd(Snd: Integer);
+var
+  SFilePath: string;
 begin
   // Играем звуки IMadering
-  {
-    0 - Старт программы
-    1 - Входящее сообщение
-    2 - Ошибка
-    3 - Событие
-    4 - Открытие окон
-    }
+
+  { 1 - Старт IMadering
+    2 - Входящее сообщение
+    3 - Сообщение отправлено
+    4 - Контакт вошёл в сеть
+    5 - Сервисные оповещения
+    6 - Передача файла завершена
+    7 - Оповещение об ошибке
+    8 - Открытие окна
+    ------------------------
+    9 - Набор текста
+    10 - Удаление текста
+    11 - Отправка текста }
+
   if SoundON then
     begin
       case Snd of
-        0: if (SoundStartProg) and (FileExists(SoundStartProgPath)) then
-            Sndplaysound(PChar(SoundStartProgPath), Snd_async);
-        1: if (SoundIncMsg) and (FileExists(SoundIncMsgpath)) then
-            Sndplaysound(PChar(SoundIncMsgpath), Snd_async);
-        2: if (SoundError) and (FileExists(SoundErrorPath)) then
-            Sndplaysound(PChar(SoundErrorPath), Snd_async);
-        3: if (SoundEvent) and (FileExists(SoundEventPath)) then
-            Sndplaysound(PChar(SoundEventPath), Snd_async);
-        4: if (SoundOpen) and (FileExists(SoundOpenPath)) then
-            Sndplaysound(PChar(SoundOpenPath), Snd_async);
+        1: if (SoundStartProg) and (FileExists(SoundStartProg_Path)) then
+            Sndplaysound(PChar(SoundStartProg_Path), Snd_async);
+        2: if (SoundIncMsg) and (FileExists(SoundIncMsg_Path)) then
+            Sndplaysound(PChar(SoundIncMsg_Path), Snd_async);
+        3: if (SoundMsgSend) and (FileExists(SoundMsgSend_Path)) then
+            Sndplaysound(PChar(SoundMsgSend_Path), Snd_async);
+        4: if (SoungUserOnline) and (FileExists(UserOnline_Path)) then
+            Sndplaysound(PChar(UserOnline_Path), Snd_async);
+        5: if (SoundEvent) and (FileExists(SoundEvent_Path)) then
+            Sndplaysound(PChar(SoundEvent_Path), Snd_async);
+        6: if (SoundFileSend) and (FileExists(SoundFileSend_Path)) then
+            Sndplaysound(PChar(SoundFileSend_Path), Snd_async);
+        7: if (SoundError) and (FileExists(SoundError_Path)) then
+            Sndplaysound(PChar(SoundError_Path), Snd_async);
+        8: if (SoundOpen) and (FileExists(SoundOpen_Path)) then
+            Sndplaysound(PChar(SoundOpen_Path), Snd_async);
+        9: begin
+            SFilePath := MyPath + 'Sounds\' + CurrentSounds + '\Type.wav';
+            if (FileExists(SFilePath)) then
+              Sndplaysound(PChar(SFilePath), Snd_async);
+          end;
+        10: begin
+            SFilePath := MyPath + 'Sounds\' + CurrentSounds + '\Back.wav';
+            if (FileExists(SFilePath)) then
+              Sndplaysound(PChar(SFilePath), Snd_async);
+          end;
+        11: begin
+            if (SoundON) and (SoundMsgSend) then
+              Exit;
+            SFilePath := MyPath + 'Sounds\' + CurrentSounds + '\MsgSend.wav';
+            if (FileExists(SFilePath)) then
+              Sndplaysound(PChar(SFilePath), Snd_async);
+          end;
       end;
     end;
 end;
@@ -2033,7 +2096,6 @@ end;
 function CreateHistoryArhive(HFile: string): Boolean;
 var
   AFormat: TJclCompressArchiveClass;
-  FArchive: TJclCompressionArchive;
   FCompressionLevel: IJclArchiveCompressionLevel;
   FCompressHeader: IJclArchiveCompressHeader;
   FSaveCreationDateTime: IJclArchiveSaveCreationDateTime;
@@ -2080,6 +2142,30 @@ begin
     end;
 end;
 
+function UnpackArhive(HFile: string): Boolean;
+var
+  ArchiveFileName: string;
+  AFormat: TJclDecompressArchiveClass;
+begin
+  // Распаковываем архив
+  Result := False;
+  FreeAndNil(FArchive);
+  ArchiveFileName := HFile;
+  AFormat := GetArchiveFormats.FindDecompressFormat(ArchiveFileName);
+  if AFormat <> nil then
+    begin
+      FArchive := AFormat.Create(ArchiveFileName);
+      FArchive.Password := EmptyStr;
+      FArchive.OnProgress := UpdateForm.ArchiveProgress;
+      if FArchive is TJclDecompressArchive then
+        begin
+          TJclDecompressArchive(FArchive).ListFiles;
+          TJclDecompressArchive(FArchive).ExtractAll(MyPath, True);
+        end;
+      Result := True;
+    end;
+end;
+
 procedure CheckMessage_Smilies(var Msg: string);
 var
   ImgTag1, ImgTag2, Cod: string;
@@ -2093,7 +2179,7 @@ end;
 begin
   // Определяем html тэги для вставки смайлов заместо их текстовых обозначений
   ImgTag1 := '<img src="./Smilies/' + CurrentSmiles + '/';
-  ImgTag2 := '" ALIGN=ABSMIDDLE BORDER="0">';
+  ImgTag2 := '" ALIGN="ABSMIDDLE" vspace="3" BORDER="0">';
   // Сканируем список кодов смайлов на совпадения
   for I := 1 to SmilesList.Count - 1 do
     begin
@@ -2107,5 +2193,57 @@ begin
         end;
     end;
 end;
+
+function HtmlStrToString(const HtmlText: string): string;
+var
+  I, J, HtmlLength: Integer;
+begin
+  I := 1;
+  HtmlLength := Length(HtmlText);
+  while I <= HtmlLength do
+    begin
+      if (HtmlText[I] = '&') and (HtmlText[I + 1] = '#') then
+        begin
+          for J := I + 2 to HtmlLength do
+            if HtmlText[J] = ';' then
+              begin
+                Result := Result + Char(StrToIntDef(Copy(HTMLText, I + 2, J - (I + 2)), 0));
+                I := J;
+                Break;
+              end;
+        end
+      else
+        Result := Result + HtmlText[I];
+      Inc(I);
+    end;
+end;
+
+{ function Twit_ParseDateTime(Sdate: string): TDateTime;
+  var
+  DayOfWeek, Smonth, DayInMonth, Time, Offset, Year: string;
+  Hour, Minute, Second: string;
+  Month, I: Integer;
+  begin
+  Result := now;
+  // Разбираем фиксированную структуру даты в твите
+  DayOfWeek := Trim(Copy(Sdate, 0, 3));
+  Smonth := Trim(Copy(Sdate, 5, 3));
+  DayInMonth := Trim(Copy(Sdate, 9, 2));
+  Offset := Trim(Copy(Sdate, 20, 6));
+  Year := Trim(Copy(Sdate, 27, 5));
+  Time := Trim(Copy(Sdate, 11, 9));
+  Hour := Trim(Copy(Time, 1, 2));
+  Minute := Trim(Copy(Time, 4, 2));
+  Second := Trim(Copy(Time, 7, 2));
+  // Вычисляем месяц
+  Month := 1;
+  for I := 1 to 12 do
+  begin
+  if ShortMonthNames[I] = Smonth then
+  Month := I
+  end;
+  // Преобразуем полученные данные в нормальный формат
+  Result := EncodeDateTime(StrToInt(Year), Month, StrToInt(DayInMonth), StrToInt(Hour), StrToInt(Minute), StrToInt(Second), 0);
+  end; }
 
 end.

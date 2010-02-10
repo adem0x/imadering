@@ -28,20 +28,18 @@ uses
   CategoryButtons,
   OverbyteIcsMimeUtils,
   JabberOptionsUnit,
-  RosterUnit;
-
-{ const
-  CONST_Jabber_DefaultServerSSLPort: string = '5223';
-  CONST_Jabber_DefaultServerNoSecurePort: string = '5222'; }
+  RosterUnit,
+  JvSimpleXml,
+  OverbyteIcsUrl;
 
 var
   Jabber_UseSSL: Boolean = False;
-  Jabber_BuffPkt: string = '';
-  Jabber_JID: string = '';
-  Jabber_LoginUIN: string = '';
-  Jabber_LoginPassword: string = '';
-  Jabber_ServerAddr: string = '';
-  Jabber_ServerPort: string = '5222';
+  Jabber_BuffPkt: string;
+  Jabber_JID: string;
+  Jabber_LoginUIN: string;
+  Jabber_LoginPassword: string;
+  Jabber_ServerAddr: string;
+  Jabber_ServerPort: string;
   Jabber_Reconnect: Boolean = False;
   Jabber_KeepAlive: Boolean = True;
   Jabber_myBeautifulSocketBuffer: string;
@@ -56,15 +54,27 @@ var
   Jabber_Work_Phaze: Boolean = False;
   Jabber_Offline_Phaze: Boolean = True;
   // Фазы работы конец
-  StreamHead: string = '<?xml version=''1.0'' encoding=''UTF-8''?>' + '<stream:stream to=''%s'' xmlns=''jabber' +
-    ':client'' xmlns:stream=''http://etherx.jabber.org/streams'' xm' + 'l:lang=''ru'' version=''1.0''>';
-  IqTypeSet: string = '<iq type=''set'' id=''imadering_%d''>';
-  IqTypeGet: string = '<iq type=''get'' id=''imadering_%d''>';
-  FRootTag: string = 'stream:stream';
+  J_SessionId: string;
+
+const
+  Iq_TypeSet: string = '<iq type=''set'' id=''imadering_%d''>';
+  Iq_TypeGet: string = '<iq type=''get'' id=''imadering_%d''>';
   Iq_Roster: string = 'jabber:iq:roster';
-  JmessHead: string = '<message type=''chat'' to=''%s'' id=''%d''>';
-  JPlainMechanism: string = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''PLAIN''>%s</auth>';
-  JSessionId: string;
+  J_MessHead: string = '<message type=''chat'' to=''%s'' id=''%d''>';
+  J_RootTag: string = 'stream:stream';
+  J_Features: string = 'stream:features';
+  J_Iq: string = 'iq';
+  J_Presence: string = 'presence';
+  J_Message: string = 'message';
+  J_Session: string = 'session';
+  J_Query: string = 'query';
+
+resourcestring
+  J_StreamHead = '<?xml version=''1.0'' encoding=''UTF-8''?>' + '<stream:stream to=''%s'' xmlns=''jabber' + ':client'' xmlns:stream=''http://etherx.jabber.org/streams'' xm' +
+    'l:lang=''%s'' version=''1.0''>';
+  J_PlainMechanism = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''PLAIN''>%s</auth>';
+  J_MD5Mechanism = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>';
+  J_ChallengeOK = '<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>';
 
 function JabberDIGESTMD5_Auth(User, Host, Password, Nonce, Cnonce: string): string;
 function JabberPlain_Auth: string;
@@ -73,11 +83,11 @@ function Jabber_SetBind: string;
 function Jabber_SetSession: string;
 function Jabber_GetRoster: string;
 function Jabber_SetStatus(JStatus: Integer): string;
-procedure Jabber_ParseRoster(XmlData: string);
-procedure Jabber_ParseFeatures(XmlData: string);
-procedure Jabber_ParseIQ(XmlData: string);
-procedure Jabber_ParsePresence(XmlData: string);
-procedure Jabber_ParseMessage(XmlData: string);
+procedure Jabber_ParseRoster(PktData: string);
+procedure Jabber_ParseFeatures(PktData: string);
+procedure Jabber_ParseIQ(PktData: string);
+procedure Jabber_ParsePresence(PktData: string);
+procedure Jabber_ParseMessage(PktData: string);
 procedure Jabber_SendMessage(MJID, Msg: string);
 
 implementation
@@ -114,7 +124,7 @@ begin
   Nc := '00000001';
   Gop := 'auth';
   Razdel := Ord(':');
-  XLog('Jabber parsing | ' + Log_MD5_Nonce + Nonce);
+  XLog(S_Jabber + Log_Parsing + Log_MD5_Nonce + Nonce);
   // Вычисляем А1 по формуле RFC 2831
   SJID := Format('%S:%S:%S', [UserName, Realm, Pass]);
   MD5Init(Context);
@@ -164,8 +174,7 @@ begin
   // Вычиляем пароль
   Response := GenResponse(User, Host, 'xmpp/' + Host, Password, Nonce, Cnonce);
   // Формируем строку в формате UTF-8
-  Str := Format('username="%s",realm="%s",nonce="%s",cnonce="%s",nc=00000001,' + 'qop=auth,digest-uri="xmpp/%s",charset=utf-8,response=%s',
-    [User, Host, Nonce, Cnonce, Host, Response]);
+  Str := Format('username="%s",realm="%s",nonce="%s",cnonce="%s",nc=00000001,' + 'qop=auth,digest-uri="xmpp/%s",charset=utf-8,response=%s', [User, Host, Nonce, Cnonce, Host, Response]);
   // Шифруем строку алгоритмом Base64
   Str := Base64Encode(Str);
   Result := Format('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''>%s</response>', [Str]);
@@ -240,24 +249,23 @@ end;
 
 function Jabber_SetBind: string;
 begin
-  Result := Format(IqTypeSet, [Jabber_Seq]) + '<bind xmlns=''urn:ietf:params:xml:ns:xmpp-bind''>' + '<resource>' + JabberResurs +
-    '</resource></bind></iq>';
+  Result := Format(Iq_TypeSet, [Jabber_Seq]) + '<bind xmlns=''urn:ietf:params:xml:ns:xmpp-bind''>' + '<resource>' + JabberResurs + '</resource></bind></iq>';
   // Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
 end;
 
 function Jabber_SetSession: string;
 begin
-  Result := Format(IqTypeSet, [Jabber_Seq]) + '<session xmlns=''urn:ietf:params:xml:ns:xmpp-session''/>' + '</iq>';
+  Result := Format(Iq_TypeSet, [Jabber_Seq]) + '<session xmlns=''urn:ietf:params:xml:ns:xmpp-session''/>' + '</iq>';
   // Запоминаем Id для запроса сессии (google talk)
-  JSessionId := Format('imadering_%d', [Jabber_Seq]);
+  J_SessionId := Format('imadering_%d', [Jabber_Seq]);
   // Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
 end;
 
 function Jabber_GetRoster: string;
 begin
-  Result := Format(IqTypeGet, [Jabber_Seq]) + '<query xmlns=''jabber:iq:roster''/></iq>';
+  Result := Format(Iq_TypeGet, [Jabber_Seq]) + '<query xmlns=''jabber:iq:roster''/></iq>';
   // Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
 end;
@@ -281,143 +289,143 @@ begin
   else St := '';
   end;
   // Формируем пакет
-  Result := '<presence><priority>' + JabberPriority + '</priority>' +
-    '<c xmlns=''http://jabber.org/protocol/caps'' node=''http://imadering.com/caps'' ver=''0.5.0.0''/>' + St + '</presence>';
+  Result := '<presence><priority>' + JabberPriority + '</priority>' + '<c xmlns=''http://jabber.org/protocol/caps'' node=''http://imadering.com/caps'' ver=''0.5.0.0''/>' + St + '</presence>';
 end;
 
-procedure Jabber_ParseRoster(XmlData: string);
-{var
+procedure Jabber_ParseRoster(PktData: string);
+var
   Cnt, I: Integer;
-  ListItemD: TListItem;}
+  ListItemD: TListItem;
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
-  {Cnt := 0;
   // Инициализируем XML
-  XmlDoc := TrXML.Create;
+  JvXML_Create(JvXML);
   // Начинаем добаление записей контактов в Ростер
   RosterForm.RosterJvListView.Items.BeginUpdate;
   try
-    with XmlDoc do
+    // Загружаем xml данные
+    JvXML_LoadStr(JvXML, PktData);
+    with JvXML do
       begin
-        Text := XmlData;
-        if OpenKey('query') then
-          try
-            Cnt := GetKeyCount('item');
-          finally
-            CloseKey;
-          end;
-        // Разбираем список контктов Jabber
-        for I := 0 to Cnt - 1 do
+        if Root <> nil then
           begin
-            if OpenKey('query\item', False, I) then
-              try
-                ListItemD := RosterForm.RosterJvListView.Items.Add;
-                ListItemD.Caption := ReadString('jid');
-                // Подготавиливаем все значения
-                RosterForm.RosterItemSetFull(ListItemD);
-                // Обновляем субстроки
-                ListItemD.SubItems[0] := ReadString('name');
-                if ListItemD.SubItems[0] = EmptyStr then
-                  ListItemD.SubItems[0] := ListItemD.Caption;
-                ListItemD.SubItems[2] := ReadString('subscription');
-                // Открываем ключ группы
-                OpenKey('group', False, 0);
-                ListItemD.SubItems[1] := GetKeyText;
-                if ListItemD.SubItems[1] = EmptyStr then
-                  ListItemD.SubItems[1] := JabberNullGroup;
-                ListItemD.SubItems[3] := S_Jabber;
-                ListItemD.SubItems[6] := '30';
-              finally
-                CloseKey;
+            Cnt := Root.Items.Count;
+            // Разбираем список контактов в пакете
+            for I := 0 to Cnt - 1 do
+              begin
+                XML_Node := Root.Items[I];
+                if XML_Node <> nil then
+                  begin
+                    ListItemD := RosterForm.RosterJvListView.Items.Add;
+                    ListItemD.Caption := XML_Node.Properties.Value('jid');
+                    // Подготавиливаем все значения
+                    RosterForm.RosterItemSetFull(ListItemD);
+                    // Обновляем субстроки
+                    ListItemD.SubItems[0] := XML_Node.Properties.Value('name');
+                    if ListItemD.SubItems[0] = EmptyStr then
+                      ListItemD.SubItems[0] := ListItemD.Caption;
+                    ListItemD.SubItems[2] := XML_Node.Properties.Value('subscription');
+                    // Открываем ключ группы
+                    Sub_Node := XML_Node.Items.ItemNamed['group'];
+                    if Sub_Node <> nil then
+                      ListItemD.SubItems[1] := Sub_Node.Value;
+                    if ListItemD.SubItems[1] = EmptyStr then
+                      ListItemD.SubItems[1] := JabberNullGroup;
+                    ListItemD.SubItems[3] := S_Jabber;
+                    ListItemD.SubItems[6] := '30';
+                  end;
               end;
           end;
       end;
   finally
-    FreeAndNil(XmlDoc);
+    JvXML.Free;
     // Заканчиваем добаление записей контактов в Ростер
     RosterForm.RosterJvListView.Items.EndUpdate;
   end;
   // Запускаем обработку Ростера
   CollapseGroupsRestore := True;
-  RosterForm.UpdateFullCL; }
+  RosterForm.UpdateFullCL;
 end;
 
-procedure Jabber_ParseFeatures(XmlData: string);
+procedure Jabber_ParseFeatures(PktData: string);
+var
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  {XmlDoc := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlDoc do
+    // Загружаем xml данные
+    JvXML_LoadStr(JvXML, PktData);
+    with JvXML do
       begin
-        Text := XmlData;
-        if OpenKey('stream:features\bind') then
-          try
-            // Устанавливаем bind
-            Sendflap_jabber(Jabber_SetBind);
-          finally
-            CloseKey;
-          end;
-        if OpenKey('stream:features\session') then
-          try
-            // Устанавливаем session
-            Sendflap_jabber(Jabber_SetSession);
-          finally
-            CloseKey;
+        if Root <> nil then
+          begin
+            // Ищем бинд
+            XML_Node := Root.Items.ItemNamed['bind'];
+            if XML_Node <> nil then
+              Sendflap_jabber(Jabber_SetBind);
+            // Ищем сессию
+            XML_Node := Root.Items.ItemNamed[J_Session];
+            if XML_Node <> nil then
+              Sendflap_jabber(Jabber_SetSession);
           end;
       end;
   finally
-    FreeAndNil(XmlDoc);
-  end;}
+    JvXML.Free;
+  end;
 end;
 
-procedure Jabber_ParseIQ(XmlData: string);
+procedure Jabber_ParseIQ(PktData: string);
+label
+  X;
+var
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Инициализируем XML
-  {XmlDoc := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlDoc do
+    // Загружаем xml данные
+    JvXML_LoadStr(JvXML, PktData);
+    with JvXML do
       begin
-        Text := XmlData;
-        if OpenKey('iq\session') then
-          try
-            begin
-              // Запрашиваем список контактов
-              Sendflap_jabber(Jabber_GetRoster);
-              // Устанавливаем статус
-              Sendflap_jabber(Jabber_SetStatus(Jabber_CurrentStatus));
-            end;
-          finally
-            CloseKey;
-          end
-        else if OpenKey('iq\query') then
-          try
-            begin
-              // Разбираем список контктов Jabber
-              if ReadString('xmlns') = Iq_Roster then
-                Jabber_ParseRoster(GetKeyXML);
-            end;
-          finally
-            CloseKey;
-          end
-        else
-        // Такое можно было ожидать только от google talk
-          if OpenKey('iq') then
-          try
-            begin
-              if (ReadString('type') = 'result') and (ReadString('id') = JSessionId) then
-                begin
-                  // Запрашиваем список контактов
-                  Sendflap_jabber(Jabber_GetRoster);
-                  // Устанавливаем статус
-                  Sendflap_jabber(Jabber_SetStatus(Jabber_CurrentStatus));
-                end;
-            end;
-          finally
-            CloseKey;
+        if Root <> nil then
+          begin
+            // Если сессия открылась
+            XML_Node := Root.Items.ItemNamed[J_Session];
+            if XML_Node <> nil then
+              begin
+                // Запрашиваем список контактов
+                Sendflap_jabber(Jabber_GetRoster);
+                // Устанавливаем статус
+                Sendflap_jabber(Jabber_SetStatus(Jabber_CurrentStatus));
+                goto X;
+              end;
+            // Если къюри
+            XML_Node := Root.Items.ItemNamed[J_Query];
+            if XML_Node <> nil then
+              begin
+                if XML_Node.Properties.Value('xmlns') = Iq_Roster then // Если это список контактов
+                  Jabber_ParseRoster(XML_Node.SaveToString);
+                goto X;
+              end;
+            // Такое можно было ожидать только от google talk
+            if (Root.Properties.Value('type') = 'result') and (Root.Properties.Value('id') = J_SessionId) then
+              begin
+                // Запрашиваем список контактов
+                Sendflap_jabber(Jabber_GetRoster);
+                // Устанавливаем статус
+                Sendflap_jabber(Jabber_SetStatus(Jabber_CurrentStatus));
+                goto X;
+              end;
           end;
       end;
+  X :;
   finally
-    FreeAndNil(XmlDoc);
-  end;}
+    JvXML.Free;
+  end;
 end;
 
 procedure Jabber_SendMessage(MJID, Msg: string);
@@ -425,172 +433,174 @@ var
   M: string;
 begin
   // Отправляем сообщение для jabber контакта
-  M := Format(JmessHead, [MJID, Jabber_Seq]) + '<body>' + Msg + '</body></message>';
+  M := Format(J_MessHead, [MJID, Jabber_Seq]) + '<body>' + Msg + '</body></message>';
   Sendflap_jabber(M);
   // Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
 end;
 
-procedure Jabber_ParsePresence(XmlData: string);
-{var
+procedure Jabber_ParsePresence(PktData: string);
+var
   PJID: string;
-  RosterItem: TListItem;}
+  RosterItem: TListItem;
+  JvXML: TJvSimpleXml;
 begin
   // Инициализируем XML
-  {XmlDoc := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlDoc do
+    // Загружаем xml данные
+    JvXML_LoadStr(JvXML, PktData);
+    with JvXML do
       begin
-        Text := XmlData;
-        if OpenKey('presence') then
-          try
-            begin
-              PJID := ReadString('from');
-              if PJID <> EmptyStr then
-                begin
-                  // Отделяем ресурс
+        if Root <> nil then
+          begin
+            PJID := Root.Properties.Value('from');
+            if PJID <> EmptyStr then
+              begin
+                // Отделяем ресурс
+                if Pos('/', PJID) > 0 then
                   PJID := Parse('/', PJID, 1);
-                  // Ищем эту запись в Ростере
-                  RosterItem := RosterForm.ReqRosterItem(PJID);
-                  if RosterItem <> nil then
-                    begin
-                      // Выставляем параметры этой записи
-                      with RosterItem do
-                        begin
-                          if ReadString('type') = 'unavailable' then
-                            begin
-                              SubItems[18] := '0';
-                              if (SubItems[6] <> '30') and (SubItems[6] <> '41') and (SubItems[6] <> '42') then
-                                SubItems[19] := '20'
-                              else
-                                SubItems[19] := '0';
-                              SubItems[6] := '30';
-                            end
-                          else
-                            begin
-                              if SubItems[6] = '30' then
-                                SubItems[18] := '20'
-                              else
-                                SubItems[18] := '0';
+                // Ищем эту запись в Ростере
+                RosterItem := RosterForm.ReqRosterItem(PJID);
+                if RosterItem <> nil then
+                  begin
+                    // Выставляем параметры этой записи
+                    with RosterItem do
+                      begin
+                        if Root.Properties.Value('type') = 'unavailable' then
+                          begin
+                            SubItems[18] := '0';
+                            if (SubItems[6] <> '30') and (SubItems[6] <> '41') and (SubItems[6] <> '42') then
+                              SubItems[19] := '20'
+                            else
                               SubItems[19] := '0';
-                              SubItems[6] := '28';
-                            end;
-                          // Запускаем таймер задержку событий Ростера
-                          MainForm.JvTimerList.Events[11].Enabled := False;
-                          MainForm.JvTimerList.Events[11].Enabled := True;
-                        end;
-                    end;
-                end;
-            end;
-          finally
-            CloseKey;
+                            SubItems[6] := '30';
+                          end
+                        else
+                          begin
+                            if SubItems[6] = '30' then
+                              SubItems[18] := '20'
+                            else
+                              SubItems[18] := '0';
+                            SubItems[19] := '0';
+                            SubItems[6] := '28';
+                          end;
+                        // Запускаем таймер задержку событий Ростера
+                        MainForm.JvTimerList.Events[11].Enabled := False;
+                        MainForm.JvTimerList.Events[11].Enabled := True;
+                      end;
+                  end;
+              end;
+
           end;
       end;
   finally
-    FreeAndNil(XmlDoc);
-  end;}
+    JvXML.Free;
+  end;
 end;
 
-procedure Jabber_ParseMessage(XmlData: string);
-{var
-  PJID, InMsg, Nick, Mess, MsgD, PopMsg: string;
-  RosterItem: TListItem;}
+procedure Jabber_ParseMessage(PktData: string);
+var
+  PJID, InMsg, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
+  RosterItem: TListItem;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
-  {// Если окно сообщений не было создано, то создаём его
+  // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
   // Инициализируем XML
-  XmlDoc := TrXML.Create;
+  JvXML_Create(JvXML);
   try
-    with XmlDoc do
+    // Загружаем xml данные
+    JvXML_LoadStr(JvXML, PktData);
+    with JvXML do
       begin
-        Text := XmlData;
-        if OpenKey('message') then
-          try
-            begin
-              PJID := ReadString('from');
-              OpenKey('body', False, 0);
-              InMsg := GetKeyText;
-              if (PJID <> EmptyStr) and (InMsg <> EmptyStr) then
-                begin
-                  // Отделяем ресурс
-                  if Pos('/', PJID) > 0 then
-                    PJID := Parse('/', PJID, 1);
-                  // Обрабатываем сообщение
-                  Mess := InMsg;
-                  CheckMessage_BR(Mess);
-                  ChatForm.CheckMessage_ClearTag(Mess);
-                  PopMsg := Mess;
-                  CheckMessage_BR(Mess);
-                  DecorateURL(Mess);
-                  // Ищем эту запись в Ростере
-                  RosterItem := RosterForm.ReqRosterItem(PJID);
-                  if RosterItem <> nil then
-                    begin
-                      // Выставляем параметры сообщения в этой записи
-                      with RosterItem do
-                        begin
-                          // Ник контакта из Ростера
-                          Nick := SubItems[0];
-                          // Дата сообщения
-                          MsgD := Nick + ' [' + DateTimeChatMess + ']';
-                          // Записываем историю в этот контакт если он уже найден в списке контактов
-                          SubItems[15] := URLEncode(PopMsg);
-                          SubItems[17] := 'X';
-                          SubItems[35] := '0';
-                          // Добавляем историю в эту запись
-                          // RosterForm.AddHistory(RosterItem, MsgD, Mess);
-                        end;
-                    end
-                  else // Если такой контакт не найден в Ростере, то добавляем его
-                    begin
-                      // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-                      Nick := SearchNickInCash(S_Jabber, PJID);
-                      // Дата сообщения
-                      MsgD := Nick + ' [' + DateTimeChatMess + ']';
-                      // Ищем группу "Не в списке" в Ростере
-                      RosterItem := RosterForm.ReqRosterItem(S_NoCL);
-                      if RosterItem = nil then // Если группу не нашли
-                        begin
-                          // Добавляем такую группу в Ростер
-                          RosterItem := RosterForm.RosterJvListView.Items.Add;
-                          RosterItem.Caption := S_NoCL;
-                          // Подготавиливаем все значения
-                          RosterForm.RosterItemSetFull(RosterItem);
-                          RosterItem.SubItems[1] := NoInListGroupCaption;
-                        end;
-                      // Добавляем этот контакт в Ростер
-                      RosterItem := RosterForm.RosterJvListView.Items.Add;
-                      with RosterItem do
-                        begin
-                          Caption := PJID;
-                          // Подготавиливаем все значения
-                          RosterForm.RosterItemSetFull(RosterItem);
-                          // Обновляем субстроки
-                          SubItems[0] := Nick;
-                          SubItems[1] := S_NoCL;
-                          SubItems[2] := 'none';
-                          SubItems[3] := S_Jabber;
-                          SubItems[6] := '214';
-                          SubItems[15] := URLEncode(PopMsg);
-                          SubItems[17] := 'X';
-                          SubItems[35] := '0';
-                          // Добавляем историю в эту запись
-                          // RosterForm.AddHistory(RosterItem, MsgD, Mess);
-                        end;
-                    end;
-                  // Добавляем сообщение в текущий чат
-                  if ChatForm.AddMessInActiveChat(Nick, PopMsg, PJID, MsgD, Mess) then
-                    RosterItem.SubItems[36] := EmptyStr;
-                end;
-            end;
-          finally
-            CloseKey;
+        if Root <> nil then
+          begin
+            PJID := Root.Properties.Value('from');
+            XML_Node := Root.Items.ItemNamed['body'];
+            if XML_Node <> nil then
+              InMsg := XML_Node.Value;
+            if (PJID <> EmptyStr) and (InMsg <> EmptyStr) then
+              begin
+                // Отделяем ресурс
+                if Pos('/', PJID) > 0 then
+                  PJID := Parse('/', PJID, 1);
+                // Обрабатываем сообщение
+                Mess := InMsg;
+                CheckMessage_BR(Mess);
+                ChatForm.CheckMessage_ClearTag(Mess);
+                PopMsg := Mess;
+                CheckMessage_BR(Mess);
+                DecorateURL(Mess);
+                // Ищем эту запись в Ростере
+                RosterItem := RosterForm.ReqRosterItem(PJID);
+                if RosterItem <> nil then
+                  begin
+                    // Выставляем параметры сообщения в этой записи
+                    with RosterItem do
+                      begin
+                        // Ник контакта из Ростера
+                        Nick := SubItems[0];
+                        // Дата сообщения
+                        MsgD := Nick + ' [' + DateTimeChatMess + ']';
+                        // Записываем историю в этот контакт если он уже найден в списке контактов
+                        SubItems[15] := URLEncode(PopMsg);
+                        SubItems[35] := '0';
+                      end;
+                  end
+                else // Если такой контакт не найден в Ростере, то добавляем его
+                  begin
+                    // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
+                    Nick := SearchNickInCash(S_Jabber, PJID);
+                    // Дата сообщения
+                    MsgD := Nick + ' [' + DateTimeChatMess + ']';
+                    // Ищем группу "Не в списке" в Ростере
+                    RosterItem := RosterForm.ReqRosterItem(S_NoCL);
+                    if RosterItem = nil then // Если группу не нашли
+                      begin
+                        // Добавляем такую группу в Ростер
+                        RosterItem := RosterForm.RosterJvListView.Items.Add;
+                        RosterItem.Caption := S_NoCL;
+                        // Подготавиливаем все значения
+                        RosterForm.RosterItemSetFull(RosterItem);
+                        RosterItem.SubItems[1] := NoInListGroupCaption;
+                      end;
+                    // Добавляем этот контакт в Ростер
+                    RosterItem := RosterForm.RosterJvListView.Items.Add;
+                    with RosterItem do
+                      begin
+                        Caption := PJID;
+                        // Подготавиливаем все значения
+                        RosterForm.RosterItemSetFull(RosterItem);
+                        // Обновляем субстроки
+                        SubItems[0] := Nick;
+                        SubItems[1] := S_NoCL;
+                        SubItems[2] := 'none';
+                        SubItems[3] := S_Jabber;
+                        SubItems[6] := '42';
+                        SubItems[15] := URLEncode(PopMsg);
+                        SubItems[35] := '0';
+                      end;
+                    // Запускаем таймер задержку событий Ростера
+                    MainForm.JvTimerList.Events[11].Enabled := False;
+                    MainForm.JvTimerList.Events[11].Enabled := True;
+                  end;
+
+                // Записываем история в файл истории с этим контактов
+                HistoryFile := ProfilePath + HistoryFileName + S_Jabber + BN + Jabber_LoginUIN + BN + PJID + '.htm';
+                SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
+                // Добавляем сообщение в текущий чат
+                RosterItem.SubItems[36] := 'X';
+                if ChatForm.AddMessInActiveChat(Nick, PopMsg, PJID, MsgD, Mess) then
+                  RosterItem.SubItems[36] := EmptyStr;
+              end;
           end;
       end;
   finally
-    FreeAndNil(XmlDoc);
-  end;}
+    JvXML.Free;
+  end;
 end;
 
 end.

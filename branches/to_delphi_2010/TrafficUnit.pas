@@ -38,6 +38,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ResetCurTrafButtonClick(Sender: TObject);
     procedure ResetAllTrafButtonClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -111,6 +112,12 @@ begin
   // Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetIcon(226, Icon);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
+end;
+
+procedure TTrafficForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 end.

@@ -3,7 +3,6 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
   ClientHeight = 416
   ClientWidth = 601
   Color = clBtnFace
@@ -12,11 +11,13 @@ object SettingsForm: TSettingsForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -33,55 +34,42 @@ object SettingsForm: TSettingsForm
     Images = MainForm.AllImageList
     Items = <
       item
-        Caption = #1054#1073#1097#1080#1077
         ImageIndex = 0
       end
       item
-        Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
         ImageIndex = 1
       end
       item
-        Caption = #1054#1082#1085#1086' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
         ImageIndex = 165
       end
       item
-        Caption = #1057#1086#1073#1099#1090#1080#1103
         ImageIndex = 133
       end
       item
-        Caption = #1048#1089#1090#1086#1088#1080#1103
         ImageIndex = 147
       end
       item
-        Caption = #1057#1090#1072#1090#1091#1089#1099
         ImageIndex = 181
       end
       item
-        Caption = #1040#1085#1090#1080'-'#1089#1087#1072#1084
         ImageIndex = 170
       end
       item
-        Caption = #1047#1074#1091#1082#1080
         ImageIndex = 135
       end
       item
-        Caption = #1048#1085#1090#1077#1088#1092#1077#1081#1089
         ImageIndex = 182
       end
       item
-        Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1083#1072#1074#1080#1096#1080
         ImageIndex = 183
       end
       item
-        Caption = #1052#1086#1076#1091#1083#1080
         ImageIndex = 184
       end
       item
-        Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
         ImageIndex = 162
       end
       item
-        Caption = #1059#1095#1105#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
         ImageIndex = 160
       end>
     ItemIndex = 0
@@ -105,7 +93,7 @@ object SettingsForm: TSettingsForm
       Top = 3
       Width = 432
       Height = 359
-      ActivePage = ThemesPage
+      ActivePage = GeneralPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -119,8 +107,7 @@ object SettingsForm: TSettingsForm
           Left = 0
           Top = 0
           Width = 432
-          Height = 99
-          Caption = #1054#1073#1097#1080#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
+          Height = 121
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -131,9 +118,9 @@ object SettingsForm: TSettingsForm
           object HideInTrayProgramStartCheckBox: TCheckBox
             Left = 14
             Top = 22
-            Width = 395
+            Width = 402
             Height = 17
-            Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1089#1074#1077#1088#1085#1091#1090#1086#1081' '#1074' '#1090#1088#1101#1081
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -146,9 +133,9 @@ object SettingsForm: TSettingsForm
           object StartOnWinStartCheckBox: TCheckBox
             Left = 14
             Top = 45
-            Width = 395
+            Width = 402
             Height = 17
-            Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' IMadering '#1087#1088#1080' '#1089#1090#1072#1088#1090#1077' '#1089#1080#1089#1090#1077#1084#1099' ('#1090#1086#1083#1100#1082#1086' '#1076#1083#1103' Windows)'
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -161,16 +148,33 @@ object SettingsForm: TSettingsForm
           object AutoUpdateCheckBox: TCheckBox
             Left = 14
             Top = 68
-            Width = 395
+            Width = 402
             Height = 17
-            Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1085#1086#1074#1086#1081' '#1074#1077#1088#1089#1080#1080' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
+            TabStop = False
+            Checked = True
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
+            State = cbChecked
             TabOrder = 2
+            OnClick = ProxyAddressEditChange
+          end
+          object BestPrioritetCheckBox: TCheckBox
+            Left = 14
+            Top = 91
+            Width = 402
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 3
             OnClick = ProxyAddressEditChange
           end
         end
@@ -186,7 +190,6 @@ object SettingsForm: TSettingsForm
           Top = 0
           Width = 214
           Height = 149
-          Caption = #1054#1082#1085#1086
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -199,7 +202,7 @@ object SettingsForm: TSettingsForm
             Top = 19
             Width = 192
             Height = 17
-            Caption = #1055#1086#1074#1077#1088#1093' '#1074#1089#1077#1093' '#1086#1082#1086#1085
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -214,7 +217,7 @@ object SettingsForm: TSettingsForm
             Top = 42
             Width = 161
             Height = 17
-            Caption = #1040#1074#1090#1086'-'#1089#1082#1088#1099#1090#1080#1077' ('#1089#1077#1082#1091#1085#1076#1099'):'
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -229,6 +232,7 @@ object SettingsForm: TSettingsForm
             Top = 40
             Width = 25
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -248,7 +252,6 @@ object SettingsForm: TSettingsForm
           Top = 0
           Width = 212
           Height = 80
-          Caption = #1055#1088#1086#1079#1088#1072#1095#1085#1086#1089#1090#1100
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -265,6 +268,7 @@ object SettingsForm: TSettingsForm
             PositionToolTip = ptTop
             ShowSelRange = False
             TabOrder = 0
+            TabStop = False
             TickStyle = tsNone
             OnChange = TransparentTrackBarChange
           end
@@ -273,7 +277,7 @@ object SettingsForm: TSettingsForm
             Top = 52
             Width = 188
             Height = 17
-            Caption = #1058#1086#1083#1100#1082#1086' '#1076#1083#1103' '#1085#1077#1072#1082#1090#1080#1074#1085#1086#1075#1086
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -289,7 +293,6 @@ object SettingsForm: TSettingsForm
           Top = 86
           Width = 212
           Height = 63
-          Caption = #1058#1077#1082#1089#1090' '#1079#1072#1075#1086#1083#1086#1074#1082#1072' '#1086#1082#1085#1072
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -302,6 +305,7 @@ object SettingsForm: TSettingsForm
             Top = 25
             Width = 187
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -309,7 +313,6 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            Text = 'IMadering'
             OnChange = ProxyAddressEditChange
           end
         end
@@ -318,7 +321,6 @@ object SettingsForm: TSettingsForm
           Top = 155
           Width = 432
           Height = 204
-          Caption = #1054#1087#1094#1080#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -339,7 +341,6 @@ object SettingsForm: TSettingsForm
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1086#1082#1085#1072' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -360,7 +361,6 @@ object SettingsForm: TSettingsForm
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1086#1087#1086#1074#1077#1097#1077#1085#1080#1081' '#1086' '#1089#1086#1073#1099#1090#1080#1103#1093' '#1074' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -376,12 +376,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'HistoryPage'
-        object GroupBox1: TGroupBox
+        object HistoryGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1048#1089#1090#1086#1088#1080#1103
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -397,12 +396,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'StatusesPage'
-        object GroupBox2: TGroupBox
+        object StatusesGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1057#1090#1072#1090#1091#1089#1099
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -418,12 +416,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'AntiSpamPage'
-        object GroupBox3: TGroupBox
+        object AntiSpamGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1040#1085#1090#1080'-'#1089#1087#1072#1084
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -439,12 +436,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'SoundsPage'
-        object GroupBox4: TGroupBox
+        object SoundsGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1047#1074#1091#1082#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -452,6 +448,147 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
+          object SoundPlaySpeedButton: TSpeedButton
+            Left = 385
+            Top = 327
+            Width = 34
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentShowHint = False
+            ShowHint = True
+            OnClick = SoundPlaySpeedButtonClick
+          end
+          object SoundOnOffCheckBox: TCheckBox
+            Left = 14
+            Top = 17
+            Width = 405
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnClick = SoundOnOffCheckBoxClick
+          end
+          object SoundOffForStatusCheckBox: TCheckBox
+            Left = 27
+            Top = 40
+            Width = 392
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+          end
+          object SoundAlwaysUniqCheckBox: TCheckBox
+            Left = 27
+            Top = 63
+            Width = 392
+            Height = 17
+            TabStop = False
+            Checked = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            State = cbChecked
+            TabOrder = 2
+          end
+          object SoundPackComboBox: TComboBox
+            Left = 14
+            Top = 88
+            Width = 219
+            Height = 21
+            Style = csDropDownList
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 3
+            TabStop = False
+            OnChange = SoundPackComboBoxChange
+          end
+          object DownSoundButton: TButton
+            Left = 255
+            Top = 86
+            Width = 164
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 4
+            TabStop = False
+          end
+          object SoundPathListView: TListView
+            Left = 14
+            Top = 117
+            Width = 405
+            Height = 204
+            Checkboxes = True
+            Columns = <
+              item
+                Width = 170
+              end
+              item
+                Width = 230
+              end>
+            ColumnClick = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            HideSelection = False
+            Items.ItemData = {
+              03F80000000800000000000000FFFFFFFFFFFFFFFF01000000FFFFFFFF000000
+              000131000000000000FFFFFFFFFFFFFFFF01000000FFFFFFFF00000000013200
+              0000000000FFFFFFFFFFFFFFFF01000000FFFFFFFF0000000001330000000000
+              00FFFFFFFFFFFFFFFF01000000FFFFFFFF000000000134000000000000FFFFFF
+              FFFFFFFFFF01000000FFFFFFFF000000000135000000000000FFFFFFFFFFFFFF
+              FF01000000FFFFFFFF000000000136000000000000FFFFFFFFFFFFFFFF010000
+              00FFFFFFFF000000000137000000000000FFFFFFFFFFFFFFFF01000000FFFFFF
+              FF0000000001380000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
+            ReadOnly = True
+            RowSelect = True
+            ParentFont = False
+            TabOrder = 5
+            TabStop = False
+            ViewStyle = vsReport
+            OnChange = SoundPathListViewChange
+          end
+          object SoundPathButton: TButton
+            Left = 14
+            Top = 327
+            Width = 99
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 6
+            TabStop = False
+          end
         end
       end
       object ThemesPage: TJvStandardPage
@@ -460,12 +597,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'ThemesPage'
-        object GroupBox7: TGroupBox
+        object LangGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
-          Height = 359
-          Caption = #1048#1085#1090#1077#1088#1092#1077#1081#1089
+          Height = 109
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -473,12 +609,217 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
-          object Bevel1: TBevel
-            Left = 11
-            Top = 72
-            Width = 410
-            Height = 2
-            Shape = bsBottomLine
+          object LangDownButton: TButton
+            Left = 255
+            Top = 16
+            Width = 164
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            OnClick = LangDownButtonClick
+          end
+          object LangComboBox: TComboBox
+            Left = 13
+            Top = 18
+            Width = 220
+            Height = 21
+            Style = csDropDownList
+            DropDownCount = 15
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            TabStop = False
+            OnChange = LangComboBoxChange
+            Items.Strings = (
+              '[ru] '#1056#1091#1089#1089#1082#1080#1081
+              '[en] English')
+          end
+          object LangInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 47
+            Width = 406
+            Height = 56
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 2
+          end
+        end
+        object SmiliesGroupBox: TGroupBox
+          Left = 0
+          Top = 115
+          Width = 432
+          Height = 129
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 1
+          object SmiliesLabel: TLabel
+            Left = 13
+            Top = 80
+            Width = 406
+            Height = 32
+            AutoSize = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            WordWrap = True
+          end
+          object SmiliesComboBox: TComboBox
+            Left = 13
+            Top = 18
+            Width = 220
+            Height = 21
+            Style = csDropDownList
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            OnChange = SmiliesComboBoxChange
+          end
+          object SmiliesDownButton: TButton
+            Left = 255
+            Top = 16
+            Width = 164
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            TabStop = False
+            OnClick = LangDownButtonClick
+          end
+          object TextSmiliesCheckBox: TCheckBox
+            Left = 13
+            Top = 44
+            Width = 406
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            OnClick = ProxyAddressEditChange
+          end
+          object SmiliesInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 66
+            Width = 406
+            Height = 56
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 3
+          end
+        end
+        object IconsGroupBox: TGroupBox
+          Left = 0
+          Top = 250
+          Width = 432
+          Height = 109
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 2
+          object IconsComboBox: TComboBox
+            Left = 13
+            Top = 18
+            Width = 220
+            Height = 21
+            Style = csDropDownList
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            OnChange = IconsComboBoxChange
+          end
+          object IconsDownButton: TButton
+            Left = 255
+            Top = 16
+            Width = 164
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            TabStop = False
+            OnClick = LangDownButtonClick
+          end
+          object IconsInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 47
+            Width = 406
+            Height = 56
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 2
           end
         end
       end
@@ -488,12 +829,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'HotKeysPage'
-        object GroupBox8: TGroupBox
+        object HotKeysGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1083#1072#1074#1080#1096#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -509,12 +849,11 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'PluginsPage'
-        object GroupBox9: TGroupBox
+        object PluginsGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1052#1086#1076#1091#1083#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -523,18 +862,17 @@ object SettingsForm: TSettingsForm
           ParentFont = False
           TabOrder = 0
           object ShowPluginConfigButton: TButton
-            Left = 16
-            Top = 320
-            Width = 401
+            Left = 10
+            Top = 325
+            Width = 412
             Height = 25
-            Caption = #1053#1072#1089#1090#1088#1086#1080#1090#1100' '#1074#1099#1073#1088#1072#1085#1085#1099#1081' '#1087#1083#1072#1075#1080#1085
             TabOrder = 0
           end
           object PluginsListView: TListView
-            Left = 16
-            Top = 24
-            Width = 401
-            Height = 290
+            Left = 10
+            Top = 19
+            Width = 412
+            Height = 300
             Columns = <>
             TabOrder = 1
           end
@@ -546,13 +884,12 @@ object SettingsForm: TSettingsForm
         Width = 432
         Height = 359
         Caption = 'GlobalProxyPage'
-        object GroupBox5: TGroupBox
+        object ProxyGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 432
           Height = 247
           Align = alTop
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1082#1089#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -560,92 +897,94 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
-          object Label1: TLabel
+          object HostLabel: TLabel
+            Left = 82
+            Top = 48
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object PortLabel: TLabel
+            Left = 82
+            Top = 75
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object TypeLabel: TLabel
+            Left = 334
+            Top = 48
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object ProxyVerLabel: TLabel
+            Left = 334
+            Top = 75
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object LoginLabel: TLabel
+            Left = 82
+            Top = 147
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object PassLabel: TLabel
+            Left = 82
+            Top = 174
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Bevel1: TBevel
             Left = 12
-            Top = 54
-            Width = 73
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1040#1076#1088#1077#1089' '#1087#1088#1086#1082#1089#1080':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label2: TLabel
-            Left = 18
-            Top = 81
-            Width = 67
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1055#1086#1088#1090' '#1087#1088#1086#1082#1089#1080':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label3: TLabel
-            Left = 315
-            Top = 54
-            Width = 22
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1058#1080#1087':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label4: TLabel
-            Left = 298
-            Top = 81
-            Width = 39
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1042#1077#1088#1089#1080#1103':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label5: TLabel
-            Left = 51
-            Top = 145
-            Width = 34
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1051#1086#1075#1080#1085':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label6: TLabel
-            Left = 44
-            Top = 172
-            Width = 41
-            Height = 13
-            Caption = #1055#1072#1088#1086#1083#1100':'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
+            Top = 109
+            Width = 406
+            Height = 2
+            Shape = bsBottomLine
           end
           object ProxyAddressEdit: TEdit
             Left = 91
-            Top = 51
+            Top = 45
             Width = 207
             Height = 21
             Color = clBtnFace
@@ -661,7 +1000,7 @@ object SettingsForm: TSettingsForm
           end
           object ProxyPortEdit: TEdit
             Left = 91
-            Top = 78
+            Top = 72
             Width = 187
             Height = 21
             Color = clBtnFace
@@ -677,8 +1016,8 @@ object SettingsForm: TSettingsForm
           end
           object ProxyTypeComboBox: TComboBox
             Left = 343
-            Top = 51
-            Width = 73
+            Top = 45
+            Width = 75
             Height = 21
             Style = csDropDownList
             Color = clBtnFace
@@ -690,7 +1029,8 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ItemIndex = 0
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 4
+            TabStop = False
             Text = 'HTTP'
             Items.Strings = (
               'HTTP'
@@ -701,8 +1041,8 @@ object SettingsForm: TSettingsForm
           end
           object ProxyVersionComboBox: TComboBox
             Left = 343
-            Top = 78
-            Width = 73
+            Top = 72
+            Width = 75
             Height = 21
             Style = csDropDownList
             Color = clBtnFace
@@ -714,7 +1054,8 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ItemIndex = 0
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 5
+            TabStop = False
             Text = '1.0'
             OnChange = ProxyAddressEditChange
             Items.Strings = (
@@ -723,10 +1064,10 @@ object SettingsForm: TSettingsForm
           end
           object ProxyAuthCheckBox: TCheckBox
             Left = 91
-            Top = 113
-            Width = 231
+            Top = 121
+            Width = 327
             Height = 17
-            Caption = #1040#1074#1090#1086#1088#1080#1079#1072#1094#1080#1103' '#1085#1072' '#1087#1088#1086#1082#1089#1080
+            TabStop = False
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -734,13 +1075,13 @@ object SettingsForm: TSettingsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 4
+            TabOrder = 6
             OnClick = ProxyAuthCheckBoxClick
           end
           object ProxyLoginEdit: TEdit
             Left = 91
-            Top = 142
-            Width = 325
+            Top = 144
+            Width = 327
             Height = 21
             Color = clBtnFace
             Enabled = False
@@ -750,13 +1091,13 @@ object SettingsForm: TSettingsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 5
+            TabOrder = 2
             OnChange = ProxyAddressEditChange
           end
           object ProxyPasswordEdit: TEdit
             Left = 91
-            Top = 169
-            Width = 325
+            Top = 171
+            Width = 327
             Height = 21
             Color = clBtnFace
             Enabled = False
@@ -767,15 +1108,15 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             PasswordChar = '*'
-            TabOrder = 6
+            TabOrder = 3
             OnChange = ProxyAddressEditChange
           end
           object ProxyShowPassCheckBox: TCheckBox
             Left = 91
-            Top = 196
-            Width = 302
+            Top = 198
+            Width = 327
             Height = 17
-            Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1087#1072#1088#1086#1083#1100
+            TabStop = False
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -788,10 +1129,10 @@ object SettingsForm: TSettingsForm
           end
           object ProxyEnableCheckBox: TCheckBox
             Left = 12
-            Top = 23
-            Width = 318
+            Top = 22
+            Width = 406
             Height = 17
-            Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -803,10 +1144,10 @@ object SettingsForm: TSettingsForm
           end
           object NTLMCheckBox: TCheckBox
             Left = 91
-            Top = 219
-            Width = 318
+            Top = 221
+            Width = 327
             Height = 17
-            Caption = 'NTLM '#1072#1091#1090#1077#1085#1090#1080#1092#1080#1082#1072#1094#1080#1103
+            TabStop = False
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -818,13 +1159,12 @@ object SettingsForm: TSettingsForm
             OnClick = ProxyAddressEditChange
           end
         end
-        object GroupBox6: TGroupBox
+        object ConnGroupBox: TGroupBox
           Left = 0
           Top = 247
           Width = 432
           Height = 112
           Align = alClient
-          Caption = #1054#1087#1094#1080#1080
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -835,9 +1175,9 @@ object SettingsForm: TSettingsForm
           object ReconnectCheckBox: TCheckBox
             Left = 12
             Top = 21
-            Width = 389
+            Width = 406
             Height = 17
-            Caption = #1055#1077#1088#1077#1087#1086#1076#1082#1083#1102#1095#1072#1090#1100#1089#1103' '#1087#1088#1080' '#1086#1073#1088#1099#1074#1077' '#1089#1074#1103#1079#1080
+            TabStop = False
             Checked = True
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -862,7 +1202,6 @@ object SettingsForm: TSettingsForm
           Top = 0
           Width = 432
           Height = 359
-          Caption = #1059#1095#1105#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080' ('#1091#1087#1088#1072#1074#1083#1077#1085#1080#1077' '#1087#1088#1086#1090#1086#1082#1086#1083#1072#1084#1080')'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -878,29 +1217,67 @@ object SettingsForm: TSettingsForm
             Checkboxes = True
             Columns = <
               item
-                Caption = #1059#1095#1105#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
                 Width = 404
               end>
             ColumnClick = False
+            Groups = <
+              item
+                Header = 'ICQ (OSCAR)'
+                GroupID = 0
+                State = [lgsNormal]
+                HeaderAlign = taLeftJustify
+                FooterAlign = taLeftJustify
+                TitleImage = -1
+                ExtendedImage = -1
+              end
+              item
+                Header = 'Jabber (XMPP)'
+                GroupID = 1
+                State = [lgsNormal]
+                HeaderAlign = taLeftJustify
+                FooterAlign = taLeftJustify
+                TitleImage = -1
+                ExtendedImage = -1
+              end
+              item
+                Header = 'Mail.ru agent (MRA)'
+                GroupID = 2
+                State = [lgsNormal]
+                HeaderAlign = taLeftJustify
+                FooterAlign = taLeftJustify
+                TitleImage = -1
+                ExtendedImage = -1
+              end
+              item
+                Header = 'Twitter (www.twitter.com)'
+                GroupID = 3
+                State = [lgsNormal]
+                HeaderAlign = taLeftJustify
+                FooterAlign = taLeftJustify
+                TitleImage = -1
+                ExtendedImage = -1
+              end>
             HideSelection = False
+            GroupView = True
             ReadOnly = True
             RowSelect = True
+            ShowColumnHeaders = False
             SmallImages = MainForm.AllImageList
             TabOrder = 0
             TabStop = False
             ViewStyle = vsReport
+            OnChange = ProtocolsListViewChange
             OnClick = ProtocolsListViewClick
-            OnDblClick = ProtocolsListViewDblClick
+            OnDblClick = ProtocolsListViewClick
             OnKeyUp = ProtocolsListViewKeyUp
-            OnSelectItem = ProtocolsListViewSelectItem
           end
           object AddProtoBitBtn: TBitBtn
             Left = 12
             Top = 326
             Width = 132
             Height = 25
-            Caption = #1044#1086#1073#1072#1074#1080#1090#1100
             DoubleBuffered = True
+            Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -917,7 +1294,6 @@ object SettingsForm: TSettingsForm
             Top = 326
             Width = 132
             Height = 25
-            Caption = #1053#1072#1089#1090#1088#1086#1080#1090#1100
             DoubleBuffered = True
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
@@ -936,8 +1312,8 @@ object SettingsForm: TSettingsForm
             Top = 326
             Width = 132
             Height = 25
-            Caption = #1059#1076#1072#1083#1080#1090#1100
             DoubleBuffered = True
+            Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -947,7 +1323,7 @@ object SettingsForm: TSettingsForm
             ParentFont = False
             TabOrder = 3
             TabStop = False
-            OnClick = DeleteProtoBitBtnClick
+            OnClick = AddProtoBitBtnClick
           end
         end
       end
@@ -958,7 +1334,6 @@ object SettingsForm: TSettingsForm
     Top = 383
     Width = 137
     Height = 25
-    Caption = #1054#1090#1084#1077#1085#1072
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 2
@@ -966,9 +1341,9 @@ object SettingsForm: TSettingsForm
     OnClick = CancelBitBtnClick
   end
   object OKBitBtn: TBitBtn
-    Left = 472
+    Left = 486
     Top = 383
-    Width = 121
+    Width = 107
     Height = 25
     Caption = 'OK'
     DoubleBuffered = True
@@ -978,11 +1353,10 @@ object SettingsForm: TSettingsForm
     OnClick = OKBitBtnClick
   end
   object ApplyBitBtn: TBitBtn
-    Left = 336
+    Left = 373
     Top = 383
-    Width = 121
+    Width = 107
     Height = 25
-    Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
     DoubleBuffered = True
     Enabled = False
     ParentDoubleBuffered = False

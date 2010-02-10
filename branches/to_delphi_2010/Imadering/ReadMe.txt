@@ -7,6 +7,8 @@ Site: http://imadering.ru
 
 Forum: http://imadering.mybb.ru
 
+Blog: http://twitter.com/IMadering
+
 Blog: http://juick.com/IMadering
 
 Gallery: http://picasaweb.google.com/delferon
@@ -23,11 +25,13 @@ ICQ: 118648
 
 Jabber: imadering@jabber.ru
 
-E-mail: imadering@mail.ru
+Email: imadering@mail.ru
 
 
 Donate
 ------
+
+SkyLink: +79010084988
 
 WebMoney: Z338792805424
 

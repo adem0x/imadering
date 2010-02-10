@@ -35,6 +35,7 @@ type
     procedure SmiliesHTMLViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
     procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   private
     TimerCount: Integer;
@@ -102,6 +103,13 @@ begin
   HintWindow.Free;
 end;
 
+procedure TSmilesForm.FormShow(Sender: TObject);
+begin
+  // Сбрасываем фокус со смайлов
+  if SmiliesHTMLViewer.CanFocus then
+    SmiliesHTMLViewer.SetFocus;
+end;
+
 procedure TSmilesForm.HintTimerTimer(Sender: TObject);
 const
   StartCount = 2;
@@ -145,20 +153,18 @@ procedure TSmilesForm.SmiliesHTMLViewerHotSpotClick(Sender: TObject; const SRC: 
 begin
   // Отключаем реакции
   Handled := True;
+  // Выводим на передний план окно чата и ставим фокус в поле ввода
+  SetForegroundWindow(ChatForm.Handle);
+  if ChatForm.InputRichEdit.CanFocus then
+    ChatForm.InputRichEdit.SetFocus;
   // Вставляем выбранный смайлик в поле ввода в окне чата
   with ChatForm.InputRichEdit do
     begin
       Text := Text + BN + SmiliesHTMLViewer.TitleAttr;
       SelStart := GetTextLen;
-      if SmiliesHTMLViewer.CanFocus then
-        SmiliesHTMLViewer.SetFocus;
-      // Закрываем окно смайлов
-      Close;
     end;
-  // Выводим на передний план окно чата и ставим фокус в поле ввода
-  SetForegroundWindow(ChatForm.Handle);
-  if ChatForm.InputRichEdit.CanFocus then
-    ChatForm.InputRichEdit.SetFocus;
+  // Закрываем окно смайлов
+  Close;
 end;
 
 procedure TSmilesForm.SmiliesHTMLViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);

@@ -10,11 +10,13 @@ object IcqXStatusForm: TIcqXStatusForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDefaultSizeOnly
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDeactivate = FormDeactivate
   PixelsPerInch = 96
   TextHeight = 13

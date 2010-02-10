@@ -60,6 +60,7 @@ type
     procedure BottomPopupMenuPopup(Sender: TObject);
     procedure TopAllCopyHTMLClick(Sender: TObject);
     procedure BottomAllCopyHTMLClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -90,8 +91,6 @@ uses
   OverbyteIcsUrl;
 
 resourcestring
-  DetailsCSS = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' + 'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
-    '.cbold { font: bold 12px tahoma, verdana; }' + '.cdef { font: 12px tahoma, verdana; }' + '.cmargin { font: 11px tahoma, verdana; margin: 10px; }' + '</style>';
   RS_ContForm = 'contact_info_form';
 
 procedure TIcqContactInfoForm.TopAllCopyHTMLClick(Sender: TObject);
@@ -836,6 +835,12 @@ begin
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+end;
+
+procedure TIcqContactInfoForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TIcqContactInfoForm.FormDestroy(Sender: TObject);

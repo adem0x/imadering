@@ -118,6 +118,7 @@ type
     procedure SearchResultPopupMenuPopup(Sender: TObject);
     procedure LoadSMClick(Sender: TObject);
     procedure SaveSMClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -491,6 +492,12 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
+end;
+
+procedure TIcqSearchForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TIcqSearchForm.FormDestroy(Sender: TObject);

@@ -168,6 +168,12 @@
 			<DCCReference Include="lib\ComCtrls.pas"/>
 			<DCCReference Include="lib\CategoryButtons.pas"/>
 			<DCCReference Include="lib\ButtonGroup.pas"/>
+			<DCCReference Include="LoginUnit.pas">
+				<Form>LoginForm</Form>
+			</DCCReference>
+			<DCCReference Include="TwitterOptionsUnit.pas">
+				<Form>TwitterOptionsForm</Form>
+			</DCCReference>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
@@ -198,7 +204,7 @@
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">189</VersionInfo>
+						<VersionInfo Name="Build">223</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -210,7 +216,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.1.189</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.1.223</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

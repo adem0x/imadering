@@ -56,6 +56,7 @@ type
     procedure RosterPopupMenuPopup(Sender: TObject);
     procedure ClearNoCLContactsClick(Sender: TObject);
     procedure ClearTempIcqContactsClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -605,6 +606,12 @@ begin
   if FileExists(ProfilePath + ContactListFileName) then
     RosterJvListView.LoadFromCSV(ProfilePath + ContactListFileName);
   XLog(LogRosterCount + IntToStr(RosterJvListView.Items.Count));
+end;
+
+procedure TRosterForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 function TRosterForm.ClearContacts(CType: string): Boolean;

@@ -11,10 +11,12 @@ object IcqSearchForm: TIcqSearchForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13

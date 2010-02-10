@@ -55,6 +55,7 @@ type
     procedure ClearMessPopupMenuPopup(Sender: TObject);
     procedure GtransListViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GtransHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -320,6 +321,12 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
+procedure TGTransForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
+end;
+
 procedure TGTransForm.GtransHttpClientSessionClosed(Sender: TObject);
 begin
   // Обрабатываем возможные ошибки в работе http сокета
@@ -338,7 +345,7 @@ begin
   if ErrCode <> 0 then
     begin
       GTranslation := False;
-      DAShow(S_Errorhead, NotifyConnectError('GTrans', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).Name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -348,7 +355,7 @@ begin
   if Error <> 0 then
     begin
       GTranslation := False;
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, SocketConnErrorInfo_1 + RN + Msg + RN + Format(HttpSocketErrCodeL, [Error]) + RN + '[ ' + SocketL + BN + (Sender as THttpCli).Name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 

@@ -58,6 +58,7 @@ type
     procedure SendFileHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
     procedure SendFileHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure SendFileHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -189,7 +190,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('Transfer', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).Name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -198,7 +199,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, SocketConnErrorInfo_1 + RN + Msg + RN + Format(HttpSocketErrCodeL, [Error]) + RN + '[ ' + SocketL + BN + (Sender as THttpCli).Name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -254,6 +255,12 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Применяем настройки прокси
   SettingsForm.ApplyProxyHttpClient(SendFileHttpClient);
+end;
+
+procedure TFileTransferForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TFileTransferForm.TranslateForm;

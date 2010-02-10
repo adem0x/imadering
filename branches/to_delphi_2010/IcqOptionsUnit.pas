@@ -39,7 +39,7 @@ type
     OptionJvPageList: TJvPageList;
     AccountPage: TJvStandardPage;
     PrivatPage: TJvStandardPage;
-    BonusPage: TJvStandardPage;
+    ConsolePage: TJvStandardPage;
     IDClientPage: TJvStandardPage;
     ApplyButton: TBitBtn;
     CancelButton: TBitBtn;
@@ -57,7 +57,7 @@ type
     MyInfoNameGroupBox: TGroupBox;
     OtherOptionsGroupBox: TGroupBox;
     ShowAwayTimeCheckBox: TCheckBox;
-    AccountGroupBox1: TGroupBox;
+    AccountGroupBox: TGroupBox;
     ReqPassLabel: TLabel;
     ICQUINLabel: TLabel;
     PassLabel: TLabel;
@@ -218,9 +218,6 @@ type
     AvatarInfoGroupBox: TGroupBox;
     ParamInfoGroupBox: TGroupBox;
     SendCustomICQPacketRichEdit: TRichEdit;
-    SendCustomICQPaketTimerCheckBox: TCheckBox;
-    SendCustomICQPaketTimerEdit: TEdit;
-    SendCustomICQPaketTimer: TTimer;
     ParamInfoRichEdit: TRichEdit;
     AccountGroupBox2: TGroupBox;
     ShowHideContactsCheckBox: TCheckBox;
@@ -246,14 +243,12 @@ type
     procedure ShowPassChangeCheckBoxClick(Sender: TObject);
     procedure ChangePassButtonClick(Sender: TObject);
     procedure PassEditClick(Sender: TObject);
-    procedure SendCustomICQPaketTimerEditExit(Sender: TObject);
-    procedure SendCustomICQPaketTimerEditKeyPress(Sender: TObject; var Key: Char);
     procedure SendCustomICQPacketButtonClick(Sender: TObject);
-    procedure SendCustomICQPaketTimerTimer(Sender: TObject);
     procedure RegNewUINLabelClick(Sender: TObject);
     procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure PassEditChange(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -353,6 +348,7 @@ end;
 
 procedure TIcqOptionsForm.ApplySettings;
 begin
+  // Применяем настройки ICQ протокола
   // --------------------------------------------------------------------------
   // Нормализуем ICQ логин
   ICQUINEdit.Text := Trim(ICQUINEdit.Text);
@@ -430,6 +426,8 @@ begin
   finally
     JvXML.Free;
   end;
+  // Деактивируем кнопку применения настроек
+  ApplyButton.Enabled := False;
 end;
 
 procedure TIcqOptionsForm.ReqPassLabelClick(Sender: TObject);
@@ -739,45 +737,9 @@ begin
         end
       else
         SendFLAP('2', Pkt);
-      // Запускаем таймер повтора отправки если установлено
-      if SendCustomICQPaketTimerCheckBox.Checked then
-        begin
-          // Применяем время таймера
-          SendCustomICQPaketTimer.Interval := StrToInt(SendCustomICQPaketTimerEdit.Text) * 1000;
-          // Пересбрасываем и перезапускаем таймер
-          SendCustomICQPaketTimer.Enabled := False;
-          SendCustomICQPaketTimer.Enabled := True;
-        end;
     end;
   // Сохраняем пакет локально для дальнейшего использования
-  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Icq Packet.txt');
-end;
-
-procedure TIcqOptionsForm.SendCustomICQPaketTimerEditExit(Sender: TObject);
-begin
-  // Если ввод пустой, то ставим по дефолту
-  if SendCustomICQPaketTimerEdit.Text = EmptyStr then
-    SendCustomICQPaketTimerEdit.Text := '10';
-end;
-
-procedure TIcqOptionsForm.SendCustomICQPaketTimerEditKeyPress(Sender: TObject; var Key: Char);
-const
-  ValidAsciiChars = ['0' .. '9'];
-begin
-  // Делаем так, что вводить можно только цифры
-  if (not CharInSet(Key, ValidAsciiChars)) and (Key <> #8) then
-    Key := #0;
-end;
-
-procedure TIcqOptionsForm.SendCustomICQPaketTimerTimer(Sender: TObject);
-begin
-  // Применяем время таймера
-  SendCustomICQPaketTimer.Interval := StrToInt(SendCustomICQPaketTimerEdit.Text) * 1000;
-  // Нажимаем на кнопку отправки
-  if SendCustomICQPaketTimerCheckBox.Checked then
-    SendCustomICQPacketButtonClick(Self)
-  else
-    SendCustomICQPaketTimer.Enabled := False;
+  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Icq packet.txt');
 end;
 
 procedure TIcqOptionsForm.ICQOptionButtonGroupButtonClicked(Sender: TObject; index: Integer);
@@ -804,7 +766,7 @@ begin
   else
     PassEdit.PasswordChar := '*';
   // Восстанавливаем событие изменения поля пароля
-  PassEdit.OnChange := ICQUINEditChange;
+  PassEdit.OnChange := PassEditChange;
 end;
 
 procedure TIcqOptionsForm.ShowPassChangeCheckBoxClick(Sender: TObject);
@@ -831,11 +793,6 @@ end;
 
 procedure TIcqOptionsForm.FormCreate(Sender: TObject);
 begin
-  // Переводим форму на другие языки
-  TranslateForm;
-  // Загружаем настройки
-  LoadSettings;
-  ApplySettings;
   // Выставляем иконки формы и кнопок
   MainForm.AllImageList.GetIcon(81, Icon);
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
@@ -864,10 +821,24 @@ begin
   PersonalSexInfoComboBox.Items.NameValueSeparator := BN;
   PersonalMaritalInfoComboBox.Items.NameValueSeparator := BN;
   PersonalGenderInfoComboBox.Items.NameValueSeparator := BN;
+  // Загружаем настройки
+  LoadSettings;
+  // Переводим форму на другие языки
+  TranslateForm;
+  // Применяем настройки
+  ApplySettings;
+end;
+
+procedure TIcqOptionsForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TIcqOptionsForm.FormShow(Sender: TObject);
 begin
+  // Востанавливаем прежние сохранённые настройки
+  LoadSettings;
   // Прокручиваем на первую вкладку
   OptionJvPageList.ActivePage := AccountPage;
   IcqOptionButtonGroup.ItemIndex := 0;

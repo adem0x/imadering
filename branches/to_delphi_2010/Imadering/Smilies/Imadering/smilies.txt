@@ -1,4 +1,4 @@
-<height>245</height><width>340</width>
+﻿<height>245</height><width>340</width><info>Green animated smilies._r_Author: Michael Niedermayr._r__r_Site: www.greensmilies.com_r_Date: 27.01.2010</info>
 O:-),O=)
 :-),:),=)
 :-(,:(,;(

@@ -36,6 +36,7 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure XButtonGroupButtonClicked(Sender: TObject; index: Integer);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -65,6 +66,12 @@ begin
   // XButtonGroup.ItemIndex := ICQ_X_CurrentStatus;
   // Xindex := ICQ_X_CurrentStatus;
   // XTextMemo.Text := ICQ_X_CurrentStatus_Text;
+end;
+
+procedure TMraXStatusForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TMraXStatusForm.FormDeactivate(Sender: TObject);

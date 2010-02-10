@@ -11,11 +11,13 @@ object IcqOptionsForm: TIcqOptionsForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   ScreenSnap = True
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -61,7 +63,7 @@ object IcqOptionsForm: TIcqOptionsForm
         ImageIndex = 177
       end
       item
-        ImageIndex = 178
+        ImageIndex = 273
       end
       item
         ImageIndex = 180
@@ -71,7 +73,6 @@ object IcqOptionsForm: TIcqOptionsForm
       end>
     ItemIndex = 0
     TabOrder = 0
-    TabStop = False
     OnButtonClicked = ICQOptionButtonGroupButtonClicked
     OnKeyDown = ICQOptionButtonGroupKeyDown
   end
@@ -100,7 +101,7 @@ object IcqOptionsForm: TIcqOptionsForm
         Width = 428
         Height = 356
         Caption = 'AccountPage'
-        object AccountGroupBox1: TGroupBox
+        object AccountGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 428
@@ -179,7 +180,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 0
+            TabOrder = 1
             OnChange = ICQUINEditChange
           end
           object PassEdit: TEdit
@@ -194,7 +195,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             PasswordChar = '*'
-            TabOrder = 1
+            TabOrder = 2
             OnChange = PassEditChange
             OnClick = PassEditClick
           end
@@ -210,7 +211,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 0
             OnClick = ShowPassCheckBoxClick
           end
           object SavePassCheckBox: TCheckBox
@@ -2530,12 +2531,12 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object BonusPage: TJvStandardPage
+      object ConsolePage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'BonusPage'
+        Caption = 'ConsolePage'
         object CustomICQPacketGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -2549,7 +2550,7 @@ object IcqOptionsForm: TIcqOptionsForm
           ParentFont = False
           TabOrder = 0
           object SendCustomICQPacketButton: TButton
-            Left = 9
+            Left = 322
             Top = 324
             Width = 96
             Height = 25
@@ -2560,6 +2561,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            TabStop = False
             OnClick = SendCustomICQPacketButtonClick
           end
           object SendCustomICQPacketRichEdit: TRichEdit
@@ -2577,36 +2579,6 @@ object IcqOptionsForm: TIcqOptionsForm
             PlainText = True
             ScrollBars = ssVertical
             TabOrder = 1
-          end
-          object SendCustomICQPaketTimerCheckBox: TCheckBox
-            Left = 124
-            Top = 328
-            Width = 255
-            Height = 17
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 2
-          end
-          object SendCustomICQPaketTimerEdit: TEdit
-            Left = 385
-            Top = 326
-            Width = 33
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            MaxLength = 3
-            ParentFont = False
-            TabOrder = 3
-            Text = '10'
-            OnExit = SendCustomICQPaketTimerEditExit
-            OnKeyPress = SendCustomICQPaketTimerEditKeyPress
           end
           object DumpInfoRichEdit: TRichEdit
             Left = 9
@@ -2626,7 +2598,7 @@ object IcqOptionsForm: TIcqOptionsForm
             PlainText = True
             ReadOnly = True
             ScrollBars = ssVertical
-            TabOrder = 4
+            TabOrder = 2
           end
         end
       end
@@ -2667,11 +2639,5 @@ object IcqOptionsForm: TIcqOptionsForm
     TabOrder = 4
     TabStop = False
     OnClick = OKButtonClick
-  end
-  object SendCustomICQPaketTimer: TTimer
-    Enabled = False
-    OnTimer = SendCustomICQPaketTimerTimer
-    Left = 184
-    Top = 379
   end
 end

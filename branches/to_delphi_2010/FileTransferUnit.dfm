@@ -11,10 +11,12 @@ object FileTransferForm: TFileTransferForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   PixelsPerInch = 96
   TextHeight = 13
   object FileNameLabel: TLabel

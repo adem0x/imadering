@@ -11,12 +11,14 @@ object FirstStartForm: TFirstStartForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   PixelsPerInch = 96
   TextHeight = 13
   object BottomPanel: TPanel

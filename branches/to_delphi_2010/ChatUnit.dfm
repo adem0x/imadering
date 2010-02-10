@@ -11,11 +11,13 @@ object ChatForm: TChatForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Scaled = False
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
@@ -943,7 +945,7 @@ object ChatForm: TChatForm
       OnClick = ChatHTMLQTextClick
     end
     object ChatHTMLQTextTwitter: TMenuItem
-      ImageIndex = 269
+      ImageIndex = 268
       OnClick = ChatHTMLQTextTwitterClick
     end
   end

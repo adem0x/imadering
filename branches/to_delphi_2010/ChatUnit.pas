@@ -186,6 +186,7 @@ type
     procedure InfoPanel2Click(Sender: TObject);
     procedure GtransSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ChatHTMLQTextTwitterClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -233,7 +234,8 @@ uses
   GtransUnit,
   MraProtoUnit,
   UniqUnit,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  IcqReqAuthUnit;
 
 resourcestring
   RS_ChatForm = 'chat_form';
@@ -459,7 +461,7 @@ begin
   if InMessList.IndexOf(CId) = -1 then
     InMessList.Add(CId);
   // Играем звук входящего сообщения
-  ImPlaySnd(1);
+  ImPlaySnd(2);
   // Показываем всплывашку с сообщением
   DAShow(CNick, CPopMsg, CId, 165, 1, 0);
 end;
@@ -606,9 +608,9 @@ var
 begin
   Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
   if MessIn then
-    Doc := Doc + '<IMG NAME=i SRC="./Icons/' + CurrentIcons + '/inmess.gif" ALIGN=ABSMIDDLE BORDER=0><span class=b> ' + Nick_Time + '</span><br>'
+    Doc := Doc + '<IMG NAME="i" SRC="./Icons/' + CurrentIcons + '/inmess.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=b> ' + Nick_Time + '</span><br>'
   else
-    Doc := Doc + '<IMG NAME=o' + IntToStr(OutMessIndex) + ' SRC="./Icons/' + CurrentIcons + '/outmess1.gif" ALIGN=ABSMIDDLE BORDER=0><span class=a> ' + Nick_Time + '</span><br>';
+    Doc := Doc + '<IMG NAME="o' + IntToStr(OutMessIndex) + '" SRC="./Icons/' + CurrentIcons + '/outmess1.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=a> ' + Nick_Time + '</span><br>';
   Doc := Doc + '<span class=c>' + Mess_Text + '</span><br><br>';
   HTMLChatViewer.LoadFromBuffer(PChar(Doc), Length(Doc), EmptyStr);
 end;
@@ -723,9 +725,20 @@ begin
 end;
 
 procedure TChatForm.ChatHTMLQTextTwitterClick(Sender: TObject);
+var
+  s: string;
 begin
   // Цетируем выделенный текст в twitter
-  ShowMessage(S_DevelMess);
+  s := HTMLChatViewer.SelText;
+  // Ограничиваем длинну текста до 140 символов
+  SetLength(s, 140);
+  // Если форма не существует, то создаём её
+  if not Assigned(IcqReqAuthForm) then
+    IcqReqAuthForm := TIcqReqAuthForm.Create(Self);
+  // Делаем запрос в форме на обновление программы
+  IcqReqAuthForm.PostInTwitter(s);
+  // Отображаем окно
+  XShowForm(IcqReqAuthForm);
 end;
 
 procedure TChatForm.CopyAllMemoClick(Sender: TObject);
@@ -797,7 +810,7 @@ begin
       SetCursorPos(FCursor.X - 68, FCursor.Y);
     end;
   // Играем звук открытия окна
-  ImPlaySnd(4);
+  ImPlaySnd(8);
 end;
 
 procedure TChatForm.InfoContactSpeedButtonClick(Sender: TObject);
@@ -1115,6 +1128,12 @@ begin
   GroupSplitter.Visible := False;
 end;
 
+procedure TChatForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
+end;
+
 procedure TChatForm.FormDestroy(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
@@ -1347,7 +1366,7 @@ begin
       SetCursorPos(FCursor.X + 68, FCursor.Y);
     end;
   // Играем звук открытия окна
-  ImPlaySnd(4);
+  ImPlaySnd(8);
 end;
 
 procedure TChatForm.ContactMenuToolButtonClick(Sender: TObject);
@@ -1616,7 +1635,7 @@ procedure TChatForm.InputRichEditKeyPress(Sender: TObject; var Key: Char);
 label
   X;
 var
-  MsgD, Msg, HMsg, HistoryFile, SoundBackFile, SoundTypeFile, SoundSendFile: string;
+  MsgD, Msg, HMsg, HistoryFile: string;
 begin
   // Если поле идентификатора пользователя пустое, то выходим от сюда (в будущем сделать чтобы закрывалось окно)
   if InfoPanel2.Caption = EmptyStr then
@@ -1628,20 +1647,9 @@ begin
       if KeySoundToolButton.Down then
         begin
           if (Key = #8) and (InputRichEdit.Text <> EmptyStr) then
-            begin
-              SoundBackFile := MyPath + 'Sounds\' + CurrentSounds + '\Back.wav';
-              if FileExists(SoundBackFile) then
-                SndPlaySound(PChar(SoundBackFile), SND_ASYNC);
-            end
-          else
-            begin
-              if (Key <> #8) then
-                begin
-                  SoundTypeFile := MyPath + 'Sounds\' + CurrentSounds + '\Type.wav';
-                  if FileExists(SoundTypeFile) then
-                    SndPlaySound(PChar(SoundTypeFile), SND_ASYNC);
-                end;
-            end;
+            ImPlaySnd(10)
+          else if Key <> #8 then
+            ImPlaySnd(9);
         end;
       // Если нажата кнопка отправки оповещения о печати текста
       if TypingTextToolButton.Down then
@@ -1672,11 +1680,7 @@ begin
           Exit;
         // Если нажата кнопка звука нажатия клавиш, то играем звуки
         if KeySoundToolButton.Down then
-          begin
-            SoundSendFile := MyPath + 'Sounds\' + CurrentSounds + '\MsgSend.wav';
-            if FileExists(SoundSendFile) then
-              SndPlaySound(PChar(SoundSendFile), SND_ASYNC);
-          end;
+          ImPlaySnd(11);
         // Копируем текст сообщения
         Msg := Trim(InputRichEdit.Text);
         // Переводим сообщение если активна функция Gtrans

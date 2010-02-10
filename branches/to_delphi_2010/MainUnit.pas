@@ -261,6 +261,25 @@ type
     PingICQServer: TMenuItem;
     PingMRAServer: TMenuItem;
     PingJabberServer: TMenuItem;
+    CLSearchToolButton: TToolButton;
+    CLSearchTopToolButton: TToolButton;
+    CLSearchONMenu: TMenuItem;
+    TopCLSearchONMenu: TMenuItem;
+    TwitterToolButton: TToolButton;
+    TwitterPopupMenu: TPopupMenu;
+    OpenSiteTwitterMinu: TMenuItem;
+    OpenMyPageMenu: TMenuItem;
+    TwitterSettingsMenu: TMenuItem;
+    N33: TMenuItem;
+    N31: TMenuItem;
+    OpenLentaTwitterMenu: TMenuItem;
+    PostMessageTwitterMenu: TMenuItem;
+    N36: TMenuItem;
+    OnlineTwitterMenu: TMenuItem;
+    OfflineTwitterMenu: TMenuItem;
+    TwitterHttpClient: THttpCli;
+    MyInfoTwitterMenu: TMenuItem;
+    OpenTwitterIncMessMenu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -270,7 +289,6 @@ type
     procedure OpenTestClick(Sender: TObject);
     procedure AboutIMaderingClick(Sender: TObject);
     procedure UpdateHttpClientDocBegin(Sender: TObject);
-    procedure UpdateHttpClientDocEnd(Sender: TObject);
     procedure JvTimerListEvents2Timer(Sender: TObject);
     procedure ICQSettingsClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -323,8 +341,6 @@ type
     procedure OpenHistoryClick(Sender: TObject);
     procedure OpenTrafficClick(Sender: TObject);
     procedure UpdateHttpClientSendEnd(Sender: TObject);
-    procedure MRAAvatarHttpClientSendEnd(Sender: TObject);
-    procedure MRAAvatarHttpClientDocEnd(Sender: TObject);
     procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
     procedure UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
     procedure JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
@@ -342,13 +358,10 @@ type
     procedure JabberWSocketSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure UpdateHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure UpdateHttpClientSessionClosed(Sender: TObject);
-    procedure MRAAvatarHttpClientSessionClosed(Sender: TObject);
     procedure ICQWSocketError(Sender: TObject);
     procedure ICQWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure ICQWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure UpdateHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
-    procedure MRAAvatarHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
-    procedure MRAAvatarHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure JabberWSocketError(Sender: TObject);
     procedure JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
@@ -421,6 +434,22 @@ type
     procedure PingICQServerClick(Sender: TObject);
     procedure JvTimerListEvents8Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormDblClick(Sender: TObject);
+    procedure UpdateHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+    procedure TopCLSearchONMenuClick(Sender: TObject);
+    procedure CLSearchONMenuClick(Sender: TObject);
+    procedure TwitterHttpClientSessionClosed(Sender: TObject);
+    procedure TwitterHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+    procedure TwitterToolButtonClick(Sender: TObject);
+    procedure TwitterToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure PostMessageTwitterMenuClick(Sender: TObject);
+    procedure TwitterSettingsMenuClick(Sender: TObject);
+    procedure OpenSiteTwitterMinuClick(Sender: TObject);
+    procedure OpenMyPageMenuClick(Sender: TObject);
+    procedure TwitterPopupMenuPopup(Sender: TObject);
+    procedure OpenLentaTwitterMenuClick(Sender: TObject);
+    procedure OpenTwitterIncMessMenuClick(Sender: TObject);
+    procedure MyInfoTwitterMenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -441,6 +470,7 @@ type
     procedure ICQEnable(OnOff: Boolean);
     procedure MRAEnable(OnOff: Boolean);
     procedure JabberEnable(OnOff: Boolean);
+    procedure TwitterEnable(OnOff: Boolean);
     procedure OpenFromTrayMessage(HUIN: string);
     procedure FormShowInWorkArea(XForm: TForm);
     procedure FormSetInWorkArea(XForm: TForm);
@@ -488,7 +518,8 @@ uses
   GTransUnit,
   OverbyteIcsUrl,
   ShellApi,
-  IcqEditContactUnit;
+  IcqEditContactUnit,
+  TwitterOptionsUnit;
 
 resourcestring
   RS_MainForm = 'main_form';
@@ -501,6 +532,7 @@ resourcestring
   RS_MainFormHEG = 'empty_group';
   RS_MainFormTP = 'top_panel';
   RS_MainFormBP = 'bottom_panel';
+  RS_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
 
 procedure TMainForm.TrafficONMenuClick(Sender: TObject);
 begin
@@ -524,6 +556,7 @@ begin
   HistoryTopToolButton.Hint := HistoryToolButton.Hint;
   SettingsTopToolButton.Hint := SettingsToolButton.Hint;
   TrafficTopToolButton.Hint := TrafficToolButton.Hint;
+  CLSearchTopToolButton.Hint := CLSearchToolButton.Hint;
   // Применяем перевод меню
   HideProfileInTray.Caption := S_HideProfileInTray;
   HideInTray.Caption := S_HideInTray;
@@ -546,6 +579,8 @@ begin
   TopSettingsONMenu.Caption := SettingsONMenu.Caption;
   TopTrafficONMenu.Caption := TrafficONMenu.Caption;
   SearchInCL.Caption := SearchInCLMainMenu.Caption;
+  TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
+  PostMessageTwitterMenu.Caption := S_PostInTwitter;
   // Применяем перевод статусов в меню
   ICQStatusFFC.Caption := S_Status1;
   ICQStatusEvil.Caption := S_Status2;
@@ -605,6 +640,10 @@ begin
   AllStatusOnline.Caption := S_Status11;
   AllStatusInvisible.Caption := S_Status12;
   AllStatusOffline.Caption := S_Status14;
+  //
+  TwitterSettingsMenu.Caption := ICQSettings.Caption;
+  OnlineTwitterMenu.Caption := S_Status11;
+  OfflineTwitterMenu.Caption := S_Status14;
 end;
 
 procedure TMainForm.FormShowInWorkArea(XForm: TForm);
@@ -684,60 +723,6 @@ begin
       // Стираем из Ростера контакты ICQ
       if Assigned(RosterForm) then
         RosterForm.ClearICQClick(Self);
-    end;
-end;
-
-procedure TMainForm.MRAAvatarHttpClientDocEnd(Sender: TObject);
-begin
-  // Читаем полученные http данные из блока памяти
-  if MRAAvatarHttpClient.RcvdStream <> nil then
-    begin
-      // Увеличиваем статистику входящего трафика
-      TrafRecev := TrafRecev + MRAAvatarHttpClient.RcvdCount;
-      AllTrafRecev := AllTrafRecev + MRAAvatarHttpClient.RcvdCount;
-      if Assigned(TrafficForm) then
-        OpenTrafficClick(nil);
-      // Обрабатываем полученую MRA аватару
-
-      // Высвобождаем блок памяти
-      MRAAvatarHttpClient.RcvdStream.Free;
-      MRAAvatarHttpClient.RcvdStream := nil;
-    end;
-end;
-
-procedure TMainForm.MRAAvatarHttpClientSendEnd(Sender: TObject);
-begin
-  // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + MRAAvatarHttpClient.SentCount;
-  AllTrafSend := AllTrafSend + MRAAvatarHttpClient.SentCount;
-  if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
-end;
-
-procedure TMainForm.MRAAvatarHttpClientSessionClosed(Sender: TObject);
-begin
-  // Обрабатываем возможные ошибки в работе http сокета
-  if (MRAAvatarHttpClient.StatusCode = 0) or (MRAAvatarHttpClient.StatusCode >= 400) then
-    begin
-      DAShow(S_Errorhead, ErrorHttpClient(MRAAvatarHttpClient.StatusCode), EmptyStr, 134, 2, 0);
-    end;
-end;
-
-procedure TMainForm.MRAAvatarHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
-begin
-  // Если возникла ошибка, то сообщаем об этом
-  if ErrCode <> 0 then
-    begin
-      DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
-    end;
-end;
-
-procedure TMainForm.MRAAvatarHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
-begin
-  // Если возникла ошибка, то сообщаем об этом
-  if Error <> 0 then
-    begin
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -890,6 +875,26 @@ begin
     end;
 end;
 
+procedure TMainForm.TwitterEnable(OnOff: Boolean);
+begin
+  if OnOff then
+    begin
+      // Инициализируем окно настроек протокола Twitter
+      if not Assigned(TwitterOptionsForm) then
+        TwitterOptionsForm := TTwitterOptionsForm.Create(Self);
+      // Ставим иконку в окне контактов
+      TwitterToolButton.Visible := True;
+    end
+  else
+    begin
+      // Прячем иконку в окне контактов
+      TwitterToolButton.Visible := False;
+      // Высвобождаем окно настроек протокола Twitter
+      if Assigned(TwitterOptionsForm) then
+        FreeAndNil(TwitterOptionsForm);
+    end;
+end;
+
 procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
 begin
   ShowMessage(S_DevelMess);
@@ -912,6 +917,8 @@ begin
 end;
 
 procedure TMainForm.JabberStatusOnlineClick(Sender: TObject);
+var
+  S_Log: string;
 begin
   // Если логин Jabber или пароль пустые, то выводим окно настроек для их ввода
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
@@ -935,7 +942,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   Jabber_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  XLog('Jabber | ' + Log_Set_Status + TMenuItem(Sender).Caption);
+  S_Log := S_Log + S_Jabber + Log_Bevel + Log_Set_Status + TMenuItem(Sender).Caption + RN;
   // Ставим запасное значение статуса для протокола
   Jabber_CurrentStatus_bac := ICQ_CurrentStatus;
   // Ставим иконки статуса в окне и в трэе
@@ -947,17 +954,16 @@ begin
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
     begin
-      XLog('Jabber | ' + Log_Login + Jabber_JID);
+      S_Log := S_Log + S_Jabber + Log_Bevel + Log_Login + Jabber_JID + RN;
       // Разбираем JID на логин и сервер
       Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
       Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
       // Если сервер и порт указаны вручную
       with JabberOptionsForm do
-        if JUseCustomServerSettingsCheckBox.Checked then
+        if CustomServerCheckBox.Checked then
           begin
-            // Jabber_LoginUIN := Jabber_JID;
-            Jabber_ServerAddr := JCustomServerHostEdit.Text;
-            Jabber_ServerPort := JCustomServerPortEdit.Text;
+            Jabber_ServerAddr := CustomServerEdit.Text;
+            Jabber_ServerPort := CustomPortEdit.Text;
           end;
       // Ставим иконки статуса в окне и в трэе
       JabberToolButton.ImageIndex := 168;
@@ -987,13 +993,13 @@ begin
         begin
           JabberWSocket.Addr := HttpProxy_Address;
           JabberWSocket.Port := HttpProxy_Port;
-          XLog('Jabber | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
+          S_Log := S_Log + S_Jabber + Log_Bevel + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port + RN;
         end
       else
         begin
           JabberWSocket.Addr := Jabber_ServerAddr;
           JabberWSocket.Port := Jabber_ServerPort;
-          XLog(Log_Jabber_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort);
+          S_Log := S_Log + Log_Jabber_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort + RN;
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -1004,6 +1010,8 @@ begin
   // Отсылаем пакет со статусом
   if Jabber_Work_Phaze then
     Sendflap_jabber(Jabber_SetStatus(Jabber_CurrentStatus));
+  // Пишем в лог
+  XLog(Trim(S_Log));
 end;
 
 procedure TMainForm.HideEmptyGroupsClick(Sender: TObject);
@@ -1082,7 +1090,8 @@ end;
 procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
 begin
   // Создаём блок памяти для приёма http данных
-  UpdateHttpClient.RcvdStream := TMemoryStream.Create;
+(Sender as THttpCli)
+  .RcvdStream := TMemoryStream.Create;
 end;
 
 procedure TMainForm.UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
@@ -1094,7 +1103,7 @@ begin
         begin
           if UpdateHttpClient.ContentLength > -1 then
             begin
-              LoadSizeLabel.Caption := 'Скачано: ' + FloatToStrF(UpdateHttpClient.RcvdCount / 1000, FfFixed, 7, 1) + ' KB';
+              LoadSizeLabel.Caption := Format(S_DownCount, [FloatToStrF(UpdateHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
               DownloadProgressBar.Max := UpdateHttpClient.ContentLength;
               DownloadProgressBar.Position := UpdateHttpClient.RcvdCount;
             end;
@@ -1110,10 +1119,10 @@ begin
     end;
 end;
 
-procedure TMainForm.UpdateHttpClientDocEnd(Sender: TObject);
+procedure TMainForm.UpdateHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 var
   List: TStringList;
-  { Ver, Bild, } Mess: string;
+  S, Ver, Bild, Mess: string;
 
 procedure ShowUpdateNote;
 begin
@@ -1127,99 +1136,126 @@ begin
 end;
 
 begin
-  // Читаем полученные http данные из блока памяти
-  if UpdateHttpClient.RcvdStream <> nil then
-    begin
-      try
-        // Увеличиваем статистику входящего трафика
-        TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
-        AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
-        if Assigned(TrafficForm) then
-          OpenTrafficClick(nil);
-        // Определяем выполнение задания для данных по флагу
-        case UpdateHttpClient.Tag of
-          0: begin
-              // Создаём временный лист
-              List := TStringList.Create;
-              try
+  try
+    // Высвобождаем память отправки данных
+    if UpdateHttpClient.SendStream <> nil then
+      begin
+        UpdateHttpClient.SendStream.Free;
+        UpdateHttpClient.SendStream := nil;
+      end;
+    // Читаем полученные http данные из блока памяти
+    if UpdateHttpClient.RcvdStream <> nil then
+      begin
+        // Создаём временный лист
+        List := TStringList.Create;
+        try
+          // Увеличиваем статистику входящего трафика
+          TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
+          AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
+          if Assigned(TrafficForm) then
+            OpenTrafficClick(nil);
+          // Определяем выполнение задания для данных по флагу
+          case UpdateHttpClient.Tag of
+            0: begin
                 // Обнуляем позицию начала чтения в блоке памяти
                 UpdateHttpClient.RcvdStream.Position := 0;
                 // Читаем данные в лист
-                List.LoadFromStream(UpdateHttpClient.RcvdStream);
+                List.LoadFromStream(UpdateHttpClient.RcvdStream, TEncoding.UTF8);
                 // Разбираем данные в листе
                 if List.Text > EmptyStr then
                   begin
-                    { ver := IsolateTextString(list.Text, '<v>', '</v>');
-                      bild := IsolateTextString(list.Text, '<b>', '</b>');
-                      mess := IsolateTextString(list.Text, '<m>', '</m>');
-                      //--Запоминаем переменную аддэйтпатч для автообновления
-                      UpdateVersionPath := Format(UpdateVersionPath, [ver, bild]);
-                      //--Отображаем всплывающее окно с информацией о новой версии
-                      if (ver <> EmptyStr) and (bild <> EmptyStr) then
+                    // Получаем версию и информацию сборки
+                    S := IsolateTextString(List.Text, '<version>', '</version>');
+                    Ver := LeftStr(S, 3);
+                    Bild := RightStr(S, 3);
+                    Mess := IsolateTextString(List.Text, '<info>', '</info>');
+                    // Запоминаем переменную аддэйтпатч для автообновления
+                    UpdateVersionPath := Format(UpdateVersionPath, [Ver, Bild]);
+                    Xlog(RN + List.Text + RN + UpdateVersionPath);
+                    // Отображаем всплывающее окно с информацией о новой версии
+                    if (Ver <> EmptyStr) and (Bild <> EmptyStr) then
                       begin
-                      //--Если версия на сайте выше текущей
-                      if StrToInt(ver) > Update_Version then
-                      begin
-                      DAShow(InformationHead, NewVersionIMaderingYES1, EmptyStr, 133, 3, 100000000);
-                      ShowUpdateNote;
+                        // Если версия на сайте выше текущей
+                        if StrToInt(S) > StrToInt(ReplaceStr(InitBuildInfo, '.', EmptyStr)) then
+                          begin
+                            DAShow(S_InfoHead, S_NewVerYES, EmptyStr, 133, 3, 100000000);
+                            ShowUpdateNote;
+                          end
+                        else if not UpdateAuto then
+                          DAShow(S_InfoHead, S_NewVerNO, EmptyStr, 133, 0, 0);
                       end
-                      //--Если версия таже, но сборка выше текущей
-                      else if StrToInt(bild) > StrToInt(Parse('.', InitBuildInfo, 4)) then
-                      begin
-                      DAShow(InformationHead, NewVersionIMaderingYES2, EmptyStr, 133, 3, 100000000);
-                      ShowUpdateNote;
-                      end
-                      else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingNO, EmptyStr, 133, 0, 100000000);
-                      end
-                      else if not UpdateAuto then DAShow(InformationHead, NewVersionIMaderingErr, EmptyStr, 134, 2, 0); }
+                    else if not UpdateAuto then
+                      DAShow(S_InfoHead, S_NewVerErr, EmptyStr, 134, 2, 0);
                   end;
-              finally
-                List.Free;
               end;
-            end;
-          1: begin
-              if Assigned(UpdateForm) then
-                begin
-                  with UpdateForm do
-                    begin
-                      // Создаём блок в памяти для приёма файла обновления
-                      UpdateFile := TMemoryStream.Create;
-                      try
+            1: begin
+                if Assigned(UpdateForm) then
+                  begin
+                    with UpdateForm do
+                      begin
+                        // Создаём блок в памяти для приёма файла обновления
+                        UpdateFile := TMemoryStream.Create;
                         try
-                          { // Обнуляем позицию начала чтения в блоке памяти
-                            UpdateHttpClient.RcvdStream.Position := 0;
-                            // Читаем данные в лист
-                            UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
-                            // Информируем о успешной закачке файла обновления
-                            InfoMemo.Lines.Add(UpDateLoadL);
-                            InfoMemo.Lines.Add(UpDateUnL);
-                            // Переименовываем файл Imadering.exe
-                            if FileExists(MyPath + 'Imadering.exe') then
-                            RenameFile(MyPath + 'Imadering.exe', MyPath + 'Imadering.old');
-                            // Запускаем установку обновления
-                            UnZip_Stream(UpdateFile, MyPath);
-                            // Выводим информацию об окончании обновления
-                            InfoMemo.Lines.Add(UpDateOKL);
-                            AbortBitBtn.Enabled := False; }
-                        except
+                          // Обнуляем позицию начала чтения в блоке памяти
+                          UpdateHttpClient.RcvdStream.Position := 0;
+                          // Читаем данные в лист
+                          UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
+                          // Информируем о успешной закачке файла обновления
+                          InfoMemo.Lines.Add(S_UpDateLoad);
+                          // Сохраняем полученный файл
+                          UpdateFile.SaveToFile(Profile + UpdateVersionPath);
+                          // Проверяем есть ли у нас права на запись в папку с программой
+                          if ForceDirectories(MyPath + RS_Infos) then
+                            begin
+                              // Удаляем тестовую папку
+                              if DirectoryExists(MyPath + RS_Infos) then
+                                RemoveDir(MyPath + RS_Infos);
+                              // Начинаем установку обновления
+                              InfoMemo.Lines.Add(S_UpDateUn);
+                              // Переименовываем файл Imadering.exe
+                              if FileExists(MyPath + RS_ExeName) then
+                                RenameFile(MyPath + RS_ExeName, MyPath + 'Imadering.old');
+                              // Распаковываем архив
+                              if UnpackArhive(Profile + UpdateVersionPath) then
+                                begin
+                                  InfoMemo.Lines.Add(S_UpDateOK);
+                                  if FileExists(Profile + UpdateVersionPath) then
+                                    DeleteFile(Profile + UpdateVersionPath);
+                                end;
+                            end
+                          else
+                            begin
+                              // Сообщаем, что прав на запись обновления у нас нет
+                              DAShow(S_Errorhead, S_UnPackErr, EmptyStr, 134, 2, 0);
+                              // Открываем папку со скачанным архивом
+                              ShellExecute(0, 'open', PChar(Profile), nil, PChar(Profile), SW_SHOW);
+                            end;
+                          AbortBitBtn.Enabled := False;
+                        finally
+                          // Уничтожаем блок памяти
+                          FreeAndNil(UpdateFile);
                         end;
-                      finally
-                        // Уничтожаем блок памяти
-                        FreeAndNil(UpdateFile);
                       end;
-                    end;
-                end;
-            end;
-          2: begin
-              // Ничего не делаем с данными
-            end;
+                  end;
+              end;
+            2: begin
+                // Ничего не делаем, потому что это остановка закачки обновления
+              end;
+            3: begin
+                // Для тестов
+              end;
+          end;
+        finally
+          List.Free;
+          // Высвобождаем блок памяти
+          UpdateHttpClient.RcvdStream.Free;
+          UpdateHttpClient.RcvdStream := nil;
         end;
-      finally
-        // Высвобождаем блок памяти
-        UpdateHttpClient.RcvdStream.Free;
-        UpdateHttpClient.RcvdStream := nil;
       end;
-    end;
+  except
+    on E: Exception do
+      IMaderingEventsException(Self, E);
+  end;
 end;
 
 procedure TMainForm.ICQSearchNewContactClick(Sender: TObject);
@@ -1273,7 +1309,7 @@ begin
     TMenuItem(Sender).default := True;
     // Ставим статус для протокола
     ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
-    XLog('ICQ | ' + Log_Set_Status + TMenuItem(Sender).Caption);
+    XLog(S_Icq + Log_Bevel + Log_Set_Status + TMenuItem(Sender).Caption);
     // Ставим запасное значение статуса для протокола
     ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
     // Ставим иконки статусов в окне и в трэе
@@ -1291,7 +1327,7 @@ begin
     // Подключаемся к ICQ серверу
     if ICQ_Offline_Phaze then
       begin
-        XLog('ICQ | ' + Log_Login + ICQ_LoginUIN);
+        XLog(S_Icq + Log_Bevel + Log_Login + ICQ_LoginUIN);
         // Ставим иконки подключения в окне и в трэе
         ICQTrayIcon.IconIndex := 168;
         ICQToolButton.ImageIndex := 168;
@@ -1321,7 +1357,7 @@ begin
           begin
             ICQWSocket.Addr := HttpProxy_Address;
             ICQWSocket.Port := HttpProxy_Port;
-            XLog('ICQ | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
+            XLog(S_Icq + Log_Bevel + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port);
           end
         else
           begin
@@ -1442,9 +1478,10 @@ begin
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
       begin
-        DAShow(S_Errorhead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
+        DAShow(S_Errorhead, NotifyConnectError(S_Icq, ErrCode), EmptyStr, 134, 2, 0);
         // Активируем режим оффлайн
         ICQ_GoOffline;
+        Exit;
       end;
     // HTTP прокси коннект
     if (HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
@@ -1463,19 +1500,19 @@ begin
         if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
           begin
             ICQ_HTTP_Connect_Phaze := True;
-            XLog(Log_ICQGet + Log_Proxy_OK);
+            XLog(S_Icq + Log_Get + Log_Proxy_OK);
           end
         else
         // Сообщаем об ошибках прокси
           if AnsiStartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(S_Errorhead, ProxyConnectErrL1 + RN + '[ ' + SocketL + BN + ICQWSocket.name + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(S_Errorhead, ProxyConnectErrL1 + RN + '[ ' + SocketL + BN + S_Icq + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(S_Errorhead, ProxyConnectErrL2 + RN + '[ ' + SocketL + BN + ICQWSocket.name + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(S_Errorhead, ProxyConnectErrL2 + RN + '[ ' + SocketL + BN + S_Icq + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными ICQ
         Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1503,7 +1540,7 @@ begin
     if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(S_Errorhead, ParsingPktError + RN + '[ ' + SocketL + BN + ICQWSocket.name + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(S_Errorhead, ParsingPktError + RN + '[ ' + SocketL + BN + S_Icq + ' ]', EmptyStr, 134, 2, 0);
         ICQ_GoOffline;
         Exit;
       end;
@@ -1518,7 +1555,7 @@ begin
         HexPkt := NextData(ICQ_BuffPkt, ICQ_FLAP_HEAD_SIZE + PktSize);
         // Пишем в лог данные пакета
         if LogForm.ICQDumpSpeedButton.Down then
-          XLog(Log_ICQGet + RN + Trim(Dump(HexPkt)));
+          XLog(S_Icq + Log_Get + RN + Trim(Dump(HexPkt)));
         // Разбираем пакет данных если его длинна больше нуля
         if Length(HexPkt) > 0 then
           begin
@@ -1528,7 +1565,7 @@ begin
                 // Смотрим какой канал у пакета
                 case HexToInt(Text2Hex(NextData(HexPkt, 1))) of
                   $01: begin
-                      XLog(Log_ICQGet + Log_Server_Hello);
+                      XLog(S_Icq + Log_Get + Log_Server_Hello);
                       // Пропускаем Seq (счётчик) и длинну пакета
                       NextData(HexPkt, 4);
                       // Если AOL прислал приглашение и мы в фазе подключения к серверу
@@ -1597,7 +1634,7 @@ begin
                                     begin
                                       TLV := Text2Hex(NextData(HexPkt, 2)); // Пропускаем TLV
                                       Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                      XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + NextData(HexPkt, Len));
+                                      XLog(S_Icq + Log_Parsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + NextData(HexPkt, Len));
                                     end;
                                 end;
                               $000F: begin
@@ -1618,7 +1655,7 @@ begin
                                       Len := HexToInt(Text2Hex(NextData(HexPkt, 1)));
                                       // Забираем Hash
                                       ICQ_MyIcon_Hash := Text2Hex(NextData(HexPkt, Len));
-                                      XLog(Log_ICQParsing + Log_Icon_Hash + RN + ICQ_MyIcon_Hash);
+                                      XLog(S_Icq + Log_Parsing + Log_Icon_Hash + RN + ICQ_MyIcon_Hash);
                                     end;
                                 end;
                             end;
@@ -1724,7 +1761,7 @@ begin
                                   // Пропускаем раздел флагов
                                   NextData(HexPkt, 6);
                                   // Разбираем пакет со списком контактов
-                                  XLog(Log_ICQGet + Log_Get_CL);
+                                  XLog(S_Icq + Log_Get + Log_Get_CL);
                                   if ICQ_Parse_1306(HexPkt) then
                                     begin
                                       // Запрашиваем нашу инфу обязательно!
@@ -1817,19 +1854,19 @@ begin
                                         $0005: begin // TLV с адресом для коннекта к основному серверу
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                             ICQ_Bos_Addr := NextData(HexPkt, Len);
-                                            XLog(Log_ICQParsing + Log_Get_Server + ICQ_Bos_Addr);
+                                            XLog(S_Icq + Log_Parsing + Log_Get_Server + ICQ_Bos_Addr);
                                             ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
                                             ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                           end;
                                         $0006: begin // TLV с куком для коннекта к основному серверу
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                             ICQ_Bos_Cookie := Text2Hex(NextData(HexPkt, Len));
-                                            XLog(Log_ICQParsing + 'Cookie');
+                                            XLog(S_Icq + Log_Parsing + 'Cookie');
                                           end
                                         else // Если пакет содержит другие TLV, то пропускаем их
                                           begin
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                            XLog(Log_ICQParsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(HexPkt, Len))));
+                                            XLog(S_Icq + Log_Parsing + Log_Unk_Data + RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(HexPkt, Len))));
                                           end;
                                       end;
                                     end;
@@ -1842,7 +1879,7 @@ begin
                       // Если длинна пакета ноль, то завершаем связь с сервером
                       if PktSize = 0 then
                         begin
-                          XLog(Log_ICQGet + Log_Close_Server);
+                          XLog(S_Icq + Log_Get + Log_Close_Server);
                           // Если сокет ещё подключён, то отсылаем "прощание"
                           if ICQWSocket.State = WsConnected then
                             ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq, 4) + '0000'));
@@ -1905,7 +1942,7 @@ begin
               begin
                 // Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(S_Errorhead, ParsingPktError + RN + '[ ' + SocketL + BN + ICQWSocket.name + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(S_Errorhead, ParsingPktError + RN + '[ ' + SocketL + BN + S_Icq + ' ]', EmptyStr, 134, 2, 0);
                 ICQ_GoOffline;
                 Exit;
               end;
@@ -1935,7 +1972,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -1946,7 +1983,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if (not ICQ_Connect_Phaze) and (not ICQ_Offline_Phaze) then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -1961,7 +1998,7 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -1991,7 +2028,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('ICQ', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2002,7 +2039,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, SocketConnErrorInfo_1 + RN + Msg + RN + Format(HttpSocketErrCodeL, [Error]) + RN + '[ ' + SocketL + BN + S_Icq + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2052,203 +2089,189 @@ end;
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 var
   PktZ: RawByteString;
-  { Pkt, Challenge: string;
-    ProxyErr, I: Integer; }
+  Pkt, Challenge: string;
+  ProxyErr, I, CntPkt: Integer;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
-  // Получаем пришедшие от сервера данные с сокета
-  PktZ := JabberWSocket.ReceiveStr;
-
-  (* // Указываем кодовую страницу UTF-8 для полученных данных
-    SetCodePage(PktZ, 65001, False);
+  try
+    // Получаем пришедшие от сервера данные с сокета
+    PktZ := JabberWSocket.ReceiveStr;
+    // Указываем кодовую страницу UTF-8 для полученных данных
+    SetCodePage(PktZ, CP_UTF8, False);
     Pkt := PktZ;
-    // Пишем в лог данные пакета
-    if LogForm.JabberDumpSpeedButton.Down then
-    XLog('Jabber get | ' + RN + Trim(Dump(Pkt)));
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
-    begin
-    DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
-    // Активируем режим оффлайн
-    Jabber_GoOffline;
-    Exit;
-    end;
+      begin
+        DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+        // Активируем режим оффлайн
+        Jabber_GoOffline;
+        Exit;
+      end;
     // HTTP прокси коннект
     if (HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
-    begin
-    // Заносим данные в специальный буфер
-    Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
-    // Если нет ответа нормального от прокси, то выходим
-    if Pos(RN + RN, Jabber_myBeautifulSocketBuffer) = 0 then
-    Exit;
-    // Забираем из ответа прокси нужную информацию от прокси
-    Pkt := Chop(RN + RN, Jabber_myBeautifulSocketBuffer);
-    // Обнуляем ошибки прокси
-    ProxyErr := 0;
-    // Если ответ положительный и прокси установил соединение,
-    // то активируем фазу подключения через http прокси
-    if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
-    begin
-    Jabber_HTTP_Connect_Phaze := True;
-    XLog('Jabber | ' + Log_Proxy_OK);
-    end
-    else
-    // Сообщаем об ошибках прокси
-    if AnsiStartsStr('HTTP/1.0 407', Pkt) then
-    begin
-    ProxyErr := 1;
-    DAShow(S_Errorhead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
-    XLog('Jabber | ' + ProxyConnectErrL1);
-    end
-    else
-    begin
-    ProxyErr := 2;
-    DAShow(S_Errorhead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
-    XLog('Jabber | ' + ProxyConnectErrL2);
-    end;
-    // Забираем из буфера пакет с данными Jabber
-    Pkt := Jabber_myBeautifulSocketBuffer;
-    // Очищаем буфер
-    Jabber_myBeautifulSocketBuffer := EmptyStr;
-    // Если в работе с прокси были ошибки, то уходим в оффлайн
-    if ProxyErr <> 0 then
-    begin
-    Jabber_GoOffline;
-    Exit;
-    end;
-    end;
+      begin
+        // Заносим данные в специальный буфер
+        Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
+        // Если нет ответа нормального от прокси, то выходим
+        if Pos(RN + RN, Jabber_myBeautifulSocketBuffer) = 0 then
+          Exit;
+        // Забираем из ответа прокси нужную информацию от прокси
+        Pkt := Chop(RN + RN, Jabber_myBeautifulSocketBuffer);
+        // Обнуляем ошибки прокси
+        ProxyErr := 0;
+        // Если ответ положительный и прокси установил соединение,
+        // то активируем фазу подключения через http прокси
+        if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
+          begin
+            Jabber_HTTP_Connect_Phaze := True;
+            XLog(S_Jabber + Log_Get + Log_Proxy_OK);
+          end
+        else
+        // Сообщаем об ошибках прокси
+          if AnsiStartsStr('HTTP/1.0 407', Pkt) then
+          begin
+            ProxyErr := 1;
+            DAShow(S_Errorhead, ProxyConnectErrL1 + RN + '[ ' + SocketL + BN + S_Jabber + ' ]', EmptyStr, 134, 2, 0);
+          end
+        else
+          begin
+            ProxyErr := 2;
+            DAShow(S_Errorhead, ProxyConnectErrL2 + RN + '[ ' + SocketL + BN + S_Jabber + ' ]', EmptyStr, 134, 2, 0);
+          end;
+        // Забираем из буфера пакет с данными Jabber
+        Pkt := Jabber_myBeautifulSocketBuffer;
+        // Очищаем буфер
+        Jabber_myBeautifulSocketBuffer := EmptyStr;
+        // Если в работе с прокси были ошибки, то уходим в оффлайн
+        if ProxyErr <> 0 then
+          begin
+            Jabber_GoOffline;
+            Exit;
+          end;
+      end;
     // Если длинна этих данных равна нулю, выходим от сюда :)
     if Length(Pkt) = 0 then
-    Exit;
+      Exit;
     // Увеличиваем статистику входящего трафика
     TrafRecev := TrafRecev + Length(Pkt);
     AllTrafRecev := AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
+      OpenTrafficClick(nil);
     // Проверяем пакет окончания сессии
-    if Pkt = ('</' + FRootTag + '>') then
-    begin
-    Jabber_GoOffline;
-    Exit;
-    end;
+    if Pkt = ('</' + J_RootTag + '>') then
+      begin
+        Jabber_GoOffline;
+        Exit;
+      end;
     // Буферизируем данные пакетов из сокета и забираем цельные данные
     Jabber_BuffPkt := Jabber_BuffPkt + Pkt;
     repeat
-    Pkt := GetFullTag(Jabber_BuffPkt);
-    if Pkt <> EmptyStr then
-    begin
-    if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (Pos(FRootTag, Pkt) = 0) then
-    begin
-    // Если это стадия подключения к серверу жаббер
-    if Jabber_Connect_Phaze then
-    begin
-    // Ищем механизм авторизации DIGEST-MD5
-    if Pos('>DIGEST-MD5<', Pkt) > 0 then
-    // Отсылаем запрос challenge
-    Sendflap_jabber('<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>')
-    // Если только механизм авторизации PLAIN
-    else if Pos('>PLAIN<', Pkt) > 0 then
-    Sendflap_jabber(Format(JPlainMechanism, [JabberPlain_Auth]))
-    // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
-    else if Pos('</challenge>', Pkt) > 0 then
-    begin
-    // Получаем чистый challenge из пакета и расшифровываем
-    Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
-    // Забираем из challenge ключ nonce
-    Challenge := IsolateTextString(Challenge, 'nonce="', '"');
-    // Если challenge пустой, то значит мы уже авторизовались
-    if Challenge = EmptyStr then
-    Sendflap_jabber('<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>')
-    else
-    // Отсылаем пакет с авторизацией
-    Sendflap_jabber(JabberDIGESTMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
-    end
-    else if Pos('<not-authorized', Pkt) > 0 then
-    begin
-    // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-    DAShow(S_Errorhead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
-    Jabber_GoOffline;
-    Exit;
-    end
-    else if Pos('<success', Pkt) > 0 then
-    begin
-    // Закрепляем сессию с жаббер сервером
-    // Если сервер и порт указаны вручную
-    if JabberOptionsForm.JUseCustomServerSettingsCheckBox.Checked then
-    Sendflap_jabber(Format(StreamHead, [Parse('@', Jabber_JID, 2)]))
-    else
-    Sendflap_jabber(Format(StreamHead, [Jabber_ServerAddr]));
-    // Активируем режим онлайн для Jabber
-    Jabber_Connect_Phaze := False;
-    Jabber_HTTP_Connect_Phaze := False;
-    Jabber_Work_Phaze := True;
-    Jabber_Offline_Phaze := False;
-    // Отключаем метку пересоединения ведь мы уже и так онлайн!
-    Jabber_Reconnect := False;
-    // Запускаем таймер отсылки пинг пакетов
-    if Jabber_KeepAlive then
-    JvTimerList.Events[9].Enabled := True;
-    // Выходим
-    // Очищаем группы Jabber в Ростере
-    RosterForm.ClearContacts(S_Jabber);
-    Exit;
-    end;
-    end;
-    // Разбираем пакеты рабочей фазы jabber
-    if Jabber_Work_Phaze then
-    begin
-    // Обрамляем в STREAM для корректной обработки братских узлов парсером
-    Pkt := '<istream>' + Pkt + '</istream>';
-    // Инициализируем XML
-
-    { with XmlDoc do
-    begin
-    // Загружаем пакет в объект xml
-    Text := Pkt;
-    // Начинаем пробег по возможным склеенным пакетам
-    if OpenKey('istream') then
-    try
-    CntPkt := GetKeyCount;
-    finally
-    CloseKey;
-    end;
-    for I := 0 to CntPkt - 1 do
-    begin
-    if OpenKey('istream\stream:features', False, I) then
-    try
-    Jabber_ParseFeatures(GetKeyXML);
-    finally
-    CloseKey;
-    end
-    // Парсим пакеты iq
-    else if OpenKey('istream\iq', False, I) then
-    try
-    Jabber_ParseIQ(GetKeyXML);
-    finally
-    CloseKey;
-    end
-    // Парсим пакеты presence
-    else if OpenKey('istream\presence', False, I) then
-    try
-    Jabber_ParsePresence(GetKeyXML);
-    finally
-    CloseKey;
-    end
-    else if OpenKey('istream\message', False, I) then
-    try
-    Jabber_ParseMessage(GetKeyXML);
-    finally
-    CloseKey;
-    end;
-    end;
-    end; }
-
-    end;
-    end;
-    end;
-    until ((Pkt = '') or (Jabber_BuffPkt = ''));
-
-    *)
-
+      Pkt := GetFullTag(Jabber_BuffPkt);
+      if Pkt <> EmptyStr then
+        begin
+          if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (Pos(J_RootTag, Pkt) = 0) then
+            begin
+              // Обрамляем полученные данные для корректной обработки братских узлов парсером
+              Pkt := '<xml>' + Pkt + '</xml>';
+              // Инициализируем XML
+              JvXML_Create(JvXML);
+              try
+                with JvXML do
+                  begin
+                    // Загружаем пакет в объект xml
+                    JvXML_LoadStr(JvXML, Pkt);
+                    // Пишем в лог данные пакета
+                    if LogForm.JabberDumpSpeedButton.Down then
+                      XLog(S_Jabber + Log_Get + RN + Trim(Copy(XMLData, 4, Length(XMLData))));
+                    // Если это стадия подключения к серверу жаббер
+                    if Jabber_Connect_Phaze then
+                      begin
+                        // Ищем механизм авторизации DIGEST-MD5
+                        if Pos('>DIGEST-MD5<', Pkt) > 0 then
+                          Sendflap_jabber(J_MD5Mechanism) // Отсылаем запрос challenge
+                        else if Pos('>PLAIN<', Pkt) > 0 then // Если только механизм авторизации PLAIN
+                          Sendflap_jabber(Format(J_PlainMechanism, [JabberPlain_Auth]))
+                        else if Pos('</challenge>', Pkt) > 0 then // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
+                          begin
+                            // Получаем чистый challenge из пакета и расшифровываем
+                            Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
+                            // Забираем из challenge ключ nonce
+                            Challenge := IsolateTextString(Challenge, 'nonce="', '"');
+                            // Если challenge пустой, то значит мы уже авторизовались
+                            if Challenge = EmptyStr then
+                              Sendflap_jabber(J_ChallengeOK)
+                            else
+                              // Отсылаем пакет с авторизацией
+                              Sendflap_jabber(JabberDIGESTMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
+                          end
+                        else if Pos('<not-authorized', Pkt) > 0 then
+                          begin
+                            // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
+                            DAShow(S_Errorhead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
+                            Jabber_GoOffline;
+                            Exit;
+                          end
+                        else if Pos('<success', Pkt) > 0 then
+                          begin
+                            // Закрепляем сессию с жаббер сервером
+                            // Если сервер и порт указаны вручную
+                            if JabberOptionsForm.CustomServerCheckBox.Checked then
+                              Sendflap_jabber(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), CurrentLang]))
+                            else
+                              Sendflap_jabber(Format(J_StreamHead, [Jabber_ServerAddr, CurrentLang]));
+                            // Активируем режим онлайн для Jabber
+                            Jabber_Connect_Phaze := False;
+                            Jabber_HTTP_Connect_Phaze := False;
+                            Jabber_Work_Phaze := True;
+                            Jabber_Offline_Phaze := False;
+                            // Отключаем метку пересоединения ведь мы уже и так онлайн!
+                            Jabber_Reconnect := False;
+                            // Запускаем таймер отсылки пинг пакетов
+                            if Jabber_KeepAlive then
+                              JvTimerList.Events[9].Enabled := True;
+                            // Выходим
+                            // Очищаем группы Jabber в Ростере
+                            RosterForm.ClearContacts(S_Jabber);
+                            Exit;
+                          end;
+                      end
+                      // Разбираем пакеты рабочей фазы jabber
+                    else if Jabber_Work_Phaze then
+                      begin
+                        // Начинаем разбор данных пакета
+                        if Root <> nil then
+                          begin
+                            // Начинаем пробег по возможным склеенным пакетам
+                            CntPkt := Root.Items.Count;
+                            for I := 0 to CntPkt - 1 do
+                              begin
+                                XML_Node := Root.Items[I];
+                                if XML_Node <> nil then
+                                  begin
+                                    if XML_Node.FullName = J_Features then
+                                      Jabber_ParseFeatures(XML_Node.SaveToString)
+                                    else if XML_Node.FullName = J_Iq then
+                                      Jabber_ParseIQ(XML_Node.SaveToString)
+                                    else if XML_Node.FullName = J_Presence then
+                                      Jabber_ParsePresence(XML_Node.SaveToString)
+                                    else if XML_Node.FullName = J_Message then
+                                      Jabber_ParseMessage(XML_Node.SaveToString);
+                                  end;
+                              end;
+                          end;
+                      end;
+                  end;
+              finally
+                JvXML.Free;
+              end;
+            end;
+        end;
+    until ((Pkt = EmptyStr) or (Jabber_BuffPkt = EmptyStr));
+  except
+    on E: Exception do
+      IMaderingEventsException(Self, E);
+  end;
 end;
 
 procedure TMainForm.JabberWSocketError(Sender: TObject);
@@ -2324,10 +2347,10 @@ begin
   JabberWSocket.SslEnable := Jabber_UseSSL;
   // Отсылаем строку начала сессии с сервером
   // Если сервер и порт указаны вручную
-  if JabberOptionsForm.JUseCustomServerSettingsCheckBox.Checked then
-    Sendflap_jabber(Format(StreamHead, [Parse('@', Jabber_JID, 2)]))
+  if JabberOptionsForm.CustomServerCheckBox.Checked then
+    Sendflap_jabber(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), CurrentLang]))
   else
-    Sendflap_jabber(Format(StreamHead, [Jabber_ServerAddr]));
+    Sendflap_jabber(Format(J_StreamHead, [Jabber_ServerAddr, CurrentLang]));
 end;
 
 procedure TMainForm.JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
@@ -2346,7 +2369,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, SocketConnErrorInfo_1 + RN + Msg + RN + Format(HttpSocketErrCodeL, [Error]) + RN + '[ ' + SocketL + BN + S_Jabber + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jabber_GoOffline;
     end;
@@ -2430,9 +2453,6 @@ begin
   ICQTrayIcon.Refresh;
   MRATrayIcon.Refresh;
   JabberTrayIcon.Refresh;
-  // Высвобождаем общую память приложения (вспоминая qip)
-  if Win32Platform = VER_PLATFORM_WIN32_NT then
-    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
 end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
@@ -2639,7 +2659,7 @@ begin
   // Ставим флаг задания
   UpdateHttpClient.Tag := 0;
   // Запускаем проверку обновлений программы на сайте
-  UpdateHttpClient.URL := 'http://imadering.googlecode.com/files/version.txt';
+  UpdateHttpClient.URL := RS_UpdateURL;
   UpdateHttpClient.GetASync;
 end;
 
@@ -2817,9 +2837,7 @@ begin
   Popup(MainToolButton, MainPopupMenu);
 end;
 
-procedure TMainForm.MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
-
-  var Handled: Boolean);
+procedure TMainForm.MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
   MainPopupMenu.Alignment := PaLeft;
@@ -2865,555 +2883,560 @@ var
   { , SubPkt } : string;
   { PktLen, Len, } ProxyErr, PktSize: Integer;
 begin
-  // Получаем пришедшие от сервера данные с сокета
-  Pkt := MRAWSocket.ReceiveStr;
-  // Пишем в лог данные пакета
-  if LogForm.MRADumpSpeedButton.Down then
-    XLog('MRA get | ' + RN + Trim(Dump(Pkt)));
-  // Если при получении данных возникла ошибка, то сообщаем об этом
-  if ErrCode <> 0 then
-    begin
-      DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
-      // Активируем режим оффлайн
-      MRA_GoOffline;
-    end;
-  // HTTP прокси коннект
-  if (HttpProxy_Enable) and ((MRA_Connect_Phaze) or (MRA_BosConnect_Phaze)) and (not MRA_HTTP_Connect_Phaze) then
-    begin
-      // Заносим данные в специальный буфер
-      MRA_myBeautifulSocketBuffer := MRA_myBeautifulSocketBuffer + Pkt;
-      // Если нет ответа нормального от прокси, то выходим
-      if Pos(RN + RN, MRA_myBeautifulSocketBuffer) = 0 then
-        Exit;
-      // Забираем из ответа прокси нужную информацию от прокси
-      Pkt := Chop(RN + RN, MRA_myBeautifulSocketBuffer);
-      // Обнуляем ошибки прокси
-      ProxyErr := 0;
-      // Если ответ положительный и прокси установил соединение,
-      // то активируем фазу подключения через http прокси
-      if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
-        begin
-          MRA_HTTP_Connect_Phaze := True;
-          XLog('MRA | ' + Log_Proxy_OK);
-          // Если уже подключились в Bos серверу
-          if MRA_BosConnect_Phaze then
-            begin
-              // Отсылаем первый пакет логина
-              MRA_Login_1;
-              Exit;
-            end;
-        end
-      else
-      // Сообщаем об ошибках прокси
-        if AnsiStartsStr('HTTP/1.0 407', Pkt) then
-        begin
-          ProxyErr := 1;
-          DAShow(S_Errorhead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
-          XLog('MRA | ' + ProxyConnectErrL1);
-        end
-      else
-        begin
-          ProxyErr := 2;
-          DAShow(S_Errorhead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
-          XLog('MRA | ' + ProxyConnectErrL2);
-        end;
-      // Забираем из буфера пакет с данными ICQ
-      Pkt := MRA_myBeautifulSocketBuffer;
-      // Очищаем буфер
-      MRA_myBeautifulSocketBuffer := EmptyStr;
-      // Если в работе с прокси были ошибки, то уходим в оффлайн
-      if ProxyErr <> 0 then
-        begin
-          MRA_GoOffline;
+  try
+    // Получаем пришедшие от сервера данные с сокета
+    Pkt := MRAWSocket.ReceiveStr;
+    // Пишем в лог данные пакета
+    if LogForm.MRADumpSpeedButton.Down then
+      XLog('MRA get | ' + RN + Trim(Dump(Pkt)));
+    // Если при получении данных возникла ошибка, то сообщаем об этом
+    if ErrCode <> 0 then
+      begin
+        DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
+        // Активируем режим оффлайн
+        MRA_GoOffline;
+      end;
+    // HTTP прокси коннект
+    if (HttpProxy_Enable) and ((MRA_Connect_Phaze) or (MRA_BosConnect_Phaze)) and (not MRA_HTTP_Connect_Phaze) then
+      begin
+        // Заносим данные в специальный буфер
+        MRA_myBeautifulSocketBuffer := MRA_myBeautifulSocketBuffer + Pkt;
+        // Если нет ответа нормального от прокси, то выходим
+        if Pos(RN + RN, MRA_myBeautifulSocketBuffer) = 0 then
           Exit;
-        end;
-    end;
-  // Если длинна этих данных равна нулю, выходим от сюда :)
-  if Length(Pkt) = 0 then
-    Exit;
-  // Увеличиваем статистику входящего трафика
-  TrafRecev := TrafRecev + Length(Pkt);
-  AllTrafRecev := AllTrafRecev + Length(Pkt);
-  if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
-  // Преобразуем данные из бинарного формата в HEX формат и прибавляем
-  // их к специальному буферу накопления таких преобразованных данных
-  MRA_HexPkt := MRA_HexPkt + Text2Hex(Pkt);
-  // Если фаза первого подключания к серверу MRA
-  if MRA_Connect_Phaze then
-    begin
-      MRA_Bos_Addr := Hex2Text(MRA_HexPkt);
-      // Получаем адрес Bos сервера для подключения
-      MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
-      MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
-      // Закрываем сокет и ждём пока он закроется
-      MRAWSocket.Close;
-      MRAWSocket.WaitForClose;
-      // Подключаемся к Bos серверу
-      // Активируем фазу коннекта к основному серверу
-      MRA_Connect_Phaze := False;
-      MRA_BosConnect_Phaze := True;
-      MRA_HTTP_Connect_Phaze := False;
-      MRA_myBeautifulSocketBuffer := EmptyStr;
-      MRA_HexPkt := EmptyStr;
-      // Устанавливаем параметры
-      MRAWSocket.Proto := 'tcp';
-      if HttpProxy_Enable then
-        begin
-          MRAWSocket.Addr := HttpProxy_Address;
-          MRAWSocket.Port := HttpProxy_Port;
-        end
-      else
-        begin
-          MRAWSocket.Addr := MRA_Bos_IP;
-          MRAWSocket.Port := MRA_Bos_Port;
-        end;
-      // Начинаем подключение к основному серверу
-      MRAWSocket.Connect;
-      Exit;
-    end;
-  // Ищем ошибки в буфере пакетов
-  if ((MRA_HexPkt > EmptyStr) and ((LeftStr(MRA_HexPkt, 8)) <> MRA_MagKey)) or ((Length(MRA_HexPkt) > 2) and ((HexToInt(MRA_HexPkt[3] + MRA_HexPkt[4]) = $0))) then
-    begin
-      // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-      DAShow(S_Errorhead, ParsingPktError, EmptyStr, 134, 2, 0);
-      MRA_GoOffline;
-      Exit;
-    end;
-
-  // Если пакет был разобран, но в буфере есть ещё данные, то возвращаемся сюда
-  // для проверки этих данные на наличие слудующего целого пакета данных
-X :;
-  PktSize := MRA_BodySize;
-  // Проверяем если ли в буфере хоть один целый пакет
-  if (Length(MRA_HexPkt) >= MRA_FLAP_HEAD_SIZE) and (Length(MRA_HexPkt) >= MRA_FLAP_HEAD_SIZE + PktSize) then
-    begin
-      // Забираем из буфера один целый пакет
-      HexPkt := NextData(MRA_HexPkt, MRA_FLAP_HEAD_SIZE + PktSize);
-
-      { //--Разбираем пакет данных если его длинна больше нуля
-        if Length(HexPkt) > 0 then
-        begin
-        //--Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
-        if HexToInt(NextData(HexPkt, 2)) = $2A then
-        begin
-        //--Смотрим какой канал у пакета
-        case HexToInt(NextData(HexPkt, 2)) of
-        $01:
-        begin
-        //--Пропускаем Seq (счётчик)
-        NextData(HexPkt, 4);
-        //--Узнаём длинну пакета и увеличиваем её в двое для HEX формата
-        PktLen := HexToInt(NextData(HexPkt, 4));
-        PktLen := PktLen * 2;
-        //--Получаем тело пакета
-        SubPkt := NextData(HexPkt, PktLen);
-        //--Если AOL прислал приглашение и мы в фазе подключения к серверу
-        if (ICQ_Connect_Phaze) and (SubPkt = '00000001') then
-        begin
-        //--Тоже отсылаем серверу "привет" + что-то новое в протоколе
-        SendFLAP('1', '00000001' + '8003000400100000');
-        //--Отсылаем серверу наш логин
-        SendFLAP('2', '00170006000000000000' + '0001' +
-        IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN));
-        //--Выходим на проверку другого пакета в буфере
-        goto z;
-        end;
-        //--Если это уже подключение к основному icq серверу
-        if (ICQ_BosConnect_Phaze) and (SubPkt = '00000001') then
-        begin
-        //--Отсылаем серверу полученый от логин сервера код авторизации (кукис)
-        SendFLAP('1', ICQ_CliCookiePkt(ICQ_Bos_Cookie));
-        end;
-        end;
-        $02:
-        begin
-        //--Пропускаем Seq (счётчик)
-        NextData(HexPkt, 4);
-        //--Узнаём длинну пакета и увеличиваем её в двое для HEX формата
-        PktLen := HexToInt(NextData(HexPkt, 4));
-        PktLen := PktLen * 2;
-        //--Получаем тело пакета
-        SubPkt := NextData(HexPkt, PktLen);
-        //--Смотрим какая фэмили у пакета
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0001:
-        begin
-        //--Смотрим какая субфэмили у пакета
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0003:
-        begin
-        if ICQ_BosConnect_Phaze then
-        begin
-        //--Очищаем группы ICQ в Ростере
-        RosterForm.ClearContacts(S_Icq);
-        //--Пока думаем, что у нас новый (обсолютно чистый) список контактов
-        NewKL := true;
-        ICQ_CL_Count := 0;
-        //--Отсылаем серверу пакет с допустимыми для нас фэмили
-        SendFLAP('2', ICQ_CliFamilyPkt);
-        end;
-        end;
-        $0005:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с адресом сервера icq аватар
-        ICQ_Parse_0105(SubPkt);
-        end;
-        $0013:
-        begin
-        //--Если фаза подключения уже к основному серверу
-        if ICQ_BosConnect_Phaze then
-        begin
-        //--Отсылаем стандартные пакеты данных для окончательной авторизации
-        SendFLAP('2', '00010008000000000008' + '00010002000300040005');
-        SendFLAP('2', '0001000E00000000000E');
-        SendFLAP('2', '00130002000000000002' + '000b0002000F');
-        SendFLAP('2', '001300050000344A0005' + '4A32107F003D');
-        SendFLAP('2', '00020002000000000002');
-        SendFLAP('2', '00030002000000000002' + '000500020003');
-        SendFLAP('2', '00040004000000000004');
-        SendFLAP('2', '00090002000000000002');
-        end;
-        end;
-        $000F:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с онлайн инфой о нашем подключении и аккаунте
-        ICQ_Parse_010F(SubPkt);
-        end;
-        $0021:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Получаем аватар Hash нашего аккаунта
-        if NextData(SubPkt, 4) = '0001' then
-        begin
-        //--Пропускаем непонятный 01
-        NextData(SubPkt, 2);
-        //--Узнаём длинну Hash
-        Len := HexToInt(NextData(SubPkt, 2));
-        Len := Len * 2;
-        //--Забираем Hash
-        ICQ_MyIcon_Hash := NextData(SubPkt, Len);
-        end;
-        end;
-        end;
-        end;
-        $0002:
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0006:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с онлайн инфой о контакте
-        ICQ_UserOnline_030B(SubPkt, true);
-        end;
-        end;
-        end;
-        $0004:
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0007:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с сообщением от контакта
-        ICQ_ReqMessage_0407(SubPkt);
-        end;
-        $0014:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с нотификацией о наборе сообщения контактом
-        ICQ_UserSentTyping_0414(SubPkt);
-        end;
-        $000C:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с сообщением о принятии нашего сообщения сервером
-        ICQ_SRV_MSGACK_ADVANCED(SubPkt, false);
-        end;
-        $000B:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с сообщением о принятии нашего сообщения контактом
-        ICQ_SRV_MSGACK_ADVANCED(SubPkt, true);
-        end;
-        end;
-        end;
-        $0003:
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $000A:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с неизвестным статусом контакта
-        ICQ_UserUnkStatus_030A(SubPkt);
-        end;
-        $000B:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с онлайн инфой о контакте
-        ICQ_UserOnline_030B(SubPkt, false);
-        end;
-        $000C:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет с оффлайн инфой о контакте
-        ICQ_UserOffline_030C(SubPkt);
-        end;
-        end;
-        end;
-        $0013:
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0001:
-        begin
-        //--Если фаза добавления контакта
-        if ICQ_Add_Contact_Phaze then
-        begin
-        //--Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
-        ICQ_AddEnd;
-        ICQ_Add_Contact_Phaze := false;
-        ICQ_SSI_Phaze := false;
-        DAShow(ErrorHead, AddContactError, EmptyStr, 134, 2, 0);
-        end else
-        //--Если фаза добавления группы
-        if ICQ_Add_Group_Phaze then
-        begin
-        //--Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
-        ICQ_AddEnd;
-        ICQ_Add_Group_Phaze := false;
-        ICQ_SSI_Phaze := false;
-        DAShow(ErrorHead, AddGroupError, EmptyStr, 134, 2, 0);
-        end else
-        //--Если фаза удаления группы
-        if ICQ_Group_Delete_Phaze then
-        begin
-        //--Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
-        ICQ_AddEnd;
-        ICQ_Group_Delete_Phaze := false;
-        ICQ_SSI_Phaze := false;
-        DAShow(ErrorHead, DelGroupError, EmptyStr, 134, 2, 0);
-        end;
-        end;
-        $0006:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет со списком контактов
-        if ICQ_Parse_1306(SubPkt) then
-        begin
-        //--Запрашиваем нашу инфу обязательно!
-        ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
-        //--Отсылаем подтверждение получения пакета с контактами
-        SendFLAP('2', '00130007000000000007');
-        //--Отсылаем первоначальную онлайн инфу
-        SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
-        //--Отсылаем параметры ограничений
-        SendFLAP('2', ICQ_CliSetICBMparametersPkt);
-        //--Отсылаем первый пакет со статусом
-        SendFLAP('2', ICQ_CliSetFirstStatusPkt);
-        //--Отсылаем стандартные параметры клиента
-        SendFLAP('2', ICQ_CliClientReadyPkt);
-        //--Отсылаем возможность приёма сообщений от AIM
-        SendFLAP('2', '00040010000000040010');
-        //--Отсылаем короткий статус
-        SendFLAP('2', ICQ_CreateShortStatusPkt);
-        //--Если ещё есть доп. статус то отсылаем пакеты установки правильного доп. статуса как в ICQ 6
-        if ICQ_X_CurrentStatus > 0 then
-        begin
-        SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
-        ICQ_SetInfoP;
-        ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
-        end;
-        //--Включаем фазу Онлайн
-        ICQ_Connect_Phaze := false;
-        ICQ_HTTP_Connect_Phaze := false;
-        ICQ_BosConnect_Phaze := false;
-        ICQ_Work_Phaze := true;
-        ICQ_Offline_Phaze := false;
-        //--Отключаем метку пересоединения ведь мы уже и так онлайн!
-        ICQ_Reconnect := false;
-        //--Запускаем таймер отсылки пинг пакетов
-        if ICQ_KeepAlive then JvTimerList.Events[5].Enabled := true;
-        end;
-        end;
-        $000E:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Разбираем пакет подтверждения операций со списком контактов
-        ICQ_Parse_130E_UpdateAck(SubPkt);
-        end;
-        end;
-        end;
-        $0015:
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0003:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Пропускаем данные о размере пакета и UIN получателя
-        NextData(SubPkt, 20);
-        case HexToInt(NextData(SubPkt, 4)) of
-        $DA07:
-        begin
-        //--Пропускаем ещё данные о счётчике
-        NextData(SubPkt, 4);
-        //--Разбираем пакет с инфой для данного UIN
-        ICQ_Parse_SNAC_1503(SubPkt);
-        end;
-        end;
-        end;
-        end;
-        end;
-        $0017:
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0007:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Узнаём длинну пакета и увеличиваем её в двое для HEX формата
-        Len := HexToInt(NextData(SubPkt, 4));
-        Len := Len * 2;
-        //--Отсылаем логин в формате MD5 шифрования
-        SendFLAP('2', ICQ_MD5CliLoginPkt(Hex2Text(NextData(SubPkt, Len))));
-        end;
-        $0003:
-        begin
-        //--Пропускаем раздел флагов
-        NextData(SubPkt, 12);
-        //--Сканируем пакет на наличие нужных нам TLV
-        while Length(SubPkt) > 0 do
-        begin
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0008: //--TLV с ошибкой авторизации
-        begin
-        Len := HexToInt(NextData(SubPkt, 4));
-        Len := Len * 2;
-        DAShow(ErrorHead, ICQ_NotifyAuthCookieError(NextData(SubPkt, Len)), EmptyStr, 134, 2, 0);
-        ICQ_GoOffline;
-        end;
-        $0005: //--TLV с адресом для коннекта к основному серверу
-        begin
-        Len := HexToInt(NextData(SubPkt, 4));
-        Len := Len * 2;
-        Bos_Addr := Hex2Text(NextData(SubPkt, Len));
-        ICQ_Bos_IP := Parse(':', Bos_Addr, 1);
-        ICQ_Bos_Port := Parse(':', Bos_Addr, 2);
-        end;
-        $0006: //--TLV с куком для коннекта к основному серверу
-        begin
-        Len := HexToInt(NextData(SubPkt, 4));
-        Len := Len * 2;
-        ICQ_Bos_Cookie := NextData(SubPkt, Len);
-        end
+        // Забираем из ответа прокси нужную информацию от прокси
+        Pkt := Chop(RN + RN, MRA_myBeautifulSocketBuffer);
+        // Обнуляем ошибки прокси
+        ProxyErr := 0;
+        // Если ответ положительный и прокси установил соединение,
+        // то активируем фазу подключения через http прокси
+        if AnsiStartsStr('HTTPS/1.0 200', Pkt) or AnsiStartsStr('HTTPS/1.1 200', Pkt) or AnsiStartsStr('HTTP/1.0 200', Pkt) or AnsiStartsStr('HTTP/1.1 200', Pkt) then
+          begin
+            MRA_HTTP_Connect_Phaze := True;
+            XLog('MRA | ' + Log_Proxy_OK);
+            // Если уже подключились в Bos серверу
+            if MRA_BosConnect_Phaze then
+              begin
+                // Отсылаем первый пакет логина
+                MRA_Login_1;
+                Exit;
+              end;
+          end
         else
-        begin
-        //--Если пакет содержит другие TLV, то пропускаем их
-        Len := HexToInt(NextData(SubPkt, 4));
-        Len := Len * 2;
-        NextData(SubPkt, Len);
-        end;
-        end;
-        end;
-        end;
-        end;
-        end;
-        end;
-        end;
-        $04:
-        begin
-        //--Пропускаем Seq (счётчик)
-        NextData(HexPkt, 4);
-        //--Узнаём длинну пакета
-        PktLen := HexToInt(NextData(HexPkt, 4));
-        //--Если длинна пакета ноль, то завершаем связь с сервером
-        if PktLen = 0 then
-        begin
-        //--Если сокет ещё подключён, то отсылаем "прощание"
-        if ICQWSocket.State = wsConnected then ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));
-        //--Увеличиваем наш счётчик пакетов на один
-        Inc(ICQ_Seq1);
-        //--Закрываем сокет и ждём пока он закроется
-        ICQWSocket.Close;
-        ICQWSocket.WaitForClose;
-        //--Если это фаза первичного коннекта
-        if ICQ_Connect_Phaze then
-        begin
-        try
-        //--Активируем фазу коннекта к основному серверу
-        ICQ_Connect_Phaze := false;
-        ICQ_BosConnect_Phaze := true;
-        ICQ_HTTP_Connect_Phaze := false;
-        //--Устанавливаем параметры
-        ICQWSocket.Proto := 'tcp';
+        // Сообщаем об ошибках прокси
+          if AnsiStartsStr('HTTP/1.0 407', Pkt) then
+          begin
+            ProxyErr := 1;
+            DAShow(S_Errorhead, ProxyConnectErrL1, EmptyStr, 134, 2, 0);
+            XLog('MRA | ' + ProxyConnectErrL1);
+          end
+        else
+          begin
+            ProxyErr := 2;
+            DAShow(S_Errorhead, ProxyConnectErrL2, EmptyStr, 134, 2, 0);
+            XLog('MRA | ' + ProxyConnectErrL2);
+          end;
+        // Забираем из буфера пакет с данными ICQ
+        Pkt := MRA_myBeautifulSocketBuffer;
+        // Очищаем буфер
+        MRA_myBeautifulSocketBuffer := EmptyStr;
+        // Если в работе с прокси были ошибки, то уходим в оффлайн
+        if ProxyErr <> 0 then
+          begin
+            MRA_GoOffline;
+            Exit;
+          end;
+      end;
+    // Если длинна этих данных равна нулю, выходим от сюда :)
+    if Length(Pkt) = 0 then
+      Exit;
+    // Увеличиваем статистику входящего трафика
+    TrafRecev := TrafRecev + Length(Pkt);
+    AllTrafRecev := AllTrafRecev + Length(Pkt);
+    if Assigned(TrafficForm) then
+      OpenTrafficClick(nil);
+    // Преобразуем данные из бинарного формата в HEX формат и прибавляем
+    // их к специальному буферу накопления таких преобразованных данных
+    MRA_HexPkt := MRA_HexPkt + Text2Hex(Pkt);
+    // Если фаза первого подключания к серверу MRA
+    if MRA_Connect_Phaze then
+      begin
+        MRA_Bos_Addr := Hex2Text(MRA_HexPkt);
+        // Получаем адрес Bos сервера для подключения
+        MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
+        MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
+        // Закрываем сокет и ждём пока он закроется
+        MRAWSocket.Close;
+        MRAWSocket.WaitForClose;
+        // Подключаемся к Bos серверу
+        // Активируем фазу коннекта к основному серверу
+        MRA_Connect_Phaze := False;
+        MRA_BosConnect_Phaze := True;
+        MRA_HTTP_Connect_Phaze := False;
+        MRA_myBeautifulSocketBuffer := EmptyStr;
+        MRA_HexPkt := EmptyStr;
+        // Устанавливаем параметры
+        MRAWSocket.Proto := 'tcp';
         if HttpProxy_Enable then
-        begin
-        ICQWSocket.Addr := HttpProxy_Address;
-        ICQWSocket.Port := HttpProxy_Port;
-        end
+          begin
+            MRAWSocket.Addr := HttpProxy_Address;
+            MRAWSocket.Port := HttpProxy_Port;
+          end
         else
-        begin
-        ICQWSocket.Addr := ICQ_Bos_IP;
-        ICQWSocket.Port := ICQ_Bos_Port;
-        end;
-        //--Начинаем подключение к основному серверу
-        ICQWSocket.Connect;
-        except
-        on E: Exception do
-        TLogger.Instance.WriteMessage(E);
-        end;
-        end;
-        end
-        else
-        begin
-        //--Если длинна пакета больше нуля, то увеличиваем её вдвое
-        PktLen := PktLen * 2;
-        //--Получаем тело пакета
-        SubPkt := NextData(HexPkt, PktLen);
-        //--Ищем нужные нам TLV
-        case HexToInt(NextData(SubPkt, 4)) of
-        $0009: //--TLV с кодом ошибки
-        begin
-        //--Выводим сообщение о том, что наш номер используется кем то другим
-        DAShow(ErrorHead, ICQxUIN, EmptyStr, 134, 2, 100000000);
-        //--Активиуем режим оффлайн
-        ICQ_GoOffline;
-        end;
-        end;
-        end;
-        end
-        else
-        //--Если канал пакета вообще другой, то проверяем в буфере другой пакет
-        goto z;
-        end;
-        end
-        else
-        begin
-        //--Если начальная метка пакета не правильная,
-        //то выводим сообщение об ошибке разбора и выходим в оффлайн
-        DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
-        ICQ_GoOffline;
+          begin
+            MRAWSocket.Addr := MRA_Bos_IP;
+            MRAWSocket.Port := MRA_Bos_Port;
+          end;
+        // Начинаем подключение к основному серверу
+        MRAWSocket.Connect;
         Exit;
-        end;
-        end;
-        //--Если в конце разбора пакета у нас ещё остались данные, то возвращаемся для проверки буфера
-        z: ;
-        if Length(ICQ_HexPkt) > 0 then goto x; }
-    end;
+      end;
+    // Ищем ошибки в буфере пакетов
+    if ((MRA_HexPkt > EmptyStr) and ((LeftStr(MRA_HexPkt, 8)) <> MRA_MagKey)) or ((Length(MRA_HexPkt) > 2) and ((HexToInt(MRA_HexPkt[3] + MRA_HexPkt[4]) = $0))) then
+      begin
+        // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
+        DAShow(S_Errorhead, ParsingPktError, EmptyStr, 134, 2, 0);
+        MRA_GoOffline;
+        Exit;
+      end;
+
+    // Если пакет был разобран, но в буфере есть ещё данные, то возвращаемся сюда
+    // для проверки этих данные на наличие слудующего целого пакета данных
+  X :;
+    PktSize := MRA_BodySize;
+    // Проверяем если ли в буфере хоть один целый пакет
+    if (Length(MRA_HexPkt) >= MRA_FLAP_HEAD_SIZE) and (Length(MRA_HexPkt) >= MRA_FLAP_HEAD_SIZE + PktSize) then
+      begin
+        // Забираем из буфера один целый пакет
+        HexPkt := NextData(MRA_HexPkt, MRA_FLAP_HEAD_SIZE + PktSize);
+
+        { //--Разбираем пакет данных если его длинна больше нуля
+          if Length(HexPkt) > 0 then
+          begin
+          //--Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
+          if HexToInt(NextData(HexPkt, 2)) = $2A then
+          begin
+          //--Смотрим какой канал у пакета
+          case HexToInt(NextData(HexPkt, 2)) of
+          $01:
+          begin
+          //--Пропускаем Seq (счётчик)
+          NextData(HexPkt, 4);
+          //--Узнаём длинну пакета и увеличиваем её в двое для HEX формата
+          PktLen := HexToInt(NextData(HexPkt, 4));
+          PktLen := PktLen * 2;
+          //--Получаем тело пакета
+          SubPkt := NextData(HexPkt, PktLen);
+          //--Если AOL прислал приглашение и мы в фазе подключения к серверу
+          if (ICQ_Connect_Phaze) and (SubPkt = '00000001') then
+          begin
+          //--Тоже отсылаем серверу "привет" + что-то новое в протоколе
+          SendFLAP('1', '00000001' + '8003000400100000');
+          //--Отсылаем серверу наш логин
+          SendFLAP('2', '00170006000000000000' + '0001' +
+          IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN));
+          //--Выходим на проверку другого пакета в буфере
+          goto z;
+          end;
+          //--Если это уже подключение к основному icq серверу
+          if (ICQ_BosConnect_Phaze) and (SubPkt = '00000001') then
+          begin
+          //--Отсылаем серверу полученый от логин сервера код авторизации (кукис)
+          SendFLAP('1', ICQ_CliCookiePkt(ICQ_Bos_Cookie));
+          end;
+          end;
+          $02:
+          begin
+          //--Пропускаем Seq (счётчик)
+          NextData(HexPkt, 4);
+          //--Узнаём длинну пакета и увеличиваем её в двое для HEX формата
+          PktLen := HexToInt(NextData(HexPkt, 4));
+          PktLen := PktLen * 2;
+          //--Получаем тело пакета
+          SubPkt := NextData(HexPkt, PktLen);
+          //--Смотрим какая фэмили у пакета
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0001:
+          begin
+          //--Смотрим какая субфэмили у пакета
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0003:
+          begin
+          if ICQ_BosConnect_Phaze then
+          begin
+          //--Очищаем группы ICQ в Ростере
+          RosterForm.ClearContacts(S_Icq);
+          //--Пока думаем, что у нас новый (обсолютно чистый) список контактов
+          NewKL := true;
+          ICQ_CL_Count := 0;
+          //--Отсылаем серверу пакет с допустимыми для нас фэмили
+          SendFLAP('2', ICQ_CliFamilyPkt);
+          end;
+          end;
+          $0005:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с адресом сервера icq аватар
+          ICQ_Parse_0105(SubPkt);
+          end;
+          $0013:
+          begin
+          //--Если фаза подключения уже к основному серверу
+          if ICQ_BosConnect_Phaze then
+          begin
+          //--Отсылаем стандартные пакеты данных для окончательной авторизации
+          SendFLAP('2', '00010008000000000008' + '00010002000300040005');
+          SendFLAP('2', '0001000E00000000000E');
+          SendFLAP('2', '00130002000000000002' + '000b0002000F');
+          SendFLAP('2', '001300050000344A0005' + '4A32107F003D');
+          SendFLAP('2', '00020002000000000002');
+          SendFLAP('2', '00030002000000000002' + '000500020003');
+          SendFLAP('2', '00040004000000000004');
+          SendFLAP('2', '00090002000000000002');
+          end;
+          end;
+          $000F:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с онлайн инфой о нашем подключении и аккаунте
+          ICQ_Parse_010F(SubPkt);
+          end;
+          $0021:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Получаем аватар Hash нашего аккаунта
+          if NextData(SubPkt, 4) = '0001' then
+          begin
+          //--Пропускаем непонятный 01
+          NextData(SubPkt, 2);
+          //--Узнаём длинну Hash
+          Len := HexToInt(NextData(SubPkt, 2));
+          Len := Len * 2;
+          //--Забираем Hash
+          ICQ_MyIcon_Hash := NextData(SubPkt, Len);
+          end;
+          end;
+          end;
+          end;
+          $0002:
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0006:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с онлайн инфой о контакте
+          ICQ_UserOnline_030B(SubPkt, true);
+          end;
+          end;
+          end;
+          $0004:
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0007:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с сообщением от контакта
+          ICQ_ReqMessage_0407(SubPkt);
+          end;
+          $0014:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с нотификацией о наборе сообщения контактом
+          ICQ_UserSentTyping_0414(SubPkt);
+          end;
+          $000C:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с сообщением о принятии нашего сообщения сервером
+          ICQ_SRV_MSGACK_ADVANCED(SubPkt, false);
+          end;
+          $000B:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с сообщением о принятии нашего сообщения контактом
+          ICQ_SRV_MSGACK_ADVANCED(SubPkt, true);
+          end;
+          end;
+          end;
+          $0003:
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $000A:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с неизвестным статусом контакта
+          ICQ_UserUnkStatus_030A(SubPkt);
+          end;
+          $000B:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с онлайн инфой о контакте
+          ICQ_UserOnline_030B(SubPkt, false);
+          end;
+          $000C:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет с оффлайн инфой о контакте
+          ICQ_UserOffline_030C(SubPkt);
+          end;
+          end;
+          end;
+          $0013:
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0001:
+          begin
+          //--Если фаза добавления контакта
+          if ICQ_Add_Contact_Phaze then
+          begin
+          //--Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
+          ICQ_AddEnd;
+          ICQ_Add_Contact_Phaze := false;
+          ICQ_SSI_Phaze := false;
+          DAShow(ErrorHead, AddContactError, EmptyStr, 134, 2, 0);
+          end else
+          //--Если фаза добавления группы
+          if ICQ_Add_Group_Phaze then
+          begin
+          //--Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
+          ICQ_AddEnd;
+          ICQ_Add_Group_Phaze := false;
+          ICQ_SSI_Phaze := false;
+          DAShow(ErrorHead, AddGroupError, EmptyStr, 134, 2, 0);
+          end else
+          //--Если фаза удаления группы
+          if ICQ_Group_Delete_Phaze then
+          begin
+          //--Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
+          ICQ_AddEnd;
+          ICQ_Group_Delete_Phaze := false;
+          ICQ_SSI_Phaze := false;
+          DAShow(ErrorHead, DelGroupError, EmptyStr, 134, 2, 0);
+          end;
+          end;
+          $0006:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет со списком контактов
+          if ICQ_Parse_1306(SubPkt) then
+          begin
+          //--Запрашиваем нашу инфу обязательно!
+          ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
+          //--Отсылаем подтверждение получения пакета с контактами
+          SendFLAP('2', '00130007000000000007');
+          //--Отсылаем первоначальную онлайн инфу
+          SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
+          //--Отсылаем параметры ограничений
+          SendFLAP('2', ICQ_CliSetICBMparametersPkt);
+          //--Отсылаем первый пакет со статусом
+          SendFLAP('2', ICQ_CliSetFirstStatusPkt);
+          //--Отсылаем стандартные параметры клиента
+          SendFLAP('2', ICQ_CliClientReadyPkt);
+          //--Отсылаем возможность приёма сообщений от AIM
+          SendFLAP('2', '00040010000000040010');
+          //--Отсылаем короткий статус
+          SendFLAP('2', ICQ_CreateShortStatusPkt);
+          //--Если ещё есть доп. статус то отсылаем пакеты установки правильного доп. статуса как в ICQ 6
+          if ICQ_X_CurrentStatus > 0 then
+          begin
+          SendFLAP('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
+          ICQ_SetInfoP;
+          ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
+          end;
+          //--Включаем фазу Онлайн
+          ICQ_Connect_Phaze := false;
+          ICQ_HTTP_Connect_Phaze := false;
+          ICQ_BosConnect_Phaze := false;
+          ICQ_Work_Phaze := true;
+          ICQ_Offline_Phaze := false;
+          //--Отключаем метку пересоединения ведь мы уже и так онлайн!
+          ICQ_Reconnect := false;
+          //--Запускаем таймер отсылки пинг пакетов
+          if ICQ_KeepAlive then JvTimerList.Events[5].Enabled := true;
+          end;
+          end;
+          $000E:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Разбираем пакет подтверждения операций со списком контактов
+          ICQ_Parse_130E_UpdateAck(SubPkt);
+          end;
+          end;
+          end;
+          $0015:
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0003:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Пропускаем данные о размере пакета и UIN получателя
+          NextData(SubPkt, 20);
+          case HexToInt(NextData(SubPkt, 4)) of
+          $DA07:
+          begin
+          //--Пропускаем ещё данные о счётчике
+          NextData(SubPkt, 4);
+          //--Разбираем пакет с инфой для данного UIN
+          ICQ_Parse_SNAC_1503(SubPkt);
+          end;
+          end;
+          end;
+          end;
+          end;
+          $0017:
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0007:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Узнаём длинну пакета и увеличиваем её в двое для HEX формата
+          Len := HexToInt(NextData(SubPkt, 4));
+          Len := Len * 2;
+          //--Отсылаем логин в формате MD5 шифрования
+          SendFLAP('2', ICQ_MD5CliLoginPkt(Hex2Text(NextData(SubPkt, Len))));
+          end;
+          $0003:
+          begin
+          //--Пропускаем раздел флагов
+          NextData(SubPkt, 12);
+          //--Сканируем пакет на наличие нужных нам TLV
+          while Length(SubPkt) > 0 do
+          begin
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0008: //--TLV с ошибкой авторизации
+          begin
+          Len := HexToInt(NextData(SubPkt, 4));
+          Len := Len * 2;
+          DAShow(ErrorHead, ICQ_NotifyAuthCookieError(NextData(SubPkt, Len)), EmptyStr, 134, 2, 0);
+          ICQ_GoOffline;
+          end;
+          $0005: //--TLV с адресом для коннекта к основному серверу
+          begin
+          Len := HexToInt(NextData(SubPkt, 4));
+          Len := Len * 2;
+          Bos_Addr := Hex2Text(NextData(SubPkt, Len));
+          ICQ_Bos_IP := Parse(':', Bos_Addr, 1);
+          ICQ_Bos_Port := Parse(':', Bos_Addr, 2);
+          end;
+          $0006: //--TLV с куком для коннекта к основному серверу
+          begin
+          Len := HexToInt(NextData(SubPkt, 4));
+          Len := Len * 2;
+          ICQ_Bos_Cookie := NextData(SubPkt, Len);
+          end
+          else
+          begin
+          //--Если пакет содержит другие TLV, то пропускаем их
+          Len := HexToInt(NextData(SubPkt, 4));
+          Len := Len * 2;
+          NextData(SubPkt, Len);
+          end;
+          end;
+          end;
+          end;
+          end;
+          end;
+          end;
+          end;
+          $04:
+          begin
+          //--Пропускаем Seq (счётчик)
+          NextData(HexPkt, 4);
+          //--Узнаём длинну пакета
+          PktLen := HexToInt(NextData(HexPkt, 4));
+          //--Если длинна пакета ноль, то завершаем связь с сервером
+          if PktLen = 0 then
+          begin
+          //--Если сокет ещё подключён, то отсылаем "прощание"
+          if ICQWSocket.State = wsConnected then ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq1, 4) + '0000'));
+          //--Увеличиваем наш счётчик пакетов на один
+          Inc(ICQ_Seq1);
+          //--Закрываем сокет и ждём пока он закроется
+          ICQWSocket.Close;
+          ICQWSocket.WaitForClose;
+          //--Если это фаза первичного коннекта
+          if ICQ_Connect_Phaze then
+          begin
+          try
+          //--Активируем фазу коннекта к основному серверу
+          ICQ_Connect_Phaze := false;
+          ICQ_BosConnect_Phaze := true;
+          ICQ_HTTP_Connect_Phaze := false;
+          //--Устанавливаем параметры
+          ICQWSocket.Proto := 'tcp';
+          if HttpProxy_Enable then
+          begin
+          ICQWSocket.Addr := HttpProxy_Address;
+          ICQWSocket.Port := HttpProxy_Port;
+          end
+          else
+          begin
+          ICQWSocket.Addr := ICQ_Bos_IP;
+          ICQWSocket.Port := ICQ_Bos_Port;
+          end;
+          //--Начинаем подключение к основному серверу
+          ICQWSocket.Connect;
+          except
+          on E: Exception do
+          TLogger.Instance.WriteMessage(E);
+          end;
+          end;
+          end
+          else
+          begin
+          //--Если длинна пакета больше нуля, то увеличиваем её вдвое
+          PktLen := PktLen * 2;
+          //--Получаем тело пакета
+          SubPkt := NextData(HexPkt, PktLen);
+          //--Ищем нужные нам TLV
+          case HexToInt(NextData(SubPkt, 4)) of
+          $0009: //--TLV с кодом ошибки
+          begin
+          //--Выводим сообщение о том, что наш номер используется кем то другим
+          DAShow(ErrorHead, ICQxUIN, EmptyStr, 134, 2, 100000000);
+          //--Активиуем режим оффлайн
+          ICQ_GoOffline;
+          end;
+          end;
+          end;
+          end
+          else
+          //--Если канал пакета вообще другой, то проверяем в буфере другой пакет
+          goto z;
+          end;
+          end
+          else
+          begin
+          //--Если начальная метка пакета не правильная,
+          //то выводим сообщение об ошибке разбора и выходим в оффлайн
+          DAShow(ErrorHead, ParsingPktError, EmptyStr, 134, 2, 0);
+          ICQ_GoOffline;
+          Exit;
+          end;
+          end;
+          //--Если в конце разбора пакета у нас ещё остались данные, то возвращаемся для проверки буфера
+          z: ;
+          if Length(ICQ_HexPkt) > 0 then goto x; }
+      end;
+  except
+    on E: Exception do
+      IMaderingEventsException(Self, E);
+  end;
 end;
 
 procedure TMainForm.MRAXStatusClick(Sender: TObject);
@@ -3423,6 +3446,22 @@ begin
     MraXStatusForm := TMraXStatusForm.Create(Self);
   // Отображаем окнов рабочей области
   FormShowInWorkArea(MraXStatusForm);
+end;
+
+procedure TMainForm.MyInfoTwitterMenuClick(Sender: TObject);
+begin
+  // Загружаем информацию о пользователе
+  if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+    begin
+      with TwitterHttpClient do
+        begin
+          Abort;
+          Username := Twit_Login;
+          Password := Twit_Password;
+          URL := RS_TwitUserInfo + Twit_Login;
+          GetASync;
+        end;
+    end;
 end;
 
 procedure TMainForm.AddNewContactClick(Sender: TObject);
@@ -3505,6 +3544,22 @@ begin
   XShowForm(TrafficForm);
 end;
 
+procedure TMainForm.OpenTwitterIncMessMenuClick(Sender: TObject);
+begin
+  // Загружаем входящие сообщения
+  if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+    begin
+      with TwitterHttpClient do
+        begin
+          Abort;
+          Username := Twit_Login;
+          Password := Twit_Password;
+          URL := Format(RS_TwitIncMess, [Twit_IncMess_Count]);
+          GetASync;
+        end;
+    end;
+end;
+
 procedure TMainForm.FloatContactMenuClick(Sender: TObject);
 var
   I, FloatHandle: Integer;
@@ -3557,6 +3612,17 @@ begin
   // if not NotProtoOnline(S_Icq) then
 end;
 
+procedure TMainForm.PostMessageTwitterMenuClick(Sender: TObject);
+begin
+  // Если форма не существует, то создаём её
+  if not Assigned(IcqReqAuthForm) then
+    IcqReqAuthForm := TIcqReqAuthForm.Create(Self);
+  // Делаем запрос в форме на обновление программы
+  IcqReqAuthForm.PostInTwitter(EmptyStr);
+  // Отображаем окно
+  XShowForm(IcqReqAuthForm);
+end;
+
 procedure TMainForm.PrivatListMenuClick(Sender: TObject);
 begin
   ShowMessage(S_DevelMess);
@@ -3575,7 +3641,7 @@ var
   R: Integer;
 begin
   // Запускаем второй экземпляр программы для выбора другого профиля
-  Spath := MyPath + 'Imadering.exe';
+  Spath := MyPath + RS_ExeName;
   R := ShellExecute(0, 'open', 'Imadering.exe', nil, PChar(MyPath), SW_SHOW);
   XLog(Spath + BN + IntToStr(R));
   if R < 32 then
@@ -3629,6 +3695,12 @@ begin
     SettingsForm := TSettingsForm.Create(Self);
   // Отображаем окно
   XShowForm(SettingsForm);
+end;
+
+procedure TMainForm.OpenSiteTwitterMinuClick(Sender: TObject);
+begin
+  // Открываем сайт Twitter
+  OpenURL(RS_TwitSite);
 end;
 
 procedure TMainForm.RenemeGroupCLClick(Sender: TObject);
@@ -3715,6 +3787,13 @@ begin
   // Закрываем программу
   ProgramCloseCommand := True;
   Close;
+end;
+
+procedure TMainForm.CLSearchONMenuClick(Sender: TObject);
+begin
+  // Скрываем кнопку поиска на верхней панели
+  CLSearchONMenu.Checked := not CLSearchONMenu.Checked;
+  CLSearchToolButton.Visible := not CLSearchToolButton.Visible;
 end;
 
 procedure TMainForm.ContactListButtonClicked(Sender: TObject; const Button: TButtonItem);
@@ -4376,8 +4455,20 @@ begin
   // Проверяем если ли старый файл после обновления, если есть, то удаляем
   if FileExists(MyPath + 'Imadering.old') then
     DeleteFile(MyPath + 'Imadering.old');
+  // Проверяем могут ли воспроизводится звуки на компьютере
+  if InitMixer = 0 then
+    SoundON := False;
   // Запускаем таймер отображения окна выбора профиля
   JvTimerList.Events[0].Enabled := True;
+end;
+
+procedure TMainForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
+  // Устанавливаем заголовок
+  if Assigned(SettingsForm) then
+    Caption := SettingsForm.HeaderTextEdit.Text;
 end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);
@@ -4390,6 +4481,9 @@ begin
   if Assigned(SmilesForm) then
     if SmilesForm.Visible then
       SmilesForm.Hide;
+  // Высвобождаем общую память приложения (вспоминая qip)
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
 end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: Char);
@@ -4409,7 +4503,7 @@ begin
     end;
   // Запоминаем клавишу
   PKeySearch := Key;
-  xlog(PKeySearch);
+  Xlog(PKeySearch);
 Z :;
   with ContactList do
     begin
@@ -4555,6 +4649,7 @@ begin
                         ICQEnable(Sub_Node.Properties.BoolValue(S_Icq, False));
                         MRAEnable(Sub_Node.Properties.BoolValue(S_Mra, False));
                         JabberEnable(Sub_Node.Properties.BoolValue(S_Jabber, False));
+                        TwitterEnable(Sub_Node.Properties.BoolValue(S_Twitter, False));
                       end;
                     // Загружаем данные трафика
                     Sub_Node := XML_Node.Items.ItemNamed[RS_Traffic];
@@ -4594,7 +4689,10 @@ begin
                         SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
                         TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
                         //
-                        TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+                        CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+                        TopCLSearchONMenu.Checked := CLSearchTopToolButton.Visible;
+                        //
+                        TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
                         TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
                         //
                         if not Sub_Node.BoolValue then
@@ -4629,10 +4727,13 @@ begin
                         SettingsToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
                         SettingsONMenu.Checked := SettingsToolButton.Visible;
                         //
-                        TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+                        CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+                        CLSearchONMenu.Checked := CLSearchToolButton.Visible;
+                        //
+                        TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
                         TrafficONMenu.Checked := TrafficToolButton.Visible;
                         //
-                        TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
+                        TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('b9');
                         TopPanelONMenu.Checked := TopPanelToolButton.Visible;
                       end;
                   end;
@@ -4689,6 +4790,7 @@ begin
             Sub_Node.Properties.Add(S_Icq, ICQToolButton.Visible);
             Sub_Node.Properties.Add(S_Mra, MRAToolButton.Visible);
             Sub_Node.Properties.Add(S_Jabber, JabberToolButton.Visible);
+            Sub_Node.Properties.Add(S_Twitter, TwitterToolButton.Visible);
             // Сохраняем трафик
             Sub_Node := XML_Node.Items.Add(RS_Traffic);
             Sub_Node.Properties.Add('s', AllTrafSend);
@@ -4808,13 +4910,18 @@ begin
       SoundOnOffToolButton.ImageIndex := 136;
       SoundOnOffToolTopButton.ImageIndex := 136;
       SoundON := False;
+      if Assigned(SettingsForm) then
+        SettingsForm.SoundOnOffCheckBox.Checked := True;
     end
   else
     begin
       SoundOnOffToolTopButton.Down := False;
       SoundOnOffToolButton.ImageIndex := 135;
       SoundOnOffToolTopButton.ImageIndex := 135;
-      SoundON := True;
+      if InitMixer <> 0 then
+        SoundON := True;
+      if Assigned(SettingsForm) then
+        SettingsForm.SoundOnOffCheckBox.Checked := False;
     end;
 end;
 
@@ -4823,6 +4930,13 @@ begin
   // Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. звуков
   SoundOnOffToolButton.Down := not SoundOnOffToolButton.Down;
   SoundOnOffToolButtonClick(Self);
+end;
+
+procedure TMainForm.TopCLSearchONMenuClick(Sender: TObject);
+begin
+  // Скрываем кнопку поиска на верхней панели
+  TopCLSearchONMenu.Checked := not TopCLSearchONMenu.Checked;
+  CLSearchTopToolButton.Visible := not CLSearchTopToolButton.Visible;
 end;
 
 procedure TMainForm.TopGroupONMenuClick(Sender: TObject);
@@ -4971,6 +5085,139 @@ begin
     end;
 end;
 
+procedure TMainForm.TwitterHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+var
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  I, Count: Integer;
+  Msg, User_Name: string;
+begin
+  try
+    // Высвобождаем память отправки данных
+    if TwitterHttpClient.SendStream <> nil then
+      begin
+        TwitterHttpClient.SendStream.Free;
+        TwitterHttpClient.SendStream := nil;
+      end;
+    // Читаем полученные http данные из блока памяти
+    if TwitterHttpClient.RcvdStream <> nil then
+      begin
+        // Инициализируем XML
+        JvXML_Create(JvXML);
+        try
+          // Увеличиваем статистику входящего трафика
+          TrafRecev := TrafRecev + TwitterHttpClient.RcvdCount;
+          AllTrafRecev := AllTrafRecev + TwitterHttpClient.RcvdCount;
+          if Assigned(TrafficForm) then
+            OpenTrafficClick(nil);
+          // Обнуляем позицию начала чтения в блоке памяти
+          TwitterHttpClient.RcvdStream.Position := 0;
+          // Читаем данные в лист
+          with JvXML do
+            begin
+              LoadFromStream(TwitterHttpClient.RcvdStream);
+              // Разбираем данные XML
+              Xlog(RN + XMLData);
+              // Проверяем на ошибки и отображаем если они есть
+              if Root <> nil then
+                begin
+                  XML_Node := Root.Items.ItemNamed['error'];
+                  if XML_Node <> nil then
+                    DAShow(S_Errorhead, XML_Node.Value, EmptyStr, 134, 2, 0);
+                  // Проверяем на успешную публикацию
+                  XML_Node := Root.Items.ItemNamed['created_at'];
+                  if XML_Node <> nil then
+                    DAShow(S_InfoHead, S_TwitPostOK, EmptyStr, 133, 3, 0);
+                  // Начинаем разбор списка
+                  if Root.Properties.Value('type') = 'array' then
+                    begin
+                      Count := Root.Items.Count; // Получаем количество вложенных пакетов
+                      for I := 0 to Count - 1 do
+                        begin
+                          XML_Node := Root.Items[I];
+                          if XML_Node <> nil then
+                            begin
+                              Sub_Node := XML_Node.Items.ItemNamed['text'];
+                              if Sub_Node <> nil then
+                                begin
+                                  Msg := EmptyStr;
+                                  Msg := HtmlStrToString(Sub_Node.Value);
+                                end;
+                              Sub_Node := XML_Node.Items.ItemNamed['user'];
+                              if Sub_Node <> nil then
+                                begin
+                                  Tri_Node := Sub_Node.Items.ItemNamed['name'];
+                                  if Tri_Node <> nil then
+                                    User_Name := Tri_Node.Value;
+                                end;
+                              DAShow(User_Name, Msg, EmptyStr, 165, 1, 0);
+                            end;
+                        end;
+                    end;
+                end;
+            end;
+        finally
+          JvXML.Free;
+          // Высвобождаем блок памяти
+          TwitterHttpClient.RcvdStream.Free;
+          TwitterHttpClient.RcvdStream := nil;
+        end;
+      end;
+  except
+    on E: Exception do
+      IMaderingEventsException(Self, E);
+  end;
+end;
+
+procedure TMainForm.TwitterHttpClientSessionClosed(Sender: TObject);
+begin
+  // Обрабатываем возможные ошибки в работе http сокета
+  if (TwitterHttpClient.StatusCode = 0) or (TwitterHttpClient.StatusCode >= 400) then
+    begin
+      DAShow(S_Errorhead, ErrorHttpClient(TwitterHttpClient.StatusCode), EmptyStr, 134, 2, 0);
+    end;
+end;
+
+procedure TMainForm.TwitterPopupMenuPopup(Sender: TObject);
+begin
+  // Управляем пунктами меню
+  if Twit_Login <> EmptyStr then
+    begin
+      OpenMyPageMenu.Enabled := True;
+      OpenLentaTwitterMenu.Enabled := True;
+      MyInfoTwitterMenu.Enabled := True;
+      OpenTwitterIncMessMenu.Enabled := True;
+    end
+  else
+    begin
+      OpenMyPageMenu.Enabled := False;
+      OpenLentaTwitterMenu.Enabled := False;
+      MyInfoTwitterMenu.Enabled := False;
+      OpenTwitterIncMessMenu.Enabled := False;
+    end;
+end;
+
+procedure TMainForm.TwitterSettingsMenuClick(Sender: TObject);
+begin
+  // Открываем окно настроек ICQ протокола
+  if not Assigned(TwitterOptionsForm) then
+    TwitterOptionsForm := TTwitterOptionsForm.Create(Self);
+  // Отображаем окно
+  XShowForm(TwitterOptionsForm);
+end;
+
+procedure TMainForm.TwitterToolButtonClick(Sender: TObject);
+begin
+  // Открываем меню над этим элементом
+  Popup(TwitterToolButton, TwitterPopupMenu);
+end;
+
+procedure TMainForm.TwitterToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  // Открываем меню над этим элементом
+  Popup(TwitterToolButton, TwitterPopupMenu);
+end;
+
 procedure TMainForm.UniqContactSettingsMenuClick(Sender: TObject);
 begin
   // Открываем окно уникальных настроек контакта
@@ -5014,21 +5261,48 @@ begin
   XShowForm(HistoryForm);
 end;
 
+procedure TMainForm.OpenLentaTwitterMenuClick(Sender: TObject);
+begin
+  // Загружаем свои сообщения
+  if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+    begin
+      with TwitterHttpClient do
+        begin
+          Abort;
+          Username := Twit_Login;
+          Password := Twit_Password;
+          URL := Format(RS_TwitOpenLenta, [Twit_Login, Twit_MyMess_Count]);
+          GetASync;
+        end;
+    end;
+end;
+
+procedure TMainForm.OpenMyPageMenuClick(Sender: TObject);
+begin
+  // Открываем страницу пользователя на Twitter
+  OpenURL(RS_TwitSite + Twit_Login);
+end;
+
 procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);
 begin
   // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + UpdateHttpClient.SentCount;
-  AllTrafSend := AllTrafSend + UpdateHttpClient.SentCount;
+  TrafSend := TrafSend + (Sender as THttpCli).SentCount;
+  AllTrafSend := AllTrafSend + (Sender as THttpCli).SentCount;
   if Assigned(TrafficForm) then
     OpenTrafficClick(nil);
 end;
 
 procedure TMainForm.UpdateHttpClientSessionClosed(Sender: TObject);
+var
+  S: string;
 begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (UpdateHttpClient.StatusCode = 0) or (UpdateHttpClient.StatusCode >= 400) then
     begin
-      DAShow(S_Errorhead, ErrorHttpClient(UpdateHttpClient.StatusCode), EmptyStr, 134, 2, 0);
+      S := ErrorHttpClient(UpdateHttpClient.StatusCode);
+      DAShow(S_Errorhead, S, EmptyStr, 134, 2, 0);
+      if Assigned(UpdateForm) then
+        UpdateForm.InfoMemo.Lines.Add(RN + S);
     end;
 end;
 
@@ -5037,7 +5311,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('Update', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -5046,14 +5320,14 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, SocketConnErrorInfo_1 + RN + Msg + RN + Format(HttpSocketErrCodeL, [Error]) + RN + '[ ' + SocketL + BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
 procedure TMainForm.ICQWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(S_Errorhead, NotifyConnectError('ICQ', WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(S_Errorhead, NotifyConnectError(S_Icq, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   ICQ_GoOffline;
 end;
@@ -5061,7 +5335,7 @@ end;
 procedure TMainForm.MRAWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(S_Errorhead, NotifyConnectError('MRA', WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(S_Errorhead, NotifyConnectError(S_Mra, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   MRA_GoOffline;
 end;
@@ -5080,7 +5354,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -5091,7 +5365,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if (not MRA_Connect_Phaze) and (not MRA_Offline_Phaze) then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -5106,7 +5380,7 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -5136,7 +5410,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError('MRA', ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -5147,7 +5421,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, Msg, EmptyStr, 134, 2, 0);
+      DAShow(S_Errorhead, SocketConnErrorInfo_1 + RN + Msg + RN + Format(HttpSocketErrCodeL, [Error]) + RN + '[ ' + SocketL + BN + S_Mra + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;

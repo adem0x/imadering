@@ -82,6 +82,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure RegNewUINLabelClick(Sender: TObject);
     procedure MRARegNewEmailLabelClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -365,6 +366,12 @@ begin
   // По умолчанию деактивируем контролы протоколов MRA и Jabber
   MRAEnableCheckBoxClick(Self);
   JabberEnableCheckBoxClick(Self);
+end;
+
+procedure TFirstStartForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 end.

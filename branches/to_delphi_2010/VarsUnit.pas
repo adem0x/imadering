@@ -34,10 +34,7 @@ const
   S_Icq = 'Icq';
   S_Jabber = 'Jabber';
   S_Mra = 'Mra';
-
-  ChatCSS = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' + 'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
-    '.a { font: bold 11px tahoma, verdana; color: blue; }' + '.b { font: bold 11px tahoma, verdana; color: red; }' + '.c { font: 12px tahoma, verdana; color: black; }' +
-    '.d { font: bold 11px tahoma, verdana; color: green; }' + '</style>';
+  S_Twitter = 'Twitter';
 
   SettingsFileName: string = 'Settings.xml';
   ProfilesFileName: string = 'Profiles.xml';
@@ -116,12 +113,23 @@ resourcestring
   RS_Children = 'children';
   RS_IcqReg = 'http://www.icq.com/register';
   RS_MraReg = 'http://win.mail.ru/cgi-bin/signup';
+  RS_SitePage = 'http://imadering.com';
+  RS_DownPage = 'http://imadering.com/download.htm';
   RS_MaskPass = '----------------------';
   RS_Login = 'login';
   RS_Pass = 'password';
   RS_SavePass = 'save_password';
   RS_LangVars = 'vars';
   RS_Infos = 'Infos';
+  RS_Lang = 'language';
+  RS_ExeName = 'Imadering.exe';
+  RS_PostInTwit = 'http://twitter.com/statuses/update.xml?source=IMadering&status=%s&in_reply_to_status_id=';
+  RS_TwitSite = 'http://twitter.com/';
+  RS_TwitIncMess = 'http://twitter.com/statuses/mentions.xml?count=%d';
+  RS_TwitUserInfo = 'http://twitter.com/users/show/';
+  RS_TwitOpenLenta = 'http://twitter.com/statuses/friends_timeline/%s.xml?count=%d';
+  RS_Host = 'host';
+  RS_Port = 'port';
 
 var
   // Переменные общие для всей программы
@@ -141,7 +149,7 @@ var
   AccountToNick: TStringList;
   AvatarServiceDisable: Boolean = False;
   UpdateAuto: Boolean = True;
-  UpdateVersionPath: string = 'Update_%s_%s.z';
+  UpdateVersionPath: string = 'Update_%s_%s.7z';
   UpdateFile: TMemoryStream;
   NoReSave: Boolean = True;
   GroupHeaderColor: TColor = $00FFDEFF;
@@ -153,6 +161,19 @@ var
   CurGroup: integer;
   CurItem: integer;
 
+  // Переменные стилей для HTML
+  ChatCSS: string = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' + 'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
+    '.a { font: bold 11px tahoma, verdana; color: blue; }' + '.b { font: bold 11px tahoma, verdana; color: red; }' + '.c { font: 12px tahoma, verdana; color: black; }' +
+    '.d { font: bold 11px tahoma, verdana; color: green; }' + '</style>';
+  DetailsCSS: string = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' + 'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
+    '.cbold { font: bold 12px tahoma, verdana; }' + '.cdef { font: 12px tahoma, verdana; }' + '.cmargin { font: 11px tahoma, verdana; margin: 10px; }' + '</style>';
+
+  // Переменные Twitter
+  Twit_Login: string;
+  Twit_Password: string;
+  Twit_IncMess_Count: integer = 5;
+  Twit_MyMess_Count: integer = 5;
+
   // Статистика трафика
   TrafSend: Real;
   TrafRecev: Real;
@@ -163,16 +184,46 @@ var
 
   // Переменные звуков
   SoundON: Boolean = True;
-  SoundStartProg: Boolean = True;
-  SoundStartProgPath: string = '';
-  SoundIncMsg: Boolean = True;
-  SoundIncMsgPath: string = '';
-  SoundError: Boolean = True;
-  SoundErrorPath: string = '';
-  SoundEvent: Boolean = True;
-  SoundEventPath: string = '';
-  SoundOpen: Boolean = True;
-  SoundOpenPath: string = '';
+  // 1
+  SoundStartProg: Boolean;
+  SoundStartProg_Name: string;
+  SoundStartProg_Path: string;
+  SoundStartProg_Mask: string = 'Sounds\%s\Start.wav';
+  // 2
+  SoundIncMsg: Boolean;
+  SoundIncMsg_Name: string;
+  SoundIncMsg_Path: string;
+  SoundIncMsg_Mask: string = 'Sounds\%s\IncMsg.wav';
+  // 3
+  SoundMsgSend: Boolean;
+  SoundMsgSend_Name: string;
+  SoundMsgSend_Path: string;
+  SoundMsgSend_Mask: string = 'Sounds\%s\MsgSend.wav';
+  // 4
+  SoungUserOnline: Boolean;
+  UserOnline_Name: string;
+  UserOnline_Path: string;
+  UserOnline_Mask: string = 'Sounds\%s\UserOnline.wav';
+  // 5
+  SoundEvent: Boolean;
+  SoundEvent_Name: string;
+  SoundEvent_Path: string;
+  SoundEvent_Mask: string = 'Sounds\%s\Event.wav';
+  // 6
+  SoundFileSend: Boolean;
+  SoundFileSend_Name: string;
+  SoundFileSend_Path: string;
+  SoundFileSend_Mask: string = 'Sounds\%s\FileSend.wav';
+  // 7
+  SoundError: Boolean;
+  SoundError_Name: string;
+  SoundError_Path: string;
+  SoundError_Mask: string = 'Sounds\%s\Error.wav';
+  // 8
+  SoundOpen: Boolean;
+  SoundOpen_Name: string;
+  SoundOpen_Path: string;
+  SoundOpen_Mask: string = 'Sounds\%s\Open.wav';
 
   // Http прокси для сокетов протоколов
   HttpProxy_Enable: Boolean = False;
@@ -219,10 +270,10 @@ var
   S_Cancel: string;
   S_Apply: string;
   S_ProtoSelectAlert: string;
-  NewVersionIMaderingYES1: string = 'Доступна новая версия IMadering.' + RN + RN + 'Для ознакомления зайдите на сайт www.imadering.com';
-  NewVersionIMaderingYES2: string = 'Доступна новая сборка IMadering.' + RN + RN + 'Для ознакомления зайдите на сайт www.imadering.com';
-  NewVersionIMaderingNO: string = 'Новой версии не обнаружено.';
-  NewVersionIMaderingErr: string = 'Ошибка получения данных о новой версии.';
+  S_Empty: string;
+  S_NewVerYES: string;
+  S_NewVerNO: string;
+  S_NewVerErr: string;
   S_InfoHead: string;
   S_ErrorHead: string;
   S_AlertHead: string;
@@ -321,11 +372,11 @@ var
   GroupInv: string = ' из ';
   HistorySearchNoL: string = 'Такой текст не найден.';
   HistoryLoadFileL: string = 'Загружается история...';
-  UpDateStartL: string = 'Загрузка обновления...';
-  UpDateAbortL: string = 'Загрузка обновления прервана.';
-  UpDateLoadL: string = 'Файл обновления успешно получен.';
-  UpDateUnL: string = 'Установка обновления...';
-  UpDateOKL: string = 'Установка обновления завершена.' + RN + RN + 'Для завершения обновления необходимо перезапустить программу IMadering!';
+  S_UpDateStart: string;
+  S_UpDateAbort: string;
+  S_UpDateLoad: string;
+  S_UpDateUn: string;
+  S_UpDateOK: string;
   ProxyConnectErrL1: string = 'Неверный логин или пароль для прокси.';
   ProxyConnectErrL2: string = 'Неизвестная прокси ошибка.';
   JabberLoginErrorL: string = 'Неправильный JID или пароль.';
@@ -366,6 +417,11 @@ var
   GtransErrL: string = 'Ошибка перевода: %s';
   S_GtransErr2: string;
   NewProgErrL: string = 'Ошибка запуска другого профиля программы.';
+  S_DownCount: string;
+  S_UnPackErr: string = 'У вас нет прав на запись файлов!_r_Необходимы права администратора.';
+  S_CharsCount: string = '%d из %s';
+  S_PostInTwitter: string;
+  S_TwitPostOK: string;
 
   // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
@@ -446,6 +502,7 @@ var
   Err505: string = 'Не поддерживаемая версия HTTP.';
 
   // Для Лога
+  Log_Bevel: string = ' | ';
   LogMyPath: string = 'Путь к программе: ';
   LogProfile: string = 'Путь к профилю: ';
   LogIconCount: string = 'Загружено %d иконок';
@@ -491,12 +548,10 @@ var
   Log_Contact_Info: string = 'Получен пакет информации о контакте: ';
   Log_Gtrans_Req: string = 'Получены данные перевода: %s на %s';
   Log_Gtrans_URL: string = 'Запрос для перевода: %s на %s';
-  Log_ICQGet: string = 'ICQ get | ';
-  Log_ICQParsing: string = 'ICQ parsing | ';
-
-  // Подсказки <b></b><br>
-  H_SelFolder_Button: string = '<b>Путь к файлу</b><br>Указать путь к файлу';
-  H_PlaySound_Button: string = '<b>Воспроизвести</b><br>Прослушать звуковой файл';
+  Log_Get: string = ' get | ';
+  Log_Send: string = ' send | ';
+  Log_Parsing: string = ' parsing | ';
+  Log_SetLang: string = 'Перевод формы: ';
 
 procedure SetLangVars;
 
@@ -618,7 +673,51 @@ begin
         else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_GtransErr2' then
           S_GtransErr2 := IsolateTextString(List.Strings[I], 'c="', '"')
         else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Apply' then
-          S_Apply := IsolateTextString(List.Strings[I], 'c="', '"');
+          S_Apply := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_Empty' then
+          S_Empty := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_NewVerYES' then
+          S_NewVerYES := CheckText_RN(IsolateTextString(List.Strings[I], 'c="', '"'))
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_NewVerNO' then
+          S_NewVerNO := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_NewVerErr' then
+          S_NewVerErr := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_DownCount' then
+          S_DownCount := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_UpDateStart' then
+          S_UpDateStart := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_UpDateAbort' then
+          S_UpDateAbort := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_UpDateLoad' then
+          S_UpDateLoad := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_UpDateUn' then
+          S_UpDateUn := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_UpDateOK' then
+          S_UpDateOK := CheckText_RN(IsolateTextString(List.Strings[I], 'c="', '"'))
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundStartProg_Name' then
+          SoundStartProg_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundIncMsg_Name' then
+          SoundIncMsg_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundMsgSend_Name' then
+          SoundMsgSend_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'UserOnline_Name' then
+          UserOnline_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundEvent_Name' then
+          SoundEvent_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundFileSend_Name' then
+          SoundFileSend_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundError_Name' then
+          SoundError_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'SoundOpen_Name' then
+          SoundOpen_Name := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_PostInTwitter' then
+          S_PostInTwitter := IsolateTextString(List.Strings[I], 'c="', '"')
+        else if IsolateTextString(List.Strings[I], '<', ' ') = 'S_TwitPostOK' then
+          S_TwitPostOK := IsolateTextString(List.Strings[I], 'c="', '"');
+
+
+
+
 
 
 

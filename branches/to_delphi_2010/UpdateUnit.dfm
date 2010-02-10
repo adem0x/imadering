@@ -3,7 +3,6 @@ object UpdateForm: TUpdateForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1074#1077#1088#1089#1080#1080' IMadering'
   ClientHeight = 266
   ClientWidth = 358
   Color = clBtnFace
@@ -12,27 +11,27 @@ object UpdateForm: TUpdateForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   PixelsPerInch = 96
   TextHeight = 13
   object LoadSizeLabel: TLabel
     Left = 9
     Top = 191
-    Width = 72
+    Width = 3
     Height = 13
-    Caption = #1057#1082#1072#1095#1072#1085#1086': 0 '#1050#1073
   end
   object StartBitBtn: TBitBtn
     Left = 240
     Top = 233
     Width = 110
     Height = 25
-    Caption = #1042#1086#1079#1086#1073#1085#1086#1074#1080#1090#1100
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
@@ -44,7 +43,6 @@ object UpdateForm: TUpdateForm
     Top = 233
     Width = 110
     Height = 25
-    Caption = #1055#1088#1077#1088#1074#1072#1090#1100
     DoubleBuffered = True
     Enabled = False
     ParentDoubleBuffered = False
@@ -57,7 +55,6 @@ object UpdateForm: TUpdateForm
     Top = 233
     Width = 110
     Height = 25
-    Caption = #1047#1072#1082#1088#1099#1090#1100
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 2

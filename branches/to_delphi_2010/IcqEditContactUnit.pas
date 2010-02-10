@@ -38,6 +38,7 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure PhoneEditKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -67,6 +68,12 @@ begin
   SetLang(Self);
   // Другое
   CancelButton.Caption := S_Cancel;
+end;
+
+procedure TIcqEditContactForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TIcqEditContactForm.OKButtonClick(Sender: TObject);

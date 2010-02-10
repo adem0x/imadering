@@ -34,6 +34,7 @@ type
     WriteLogSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -74,6 +75,12 @@ begin
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+end;
+
+procedure TLogForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 end.

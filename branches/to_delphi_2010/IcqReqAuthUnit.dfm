@@ -11,11 +11,14 @@ object IcqReqAuthForm: TIcqReqAuthForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object HeadLabel: TLabel
@@ -30,6 +33,13 @@ object IcqReqAuthForm: TIcqReqAuthForm
     Font.Style = [fsBold]
     ParentFont = False
   end
+  object CountLabel: TLabel
+    Left = 480
+    Top = 8
+    Width = 3
+    Height = 13
+    Alignment = taRightJustify
+  end
   object InfoMemo: TMemo
     Left = 8
     Top = 27
@@ -38,6 +48,8 @@ object IcqReqAuthForm: TIcqReqAuthForm
     TabStop = False
     ScrollBars = ssVertical
     TabOrder = 0
+    OnChange = InfoMemoChange
+    OnKeyPress = InfoMemoKeyPress
   end
   object YesBitBtn: TBitBtn
     Left = 386

@@ -78,7 +78,6 @@ uses
   LogUnit;
 
 resourcestring
-  RS_Lang = 'language';
   RS_Prof = 'profiles';
   RS_Cur = 'current';
   RS_Auto = 'auto_login';
@@ -151,6 +150,8 @@ begin
 end;
 
 procedure TProfileForm.LoginButtonClick(Sender: TObject);
+var
+  PR: string;
 begin
   // Запускаем выбранный профиль
   if ProfileComboBox.Text = EmptyStr then
@@ -168,7 +169,9 @@ begin
   // Сохраняем настройки
   SaveSettings;
   // Инициализируем папку с профилем
+  PR := ProfilePath;
   ProfilePath := ProfilePath + Profile + '\';
+  Profile := PR;
   XLog(LogProfile + ProfilePath);
   // Создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(MainForm);
@@ -205,10 +208,10 @@ begin
   InMessList := TStringList.Create;
   SmilesList := TStringList.Create;
   if FileExists(ProfilePath + Nick_BD_FileName) then
-    AccountToNick.LoadFromFile(ProfilePath + Nick_BD_FileName);
+    AccountToNick.LoadFromFile(ProfilePath + Nick_BD_FileName, TEncoding.Unicode);
   XLog(LogNickCash + IntToStr(AccountToNick.Count));
   if FileExists(MyPath + Format(SmiliesPath, [CurrentSmiles])) then
-    SmilesList.LoadFromFile(MyPath + Format(SmiliesPath, [CurrentSmiles]));
+    SmilesList.LoadFromFile(MyPath + Format(SmiliesPath, [CurrentSmiles]), TEncoding.UTF8);
   XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1));
   // Запускаем обработку Ростера
   RosterForm.UpdateFullCL;
@@ -234,11 +237,8 @@ begin
   MainForm.JvTimerList.Events[1].Enabled := True;
   // Выключаем кнопку записи последующих событий в окно лога
   LogForm.WriteLogSpeedButton.Down := False;
-  // Высвобождаем общую память приложения (вспоминая qip)
-  if Win32Platform = VER_PLATFORM_WIN32_NT then
-    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
   // Воспроизводим звук запуска программы
-  ImPlaySnd(0);
+  ImPlaySnd(1);
   // Закрываем окно
   FClose := True;
   Close;
@@ -310,9 +310,6 @@ begin
   // Переводим форму
   LangComboBox.OnChange := LangComboBoxChange;
   LangComboBoxChange(nil);
-  // Высвобождаем общую память приложения (вспоминая qip)
-  if Win32Platform = VER_PLATFORM_WIN32_NT then
-    SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
 end;
 
 procedure TProfileForm.LangComboBoxChange(Sender: TObject);
@@ -332,7 +329,7 @@ end;
 procedure TProfileForm.SiteLabelClick(Sender: TObject);
 begin
   // Открываем сайт в браузере по умолчанию
-  OpenURL('http://imadering.com');
+  OpenURL(RS_SitePage);
 end;
 
 procedure TProfileForm.SiteLabelMouseEnter(Sender: TObject);

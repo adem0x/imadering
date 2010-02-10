@@ -38,6 +38,7 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure XButtonGroupButtonClicked(Sender: TObject; Index: Integer);
+    procedure FormDblClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -74,6 +75,12 @@ begin
   Xindex := ICQ_X_CurrentStatus;
   BirthDayCheckBox.Checked := ICQ_BirthDay_Enabled;
   XButtonGroupButtonClicked(nil, ICQ_X_CurrentStatus);
+end;
+
+procedure TIcqXStatusForm.FormDblClick(Sender: TObject);
+begin
+  // Устанавливаем перевод
+  TranslateForm;
 end;
 
 procedure TIcqXStatusForm.FormDeactivate(Sender: TObject);

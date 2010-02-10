@@ -11,10 +11,12 @@ object LogForm: TLogForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Scaled = False
   ScreenSnap = True
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   PixelsPerInch = 96
   TextHeight = 13
   object LogMemo: TMemo
@@ -24,8 +26,9 @@ object LogForm: TLogForm
     Height = 371
     Align = alClient
     ReadOnly = True
-    ScrollBars = ssVertical
+    ScrollBars = ssBoth
     TabOrder = 0
+    WordWrap = False
   end
   object BottomPanel: TPanel
     Left = 0

@@ -3,7 +3,6 @@ object UniqForm: TUniqForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1059#1085#1080#1082#1072#1083#1100#1085#1099#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1082#1086#1085#1090#1072#1082#1090#1072
   ClientHeight = 360
   ClientWidth = 442
   Color = clBtnFace
@@ -12,19 +11,20 @@ object UniqForm: TUniqForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   PixelsPerInch = 96
   TextHeight = 13
   object SoundsGroupBox: TGroupBox
     Left = 8
     Top = 30
     Width = 426
-    Height = 132
-    Caption = #1047#1074#1091#1082#1080
+    Height = 122
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -34,7 +34,7 @@ object UniqForm: TUniqForm
     TabOrder = 0
     object OnlineSoundPathSpeedButton: TSpeedButton
       Left = 367
-      Top = 43
+      Top = 40
       Width = 23
       Height = 22
       Flat = True
@@ -43,7 +43,7 @@ object UniqForm: TUniqForm
     end
     object OnlineSoundPlaySpeedButton: TSpeedButton
       Left = 396
-      Top = 43
+      Top = 40
       Width = 23
       Height = 22
       Flat = True
@@ -52,7 +52,7 @@ object UniqForm: TUniqForm
     end
     object MessSoundPathSpeedButton: TSpeedButton
       Left = 367
-      Top = 98
+      Top = 90
       Width = 23
       Height = 22
       Flat = True
@@ -61,7 +61,7 @@ object UniqForm: TUniqForm
     end
     object MessSoundPlaySpeedButton: TSpeedButton
       Left = 396
-      Top = 98
+      Top = 90
       Width = 23
       Height = 22
       Flat = True
@@ -70,10 +70,9 @@ object UniqForm: TUniqForm
     end
     object OnlineSoundCheckBox: TCheckBox
       Left = 16
-      Top = 20
+      Top = 18
       Width = 393
       Height = 17
-      Caption = #1042#1086#1089#1087#1088#1086#1080#1079#1074#1086#1076#1080#1090#1100' '#1101#1090#1086#1090' '#1079#1074#1091#1082' '#1087#1088#1080' '#1074#1093#1086#1076#1077' '#1082#1086#1085#1090#1072#1082#1090#1072' '#1074' '#1089#1077#1090#1100
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -84,7 +83,7 @@ object UniqForm: TUniqForm
     end
     object OnlineSoundPathEdit: TEdit
       Left = 16
-      Top = 43
+      Top = 41
       Width = 345
       Height = 21
       Color = clBtnFace
@@ -99,10 +98,9 @@ object UniqForm: TUniqForm
     end
     object MessSoundCheckBox: TCheckBox
       Left = 16
-      Top = 75
+      Top = 68
       Width = 393
       Height = 17
-      Caption = #1042#1086#1089#1087#1088#1086#1080#1079#1074#1086#1076#1080#1090#1100' '#1101#1090#1086#1090' '#1079#1074#1091#1082' '#1076#1083#1103' '#1074#1093#1086#1076#1103#1097#1080#1093' '#1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1086#1090' '#1082#1086#1085#1090#1072#1082#1090#1072
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -113,7 +111,7 @@ object UniqForm: TUniqForm
     end
     object MessSoundPathEdit: TEdit
       Left = 16
-      Top = 98
+      Top = 91
       Width = 345
       Height = 21
       Color = clBtnFace
@@ -132,7 +130,6 @@ object UniqForm: TUniqForm
     Top = 327
     Width = 97
     Height = 25
-    Caption = #1054#1090#1084#1077#1085#1072
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
@@ -151,10 +148,9 @@ object UniqForm: TUniqForm
   end
   object OptionGroupBox: TGroupBox
     Left = 8
-    Top = 168
+    Top = 158
     Width = 426
-    Height = 153
-    Caption = #1054#1087#1094#1080#1080
+    Height = 163
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -164,10 +160,9 @@ object UniqForm: TUniqForm
     TabOrder = 3
     object SaveHistoryCheckBox: TCheckBox
       Left = 16
-      Top = 22
+      Top = 18
       Width = 393
       Height = 17
-      Caption = #1042#1089#1077#1075#1076#1072' '#1089#1086#1093#1088#1072#1085#1103#1090#1100' '#1080#1089#1090#1086#1088#1080#1102' '#1089#1086#1086#1073#1097#1077#1085#1080#1081' '#1076#1083#1103' '#1101#1090#1086#1075#1086' '#1082#1086#1085#1090#1072#1082#1090#1072
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -178,10 +173,9 @@ object UniqForm: TUniqForm
     end
     object SendTranslitCheckBox: TCheckBox
       Left = 16
-      Top = 45
+      Top = 41
       Width = 393
       Height = 17
-      Caption = #1042#1089#1077#1075#1076#1072' '#1086#1090#1087#1088#1072#1074#1083#1103#1090#1100' '#1101#1090#1086#1084#1091' '#1082#1086#1085#1090#1072#1082#1090#1091' '#1089#1086#1086#1073#1097#1077#1085#1080#1103' '#1074' '#1090#1088#1072#1085#1089#1083#1080#1090#1077#1088#1072#1094#1080#1080
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11

@@ -3,13 +3,14 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biSystemMenu]
   ClientHeight = 401
-  ClientWidth = 283
+  ClientWidth = 329
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  HelpFile = 'T'
   KeyPreview = True
   OldCreateOrder = False
   Scaled = False
@@ -17,6 +18,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDeactivate = FormDeactivate
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
@@ -25,7 +27,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 0
     Top = 26
-    Width = 283
+    Width = 329
     Height = 350
     Margins.Left = 0
     Margins.Top = 1
@@ -58,7 +60,7 @@ object MainForm: TMainForm
   object BottomToolBar: TToolBar
     Left = 0
     Top = 376
-    Width = 283
+    Width = 329
     Height = 25
     Align = alBottom
     Color = clBtnFace
@@ -122,8 +124,20 @@ object MainForm: TMainForm
       OnClick = JabberToolButtonClick
       OnContextPopup = JabberToolButtonContextPopup
     end
-    object OnlyOnlineContactsToolButton: TToolButton
+    object TwitterToolButton: TToolButton
       Left = 92
+      Top = 0
+      Hint = '<b>Twitter</b>'
+      ImageIndex = 269
+      ParentShowHint = False
+      PopupMenu = TwitterPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = TwitterToolButtonClick
+      OnContextPopup = TwitterToolButtonContextPopup
+    end
+    object OnlyOnlineContactsToolButton: TToolButton
+      Left = 115
       Top = 0
       ImageIndex = 138
       ParentShowHint = False
@@ -134,7 +148,7 @@ object MainForm: TMainForm
       OnClick = OnlyOnlineContactsToolButtonClick
     end
     object GroupOnOffToolButton: TToolButton
-      Left = 115
+      Left = 138
       Top = 0
       Down = True
       ImageIndex = 231
@@ -146,7 +160,7 @@ object MainForm: TMainForm
       OnClick = GroupOnOffToolButtonClick
     end
     object SoundOnOffToolButton: TToolButton
-      Left = 138
+      Left = 161
       Top = 0
       ImageIndex = 135
       ParentShowHint = False
@@ -157,7 +171,7 @@ object MainForm: TMainForm
       OnClick = SoundOnOffToolButtonClick
     end
     object PrivatToolButton: TToolButton
-      Left = 161
+      Left = 184
       Top = 0
       ImageIndex = 236
       ParentShowHint = False
@@ -167,7 +181,7 @@ object MainForm: TMainForm
       OnClick = PrivatListMenuClick
     end
     object HistoryToolButton: TToolButton
-      Left = 184
+      Left = 207
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -177,7 +191,7 @@ object MainForm: TMainForm
       OnClick = OpenHistoryClick
     end
     object SettingsToolButton: TToolButton
-      Left = 207
+      Left = 230
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -186,8 +200,18 @@ object MainForm: TMainForm
       Visible = False
       OnClick = OpenSettingsClick
     end
+    object CLSearchToolButton: TToolButton
+      Left = 253
+      Top = 0
+      ImageIndex = 215
+      ParentShowHint = False
+      PopupMenu = BottomPanelPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = SearchInCLClick
+    end
     object TrafficToolButton: TToolButton
-      Left = 230
+      Left = 276
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -197,7 +221,7 @@ object MainForm: TMainForm
       OnClick = OpenTrafficClick
     end
     object TopPanelToolButton: TToolButton
-      Left = 253
+      Left = 299
       Top = 0
       Down = True
       ImageIndex = 244
@@ -211,7 +235,7 @@ object MainForm: TMainForm
   object TopToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 283
+    Width = 329
     Height = 25
     Color = clBtnFace
     DoubleBuffered = True
@@ -292,8 +316,17 @@ object MainForm: TMainForm
       ShowHint = True
       OnClick = OpenSettingsClick
     end
-    object TrafficTopToolButton: TToolButton
+    object CLSearchTopToolButton: TToolButton
       Left = 161
+      Top = 0
+      ImageIndex = 215
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      OnClick = SearchInCLClick
+    end
+    object TrafficTopToolButton: TToolButton
+      Left = 184
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -684,8 +717,8 @@ object MainForm: TMainForm
     OnSessionClosed = UpdateHttpClientSessionClosed
     OnDocBegin = UpdateHttpClientDocBegin
     OnDocData = UpdateHttpClientDocData
-    OnDocEnd = UpdateHttpClientDocEnd
     OnSendEnd = UpdateHttpClientSendEnd
+    OnRequestDone = UpdateHttpClientRequestDone
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = UpdateHttpClientSocksConnected
     OnSocksError = UpdateHttpClientSocksError
@@ -1084,7 +1117,7 @@ object MainForm: TMainForm
     Left = 48
     Top = 296
     object PingICQServer: TMenuItem
-      ImageIndex = 267
+      ImageIndex = 162
       OnClick = PingICQServerClick
     end
     object UnstableICQStatus: TMenuItem
@@ -1108,32 +1141,29 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnSessionClosed = MRAAvatarHttpClientSessionClosed
-    OnDocEnd = MRAAvatarHttpClientDocEnd
-    OnSendEnd = MRAAvatarHttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
-    OnSocksConnected = MRAAvatarHttpClientSocksConnected
-    OnSocksError = MRAAvatarHttpClientSocksError
     Left = 80
     Top = 64
   end
   object RightMRAPopupMenu: TPopupMenu
+    AutoPopup = False
     Images = AllImageList
     Left = 80
     Top = 296
     object PingMRAServer: TMenuItem
-      ImageIndex = 267
+      ImageIndex = 162
     end
     object UnstableMRAStatus: TMenuItem
       ImageIndex = 230
     end
   end
   object RightJabberPopupMenu: TPopupMenu
+    AutoPopup = False
     Images = AllImageList
     Left = 112
     Top = 296
     object PingJabberServer: TMenuItem
-      ImageIndex = 267
+      ImageIndex = 162
     end
     object UnstableJabberStatus: TMenuItem
       ImageIndex = 230
@@ -1193,6 +1223,11 @@ object MainForm: TMainForm
       ImageIndex = 140
       OnClick = TopSettingsONMenuClick
     end
+    object TopCLSearchONMenu: TMenuItem
+      Checked = True
+      ImageIndex = 140
+      OnClick = TopCLSearchONMenuClick
+    end
     object TopTrafficONMenu: TMenuItem
       Checked = True
       ImageIndex = 140
@@ -1232,6 +1267,10 @@ object MainForm: TMainForm
     object SettingsONMenu: TMenuItem
       ImageIndex = 230
       OnClick = SettingsONMenuClick
+    end
+    object CLSearchONMenu: TMenuItem
+      ImageIndex = 230
+      OnClick = CLSearchONMenuClick
     end
     object TrafficONMenu: TMenuItem
       ImageIndex = 230
@@ -1366,5 +1405,82 @@ object MainForm: TMainForm
       ImageIndex = 3
       OnClick = CloseProgramClick
     end
+  end
+  object TwitterPopupMenu: TPopupMenu
+    AutoPopup = False
+    Images = AllImageList
+    OnPopup = TwitterPopupMenuPopup
+    Left = 80
+    Top = 232
+    object TwitterSettingsMenu: TMenuItem
+      ImageIndex = 160
+      OnClick = TwitterSettingsMenuClick
+    end
+    object N33: TMenuItem
+      Caption = '-'
+    end
+    object OpenSiteTwitterMinu: TMenuItem
+      ImageIndex = 267
+      OnClick = OpenSiteTwitterMinuClick
+    end
+    object OpenMyPageMenu: TMenuItem
+      ImageIndex = 270
+      OnClick = OpenMyPageMenuClick
+    end
+    object N31: TMenuItem
+      Caption = '-'
+    end
+    object OpenLentaTwitterMenu: TMenuItem
+      ImageIndex = 271
+      OnClick = OpenLentaTwitterMenuClick
+    end
+    object MyInfoTwitterMenu: TMenuItem
+      Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1084#1086#1080' '#1076#1072#1085#1085#1099#1077
+      ImageIndex = 178
+      OnClick = MyInfoTwitterMenuClick
+    end
+    object OpenTwitterIncMessMenu: TMenuItem
+      Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1093#1086#1076#1103#1097#1080#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+      OnClick = OpenTwitterIncMessMenuClick
+    end
+    object PostMessageTwitterMenu: TMenuItem
+      ImageIndex = 272
+      OnClick = PostMessageTwitterMenuClick
+    end
+    object N36: TMenuItem
+      Caption = '-'
+    end
+    object OnlineTwitterMenu: TMenuItem
+      ImageIndex = 268
+    end
+    object OfflineTwitterMenu: TMenuItem
+      ImageIndex = 269
+    end
+  end
+  object TwitterHttpClient: THttpCli
+    LocalAddr = '0.0.0.0'
+    ProxyPort = '80'
+    Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
+    Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
+    NoCache = False
+    ContentTypePost = 'application/x-www-form-urlencoded'
+    MultiThreaded = False
+    RequestVer = '1.0'
+    FollowRelocation = True
+    LocationChangeMaxCount = 5
+    ServerAuth = httpAuthBasic
+    ProxyAuth = httpAuthNone
+    BandwidthLimit = 10000
+    BandwidthSampling = 1000
+    Options = []
+    OnSessionClosed = TwitterHttpClientSessionClosed
+    OnDocBegin = UpdateHttpClientDocBegin
+    OnSendEnd = UpdateHttpClientSendEnd
+    OnRequestDone = TwitterHttpClientRequestDone
+    SocksAuthentication = socksNoAuthentication
+    OnSocksConnected = UpdateHttpClientSocksConnected
+    OnSocksError = UpdateHttpClientSocksError
+    Left = 80
+    Top = 128
   end
 end
