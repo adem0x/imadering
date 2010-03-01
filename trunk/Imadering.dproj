@@ -1,0 +1,237 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{c593aa1a-db5a-422b-934f-d474cec721d5}</ProjectGuid>
+			<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+			<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<DCC_DependencyCheckOutputName>Imadering\Imadering.exe</DCC_DependencyCheckOutputName>
+			<MainSource>Imadering.dpr</MainSource>
+			<ProjectVersion>12.0</ProjectVersion>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_IMPLICIT_STRING_CAST>false</DCC_IMPLICIT_STRING_CAST>
+			<DCC_IMPLICIT_STRING_CAST_LOSS>false</DCC_IMPLICIT_STRING_CAST_LOSS>
+			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_UnitSearchPath>lib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_ExeOutput>Imadering</DCC_ExeOutput>
+			<DCC_Define>USE_SSL;$(DCC_Define)</DCC_Define>
+			<DCC_DcuOutput>dcu</DCC_DcuOutput>
+			<DCC_UsePackage>vcl;rtl;vclx;vclactnband;dbrtl;bdertl;TeeUI;TeeDB;Tee;adortl;IndyCore;IndySystem;IndyProtocols;Jcl;JclVcl;JvCoreD12R;JvSystemD12R;JvStdCtrlsD12R;JvAppFrmD12R;JvBandsD12R;JvCmpD12R;JvCryptD12R;JvCtrlsD12R;JvCustomD12R;JvDlgsD12R;JvDockingD12R;JvEDID12R;vcldb;JvGlobusD12R;JvHMID12R;JvInterpreterD12R;JvJansD12R;JvManagedThreadsD12R;JvMMD12R;JvNetD12R;JvPageCompsD12R;JvPluginD12R;JvPrintPreviewD12R;JvRuntimeDesignD12R;JvTimeFrameworkD12R;JvValidatorsD12R;JvWizardD12R;JvXPCtrlsD12R;OverbyteIcsD2009Run</DCC_UsePackage>
+			<DCC_DependencyCheckOutputName>Imadering\Imadering.exe</DCC_DependencyCheckOutputName>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_IMPLICIT_STRING_CAST>false</DCC_IMPLICIT_STRING_CAST>
+			<DCC_IMPLICIT_STRING_CAST_LOSS>false</DCC_IMPLICIT_STRING_CAST_LOSS>
+			<Version>7.0</Version>
+			<DCC_DebugInformation>False</DCC_DebugInformation>
+			<DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_IMPLICIT_STRING_CAST>false</DCC_IMPLICIT_STRING_CAST>
+			<DCC_IMPLICIT_STRING_CAST_LOSS>false</DCC_IMPLICIT_STRING_CAST_LOSS>
+			<DCC_MapFile>3</DCC_MapFile>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<Version>7.0</Version>
+			<DCC_ObjOutput>dcu</DCC_ObjOutput>
+			<DCC_HppOutput>dcu</DCC_HppOutput>
+			<DCC_ResourcePath>lib;$(DCC_ResourcePath)</DCC_ResourcePath>
+			<DCC_ObjPath>lib;$(DCC_ObjPath)</DCC_ObjPath>
+			<DCC_IncludePath>lib;$(DCC_IncludePath)</DCC_IncludePath>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelphiCompile Include="Imadering.dpr">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="MainUnit.pas">
+				<Form>MainForm</Form>
+			</DCCReference>
+			<DCCReference Include="SettingsUnit.pas">
+				<Form>SettingsForm</Form>
+			</DCCReference>
+			<DCCReference Include="AboutUnit.pas">
+				<Form>AboutForm</Form>
+			</DCCReference>
+			<DCCReference Include="ChatUnit.pas">
+				<Form>ChatForm</Form>
+			</DCCReference>
+			<DCCReference Include="CLSearchUnit.pas">
+				<Form>CLSearchForm</Form>
+			</DCCReference>
+			<DCCReference Include="FirstStartUnit.pas">
+				<Form>FirstStartForm</Form>
+			</DCCReference>
+			<DCCReference Include="FloatingUnit.pas">
+				<Form>FloatingForm</Form>
+			</DCCReference>
+			<DCCReference Include="HistoryUnit.pas">
+				<Form>HistoryForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqAddContactUnit.pas">
+				<Form>IcqAddContactForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqContactInfoUnit.pas">
+				<Form>IcqContactInfoForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqEditContactUnit.pas">
+				<Form>IcqEditContactForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqGroupManagerUnit.pas">
+				<Form>IcqGroupManagerForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqOptionsUnit.pas">
+				<Form>IcqOptionsForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqReqAuthUnit.pas">
+				<Form>IcqReqAuthForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqSearchUnit.pas">
+				<Form>IcqSearchForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqXStatusUnit.pas">
+				<Form>IcqXStatusForm</Form>
+			</DCCReference>
+			<DCCReference Include="SmilesUnit.pas">
+				<Form>SmilesForm</Form>
+			</DCCReference>
+			<DCCReference Include="MraXStatusUnit.pas">
+				<Form>MraXStatusForm</Form>
+			</DCCReference>
+			<DCCReference Include="MraOptionsUnit.pas">
+				<Form>MraOptionsForm</Form>
+			</DCCReference>
+			<DCCReference Include="JabberOptionsUnit.pas">
+				<Form>JabberOptionsForm</Form>
+			</DCCReference>
+			<DCCReference Include="UpdateUnit.pas">
+				<Form>UpdateForm</Form>
+			</DCCReference>
+			<DCCReference Include="TrafficUnit.pas">
+				<Form>TrafficForm</Form>
+			</DCCReference>
+			<DCCReference Include="RosterUnit.pas">
+				<Form>RosterForm</Form>
+			</DCCReference>
+			<DCCReference Include="FileTransferUnit.pas">
+				<Form>FileTransferForm</Form>
+			</DCCReference>
+			<DCCReference Include="ShowCertUnit.pas">
+				<Form>ShowCertForm</Form>
+			</DCCReference>
+			<DCCReference Include="IcqProtoUnit.pas"/>
+			<DCCReference Include="JabberProtoUnit.pas"/>
+			<DCCReference Include="MraProtoUnit.pas"/>
+			<DCCReference Include="VarsUnit.pas"/>
+			<DCCReference Include="LogUnit.pas">
+				<Form>LogForm</Form>
+			</DCCReference>
+			<DCCReference Include="GtransUnit.pas">
+				<Form>GTransForm</Form>
+			</DCCReference>
+			<DCCReference Include="UniqUnit.pas">
+				<Form>UniqForm</Form>
+			</DCCReference>
+			<DCCReference Include="ProfileUnit.pas">
+				<Form>ProfileForm</Form>
+			</DCCReference>
+			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
+			<DCCReference Include="lib\Menus.pas"/>
+			<DCCReference Include="lib\JvListView.pas"/>
+			<DCCReference Include="lib\JvHint.pas"/>
+			<DCCReference Include="lib\JvDesktopAlertForm.pas"/>
+			<DCCReference Include="lib\JvDesktopAlert.pas"/>
+			<DCCReference Include="lib\ComCtrls.pas"/>
+			<DCCReference Include="lib\CategoryButtons.pas"/>
+			<DCCReference Include="lib\ButtonGroup.pas"/>
+			<DCCReference Include="LoginUnit.pas">
+				<Form>LoginForm</Form>
+			</DCCReference>
+			<DCCReference Include="TwitterOptionsUnit.pas">
+				<Form>TwitterOptionsForm</Form>
+			</DCCReference>
+			<DCCReference Include="HttpUnit.pas">
+				<Form>HttpForm</Form>
+			</DCCReference>
+			<DCCReference Include="ProfilesFolderUnit.pas">
+				<Form>ProfilesFolderForm</Form>
+			</DCCReference>
+			<DCCReference Include="SMSUnit.pas">
+				<Form>SMSForm</Form>
+			</DCCReference>
+			<DCCReference Include="UtilsUnit.pas"/>
+			<None Include="Imadering.todo"/>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
+						<VersionInfo Name="MajorVer">5</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">1</VersionInfo>
+						<VersionInfo Name="Build">256</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1033</VersionInfo>
+						<VersionInfo Name="CodePage">1200</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">5.0.1.256</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName">IMadering</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">5 alpha</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Excluded_Packages/>
+					<Source>
+						<Source Name="MainSource">Imadering.dpr</Source>
+					</Source>
+				</Delphi.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>
