@@ -52,7 +52,9 @@ uses
   HttpUnit in 'HttpUnit.pas' {HttpForm},
   ProfilesFolderUnit in 'ProfilesFolderUnit.pas' {ProfilesFolderForm},
   SMSUnit in 'SMSUnit.pas' {SMSForm},
-  UtilsUnit in 'UtilsUnit.pas';
+  UtilsUnit in 'UtilsUnit.pas',
+  ImgList in 'lib\ImgList.pas',
+  GamesUnit in 'GamesUnit.pas' {GamesForm};
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -60,7 +62,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;
+  Application.MainFormOnTaskbar := False;
   Application.Title := 'IMadering';
   // Изначально скрываем главную форму
   Application.ShowMainForm := False;

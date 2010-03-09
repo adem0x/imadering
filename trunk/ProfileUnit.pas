@@ -55,6 +55,7 @@ type
     procedure DeleteButtonClick(Sender: TObject);
     procedure ProfileComboBoxChange(Sender: TObject);
     procedure OpenProfilesSpeedButtonClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   private
     { Private declarations }
@@ -413,6 +414,11 @@ end;
 procedure TProfileForm.SiteLabelMouseLeave(Sender: TObject);
 begin (Sender as TLabel)
   .Font.Color := ClNavy;
+end;
+
+procedure TProfileForm.FormShow(Sender: TObject);
+begin
+  ShowWindow(Application.Handle, SW_HIDE);
 end;
 
 {$ENDREGION}

@@ -149,6 +149,10 @@
 	<OpenSiteTwitterMinu c="Открыть сайт Twitter"/>
 	<OpenMyPageMenu c="Ваша страница на сайте"/>
 	<OpenLentaTwitterMenu c="Моя лента"/>
+	<OpenGameMenu c="Открыть игры"/>
+	<SnapContactList c="Пристыковать список контактов"/>
+	<SnapToRight c="К правому краю экрана"/>
+	<SnapToLeft c="К левому краю экрана"/>
   </MainForm>
   <RosterForm c="БД списка контактов">
     <RosterJvListView_0 c="Учётная запись"/>
@@ -266,6 +270,7 @@
 	<NoShowProfileFormCheckBox c="Не показывать окно выбора профиля при запуске"/>
 	<ProfilePathLabel c="Путь профиля:"/>
 	<OpenProfileSpeedButton h="_b_Папка профиля_d__r_Открыть папку с профилем"/>
+	<NoTaskBarMainButtonCheckBox c="Не показывать кнопку окна списка контактов на панели задач."/>
   </SettingsForm>
   <Infos>
     <SendDump c="Внимание! Эта функция предназначена для очень опытных пользователей. Используйте её только если вы точно знаете, что вы делаете. Последствия могут быть непредсказуемые."/>
@@ -1197,4 +1202,15 @@
     <PhoneLabel c="Номер сотового телефона:"/>
     <SMSTextLabel c="Текст SMS сообщения:"/>
   </SMSForm>
+  <GamesForm c="Игры">
+    <LoadCatalogBitBtn c="Обновить список"/>
+    <LoadAbortButton c="Отмена"/>
+    <LoadLabel c="Загрузка игры"/>
+    <InfoLabel c="Переодически обновляйте список доступных на сервере игр"/>
+    <LoadGameBitBtn c="Загрузить игру"/>
+    <FlashInfoLabel c="Характеристики игры"/>
+    <AllowNetworkingCheckBox c="Разрешить игре сохранять данные и доступ к сети"/>
+    <PlayButton c="Пуск"/>
+    <ResetButton c="Сброс"/>
+  </GamesForm>
 </root>

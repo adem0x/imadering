@@ -21,7 +21,9 @@ uses
   FloatingUnit,
   JvSimpleXml,
   JclCompression,
-  Htmlview;
+  Htmlview,
+  Messages,
+  ShellApi;
 
 const
   C_RN = #13#10;
@@ -29,18 +31,21 @@ const
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
+  C_WM_APPBAR = WM_USER + 1;
 
-  SettingsFileName: string = 'Settings.xml';
-  ProfilesFileName: string = 'Profiles.xml';
-  GroupsFileName: string = 'Groups.xml';
-  AnketaFileName: string = 'Contacts\';
-  AvatarFileName: string = 'Avatars\';
-  HistoryFileName: string = 'History\';
-  LangPath: string = 'Langs\%s.xml';
-  SmiliesPath: string = 'Smilies\%s\smilies.txt';
-  ContactListFileName: string = 'Contacts.txt';
-  Nick_BD_FileName: string = 'Nicks.txt';
-  QReplyFileName: string = 'QReply.txt';
+  SettingsFileName = 'Settings.xml';
+  ProfilesFileName = 'Profiles.xml';
+  GroupsFileName = 'Groups.xml';
+  AnketaFileName = 'Contacts\';
+  AvatarFileName = 'Avatars\';
+  HistoryFileName = 'History\';
+  GamesFolder = 'Games\';
+  GamesCatalogFile = 'Catalog.txt';
+  LangPath = 'Langs\%s.xml';
+  SmiliesPath = 'Smilies\%s\smilies.txt';
+  ContactListFileName = 'Contacts.txt';
+  Nick_BD_FileName = 'Nicks.txt';
+  QReplyFileName = 'QReply.txt';
 
   // Команды смежного использования
   C_NoCL = 'NoCL';
@@ -134,6 +139,7 @@ const
   C_Profiles = 'profiles';
   C_Cur = 'current';
   C_Auto = 'auto_login';
+  C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
 
 var
   // Переменные общие для всей программы
@@ -171,6 +177,14 @@ var
   SH_HintWindow: THintWindow;
   SH_HintVisible: Boolean;
   SH_HTMLViewer: THTMLViewer;
+
+  // Переменные для Snap CL
+  AppBarDataCL: TAppBarData;
+  DockAppBar: boolean = False;
+  DockRigth: boolean = False;
+  DockLeft: boolean = False;
+  NoDockWigth: integer = 0;
+  NoDockHeigth: integer = 0;
 
   // Переменные стилей для HTML
   ChatCSS: string = '<style type="text/css">' + 'body, span { color: #000000; font: 12px tahoma, verdana; }' + 'hr { margin: 5px; border: none; color: gray; background-color: gray; height: 1px; }' +
@@ -436,6 +450,7 @@ var
   S_PostInTwitter: string;
   S_TwitPostOK: string;
   EmailMessagesL: string = 'У вас в ящике %s непрочитанных писем!' + C_RN + C_RN + 'Всего в ящике %s писем.';
+  S_Game: string = 'Игра %s';
 
   // Ошибки подключения ICQ протокола
   ConnectErrors_0001: string = 'Неправильный номер ICQ или пароль.';
@@ -565,6 +580,7 @@ var
   Log_Send: string = ' send | ';
   Log_Parsing: string = ' parsing | ';
   Log_SetLang: string = 'Перевод формы: ';
+  Log_WinVer: string = 'Версия Windows: %u.%u.%u %s';
 
 procedure SetLangVars;
 

@@ -67,12 +67,6 @@ uses
   VarsUnit;
 
 {$ENDREGION}
-{$REGION 'MyConst'}
-
-const
-  C_FileURL = 'http://imadering.googlecode.com/files/';
-
-{$ENDREGION}
 {$REGION 'TranslateForm'}
 
 procedure TUpdateForm.TranslateForm;
@@ -96,6 +90,7 @@ begin
   AbortBitBtn.Enabled := False;
   // Ставим флаг отбоя обработки закачки
   MainForm.UpdateHttpClient.Tag := 2;
+  MainForm.UpdateHttpClient.Abort;
   // Выводим информацию о прекрашении закачки обноления
   InfoMemo.Lines.Add(S_UpDateAbort);
 end;
@@ -166,7 +161,7 @@ begin
   InfoMemo.Lines.Add(S_UpDateStart + ' (' + UpdateVersionPath + ')');
   // Запускаем закачку файла обновления с сайта
   MainForm.UpdateHttpClient.Abort;
-  MainForm.UpdateHttpClient.URL := C_FileURL + UpdateVersionPath;
+  MainForm.UpdateHttpClient.URL := C_GoogleCodeURL + UpdateVersionPath;
   Xlog('URL: ' + MainForm.UpdateHttpClient.URL, EmptyStr);
   MainForm.UpdateHttpClient.GetASync;
 end;

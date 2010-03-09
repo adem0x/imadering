@@ -40,6 +40,7 @@ object SmilesForm: TSmilesForm
       Height = 218
       Cursor = crDefault
       OnHotSpotClick = SmiliesHTMLViewerHotSpotClick
+      ViewImages = False
       TabOrder = 0
       Align = alClient
       DefBackground = clWhite

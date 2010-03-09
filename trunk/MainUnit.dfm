@@ -21,6 +21,7 @@ object MainForm: TMainForm
   OnDblClick = FormDblClick
   OnDeactivate = FormDeactivate
   OnKeyPress = FormKeyPress
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object ContactList: TCategoryButtons
@@ -345,6 +346,7 @@ object MainForm: TMainForm
     Top = 32
   end
   object TrayPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = TrayPopupMenuPopup
     Left = 16
@@ -473,11 +475,19 @@ object MainForm: TMainForm
         Enabled = False
         Interval = 200
         OnTimer = JvTimerListEvents14Timer
+      end
+      item
+        Name = 'Snap CL Timer'
+        Cycled = False
+        Enabled = False
+        Interval = 100
+        OnTimer = JvTimerListEvents15Timer
       end>
     Left = 16
     Top = 168
   end
   object MainPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 16
@@ -486,6 +496,27 @@ object MainForm: TMainForm
       Caption = 'Test'
       Visible = False
       OnClick = OpenTestClick
+    end
+    object OpenGameMenu: TMenuItem
+      ImageIndex = 286
+      OnClick = OpenGameMenuClick
+    end
+    object N38: TMenuItem
+      Caption = '-'
+    end
+    object SnapContactList: TMenuItem
+      ImageIndex = 278
+      object SnapToRight: TMenuItem
+        ImageIndex = 279
+        OnClick = SnapToRightClick
+      end
+      object SnapToLeft: TMenuItem
+        ImageIndex = 280
+        OnClick = SnapToRightClick
+      end
+    end
+    object N39: TMenuItem
+      Caption = '-'
     end
     object RosterMainMenu: TMenuItem
       ImageIndex = 1
@@ -811,6 +842,7 @@ object MainForm: TMainForm
     end
   end
   object ICQPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 48
@@ -901,6 +933,7 @@ object MainForm: TMainForm
     end
   end
   object MRAPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 80
@@ -963,6 +996,7 @@ object MainForm: TMainForm
     end
   end
   object JabberPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 112
@@ -1050,6 +1084,7 @@ object MainForm: TMainForm
   end
   object ContactPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = AllImageList
     Left = 48
     Top = 232
@@ -1133,6 +1168,7 @@ object MainForm: TMainForm
     end
   end
   object RightICQPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     OnPopup = RightICQPopupMenuPopup
@@ -1168,6 +1204,7 @@ object MainForm: TMainForm
     Top = 64
   end
   object RightMRAPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 80
@@ -1180,6 +1217,7 @@ object MainForm: TMainForm
     end
   end
   object RightJabberPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 112
@@ -1207,6 +1245,7 @@ object MainForm: TMainForm
   end
   object TopPanelPopupMenu: TPopupMenu
     Alignment = paRight
+    AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
     Left = 160
@@ -1257,6 +1296,7 @@ object MainForm: TMainForm
     end
   end
   object BottomPanelPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
     Left = 160
@@ -1335,6 +1375,7 @@ object MainForm: TMainForm
     Top = 168
   end
   object xTrayPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = AllImageList
     Left = 80
     Top = 200
@@ -1429,14 +1470,24 @@ object MainForm: TMainForm
     end
   end
   object TwitterPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
-    OnPopup = TwitterPopupMenuPopup
     Left = 144
     Top = 328
     object TwitterSettingsMenu: TMenuItem
       ImageIndex = 160
       OnClick = TwitterSettingsMenuClick
+    end
+    object MyInfoTwitterMenu: TMenuItem
+      Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1084#1086#1080' '#1076#1072#1085#1085#1099#1077
+      ImageIndex = 178
+      OnClick = MyInfoTwitterMenuClick
+    end
+    object TwitterSearchMenu: TMenuItem
+      Caption = '#'#1055#1086#1080#1089#1082' '#1087#1086' Twitter'
+      ImageIndex = 235
+      OnClick = TwitterSearchMenuClick
     end
     object N33: TMenuItem
       Caption = '-'
@@ -1452,22 +1503,41 @@ object MainForm: TMainForm
     object N31: TMenuItem
       Caption = '-'
     end
-    object OpenLentaTwitterMenu: TMenuItem
+    object AllLentaTwitterMenu: TMenuItem
+      Caption = '#'#1054#1073#1097#1072#1103' '#1083#1077#1085#1090#1072
       ImageIndex = 271
-      OnClick = OpenLentaTwitterMenuClick
+      OnClick = AllLentaTwitterMenuClick
     end
-    object MyInfoTwitterMenu: TMenuItem
-      Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1084#1086#1080' '#1076#1072#1085#1085#1099#1077
-      ImageIndex = 178
-      OnClick = MyInfoTwitterMenuClick
+    object MyLentaTwitterMenu: TMenuItem
+      ImageIndex = 271
+      OnClick = MyLentaTwitterMenuClick
     end
-    object OpenTwitterIncMessMenu: TMenuItem
-      Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1093#1086#1076#1103#1097#1080#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
-      OnClick = OpenTwitterIncMessMenuClick
+    object MyPostsLentaTwitterMenu: TMenuItem
+      Caption = '#'#1052#1086#1080' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+    end
+    object PostsMeLentaTwitterMenu: TMenuItem
+      Caption = '#'#1054#1090#1074#1077#1090#1099' '#1084#1085#1077
+    end
+    object FavoriteLentaTwitterMenu: TMenuItem
+      Caption = '#'#1048#1079#1073#1088#1072#1085#1085#1099#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+    end
+    object IncMessTwitterMenu: TMenuItem
+      Caption = '#'#1042#1093#1086#1076#1103#1097#1080#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+      OnClick = IncMessTwitterMenuClick
+    end
+    object OutMessTwitterMenu: TMenuItem
+      Caption = '#'#1048#1089#1093#1086#1076#1103#1097#1080#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+    end
+    object N37: TMenuItem
+      Caption = '-'
     end
     object PostMessageTwitterMenu: TMenuItem
       ImageIndex = 272
       OnClick = PostMessageTwitterMenuClick
+    end
+    object PostImageTwitterMenu: TMenuItem
+      Caption = '#'#1054#1087#1091#1073#1083#1080#1082#1086#1074#1072#1090#1100' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1077
+      OnClick = PostImageTwitterMenuClick
     end
     object N36: TMenuItem
       Caption = '-'

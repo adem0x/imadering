@@ -67,7 +67,8 @@ implementation
 uses
   MainUnit,
   UtilsUnit,
-  RosterUnit;
+  RosterUnit,
+  OverbyteIcsUrl;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -90,21 +91,21 @@ begin
   for I := 0 to CLSearchJvListView.Columns.Count - 1 do
     CLSearchJvListView.Columns[I].ImageIndex := -1;
   // Делаем поиск текста
-  if CLSearchEdit.Text <> '' then
+  if CLSearchEdit.Text <> EmptyStr then
     begin
       with RosterForm.RosterJvListView do
         begin
           for I := 0 to Items.Count - 1 do
             begin
               // Если это группы ICQ или NoCL, то пропускаем
-              if ((Length(Items[I].Caption) = 4) and (Items[I].SubItems[3] = C_Icq)) or (Items[I].Caption = C_NoCL) then
+              if (Length(Items[I].Caption) <= 4) or (Items[I].Caption = C_NoCL) then
                 Continue;
               // Если нашли текст в учётной записи или нике
               if (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].Caption, LoUserLocale)) > 0) or (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale),
-                  UpperCase(Items[I].SubItems[0], LoUserLocale)) > 0) then
+                  UpperCase(URLDecode(Items[I].SubItems[0]), LoUserLocale)) > 0) then
                 begin
                   CLSearchJvListView.Items.Add.Caption := Items[I].Caption;
-                  CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Items[I].SubItems[0]);
+                  CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Items[I].SubItems[0]));
                   CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Items[I].SubItems[6]);
                 end;
             end;
