@@ -203,6 +203,7 @@ begin
               ChatTab.Grouped := True;
               ChatTab.ImageIndex := CButton.Status;
               ChatTab.OnMouseDown := ToolButtonMouseDown;
+              ChatTab.OnMouseUp := ToolButtonMouseUp;
               ChatTab.OnContextPopup := ToolButtonContextPopup;
               ChatTab.Down := True;
               ChatTab.PopupMenu := TabPopupMenu;
@@ -235,6 +236,7 @@ begin
               ChatTab.Grouped := True;
               ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
               ChatTab.OnMouseDown := ToolButtonMouseDown;
+              ChatTab.OnMouseUp := ToolButtonMouseUp;
               ChatTab.OnContextPopup := ToolButtonContextPopup;
               ChatTab.Down := True;
               ChatTab.PopupMenu := TabPopupMenu;

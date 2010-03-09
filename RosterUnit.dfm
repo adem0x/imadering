@@ -103,11 +103,13 @@ object RosterForm: TRosterForm
       item
       end>
     ColumnClick = False
+    DoubleBuffered = True
     GridLines = True
     Groups = <>
     HideSelection = False
     ReadOnly = True
     RowSelect = True
+    ParentDoubleBuffered = False
     PopupMenu = RosterPopupMenu
     SmallImages = MainForm.AllImageList
     TabOrder = 0

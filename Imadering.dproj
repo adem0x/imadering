@@ -175,6 +175,10 @@
 				<Form>SMSForm</Form>
 			</DCCReference>
 			<DCCReference Include="UtilsUnit.pas"/>
+			<DCCReference Include="lib\ImgList.pas"/>
+			<DCCReference Include="GamesUnit.pas">
+				<Form>GamesForm</Form>
+			</DCCReference>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
@@ -205,7 +209,7 @@
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">256</VersionInfo>
+						<VersionInfo Name="Build">265</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -217,7 +221,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.1.256</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.1.265</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

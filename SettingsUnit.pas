@@ -135,6 +135,7 @@ type
     ProfilePathEdit: TEdit;
     ProfilePathLabel: TLabel;
     OpenProfileSpeedButton: TSpeedButton;
+    NoTaskBarMainButtonCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -198,7 +199,8 @@ uses
   OverbyteIcsMimeUtils,
   FileTransferUnit,
   GTransUnit,
-  SmilesUnit;
+  SmilesUnit,
+  GamesUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -229,6 +231,7 @@ const
   C_InfoLang = 'Langs';
   C_Smile = 'smiles';
   C_TextSmile = 'text_smilies';
+  C_NoTask = 'no_task';
 
 {$ENDREGION}
 {$REGION 'AutoStartProgram'}
@@ -482,6 +485,8 @@ begin
                         AutoHideClEdit.Text := Sub_Node.Properties.Value(C_AutoHideS);
                         // Загружаем заголовок окна списка контактов
                         HeaderTextEdit.Text := Sub_Node.Properties.Value(C_CLHeader);
+                        // Загружаем показ кнопки на панели задач
+                        NoTaskBarMainButtonCheckBox.Checked := Sub_Node.Properties.BoolValue(C_NoTask);
                       end;
                     // ----------------------------------------------------------------------
                     // Загружаем и отображаем настройки Подключения
@@ -621,6 +626,12 @@ begin
           GtransForm.GtransHttpClient.Abort;
           ApplyProxyHttpClient(GtransForm.GtransHttpClient);
         end;
+      // HTTP сокет для игр
+      if (Assigned(GamesForm)) and (GamesForm.GameLoadHttpClient.State <> HttpConnected) then
+        begin
+          GamesForm.GameLoadHttpClient.Abort;
+          ApplyProxyHttpClient(GamesForm.GameLoadHttpClient);
+        end;
       // Сокет для протокола ICQ
       if ICQWSocket.State <> WsConnected then
         begin
@@ -750,6 +761,9 @@ begin
         end;
     end;
   // --------------------------------------------------------------------------
+  // Если файл с настройками не создан, то сохраняем его
+  if not FileExists(ProfilePath + SettingsFileName) then
+    SaveSettings;
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;
 end;
@@ -769,6 +783,7 @@ begin
   ForceDirectories(ProfilePath + HistoryFileName);
   ForceDirectories(ProfilePath + AvatarFileName);
   ForceDirectories(ProfilePath + AnketaFileName);
+  ForceDirectories(ProfilePath + GamesFolder);
   // Записываем настройки программы в файл
   // Инициализируем XML
   JvXML_Create(JvXML);
@@ -819,6 +834,8 @@ begin
             Sub_Node.Properties.Add(C_AutoHideS, AutoHideClEdit.Text);
             // Сохраняем заголовок окна списка контактов
             Sub_Node.Properties.Add(C_CLHeader, HeaderTextEdit.Text);
+            // Сохраняем показ кнопки на панели задач
+            Sub_Node.Properties.Add(C_NoTask, NoTaskBarMainButtonCheckBox.Checked);
             // --------------------------------------------------------------------
             // Сохраняем настройки Подключения
             // Сохраняем пересоединяться при разрыве соединения

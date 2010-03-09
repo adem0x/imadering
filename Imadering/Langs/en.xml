@@ -148,6 +148,10 @@
 	<OpenSiteTwitterMinu c="Open website Twitter"/>
 	<OpenMyPageMenu c="Your page on the site"/>
 	<OpenLentaTwitterMenu c="My timeline"/>
+	<OpenGameMenu c="Play games"/>
+	<SnapContactList c="Dock contact list"/>
+	<SnapToRight c="Right screen edge"/>
+	<SnapToLeft c="Left screen edge"/>
   </MainForm>
   <RosterForm c="DB contact list">
     <RosterJvListView_0 c="Account"/>
@@ -265,6 +269,7 @@
 	<NoShowProfileFormCheckBox c="Don't show Profile selection on start up"/>
 	<ProfilePathLabel c="Profile path:"/>
 	<OpenProfileSpeedButton h="_b_Profile folder_d__r_Open the profile folder"/>
+	<NoTaskBarMainButtonCheckBox c="Do not show contacts list window on the taskbar."/>
   </SettingsForm>
   <Infos>
     <SendDump c="Warning this feature is designed for very experienced users. Use it only if you know exactly what you are doing. The consequences could be unpredictable."/>
@@ -1196,4 +1201,15 @@
     <PhoneLabel c="Cellphone:"/>
     <SMSTextLabel c="SMS text message:"/>
   </SMSForm>
+  <GamesForm c="Games">
+    <LoadCatalogBitBtn c="Update List"/>
+    <LoadAbortButton c="Abort"/>
+    <LoadLabel c="Download game"/>
+    <InfoLabel c="Updated periodically on the server list of available games"/>
+    <LoadGameBitBtn c="Download game"/>
+    <FlashInfoLabel c="Features game"/>
+    <AllowNetworkingCheckBox c="Allow the game to save your data and network access"/>
+    <PlayButton c="Play"/>
+    <ResetButton c="Reset"/>
+  </GamesForm>
 </root>

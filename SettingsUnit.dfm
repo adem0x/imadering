@@ -399,6 +399,21 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 3
+          object NoTaskBarMainButtonCheckBox: TCheckBox
+            Left = 12
+            Top = 19
+            Width = 409
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnClick = ProxyAddressEditChange
+          end
         end
       end
       object ChatPage: TJvStandardPage

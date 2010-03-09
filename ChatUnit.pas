@@ -182,6 +182,7 @@ type
     procedure InputRichEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure InputRichEditKeyPress(Sender: TObject; var Key: Char);
     procedure ToolButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ToolButtonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure UniqToolButtonClick(Sender: TObject);
     procedure InfoPanel1Click(Sender: TObject);
@@ -199,6 +200,7 @@ type
     TabMenuToolButton: TToolButton;
     // Zundo: string;
     procedure QuickMessClick(Sender: TObject);
+
   public
     { Public declarations }
     OutMessIndex: LongInt;
@@ -937,6 +939,9 @@ begin
     end;
 end;
 
+{$ENDREGION}
+{$REGION 'ToolButtonMouse Events'}
+
 procedure TChatForm.ToolButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Определяем какой клавишей был выполнен клик по закладке
@@ -945,16 +950,32 @@ begin
       case Button of
         MbLeft: // Применяем параметры чата с этим контактом
           begin
+            // Запоминаем кнопку на которой было нажатие
+            TabMenuToolButton := (Sender as TToolButton);
             // Сохраняем набранный текст для этой вкладки
             Save_Input_Text(InfoPanel2.Caption);
-            // Открываем новый чат
-            CreateNewChat((Sender as TToolButton));
           end;
         MbMiddle: // Закрываем эту закладку
           if (Sender as TToolButton).Down then
             CloseTabBitBtnClick(nil)
           else
             RemoveChatPageButton((Sender as TToolButton));
+      end;
+    end;
+end;
+
+procedure TChatForm.ToolButtonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  // Определяем какой клавишей был выполнен клик по закладке
+  if (Sender is TToolButton) then
+    begin
+      case Button of
+        MbLeft: // Применяем параметры чата с этим контактом
+          begin
+            // Открываем новый чат
+            if TabMenuToolButton = (Sender as TToolButton) then
+              CreateNewChat((Sender as TToolButton));
+          end;
       end;
     end;
 end;

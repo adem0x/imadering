@@ -152,11 +152,66 @@ procedure FormSetInWorkArea(XForm: TForm);
 procedure LoadHTMLStrings(HtmlV: THTMLViewer; HtmlS: string);
 procedure CloseSmiliesHint;
 procedure ShowSmiliesHint(HtmlV: THTMLViewer);
+procedure AppBarCreate;
+procedure AppBarSetPos(const Left: boolean);
+procedure AppBarDestroy;
+function ExtractUrlFileName(const AUrl: string): string;
 
 {$ENDREGION}
 
 implementation
 
+{$REGION 'ExtractUrlFileName'}
+
+  function ExtractUrlFileName(const AUrl: string): string;
+    var
+      i: Integer;
+    begin
+      i := LastDelimiter('/', AUrl);
+     Result := Copy(AUrl, i + 1, Length(AUrl) - (i));
+    end;
+
+{$ENDREGION}
+{$REGION 'AppBar Tools'}
+  procedure AppBarCreate;
+  begin
+    AppBarDataCL.cbSize := SizeOf(TAppBarData);
+    AppBarDataCL.hWnd := MainForm.Handle;
+    AppBarDataCL.uCallbackMessage := C_WM_APPBAR;
+    // Register the application bar within the system
+    if SHAppBarMessage(ABM_NEW, AppBarDataCL) <> 0 then
+      SetWindowPos(AppBarDataCL.hWnd, AppBarDataCL.hWnd, 0, 0, 0, 0, SWP_FRAMECHANGED or SWP_NOACTIVATE or SWP_NOSIZE or SWP_SHOWWINDOW);
+  end;
+
+  procedure AppBarSetPos(const Left: boolean);
+  var
+    W: Integer;
+  begin
+    if Left then AppBarDataCL.uEdge := ABE_LEFT
+    else AppBarDataCL.uEdge := ABE_RIGHT;
+    W := MainForm.Width;
+    AppBarDataCL.rc.Right := GetSystemMetrics(SM_CXSCREEN);
+    AppBarDataCL.rc.Bottom := GetSystemMetrics(SM_CYSCREEN);
+    if AppBarDataCL.uEdge = ABE_LEFT then AppBarDataCL.rc.Left := 0
+    else AppBarDataCL.rc.Left := GetSystemMetrics(SM_CXSCREEN) - W + 40;
+    AppBarDataCL.rc.Top := 0;
+    if SHAppBarMessage(ABM_QUERYPOS, AppBarDataCL) <> 0 then
+      case AppBarDataCL.uEdge of
+        ABE_LEFT:
+          AppBarDataCL.rc.Right := AppBarDataCL.rc.Left + W;
+        ABE_RIGHT:
+          AppBarDataCL.rc.Left := AppBarDataCL.rc.Right - W;
+      end;
+    // Set the new size
+    SHAppBarMessage(ABM_SETPOS, AppBarDataCL);
+  end;
+
+  procedure AppBarDestroy;
+  begin
+    // Remove the application bar
+    SHAppBarMessage(ABM_REMOVE, AppBarDataCL);
+  end;
+{$ENDREGION}
 {$REGION 'FormShowInWorkArea'}
 
 procedure FormShowInWorkArea(XForm: TForm);

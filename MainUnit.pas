@@ -275,17 +275,31 @@ type
     TwitterSettingsMenu: TMenuItem;
     N33: TMenuItem;
     N31: TMenuItem;
-    OpenLentaTwitterMenu: TMenuItem;
+    MyLentaTwitterMenu: TMenuItem;
     PostMessageTwitterMenu: TMenuItem;
     N36: TMenuItem;
     OnlineTwitterMenu: TMenuItem;
     OfflineTwitterMenu: TMenuItem;
     TwitterHttpClient: THttpCli;
     MyInfoTwitterMenu: TMenuItem;
-    OpenTwitterIncMessMenu: TMenuItem;
+    IncMessTwitterMenu: TMenuItem;
     SaveTextAsFileDialog: TSaveTextFileDialog;
     MraSMSSendMenu: TMenuItem;
     N34: TMenuItem;
+    TwitterSearchMenu: TMenuItem;
+    AllLentaTwitterMenu: TMenuItem;
+    N37: TMenuItem;
+    PostImageTwitterMenu: TMenuItem;
+    MyPostsLentaTwitterMenu: TMenuItem;
+    PostsMeLentaTwitterMenu: TMenuItem;
+    FavoriteLentaTwitterMenu: TMenuItem;
+    OutMessTwitterMenu: TMenuItem;
+    SnapContactList: TMenuItem;
+    SnapToRight: TMenuItem;
+    SnapToLeft: TMenuItem;
+    N39: TMenuItem;
+    OpenGameMenu: TMenuItem;
+    N38: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -452,14 +466,20 @@ type
     procedure TwitterSettingsMenuClick(Sender: TObject);
     procedure OpenSiteTwitterMinuClick(Sender: TObject);
     procedure OpenMyPageMenuClick(Sender: TObject);
-    procedure TwitterPopupMenuPopup(Sender: TObject);
-    procedure OpenLentaTwitterMenuClick(Sender: TObject);
-    procedure OpenTwitterIncMessMenuClick(Sender: TObject);
+    procedure MyLentaTwitterMenuClick(Sender: TObject);
+    procedure IncMessTwitterMenuClick(Sender: TObject);
     procedure MyInfoTwitterMenuClick(Sender: TObject);
     procedure JvTimerListEvents10Timer(Sender: TObject);
     procedure MraSMSSendMenuClick(Sender: TObject);
     procedure JvTimerListEvents13Timer(Sender: TObject);
     procedure JvTimerListEvents14Timer(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure TwitterSearchMenuClick(Sender: TObject);
+    procedure AllLentaTwitterMenuClick(Sender: TObject);
+    procedure PostImageTwitterMenuClick(Sender: TObject);
+    procedure SnapToRightClick(Sender: TObject);
+    procedure JvTimerListEvents15Timer(Sender: TObject);
+    procedure OpenGameMenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -469,6 +489,7 @@ type
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
     procedure WMQueryEndSession(var Msg: TWMQueryEndSession); message WM_QueryEndSession;
+    procedure WMEXITSIZEMOVE(var message: TMessage); message WM_EXITSIZEMOVE;
 
   public
     { Public declarations }
@@ -531,7 +552,8 @@ uses
   ShellApi,
   IcqEditContactUnit,
   TwitterOptionsUnit,
-  SMSUnit;
+  SMSUnit,
+  GamesUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -548,6 +570,21 @@ const
   C_MainFormTP = 'top_panel';
   C_MainFormBP = 'bottom_panel';
   C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
+
+{$ENDREGION}
+{$REGION 'WMEXITSIZEMOVE'}
+
+procedure TMainForm.WMEXITSIZEMOVE(var message: TMessage);
+begin
+  if DockAppBar then
+    begin
+      DockAppBar := False;
+      Height := NoDockHeigth;
+      Width := NoDockWigth;
+      // Уничтожаем АppBar
+      AppBarDestroy;
+    end;
+end;
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
@@ -1175,11 +1212,11 @@ begin
           AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
             OpenTrafficClick(nil);
+          // Обнуляем позицию начала чтения в блоке памяти
+          UpdateHttpClient.RcvdStream.Position := 0;
           // Определяем выполнение задания для данных по флагу
           case UpdateHttpClient.Tag of
             0: begin
-                // Обнуляем позицию начала чтения в блоке памяти
-                UpdateHttpClient.RcvdStream.Position := 0;
                 // Читаем данные в лист
                 List.LoadFromStream(UpdateHttpClient.RcvdStream, TEncoding.UTF8);
                 // Разбираем данные в листе
@@ -1217,9 +1254,7 @@ begin
                         // Создаём блок в памяти для приёма файла обновления
                         UpdateFile := TMemoryStream.Create;
                         try
-                          // Обнуляем позицию начала чтения в блоке памяти
-                          UpdateHttpClient.RcvdStream.Position := 0;
-                          // Читаем данные в лист
+                          // Читаем данные в память
                           UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
                           // Информируем о успешной закачке файла обновления
                           InfoMemo.Lines.Add(S_UpDateLoad);
@@ -1441,24 +1476,6 @@ begin
   MainToolButton.Visible := not MainToolButton.Visible;
 end;
 
-procedure TMainForm.MainFormHideInTray;
-begin
-  // Показываем или сворачиваем главное окно
-  if Visible then
-    begin
-      Hide;
-      HideMainInTray1.Caption := S_RestoreFromTray;
-      HideMainInTray1.ImageIndex := 5;
-    end
-  else
-    begin
-      Show;
-      SetForeGroundWindow(Application.MainForm.Handle);
-      HideMainInTray1.Caption := S_HideInTray;
-      HideMainInTray1.ImageIndex := 4;
-    end;
-end;
-
 procedure TMainForm.ICQTrayIconClick(Sender: TObject);
 begin
   // Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
@@ -1476,6 +1493,39 @@ begin
     // Выводим список контактов на передний план если нажали средней клавишей мыши
   else if Button = MbMiddle then
     SetForeGroundWindow(Handle);
+end;
+
+{$ENDREGION}
+{$REGION 'MainFormHideInTray'}
+
+procedure TMainForm.MainFormHideInTray;
+begin
+  // Показываем или сворачиваем главное окно
+  if Visible then
+    begin
+      Hide;
+      HideMainInTray1.Caption := S_RestoreFromTray;
+      HideMainInTray1.ImageIndex := 5;
+      // Удаляем AppBar если он есть
+      if DockAppBar then
+        AppBarDestroy;
+    end
+  else
+    begin
+      // Если был режим AppBar, то восстанавливаем его
+      if DockAppBar then
+        begin
+          if DockRigth then
+            SnapToRightClick(SnapToRight)
+          else
+            SnapToRightClick(SnapToLeft);
+        end;
+      // Отображем окно контактов
+      Show;
+      SetForeGroundWindow(Application.MainForm.Handle);
+      HideMainInTray1.Caption := S_HideInTray;
+      HideMainInTray1.ImageIndex := 4;
+    end;
 end;
 
 {$ENDREGION}
@@ -2478,6 +2528,7 @@ end;
 {$ENDREGION}
 {$REGION 'Show Profile Form Timer'}
 {$HINTS OFF}
+
 procedure TMainForm.JvTimerListEvents0Timer(Sender: TObject);
 var
   HMutex: THandle;
@@ -2508,6 +2559,7 @@ begin
       XShowForm(ProfileForm);
     end;
 end;
+
 {$HINTS ON}
 {$ENDREGION}
 {$REGION 'Other'}
@@ -2564,16 +2616,27 @@ begin
 end;
 
 {$ENDREGION}
-
 {$REGION 'Smilies Hint Timer'}
-  procedure TMainForm.JvTimerListEvents14Timer(Sender: TObject);
-  begin
-    // Отображаем подсказку с кодом смайлика
-    if SH_HTMLViewer <> nil then
-      ShowSmiliesHint(SH_HTMLViewer);
-  end;
-{$ENDREGION}
 
+procedure TMainForm.JvTimerListEvents14Timer(Sender: TObject);
+begin
+  // Отображаем подсказку с кодом смайлика
+  if SH_HTMLViewer <> nil then
+    ShowSmiliesHint(SH_HTMLViewer);
+end;
+
+{$ENDREGION}
+{$REGION 'Snap CL Timer'}
+
+procedure TMainForm.JvTimerListEvents15Timer(Sender: TObject);
+begin
+  // Move the form
+  MoveWindow(AppBarDataCL.HWnd, AppBarDataCL.Rc.Left, AppBarDataCL.Rc.Top, AppBarDataCL.Rc.Right - AppBarDataCL.Rc.Left, AppBarDataCL.Rc.Bottom - AppBarDataCL.Rc.Top, TRUE);
+  if not Visible then
+    XShowForm(MainForm);
+end;
+
+{$ENDREGION}
 {$REGION 'Message Icon Timer'}
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
@@ -3449,6 +3512,11 @@ begin
   // if not NotProtoOnline(S_Icq) then
 end;
 
+procedure TMainForm.PostImageTwitterMenuClick(Sender: TObject);
+begin
+  { TODO 2 : Сделать публикацию изображения в Twitter }
+end;
+
 procedure TMainForm.PostMessageTwitterMenuClick(Sender: TObject);
 begin
   // Если форма не существует, то создаём её
@@ -3500,20 +3568,20 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TMainForm.OpenTwitterIncMessMenuClick(Sender: TObject);
+procedure TMainForm.IncMessTwitterMenuClick(Sender: TObject);
 begin
-  // Загружаем входящие сообщения
-  if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+  { // Загружаем входящие сообщения
+    if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
     begin
-      with TwitterHttpClient do
-        begin
-          Abort;
-          Username := Twit_Login;
-          Password := Twit_Password;
-          URL := Format(C_TwitIncMess, [Twit_IncMess_Count]);
-          GetASync;
-        end;
+    with TwitterHttpClient do
+    begin
+    Abort;
+    Username := Twit_Login;
+    Password := Twit_Password;
+    URL := Format(C_TwitIncMess, [Twit_IncMess_Count]);
+    GetASync;
     end;
+    end; }
 end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
@@ -4173,6 +4241,9 @@ begin
       // Высвобождаем окно подсказок
       if Assigned(SH_HintWindow) then
         FreeAndNil(SH_HintWindow);
+      // Если создан AppBar, то уничтожаем его
+      if DockAppBar then
+        AppBarDestroy;
     end;
 end;
 
@@ -4233,6 +4304,11 @@ begin
   finally
     FreeAndNil(FrmAddGroup);
   end;
+end;
+
+procedure TMainForm.AllLentaTwitterMenuClick(Sender: TObject);
+begin
+  { TODO 2 : Сделать открытие общей ленты Twitter }
 end;
 
 {$ENDREGION}
@@ -4317,6 +4393,7 @@ var
   Buf: array [0 .. $FF] of Char;
   Size: Integer;
   Lang: Word;
+  VI: TOSVersionInfo;
 begin
   // Устанавливаем начальное значение ширины окна КЛ
   Width := 199;
@@ -4330,7 +4407,13 @@ begin
   SetLangVars;
   // Создаём окно лога
   LogForm := TLogForm.Create(Self);
+  // Узнаём версию Windows
+  VI.DwOSVersionInfoSize := SizeOf(TOSVersionInfo);
+  GetVersionEx(VI);
+  XLog(Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]), EmptyStr);
+  // Пишем в лог путь к программе
   XLog(LogMyPath + MyPath, EmptyStr);
+  // Пишем в лог код локального языка системы
   XLog(Log_Lang_Code + IntToStr(Lang), EmptyStr);
   // Если профиль не найден, то создаём его в настройках юзера виндовс
   ProfilePath := MyPath + 'Profiles\';
@@ -4354,9 +4437,6 @@ begin
   AllImageList.GetBitmap(249, LogForm.WriteLogSpeedButton.Glyph);
   AllImageList.GetBitmap(268, LogForm.TwitDumpSpeedButton.Glyph);
   AllImageList.GetBitmap(225, LogForm.SaveLogSpeedButton.Glyph);
-  // Помещаем кнопку формы в таскбар и делаем независимой
-  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Делаем всплывающие подсказки неисчезающими
   Application.HintHidePause := MaxInt;
   Application.OnHint := HintMaxTime;
@@ -4412,6 +4492,8 @@ var
   I, Ii: Integer;
   Capt: string;
 begin
+  if Key = #13 then
+    Exit;
   // Делаем поиск по списку контактов
   if PKeySearch <> Key then
     begin
@@ -4842,6 +4924,42 @@ begin
 end;
 
 {$ENDREGION}
+{$REGION 'SnapToRightClick'}
+
+procedure TMainForm.SnapToRightClick(Sender: TObject);
+begin
+  // Уничтожаем старый AppBar
+  if DockAppBar then
+    AppBarDestroy;
+  // Создаём новый AppBar
+  AppBarCreate;
+  if Sender = SnapToRight then
+    AppBarSetPos(False)
+  else
+    AppBarSetPos(True);
+  if not DockAppBar then
+    begin
+      DockAppBar := True;
+      // Запоминаем предыдущие размеры окна
+      NoDockHeigth := Height;
+      NoDockWigth := Width;
+    end;
+  // Запоминаем сторону
+  if Sender = SnapToRight then
+    begin
+      DockRigth := True;
+      DockLeft := False;
+    end
+  else
+    begin
+      DockRigth := False;
+      DockLeft := True;
+    end;
+  // Запускаем таймер перемещения формы в AppBar
+  JvTimerList.Events[15].Enabled := True;
+end;
+
+{$ENDREGION}
 {$REGION 'SoundOnOffToolButtonClick'}
 
 procedure TMainForm.SoundOnOffToolButtonClick(Sender: TObject);
@@ -5133,23 +5251,9 @@ begin
     end;
 end;
 
-procedure TMainForm.TwitterPopupMenuPopup(Sender: TObject);
+procedure TMainForm.TwitterSearchMenuClick(Sender: TObject);
 begin
-  // Управляем пунктами меню
-  if Twit_Login <> EmptyStr then
-    begin
-      OpenMyPageMenu.Enabled := True;
-      OpenLentaTwitterMenu.Enabled := True;
-      MyInfoTwitterMenu.Enabled := True;
-      OpenTwitterIncMessMenu.Enabled := True;
-    end
-  else
-    begin
-      OpenMyPageMenu.Enabled := False;
-      OpenLentaTwitterMenu.Enabled := False;
-      MyInfoTwitterMenu.Enabled := False;
-      OpenTwitterIncMessMenu.Enabled := False;
-    end;
+  { TODO 2 : Сделать поиск по Twitter }
 end;
 
 procedure TMainForm.TwitterSettingsMenuClick(Sender: TObject);
@@ -5204,6 +5308,14 @@ begin
     UnstableICQStatus.Checked := False;
 end;
 
+procedure TMainForm.OpenGameMenuClick(Sender: TObject);
+begin
+  // Открываем в окне чата закладку с играми
+  if not Assigned(GamesForm) then
+    GamesForm := TGamesForm.Create(self);
+  XShowForm(GamesForm);
+end;
+
 procedure TMainForm.OpenGroupsCLClick(Sender: TObject);
 var
   I: Integer;
@@ -5222,20 +5334,20 @@ begin
   XShowForm(HistoryForm);
 end;
 
-procedure TMainForm.OpenLentaTwitterMenuClick(Sender: TObject);
+procedure TMainForm.MyLentaTwitterMenuClick(Sender: TObject);
 begin
-  // Загружаем свои сообщения
-  if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+  { // Загружаем свои сообщения
+    if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
     begin
-      with TwitterHttpClient do
-        begin
-          Abort;
-          Username := Twit_Login;
-          Password := Twit_Password;
-          URL := Format(C_TwitOpenLenta, [Twit_Login, Twit_MyMess_Count]);
-          GetASync;
-        end;
+    with TwitterHttpClient do
+    begin
+    Abort;
+    Username := Twit_Login;
+    Password := Twit_Password;
+    URL := Format(C_TwitOpenLenta, [Twit_Login, Twit_MyMess_Count]);
+    GetASync;
     end;
+    end; }
 end;
 
 procedure TMainForm.OpenMyPageMenuClick(Sender: TObject);
@@ -5407,6 +5519,19 @@ procedure TMainForm.LogFormMenuClick(Sender: TObject);
 begin
   // Отображаем окно
   XShowForm(LogForm);
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  if Assigned(SettingsForm) then
+    if not SettingsForm.NoTaskBarMainButtonCheckBox.Checked then
+      begin
+        SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+        SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+      end;
+  // Скрываем кнопку программы на панели задач
+  ShowWindow(Application.Handle, SW_HIDE);
 end;
 
 {$ENDREGION}
