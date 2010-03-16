@@ -1,10 +1,12 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu]
+  BorderIcons = [biSystemMenu, biMinimize]
   ClientHeight = 401
   ClientWidth = 329
   Color = clWhite
+  Constraints.MinHeight = 100
+  Constraints.MinWidth = 100
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -52,6 +54,7 @@ object MainForm: TMainForm
     SelectedButtonColor = 15717318
     ShowHint = True
     TabOrder = 1
+    TabStop = False
     OnButtonClicked = ContactListButtonClicked
     OnCategoryCollapase = ContactListCategoryCollapase
     OnContextPopup = ContactListContextPopup

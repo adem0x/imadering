@@ -317,9 +317,9 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_Icq];
@@ -402,8 +402,8 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел главной формы если он есть
@@ -431,7 +431,7 @@ begin
             XML_Node.Items.Add(C_IcqSHC, ShowHideContactsCheckBox.Checked);
             // --------------------------------------------------------------------------
             // Сохраняем файл
-            SaveToFile(ProfilePath + SettingsFileName);
+            SaveToFile(V_ProfilePath + C_SettingsFileName);
           end;
       end;
   finally
@@ -460,10 +460,10 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+        if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
           begin
             // Загружаем файл языка
-            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_Infos];
@@ -630,8 +630,8 @@ begin
   Lang2InfoComboBox.Items.Assign(Lang1InfoComboBox.Items);
   Lang3InfoComboBox.Items.Assign(Lang1InfoComboBox.Items);
   // Другое
-  ApplyButton.Caption := S_Apply;
-  CancelButton.Caption := S_Cancel;
+  ApplyButton.Caption := Lang_Vars[10].L_S;
+  CancelButton.Caption := Lang_Vars[9].L_S;
   OCountryInfoLabel.Caption := CountryInfoLabel.Caption;
   OAreaInfoLabel.Caption := AreaInfoLabel.Caption;
   OCityInfoLabel.Caption := CityInfoLabel.Caption;
@@ -728,7 +728,7 @@ begin
     begin
       if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) or (NewPassChangeEdit.Text = EmptyStr) or (Length(NewPassChangeEdit.Text) < 6) or
         (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
-        DAShow(S_AlertHead, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+        DAShow(Lang_Vars[18].L_S, PassChangeAlert_1, EmptyStr, 134, 2, 0)
       else
         begin
           ICQ_PassChange(RetypeNewPassEdit.Text);
@@ -736,7 +736,7 @@ begin
         end;
     end
   else
-    DAShow(S_AlertHead, OnlineAlert, EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 134, 2, 0);
 end;
 
 {$ENDREGION}
@@ -768,7 +768,7 @@ begin
         ICQ_SendPkt('2', Pkt);
     end;
   // Сохраняем пакет локально для дальнейшего использования
-  SendCustomICQPacketRichEdit.Lines.SaveToFile(ProfilePath + 'Icq packet.txt');
+  SendCustomICQPacketRichEdit.Lines.SaveToFile(V_ProfilePath + 'Icq packet.txt');
 end;
 
 {$ENDREGION}

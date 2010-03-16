@@ -83,7 +83,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelBitBtn.Caption := S_Cancel;
+  CancelBitBtn.Caption := Lang_Vars[9].L_S;
   MessSoundPathSpeedButton.Hint := OnlineSoundPathSpeedButton.Hint;
   MessSoundPlaySpeedButton.Hint := OnlineSoundPlaySpeedButton.Hint;
 end;

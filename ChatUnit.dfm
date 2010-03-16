@@ -4,8 +4,8 @@ object ChatForm: TChatForm
   ClientHeight = 414
   ClientWidth = 502
   Color = clBtnFace
-  Constraints.MinHeight = 200
-  Constraints.MinWidth = 200
+  Constraints.MinHeight = 400
+  Constraints.MinWidth = 400
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

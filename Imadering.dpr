@@ -54,7 +54,8 @@ uses
   SMSUnit in 'SMSUnit.pas' {SMSForm},
   UtilsUnit in 'UtilsUnit.pas',
   ImgList in 'lib\ImgList.pas',
-  GamesUnit in 'GamesUnit.pas' {GamesForm};
+  GamesUnit in 'GamesUnit.pas' {GamesForm},
+  TwitProtoUnit in 'TwitProtoUnit.pas';
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
@@ -64,9 +65,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := False;
   Application.Title := 'IMadering';
-  // Изначально скрываем главную форму
-  Application.ShowMainForm := False;
   Application.CreateForm(TMainForm, MainForm);
-  ShowWindow(Application.Handle, SW_HIDE);
   Application.Run;
 end.

@@ -138,9 +138,9 @@ var
   I: Integer;
 begin
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
-  if Assigned(InMessList) then
+  if Assigned(V_InMessList) then
     begin
-      with InMessList do
+      with V_InMessList do
         begin
           for I := 0 to Count - 1 do
             begin
@@ -281,13 +281,13 @@ begin
     Item.ImageIndex := 227
   else if Item.SubItems[3] = C_Icq then
     Item.ImageIndex := 81
-  else if Item.SubItems[3] = S_Jabber then
+  else if Item.SubItems[3] = C_Jabber then
     Item.ImageIndex := 43
   else if Item.Caption = C_NoCL then
     Item.ImageIndex := 227
-  else if (Item.SubItems[3] = S_Mra) and (Length(Item.Caption) < 4) and (Item.SubItems[0] = EmptyStr) then
+  else if (Item.SubItems[3] = C_Mra) and (Length(Item.Caption) < 4) and (Item.SubItems[0] = EmptyStr) then
     Item.ImageIndex := 227
-  else if Item.SubItems[3] = S_Mra then
+  else if Item.SubItems[3] = C_Mra then
     Item.ImageIndex := 66;
 end;
 
@@ -367,13 +367,13 @@ begin
               // Получаем статус контакта заранее
               S := StrToInt(Items[I].SubItems[6]);
               // Добавляем Jabber контакты в КЛ --------------------------------------------------------------------------------------------------------------------------
-              if Items[I].SubItems[3] = S_Jabber then
+              if Items[I].SubItems[3] = C_Jabber then
                 begin
                   // Ищем группу контакта в КЛ
                   for C := 0 to Categories.Count - 1 do
                     begin
                       // Если такую группу нашли
-                      if (Categories[C].GroupCaption = URLDecode(Items[I].SubItems[1])) and (Categories[C].GroupType = S_Jabber) then
+                      if (Categories[C].GroupCaption = URLDecode(Items[I].SubItems[1])) and (Categories[C].GroupType = C_Jabber) then
                         begin
                           // Начинаем поиск в ней этого контакта
                           for Cc := 0 to Categories[C].Items.Count - 1 do
@@ -415,7 +415,7 @@ begin
                               ImageIndex := S;
                               XImageIndex := -1;
                               CImageIndex := -1;
-                              ContactType := S_Jabber;
+                              ContactType := C_Jabber;
                             end;
                           // Продолжаем сканирование Ростера
                           goto X;
@@ -427,7 +427,7 @@ begin
                     begin
                       Caption := URLDecode(RosterJvListView.Items[I].SubItems[1]);
                       GroupCaption := URLDecode(RosterJvListView.Items[I].SubItems[1]);
-                      GroupType := S_Jabber;
+                      GroupType := C_Jabber;
                       // Определяем режим КЛ
                       if (MainForm.OnlyOnlineContactsToolButton.Down) and (RosterJvListView.Items[I].Caption <> C_NoCL) and ((S = 30) or (S = 41) or (S = 42)) then
                         goto X;
@@ -440,7 +440,7 @@ begin
                           ImageIndex := S;
                           XImageIndex := -1;
                           CImageIndex := -1;
-                          ContactType := S_Jabber;
+                          ContactType := C_Jabber;
                         end;
                     end;
                 end
@@ -542,14 +542,14 @@ begin
                     end;
                 end
                 // Добавляем MRA контакты в КЛ --------------------------------------------------------------------------------------------------------------------------
-              else if Items[I].SubItems[3] = S_Mra then
+              else if Items[I].SubItems[3] = C_Mra then
                 begin
                   if (Length(Items[I].Caption) < 4) and (Items[I].SubItems[0] = EmptyStr) then
                     begin // Группа MRA
                       for C := 0 to Categories.Count - 1 do
                         begin
                           // Если такую группу нашли
-                          if (Categories[C].GroupId = Items[I].Caption) and (Categories[C].GroupType = S_Mra) then
+                          if (Categories[C].GroupId = Items[I].Caption) and (Categories[C].GroupType = C_Mra) then
                             begin
                               Categories[C].Caption := URLDecode(Items[I].SubItems[1]);
                               Categories[C].GroupCaption := URLDecode(Items[I].SubItems[1]);
@@ -562,7 +562,7 @@ begin
                           Caption := URLDecode(RosterJvListView.Items[I].SubItems[1]);
                           GroupCaption := URLDecode(RosterJvListView.Items[I].SubItems[1]);
                           GroupId := RosterJvListView.Items[I].Caption;
-                          GroupType := S_Mra;
+                          GroupType := C_Mra;
                         end;
                     end
                   else // Контакт
@@ -571,7 +571,7 @@ begin
                       for C := 0 to Categories.Count - 1 do
                         begin
                           // Если такую группу нашли
-                          if (Categories[C].GroupId = Items[I].SubItems[1]) and (Categories[C].GroupType = S_Mra) then
+                          if (Categories[C].GroupId = Items[I].SubItems[1]) and (Categories[C].GroupType = C_Mra) then
                             begin
                               // Начинаем поиск в ней этого контакта
                               for Cc := 0 to Categories[C].Items.Count - 1 do
@@ -621,7 +621,7 @@ begin
                                   ImageIndex := S;
                                   XImageIndex := StrToInt(Items[I].SubItems[7]);
                                   CImageIndex := StrToInt(Items[I].SubItems[8]);
-                                  ContactType := S_Mra;
+                                  ContactType := C_Mra;
                                   if Items[I].SubItems[4] = 'phone' then
                                     begin
                                       Status := 275;
@@ -653,7 +653,7 @@ begin
           for C := 0 to Categories.Count - 1 do
             begin
               if (Categories[C].GroupId = '0000') or (Categories[C].GroupId = C_NoCL) or (Categories[C].Items.Count = 0) //
-                or (MainForm.OnlyOnlineContactsToolButton.Down) or ((Categories[C].GroupId = '999') and (Categories[C].GroupType = S_Mra)) then
+                or (MainForm.OnlyOnlineContactsToolButton.Down) or ((Categories[C].GroupId = '999') and (Categories[C].GroupType = C_Mra)) then
                 Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(Categories[C].Items.Count)
               else
                 begin
@@ -666,16 +666,16 @@ begin
                 end;
             end;
           // Восстанавливаем состояние свёрнутых групп
-          if CollapseGroupsRestore then
+          if V_CollapseGroupsRestore then
             begin
               // Инициализируем XML
               JvXML_Create(JvXML);
               try
                 with JvXML do
                   begin
-                    if FileExists(ProfilePath + GroupsFileName) then
+                    if FileExists(V_ProfilePath + C_GroupsFileName) then
                       begin
-                        LoadFromFile(ProfilePath + GroupsFileName);
+                        LoadFromFile(V_ProfilePath + C_GroupsFileName);
                         if Root <> nil then
                           begin
                             for C := 0 to Categories.Count - 1 do
@@ -690,7 +690,7 @@ begin
               finally
                 JvXML.Free;
               end;
-              CollapseGroupsRestore := False;
+              V_CollapseGroupsRestore := False;
             end;
           // Заканчиваем обновление КЛ
           Categories.EndUpdate;
@@ -741,8 +741,8 @@ begin
   // Переводим форму
   TranslateForm;
   // Загружаем копию локальную списка контактов
-  if FileExists(ProfilePath + ContactListFileName) then
-    RosterJvListView.LoadFromCSV(ProfilePath + ContactListFileName);
+  if FileExists(V_ProfilePath + C_ContactListFileName) then
+    RosterJvListView.LoadFromCSV(V_ProfilePath + C_ContactListFileName);
   XLog(LogRosterCount + IntToStr(RosterJvListView.Items.Count), EmptyStr);
 end;
 
@@ -806,25 +806,25 @@ end;
 procedure TRosterForm.ClearJabberClick(Sender: TObject);
 begin
   // Стираем в Ростере все Jabber контакты
-  if ClearContacts(S_Jabber) then
+  if ClearContacts(C_Jabber) then
     RosterForm.UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearMRAClick(Sender: TObject);
 begin
   // Стираем в Ростере все MRA контакты
-  if ClearContacts(S_Mra) then
+  if ClearContacts(C_Mra) then
     RosterForm.UpdateFullCL;
 end;
 
 procedure TRosterForm.ClearNoCLContactsClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TRosterForm.ClearTempIcqContactsClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 {$ENDREGION}

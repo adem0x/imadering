@@ -63,6 +63,7 @@ type
     WidthLabel: TLabel;
     FrameRateLabel: TLabel;
     FrameCountLabel: TLabel;
+    FlashPlayerURLLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure CatalogButtonGroupButtonClicked(Sender: TObject; index: Integer);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -80,6 +81,9 @@ type
     procedure PlayButtonClick(Sender: TObject);
     procedure ResetButtonClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
+    procedure FlashPlayerURLLabelClick(Sender: TObject);
+    procedure FlashPlayerURLLabelMouseEnter(Sender: TObject);
+    procedure FlashPlayerURLLabelMouseLeave(Sender: TObject);
 
   private
     { Private declarations }
@@ -126,7 +130,8 @@ uses
   MainUnit,
   VarsUnit,
   UtilsUnit,
-  TrafficUnit;
+  TrafficUnit,
+  SettingsUnit;
 
 {$ENDREGION}
 {$REGION 'MyConsts'}
@@ -180,6 +185,8 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Создаём список игр
   CreateGamesList;
+  // Применяем настройки прокси
+  SettingsForm.ApplyProxyHttpClient(GameLoadHttpClient);
 end;
 
 procedure TGamesForm.FormDblClick(Sender: TObject);
@@ -286,6 +293,22 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
+procedure TGamesForm.FlashPlayerURLLabelClick(Sender: TObject);
+begin
+  // Открываем сайт для скачки Flash Player
+  OpenURL('http://get.adobe.com/flashplayer/otherversions/');
+end;
+
+procedure TGamesForm.FlashPlayerURLLabelMouseEnter(Sender: TObject);
+begin
+  (Sender as TLabel).Font.Color := ClBlue;
+end;
+
+procedure TGamesForm.FlashPlayerURLLabelMouseLeave(Sender: TObject);
+begin
+  (Sender as TLabel).Font.Color := ClNavy;
+end;
+
 procedure TGamesForm.PlayButtonClick(Sender: TObject);
 begin
   // Стартуем игру
@@ -364,13 +387,13 @@ begin
       begin
         try
           // Увеличиваем статистику входящего трафика
-          TrafRecev := TrafRecev + GameLoadHttpClient.RcvdCount;
-          AllTrafRecev := AllTrafRecev + GameLoadHttpClient.RcvdCount;
+          V_TrafRecev := V_TrafRecev + GameLoadHttpClient.RcvdCount;
+          V_AllTrafRecev := V_AllTrafRecev + GameLoadHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
             MainForm.OpenTrafficClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
           GameLoadHttpClient.RcvdStream.Position := 0;
-          ForceDirectories(ProfilePath + GamesFolder);
+          ForceDirectories(V_ProfilePath + C_GamesFolder);
           case GameLoadHttpClient.Tag of // Определяем выполнение задания для данных по флагу
             0: begin
                 // Создаём временный лист
@@ -382,9 +405,10 @@ begin
                   if List.Text > EmptyStr then
                     begin
                       // Сохраняем каталог в файл
-                      List.SaveToFile(ProfilePath + GamesFolder + GamesCatalogFile);
+                      List.SaveToFile(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName);
                       // Обновляем список игр
                       CreateGamesList;
+                      InfoLabel.Caption := '#Список игр успешно получен и обновлён!';
                     end;
                 finally
                   List.Free;
@@ -397,7 +421,7 @@ begin
                   // Читаем данные в память
                   GFile.LoadFromStream(GameLoadHttpClient.RcvdStream);
                   // Сохраняем файл с игрой
-                  GFile.SaveToFile(ProfilePath + GamesFolder + GFileName);
+                  GFile.SaveToFile(V_ProfilePath + C_GamesFolder + GFileName);
                   // Деактивируем кнопку Прервать
                   LoadAbortButton.Enabled := False;
                   // Прячем панель загрузки
@@ -406,7 +430,7 @@ begin
                   CatalogButtonGroupButtonClicked(CatalogButtonGroup, CatalogButtonGroup.ItemIndex);
                 finally
                   // Уничтожаем блок памяти
-                  FreeAndNil(UpdateFile);
+                  FreeAndNil(GFile);
                 end;
               end;
           end;
@@ -433,12 +457,13 @@ var
 begin
   // Стираем сообщения об ошибках
   FlashPanel.Caption := EmptyStr;
+  FlashPlayerURLLabel.Visible := False;
   // Высвобождаем предыдущий флэш объект
   if Flash <> nil then
     FreeAndNil(Flash);
   // Если игра найдена, то запускаем игру
   Gfile := ExtractUrlFileName(CatalogButtonGroup.Items[index].Hint);
-  if FileExists(ProfilePath + GamesFolder + Gfile) then
+  if FileExists(V_ProfilePath + C_GamesFolder + Gfile) then
     begin
       // Прячем контролы
       InfoLabel.Visible := False;
@@ -447,7 +472,7 @@ begin
       SettingsPanel.Width := 0;
       WindowState := wsNormal;
       // Получаем информацию из флэш файла
-      if GetSwfFileHeader(ProfilePath + GamesFolder + Gfile, FlashInfo) then
+      if GetSwfFileHeader(V_ProfilePath + C_GamesFolder + Gfile, FlashInfo) then
         begin
           SignatureLabel.Caption := C_Signature + FlashInfo.Signature;
           VersionLabel.Caption := C_Version + IntToStr(FlashInfo.Version);
@@ -457,26 +482,33 @@ begin
           FrameRateLabel.Caption := C_FrameRate + IntToStr(FlashInfo.FrameRate);
           FrameCountLabel.Caption := C_FrameCount + IntToStr(FlashInfo.FrameCount);
         end;
+      // Загружаем новый флэш объект
+      try
+      Flash := TShockwaveFlash.Create(FlashPanel);
       // Подгоняем размеры окна к размерам игры
       Height := (FlashInfo.FrameSize.Ymax div 20) + 34;
-      //showmessage(IntToStr(FlashPanel.Height));
       Width := FlashInfo.FrameSize.Xmax div 20 + CatalogButtonGroup.Width + 20;
-      //showmessage(IntToStr(FlashPanel.Width));
-      // Загружаем новый флэш объект
-      Flash := TShockwaveFlash.Create(FlashPanel);
+      // Выставляем настройки
       Flash.Align := AlClient;
       Flash.Parent := FlashPanel;
       Flash.BackgroundColor := ClBlack;
       Flash.ScaleMode := 2; // 0 - ShowAll, 1 - NoBorder, 2 - ExtractFit, 3 - NoScale, 4- Low, 5 - AutoLow, 6 - AutoHight, 7 - Hight, 8 - Best, 9 - AutoMedium, 10 - Medium
       Flash.AllowFullScreen := 'false';
       Flash.Menu := false;
-      Flash.Movie := ProfilePath + GamesFolder + Gfile;
+      Flash.Movie := V_ProfilePath + C_GamesFolder + Gfile;
       // Включаем или выключаем флэшке доступ к системе
       if AllowNetworkingCheckBox.Checked then
         Flash.AllowNetworking := 'all'
       else
         Flash.AllowNetworking := 'none';
       Flash.AllowScriptAccess := 'never';
+      except
+        if Flash <> nil then
+          FreeAndNil(Flash);
+        InfoLabel.Caption := '#Вероятно у вас не установлен компонент Flash Player!';
+        InfoLabel.Visible := true;
+        FlashPlayerURLLabel.Visible := true;
+      end;
     end
   else
     begin
@@ -499,10 +531,11 @@ var
   I: Integer;
 begin
   // Строим список игр из файла каталога
+  CatalogButtonGroup.Items.Clear;
   List := TStringList.Create;
   try
-    if FileExists(ProfilePath + GamesFolder + GamesCatalogFile) then
-      List.LoadFromFile(ProfilePath + GamesFolder + GamesCatalogFile);
+    if FileExists(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName) then
+      List.LoadFromFile(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName);
     for I := 0 to List.Count - 1 do
       begin
         with CatalogButtonGroup.Items.Add do
@@ -537,7 +570,7 @@ begin
   if Flash <> nil then
     FreeAndNil(Flash);
   // Запускаем загрузку файла с каталогом игр
-  GameLoadHttpClient.URL := C_GoogleCodeURL + GamesCatalogFile;
+  GameLoadHttpClient.URL := C_GoogleCodeURL + C_GamesCatalogFileName;
   GameLoadHttpClient.GetASync;
 end;
 
@@ -606,7 +639,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -615,7 +648,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 

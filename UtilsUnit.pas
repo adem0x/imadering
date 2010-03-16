@@ -90,7 +90,7 @@ function Dump(Data: RawByteString): string;
 function Chop(I: Integer; var S: string): string; overload;
 function Chop(I, L: Integer; var S: string): string; overload;
 function Chop(Ss: string; var S: string): string; overload;
-function ReadFromFile(FileName: string): string;
+function ReadFromFile(FileName: string; AsUnicode: boolean): string;
 function IsolateTextString(const S: string; Tag1, Tag2: string): string;
 function Int64ToHex(C: Int64): string;
 function Horospope(D, M: Integer): Integer;
@@ -175,41 +175,41 @@ implementation
 {$REGION 'AppBar Tools'}
   procedure AppBarCreate;
   begin
-    AppBarDataCL.cbSize := SizeOf(TAppBarData);
-    AppBarDataCL.hWnd := MainForm.Handle;
-    AppBarDataCL.uCallbackMessage := C_WM_APPBAR;
+    V_AppBarDataCL.cbSize := SizeOf(TAppBarData);
+    V_AppBarDataCL.hWnd := MainForm.Handle;
+    V_AppBarDataCL.uCallbackMessage := C_WM_APPBAR;
     // Register the application bar within the system
-    if SHAppBarMessage(ABM_NEW, AppBarDataCL) <> 0 then
-      SetWindowPos(AppBarDataCL.hWnd, AppBarDataCL.hWnd, 0, 0, 0, 0, SWP_FRAMECHANGED or SWP_NOACTIVATE or SWP_NOSIZE or SWP_SHOWWINDOW);
+    if SHAppBarMessage(ABM_NEW, V_AppBarDataCL) <> 0 then
+      SetWindowPos(V_AppBarDataCL.hWnd, V_AppBarDataCL.hWnd, 0, 0, 0, 0, SWP_FRAMECHANGED or SWP_NOACTIVATE or SWP_NOSIZE or SWP_SHOWWINDOW);
   end;
 
   procedure AppBarSetPos(const Left: boolean);
   var
     W: Integer;
   begin
-    if Left then AppBarDataCL.uEdge := ABE_LEFT
-    else AppBarDataCL.uEdge := ABE_RIGHT;
+    if Left then V_AppBarDataCL.uEdge := ABE_LEFT
+    else V_AppBarDataCL.uEdge := ABE_RIGHT;
     W := MainForm.Width;
-    AppBarDataCL.rc.Right := GetSystemMetrics(SM_CXSCREEN);
-    AppBarDataCL.rc.Bottom := GetSystemMetrics(SM_CYSCREEN);
-    if AppBarDataCL.uEdge = ABE_LEFT then AppBarDataCL.rc.Left := 0
-    else AppBarDataCL.rc.Left := GetSystemMetrics(SM_CXSCREEN) - W + 40;
-    AppBarDataCL.rc.Top := 0;
-    if SHAppBarMessage(ABM_QUERYPOS, AppBarDataCL) <> 0 then
-      case AppBarDataCL.uEdge of
+    V_AppBarDataCL.rc.Right := GetSystemMetrics(SM_CXSCREEN);
+    V_AppBarDataCL.rc.Bottom := GetSystemMetrics(SM_CYSCREEN);
+    if V_AppBarDataCL.uEdge = ABE_LEFT then V_AppBarDataCL.rc.Left := 0
+    else V_AppBarDataCL.rc.Left := GetSystemMetrics(SM_CXSCREEN) - W + 40;
+    V_AppBarDataCL.rc.Top := 0;
+    if SHAppBarMessage(ABM_QUERYPOS, V_AppBarDataCL) <> 0 then
+      case V_AppBarDataCL.uEdge of
         ABE_LEFT:
-          AppBarDataCL.rc.Right := AppBarDataCL.rc.Left + W;
+          V_AppBarDataCL.rc.Right := V_AppBarDataCL.rc.Left + W;
         ABE_RIGHT:
-          AppBarDataCL.rc.Left := AppBarDataCL.rc.Right - W;
+          V_AppBarDataCL.rc.Left := V_AppBarDataCL.rc.Right - W;
       end;
     // Set the new size
-    SHAppBarMessage(ABM_SETPOS, AppBarDataCL);
+    SHAppBarMessage(ABM_SETPOS, V_AppBarDataCL);
   end;
 
   procedure AppBarDestroy;
   begin
     // Remove the application bar
-    SHAppBarMessage(ABM_REMOVE, AppBarDataCL);
+    SHAppBarMessage(ABM_REMOVE, V_AppBarDataCL);
   end;
 {$ENDREGION}
 {$REGION 'FormShowInWorkArea'}
@@ -419,10 +419,10 @@ begin
     try
       with JvXML do
         begin
-          if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+          if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
             begin
               // Загружаем файл языка
-              LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+              LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
               if Root <> nil then
                 begin
                   // Переводим заголовок формы и получаем все остальные пункты
@@ -679,11 +679,11 @@ begin
   // Проверяем какой протокол
   if (Proto = C_Icq) and (LogForm.ICQDumpSpeedButton.Down) then
     goto A
-  else if (Proto = S_Jabber) and (LogForm.JabberDumpSpeedButton.Down) then
+  else if (Proto = C_Jabber) and (LogForm.JabberDumpSpeedButton.Down) then
     goto A
-  else if (Proto = S_Mra) and (LogForm.MRADumpSpeedButton.Down) then
+  else if (Proto = C_Mra) and (LogForm.MRADumpSpeedButton.Down) then
     goto A
-  else if (Proto = S_Twitter) and (LogForm.TwitDumpSpeedButton.Down) then
+  else if (Proto = C_Twitter) and (LogForm.TwitDumpSpeedButton.Down) then
     goto A
   else if Proto = EmptyStr then
     goto A
@@ -721,14 +721,14 @@ begin
           begin
             JvXML_LoadStr(JvXML, Pkt);
             // Пишем в лог данные пакета
-            XLog(S_Jabber + Log_Send + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), S_Jabber);
+            XLog(C_Jabber + Log_Send + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), C_Jabber);
           end;
       finally
         JvXML.Free;
       end;
     end
   else
-    XLog(S_Jabber + Log_Send + C_RN + XMLData, S_Jabber);
+    XLog(C_Jabber + Log_Send + C_RN + XMLData, C_Jabber);
   // Отправляем данные через сокет
   Mainform.JabberWSocket.SendStr(Utf8Encode(Xmldata));
 end;
@@ -758,12 +758,12 @@ begin
   // Проверяем онлайн ли клиент для этого протокола
   if (Proto = C_Icq) and (not Icq_work_phaze) then
     Result := True
-  else if (Proto = S_Jabber) and (not Jabber_work_phaze) then
+  else if (Proto = C_Jabber) and (not Jabber_work_phaze) then
     Result := True
-  else if (Proto = S_Mra) and (not Mra_work_phaze) then
+  else if (Proto = C_Mra) and (not Mra_work_phaze) then
     Result := True;
   if Result then
-    Dashow(S_AlertHead, Onlinealert, EmptyStr, 133, 3, 0);
+    Dashow(Lang_Vars[18].L_S, Onlinealert, EmptyStr, 133, 3, 0);
 end;
 
 {$ENDREGION}
@@ -819,9 +819,9 @@ procedure XShowForm(Xform: Tform);
 begin
   // Автоматизируем показ окон
   Xform.Show;
-  if Xform.Visible then
-    Showwindow(Xform.Handle, Sw_restore);
-  Setforegroundwindow(Xform.Handle);
+  if Xform.WindowState = wsMinimized then
+    ShowWindow(Xform.Handle, SW_Restore);
+  SetForeGroundWindow(Xform.Handle);
   // Играем звук открытия окна
   ImPlaySnd(8);
 end;
@@ -870,12 +870,12 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   Result := EmptyStr;
-  GetCityPanel := NoVal;
-  GetAgePanel := NoVal;
-  GetFlagImage := EmptyStr;
-  GetGenderImage := EmptyStr;
+  V_GetCityPanel := NoVal;
+  V_GetAgePanel := NoVal;
+  V_GetFlagImage := EmptyStr;
+  V_GetGenderImage := EmptyStr;
   // Ищем файл с анкетой этого контакта
-  AFile := ProfilePath + AnketaFileName + CProto + C_BN + CId + '.xml';
+  AFile := V_ProfilePath + C_AnketaFolder + CProto + C_BN + CId + '.xml';
   if FileExists(AFile) then
     begin
       // Инициализируем XML
@@ -897,27 +897,27 @@ begin
                 XML_Node := Root.Items.ItemNamed[C_HomeInfo];
                 if XML_Node <> nil then
                   begin
-                    GetCityPanel := URLDecode(XML_Node.Properties.Value(C_City));
-                    GetFlagImage := XML_Node.Properties.Value(C_Country);
+                    V_GetCityPanel := URLDecode(XML_Node.Properties.Value(C_City));
+                    V_GetFlagImage := XML_Node.Properties.Value(C_Country);
                   end;
-                if GetCityPanel = EmptyStr then
-                  GetCityPanel := NoVal;
+                if V_GetCityPanel = EmptyStr then
+                  V_GetCityPanel := NoVal;
                 // Загружаем Возраст
                 XML_Node := Root.Items.ItemNamed[C_AgeInfo];
                 if XML_Node <> nil then
                   begin
                     La := XML_Node.Properties.Value(C_Age);
                     if La <> '0' then
-                      GetAgePanel := Infoagel + C_BN + La;
+                      V_GetAgePanel := Infoagel + C_BN + La;
                   end;
                 // Загружаем иконку пола
                 XML_Node := Root.Items.ItemNamed[C_PerInfo];
                 if XML_Node <> nil then
                   begin
-                    GetGenderImage := XML_Node.Properties.Value(C_Gender);
-                    case GetGenderImage[1] of
-                      '1': GetGenderImage := 'girl';
-                      '2': GetGenderImage := 'boy';
+                    V_GetGenderImage := XML_Node.Properties.Value(C_Gender);
+                    case V_GetGenderImage[1] of
+                      '1': V_GetGenderImage := 'girl';
+                      '2': V_GetGenderImage := 'boy';
                     end;
                   end;
               end;
@@ -1144,13 +1144,13 @@ var
 begin
   // Применяем параметры для всплывающего окна
   if DaVisible = 0 then
-    DaVisible := DaTimeShow;
+    DaVisible := V_DATimeShow;
   Da := TJvDesktopAlert.Create(MainForm);
-  Da.Options := FDaOptions;
+  Da.Options := V_FDAOptions;
   Da.AutoFree := True;
   Da.AutoFocus := False;
-  Da.Location.Position := TJvDesktopAlertPosition(DaPos);
-  Da.AlertStyle := TJvAlertStyle(DaStyle);
+  Da.Location.Position := TJvDesktopAlertPosition(V_DAPos);
+  Da.AlertStyle := TJvAlertStyle(V_DaStyle);
   Da.StyleHandler.DisplayDuration := DaVisible;
   Da.StyleHandler.StartInterval := 10;
   Da.StyleHandler.StartSteps := 10;
@@ -1237,11 +1237,14 @@ end;
 {$ENDREGION}
 {$REGION 'ReadFromFile'}
 
-function ReadFromFile(FileName: string): string;
+function ReadFromFile(FileName: string; AsUnicode: boolean): string;
 begin
   with TStringList.Create do
     try
-      LoadFromFile(Filename, TEncoding.Unicode);
+      if AsUnicode then
+        LoadFromFile(Filename, TEncoding.Unicode)
+      else
+        LoadFromFile(Filename, TEncoding.UTF8);
       Result := Text;
     finally
       Free;
@@ -1545,7 +1548,7 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(ICQ_Avatar_Seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
-  XLog(S_Icq_Avatar + Log_Send + C_RN + Trim(Dump(Str)), C_Icq);
+  XLog(C_Icq_Avatar + Log_Send + C_RN + Trim(Dump(Str)), C_Icq);
   // Отсылаем данные по сокету
   Mainform.IcqAvatarWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1578,7 +1581,7 @@ begin
             S_Name := MRA_Pkt_Names[I].Pkt_Name;
             Break;
           end;
-      XLog(S_Mra + Log_Send + S_Name + C_RN + Trim(Dump(Str)), S_Mra);
+      XLog(C_Mra + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
     end;
   // Отсылаем данные по сокету
   Mainform.MraWSocket.SendStr(Str);
@@ -2000,7 +2003,7 @@ begin
   P := Pos('<', Sbuff);
   if P <= 0 then
     begin
-      Dashow(S_Errorhead, Parsingpkterror, EmptyStr, 134, 2, 0);
+      Dashow(Lang_Vars[17].L_S, Parsingpkterror, EmptyStr, 134, 2, 0);
       Exit;
     end;
   Tmps := Copy(Sbuff, P, L - P + 1);
@@ -2097,7 +2100,6 @@ var
   SFilePath: string;
 begin
   // Играем звуки IMadering
-
   { 1 - Старт IMadering
     2 - Входящее сообщение
     3 - Сообщение отправлено
@@ -2110,40 +2112,39 @@ begin
     9 - Набор текста
     10 - Удаление текста
     11 - Отправка текста }
-
-  if SoundON then
+  if V_SoundON then
     begin
       case Snd of
-        1: if (SoundStartProg) and (FileExists(SoundStartProg_Path)) then
-            Sndplaysound(PChar(SoundStartProg_Path), Snd_async);
-        2: if (SoundIncMsg) and (FileExists(SoundIncMsg_Path)) then
-            Sndplaysound(PChar(SoundIncMsg_Path), Snd_async);
-        3: if (SoundMsgSend) and (FileExists(SoundMsgSend_Path)) then
-            Sndplaysound(PChar(SoundMsgSend_Path), Snd_async);
-        4: if (SoungUserOnline) and (FileExists(UserOnline_Path)) then
-            Sndplaysound(PChar(UserOnline_Path), Snd_async);
-        5: if (SoundEvent) and (FileExists(SoundEvent_Path)) then
-            Sndplaysound(PChar(SoundEvent_Path), Snd_async);
-        6: if (SoundFileSend) and (FileExists(SoundFileSend_Path)) then
-            Sndplaysound(PChar(SoundFileSend_Path), Snd_async);
-        7: if (SoundError) and (FileExists(SoundError_Path)) then
-            Sndplaysound(PChar(SoundError_Path), Snd_async);
-        8: if (SoundOpen) and (FileExists(SoundOpen_Path)) then
-            Sndplaysound(PChar(SoundOpen_Path), Snd_async);
+        1: if (V_SoundStartProg) and (FileExists(V_SoundStartProg_Path)) then
+            Sndplaysound(PChar(V_SoundStartProg_Path), Snd_async);
+        2: if (V_SoundIncMsg) and (FileExists(V_SoundIncMsg_Path)) then
+            Sndplaysound(PChar(V_SoundIncMsg_Path), Snd_async);
+        3: if (V_SoundMsgSend) and (FileExists(V_SoundMsgSend_Path)) then
+            Sndplaysound(PChar(V_SoundMsgSend_Path), Snd_async);
+        4: if (V_SoungUserOnline) and (FileExists(V_SoungUserOnline_Path)) then
+            Sndplaysound(PChar(V_SoungUserOnline_Path), Snd_async);
+        5: if (V_SoundEvent) and (FileExists(V_SoundEvent_Path)) then
+            Sndplaysound(PChar(V_SoundEvent_Path), Snd_async);
+        6: if (V_SoundFileSend) and (FileExists(V_SoundFileSend_Path)) then
+            Sndplaysound(PChar(V_SoundFileSend_Path), Snd_async);
+        7: if (V_SoundError) and (FileExists(V_SoundError_Path)) then
+            Sndplaysound(PChar(V_SoundError_Path), Snd_async);
+        8: if (V_SoundOpen) and (FileExists(V_SoundOpen_Path)) then
+            Sndplaysound(PChar(V_SoundOpen_Path), Snd_async);
         9: begin
-            SFilePath := MyPath + 'Sounds\' + CurrentSounds + '\Type.wav';
+            SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Type.wav';
             if (FileExists(SFilePath)) then
               Sndplaysound(PChar(SFilePath), Snd_async);
           end;
         10: begin
-            SFilePath := MyPath + 'Sounds\' + CurrentSounds + '\Back.wav';
+            SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Back.wav';
             if (FileExists(SFilePath)) then
               Sndplaysound(PChar(SFilePath), Snd_async);
           end;
         11: begin
-            if (SoundON) and (SoundMsgSend) then
+            if (V_SoundON) and (V_SoundMsgSend) then
               Exit;
-            SFilePath := MyPath + 'Sounds\' + CurrentSounds + '\MsgSend.wav';
+            SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\MsgSend.wav';
             if (FileExists(SFilePath)) then
               Sndplaysound(PChar(SFilePath), Snd_async);
           end;
@@ -2160,14 +2161,14 @@ var
 begin
   Result := CId;
   // Проверяем создан ли список ников
-  if Assigned(AccountToNick) then
+  if Assigned(V_AccountToNick) then
     begin
       // Находим ники в списке ников по учётной записи
-      for I := 0 to AccountToNick.Count - 1 do
+      for I := 0 to V_AccountToNick.Count - 1 do
         begin
-          if (Ctype + C_BN + Cid) = AccountToNick.Strings[I] then
+          if (Ctype + C_BN + Cid) = V_AccountToNick.Strings[I] then
             begin
-              Result := AccountToNick.Strings[I + 1];
+              Result := V_AccountToNick.Strings[I + 1];
               // Выходим из цикла
               Break;
             end;
@@ -2223,7 +2224,7 @@ begin
   if Ts = EmptyStr then
     begin
       SetClipBoardText(Url);
-      Dashow(S_ErrorHead, UrlOpenErrL, EmptyStr, 134, 2, 0);
+      Dashow(Lang_Vars[17].L_S, UrlOpenErrL, EmptyStr, 134, 2, 0);
       Exit;
     end;
   if Pos('"', Ts) > 0 then
@@ -2256,7 +2257,7 @@ begin
   // Проверяем размер файла истории
   if Getfilesize(HFile) > 1000000 then
     begin
-      FreeAndNil(FArchive);
+      FreeAndNil(V_FArchive);
       // Проверяем какой номер архива свободен
       N := 1;
       HArhFile := Copy(HFile, 1, Length(HFile) - 4);
@@ -2268,26 +2269,24 @@ begin
       if AFormat <> nil then
         begin
           // Устанавливаем параметры архивирования
-          FArchive := AFormat.Create(HArhFile);
-          FArchive.Password := ''; (FArchive as TJclCompressArchive)
+          V_FArchive := AFormat.Create(HArhFile);
+          V_FArchive.Password := EmptyStr; (V_FArchive as TJclCompressArchive)
           .AddFile(ExtractFileName(HFile), HFile);
-          Supports(IUnknown(FArchive), IJclArchiveCompressionLevel, FCompressionLevel);
-          Supports(IUnknown(FArchive), IJclArchiveCompressHeader, FCompressHeader);
-          Supports(IUnknown(FArchive), IJclArchiveSaveCreationDateTime, FSaveCreationDateTime);
-          Supports(IUnknown(FArchive), IJclArchiveSaveLastAccessDateTime, FSaveLastAccessDateTime);
+          Supports(IUnknown(V_FArchive), IJclArchiveCompressionLevel, FCompressionLevel);
+          Supports(IUnknown(V_FArchive), IJclArchiveCompressHeader, FCompressHeader);
+          Supports(IUnknown(V_FArchive), IJclArchiveSaveCreationDateTime, FSaveCreationDateTime);
+          Supports(IUnknown(V_FArchive), IJclArchiveSaveLastAccessDateTime, FSaveLastAccessDateTime);
           FCompressionLevel.CompressionLevel := 9;
           FCompressHeader.CompressHeader := True;
           FCompressHeader.CompressHeaderFull := True;
           FSaveLastAccessDateTime.SaveLastAccessDateTime := False;
           FSaveCreationDateTime.SaveCreationDateTime := False;
           // Упаковываем файл архиватором 7zip
-          CompresHistoryProcess := True; (FArchive as TJclCompressArchive)
-          .Compress;
+          (V_FArchive as TJclCompressArchive).Compress;
           // Завершаем процесс архивирования
-          FreeAndNil(FArchive);
-          CompresHistoryProcess := False;
+          FreeAndNil(V_FArchive);
+          Result := True;
         end;
-      Result := True;
     end;
 end;
 
@@ -2301,18 +2300,18 @@ var
 begin
   // Распаковываем архив
   Result := False;
-  FreeAndNil(FArchive);
+  FreeAndNil(V_FArchive);
   ArchiveFileName := HFile;
   AFormat := GetArchiveFormats.FindDecompressFormat(ArchiveFileName);
   if AFormat <> nil then
     begin
-      FArchive := AFormat.Create(ArchiveFileName);
-      FArchive.Password := EmptyStr;
-      FArchive.OnProgress := UpdateForm.ArchiveProgress;
-      if FArchive is TJclDecompressArchive then
+      V_FArchive := AFormat.Create(ArchiveFileName);
+      V_FArchive.Password := EmptyStr;
+      V_FArchive.OnProgress := UpdateForm.ArchiveProgress;
+      if V_FArchive is TJclDecompressArchive then
         begin
-          TJclDecompressArchive(FArchive).ListFiles;
-          TJclDecompressArchive(FArchive).ExtractAll(MyPath, True);
+          TJclDecompressArchive(V_FArchive).ListFiles;
+          TJclDecompressArchive(V_FArchive).ExtractAll(V_MyPath, True);
         end;
       Result := True;
     end;
@@ -2333,13 +2332,13 @@ end;
 
 begin
   // Определяем html тэги для вставки смайлов заместо их текстовых обозначений
-  ImgTag := '<img src="./Smilies/' + CurrentSmiles + '/%s" ALIGN="ABSMIDDLE" vspace="3" BORDER="0" alt="%s">';
+  ImgTag := '<img src="./Smilies/' + V_CurrentSmiles + '/%s" ALIGN="ABSMIDDLE" vspace="3" BORDER="0" alt="%s">';
   // Сканируем список кодов смайлов на совпадения
-  for I := 1 to SmilesList.Count - 1 do
+  for I := 1 to V_SmilesList.Count - 1 do
     begin
       for II := 1 to 20 do
         begin
-          Cod := Parse(',', SmilesList.Strings[I], II);
+          Cod := Parse(',', V_SmilesList.Strings[I], II);
           if Cod > EmptyStr then
             begin
               if Pos(Cod, Msg) > 0 then
@@ -2415,7 +2414,7 @@ end;
 procedure LoadHTMLStrings(HtmlV: THTMLViewer; HtmlS: string);
 begin
   // Объявляем текущую папку
-  SetCurrentDir(MyPath);
+  SetCurrentDir(V_MyPath);
   // Подгружаем текст в компонент HTML
   HtmlV.LoadFromBuffer(PChar(HtmlS), Length(HtmlS), EmptyStr);
 end;

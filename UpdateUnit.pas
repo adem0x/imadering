@@ -76,7 +76,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CloseBitBtn.Caption := S_Close;
+  CloseBitBtn.Caption := Lang_Vars[8].L_S;
 end;
 
 {$ENDREGION}
@@ -158,10 +158,10 @@ begin
   LoadSizeLabel.Caption := Format(S_DownCount, ['0']);
   DownloadProgressBar.Position := 0;
   // Выводим информацию о начале закачки обноления
-  InfoMemo.Lines.Add(S_UpDateStart + ' (' + UpdateVersionPath + ')');
+  InfoMemo.Lines.Add(S_UpDateStart + ' (' + V_UpdateVersionPath + ')');
   // Запускаем закачку файла обновления с сайта
   MainForm.UpdateHttpClient.Abort;
-  MainForm.UpdateHttpClient.URL := C_GoogleCodeURL + UpdateVersionPath;
+  MainForm.UpdateHttpClient.URL := C_GoogleCodeURL + V_UpdateVersionPath;
   Xlog('URL: ' + MainForm.UpdateHttpClient.URL, EmptyStr);
   MainForm.UpdateHttpClient.GetASync;
 end;

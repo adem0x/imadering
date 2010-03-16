@@ -837,10 +837,10 @@ begin
             begin
               if not ClientOk then
                 // Заменяем последнюю икоку исходящих сообщений на зелёную
-                HTMLChatViewer.ReplaceImage('o' + IntToStr(OutMessIndex), OutMessage2)
+                HTMLChatViewer.ReplaceImage('o' + IntToStr(OutMessIndex), V_OutMessage2)
               else
                 // Если это уже подтвержение от клиента, то заменяем на зелёную с галочкой
-                HTMLChatViewer.ReplaceImage('o' + IntToStr(OutMessIndex), OutMessage3);
+                HTMLChatViewer.ReplaceImage('o' + IntToStr(OutMessIndex), V_OutMessage3);
             end;
         end;
     end;
@@ -1528,7 +1528,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении контакта
-            DAShow(S_InfoHead, AddContactOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, AddContactOKL, EmptyStr, 133, 3, 0);
           end;
         $0E: begin
             // Создаём список для занесения в него всех идентификаторов контактов
@@ -1585,7 +1585,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении контакта
-            DAShow(S_InfoHead, AddContactOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, AddContactOKL, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1594,7 +1594,7 @@ begin
             ICQ_Add_Contact_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об ошибке добавления нового контакта в серверный КЛ
-            DAShow(S_Errorhead, AddContactErr4, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, AddContactErr4, EmptyStr, 134, 2, 0);
           end;
       end;
     end
@@ -1641,7 +1641,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении группы
-            DAShow(S_InfoHead, AddNewGroupOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, AddNewGroupOKL, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1650,7 +1650,7 @@ begin
             ICQ_Add_Group_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об ошибке добавления новой группы в серверный КЛ
-            DAShow(S_Errorhead, AddNewGroupErr2, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, AddNewGroupErr2, EmptyStr, 134, 2, 0);
           end;
       end;
     end
@@ -1683,7 +1683,7 @@ begin
             ICQ_Group_Delete_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об успешном добавлении группы
-            DAShow(S_InfoHead, DellGroupOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, DellGroupOKL, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1691,7 +1691,7 @@ begin
             ICQ_AddEnd;
             ICQ_Group_Delete_Phaze := False;
             ICQ_SSI_Phaze := False;
-            DAShow(S_Errorhead, DellGroupErrL, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, DellGroupErrL, EmptyStr, 134, 2, 0);
           end;
       end;
     end;
@@ -1925,7 +1925,7 @@ begin
           begin
             ICQ_LoginPassword := ICQ_ChangePassword;
             // Информируем об успешной смене пароля
-            DAShow(S_InfoHead, PassChangeOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, PassChangeOKL, EmptyStr, 133, 3, 0);
             Exit;
           end;
       end;
@@ -1934,7 +1934,7 @@ begin
         if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
           begin
             ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);
-            DAShow(S_InfoHead, AnketaSaveOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, AnketaSaveOKL, EmptyStr, 133, 3, 0);
             Exit;
           end;
       end;
@@ -2405,17 +2405,17 @@ begin
         if ICQ_ReqInfo_UIN <> EmptyStr then
           begin
             // Добавляем ник контакта в список ников
-            if Assigned(AccountToNick) then
+            if Assigned(V_AccountToNick) then
               begin
                 // Если ник не пустой и ник не равен UIN
                 if (Nick > EmptyStr) and (Nick <> UIN) then
                   begin
                     // Если такого контакта ещё нет в списке ников, то добавляем его ник
-                    if AccountToNick.IndexOf(C_Icq + C_BN + UIN) = -1 then
+                    if V_AccountToNick.IndexOf(C_Icq + C_BN + UIN) = -1 then
                       begin
-                        AccountToNick.Add(C_Icq + C_BN + UIN);
-                        AccountToNick.Add(Nick);
-                        AccountToNick.SaveToFile(ProfilePath + Nick_BD_FileName, TEncoding.Unicode);
+                        V_AccountToNick.Add(C_Icq + C_BN + UIN);
+                        V_AccountToNick.Add(Nick);
+                        V_AccountToNick.SaveToFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
                       end;
                   end;
               end;
@@ -2535,9 +2535,9 @@ begin
                       XML_Node.Properties.Add(C_Children, Children);
                     end;
                   // Создаём необходимые папки
-                  ForceDirectories(ProfilePath + AnketaFileName);
+                  ForceDirectories(V_ProfilePath + C_AnketaFolder);
                   // Записываем сам файл
-                  SaveToFile(ProfilePath + AnketaFileName + C_Icq + C_BN + UIN + '.xml');
+                  SaveToFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.xml');
                 end;
             finally
               JvXML.Free;
@@ -2785,9 +2785,9 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + AnketaFileName + C_Icq + C_BN + UIN + '.usr') then
+        if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.usr') then
           begin
-            LoadFromFile(ProfilePath + AnketaFileName + C_Icq + C_BN + UIN + '.usr');
+            LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.usr');
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_UniqGT];
@@ -2877,7 +2877,7 @@ X :;
       MainForm.JvTimerList.Events[11].Enabled := True;
     end;
   // Записываем история в файл истории с этим контактов
-  HistoryFile := ProfilePath + HistoryFileName + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm';
+  HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm';
   SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
   // Добавляем сообщение в текущий чат
   RosterItem.SubItems[36] := 'X';
@@ -4126,7 +4126,7 @@ begin
       // Объявляем финальный результат разбора всего пакета
       Result := True;
       // Запускаем обработку Ростера
-      CollapseGroupsRestore := True;
+      V_CollapseGroupsRestore := True;
       RosterForm.UpdateFullCL;
     end;
 end;
@@ -4264,7 +4264,7 @@ begin
   if IClient > EmptyStr then
     Client := ClientL + C_BN + IClient;
   // Отображаем всплывающим сообщением статус контакта
-  DAShow(S_InfoHead, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + StatusL + C_BN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
+  DAShow(Lang_Vars[16].L_S, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + StatusL + C_BN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
 end;
 
 {$ENDREGION}

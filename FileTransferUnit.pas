@@ -178,8 +178,8 @@ procedure TFileTransferForm.SendFileHttpClientSendEnd(Sender: TObject);
 begin
   Xlog(C_SF + C_SE, EmptyStr);
   // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + SendFileHttpClient.SentCount;
-  AllTrafSend := AllTrafSend + SendFileHttpClient.SentCount;
+  V_TrafSend := V_TrafSend + SendFileHttpClient.SentCount;
+  V_AllTrafSend := V_AllTrafSend + SendFileHttpClient.SentCount;
   if Assigned(TrafficForm) then
     MainForm.OpenTrafficClick(nil);
 end;
@@ -202,7 +202,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -211,7 +211,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -288,8 +288,8 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelBitBtn.Caption := S_Cancel;
-  CloseBitBtn.Caption := S_Close;
+  CancelBitBtn.Caption := Lang_Vars[9].L_S;
+  CloseBitBtn.Caption := Lang_Vars[8].L_S;
 end;
 
 {$ENDREGION}
@@ -321,8 +321,8 @@ begin
         List := TStringList.Create;
         try
           // Увеличиваем статистику входящего трафика
-          TrafRecev := TrafRecev + SendFileHttpClient.RcvdCount;
-          AllTrafRecev := AllTrafRecev + SendFileHttpClient.RcvdCount;
+          V_TrafRecev := V_TrafRecev + SendFileHttpClient.RcvdCount;
+          V_AllTrafRecev := V_AllTrafRecev + SendFileHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
             MainForm.OpenTrafficClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
@@ -386,7 +386,7 @@ begin
                           1: OKURL := Format(S_FileTransfer5, [T_FileName, OKURL, 'upwap.ru', FileSizePanel.Caption]);
                         end;
                         Xlog(C_SF + C_RN + OKURL, EmptyStr);
-                        MsgD := YouAt + ' [' + DateTimeChatMess + ']';
+                        MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
                         CheckMessage_BR(OKURL);
                         DecorateURL(OKURL);
                         // Отправляем сообщение с сылкой на файл
@@ -398,25 +398,25 @@ begin
                             // Отправляем сообщение в юникод формате
                             ICQ_SendMessage_0406(T_UIN, OKURL, True);
                             // Формируем файл с историей
-                            HistoryFile := ProfilePath + HistoryFileName + C_Icq + C_BN + ICQ_LoginUIN + C_BN + T_UIN + '.htm';
+                            HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + T_UIN + '.htm';
                           end
-                        else if T_UserType = S_Jabber then
+                        else if T_UserType = C_Jabber then
                           begin
                             // Если нет подключения к серверу Jabber, то выходим
-                            if NotProtoOnline(S_Jabber) then
+                            if NotProtoOnline(C_Jabber) then
                               goto X;
                             // Отправляем сообщение
                             Jab_SendMessage(T_UIN, OKURL);
                             // Формируем файл с историей
-                            HistoryFile := ProfilePath + HistoryFileName + S_Jabber + C_BN + Jabber_LoginUIN + C_BN + T_UIN + '.htm';
+                            HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + T_UIN + '.htm';
                           end
-                        else if T_UserType = S_Mra then
+                        else if T_UserType = C_Mra then
                           begin
                             // Если нет подключения к серверу MRA, то выходим
-                            if NotProtoOnline(S_Mra) then
+                            if NotProtoOnline(C_Mra) then
                               goto X;
                             // Формируем файл с историей
-                            HistoryFile := ProfilePath + HistoryFileName + S_Mra + C_BN + MRA_LoginUIN + C_BN + T_UIN + '.htm';
+                            HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + T_UIN + '.htm';
                           end
                         else
                           goto X;

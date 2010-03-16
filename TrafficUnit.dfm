@@ -1,7 +1,7 @@
 object TrafficForm: TTrafficForm
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu]
+  BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   ClientHeight = 171
   ClientWidth = 430

@@ -2,8 +2,8 @@ object HttpForm: THttpForm
   Left = 0
   Top = 0
   Caption = 'Http'
-  ClientHeight = 553
-  ClientWidth = 717
+  ClientHeight = 470
+  ClientWidth = 639
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

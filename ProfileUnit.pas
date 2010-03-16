@@ -98,25 +98,25 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения главного окна в xml
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
         // Сохраняем язык по умолчанию
-        Root.Items.Add(C_Lang, CurrentLang);
+        Root.Items.Add(C_Lang, V_CurrentLang);
         // Сохраняем отображение окна профиля
         Root.Items.Add(C_Auto, AutoSignCheckBox.Checked);
-        ProfileAuto := AutoSignCheckBox.Checked;
+        V_ProfileAuto := AutoSignCheckBox.Checked;
         // Сохраняем профиль по умолчанию
         XML_Node := Root.Items.Add(C_Profiles);
-        XML_Node.Properties.Add(C_Cur, Profile);
+        XML_Node.Properties.Add(C_Cur, V_Profile);
         // Сохраняем список всех других профилей
         for I := 0 to ProfileComboBox.Items.Count - 1 do
           XML_Node.Items.Add('i' + IntToStr(I), ProfileComboBox.Items.Strings[I]);
         // Записываем сам файл
-        SaveToFile(ProfilePath + ProfilesFileName);
+        SaveToFile(V_ProfilePath + C_ProfilesFileName);
       end;
   finally
     JvXML.Free;
@@ -138,20 +138,20 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + ProfilesFileName) then
+        if FileExists(V_ProfilePath + C_ProfilesFileName) then
           begin
-            LoadFromFile(ProfilePath + ProfilesFileName);
+            LoadFromFile(V_ProfilePath + C_ProfilesFileName);
             if Root <> nil then
               begin
                 // Загружаем язык по умолчанию
                 XML_Node := Root.Items.ItemNamed[C_Lang];
                 if XML_Node <> nil then
-                  CurrentLang := XML_Node.Value;
+                  V_CurrentLang := XML_Node.Value;
                 // Загружаем отображение окна профиля
                 XML_Node := Root.Items.ItemNamed[C_Auto];
                 if XML_Node <> nil then
                   AutoSignCheckBox.Checked := XML_Node.BoolValue;
-                ProfileAuto := AutoSignCheckBox.Checked;
+                V_ProfileAuto := AutoSignCheckBox.Checked;
                 // Получаем имя последнего профиля
                 XML_Node := Root.Items.ItemNamed[C_Profiles];
                 if XML_Node <> nil then
@@ -180,22 +180,22 @@ begin
   if ProfileComboBox.Text = EmptyStr then
     begin
       // Выводим сообщение о том, что нужно ввести или выбрать профиль
-      DAShow(S_Errorhead, S_ProfileError, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[5].L_S, EmptyStr, 134, 2, 0);
       Exit;
     end;
   // Нормализуем имя профиля
   ProfileComboBox.Text := RafinePath(ProfileComboBox.Text);
   // Запоминаем имя профиля
-  Profile := ProfileComboBox.Text;
-  if ProfileComboBox.Items.IndexOf(Profile) = -1 then
-    ProfileComboBox.Items.Add(Profile);
+  V_Profile := ProfileComboBox.Text;
+  if ProfileComboBox.Items.IndexOf(V_Profile) = -1 then
+    ProfileComboBox.Items.Add(V_Profile);
   // Сохраняем настройки
   SaveSettings;
   // Инициализируем папку с профилем
-  PR := ProfilePath;
-  ProfilePath := ProfilePath + Profile + '\';
-  Profile := PR;
-  XLog(LogProfile + ProfilePath, EmptyStr);
+  PR := V_ProfilePath;
+  V_ProfilePath := V_ProfilePath + V_Profile + '\';
+  V_Profile := PR;
+  XLog(LogProfile + V_ProfilePath, EmptyStr);
   // Создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(MainForm);
   SettingsForm.ApplySettings;
@@ -216,26 +216,26 @@ begin
   MainForm.XTrayIcon.Visible := False;
   // Загружаем настройки главного окна
   MainForm.LoadMainFormSettings;
-  if AllSesDataTraf = EmptyStr then
-    AllSesDataTraf := DateTimeToStr(Now);
+  if V_AllSesDataTraf = EmptyStr then
+    V_AllSesDataTraf := DateTimeToStr(Now);
   // Создаём окно Ростера и загружаем контакты в него
   RosterForm := TRosterForm.Create(MainForm);
   // Если это первый старт программы, то по умолчанию активруем ICQ протокол
-  if not FirstStart then
+  if not V_FirstStart then
     MainForm.ICQ_Enable(True);
   // Если автоматически проверять новые версии при старте
   if SettingsForm.AutoUpdateCheckBox.Checked then
     MainForm.JvTimerList.Events[2].Enabled := True;
   // Создаём необходимые листы
-  AccountToNick := TStringList.Create;
-  InMessList := TStringList.Create;
-  SmilesList := TStringList.Create;
-  if FileExists(ProfilePath + Nick_BD_FileName) then
-    AccountToNick.LoadFromFile(ProfilePath + Nick_BD_FileName, TEncoding.Unicode);
-  XLog(LogNickCash + IntToStr(AccountToNick.Count), EmptyStr);
-  if FileExists(MyPath + Format(SmiliesPath, [CurrentSmiles])) then
-    SmilesList.LoadFromFile(MyPath + Format(SmiliesPath, [CurrentSmiles]), TEncoding.UTF8);
-  XLog(LogSmiliesCount + IntToStr(SmilesList.Count - 1), EmptyStr);
+  V_AccountToNick := TStringList.Create;
+  V_InMessList := TStringList.Create;
+  V_SmilesList := TStringList.Create;
+  if FileExists(V_ProfilePath + C_Nick_BD_FileName) then
+    V_AccountToNick.LoadFromFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
+  XLog(LogNickCash + IntToStr(V_AccountToNick.Count), EmptyStr);
+  if FileExists(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles])) then
+    V_SmilesList.LoadFromFile(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles]), TEncoding.UTF8);
+  XLog(LogSmiliesCount + IntToStr(V_SmilesList.Count - 1), EmptyStr);
   // Запускаем обработку Ростера
   RosterForm.UpdateFullCL;
   // Если не активно запускаться свёрнутой в трэй то показываем клавное окно
@@ -248,9 +248,9 @@ begin
   // В фоне создаём окно смайлов
   MainForm.JvTimerList.Events[7].Enabled := True;
   // Инициализируем переменную времени начала статистики трафика сессии
-  SesDataTraf := Now;
+  V_SesDataTraf := Now;
   // Если это первый старт программы то запускаем окно первичной настройки протоколов
-  if not FirstStart then
+  if not V_FirstStart then
     begin
       // Затем показываем окно начальной настройки протоколов
       FirstStartForm := TFirstStartForm.Create(MainForm);
@@ -273,13 +273,13 @@ end;
 procedure TProfileForm.OpenProfilesSpeedButtonClick(Sender: TObject);
 begin
   // Открываем папку с профилями
-  ShellExecute(0, 'open', PChar(ProfilePath), nil, nil, SW_SHOW);
+  ShellExecute(0, 'open', PChar(V_ProfilePath), nil, nil, SW_SHOW);
 end;
 
 procedure TProfileForm.ProfileComboBoxChange(Sender: TObject);
 begin
   // Пишем в всплывающей подсказке путь к профилю
-  ProfileComboBox.Hint := ProfilePath + ProfileComboBox.Text;
+  ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
 end;
 
 {$ENDREGION}
@@ -292,7 +292,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Сведения о версии программы
-  VersionLabel.Caption := Format(S_Version, [FullVersion]);
+  VersionLabel.Caption := Format(Lang_Vars[4].L_S, [V_FullVersion]);
 end;
 
 {$ENDREGION}
@@ -327,41 +327,41 @@ begin
   MainForm.AllImageList.GetIcon(253, Icon);
   MainForm.AllImageList.GetBitmap(227, OpenProfilesSpeedButton.Glyph);
   // Загружаем логотип программы
-  if FileExists(MyPath + 'Icons\' + CurrentIcons + '\logo.png') then
-    LogoImage.Picture.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\logo.png');
+  if FileExists(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png') then
+    LogoImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png');
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Загружаем настройки
   LoadSettings;
-  ProfileComboBox.Hint := ProfilePath + ProfileComboBox.Text;
+  ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
   // Назначаем разделитель значений для списков
   LangComboBox.Items.NameValueSeparator := C_BN;
   // Устанавливаем язык
-  LangComboBox.ItemIndex := LangComboBox.Items.IndexOfName('[' + CurrentLang + ']');
+  LangComboBox.ItemIndex := LangComboBox.Items.IndexOfName('[' + V_CurrentLang + ']');
   // Переводим форму
   LangComboBox.OnChange := LangComboBoxChange;
   LangComboBoxChange(nil);
 A :;
   // Проверяем если ли папки профилей и если нету, то спрашиваем где их хранить
-  if not DirectoryExists(ProfilePath) then
+  if not DirectoryExists(V_ProfilePath) then
     begin
       FrmFolder := TProfilesFolderForm.Create(MainForm);
       try
         FrmFolder.ShowModal;
         if FrmFolder.Folder1RadioButton.Checked then
-          ProfilePath := FrmFolder.Folder1Edit.Text
+          V_ProfilePath := FrmFolder.Folder1Edit.Text
         else
-          ProfilePath := FrmFolder.Folder2Edit.Text;
+          V_ProfilePath := FrmFolder.Folder2Edit.Text;
       finally
         FreeAndNil(FrmFolder);
       end;
     end;
   // Создаём папку для профилей
-  if not ForceDirectories(ProfilePath) then
+  if not ForceDirectories(V_ProfilePath) then
     begin
       // Сообщаем, что прав на запись обновления у нас нет
-      DAShow(S_Errorhead, S_UnPackErr, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, S_UnPackErr, EmptyStr, 134, 2, 0);
       goto A;
     end;
 end;
@@ -372,7 +372,7 @@ end;
 procedure TProfileForm.LangComboBoxChange(Sender: TObject);
 begin
   // Устанавливаем язык
-  CurrentLang := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
+  V_CurrentLang := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
   // Подгружаем переменные языка
   SetLangVars;
   // Переводим форму

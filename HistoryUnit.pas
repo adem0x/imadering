@@ -120,9 +120,9 @@ begin
   // Вычисляем нашу текущую учётную запись
   if ReqCType = C_Icq then
     MyHUIN := ICQ_LoginUIN
-  else if ReqCType = S_Mra then
+  else if ReqCType = C_Mra then
     MyHUIN := Mra_LoginUIN
-  else if ReqCType = S_Jabber then
+  else if ReqCType = C_Jabber then
     MyHUIN := Jabber_LoginUIN;
   // --Очистили компонент истории и выводим надпись, что история загружается
   Doc := HTMLStyle;
@@ -130,7 +130,7 @@ begin
   LoadHTMLStrings(HTMLHistoryViewer, Doc);
   HTMLHistoryViewer.Refresh;
   // Загружаем файл истории сообщений
-  HistoryFile := ProfilePath + HistoryFileName + ReqCType + C_BN + MyHUIN + C_BN + ReqHUIN + '.htm';
+  HistoryFile := V_ProfilePath + C_HistoryFolder + ReqCType + C_BN + MyHUIN + C_BN + ReqHUIN + '.htm';
   if FileExists(HistoryFile) then
     begin
       // Находим этот контакт в списке файлов историй
@@ -142,9 +142,9 @@ begin
       // Добавляем стили
       Doc := HTMLStyle;
       // Загружаем весь текст истории
-      Doc := Doc + ReadFromFile(HistoryFile);
+      Doc := Doc + ReadFromFile(HistoryFile, true);
       // Применяем смайлы
-      if not TextSmilies then
+      if not V_TextSmilies then
         CheckMessage_Smilies(Doc);
       // Отображаем историю в компоненте
       SetLength(Doc, Length(Doc) - 6);
@@ -166,7 +166,7 @@ begin
   // Ищем архивы истории с этим контактом
   ArhiveComboBox.Clear;
   if ContactsComboBox.Text <> EmptyStr then
-    ListFileInDir(ProfilePath + HistoryFileName + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
+    ListFileInDir(V_ProfilePath + C_HistoryFolder + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
   ContactsComboBox.OnChange := ContactsComboBoxChange;
 end;
 
@@ -180,7 +180,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CloseBitBtn.Caption := S_Close;
+  CloseBitBtn.Caption := Lang_Vars[8].L_S;
 end;
 
 {$ENDREGION}
@@ -269,7 +269,7 @@ begin
   if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Выводим запрос на удаление файла истории
-  I := MessageBox(Handle, PChar(HistoryDelL), PChar(S_WarningHead), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
+  I := MessageBox(Handle, PChar(HistoryDelL), PChar(Lang_Vars[19].L_S), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
   // Если ответ положительный
   if I = IDYES then
     begin
@@ -297,7 +297,7 @@ begin
   LoadHTMLStrings(HTMLHistoryViewer, Doc);
   HTMLHistoryViewer.Refresh;
   // Загружаем файл истории сообщений
-  HistoryFile := ProfilePath + HistoryFileName + ContactsComboBox.Text + '.htm';
+  HistoryFile := V_ProfilePath + C_HistoryFolder + ContactsComboBox.Text + '.htm';
   if FileExists(HistoryFile) then
     begin
       // Ичищаем компонент просмотра истории
@@ -305,9 +305,9 @@ begin
       // Добавляем стили
       Doc := HTMLStyle;
       // Загружаем весь текст истории
-      Doc := Doc + ReadFromFile(HistoryFile);
+      Doc := Doc + ReadFromFile(HistoryFile, true);
       // Применяем смайлы
-      if not TextSmilies then
+      if not V_TextSmilies then
         CheckMessage_Smilies(Doc);
       // Отображаем историю в компоненте
       SetLength(Doc, Length(Doc) - 6);
@@ -319,7 +319,7 @@ begin
     end;
   // Ищем архивы истории с этим контактом
   ArhiveComboBox.Clear;
-  ListFileInDir(ProfilePath + HistoryFileName + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
+  ListFileInDir(V_ProfilePath + C_HistoryFolder + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
   // Ставим фокус в поле поиска текста
   if SearchTextEdit.CanFocus then
     SearchTextEdit.SetFocus;
@@ -339,9 +339,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             // Загружаем позицию окна
             if Root <> nil then
               begin
@@ -364,7 +364,7 @@ begin
   // Переводим окно на другие языки
   TranslateForm;
   // Формируем строку стиля
-  HTMLStyle := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+  HTMLStyle := '<html><head>' + V_ChatCSS + '<title>Chat</title></head><body>';
   // Назначаем иконки окну и кнопкам
   MainForm.AllImageList.GetIcon(147, Icon);
   MainForm.AllImageList.GetBitmap(221, SearchTextBitBtn.Glyph);
@@ -373,7 +373,7 @@ begin
   MainForm.AllImageList.GetBitmap(148, DeleteHistoryBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
   // Создаём список имеющихся файлов истории для выбора
-  ListFileInDir(ProfilePath + HistoryFileName + '*.htm', '.htm', ContactsComboBox.Items);
+  ListFileInDir(V_ProfilePath + C_HistoryFolder + '*.htm', '.htm', ContactsComboBox.Items);
   // Делаем окно независимым и ставим его кнопку в панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
@@ -390,15 +390,15 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения окна истории в xml
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел формы истории если он есть
@@ -413,7 +413,7 @@ begin
             XML_Node.Properties.Add('h', Height);
             XML_Node.Properties.Add('w', Width);
             // Записываем сам файл
-            SaveToFile(ProfilePath + SettingsFileName);
+            SaveToFile(V_ProfilePath + C_SettingsFileName);
           end;
       end;
   finally

@@ -41,8 +41,8 @@ type
     DataLabel: TLabel;
     HeadLabel: TLabel;
     CheckUpdateBitBtn: TBitBtn;
-    Bevel1: TBevel;
-    DonateBitBtn: TBitBtn;
+    BottomBevel: TBevel;
+    ForumBitBtn: TBitBtn;
     OKBitBtn: TBitBtn;
     LogoImage: TImage;
     HeadJvBehaviorLabel: TJvBehaviorLabel;
@@ -50,6 +50,8 @@ type
     HistoryLabel: TLabel;
     LegalLabel: TLabel;
     AboutRichEdit: TRichEdit;
+    SVNLabel: TLabel;
+    FlagImage: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure URLLabelMouseEnter(Sender: TObject);
@@ -57,7 +59,7 @@ type
     procedure URLLabelClick(Sender: TObject);
     procedure CheckUpdateBitBtnClick(Sender: TObject);
     procedure OKBitBtnClick(Sender: TObject);
-    procedure DonateBitBtnClick(Sender: TObject);
+    procedure ForumBitBtnClick(Sender: TObject);
     procedure HeadJvBehaviorLabelStart(Sender: TObject);
     procedure HeadJvBehaviorLabelStop(Sender: TObject);
     procedure SubJvBehaviorLabelStart(Sender: TObject);
@@ -66,6 +68,7 @@ type
     procedure LegalLabelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
+    procedure SVNLabelClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -102,6 +105,8 @@ const
 {$REGION 'TranslateForm'}
 
 procedure TAboutForm.TranslateForm;
+const
+  ReadMe = 'ReadMe.txt';
 var
   I: Integer;
   JvXML: TJvSimpleXml;
@@ -117,10 +122,10 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+        if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
           begin
             // Загружаем файл языка
-            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
             if Root <> nil then
               begin
                 // Загружаем "о программе"
@@ -146,6 +151,9 @@ begin
   finally
     JvXML.Free;
   end;
+  // Дополняем информацией из файла ReadMe
+  if FileExists(V_MyPath + ReadMe) then
+    AboutRichEdit.Lines.Text := AboutRichEdit.Lines.Text + C_RN + ReadFromFile(V_MyPath + ReadMe, false);
 end;
 
 {$ENDREGION}
@@ -174,6 +182,12 @@ begin
   MainForm.JvTimerList.Events[13].Enabled := True;
 end;
 
+procedure TAboutForm.SVNLabelClick(Sender: TObject);
+begin
+  // Открываем SVN репозиторий проекта
+  OpenURL('http://code.google.com/p/imadering/source/list');
+end;
+
 procedure TAboutForm.URLLabelClick(Sender: TObject);
 begin
   // Открываем сайт в браузере по умолчанию
@@ -196,10 +210,10 @@ begin
   MainForm.JvTimerListEvents2Timer(nil);
 end;
 
-procedure TAboutForm.DonateBitBtnClick(Sender: TObject);
+procedure TAboutForm.ForumBitBtnClick(Sender: TObject);
 begin
   // Поддержим проект
-  OpenURL('http://imadering.mybb.ru/viewtopic.php?id=81');
+  OpenURL('http://imadering.mybb.ru');
 end;
 
 procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -219,21 +233,24 @@ begin
   // Присваиваем иконку окну и кнопкам
   MainForm.AllImageList.GetIcon(0, Icon);
   MainForm.AllImageList.GetBitmap(6, CheckUpdateBitBtn.Glyph);
-  MainForm.AllImageList.GetBitmap(185, DonateBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(271, ForumBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
   // Переводим форму на другие языки
   TranslateForm;
   // Загружаем логотип программы
-  LogoFile := MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif';
+  LogoFile := V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif';
   if FileExists(LogoFile) then
     LogoImage.Picture.LoadFromFile(LogoFile);
+  LogoFile := V_MyPath + C_FlagsFolder + '\7.gif';
+  if FileExists(LogoFile) then
+    FlagImage.Picture.LoadFromFile(LogoFile);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Сведения о версии программы
-  VersionLabel.Caption := Format(S_Version, [FullVersion]);
+  VersionLabel.Caption := Format(Lang_Vars[4].L_S, [V_FullVersion]);
   // Получаем дату компиляци файла
-  DataLabel.Caption := DataLabel.Caption + C_BN + DateToStr(GetFileDateTime(MyPath + 'Imadering.exe'));
+  DataLabel.Caption := DataLabel.Caption + C_BN + DateToStr(GetFileDateTime(V_MyPath + 'Imadering.exe'));
   // Присваиваем начальное значение длинны списка титров
   AboutLen := 1;
   // Стартуем показ титров
@@ -271,13 +288,13 @@ end;
 procedure TAboutForm.HistoryLabelClick(Sender: TObject);
 begin
   // Открываем на просмотр файл истории изменений
-  OpenURL(MyPath + 'Changes.txt');
+  OpenURL(V_MyPath + 'Changes.txt');
 end;
 
 procedure TAboutForm.LegalLabelClick(Sender: TObject);
 begin
   // Открываем на просмотр файл лицензии
-  OpenURL(MyPath + 'GPL_' + CurrentLang + '.txt');
+  OpenURL(V_MyPath + 'GPL ' + V_CurrentLang + '.txt');
 end;
 
 {$ENDREGION}

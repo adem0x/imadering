@@ -116,7 +116,7 @@ function Jab_Plain_Auth: string;
 var
   Uu, Upass, Ujid, C, Buff: string;
 begin
-  XLog(S_Jabber + Log_Get + Log_Jabber_Plain, S_Jabber);
+  XLog(C_Jabber + Log_Get + Log_Jabber_Plain, C_Jabber);
   Ujid := Jabber_JID;
   Uu := Jabber_LoginUIN;
   Upass := Jabber_LoginPassword;
@@ -143,7 +143,7 @@ begin
   Nc := '00000001';
   Gop := 'auth';
   Razdel := Ord(':');
-  XLog(S_Jabber + Log_Parsing + Log_MD5_Nonce + Nonce, S_Jabber);
+  XLog(C_Jabber + Log_Parsing + Log_MD5_Nonce + Nonce, C_Jabber);
   // Вычисляем А1 по формуле RFC 2831
   SJID := Format('%S:%S:%S', [UserName, Realm, Pass]);
   MD5Init(Context);
@@ -256,7 +256,7 @@ begin
     begin
       for I := 0 to Items.Count - 1 do
         begin
-          if Items[I].SubItems[3] = S_Jabber then
+          if Items[I].SubItems[3] = C_Jabber then
             begin
               if Items[I].SubItems[6] <> '42' then
                 Items[I].SubItems[6] := '30';
@@ -374,7 +374,7 @@ begin
                       ListItemD.SubItems[1] := URLEncode(Sub_Node.Value);
                     if ListItemD.SubItems[1] = EmptyStr then
                       ListItemD.SubItems[1] := URLEncode(JabberNullGroup);
-                    ListItemD.SubItems[3] := S_Jabber;
+                    ListItemD.SubItems[3] := C_Jabber;
                     ListItemD.SubItems[6] := '30';
                   end;
               end;
@@ -386,7 +386,7 @@ begin
     RosterForm.RosterJvListView.Items.EndUpdate;
   end;
   // Запускаем обработку Ростера
-  CollapseGroupsRestore := True;
+  V_CollapseGroupsRestore := True;
   RosterForm.UpdateFullCL;
 end;
 
@@ -610,7 +610,7 @@ begin
                 else // Если такой контакт не найден в Ростере, то добавляем его
                   begin
                     // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-                    Nick := SearchNickInCash(S_Jabber, PJID);
+                    Nick := SearchNickInCash(C_Jabber, PJID);
                     // Дата сообщения
                     MsgD := Nick + ' [' + DateTimeChatMess + ']';
                     // Ищем группу "Не в списке" в Ростере
@@ -635,7 +635,7 @@ begin
                         SubItems[0] := URLEncode(Nick);
                         SubItems[1] := C_NoCL;
                         SubItems[2] := 'none';
-                        SubItems[3] := S_Jabber;
+                        SubItems[3] := C_Jabber;
                         SubItems[6] := '42';
                         SubItems[15] := URLEncode(PopMsg);
                         SubItems[35] := '0';
@@ -646,7 +646,7 @@ begin
                   end;
 
                 // Записываем история в файл истории с этим контактов
-                HistoryFile := ProfilePath + HistoryFileName + S_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + '.htm';
+                HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + '.htm';
                 SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
                 // Добавляем сообщение в текущий чат
                 RosterItem.SubItems[36] := 'X';

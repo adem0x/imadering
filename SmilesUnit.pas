@@ -64,14 +64,14 @@ uses
 procedure TSmilesForm.FormCreate(Sender: TObject);
 begin
   // Вычисляем размер окна смайлов
-  if SmilesList.Count > 0 then
+  if V_SmilesList.Count > 0 then
     begin
-      Height := StrToInt(IsolateTextString(SmilesList.Strings[0], '<height>', '</height>'));
-      Width := StrToInt(IsolateTextString(SmilesList.Strings[0], '<width>', '</width>'));
+      Height := StrToInt(IsolateTextString(V_SmilesList.Strings[0], '<height>', '</height>'));
+      Width := StrToInt(IsolateTextString(V_SmilesList.Strings[0], '<width>', '</width>'));
     end;
   // Загружаем смайлы из смайлпака
-  if FileExists(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm') then
-    SmiliesHTMLViewer.LoadFromFile(MyPath + 'Smilies\' + CurrentSmiles + '\smilies.htm');
+  if FileExists(V_MyPath + 'Smilies\' + V_CurrentSmiles + '\smilies.htm') then
+    SmiliesHTMLViewer.LoadFromFile(V_MyPath + 'Smilies\' + V_CurrentSmiles + '\smilies.htm');
 end;
 
 {$ENDREGION}
@@ -96,6 +96,8 @@ begin
     SmiliesHTMLViewer.SetFocus;
   // Показываем изображения смайликов
   SmiliesHTMLViewer.ViewImages := True;
+  // Ставим флаги окну отображаться поверх всех (против глюка в вайн)
+  SetWindowPos(SmilesForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOSENDCHANGING);
 end;
 
 {$ENDREGION}

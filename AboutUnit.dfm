@@ -3,7 +3,7 @@ object AboutForm: TAboutForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 286
+  ClientHeight = 337
   ClientWidth = 285
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -28,8 +28,8 @@ object AboutForm: TAboutForm
     Height = 13
   end
   object URLLabel: TLabel
-    Left = 139
-    Top = 226
+    Left = 129
+    Top = 277
     Width = 114
     Height = 13
     Cursor = crHandPoint
@@ -45,8 +45,8 @@ object AboutForm: TAboutForm
     OnMouseLeave = URLLabelMouseLeave
   end
   object SiteLabel: TLabel
-    Left = 130
-    Top = 226
+    Left = 120
+    Top = 277
     Width = 3
     Height = 13
     Alignment = taRightJustify
@@ -76,9 +76,9 @@ object AboutForm: TAboutForm
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object Bevel1: TBevel
+  object BottomBevel: TBevel
     Left = 8
-    Top = 245
+    Top = 296
     Width = 269
     Height = 2
     Shape = bsBottomLine
@@ -93,7 +93,7 @@ object AboutForm: TAboutForm
   end
   object HeadJvBehaviorLabel: TJvBehaviorLabel
     Left = 8
-    Top = 177
+    Top = 228
     Width = 269
     Height = 21
     Behavior = 'Typing'
@@ -116,7 +116,7 @@ object AboutForm: TAboutForm
   end
   object SubJvBehaviorLabel: TJvBehaviorLabel
     Left = 8
-    Top = 195
+    Top = 246
     Width = 269
     Height = 25
     Behavior = 'Typing'
@@ -139,7 +139,7 @@ object AboutForm: TAboutForm
   end
   object HistoryLabel: TLabel
     Left = 274
-    Top = 8
+    Top = 27
     Width = 3
     Height = 13
     Cursor = crHandPoint
@@ -156,7 +156,7 @@ object AboutForm: TAboutForm
   end
   object LegalLabel: TLabel
     Left = 274
-    Top = 27
+    Top = 8
     Width = 3
     Height = 13
     Cursor = crHandPoint
@@ -171,6 +171,31 @@ object AboutForm: TAboutForm
     OnMouseEnter = URLLabelMouseEnter
     OnMouseLeave = URLLabelMouseLeave
   end
+  object SVNLabel: TLabel
+    Left = 214
+    Top = 46
+    Width = 63
+    Height = 13
+    Cursor = crHandPoint
+    Alignment = taRightJustify
+    Caption = 'Source SVN'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    OnClick = SVNLabelClick
+    OnMouseEnter = URLLabelMouseEnter
+    OnMouseLeave = URLLabelMouseLeave
+  end
+  object FlagImage: TImage
+    Left = 259
+    Top = 277
+    Width = 18
+    Height = 13
+    Center = True
+  end
   object CheckUpdateBitBtn: TBitBtn
     Left = 8
     Top = 65
@@ -182,21 +207,21 @@ object AboutForm: TAboutForm
     TabStop = False
     OnClick = CheckUpdateBitBtnClick
   end
-  object DonateBitBtn: TBitBtn
+  object ForumBitBtn: TBitBtn
     Left = 8
-    Top = 253
-    Width = 161
+    Top = 304
+    Width = 177
     Height = 25
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
     TabStop = False
-    OnClick = DonateBitBtnClick
+    OnClick = ForumBitBtnClick
   end
   object OKBitBtn: TBitBtn
-    Left = 192
-    Top = 253
-    Width = 85
+    Left = 200
+    Top = 304
+    Width = 77
     Height = 25
     Caption = 'OK'
     DoubleBuffered = True
@@ -209,7 +234,7 @@ object AboutForm: TAboutForm
     Left = 8
     Top = 96
     Width = 269
-    Height = 75
+    Height = 126
     TabStop = False
     BevelKind = bkFlat
     BorderStyle = bsNone

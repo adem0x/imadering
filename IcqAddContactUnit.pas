@@ -92,12 +92,12 @@ begin
             end;
         end
         // Список для Jabber
-      else if GProto = S_Jabber then
+      else if GProto = C_Jabber then
         begin
 
         end
         // Список для Mra
-      else if GProto = S_Mra then
+      else if GProto = C_Mra then
         begin
 
         end;
@@ -117,7 +117,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelButton.Caption := S_Cancel;
+  CancelButton.Caption := Lang_Vars[9].L_S;
 end;
 
 {$ENDREGION}
@@ -148,19 +148,19 @@ begin
               RosterItem := RosterForm.ReqRosterItem(AccountEdit.Text);
               if RosterItem <> nil then // Если такой контакт уже добавлен в список, то сообщаем об этом
                 begin
-                  DAShow(S_WarningHead, AddContactErr1, EmptyStr, 133, 0, 0);
+                  DAShow(Lang_Vars[19].L_S, AddContactErr1, EmptyStr, 133, 0, 0);
                   Exit;
                 end;
               // Если фаза добавления контакта ещё активна, то ждём её окончания
               if ICQ_SSI_Phaze then
                 begin
-                  DAShow(S_WarningHead, AddContactErr2, EmptyStr, 134, 2, 0);
+                  DAShow(Lang_Vars[19].L_S, AddContactErr2, EmptyStr, 134, 2, 0);
                   Exit;
                 end;
               // Если группа не выбрана
               if GroupComboBox.ItemIndex = -1 then
                 begin
-                  DAShow(S_AlertHead, AddContactErr3, EmptyStr, 134, 2, 0);
+                  DAShow(Lang_Vars[18].L_S, AddContactErr3, EmptyStr, 134, 2, 0);
                   goto Y;
                 end;
               // Генерируем идентификатор для этого контакта
@@ -193,12 +193,12 @@ begin
         end;
     end
     // Добавляем контакты по протоколу Jabber
-  else if ContactType = S_Jabber then
+  else if ContactType = C_Jabber then
     begin
 
     end
     // Добавляем контакты по протоколу Mra
-  else if ContactType = S_Mra then
+  else if ContactType = C_Mra then
     begin
 
     end;
