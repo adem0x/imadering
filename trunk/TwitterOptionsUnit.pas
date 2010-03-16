@@ -109,7 +109,8 @@ uses
   MraProtoUnit,
   RosterUnit,
   OverbyteIcsMimeUtils,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  TwitProtoUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -131,12 +132,12 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
-                XML_Node := Root.Items.ItemNamed[S_Twitter];
+                XML_Node := Root.Items.ItemNamed[C_Twitter];
                 if XML_Node <> nil then
                   begin
                     // --------------------------------------------------------------------------
@@ -219,16 +220,16 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел главной формы если он есть
-            XML_Node := Root.Items.ItemNamed[S_Twitter];
+            XML_Node := Root.Items.ItemNamed[C_Twitter];
             if XML_Node <> nil then
               XML_Node.Clear
             else
-              XML_Node := Root.Items.Add(S_Twitter);
+              XML_Node := Root.Items.Add(C_Twitter);
             // --------------------------------------------------------------------------
             // Записываем данные логина
             XML_Node.Properties.Add(C_Login, AccountEdit.Text);
@@ -251,7 +252,7 @@ begin
             XML_Node.Items.Add(C_MyMessCount, MyMessJvSpinEdit.Text);
             // --------------------------------------------------------------------------
             // Сохраняем файл
-            SaveToFile(ProfilePath + SettingsFileName);
+            SaveToFile(V_ProfilePath + C_SettingsFileName);
           end;
       end;
   finally
@@ -313,8 +314,8 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelButton.Caption := S_Cancel;
-  ApplyButton.Caption := S_Apply;
+  CancelButton.Caption := Lang_Vars[9].L_S;
+  ApplyButton.Caption := Lang_Vars[10].L_S;
 end;
 
 {$ENDREGION}

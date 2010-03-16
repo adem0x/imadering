@@ -187,7 +187,7 @@ begin
   TopHTMLViewer.Clear;
   BottomHTMLViewer.Clear;
   // Ищем локально файл с информацией
-  if FileExists(ProfilePath + AnketaFileName + ReqProto + C_BN + ReqUIN + '.xml') then
+  if FileExists(V_ProfilePath + C_AnketaFolder + ReqProto + C_BN + ReqUIN + '.xml') then
     begin
       InfoLabel.Caption := InfoOKL;
       // Запускаем создание суммарного инфо из распакованного файла
@@ -206,14 +206,14 @@ begin
       AddHTML(TopHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
       // Учётная запись контакта
       if ReqProto = C_Icq then
-        AddHTML(TopHTMLViewer, ICQAccountInfo + C_BN + ReqUIN, 'cbold')
-      else if ReqProto = S_Jabber then
-        AddHTML(TopHTMLViewer, JabberAccountInfo + C_BN + ReqUIN, 'cbold');
+        AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + ReqUIN, 'cbold')
+      else if ReqProto = C_Jabber then
+        AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + ReqUIN, 'cbold');
       AddHTML(TopHTMLViewer, '<hr>', EmptyStr, False, True);
       // Очищаем картинку гороскопа
       HoroImage.Picture.Assign(nil);
       // Загружаем аватар
-      AvatarFile := MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif';
+      AvatarFile := V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif';
       if FileExists(AvatarFile) then
         AvatarImage.Picture.LoadFromFile(AvatarFile);
     end;
@@ -280,7 +280,7 @@ begin
   AddHTML(TopHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
   AddHTML(BottomHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
   // Учётная запись контакта
-  AddHTML(TopHTMLViewer, ICQAccountInfo + C_BN + ReqUIN, 'cbold');
+  AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + ReqUIN, 'cbold');
   AddHTML(TopHTMLViewer, '<hr>', EmptyStr, False, True);
   // Загружаем информацию из распакованного xml файла с инфой
   // Инициализируем XML
@@ -289,7 +289,7 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        LoadFromFile(ProfilePath + AnketaFileName + ReqProto + C_BN + ReqUIN + '.xml');
+        LoadFromFile(V_ProfilePath + C_AnketaFolder + ReqProto + C_BN + ReqUIN + '.xml');
         if Root <> nil then
           begin
             // Ник, Имя и фамилию
@@ -401,12 +401,12 @@ begin
                 if Gender = '1' then
                   begin
                     AddHTML(BottomHTMLViewer, InfoGenderL + C_BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, InfoGender1L + ' <IMG NAME=i SRC="./Icons/' + CurrentIcons + '/girl.gif" ALIGN=ABSMIDDLE BORDER=0>', 'cdef', True);
+                    AddHTML(BottomHTMLViewer, InfoGender1L + ' <IMG NAME=i SRC="./Icons/' + V_CurrentIcons + '/girl.gif" ALIGN=ABSMIDDLE BORDER=0>', 'cdef', True);
                   end
                 else if Gender = '2' then
                   begin
                     AddHTML(BottomHTMLViewer, InfoGenderL + C_BN, 'cbold');
-                    AddHTML(BottomHTMLViewer, InfoGender2L + ' <IMG NAME=i SRC="./Icons/' + CurrentIcons + '/boy.gif" ALIGN=ABSMIDDLE BORDER=0>', 'cdef', True);
+                    AddHTML(BottomHTMLViewer, InfoGender2L + ' <IMG NAME=i SRC="./Icons/' + V_CurrentIcons + '/boy.gif" ALIGN=ABSMIDDLE BORDER=0>', 'cdef', True);
                   end;
               end;
             // Дата рождения
@@ -767,14 +767,14 @@ begin
   if (IDay <> '0') and (IMonth <> '0') then
     begin
       // Загружаем картинку гороскопа
-      HoroImage.Picture.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\horoscope.bmp');
+      HoroImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\horoscope.bmp');
       // Прокручиваем на картинку этого знака
       HoroImage.Canvas.CopyRect(Rect(0, 0, 32, 32), HoroImage.Canvas, Bounds(Horospope(StrToInt(IDay), StrToInt(IMonth)), 0, 32, 32));
     end
   else
     HoroImage.Picture.Assign(nil);
   // Загружаем аватар
-  AvatarImage.Picture.LoadFromFile(MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif');
+  AvatarImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif');
   { if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
     (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
     (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
@@ -848,9 +848,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 // Загружаем позицию окна
@@ -868,7 +868,7 @@ begin
   end;
   // Переводим форму на другие языки
   TranslateForm;
-  HTMLStyle := '<html><head>' + DetailsCSS + '<title>Details</title></head><body>';
+  HTMLStyle := '<html><head>' + V_DetailsCSS + '<title>Details</title></head><body>';
   // Ставим иконки окна и кнопок
   MainForm.AllImageList.GetIcon(178, Icon);
   MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
@@ -887,15 +887,15 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения окна в xml
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел формы если он есть
@@ -907,7 +907,7 @@ begin
             XML_Node.Properties.Add('t', Top);
             XML_Node.Properties.Add('l', Left);
             // Записываем сам файл
-            SaveToFile(ProfilePath + SettingsFileName);
+            SaveToFile(V_ProfilePath + C_SettingsFileName);
           end;
       end;
   finally

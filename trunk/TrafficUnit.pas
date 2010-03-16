@@ -74,7 +74,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CloseBitBtn.Caption := S_Close;
+  CloseBitBtn.Caption := Lang_Vars[8].L_S;
   ResetAllTrafButton.Caption := ResetCurTrafButton.Caption;
 end;
 
@@ -84,21 +84,21 @@ end;
 procedure TTrafficForm.ResetCurTrafButtonClick(Sender: TObject);
 begin
   // Обнуляем текущий трафик
-  TrafSend := 0;
-  TrafRecev := 0;
-  SesDataTraf := Now;
+  V_TrafSend := 0;
+  V_TrafRecev := 0;
+  V_SesDataTraf := Now;
   // Показываем сколько трафика передано за эту сессию
-  CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(TrafSend / 1000, FfFixed, 18, 3) + ' KB | ' + DateTimeToStr(SesDataTraf);
+  CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + ' KB | ' + DateTimeToStr(V_SesDataTraf);
 end;
 
 procedure TTrafficForm.ResetAllTrafButtonClick(Sender: TObject);
 begin
   // Обнуляем общий трафик
-  AllTrafSend := 0;
-  AllTrafRecev := 0;
-  AllSesDataTraf := DateTimeToStr(Now);
+  V_AllTrafSend := 0;
+  V_AllTrafRecev := 0;
+  V_AllSesDataTraf := DateTimeToStr(Now);
   // Показываем сколько трафика передано всего
-  AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(AllTrafSend / 1000000, FfFixed, 18, 3) + ' MB | ' + AllSesDataTraf;
+  AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + ' MB | ' + V_AllSesDataTraf;
 end;
 
 {$ENDREGION}
@@ -133,6 +133,9 @@ begin
   // Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetIcon(226, Icon);
   MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
+  // Помещаем кнопку формы в таскбар и делаем независимой
+  SetWindowLong(Handle, GWL_HWNDPARENT, 0);
+  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
 
 {$ENDREGION}

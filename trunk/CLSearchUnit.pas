@@ -190,9 +190,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
@@ -229,15 +229,15 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения окна в xml
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел формы если он есть
@@ -253,7 +253,7 @@ begin
             XML_Node.Properties.Add('w', Width);
           end;
         // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
+        SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
   finally
     JvXML.Free;

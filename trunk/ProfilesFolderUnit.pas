@@ -97,7 +97,7 @@ begin
   S := '%APPDATA%\IMadering\';
   Size := ExpandEnvironmentStrings(PChar(S), Buf, Sizeof(Buf));
   Folder1Edit.Text := Copy(Buf, 1, Size);
-  Folder2Edit.Text := MyPath + 'Profiles\';
+  Folder2Edit.Text := V_MyPath + 'Profiles\';
 end;
 
 {$ENDREGION}

@@ -194,6 +194,7 @@ type
 
   private
     { Private declarations }
+    f_t, f_l, f_h, f_w: integer;
     HTMLStyle: string;
     LastClick: Tdatetime;
     ButtonInd: Integer;
@@ -285,25 +286,24 @@ begin
           InputRichEdit.Text := URLDecode(SubItems[14]);
           // Загружаем файл истории сообщений
           if UserType = C_Icq then
-            HistoryFile := ProfilePath + HistoryFileName + UserType + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm'
-          else if UserType = S_Jabber then
-            HistoryFile := ProfilePath + HistoryFileName + UserType + C_BN + Jabber_LoginUIN + C_BN + UIN + '.htm'
-          else if UserType = S_Mra then
-            HistoryFile := ProfilePath + HistoryFileName + UserType + C_BN + MRA_LoginUIN + C_BN + UIN + '.htm';
+            HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm'
+          else if UserType = C_Jabber then
+            HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + Jabber_LoginUIN + C_BN + UIN + '.htm'
+          else if UserType = C_Mra then
+            HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + MRA_LoginUIN + C_BN + UIN + '.htm';
           if FileExists(HistoryFile) then
             begin
               // Проверяем создавать или нет архив истории
               if CreateHistoryArhive(HistoryFile) then
                 begin
                   // Если сжатие истории закончено успешно, то удаляем файл истории
-                  if not CompresHistoryProcess then
-                    DeleteFile(HistoryFile);
+                  DeleteFile(HistoryFile);
                   // Сообщаем о создании архива и записываем это в новый файл для памятки
                   HistoryText := '<span class=d>' + HistoryCompressedL + '</span><br><br>';
                   SaveTextInHistory(HistoryText, HistoryFile);
                 end
               else
-                HistoryText := Readfromfile(HistoryFile);
+                HistoryText := Readfromfile(HistoryFile, true);
             end;
           // Отображаем историю в чате
           if HistoryText <> EmptyStr then
@@ -314,7 +314,7 @@ begin
               Doc := HTMLStyle;
               // Загружаем из файла истории указанное количесво сообщений
               Doc := Doc + TailLineTail(HistoryText, 5);
-              if not TextSmilies then
+              if not V_TextSmilies then
                 CheckMessage_Smilies(Doc);
               SetLength(Doc, Length(Doc) - 6);
               Doc := Doc + '<HR>';
@@ -331,16 +331,16 @@ begin
           // Ставим имя и фамилию в информационное поле
           InfoPanel1.Caption := NameAndLast(UIN, UserType);
           // Ставим город и возраст в информационное поле
-          InfoPanel3.Caption := GetCityPanel;
-          InfoPanel4.Caption := GetAgePanel;
+          InfoPanel3.Caption := V_GetCityPanel;
+          InfoPanel4.Caption := V_GetAgePanel;
           // Ставим флаг страны
-          ImageFile := MyPath + 'Icons\Flags\' + GetFlagImage + '.gif';
+          ImageFile := V_MyPath + 'Icons\Flags\' + V_GetFlagImage + '.gif';
           if FileExists(ImageFile) then
             FlagImage.Picture.LoadFromFile(ImageFile)
           else
             FlagImage.Picture.Assign(nil);
           // Ставим иконку пола
-          ImageFile := MyPath + 'Icons\' + CurrentIcons + '\' + GetGenderImage + '.gif';
+          ImageFile := V_MyPath + 'Icons\' + V_CurrentIcons + '\' + V_GetGenderImage + '.gif';
           if FileExists(ImageFile) then
             GenderImage.Picture.LoadFromFile(ImageFile)
           else
@@ -368,11 +368,11 @@ begin
               // Преобразуем и подгружаем иконку доп. статуса
               if SubItems[7] > '-1' then
                 begin
-                  XStatusImg.Assign(nil);
-                  MainForm.AllImageList.GetBitmap(StrToInt(SubItems[7]), XStatusImg);
-                  XStatusMem.Clear;
-                  XStatusImg.SaveToStream(XStatusMem);
-                  HTMLChatViewer.ReplaceImage('x', XStatusMem);
+                  V_XStatusImg.Assign(nil);
+                  MainForm.AllImageList.GetBitmap(StrToInt(SubItems[7]), V_XStatusImg);
+                  V_XStatusMem.Clear;
+                  V_XStatusImg.SaveToStream(V_XStatusMem);
+                  HTMLChatViewer.ReplaceImage('x', V_XStatusMem);
                 end;
             end;
           // Ставим каретку в самый низ текста
@@ -385,9 +385,9 @@ begin
           try
             with JvXML do
               begin
-                if FileExists(ProfilePath + AnketaFileName + UserType + C_BN + UIN + '.usr') then
+                if FileExists(V_ProfilePath + C_AnketaFolder + UserType + C_BN + UIN + '.usr') then
                   begin
-                    LoadFromFile(ProfilePath + AnketaFileName + UserType + C_BN + UIN + '.usr');
+                    LoadFromFile(V_ProfilePath + C_AnketaFolder + UserType + C_BN + UIN + '.usr');
                     if Root <> nil then
                       begin
                         XML_Node := Root.Items.ItemNamed[C_UniqGT];
@@ -459,7 +459,7 @@ begin
       if InfoPanel2.Caption = CId then
         begin
           // Если не включены текстовые смайлы, то форматируем сообщение под смайлы
-          if not TextSmilies then
+          if not V_TextSmilies then
             CheckMessage_Smilies(CMess);
           // Добавляем сообщение в текущий чат
           AddChatText(CMsgD, CMess, True);
@@ -474,8 +474,8 @@ begin
         end;
     end;
   // Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-  if InMessList.IndexOf(CId) = -1 then
-    InMessList.Add(CId);
+  if V_InMessList.IndexOf(CId) = -1 then
+    V_InMessList.Add(CId);
   // Играем звук входящего сообщения
   ImPlaySnd(2);
   // Показываем всплывашку с сообщением
@@ -533,8 +533,8 @@ begin
   // Создаём временный лист строк
   List := TStringList.Create;
   // Если файл с быстрыми ответами найден, то загружаем его
-  if FileExists(ProfilePath + QReplyFileName) then
-    List.LoadFromFile(ProfilePath + QReplyFileName)
+  if FileExists(V_ProfilePath + C_ReplyFileName) then
+    List.LoadFromFile(V_ProfilePath + C_ReplyFileName)
   else
     begin
       // Иначе добавляем быстрые ответы по умолчанию
@@ -639,9 +639,9 @@ var
 begin
   Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
   if MessIn then
-    Doc := Doc + '<IMG NAME="i" SRC="./Icons/' + CurrentIcons + '/inmess.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=b> ' + Nick_Time + '</span><br>'
+    Doc := Doc + '<IMG NAME="i" SRC="./Icons/' + V_CurrentIcons + '/inmess.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=b> ' + Nick_Time + '</span><br>'
   else
-    Doc := Doc + '<IMG NAME="o' + IntToStr(OutMessIndex) + '" SRC="./Icons/' + CurrentIcons + '/outmess1.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=a> ' + Nick_Time + '</span><br>';
+    Doc := Doc + '<IMG NAME="o' + IntToStr(OutMessIndex) + '" SRC="./Icons/' + V_CurrentIcons + '/outmess1.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=a> ' + Nick_Time + '</span><br>';
   Doc := Doc + '<span class=c>' + Mess_Text + '</span><br><br>';
   LoadHTMLStrings(HTMLChatViewer, Doc);
 end;
@@ -800,13 +800,13 @@ end;
 procedure TChatForm.SendAllClick(Sender: TObject);
 begin
   //
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TChatForm.SendAllOnlineClick(Sender: TObject);
 begin
   //
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TChatForm.SendFileSpeedButtonClick(Sender: TObject);
@@ -885,7 +885,7 @@ end;
 procedure TChatForm.EditContactSpeedButtonClick(Sender: TObject);
 begin
   //
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TChatForm.ChatSplitterMoved(Sender: TObject);
@@ -898,7 +898,7 @@ end;
 procedure TChatForm.ChatFontToolButtonClick(Sender: TObject);
 begin
   //
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TChatForm.ChatSettingsToolButtonClick(Sender: TObject);
@@ -990,7 +990,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CloseTabBitBtn.Caption := S_Close;
+  CloseTabBitBtn.Caption := Lang_Vars[8].L_S;
 end;
 
 {$ENDREGION}
@@ -998,7 +998,7 @@ end;
 
 procedure TChatForm.TypingTextToolButtonClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TChatForm.UniqToolButtonClick(Sender: TObject);
@@ -1007,9 +1007,9 @@ begin
   if not Assigned(UniqForm) then
     UniqForm := TUniqForm.Create(Self);
   if UserType = C_Icq then
-    UniqForm.AccountPanel.Caption := ICQAccountInfo + C_BN + InfoPanel2.Caption
-  else if UserType = S_Jabber then
-    UniqForm.AccountPanel.Caption := JabberAccountInfo + C_BN + InfoPanel2.Caption;
+    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + InfoPanel2.Caption
+  else if UserType = C_Jabber then
+    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + InfoPanel2.Caption;
   // Отображаем окно
   XShowForm(UniqForm);
 end;
@@ -1033,7 +1033,7 @@ begin
       if CancelBitBtn.Enabled then
         begin
           XShowForm(FileTransferForm);
-          DAShow(S_AlertHead, S_FileTransfer6, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[18].L_S, S_FileTransfer6, EmptyStr, 133, 3, 0);
           Exit;
         end;
       // Выбираем способ передачи файла
@@ -1096,9 +1096,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_ChatForm];
@@ -1109,6 +1109,12 @@ begin
                     Left := XML_Node.Properties.IntValue('l');
                     Height := XML_Node.Properties.IntValue('h');
                     Width := XML_Node.Properties.IntValue('w');
+                    f_t := Top;
+                    f_l := Left;
+                    f_h := Height;
+                    f_w := Width;
+                    if XML_Node.Properties.BoolValue('max', False) then
+                      WindowState := wsMaximized;
                     // Определяем не находится ли окно за пределами экрана
                     FormSetInWorkArea(Self);
                     // Загружаем позицию сплитеров
@@ -1165,24 +1171,24 @@ begin
   MainForm.AllImageList.GetBitmap(158, CloseTabBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(246, GtransSpeedButton.Glyph);
   // Создаём хранитель картинки пустой аватары для быстрого её отображения
-  NoAvatar := TImage.Create(MainForm);
-  AvatarFile := MyPath + 'Icons\' + CurrentIcons + '\noavatar.gif';
+  V_NoAvatar := TImage.Create(MainForm);
+  AvatarFile := V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif';
   if FileExists(AvatarFile) then
-    NoAvatar.Picture.LoadFromFile(AvatarFile);
+    V_NoAvatar.Picture.LoadFromFile(AvatarFile);
   // Создаём иконки подтвержения сообщений
-  OutMessage2 := TMemoryStream.Create;
-  OutMessage2File := MyPath + 'Icons\' + CurrentIcons + '\outmess2.gif';
+  V_OutMessage2 := TMemoryStream.Create;
+  OutMessage2File := V_MyPath + 'Icons\' + V_CurrentIcons + '\outmess2.gif';
   if FileExists(OutMessage2File) then
-    OutMessage2.LoadFromFile(OutMessage2File);
-  OutMessage3 := TMemoryStream.Create;
-  OutMessage3File := MyPath + 'Icons\' + CurrentIcons + '\outmess3.gif';
+    V_OutMessage2.LoadFromFile(OutMessage2File);
+  V_OutMessage3 := TMemoryStream.Create;
+  OutMessage3File := V_MyPath + 'Icons\' + V_CurrentIcons + '\outmess3.gif';
   if FileExists(OutMessage3File) then
-    OutMessage3.LoadFromFile(OutMessage3File);
+    V_OutMessage3.LoadFromFile(OutMessage3File);
   // Присваиваем картинку пустой аватары в места для аватар
-  ContactAvatarImage.Picture.Assign(NoAvatar.Picture);
-  MyAvatarImage.Picture.Assign(NoAvatar.Picture);
-  XStatusImg := TBitmap.Create;
-  XStatusMem := TMemoryStream.Create;
+  ContactAvatarImage.Picture.Assign(V_NoAvatar.Picture);
+  MyAvatarImage.Picture.Assign(V_NoAvatar.Picture);
+  V_XStatusImg := TBitmap.Create;
+  V_XStatusMem := TMemoryStream.Create;
   // Переводим форму на другие языки
   TranslateForm;
   // Создаём меню быстрых ответов
@@ -1193,7 +1199,7 @@ begin
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
   // Формируем строку html стиля
-  HTMLStyle := '<html><head>' + ChatCSS + '<title>Chat</title></head><body>';
+  HTMLStyle := '<html><head>' + V_ChatCSS + '<title>Chat</title></head><body>';
   // Пока скрываем всегда отображение участников конференции
   ChatCategoryButtons.Visible := False;
   GroupSplitter.Visible := False;
@@ -1208,15 +1214,15 @@ var
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения окна чата в xml
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         // Очищаем раздел чат формы если он есть
         XML_Node := Root.Items.ItemNamed[C_ChatForm];
         if XML_Node <> nil then
@@ -1224,10 +1230,22 @@ begin
         else
           XML_Node := Root.Items.Add(C_ChatForm);
         // Сохраняем позицию окна
-        XML_Node.Properties.Add('t', Top);
-        XML_Node.Properties.Add('l', Left);
-        XML_Node.Properties.Add('h', Height);
-        XML_Node.Properties.Add('w', Width);
+        if WindowState = wsMaximized then
+          begin
+            XML_Node.Properties.Add('max', True);
+            XML_Node.Properties.Add('t', f_t);
+            XML_Node.Properties.Add('l', f_l);
+            XML_Node.Properties.Add('h', f_h);
+            XML_Node.Properties.Add('w', f_w);
+          end
+        else
+          begin
+            XML_Node.Properties.Add('max', False);
+            XML_Node.Properties.Add('t', Top);
+            XML_Node.Properties.Add('l', Left);
+            XML_Node.Properties.Add('h', Height);
+            XML_Node.Properties.Add('w', Width);
+          end;
         // Сохраняем позицию сплитеров
         Sub_Node := XML_Node.Items.Add(C_ChatFormSP);
         Sub_Node.Properties.Add('s1', BottomChatFormPanel.Height);
@@ -1243,7 +1261,7 @@ begin
         Sub_Node.Properties.Add('a1', ContactAvatarPanel.Width);
         Sub_Node.Properties.Add('a2', MyAvatarPanel.Width);
         // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
+        SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
   finally
     JvXML.Free;
@@ -1275,14 +1293,14 @@ begin
   else // Деактивируем функцию перевода в файле уникальных настроек этого контакта
     begin
       // Создаём необходимые папки
-      ForceDirectories(ProfilePath);
+      ForceDirectories(V_ProfilePath);
       // Инициализируем XML
       JvXML_Create(JvXML);
       try
         with JvXML do
           begin
-            if FileExists(ProfilePath + AnketaFileName + UserType + C_BN + InfoPanel2.Caption + '.usr') then
-              LoadFromFile(ProfilePath + AnketaFileName + UserType + C_BN + InfoPanel2.Caption + '.usr');
+            if FileExists(V_ProfilePath + C_AnketaFolder + UserType + C_BN + InfoPanel2.Caption + '.usr') then
+              LoadFromFile(V_ProfilePath + C_AnketaFolder + UserType + C_BN + InfoPanel2.Caption + '.usr');
             if Root <> nil then
               begin
                 // Находим раздел gtrans если он есть
@@ -1294,7 +1312,7 @@ begin
                 // Сохраняем состояние GTrans
                 XML_Node.BoolValue := False;
                 // Записываем сам файл
-                SaveToFile(ProfilePath + AnketaFileName + UserType + C_BN + InfoPanel2.Caption + '.usr');
+                SaveToFile(V_ProfilePath + C_AnketaFolder + UserType + C_BN + InfoPanel2.Caption + '.usr');
               end;
           end;
       finally
@@ -1429,7 +1447,7 @@ end;
 procedure TChatForm.HTMLChatViewerParseEnd(Sender: TObject);
 begin
   // Заменяем всегда картинку доп. статуса при изменениях текста чата
-  HTMLChatViewer.ReplaceImage('x', XStatusMem);
+  HTMLChatViewer.ReplaceImage('x', V_XStatusMem);
   // Заменяем картинки исходящих сообщений
 
   // Заменяем картинки входящих сообщений
@@ -1457,8 +1475,6 @@ begin
       SmilesForm.Left := X - SmiliesSpeedButton.Width;
       SmilesForm.Top := (Y - SmilesForm.Height) - 2;
     end;
-  // Ставим флаги окну отображаться поверх всех (против глюка в вайн)
-  SetWindowPos(SmilesForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOSENDCHANGING);
   // Отображаем окно смайлов
   SmilesForm.Show;
 end;
@@ -1588,7 +1604,7 @@ begin
                 Doc := Doc + TailLineTail(SubItems[13], 50)
               else if (Sender as TMenuItem).Tag = 4 then
                 Doc := Doc + TailLineTail(SubItems[13], 20);
-              if not TextSmilies then
+              if not V_TextSmilies then
                 CheckMessage_Smilies(Doc);
               SetLength(Doc, Length(Doc) - 6);
               Doc := Doc + '<HR>';
@@ -1848,7 +1864,7 @@ begin
           end;
         HMsg := Msg;
         // Добавляем сообщение в файл истории и в чат
-        MsgD := YouAt + ' [' + DateTimeChatMess + ']';
+        MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
         // Форматируем сообщение под html формат
         CheckMessage_BR(HMsg);
         CheckMessage_ClearTag(HMsg);
@@ -1865,34 +1881,34 @@ begin
             // Отправляем сообщение в юникод формате
             ICQ_SendMessage_0406(InfoPanel2.Caption, Msg, True);
             // Формируем файл с историей
-            HistoryFile := ProfilePath + HistoryFileName + UserType + C_BN + ICQ_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
+            HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + ICQ_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
           end
-        else if UserType = S_Jabber then
+        else if UserType = C_Jabber then
           begin
             // Если нет подключения к серверу Jabber, то выходим
-            if NotProtoOnline(S_Jabber) then
+            if NotProtoOnline(C_Jabber) then
               Exit;
             // Отправляем сообщение
             Jab_SendMessage(InfoPanel2.Caption, Msg);
             // Формируем файл с историей
-            HistoryFile := ProfilePath + HistoryFileName + UserType + C_BN + Jabber_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
+            HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + Jabber_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
           end
-        else if UserType = S_Mra then
+        else if UserType = C_Mra then
           begin
             // Если нет подключения к серверу MRA, то выходим
-            if NotProtoOnline(S_Mra) then
+            if NotProtoOnline(C_Mra) then
               Exit;
             // Отправляем сообщение
             MRA_SendMessage(InfoPanel2.Caption, Msg);
             // Формируем файл с историей
-            HistoryFile := ProfilePath + HistoryFileName + UserType + C_BN + MRA_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
+            HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + MRA_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
           end
         else
           Exit;
         // Записываем историю в файл этого контакта
         SaveTextInHistory('<span class=a>' + MsgD + '</span><br><span class=c>' + HMsg + '</span><br><br>', HistoryFile);
         // Если включены графические смайлики, то форматируем сообщение под смайлы
-        if not TextSmilies then
+        if not V_TextSmilies then
           CheckMessage_Smilies(HMsg);
         // Увеличиваем счётчик исходящих сообщений
         Inc(OutMessIndex);

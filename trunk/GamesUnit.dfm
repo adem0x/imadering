@@ -212,6 +212,24 @@ object GamesForm: TGamesForm
         Width = 3
         Height = 13
       end
+      object FlashPlayerURLLabel: TLabel
+        Left = 10
+        Top = 73
+        Width = 383
+        Height = 13
+        Cursor = crHandPoint
+        Caption = '#'#1057#1082#1072#1095#1072#1090#1100' '#1087#1086#1089#1083#1077#1076#1085#1102#1102' '#1074#1077#1088#1089#1080#1102' Flash Player '#1089' '#1086#1092#1080#1094#1080#1072#1083#1100#1085#1086#1075#1086' '#1089#1072#1081#1090#1072
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clNavy
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Visible = False
+        OnClick = FlashPlayerURLLabelClick
+        OnMouseEnter = FlashPlayerURLLabelMouseEnter
+        OnMouseLeave = FlashPlayerURLLabelMouseLeave
+      end
       object LoadGameBitBtn: TBitBtn
         Left = 10
         Top = 42

@@ -72,7 +72,8 @@ uses
   UpdateUnit,
   OverbyteIcsUrl,
   OverbyteIcsHttpProt,
-  LoginUnit;
+  LoginUnit,
+  TwitProtoUnit;
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
@@ -194,7 +195,7 @@ begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(272, Icon);
   // Отображаем информацию и запрос на закачку новой версии
-  Caption := S_Twitter + ': ' + S_PostInTwitter;
+  Caption := C_Twitter + ': ' + S_PostInTwitter;
   HeadLabel.Caption := S_PostInTwitter;
   InfoMemo.Text := M;
   // Ставим флаги функции окна
@@ -242,7 +243,7 @@ begin
           FrmLogin := TLoginForm.Create(Self);
           try
             MainForm.AllImageList.GetIcon(268, FrmLogin.Icon);
-            FrmLogin.Caption := S_Twitter;
+            FrmLogin.Caption := C_Twitter;
             // Модально спрашиваем логин и пароль
             if FrmLogin.ShowModal = MrOk then
               begin

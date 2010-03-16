@@ -123,8 +123,8 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  NextButton.Caption := S_Next;
-  CancelButton.Caption := S_Cancel;
+  NextButton.Caption := Lang_Vars[7].L_S;
+  CancelButton.Caption := Lang_Vars[9].L_S;
   JabberGroupBox.Caption := ICQGroupBox.Caption;
   MRAGroupBox.Caption := ICQGroupBox.Caption;
   JabberPassLabel.Caption := ICQPassLabel.Caption;
@@ -197,7 +197,7 @@ begin
   // Проверяем выбран ли хоть один протокол
   if (not ICQEnableCheckBox.Checked) and (not MRAEnableCheckBox.Checked) and (not JabberEnableCheckBox.Checked) then
     begin
-      DAShow(S_InfoHead, S_ProtoSelectAlert, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, Lang_Vars[11].L_S, EmptyStr, 133, 3, 0);
       ICQEnableCheckBox.Checked := True;
     end;
 end;
@@ -225,7 +225,7 @@ begin
         end;
     end;
   // Устанавливаем текст на кнопке управления
-  NextButton.Caption := S_Next;
+  NextButton.Caption := Lang_Vars[7].L_S;
 end;
 
 procedure TFirstStartForm.RegNewUINLabelClick(Sender: TObject);

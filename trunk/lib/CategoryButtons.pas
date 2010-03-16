@@ -4104,7 +4104,7 @@ begin
     GLastPreset := 0; }
 
   with TButtonCategories(Collection).CategoryButtons do
-    FColor := GroupHeaderColor;
+    FColor := V_GroupHeaderColor;
 
   // Конец изменений
 

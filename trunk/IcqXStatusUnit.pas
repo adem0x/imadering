@@ -98,7 +98,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelButton.Caption := S_Cancel;
+  CancelButton.Caption := Lang_Vars[9].L_S;
 end;
 
 {$ENDREGION}
@@ -117,9 +117,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_IcqXStatus];
@@ -168,8 +168,8 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел формы если он есть
@@ -185,7 +185,7 @@ begin
             Sub_Node.Value := URLEncode(XtextMemo.Text);
           end;
         // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
+        SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
   finally
     JvXML.Free;

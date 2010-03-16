@@ -119,9 +119,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_SMSForm];
@@ -163,15 +163,15 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения окна в xml
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел формы если он есть
@@ -188,7 +188,7 @@ begin
             XML_Node.Properties.Add(C_Phone1, PhoneEdit.Text);
           end;
         // Записываем сам файл
-        SaveToFile(ProfilePath + SettingsFileName);
+        SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
   finally
     JvXML.Free;
@@ -201,7 +201,7 @@ end;
 procedure TSMSForm.SendBitBtnClick(Sender: TObject);
 begin
   // Отправляем SMS сообщение
-  if not NotProtoOnline(S_Mra) then
+  if not NotProtoOnline(C_Mra) then
     MRA_SendSMS('+' + PhoneEdit.Text, SMSTextMemo.Text);
 end;
 
@@ -232,7 +232,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelBitBtn.Caption := S_Cancel;
+  CancelBitBtn.Caption := Lang_Vars[9].L_S;
 end;
 
 {$ENDREGION}

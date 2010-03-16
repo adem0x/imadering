@@ -293,7 +293,7 @@ var
 begin
   // Отображаем данные о выбранном языке
   S := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
-  LangFile := MyPath + 'Langs\' + S + '.xml';
+  LangFile := V_MyPath + 'Langs\' + S + '.xml';
   if FileExists(LangFile) then
     begin
       // Инициализируем XML
@@ -302,10 +302,10 @@ begin
         with JvXML do
           begin
             // Загружаем настройки
-            if FileExists(MyPath + Format(LangPath, [S])) then
+            if FileExists(V_MyPath + Format(C_LangPath, [S])) then
               begin
                 // Загружаем файл языка
-                LoadFromFile(MyPath + Format(LangPath, [S]));
+                LoadFromFile(V_MyPath + Format(C_LangPath, [S]));
                 if Root <> nil then
                   begin
                     // Загружаем "о программе"
@@ -349,7 +349,7 @@ begin
   // Добавляем ICQ протокол
   with ProtocolsListView.Items.Add do
     begin
-      Caption := S_Empty;
+      Caption := C_BN + Lang_Vars[12].L_S;
       GroupID := 0;
       ImageIndex := 81;
       Checked := MainForm.ICQToolButton.Visible;
@@ -357,7 +357,7 @@ begin
   // Добавляем Jabber протокол
   with ProtocolsListView.Items.Add do
     begin
-      Caption := S_Empty;
+      Caption := C_BN + Lang_Vars[12].L_S;
       GroupID := 1;
       ImageIndex := 43;
       Checked := MainForm.JabberToolButton.Visible;
@@ -365,7 +365,7 @@ begin
   // Добавляем MRA протокол
   with ProtocolsListView.Items.Add do
     begin
-      Caption := S_Empty;
+      Caption := C_BN + Lang_Vars[12].L_S;
       GroupID := 2;
       ImageIndex := 66;
       Checked := MainForm.MRAToolButton.Visible;
@@ -373,7 +373,7 @@ begin
   // Добавляем Twitter протокол
   with ProtocolsListView.Items.Add do
     begin
-      Caption := S_Empty;
+      Caption := C_BN + Lang_Vars[12].L_S;
       GroupID := 3;
       ImageIndex := 268;
       Checked := MainForm.TwitterToolButton.Visible;
@@ -382,55 +382,55 @@ begin
   // Подгружаем названия звуков и их дефолтные значения
   with SoundPathListView do
     begin
-      Items[0].Caption := SoundStartProg_Name;
+      Items[0].Caption := V_SoundStartProg_Name;
       Items[0].Checked := True;
-      SoundStartProg_Path := Format(MyPath + SoundStartProg_Mask, [CurrentSounds]);
-      Items[0].SubItems[0] := SoundStartProg_Path;
+      V_SoundStartProg_Path := Format(V_MyPath + V_SoundStartProg_Mask, [V_CurrentSounds]);
+      Items[0].SubItems[0] := V_SoundStartProg_Path;
       //
-      Items[1].Caption := SoundIncMsg_Name;
+      Items[1].Caption := V_SoundIncMsg_Name;
       Items[1].Checked := True;
-      SoundIncMsg_Path := Format(MyPath + SoundIncMsg_Mask, [CurrentSounds]);
-      Items[1].SubItems[0] := SoundIncMsg_Path;
+      V_SoundIncMsg_Path := Format(V_MyPath + V_SoundIncMsg_Mask, [V_CurrentSounds]);
+      Items[1].SubItems[0] := V_SoundIncMsg_Path;
       //
-      Items[2].Caption := SoundMsgSend_Name;
+      Items[2].Caption := V_SoundMsgSend_Name;
       Items[2].Checked := True;
-      SoundMsgSend_Path := Format(MyPath + SoundMsgSend_Mask, [CurrentSounds]);
-      Items[2].SubItems[0] := SoundMsgSend_Path;
+      V_SoundMsgSend_Path := Format(V_MyPath + V_SoundMsgSend_Mask, [V_CurrentSounds]);
+      Items[2].SubItems[0] := V_SoundMsgSend_Path;
       //
-      Items[3].Caption := UserOnline_Name;
+      Items[3].Caption := V_SoungUserOnline_Name;
       Items[3].Checked := True;
-      UserOnline_Path := Format(MyPath + UserOnline_Mask, [CurrentSounds]);
-      Items[3].SubItems[0] := UserOnline_Path;
+      V_SoungUserOnline_Path := Format(V_MyPath + V_SoungUserOnline_Mask, [V_CurrentSounds]);
+      Items[3].SubItems[0] := V_SoungUserOnline_Path;
       //
-      Items[4].Caption := SoundEvent_Name;
+      Items[4].Caption := V_SoundEvent_Name;
       Items[4].Checked := True;
-      SoundEvent_Path := Format(MyPath + SoundEvent_Mask, [CurrentSounds]);
-      Items[4].SubItems[0] := SoundEvent_Path;
+      V_SoundEvent_Path := Format(V_MyPath + V_SoundEvent_Mask, [V_CurrentSounds]);
+      Items[4].SubItems[0] := V_SoundEvent_Path;
       //
-      Items[5].Caption := SoundFileSend_Name;
+      Items[5].Caption := V_SoundFileSend_Name;
       Items[5].Checked := True;
-      SoundFileSend_Path := Format(MyPath + SoundFileSend_Mask, [CurrentSounds]);
-      Items[5].SubItems[0] := SoundFileSend_Path;
+      V_SoundFileSend_Path := Format(V_MyPath + V_SoundFileSend_Mask, [V_CurrentSounds]);
+      Items[5].SubItems[0] := V_SoundFileSend_Path;
       //
-      Items[6].Caption := SoundError_Name;
+      Items[6].Caption := V_SoundError_Name;
       Items[6].Checked := True;
-      SoundError_Path := Format(MyPath + SoundError_Mask, [CurrentSounds]);
-      Items[6].SubItems[0] := SoundError_Path;
+      V_SoundError_Path := Format(V_MyPath + V_SoundError_Mask, [V_CurrentSounds]);
+      Items[6].SubItems[0] := V_SoundError_Path;
       //
-      Items[7].Caption := SoundOpen_Name;
+      Items[7].Caption := V_SoundOpen_Name;
       Items[7].Checked := True;
-      SoundOpen_Path := Format(MyPath + SoundOpen_Mask, [CurrentSounds]);
-      Items[7].SubItems[0] := SoundOpen_Path;
+      V_SoundOpen_Path := Format(V_MyPath + V_SoundOpen_Mask, [V_CurrentSounds]);
+      Items[7].SubItems[0] := V_SoundOpen_Path;
     end;
   // Считываем настройки из xml файла
-  if FileExists(ProfilePath + SettingsFileName) then
+  if FileExists(V_ProfilePath + C_SettingsFileName) then
     begin
       // Инициализируем XML
       JvXML_Create(JvXML);
       try
         with JvXML do
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_Settings];
@@ -500,7 +500,7 @@ begin
                     if Sub_Node <> nil then
                       begin
                         TextSmiliesCheckBox.Checked := Sub_Node.Properties.BoolValue(C_TextSmile);
-                        CurrentSmiles := Sub_Node.Value;
+                        V_CurrentSmiles := Sub_Node.Value;
                       end;
                     // ----------------------------------------------------------------------
                     // Загружаем и отображаем настройки Звука
@@ -511,7 +511,7 @@ begin
                     Sub_Node := XML_Node.Items.ItemNamed[C_Sounds];
                     if Sub_Node <> nil then
                       begin
-                        CurrentSounds := Sub_Node.Properties.Value('p');
+                        V_CurrentSounds := Sub_Node.Properties.Value('p');
                         with SoundPathListView do
                           begin
                             OnChange := nil;
@@ -534,23 +534,27 @@ begin
                     // ICQ
                     XML_Node := Root.Items.ItemNamed[C_Icq];
                     if XML_Node <> nil then
-                      Items[0].Caption := XML_Node.Properties.Value(C_Login);
-                    if Items[0].Caption = EmptyStr then
-                      Items[0].Caption := S_Empty;
+                      Items[0].Caption := C_BN + XML_Node.Properties.Value(C_Login);
+                    if Items[0].Caption = C_BN then
+                      Items[0].Caption := C_BN + Lang_Vars[12].L_S;
                     // Jabber
-                    XML_Node := Root.Items.ItemNamed[S_Jabber];
+                    XML_Node := Root.Items.ItemNamed[C_Jabber];
                     if XML_Node <> nil then
-                      Items[1].Caption := XML_Node.Properties.Value(C_Login);
-                    if Items[1].Caption = EmptyStr then
-                      Items[1].Caption := S_Empty;
+                      Items[1].Caption := C_BN + XML_Node.Properties.Value(C_Login);
+                    if Items[1].Caption = C_BN then
+                      Items[1].Caption := C_BN + Lang_Vars[12].L_S;
                     // MRA
-                    XML_Node := Root.Items.ItemNamed[S_Mra];
+                    XML_Node := Root.Items.ItemNamed[C_Mra];
                     if XML_Node <> nil then
-                      Items[2].Caption := XML_Node.Properties.Value(C_Login);
-                    if Items[2].Caption = EmptyStr then
-                      Items[2].Caption := S_Empty;
+                      Items[2].Caption := C_BN + XML_Node.Properties.Value(C_Login);
+                    if Items[2].Caption = C_BN then
+                      Items[2].Caption := C_BN + Lang_Vars[12].L_S;
                     // Twitter
-
+                    XML_Node := Root.Items.ItemNamed[C_Twitter];
+                    if XML_Node <> nil then
+                      Items[3].Caption := C_BN + XML_Node.Properties.Value(C_Login);
+                    if Items[3].Caption = C_BN then
+                      Items[3].Caption := C_BN + Lang_Vars[12].L_S;
                   end;
               end;
           end;
@@ -562,26 +566,26 @@ begin
   if HeaderTextEdit.Text = EmptyStr then
     HeaderTextEdit.Text := C_ProgName;
   // Устанавливаем список папок со Смайлпаками
-  GetTreeDirs(MyPath + 'Smilies', TS);
+  GetTreeDirs(V_MyPath + 'Smilies', TS);
   SmiliesComboBox.Items := TS;
   if TS <> nil then
     TS.Free;
-  SmiliesComboBox.ItemIndex := SmiliesComboBox.Items.IndexOf(CurrentSmiles);
+  SmiliesComboBox.ItemIndex := SmiliesComboBox.Items.IndexOf(V_CurrentSmiles);
   SmiliesComboBoxChange(nil);
   // Устанавливаем список папок с Иконпаками
-  GetTreeDirs(MyPath + 'Icons', TS);
+  GetTreeDirs(V_MyPath + 'Icons', TS);
   IconsComboBox.Items := TS;
   if TS <> nil then
     TS.Free;
   IconsComboBox.Items.Delete(IconsComboBox.Items.IndexOf('Flags'));
-  IconsComboBox.ItemIndex := IconsComboBox.Items.IndexOf(CurrentIcons);
+  IconsComboBox.ItemIndex := IconsComboBox.Items.IndexOf(V_CurrentIcons);
   IconsComboBoxChange(nil);
   // Устанавливаем список папок со Звуками
-  GetTreeDirs(MyPath + 'Sounds', TS);
+  GetTreeDirs(V_MyPath + 'Sounds', TS);
   SoundPackComboBox.Items := TS;
   if TS <> nil then
     TS.Free;
-  SoundPackComboBox.ItemIndex := SoundPackComboBox.Items.IndexOf(CurrentSounds);
+  SoundPackComboBox.ItemIndex := SoundPackComboBox.Items.IndexOf(V_CurrentSounds);
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;
 end;
@@ -592,6 +596,7 @@ end;
 procedure TSettingsForm.ApplySettings;
 var
   I: Integer;
+  FOptions: TBorderIcons;
 begin
   // Применяем настройки прокси
   with MainForm do
@@ -661,7 +666,7 @@ begin
   // Применяем общие настройки
   // Если "Запускать при старте системы", то ставим это в реестре
   if StartOnWinStartCheckBox.Checked then
-    DoAppToRun('IMadering', MyPath + 'Imadering.exe')
+    DoAppToRun('IMadering', V_MyPath + 'Imadering.exe')
   else
     DelAppFromRun('IMadering');
   // Если запускать программу с высоким приоритетом
@@ -680,18 +685,18 @@ begin
   // Применяем настройки прозрачности
   if TransparentTrackBar.Position > 0 then
     begin
-      RoasterAlphaBlend := True;
+      V_RoasterAlphaBlend := True;
       MainForm.AlphaBlend := True;
-      RoasterAlphaValue := 255 - TransparentTrackBar.Position;
+      V_RoasterAlphaValue := 255 - TransparentTrackBar.Position;
     end
   else
     begin
-      RoasterAlphaBlend := False;
+      V_RoasterAlphaBlend := False;
       MainForm.AlphaBlend := False;
       MainForm.AlphaBlendValue := 255;
-      RoasterAlphaValue := 255;
+      V_RoasterAlphaValue := 255;
     end;
-  AlphaBlendInactive := TransparentNotActiveCheckBox.Checked;
+  V_AlphaBlendInactive := TransparentNotActiveCheckBox.Checked;
   // Применяем настройки автоскрытия списка контактов
   if AutoHideClEdit.Text = EmptyStr then
     AutoHideClEdit.Text := '10';
@@ -699,70 +704,81 @@ begin
   MainForm.JvTimerList.Events[6].Enabled := AutoHideCLCheckBox.Checked;
   // Применяем настройку залоговка окна списка контактов
   MainForm.Caption := HeaderTextEdit.Text;
+  // Применяем настройки показа кнопки окна КЛ на панели задач
+  FOptions := [];
+  if NoTaskBarMainButtonCheckBox.Checked then
+    Include(FOptions, biSystemMenu)
+  else
+    begin
+      Include(FOptions, biSystemMenu);
+      Include(FOptions, biMinimize);
+    end;
+  MainForm.BorderIcons := FOptions;
+  MainForm.OnShow(nil);
   // --------------------------------------------------------------------------
   // Применяем настройки смайликов
-  if SmiliesComboBox.Text <> CurrentSmiles then
+  if SmiliesComboBox.Text <> V_CurrentSmiles then
     begin
-      CurrentSmiles := SmiliesComboBox.Text;
+      V_CurrentSmiles := SmiliesComboBox.Text;
       if Assigned(SmilesForm) then
         begin
           // Подгружаем обозначения смайлов
-          if FileExists(MyPath + Format(SmiliesPath, [CurrentSmiles])) then
-            SmilesList.LoadFromFile(MyPath + Format(SmiliesPath, [CurrentSmiles]), TEncoding.UTF8);
+          if FileExists(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles])) then
+            V_SmilesList.LoadFromFile(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles]), TEncoding.UTF8);
           // Пересоздаём окно смайлов
           FreeAndNil(SmilesForm);
           SmilesForm := TSmilesForm.Create(nil);
         end;
     end;
   // Применяем текстовые смайлы
-  TextSmilies := TextSmiliesCheckBox.Checked;
+  V_TextSmilies := TextSmiliesCheckBox.Checked;
   // --------------------------------------------------------------------------
   // Применяем настройки Звуков
-  if SoundPackComboBox.Text <> CurrentSounds then
-    CurrentSounds := SoundPackComboBox.Text;
+  if SoundPackComboBox.Text <> V_CurrentSounds then
+    V_CurrentSounds := SoundPackComboBox.Text;
   with SoundPathListView do
     begin
       for I := 0 to Items.Count - 1 do
         begin
           case I of
             0: begin
-                SoundStartProg := Items[I].Checked;
-                SoundStartProg_Path := Items[I].SubItems[0];
+                V_SoundStartProg := Items[I].Checked;
+                V_SoundStartProg_Path := Items[I].SubItems[0];
               end;
             1: begin
-                SoundIncMsg := Items[I].Checked;
-                SoundIncMsg_Path := Items[I].SubItems[0];
+                V_SoundIncMsg := Items[I].Checked;
+                V_SoundIncMsg_Path := Items[I].SubItems[0];
               end;
             2: begin
-                SoundMsgSend := Items[I].Checked;
-                SoundMsgSend_Path := Items[I].SubItems[0];
+                V_SoundMsgSend := Items[I].Checked;
+                V_SoundMsgSend_Path := Items[I].SubItems[0];
               end;
             3: begin
-                SoungUserOnline := Items[I].Checked;
-                UserOnline_Path := Items[I].SubItems[0];
+                V_SoungUserOnline := Items[I].Checked;
+                V_SoungUserOnline_Path := Items[I].SubItems[0];
               end;
             4: begin
-                SoundEvent := Items[I].Checked;
-                SoundEvent_Path := Items[I].SubItems[0];
+                V_SoundEvent := Items[I].Checked;
+                V_SoundEvent_Path := Items[I].SubItems[0];
               end;
             5: begin
-                SoundFileSend := Items[I].Checked;
-                SoundFileSend_Path := Items[I].SubItems[0];
+                V_SoundFileSend := Items[I].Checked;
+                V_SoundFileSend_Path := Items[I].SubItems[0];
               end;
             6: begin
-                SoundError := Items[I].Checked;
-                SoundError_Path := Items[I].SubItems[0];
+                V_SoundError := Items[I].Checked;
+                V_SoundError_Path := Items[I].SubItems[0];
               end;
             7: begin
-                SoundOpen := Items[I].Checked;
-                SoundOpen_Path := Items[I].SubItems[0];
+                V_SoundOpen := Items[I].Checked;
+                V_SoundOpen_Path := Items[I].SubItems[0];
               end;
           end;
         end;
     end;
   // --------------------------------------------------------------------------
   // Если файл с настройками не создан, то сохраняем его
-  if not FileExists(ProfilePath + SettingsFileName) then
+  if not FileExists(V_ProfilePath + C_SettingsFileName) then
     SaveSettings;
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;
@@ -779,19 +795,19 @@ var
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
-  ForceDirectories(ProfilePath + HistoryFileName);
-  ForceDirectories(ProfilePath + AvatarFileName);
-  ForceDirectories(ProfilePath + AnketaFileName);
-  ForceDirectories(ProfilePath + GamesFolder);
+  ForceDirectories(V_ProfilePath);
+  ForceDirectories(V_ProfilePath + C_HistoryFolder);
+  ForceDirectories(V_ProfilePath + C_AvatarFolder);
+  ForceDirectories(V_ProfilePath + C_AnketaFolder);
+  ForceDirectories(V_ProfilePath + C_GamesFolder);
   // Записываем настройки программы в файл
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел настроек если он есть
@@ -842,17 +858,17 @@ begin
             XML_Node.Items.Add(C_Recon, ReconnectCheckBox.Checked);
             // --------------------------------------------------------------------
             // Сохраняем настройки Смайликов
-            XML_Node.Items.Add(C_Smile, CurrentSmiles).Properties.Add(C_TextSmile, TextSmiliesCheckBox.Checked);
+            XML_Node.Items.Add(C_Smile, V_CurrentSmiles).Properties.Add(C_TextSmile, TextSmiliesCheckBox.Checked);
             // --------------------------------------------------------------------
             // Сохраняем настройки Звуков
             Sub_Node := XML_Node.Items.Add(C_Sounds);
-            Sub_Node.Properties.Add('p', CurrentSounds);
+            Sub_Node.Properties.Add('p', V_CurrentSounds);
             with SoundPathListView do
               for I := 0 to Items.Count - 1 do
                 Sub_Node.Items.Add('s' + IntToStr(I), Items[I].Checked).Properties.Add('p', Items[I].SubItems[0]);
             // --------------------------------------------------------------------
             // Записываем сам файл
-            SaveToFile(ProfilePath + SettingsFileName);
+            SaveToFile(V_ProfilePath + C_SettingsFileName);
           end;
       end;
   finally
@@ -865,7 +881,7 @@ begin
   try
     with JvXML do
       begin
-        LoadFromFile(Profile + ProfilesFileName);
+        LoadFromFile(V_Profile + C_ProfilesFileName);
         if Root <> nil then
           begin
             // Применяем показ окна выбора профиля
@@ -874,13 +890,13 @@ begin
               XML_Node.BoolValue := NoShowProfileFormCheckBox.Checked;
             // Применяем настройки языка
             Lang := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
-            if Lang <> CurrentLang then
+            if Lang <> V_CurrentLang then
               begin
-                CurrentLang := Lang;
+                V_CurrentLang := Lang;
                 // Записываем настройку языка
                 XML_Node := Root.Items.ItemNamed[C_Lang];
                 if XML_Node <> nil then
-                  XML_Node.Value := CurrentLang;
+                  XML_Node.Value := V_CurrentLang;
                 // Подгружаем переменные языка
                 SetLangVars;
                 // Переводим все открытые формы
@@ -891,7 +907,7 @@ begin
                   end;
               end;
             // Записываем сам файл
-            SaveToFile(Profile + ProfilesFileName);
+            SaveToFile(V_Profile + C_ProfilesFileName);
           end;
       end;
   finally
@@ -927,7 +943,7 @@ end;
 procedure TSettingsForm.OpenProfileSpeedButtonClick(Sender: TObject);
 begin
   // Открываем папку с профилями
-  ShellExecute(0, 'open', PChar(ProfilePath), nil, nil, SW_SHOW);
+  ShellExecute(0, 'open', PChar(V_ProfilePath), nil, nil, SW_SHOW);
 end;
 
 procedure TSettingsForm.AddProtoBitBtnClick(Sender: TObject);
@@ -987,7 +1003,7 @@ var
   List: TStringList;
 begin
   // Подгружаем информацию о смайлпаке
-  FilePath := MyPath + Format(SmiliesPath, [SmiliesComboBox.Text]);
+  FilePath := V_MyPath + Format(C_SmiliesPath, [SmiliesComboBox.Text]);
   if FileExists(FilePath) then
     begin
       List := TStringList.Create;
@@ -1036,21 +1052,21 @@ begin
   // Переписываем список на новый путь к звукам
   with SoundPathListView do
     begin
-      Items[0].SubItems[0] := Format(MyPath + SoundStartProg_Mask, [SoundPackComboBox.Text]);
+      Items[0].SubItems[0] := Format(V_MyPath + V_SoundStartProg_Mask, [SoundPackComboBox.Text]);
       //
-      Items[1].SubItems[0] := Format(MyPath + SoundIncMsg_Mask, [SoundPackComboBox.Text]);
+      Items[1].SubItems[0] := Format(V_MyPath + V_SoundIncMsg_Mask, [SoundPackComboBox.Text]);
       //
-      Items[2].SubItems[0] := Format(MyPath + SoundMsgSend_Mask, [SoundPackComboBox.Text]);
+      Items[2].SubItems[0] := Format(V_MyPath + V_SoundMsgSend_Mask, [SoundPackComboBox.Text]);
       //
-      Items[3].SubItems[0] := Format(MyPath + UserOnline_Mask, [SoundPackComboBox.Text]);
+      Items[3].SubItems[0] := Format(V_MyPath + V_SoungUserOnline_Mask, [SoundPackComboBox.Text]);
       //
-      Items[4].SubItems[0] := Format(MyPath + SoundEvent_Mask, [SoundPackComboBox.Text]);
+      Items[4].SubItems[0] := Format(V_MyPath + V_SoundEvent_Mask, [SoundPackComboBox.Text]);
       //
-      Items[5].SubItems[0] := Format(MyPath + SoundFileSend_Mask, [SoundPackComboBox.Text]);
+      Items[5].SubItems[0] := Format(V_MyPath + V_SoundFileSend_Mask, [SoundPackComboBox.Text]);
       //
-      Items[6].SubItems[0] := Format(MyPath + SoundError_Mask, [SoundPackComboBox.Text]);
+      Items[6].SubItems[0] := Format(V_MyPath + V_SoundError_Mask, [SoundPackComboBox.Text]);
       //
-      Items[7].SubItems[0] := Format(MyPath + SoundOpen_Mask, [SoundPackComboBox.Text]);
+      Items[7].SubItems[0] := Format(V_MyPath + V_SoundOpen_Mask, [SoundPackComboBox.Text]);
     end;
   // Активируем кнопку Применить
   ApplyBitBtn.Enabled := True;
@@ -1249,8 +1265,8 @@ end;
 procedure TSettingsForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   // Возвращаем действующее значение прозрачности списку контактов
-  MainForm.AlphaBlendValue := RoasterAlphaValue;
-  MainForm.AlphaBlend := RoasterAlphaBlend;
+  MainForm.AlphaBlendValue := V_RoasterAlphaValue;
+  MainForm.AlphaBlend := V_RoasterAlphaBlend;
 end;
 
 procedure TSettingsForm.FormDblClick(Sender: TObject);
@@ -1293,13 +1309,13 @@ begin
   LoadSettings;
   ProxyTypeComboBox.OnSelect := ProxyTypeComboBoxSelect;
   // Устанавливаем язык
-  LangComboBox.ItemIndex := LangComboBox.Items.IndexOfName('[' + CurrentLang + ']');
+  LangComboBox.ItemIndex := LangComboBox.Items.IndexOfName('[' + V_CurrentLang + ']');
   LangComboBoxChange(nil);
   // Устанавливаем перевод
   TranslateForm;
   // Заполняем путь к профилю
-  ProfilePathEdit.Text := ProfilePath;
-  NoShowProfileFormCheckBox.Checked := ProfileAuto;
+  ProfilePathEdit.Text := V_ProfilePath;
+  NoShowProfileFormCheckBox.Checked := V_ProfileAuto;
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;
 end;
@@ -1327,7 +1343,7 @@ var
   FilePath: string;
 begin
   // Подгружаем информацию о смайлпаке
-  FilePath := MyPath + 'Icons\' + IconsComboBox.Text + '\info.txt';
+  FilePath := V_MyPath + 'Icons\' + IconsComboBox.Text + '\info.txt';
   if FileExists(FilePath) then
     begin
       IconsInfoRichEdit.Lines.LoadFromFile(FilePath, TEncoding.UTF8);
@@ -1350,8 +1366,8 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelBitBtn.Caption := S_Cancel;
-  ApplyBitBtn.Caption := S_Apply;
+  CancelBitBtn.Caption := Lang_Vars[9].L_S;
+  ApplyBitBtn.Caption := Lang_Vars[10].L_S;
   SmiliesDownButton.Caption := LangDownButton.Caption;
   IconsDownButton.Caption := LangDownButton.Caption;
   DownSoundButton.Caption := LangDownButton.Caption;
@@ -1482,36 +1498,36 @@ begin
               SocksUsercode := EmptyStr;
               SocksPassword := EmptyStr;
               // Ставим флаг, что для сокета активен режим через HTTP прокси
-              HttpProxy_Enable := True;
+              V_HttpProxy_Enable := True;
               // Назначаем адрес HTTP прокси и порт
-              HttpProxy_Address := ProxyAddressEdit.Text;
-              HttpProxy_Port := ProxyPortEdit.Text;
+              V_HttpProxy_Address := ProxyAddressEdit.Text;
+              V_HttpProxy_Port := ProxyPortEdit.Text;
               // Назначаем авторизацию на HTTP прокси
               if ProxyAuthCheckBox.Checked then
                 begin
-                  HttpProxy_Auth := True;
-                  HttpProxy_Login := ProxyLoginEdit.Text;
-                  HttpProxy_Password := ProxyPasswordEdit.Text;
+                  V_HttpProxy_Auth := True;
+                  V_HttpProxy_Login := ProxyLoginEdit.Text;
+                  V_HttpProxy_Password := ProxyPasswordEdit.Text;
                 end
               else
                 begin
                   // Сбрасываем авторизацию HTTP прокси
-                  HttpProxy_Auth := False;
-                  HttpProxy_Login := EmptyStr;
-                  HttpProxy_Password := EmptyStr;
+                  V_HttpProxy_Auth := False;
+                  V_HttpProxy_Login := EmptyStr;
+                  V_HttpProxy_Password := EmptyStr;
                 end;
             end
           else
             begin
               // Убираем флаг, что для сокета активен режим через HTTP прокси
-              HttpProxy_Enable := False;
+              V_HttpProxy_Enable := False;
               // Сбрасываем адрес HTTP прокси и порт
-              HttpProxy_Address := EmptyStr;
-              HttpProxy_Port := EmptyStr;
+              V_HttpProxy_Address := EmptyStr;
+              V_HttpProxy_Port := EmptyStr;
               // Сбрасываем авторизацию HTTP прокси
-              HttpProxy_Auth := False;
-              HttpProxy_Login := EmptyStr;
-              HttpProxy_Password := EmptyStr;
+              V_HttpProxy_Auth := False;
+              V_HttpProxy_Login := EmptyStr;
+              V_HttpProxy_Password := EmptyStr;
               // SOCKS4, SOCKS4A и SOCKS5 тип прокси
               case ProxyTypeComboBox.ItemIndex of
                 2: SocksLevel := '4';
@@ -1540,14 +1556,14 @@ begin
       else
         begin
           // Убираем флаг, что для сокета активен режим через HTTP прокси
-          HttpProxy_Enable := False;
+          V_HttpProxy_Enable := False;
           // Сбрасываем адрес HTTP прокси и порт
-          HttpProxy_Address := EmptyStr;
-          HttpProxy_Port := EmptyStr;
+          V_HttpProxy_Address := EmptyStr;
+          V_HttpProxy_Port := EmptyStr;
           // Сбрасываем авторизацию HTTP прокси
-          HttpProxy_Auth := False;
-          HttpProxy_Login := EmptyStr;
-          HttpProxy_Password := EmptyStr;
+          V_HttpProxy_Auth := False;
+          V_HttpProxy_Login := EmptyStr;
+          V_HttpProxy_Password := EmptyStr;
           // Сбрасываем тип SOCKS прокси
           SocksLevel := '5';
           // Сбрасываем адрес SOCKS прокси и порт

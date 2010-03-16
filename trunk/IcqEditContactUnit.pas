@@ -74,7 +74,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelButton.Caption := S_Cancel;
+  CancelButton.Caption := Lang_Vars[9].L_S;
 end;
 
 {$ENDREGION}

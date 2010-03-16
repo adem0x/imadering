@@ -618,8 +618,8 @@ begin
       if RosterItem <> nil then RosterItem.SubItems[36] := EmptyStr;
       //--Tray Msg list
       try
-        N := InMessList.IndexOf(zUIN);
-        if N > -1 then InMessList.Delete(N);
+        N := V_InMessList.IndexOf(zUIN);
+        if N > -1 then V_InMessList.Delete(N);
       except
       end;
     end;

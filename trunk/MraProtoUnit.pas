@@ -233,7 +233,7 @@ begin
     + IntToHex(Swap32(Length(MRA_LoginPassword)), 8) + Text2Hex(MRA_LoginPassword) // Пароль
     + '010000000d0000005354415455535f4f4e4c494e450c0000004f006e006c0069006e00650000000000ff030000' // Пока фиксированная строка статуса при подключении
     + IntToHex(Swap32(Length(MRA_Ident_Client)), 8) + Text2Hex(MRA_Ident_Client) // Идентификатор клиента
-    + '02000000' + Text2Hex(CurrentLang) // Язык
+    + '02000000' + Text2Hex(V_CurrentLang) // Язык
     + IntToHex(Swap32(Length(MRA_Ident)), 8) + Text2Hex(MRA_Ident); // Официальный идентификатор
   // Отправляем пакет
   Mra_SendPkt('38100000', Pkt, False);
@@ -321,7 +321,7 @@ begin
       else // Если такой контакт не найден в Ростере, то добавляем его
         begin
           // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-          Nick := SearchNickInCash(S_Mra, M_From);
+          Nick := SearchNickInCash(C_Mra, M_From);
           // Дата сообщения
           MsgD := Nick + ' [' + DateTimeChatMess + ']';
           // Ищем группу "Не в списке" в Ростере
@@ -346,7 +346,7 @@ begin
               SubItems[0] := URLEncode(Nick);
               SubItems[1] := C_NoCL;
               SubItems[2] := 'none';
-              SubItems[3] := S_Mra;
+              SubItems[3] := C_Mra;
               SubItems[6] := '25';
               SubItems[15] := URLEncode(PopMsg);
               SubItems[35] := '0';
@@ -356,7 +356,7 @@ begin
           MainForm.JvTimerList.Events[11].Enabled := True;
         end;
       // Записываем история в файл истории с этим контактов
-      HistoryFile := ProfilePath + HistoryFileName + S_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + '.htm';
+      HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + '.htm';
       SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
       // Добавляем сообщение в текущий чат
       RosterItem.SubItems[36] := 'X';
@@ -364,9 +364,9 @@ begin
         RosterItem.SubItems[36] := EmptyStr;
     end;
   // Пишем в лог
-  S_Log := S_Log + M_Log + Log_Bevel + 'Id: ' + M_Id + Log_Next + 'Flag: ' + M_Flag + Log_Next //
-    + 'From: ' + M_From + Log_Next + 'Text: ' + Mess;
-  XLog(S_Mra + Log_Parsing + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), S_Mra);
+  S_Log := S_Log + M_Log + C_PN + 'Id: ' + M_Id + C_LN + 'Flag: ' + M_Flag + C_LN //
+    + 'From: ' + M_From + C_LN + 'Text: ' + Mess;
+  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -451,7 +451,7 @@ begin
           S_Log := S_Log + MRA_Email_Unread + C_RN;
           // Сообщаем всплывашкой сколько Email сообщений
           if MRA_Email_Unread <> '0' then
-            DAShow(S_InfoHead, Format(EmailMessagesL, [MRA_Email_Unread, MRA_Email_Total]), EmptyStr, 133, 3, 60000);
+            DAShow(Lang_Vars[16].L_S, Format(EmailMessagesL, [MRA_Email_Unread, MRA_Email_Total]), EmptyStr, 133, 3, 60000);
         end
       else if S = 'MRIM.NICKNAME' then
         begin
@@ -460,7 +460,7 @@ begin
         end;
     end;
   // Пишем в лог данные пакета
-  XLog(S_Mra + Log_Parsing + MRA_Pkt_Names[12].Pkt_Name + C_RN + Trim(S_Log), S_Mra);
+  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[12].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -532,17 +532,17 @@ begin
             RosterForm.RosterItemSetFull(ListItemD);
             // Обновляем субстроки
             ListItemD.SubItems[1] := URLEncode(G_Name);
-            ListItemD.SubItems[3] := S_Mra;
+            ListItemD.SubItems[3] := C_Mra;
             ListItemD.SubItems[4] := G_Id;
             // Заполняем лог
-            S_Log := S_Log + G_Log + Log_Bevel + 'Id: ' + G_Id + Log_Next + 'Name: ' + G_Name + Log_Next + 'Unk: ' + Unk + C_RN;
+            S_Log := S_Log + G_Log + C_PN + 'Id: ' + G_Id + C_LN + 'Name: ' + G_Name + C_LN + 'Unk: ' + Unk + C_RN;
           end;
         // Добавляем группу для телефонных контактов
         ListItemD := RosterForm.RosterJvListView.Items.Add;
         ListItemD.Caption := '999';
         RosterForm.RosterItemSetFull(ListItemD);
         ListItemD.SubItems[1] := URLEncode(PhoneGroupCaption);
-        ListItemD.SubItems[3] := S_Mra;
+        ListItemD.SubItems[3] := C_Mra;
         ListItemD.SubItems[4] := 'phone';
         // Получаем контакты
         while Length(PktData) > 0 do
@@ -613,7 +613,7 @@ begin
                 ListItemD.SubItems[6] := '25';
                 ListItemD.SubItems[8] := '220';
               end;
-            ListItemD.SubItems[3] := S_Mra;
+            ListItemD.SubItems[3] := C_Mra;
             if C_Email = 'phone' then
               begin
                 ListItemD.SubItems[4] := 'phone';
@@ -621,20 +621,20 @@ begin
               end;
             ListItemD.SubItems[9] := C_Phone;
             // Заполняем лог
-            S_Log := S_Log + C_Log + Log_Bevel + 'G_Id: ' + G_Id + Log_Next + 'Email: ' + C_Email + Log_Next //
-              + 'Nick: ' + G_Name + Log_Next + 'Auth: ' + BoolToStr(C_Auth) + Log_Next + 'Status: ' + C_Status + Log_Next //
-              + 'Phone: ' + C_Phone + Log_Next + 'Unk: ' + Copy(Unk, 1, Length(Unk) - 2) + C_RN;
+            S_Log := S_Log + C_Log + C_PN + 'G_Id: ' + G_Id + C_LN + 'Email: ' + C_Email + C_LN //
+              + 'Nick: ' + G_Name + C_LN + 'Auth: ' + BoolToStr(C_Auth) + C_LN + 'Status: ' + C_Status + C_LN //
+              + 'Phone: ' + C_Phone + C_LN + 'Unk: ' + Copy(Unk, 1, Length(Unk) - 2) + C_RN;
           end;
       finally
         // Заканчиваем добаление записей контактов в Ростер
         RosterForm.RosterJvListView.Items.EndUpdate;
       end;
       // Запускаем обработку Ростера
-      CollapseGroupsRestore := True;
+      V_CollapseGroupsRestore := True;
       RosterForm.UpdateFullCL;
     end;
   // Пишем в лог данные пакета
-  XLog(S_Mra + Log_Parsing + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), S_Mra);
+  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -688,7 +688,7 @@ begin
     begin
       for I := 0 to Items.Count - 1 do
         begin
-          if Items[I].SubItems[3] = S_Mra then
+          if Items[I].SubItems[3] = C_Mra then
             begin
               if Items[I].SubItems[6] <> '275' then
                 Items[I].SubItems[6] := '23';

@@ -74,7 +74,7 @@ begin
   // Применяем язык
   SetLang(Self);
   // Другое
-  CancelButton.Caption := S_Cancel;
+  CancelButton.Caption := Lang_Vars[9].L_S;
 end;
 
 {$ENDREGION}
@@ -95,7 +95,7 @@ begin
       // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
       if ICQ_SSI_Phaze then
         begin
-          DAShow(S_WarningHead, AddContactErr2, EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[19].L_S, AddContactErr2, EmptyStr, 134, 2, 0);
           Exit;
         end;
       // Если это добавление новой групы
@@ -111,7 +111,7 @@ begin
                 begin
                   if (Items[I].SubItems[3] = C_Icq) and (LowerCase(GNameEdit.Text, LoUserLocale) = LowerCase(Items[I].SubItems[1], LoUserLocale)) then
                     begin
-                      DAShow(S_WarningHead, AddNewGroupErr1, EmptyStr, 133, 0, 0);
+                      DAShow(Lang_Vars[19].L_S, AddNewGroupErr1, EmptyStr, 133, 0, 0);
                       Exit;
                     end;
                 end;
@@ -185,12 +185,12 @@ begin
         end;
     end
     // Управляем группой по протоколу Jabber
-  else if GroupType = S_Jabber then
+  else if GroupType = C_Jabber then
     begin
 
     end
     // Управляем группой по протоколу MRA
-  else if GroupType = S_Mra then
+  else if GroupType = C_Mra then
     begin
 
     end;

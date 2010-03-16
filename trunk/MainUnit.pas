@@ -480,6 +480,7 @@ type
     procedure SnapToRightClick(Sender: TObject);
     procedure JvTimerListEvents15Timer(Sender: TObject);
     procedure OpenGameMenuClick(Sender: TObject);
+    procedure AppMinimize(Sender: TObject);
 
   private
     { Private declarations }
@@ -553,7 +554,8 @@ uses
   IcqEditContactUnit,
   TwitterOptionsUnit,
   SMSUnit,
-  GamesUnit;
+  GamesUnit,
+  TwitProtoUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -576,11 +578,11 @@ const
 
 procedure TMainForm.WMEXITSIZEMOVE(var message: TMessage);
 begin
-  if DockAppBar then
+  if V_DockAppBar then
     begin
-      DockAppBar := False;
-      Height := NoDockHeigth;
-      Width := NoDockWigth;
+      V_DockAppBar := False;
+      Height := V_NoDockHeigth;
+      Width := V_NoDockWigth;
       // Уничтожаем АppBar
       AppBarDestroy;
     end;
@@ -606,10 +608,10 @@ begin
   TrafficTopToolButton.Hint := TrafficToolButton.Hint;
   CLSearchTopToolButton.Hint := CLSearchToolButton.Hint;
   // Применяем перевод меню
-  HideProfileInTray.Caption := S_HideProfileInTray;
-  HideInTray.Caption := S_HideInTray;
-  HideMainInTray1.Caption := S_HideInTray;
-  HideMainInTray2.Caption := S_HideInTray;
+  HideProfileInTray.Caption := Lang_Vars[3].L_S;
+  HideInTray.Caption := Lang_Vars[1].L_S;
+  HideMainInTray1.Caption := Lang_Vars[1].L_S;
+  HideMainInTray2.Caption := Lang_Vars[1].L_S;
   SettingsTray1.Caption := OpenSettings.Caption;
   SettingsTray2.Caption := OpenSettings.Caption;
   CloseProgramTray1.Caption := CloseProgram.Caption;
@@ -707,7 +709,7 @@ end;
 procedure TMainForm.WMQueryEndSession(var Msg: TWMQueryEndSession);
 begin
   // Если виндовс выключается, то мы завершаем и программу
-  ProgramCloseCommand := True;
+  V_ProgramCloseCommand := True;
   Msg.Result := 1;
 end;
 
@@ -815,7 +817,7 @@ begin
   if (MRA_LoginUIN = EmptyStr) or (MRA_LoginPassword = EmptyStr) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(S_InfoHead, MRAAccountInfo_1, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, MRAAccountInfo_1, EmptyStr, 133, 3, 0);
       // Открываем настройки MRA
       MRASettingsClick(Self);
       // Ставим фокусы в поле ввода логина или пароля
@@ -833,7 +835,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   MRA_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + S_Mra + Log_Bevel + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
+  S_Log := S_Log + C_Mra + C_PN + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   MRA_CurrentStatus_bac := MRA_CurrentStatus;
   // Ставим иконки статусов в окне и в трэе
@@ -845,7 +847,7 @@ begin
   // Подключаемся к MRA серверу
   if MRA_Offline_Phaze then
     begin
-      S_Log := S_Log + S_Mra + Log_Bevel + Log_Login + MRA_LoginUIN + C_RN;
+      S_Log := S_Log + C_Mra + C_PN + Log_Login + MRA_LoginUIN + C_RN;
       // Ставим иконки подключения в окне и в трэе
       MRATrayIcon.IconIndex := 162;
       MRAToolButton.ImageIndex := 162;
@@ -872,17 +874,17 @@ begin
       // Устанавливаем параметры сокета
       MRAWSocket.Proto := 'tcp';
       // Устанавливаем настройки прокси
-      if HttpProxy_Enable then
+      if V_HttpProxy_Enable then
         begin
-          MRAWSocket.Addr := HttpProxy_Address;
-          MRAWSocket.Port := HttpProxy_Port;
-          S_Log := S_Log + S_Mra + Log_Bevel + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port + C_RN;
+          MRAWSocket.Addr := V_HttpProxy_Address;
+          MRAWSocket.Port := V_HttpProxy_Port;
+          S_Log := S_Log + C_Mra + C_PN + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port + C_RN;
         end
       else
         begin
           MRAWSocket.Addr := MRA_LoginServerAddr;
           MRAWSocket.Port := MRA_LoginServerPort;
-          S_Log := S_Log + S_Mra + Log_Bevel + Log_Connect + MRA_LoginServerAddr + ':' + MRA_LoginServerPort + C_RN;
+          S_Log := S_Log + C_Mra + C_PN + Log_Connect + MRA_LoginServerAddr + ':' + MRA_LoginServerPort + C_RN;
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -892,7 +894,7 @@ begin
   // Отправляем статус
   // if MRA_Work_Phaze then ;
   // Пишем в лог
-  XLog(Trim(S_Log), S_Mra);
+  XLog(Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -951,7 +953,7 @@ end;
 
 procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TMainForm.JabberSettingsClick(Sender: TObject);
@@ -981,7 +983,7 @@ begin
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(S_InfoHead, JabberAccountInfo_1, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, JabberAccountInfo_1, EmptyStr, 133, 3, 0);
       // Открываем настройки ICQ
       JabberSettingsClick(Self);
       // Ставим фокусы в поле ввода логина или пароля
@@ -999,7 +1001,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   Jabber_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + S_Jabber + Log_Bevel + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
+  S_Log := S_Log + C_Jabber + C_PN + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   Jabber_CurrentStatus_bac := ICQ_CurrentStatus;
   // Ставим иконки статуса в окне и в трэе
@@ -1011,7 +1013,7 @@ begin
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
     begin
-      S_Log := S_Log + S_Jabber + Log_Bevel + Log_Login + Jabber_JID + C_RN;
+      S_Log := S_Log + C_Jabber + C_PN + Log_Login + Jabber_JID + C_RN;
       // Разбираем JID на логин и сервер
       Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
       Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
@@ -1049,17 +1051,17 @@ begin
       // Устанавливаем параметры сокета
       JabberWSocket.Proto := 'tcp';
       // Устанавливаем настройки прокси
-      if HttpProxy_Enable then
+      if V_HttpProxy_Enable then
         begin
-          JabberWSocket.Addr := HttpProxy_Address;
-          JabberWSocket.Port := HttpProxy_Port;
-          S_Log := S_Log + S_Jabber + Log_Bevel + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port + C_RN;
+          JabberWSocket.Addr := V_HttpProxy_Address;
+          JabberWSocket.Port := V_HttpProxy_Port;
+          S_Log := S_Log + C_Jabber + C_PN + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port + C_RN;
         end
       else
         begin
           JabberWSocket.Addr := Jabber_ServerAddr;
           JabberWSocket.Port := Jabber_ServerPort;
-          S_Log := S_Log + S_Jabber + Log_Bevel + Log_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort + C_RN;
+          S_Log := S_Log + C_Jabber + C_PN + Log_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort + C_RN;
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -1071,7 +1073,7 @@ begin
   if Jabber_Work_Phaze then
     Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
   // Пишем в лог
-  XLog(Trim(S_Log), S_Jabber);
+  XLog(Trim(S_Log), C_Jabber);
 end;
 
 {$ENDREGION}
@@ -1106,13 +1108,13 @@ begin
       if ProfileForm.Visible then
         begin
           ProfileForm.Hide;
-          HideProfileInTray.Caption := S_RestoreProfileFromTray;
+          HideProfileInTray.Caption := Lang_Vars[2].L_S;
           HideProfileInTray.ImageIndex := 5;
         end
       else
         begin
           XShowForm(ProfileForm);
-          HideProfileInTray.Caption := S_HideProfileInTray;
+          HideProfileInTray.Caption := Lang_Vars[3].L_S;
           HideProfileInTray.ImageIndex := 4;
         end;
     end;
@@ -1181,6 +1183,7 @@ procedure TMainForm.UpdateHttpClientRequestDone(Sender: TObject; RqType: THttpRe
 var
   List: TStringList;
   S, Ver, Bild, Mess: string;
+  UpdateFile: TMemoryStream;
 
 procedure ShowUpdateNote;
 begin
@@ -1208,8 +1211,8 @@ begin
         List := TStringList.Create;
         try
           // Увеличиваем статистику входящего трафика
-          TrafRecev := TrafRecev + UpdateHttpClient.RcvdCount;
-          AllTrafRecev := AllTrafRecev + UpdateHttpClient.RcvdCount;
+          V_TrafRecev := V_TrafRecev + UpdateHttpClient.RcvdCount;
+          V_AllTrafRecev := V_AllTrafRecev + UpdateHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
             OpenTrafficClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
@@ -1228,22 +1231,22 @@ begin
                     Bild := RightStr(S, 3);
                     Mess := IsolateTextString(List.Text, '<info>', '</info>');
                     // Запоминаем переменную аддэйтпатч для автообновления
-                    UpdateVersionPath := Format(UpdateVersionPath, [Ver, Bild]);
-                    Xlog(C_RN + List.Text + C_RN + UpdateVersionPath, EmptyStr);
+                    V_UpdateVersionPath := Format(V_UpdateVersionPath, [Ver, Bild]);
+                    Xlog(C_RN + List.Text + C_RN + V_UpdateVersionPath, EmptyStr);
                     // Отображаем всплывающее окно с информацией о новой версии
                     if (Ver <> EmptyStr) and (Bild <> EmptyStr) then
                       begin
                         // Если версия на сайте выше текущей
-                        if StrToInt(S) > StrToInt(ReplaceStr(FullVersion, '.', EmptyStr)) then
+                        if StrToInt(S) > StrToInt(ReplaceStr(V_FullVersion, '.', EmptyStr)) then
                           begin
-                            DAShow(S_InfoHead, S_NewVerYES, EmptyStr, 133, 3, 100000000);
+                            DAShow(Lang_Vars[16].L_S, Lang_Vars[13].L_S, EmptyStr, 133, 3, 100000000);
                             ShowUpdateNote;
                           end
-                        else if not UpdateAuto then
-                          DAShow(S_InfoHead, S_NewVerNO, EmptyStr, 133, 0, 0);
+                        else if not V_UpdateAuto then
+                          DAShow(Lang_Vars[16].L_S, Lang_Vars[14].L_S, EmptyStr, 133, 0, 0);
                       end
-                    else if not UpdateAuto then
-                      DAShow(S_InfoHead, S_NewVerErr, EmptyStr, 134, 2, 0);
+                    else if not V_UpdateAuto then
+                      DAShow(Lang_Vars[16].L_S, Lang_Vars[15].L_S, EmptyStr, 134, 2, 0);
                   end;
               end;
             1: begin
@@ -1259,32 +1262,32 @@ begin
                           // Информируем о успешной закачке файла обновления
                           InfoMemo.Lines.Add(S_UpDateLoad);
                           // Сохраняем полученный файл
-                          UpdateFile.SaveToFile(Profile + UpdateVersionPath);
+                          UpdateFile.SaveToFile(V_Profile + V_UpdateVersionPath);
                           // Проверяем есть ли у нас права на запись в папку с программой
-                          if ForceDirectories(MyPath + C_Infos) then
+                          if ForceDirectories(V_MyPath + C_Infos) then
                             begin
                               // Удаляем тестовую папку
-                              if DirectoryExists(MyPath + C_Infos) then
-                                RemoveDir(MyPath + C_Infos);
+                              if DirectoryExists(V_MyPath + C_Infos) then
+                                RemoveDir(V_MyPath + C_Infos);
                               // Начинаем установку обновления
                               InfoMemo.Lines.Add(S_UpDateUn);
                               // Переименовываем файл Imadering.exe
-                              if FileExists(MyPath + C_ExeName) then
-                                RenameFile(MyPath + C_ExeName, MyPath + 'Imadering.old');
+                              if FileExists(V_MyPath + C_ExeName) then
+                                RenameFile(V_MyPath + C_ExeName, V_MyPath + 'Imadering.old');
                               // Распаковываем архив
-                              if UnpackArhive(Profile + UpdateVersionPath) then
+                              if UnpackArhive(V_Profile + V_UpdateVersionPath) then
                                 begin
                                   InfoMemo.Lines.Add(S_UpDateOK);
-                                  if FileExists(Profile + UpdateVersionPath) then
-                                    DeleteFile(Profile + UpdateVersionPath);
+                                  if FileExists(V_Profile + V_UpdateVersionPath) then
+                                    DeleteFile(V_Profile + V_UpdateVersionPath);
                                 end;
                             end
                           else
                             begin
                               // Сообщаем, что прав на запись обновления у нас нет
-                              DAShow(S_Errorhead, S_UnPackErr, EmptyStr, 134, 2, 0);
+                              DAShow(Lang_Vars[17].L_S, S_UnPackErr, EmptyStr, 134, 2, 0);
                               // Открываем папку со скачанным архивом
-                              ShellExecute(0, 'open', PChar(Profile), nil, PChar(Profile), SW_SHOW);
+                              ShellExecute(0, 'open', PChar(V_Profile), nil, nil, SW_SHOW);
                             end;
                           AbortBitBtn.Enabled := False;
                         finally
@@ -1368,7 +1371,7 @@ begin
   if (ICQ_LoginUIN = EmptyStr) or (ICQ_LoginPassword = EmptyStr) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(S_InfoHead, ICQAccountInfo_1, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, ICQAccountInfo_1, EmptyStr, 133, 3, 0);
       // Открываем настройки ICQ
       ICQSettingsClick(Self);
       // Ставим фокусы в поле ввода логина или пароля
@@ -1386,7 +1389,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_Icq + Log_Bevel + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
+  S_Log := S_Log + C_Icq + C_PN + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
   // Ставим иконки статусов в окне и в трэе
@@ -1404,7 +1407,7 @@ begin
   // Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
     begin
-      S_Log := S_Log + C_Icq + Log_Bevel + Log_Login + ICQ_LoginUIN + C_RN;
+      S_Log := S_Log + C_Icq + C_PN + Log_Login + ICQ_LoginUIN + C_RN;
       // Ставим иконки подключения в окне и в трэе
       ICQTrayIcon.IconIndex := 162;
       ICQToolButton.ImageIndex := 162;
@@ -1430,17 +1433,17 @@ begin
       // Устанавливаем параметры сокета
       ICQWSocket.Proto := 'tcp';
       // Устанавливаем настройки прокси
-      if HttpProxy_Enable then
+      if V_HttpProxy_Enable then
         begin
-          ICQWSocket.Addr := HttpProxy_Address;
-          ICQWSocket.Port := HttpProxy_Port;
-          S_Log := S_Log + C_Icq + Log_Bevel + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port + C_RN;
+          ICQWSocket.Addr := V_HttpProxy_Address;
+          ICQWSocket.Port := V_HttpProxy_Port;
+          S_Log := S_Log + C_Icq + C_PN + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port + C_RN;
         end
       else
         begin
           ICQWSocket.Addr := ICQ_LoginServerAddr;
           ICQWSocket.Port := ICQ_LoginServerPort;
-          S_Log := S_Log + C_Icq + Log_Bevel + Log_Connect + ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort + C_RN;
+          S_Log := S_Log + C_Icq + C_PN + Log_Connect + ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort + C_RN;
         end;
       // Прорисовываем интерфэйс
       Update;
@@ -1489,7 +1492,7 @@ procedure TMainForm.ICQTrayIconMouseDown(Sender: TObject; Button: TMouseButton; 
 begin
   // Определяем какой протокол вызвал меню в трэе
   if Button = MbRight then
-    TrayProtoClickMenu := LowerCase((Sender as TTrayIcon).name)
+    V_TrayProtoClickMenu := LowerCase((Sender as TTrayIcon).name)
     // Выводим список контактов на передний план если нажали средней клавишей мыши
   else if Button = MbMiddle then
     SetForeGroundWindow(Handle);
@@ -1504,18 +1507,18 @@ begin
   if Visible then
     begin
       Hide;
-      HideMainInTray1.Caption := S_RestoreFromTray;
+      HideMainInTray1.Caption := Lang_Vars[0].L_S;
       HideMainInTray1.ImageIndex := 5;
       // Удаляем AppBar если он есть
-      if DockAppBar then
+      if V_DockAppBar then
         AppBarDestroy;
     end
   else
     begin
       // Если был режим AppBar, то восстанавливаем его
-      if DockAppBar then
+      if V_DockAppBar then
         begin
-          if DockRigth then
+          if V_DockRigth then
             SnapToRightClick(SnapToRight)
           else
             SnapToRightClick(SnapToLeft);
@@ -1523,7 +1526,7 @@ begin
       // Отображем окно контактов
       Show;
       SetForeGroundWindow(Application.MainForm.Handle);
-      HideMainInTray1.Caption := S_HideInTray;
+      HideMainInTray1.Caption := Lang_Vars[1].L_S;
       HideMainInTray1.ImageIndex := 4;
     end;
 end;
@@ -1543,7 +1546,7 @@ begin
       goto X;
     end;
   // Если список входящих сообщений пустой, то обнуляем флаг и выходим
-  if InMessList.Count = 0 then
+  if V_InMessList.Count = 0 then
     begin
       ICQTrayIcon.Tag := 0;
       MRATrayIcon.Tag := 0;
@@ -1551,7 +1554,7 @@ begin
       Exit;
     end;
   // Получаем учётную запись отправителя сообщения с самого низа списка
-  MUIN := InMessList.Strings[InMessList.Count - 1];
+  MUIN := V_InMessList.Strings[V_InMessList.Count - 1];
   // Если она вдруг пустая, то выходим
   if MUIN = EmptyStr then
     Exit;
@@ -1577,13 +1580,13 @@ begin
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
       begin
-        DAShow(S_Errorhead, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
         // Активируем режим оффлайн
         ICQ_GoOffline;
         Exit;
       end;
     // HTTP прокси коннект
-    if (HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
+    if (V_HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
       begin
         // Заносим данные в специальный буфер
         ICQ_myBeautifulSocketBuffer := ICQ_myBeautifulSocketBuffer + Pkt;
@@ -1606,12 +1609,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(S_Errorhead, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(S_Errorhead, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными ICQ
         Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1628,8 +1631,8 @@ begin
     if Length(Pkt) = 0 then
       Exit;
     // Увеличиваем статистику входящего трафика
-    TrafRecev := TrafRecev + Length(Pkt);
-    AllTrafRecev := AllTrafRecev + Length(Pkt);
+    V_TrafRecev := V_TrafRecev + Length(Pkt);
+    V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
       OpenTrafficClick(nil);
     // Прибавляем данные к специальному буферу накопления таких преобразованных данных
@@ -1638,7 +1641,7 @@ begin
     if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(S_Errorhead, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
         ICQ_GoOffline;
         Exit;
       end;
@@ -1831,7 +1834,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Add_Contact_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(S_Errorhead, AddContactError, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, AddContactError, EmptyStr, 134, 2, 0);
                                     end
                                   else
                                   // Если фаза добавления группы
@@ -1841,7 +1844,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Add_Group_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(S_Errorhead, AddGroupError, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, AddGroupError, EmptyStr, 134, 2, 0);
                                     end
                                   else
                                   // Если фаза удаления группы
@@ -1851,7 +1854,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Group_Delete_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(S_Errorhead, DelGroupError, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, DelGroupError, EmptyStr, 134, 2, 0);
                                     end;
                                 end;
                               $0006: begin
@@ -1945,7 +1948,7 @@ begin
                                       case HexToInt(TLV) of
                                         $0008: begin // TLV с ошибкой авторизации
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                            DAShow(S_Errorhead, ICQ_NotifyAuthCookieError(Text2Hex(NextData(HexPkt, Len))), EmptyStr, 134, 2, 0);
+                                            DAShow(Lang_Vars[17].L_S, ICQ_NotifyAuthCookieError(Text2Hex(NextData(HexPkt, Len))), EmptyStr, 134, 2, 0);
                                             ICQ_GoOffline;
                                           end;
                                         $0005: begin // TLV с адресом для коннекта к основному серверу
@@ -1996,17 +1999,17 @@ begin
                               ICQ_BuffPkt := EmptyStr;
                               // Устанавливаем параметры
                               ICQWSocket.Proto := 'tcp';
-                              if HttpProxy_Enable then
+                              if V_HttpProxy_Enable then
                                 begin
-                                  ICQWSocket.Addr := HttpProxy_Address;
-                                  ICQWSocket.Port := HttpProxy_Port;
-                                  XLog('ICQ | ' + Log_HTTP_Proxy_Connect + HttpProxy_Address + ':' + HttpProxy_Port, C_Icq);
+                                  ICQWSocket.Addr := V_HttpProxy_Address;
+                                  ICQWSocket.Port := V_HttpProxy_Port;
+                                  XLog('ICQ | ' + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port, C_Icq);
                                 end
                               else
                                 begin
                                   ICQWSocket.Addr := ICQ_Bos_IP;
                                   ICQWSocket.Port := ICQ_Bos_Port;
-                                  XLog(C_Icq + Log_Bevel + Log_Connect + ICQ_Bos_IP + ':' + ICQ_Bos_Port, C_Icq);
+                                  XLog(C_Icq + C_PN + Log_Connect + ICQ_Bos_IP + ':' + ICQ_Bos_Port, C_Icq);
                                 end;
                               // Начинаем подключение к основному серверу
                               ICQWSocket.Connect;
@@ -2023,7 +2026,7 @@ begin
                             $0009: // TLV с кодом ошибки
                               begin
                                 // Выводим сообщение о том, что наш номер используется кем то другим
-                                DAShow(S_Errorhead, ICQxUIN, EmptyStr, 134, 2, 100000000);
+                                DAShow(Lang_Vars[17].L_S, ICQxUIN, EmptyStr, 134, 2, 100000000);
                                 // Активиуем режим оффлайн
                                 ICQ_GoOffline;
                               end;
@@ -2039,7 +2042,7 @@ begin
               begin
                 // Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(S_Errorhead, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
                 ICQ_GoOffline;
                 Exit;
               end;
@@ -2061,8 +2064,8 @@ end;
 procedure TMainForm.ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
 begin
   // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + BytesSent;
-  AllTrafSend := AllTrafSend + BytesSent;
+  V_TrafSend := V_TrafSend + BytesSent;
+  V_AllTrafSend := V_AllTrafSend + BytesSent;
   if Assigned(TrafficForm) then
     OpenTrafficClick(nil);
 end;
@@ -2072,7 +2075,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2083,7 +2086,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if (not ICQ_Connect_Phaze) and (not ICQ_Offline_Phaze) then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -2101,12 +2104,12 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
   // HTTP прокси коннект
-  if HttpProxy_Enable then
+  if V_HttpProxy_Enable then
     begin
       // Составляем адрес
       if ICQ_Connect_Phaze then
@@ -2114,9 +2117,9 @@ begin
       else
         Http_data := ICQ_Bos_IP + ':' + ICQ_Bos_Port;
       // Если авторизация на прокси
-      if HttpProxy_Auth then
+      if V_HttpProxy_Auth then
         begin
-          Http_login := Base64Encode(HttpProxy_Login + ':' + HttpProxy_Password);
+          Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
           Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
         end;
       // Формируем основной запрос для http прокси
@@ -2134,7 +2137,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2145,7 +2148,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2212,13 +2215,13 @@ begin
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
       begin
-        DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, ErrCode), EmptyStr, 134, 2, 0);
         // Активируем режим оффлайн
         Jab_GoOffline;
         Exit;
       end;
     // HTTP прокси коннект
-    if (HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
+    if (V_HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
       begin
         // Заносим данные в специальный буфер
         Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
@@ -2234,19 +2237,19 @@ begin
         if StartsStr('HTTPS/1.0 200', Pkt) or StartsStr('HTTPS/1.1 200', Pkt) or StartsStr('HTTP/1.0 200', Pkt) or StartsStr('HTTP/1.1 200', Pkt) then
           begin
             Jabber_HTTP_Connect_Phaze := True;
-            XLog(S_Jabber + Log_Get + Log_Proxy_OK, S_Jabber);
+            XLog(C_Jabber + Log_Get + Log_Proxy_OK, C_Jabber);
           end
         else
         // Сообщаем об ошибках прокси
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(S_Errorhead, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + S_Jabber + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(S_Errorhead, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + S_Jabber + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными Jabber
         Pkt := Jabber_myBeautifulSocketBuffer;
@@ -2263,8 +2266,8 @@ begin
     if Length(Pkt) = 0 then
       Exit;
     // Увеличиваем статистику входящего трафика
-    TrafRecev := TrafRecev + Length(Pkt);
-    AllTrafRecev := AllTrafRecev + Length(Pkt);
+    V_TrafRecev := V_TrafRecev + Length(Pkt);
+    V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
       OpenTrafficClick(nil);
     // Проверяем пакет окончания сессии
@@ -2291,7 +2294,7 @@ begin
                     // Загружаем пакет в объект xml
                     JvXML_LoadStr(JvXML, Pkt);
                     // Пишем в лог данные пакета
-                    XLog(S_Jabber + Log_Get + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), S_Jabber);
+                    XLog(C_Jabber + Log_Get + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), C_Jabber);
                     // Если это стадия подключения к серверу жаббер
                     if Jabber_Connect_Phaze then
                       begin
@@ -2316,7 +2319,7 @@ begin
                         else if Pos('<not-authorized', Pkt) > 0 then
                           begin
                             // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                            DAShow(S_Errorhead, JabberLoginErrorL, EmptyStr, 134, 2, 0);
+                            DAShow(Lang_Vars[17].L_S, JabberLoginErrorL, EmptyStr, 134, 2, 0);
                             Jab_GoOffline;
                             Exit;
                           end
@@ -2333,13 +2336,13 @@ begin
                             if Jabber_KeepAlive then
                               JvTimerList.Events[9].Enabled := True;
                             // Очищаем группы Jabber в Ростере
-                            RosterForm.ClearContacts(S_Jabber);
+                            RosterForm.ClearContacts(C_Jabber);
                             // Закрепляем сессию с жаббер сервером
                             // Если сервер и порт указаны вручную
                             if JabberOptionsForm.CustomServerCheckBox.Checked then
-                              Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), CurrentLang]))
+                              Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
                             else
-                              Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, CurrentLang]));
+                              Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
                             // Выходим
                             Exit;
                           end;
@@ -2388,7 +2391,7 @@ end;
 procedure TMainForm.JabberWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(S_Errorhead, NotifyConnectError(S_Jabber, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   Jab_GoOffline;
 end;
@@ -2396,8 +2399,8 @@ end;
 procedure TMainForm.JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
 begin
   // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + BytesSent;
-  AllTrafSend := AllTrafSend + BytesSent;
+  V_TrafSend := V_TrafSend + BytesSent;
+  V_AllTrafSend := V_AllTrafSend + BytesSent;
   if Assigned(TrafficForm) then
     OpenTrafficClick(nil);
 end;
@@ -2407,7 +2410,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
@@ -2418,7 +2421,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if not Jabber_Offline_Phaze then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -2436,20 +2439,20 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
   // HTTP прокси коннект
-  if HttpProxy_Enable then
+  if V_HttpProxy_Enable then
     begin
       // Составляем адрес
       if Jabber_Connect_Phaze then
         Http_data := Jabber_ServerAddr + ':' + Jabber_ServerPort;
       // Если авторизация на прокси
-      if HttpProxy_Auth then
+      if V_HttpProxy_Auth then
         begin
-          Http_login := Base64Encode(HttpProxy_Login + ':' + HttpProxy_Password);
+          Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
           Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
         end;
       // Формируем основной запрос для http прокси
@@ -2462,9 +2465,9 @@ begin
   // Отсылаем строку начала сессии с сервером
   // Если сервер и порт указаны вручную
   if JabberOptionsForm.CustomServerCheckBox.Checked then
-    Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), CurrentLang]))
+    Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
   else
-    Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, CurrentLang]));
+    Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
 end;
 
 {$ENDREGION}
@@ -2475,7 +2478,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Jabber, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
@@ -2486,7 +2489,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + S_Jabber + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
@@ -2631,7 +2634,7 @@ end;
 procedure TMainForm.JvTimerListEvents15Timer(Sender: TObject);
 begin
   // Move the form
-  MoveWindow(AppBarDataCL.HWnd, AppBarDataCL.Rc.Left, AppBarDataCL.Rc.Top, AppBarDataCL.Rc.Right - AppBarDataCL.Rc.Left, AppBarDataCL.Rc.Bottom - AppBarDataCL.Rc.Top, TRUE);
+  MoveWindow(V_AppBarDataCL.HWnd, V_AppBarDataCL.Rc.Left, V_AppBarDataCL.Rc.Top, V_AppBarDataCL.Rc.Right - V_AppBarDataCL.Rc.Left, V_AppBarDataCL.Rc.Bottom - V_AppBarDataCL.Rc.Top, TRUE);
   if not Visible then
     XShowForm(MainForm);
 end;
@@ -2702,9 +2705,9 @@ begin
                   // Ставим флажки непрочитанных сообщений по протоколам
                   if Items[I].SubItems[3] = C_Icq then
                     YesMsgICQ := True;
-                  if Items[I].SubItems[3] = S_Jabber then
+                  if Items[I].SubItems[3] = C_Jabber then
                     YesMsgJabber := True;
-                  if Items[I].SubItems[3] = S_Mra then
+                  if Items[I].SubItems[3] = C_Mra then
                     YesMsgMRA := True;
                 end
               else
@@ -2793,7 +2796,7 @@ begin
   if not JvTimerList.Events[3].Enabled then
     begin
       // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-      if (YesMsgICQ) and (InMessList.Count > 0) then
+      if (YesMsgICQ) and (V_InMessList.Count > 0) then
         begin
           // Ставим флаг в трэе, что есть сообщения для открытия
           ICQTrayIcon.Tag := 1;
@@ -2811,7 +2814,7 @@ begin
           ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
         end;
       // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-      if (YesMsgJabber) and (InMessList.Count > 0) then
+      if (YesMsgJabber) and (V_InMessList.Count > 0) then
         begin
           // Ставим флаг в трэе, что есть сообщения для открытия
           JabberTrayIcon.Tag := 1;
@@ -2829,7 +2832,7 @@ begin
           JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
         end;
       // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-      if (YesMsgMRA) and (InMessList.Count > 0) then
+      if (YesMsgMRA) and (V_InMessList.Count > 0) then
         begin
           // Ставим флаг в трэе, что есть сообщения для открытия
           MraTrayIcon.Tag := 1;
@@ -2856,9 +2859,9 @@ procedure TMainForm.JvTimerListEvents2Timer(Sender: TObject);
 begin
   // Ставим флаг - непоказывать всплывающее сообщение если новой версии нету
   if Sender = nil then
-    UpdateAuto := False
+    V_UpdateAuto := False
   else
-    UpdateAuto := True;
+    V_UpdateAuto := True;
   // Сбрасываем сокет если он занят чем то другим или висит
   UpdateHttpClient.Abort;
   // Ставим флаг задания
@@ -3127,13 +3130,13 @@ begin
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
       begin
-        DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, ErrCode), EmptyStr, 134, 2, 0);
         // Активируем режим оффлайн
         MRA_GoOffline;
         Exit;
       end;
     // HTTP прокси коннект
-    if (HttpProxy_Enable) and ((MRA_Connect_Phaze) or (MRA_BosConnect_Phaze)) and (not MRA_HTTP_Connect_Phaze) then
+    if (V_HttpProxy_Enable) and ((MRA_Connect_Phaze) or (MRA_BosConnect_Phaze)) and (not MRA_HTTP_Connect_Phaze) then
       begin
         // Заносим данные в специальный буфер
         MRA_myBeautifulSocketBuffer := MRA_myBeautifulSocketBuffer + Pkt;
@@ -3149,7 +3152,7 @@ begin
         if StartsStr('HTTPS/1.0 200', Pkt) or StartsStr('HTTPS/1.1 200', Pkt) or StartsStr('HTTP/1.0 200', Pkt) or StartsStr('HTTP/1.1 200', Pkt) then
           begin
             MRA_HTTP_Connect_Phaze := True;
-            XLog(S_Mra + Log_Get + Log_Proxy_OK, S_Mra);
+            XLog(C_Mra + Log_Get + Log_Proxy_OK, C_Mra);
             // Если уже подключились в Bos серверу
             if MRA_BosConnect_Phaze then
               begin
@@ -3163,12 +3166,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(S_Errorhead, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + S_Mra + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(S_Errorhead, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + S_Mra + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными MRA
         Pkt := MRA_myBeautifulSocketBuffer;
@@ -3185,8 +3188,8 @@ begin
     if Length(Pkt) = 0 then
       Exit;
     // Увеличиваем статистику входящего трафика
-    TrafRecev := TrafRecev + Length(Pkt);
-    AllTrafRecev := AllTrafRecev + Length(Pkt);
+    V_TrafRecev := V_TrafRecev + Length(Pkt);
+    V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
       OpenTrafficClick(nil);
     // Прибавляем данные к специальному буферу накопления таких преобразованных данных
@@ -3195,7 +3198,7 @@ begin
     if MRA_Connect_Phaze then
       begin
         MRA_Bos_Addr := MRA_BuffPkt;
-        XLog(S_Mra + Log_Parsing + Log_Get_Server + MRA_Bos_Addr, S_Mra);
+        XLog(C_Mra + Log_Parsing + Log_Get_Server + MRA_Bos_Addr, C_Mra);
         // Получаем адрес Bos сервера для подключения
         MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
         MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
@@ -3211,10 +3214,10 @@ begin
         MRA_BuffPkt := EmptyStr;
         // Устанавливаем параметры
         MRAWSocket.Proto := 'tcp';
-        if HttpProxy_Enable then
+        if V_HttpProxy_Enable then
           begin
-            MRAWSocket.Addr := HttpProxy_Address;
-            MRAWSocket.Port := HttpProxy_Port;
+            MRAWSocket.Addr := V_HttpProxy_Address;
+            MRAWSocket.Port := V_HttpProxy_Port;
           end
         else
           begin
@@ -3229,7 +3232,7 @@ begin
     if ((MRA_BuffPkt > EmptyStr) and (Text2Hex(LeftStr(MRA_BuffPkt, 4)) <> MRA_MagKey)) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(S_Errorhead, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + S_Mra + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
         MRA_GoOffline;
         Exit;
       end;
@@ -3258,7 +3261,7 @@ begin
                       S_Name := MRA_Pkt_Names[I].Pkt_Name;
                       Break;
                     end;
-                XLog(S_Mra + Log_Get + S_Name + C_RN + Trim(Dump(HexPkt)), S_Mra);
+                XLog(C_Mra + Log_Get + S_Name + C_RN + Trim(Dump(HexPkt)), C_Mra);
               end;
             // Ещё раз делаем проверку на начало пакета MRA протокола по магическому ключу
             if Text2Hex(NextData(HexPkt, 4)) = MRA_MagKey then
@@ -3280,7 +3283,7 @@ begin
                       // Получаем интервал пакетов Ping
                       I := HexToInt(Text2Hex(NextData(HexPkt, Len)));
                       JvTimerList.Events[10].Interval := Swap32(I) * 1000;
-                      Xlog(S_Mra + Log_Parsing + 'Ping interval: ' + IntToStr(JvTimerList.Events[10].Interval), S_Mra);
+                      Xlog(C_Mra + Log_Parsing + 'Ping interval: ' + IntToStr(JvTimerList.Events[10].Interval), C_Mra);
                       // Отправляем пакет авторизации на сервере
                       MRA_Login_2;
                       // Запускаем таймер MRA Alive
@@ -3296,13 +3299,13 @@ begin
                       // Отключаем метку пересоединения ведь мы уже и так онлайн!
                       MRA_Reconnect := False;
                       // Очищаем группы MRA в Ростере
-                      RosterForm.ClearContacts(S_Mra);
+                      RosterForm.ClearContacts(C_Mra);
                     end;
                   $1005: begin
                       if Pos('Invalid login', HexPkt) > 0 then
                         begin
                           // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                          DAShow(S_Errorhead, MraLoginErrorL, EmptyStr, 134, 2, 0);
+                          DAShow(Lang_Vars[17].L_S, MraLoginErrorL, EmptyStr, 134, 2, 0);
                           MRA_GoOffline;
                           Exit;
                         end;
@@ -3321,7 +3324,7 @@ begin
               begin
                 // --Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(S_Errorhead, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + S_Mra + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
                 MRA_GoOffline;
                 Exit;
               end;
@@ -3427,7 +3430,7 @@ begin
           if ICQ_Work_Phaze then
             ICQ_ReqStatus0215((ContactList.SelectedItem as TButtonItem).UIN)
           else
-            DAShow(S_AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
         end;
     end;
 end;
@@ -3447,9 +3450,9 @@ begin
   if not Assigned(TrafficForm) then
     TrafficForm := TTrafficForm.Create(Self);
   // Показываем сколько трафика передано за эту сессию
-  TrafficForm.CurTrafEdit.Text := FloatToStrF(TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(TrafSend / 1000, FfFixed, 18, 3) + ' KB | ' + DateTimeToStr(SesDataTraf);
+  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + ' KB | ' + DateTimeToStr(V_SesDataTraf);
   // Показываем сколько трафика передано всего
-  TrafficForm.AllTrafEdit.Text := FloatToStrF(AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(AllTrafSend / 1000000, FfFixed, 18, 3) + ' MB | ' + AllSesDataTraf;
+  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + ' MB | ' + V_AllSesDataTraf;
   // Отображаем окно
   XShowForm(TrafficForm);
 end;
@@ -3485,19 +3488,19 @@ begin
                         end;
                     end;
                 end;
-              FloatingFrm := TFloatingForm.Create(Self);
-              SubItems[17] := IntToStr(FloatingFrm.Handle);
-              FloatingFrm.NickLabel.Caption := SubItems[0];
-              FloatingFrm.NickLabel.Hint := RosterItem.Caption;
-              MainForm.AllImageList.GetBitmap(StrToInt(SubItems[6]), FloatingFrm.StatusImage.Picture.Bitmap);
-              FloatingFrm.XStatusImage.Visible := False;
-              FloatingFrm.ClientImage.Visible := False;
-              FloatingFrm.Width := FloatingFrm.NickLabel.Width + 28;
-              if FloatingFrm.XStatusImage.Visible then
-                FloatingFrm.Width := FloatingFrm.Width + 18;
-              if FloatingFrm.ClientImage.Visible then
-                FloatingFrm.Width := FloatingFrm.Width + 20;
-              FloatingFrm.Show;
+              V_FloatingFrm := TFloatingForm.Create(Self);
+              SubItems[17] := IntToStr(V_FloatingFrm.Handle);
+              V_FloatingFrm.NickLabel.Caption := SubItems[0];
+              V_FloatingFrm.NickLabel.Hint := RosterItem.Caption;
+              MainForm.AllImageList.GetBitmap(StrToInt(SubItems[6]), V_FloatingFrm.StatusImage.Picture.Bitmap);
+              V_FloatingFrm.XStatusImage.Visible := False;
+              V_FloatingFrm.ClientImage.Visible := False;
+              V_FloatingFrm.Width := V_FloatingFrm.NickLabel.Width + 28;
+              if V_FloatingFrm.XStatusImage.Visible then
+                V_FloatingFrm.Width := V_FloatingFrm.Width + 18;
+              if V_FloatingFrm.ClientImage.Visible then
+                V_FloatingFrm.Width := V_FloatingFrm.Width + 20;
+              V_FloatingFrm.Show;
             end;
         end;
     end;
@@ -3530,7 +3533,7 @@ end;
 
 procedure TMainForm.PrivatListMenuClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TMainForm.PrivatONMenuClick(Sender: TObject);
@@ -3549,11 +3552,11 @@ var
   R: Integer;
 begin
   // Запускаем второй экземпляр программы для выбора другого профиля
-  Spath := MyPath + C_ExeName;
-  R := ShellExecute(0, 'open', 'Imadering.exe', nil, PChar(MyPath), SW_SHOW);
+  Spath := V_MyPath + C_ExeName;
+  R := ShellExecute(0, 'open', 'Imadering.exe', nil, PChar(V_MyPath), SW_SHOW);
   XLog(Spath + C_BN + IntToStr(R), EmptyStr);
   if R < 32 then
-    DAShow(S_Errorhead, NewProgErrL, EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[17].L_S, NewProgErrL, EmptyStr, 134, 2, 0);
 end;
 
 {$ENDREGION}
@@ -3721,7 +3724,7 @@ end;
 procedure TMainForm.CloseProgramClick(Sender: TObject);
 begin
   // Закрываем программу
-  ProgramCloseCommand := True;
+  V_ProgramCloseCommand := True;
   Close;
 end;
 
@@ -3740,9 +3743,9 @@ var
   Diff: Tdatetime;
 begin
   // Вычитаем время плошлого клика
-  Diff := Now - LastClick;
+  Diff := Now - V_LastClick;
   // Запоминаем время текущего клика
-  LastClick := Now;
+  V_LastClick := Now;
   // Если по времени произошёл двойной клик, то начинаем открывать окно чата с этим контактом
   if (Diff < C_DblClickTime) and (ButtonInd = Button.index) then
     begin
@@ -3763,7 +3766,7 @@ var
   I: Integer;
   JvXML: TJvSimpleXml;
 begin
-  if not CollapseGroupsRestore then
+  if not V_CollapseGroupsRestore then
     begin
       // Запоминаем свёрнутые группы
       // Инициализируем XML
@@ -3777,7 +3780,7 @@ begin
                   Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add('c', Categories[I].Collapsed);
               end;
             // Записываем файл
-            SaveToFile(ProfilePath + GroupsFileName);
+            SaveToFile(V_ProfilePath + C_GroupsFileName);
           end;
       finally
         JvXML.Free;
@@ -3815,7 +3818,7 @@ begin
           SendAddContact.Visible := True;
         end
         // Для Jabber
-      else if RoasterButton.ContactType = S_Jabber then
+      else if RoasterButton.ContactType = C_Jabber then
         begin
           DelYourSelfContact.Visible := False;
           CheckStatusContact.Visible := False;
@@ -3823,7 +3826,7 @@ begin
           SendAddContact.Visible := False;
         end
         // Для MRA
-      else if RoasterButton.ContactType = S_Mra then
+      else if RoasterButton.ContactType = C_Mra then
         begin
           DelYourSelfContact.Visible := False;
           CheckStatusContact.Visible := False;
@@ -3855,7 +3858,7 @@ begin
                   AddNewContactJabber.Visible := False;
                   AddNewContactMRA.Visible := False;
                 end
-              else if RoasterGroup.GroupType = S_Jabber then
+              else if RoasterGroup.GroupType = C_Jabber then
                 begin
                   AddNewGroupICQ.Visible := False;
                   AddNewGroupJabber.Visible := True;
@@ -3865,7 +3868,7 @@ begin
                   AddNewContactJabber.Visible := True;
                   AddNewContactMRA.Visible := False;
                 end
-              else if RoasterGroup.GroupType = S_Mra then
+              else if RoasterGroup.GroupType = C_Mra then
                 begin
                   AddNewGroupICQ.Visible := False;
                   AddNewGroupJabber.Visible := False;
@@ -4117,12 +4120,12 @@ begin
               end;
           end
           // Удаляем выбранную группу Jabber
-        else if GroupProto = S_Jabber then
+        else if GroupProto = C_Jabber then
           begin
 
           end
           // Удаляем выбранную группу Mra
-        else if GroupProto = S_Mra then
+        else if GroupProto = C_Mra then
           begin
 
           end;
@@ -4148,7 +4151,7 @@ begin
           if ICQ_Work_Phaze then
             ICQ_DellMyFromCL((ContactList.SelectedItem as TButtonItem).UIN)
           else
-            DAShow(S_AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
       finally
         // Разблокировываем окно контактов
         MainForm.Enabled := True;
@@ -4162,8 +4165,8 @@ end;
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   // Выключаем прозрачность окна при активности
-  if RoasterAlphaBlend then
-    if AlphaBlendInactive then
+  if V_RoasterAlphaBlend then
+    if V_AlphaBlendInactive then
       AlphaBlendValue := 255;
   // Сбрасываем таймер автоскрытия окна при активности окна
   if JvTimerList.Events[6].Enabled then
@@ -4183,7 +4186,7 @@ end;
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   // Делаем окно не закрывающим программу, а сворачиваем его в трэй
-  if not ProgramCloseCommand then
+  if not V_ProgramCloseCommand then
     begin
       CanClose := False;
       MainFormHideInTray;
@@ -4208,23 +4211,23 @@ begin
       if Assigned(GTransForm) then
         GTransForm.GtransHttpClient.Abort;
       // Уничтожаем ресурсы списков
-      if Assigned(InMessList) then
-        FreeAndNil(InMessList);
-      if Assigned(AccountToNick) then
-        FreeAndNil(AccountToNick);
-      if Assigned(SmilesList) then
-        FreeAndNil(SmilesList);
+      if Assigned(V_InMessList) then
+        FreeAndNil(V_InMessList);
+      if Assigned(V_AccountToNick) then
+        FreeAndNil(V_AccountToNick);
+      if Assigned(V_SmilesList) then
+        FreeAndNil(V_SmilesList);
       // Уничтожаем графические ресурсы
-      if Assigned(NoAvatar) then
-        FreeAndNil(NoAvatar);
-      if Assigned(OutMessage2) then
-        FreeAndNil(OutMessage2);
-      if Assigned(OutMessage3) then
-        FreeAndNil(OutMessage3);
-      if Assigned(XStatusImg) then
-        FreeAndNil(XStatusImg);
-      if Assigned(XStatusMem) then
-        FreeAndNil(XStatusMem);
+      if Assigned(V_NoAvatar) then
+        FreeAndNil(V_NoAvatar);
+      if Assigned(V_OutMessage2) then
+        FreeAndNil(V_OutMessage2);
+      if Assigned(V_OutMessage3) then
+        FreeAndNil(V_OutMessage3);
+      if Assigned(V_XStatusImg) then
+        FreeAndNil(V_XStatusImg);
+      if Assigned(V_XStatusMem) then
+        FreeAndNil(V_XStatusMem);
       // Уничтожаем окно смайлов
       if Assigned(SmilesForm) then
         FreeAndNil(SmilesForm);
@@ -4234,7 +4237,7 @@ begin
       // Делаем текущую локальную копию списка контактов для отображения при запуске программы
       if Assigned(RosterForm) then
         begin
-          RosterForm.RosterJvListView.SaveToCSV(ProfilePath + ContactListFileName);
+          RosterForm.RosterJvListView.SaveToCSV(V_ProfilePath + C_ContactListFileName);
           // Уничтожаем окно Ростера
           FreeAndNil(RosterForm);
         end;
@@ -4242,7 +4245,7 @@ begin
       if Assigned(SH_HintWindow) then
         FreeAndNil(SH_HintWindow);
       // Если создан AppBar, то уничтожаем его
-      if DockAppBar then
+      if V_DockAppBar then
         AppBarDestroy;
     end;
 end;
@@ -4262,8 +4265,8 @@ begin
         // Ставим флаг какой протокол
         case (Sender as TMenuItem).Tag of
           1: ContactType := C_Icq;
-          2: ContactType := S_Jabber;
-          3: ContactType := S_Mra;
+          2: ContactType := C_Jabber;
+          3: ContactType := C_Mra;
         end;
         // Строим список групп этого протокола
         BuildGroupList(ContactType);
@@ -4295,8 +4298,8 @@ begin
         // Ставим флаг какой протокол
         case (Sender as TMenuItem).Tag of
           1: GroupType := C_Icq;
-          2: GroupType := S_Jabber;
-          3: GroupType := S_Mra;
+          2: GroupType := C_Jabber;
+          3: GroupType := C_Mra;
         end;
         // Отображаем окно модально
         ShowModal;
@@ -4336,7 +4339,7 @@ end;
 
 procedure TMainForm.EditContactClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -4387,6 +4390,11 @@ end;
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
+procedure TMainForm.AppMinimize(Sender: TObject);
+begin
+  ShowWindow(Application.Handle, SW_HIDE);
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   S: string;
@@ -4395,14 +4403,19 @@ var
   Lang: Word;
   VI: TOSVersionInfo;
 begin
+  // Управляем скрытием кнопки на панели задач
+  Application.ShowMainForm := False;
+  Application.OnMinimize := AppMinimize;
+  Application.OnRestore := AppMinimize;
+  Application.MainFormOnTaskbar := True;
   // Устанавливаем начальное значение ширины окна КЛ
   Width := 199;
   // Узнаём путь откуда запущена программа
-  MyPath := ExtractFilePath(Application.ExeName);
+  V_MyPath := ExtractFilePath(Application.ExeName);
   // Смотрим язык системы
   Lang := GetSystemDefaultLangID;
   if Lang <> 1049 then
-    CurrentLang := 'en';
+    V_CurrentLang := 'en';
   // Загружаем переменные языка
   SetLangVars;
   // Создаём окно лога
@@ -4412,20 +4425,20 @@ begin
   GetVersionEx(VI);
   XLog(Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]), EmptyStr);
   // Пишем в лог путь к программе
-  XLog(LogMyPath + MyPath, EmptyStr);
+  XLog(LogMyPath + V_MyPath, EmptyStr);
   // Пишем в лог код локального языка системы
   XLog(Log_Lang_Code + IntToStr(Lang), EmptyStr);
   // Если профиль не найден, то создаём его в настройках юзера виндовс
-  ProfilePath := MyPath + 'Profiles\';
-  if not DirectoryExists(ProfilePath) then
+  V_ProfilePath := V_MyPath + 'Profiles\';
+  if not DirectoryExists(V_ProfilePath) then
     begin
       S := '%APPDATA%\IMadering\';
       Size := ExpandEnvironmentStrings(PChar(S), Buf, Sizeof(Buf));
-      ProfilePath := Copy(Buf, 1, Size);
+      V_ProfilePath := Copy(Buf, 1, Size);
     end;
-  XLog(LogProfile + ProfilePath, EmptyStr);
+  XLog(LogProfile + V_ProfilePath, EmptyStr);
   // Загрузка иконок для программы
-  LoadImageList(AllImageList, MyPath + 'Icons\' + CurrentIcons + '\icons.bmp');
+  LoadImageList(AllImageList, V_MyPath + 'Icons\' + V_CurrentIcons + '\icons.bmp');
   // Устанавливаем иконку окна
   AllImageList.GetIcon(1, Icon);
   // Устанавливаем иконки окна лога
@@ -4448,16 +4461,18 @@ begin
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
   // Проверяем если ли старый файл после обновления, если есть, то удаляем
-  if FileExists(MyPath + 'Imadering.old') then
-    DeleteFile(MyPath + 'Imadering.old');
+  if FileExists(V_MyPath + 'Imadering.old') then
+    DeleteFile(V_MyPath + 'Imadering.old');
   // Проверяем могут ли воспроизводится звуки на компьютере
   if InitMixer = 0 then
-    SoundON := False;
+    V_SoundON := False;
   // Запоминаем текущую версию имадеринг
-  FullVersion := InitBuildInfo;
+  V_FullVersion := InitBuildInfo;
   // Создаём окно подсказок
   SH_HintWindow := THintWindow.Create(Self);
   SH_HintWindow.Color := ClInfoBk;
+  // Активируем отображение формы при перетаскивании
+  SystemParametersInfo(SPI_SETDRAGFULLWINDOWS, Ord(True), nil, 0);
   // Запускаем таймер отображения окна выбора профиля
   JvTimerList.Events[0].Enabled := True;
 end;
@@ -4468,9 +4483,9 @@ end;
 procedure TMainForm.FormDeactivate(Sender: TObject);
 begin
   // Включаем прозрачность окна при неактивности
-  if RoasterAlphaBlend then
-    if AlphaBlendInactive then
-      AlphaBlendValue := RoasterAlphaValue;
+  if V_RoasterAlphaBlend then
+    if V_AlphaBlendInactive then
+      AlphaBlendValue := V_RoasterAlphaValue;
   // Окно смайлов убрать (глюк в вайн)
   if Assigned(SmilesForm) then
     if SmilesForm.Visible then
@@ -4495,19 +4510,19 @@ begin
   if Key = #13 then
     Exit;
   // Делаем поиск по списку контактов
-  if PKeySearch <> Key then
+  if V_PKeySearch <> Key then
     begin
-      CurGroup := 0;
-      CurItem := 0;
+      V_CurGroup := 0;
+      V_CurItem := 0;
     end;
   // Запоминаем клавишу
-  PKeySearch := Key;
+  V_PKeySearch := Key;
 Z :;
   with ContactList do
     begin
-      for I := CurGroup to Categories.Count - 1 do
+      for I := V_CurGroup to Categories.Count - 1 do
         begin
-          for Ii := CurItem to Categories[I].Items.Count - 1 do
+          for Ii := V_CurItem to Categories[I].Items.Count - 1 do
             begin
               Capt := Categories[I].Items[Ii].Caption[1];
               if UpperCase(Capt, LoUserLocale) = UpperCase(Key, LoUserLocale) then
@@ -4516,23 +4531,23 @@ Z :;
                     Categories[I].Collapsed := False;
                   Categories[I].Items.Items[Ii].ScrollIntoView;
                   SelectedItem := Categories.Items[I].Items.Items[Ii];
-                  CurItem := Ii + 1;
+                  V_CurItem := Ii + 1;
                   goto X;
                 end;
             end;
-          CurItem := 0;
+          V_CurItem := 0;
           goto Y;
         end;
       FocusedItem := nil;
       SelectedItem := nil;
-      CurGroup := 0;
-      CurItem := 0;
+      V_CurGroup := 0;
+      V_CurItem := 0;
       Exit;
     X :;
       Exit;
     Y :;
-      CurGroup := CurGroup + 1;
-      if CurGroup > Categories.Count then
+      V_CurGroup := V_CurGroup + 1;
+      if V_CurGroup > Categories.Count then
         Exit
       else
         goto Z;
@@ -4559,7 +4574,7 @@ begin
       if ICQ_Work_Phaze then
         ICQ_SendGrandAuth((ContactList.SelectedItem as TButtonItem).UIN)
       else
-        DAShow(S_AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+        DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
     end;
 end;
 
@@ -4611,9 +4626,9 @@ begin
     with JvXML do
       begin
         // Загружаем настройки
-        if FileExists(ProfilePath + SettingsFileName) then
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
           begin
-            LoadFromFile(ProfilePath + SettingsFileName);
+            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             if Root <> nil then
               begin
                 // Проверяем есть ли нода главной формы
@@ -4654,23 +4669,23 @@ begin
                     // Загружаем был ли первый старт
                     Sub_Node := XML_Node.Items.ItemNamed[C_MainFormFirst];
                     if Sub_Node <> nil then
-                      FirstStart := Sub_Node.BoolValue;
+                      V_FirstStart := Sub_Node.BoolValue;
                     // Загружаем выбранные протоколы
                     Sub_Node := XML_Node.Items.ItemNamed[C_MainFormProto];
                     if Sub_Node <> nil then
                       begin
                         ICQ_Enable(Sub_Node.Properties.BoolValue(C_Icq, False));
-                        MRA_Enable(Sub_Node.Properties.BoolValue(S_Mra, False));
-                        Jab_Enable(Sub_Node.Properties.BoolValue(S_Jabber, False));
-                        Twit_Enable(Sub_Node.Properties.BoolValue(S_Twitter, False));
+                        MRA_Enable(Sub_Node.Properties.BoolValue(C_Mra, False));
+                        Jab_Enable(Sub_Node.Properties.BoolValue(C_Jabber, False));
+                        Twit_Enable(Sub_Node.Properties.BoolValue(C_Twitter, False));
                       end;
                     // Загружаем данные трафика
                     Sub_Node := XML_Node.Items.ItemNamed[C_Traffic];
                     if Sub_Node <> nil then
                       begin
-                        AllTrafSend := Sub_Node.Properties.IntValue('s', 0);
-                        AllTrafRecev := Sub_Node.Properties.IntValue('r', 0);
-                        AllSesDataTraf := Sub_Node.Properties.Value('d');
+                        V_AllTrafSend := Sub_Node.Properties.IntValue('s', 0);
+                        V_AllTrafRecev := Sub_Node.Properties.IntValue('r', 0);
+                        V_AllSesDataTraf := Sub_Node.Properties.Value('d');
                       end;
                     // Загружаем пункты меню
                     Sub_Node := XML_Node.Items.ItemNamed[C_MainFormHEG];
@@ -4767,18 +4782,18 @@ var
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
-  if Profile = EmptyStr then
+  if V_Profile = EmptyStr then
     Exit;
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Сохраняем настройки положения главного окна в xml
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
         // Подгружаем файл с настройками если он есть
-        if FileExists(ProfilePath + SettingsFileName) then
-          LoadFromFile(ProfilePath + SettingsFileName);
+        if FileExists(V_ProfilePath + C_SettingsFileName) then
+          LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
           begin
             // Очищаем раздел главной формы если он есть
@@ -4804,14 +4819,14 @@ begin
             // Сохраняем активные протоколы
             Sub_Node := XML_Node.Items.Add(C_MainFormProto);
             Sub_Node.Properties.Add(C_Icq, ICQToolButton.Visible);
-            Sub_Node.Properties.Add(S_Mra, MRAToolButton.Visible);
-            Sub_Node.Properties.Add(S_Jabber, JabberToolButton.Visible);
-            Sub_Node.Properties.Add(S_Twitter, TwitterToolButton.Visible);
+            Sub_Node.Properties.Add(C_Mra, MRAToolButton.Visible);
+            Sub_Node.Properties.Add(C_Jabber, JabberToolButton.Visible);
+            Sub_Node.Properties.Add(C_Twitter, TwitterToolButton.Visible);
             // Сохраняем трафик
             Sub_Node := XML_Node.Items.Add(C_Traffic);
-            Sub_Node.Properties.Add('s', AllTrafSend);
-            Sub_Node.Properties.Add('r', AllTrafRecev);
-            Sub_Node.Properties.Add('d', AllSesDataTraf);
+            Sub_Node.Properties.Add('s', V_AllTrafSend);
+            Sub_Node.Properties.Add('r', V_AllTrafRecev);
+            Sub_Node.Properties.Add('d', V_AllSesDataTraf);
             // Сохраняем пункты меню
             XML_Node.Items.Add(C_MainFormHEG, HideEmptyGroups.Checked);
             // Сохраняем состояние верхней панели
@@ -4823,7 +4838,7 @@ begin
             for I := 0 to BottomPanelPopupMenu.Items.Count - 1 do
               Sub_Node.Properties.Add('b' + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
             // Записываем сам файл
-            SaveToFile(ProfilePath + SettingsFileName);
+            SaveToFile(V_ProfilePath + C_SettingsFileName);
           end;
       end;
   finally
@@ -4849,7 +4864,7 @@ begin
       if CancelBitBtn.Enabled then
         begin
           XShowForm(FileTransferForm);
-          DAShow(S_AlertHead, S_FileTransfer6, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[18].L_S, S_FileTransfer6, EmptyStr, 133, 3, 0);
           Exit;
         end;
       // Выбираем способ передачи файла
@@ -4896,13 +4911,13 @@ begin
       if ICQ_Work_Phaze then
         ICQ_SendYouAdded((ContactList.SelectedItem as TButtonItem).UIN)
       else
-        DAShow(S_AlertHead, OnlineAlert, EmptyStr, 133, 3, 0);
+        DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
     end;
 end;
 
 procedure TMainForm.SendInviteContactClick(Sender: TObject);
 begin
-  ShowMessage(S_DevelMess);
+  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TMainForm.SendMessageForContactClick(Sender: TObject);
@@ -4929,7 +4944,7 @@ end;
 procedure TMainForm.SnapToRightClick(Sender: TObject);
 begin
   // Уничтожаем старый AppBar
-  if DockAppBar then
+  if V_DockAppBar then
     AppBarDestroy;
   // Создаём новый AppBar
   AppBarCreate;
@@ -4937,23 +4952,23 @@ begin
     AppBarSetPos(False)
   else
     AppBarSetPos(True);
-  if not DockAppBar then
+  if not V_DockAppBar then
     begin
-      DockAppBar := True;
+      V_DockAppBar := True;
       // Запоминаем предыдущие размеры окна
-      NoDockHeigth := Height;
-      NoDockWigth := Width;
+      V_NoDockHeigth := Height;
+      V_NoDockWigth := Width;
     end;
   // Запоминаем сторону
   if Sender = SnapToRight then
     begin
-      DockRigth := True;
-      DockLeft := False;
+      V_DockRigth := True;
+      V_DockLeft := False;
     end
   else
     begin
-      DockRigth := False;
-      DockLeft := True;
+      V_DockRigth := False;
+      V_DockLeft := True;
     end;
   // Запускаем таймер перемещения формы в AppBar
   JvTimerList.Events[15].Enabled := True;
@@ -4970,7 +4985,7 @@ begin
       SoundOnOffToolTopButton.Down := True;
       SoundOnOffToolButton.ImageIndex := 136;
       SoundOnOffToolTopButton.ImageIndex := 136;
-      SoundON := False;
+      V_SoundON := False;
       if Assigned(SettingsForm) then
         SettingsForm.SoundOnOffCheckBox.Checked := True;
     end
@@ -4980,7 +4995,7 @@ begin
       SoundOnOffToolButton.ImageIndex := 135;
       SoundOnOffToolTopButton.ImageIndex := 135;
       if InitMixer <> 0 then
-        SoundON := True;
+        V_SoundON := True;
       if Assigned(SettingsForm) then
         SettingsForm.SoundOnOffCheckBox.Checked := False;
     end;
@@ -5096,7 +5111,7 @@ var
 begin
   // Определяем какой протокол в трэе вызвал это меню и назначаем
   // соответствующую иконку и таг для идентификации на пуект меню выбора статуса
-  if TrayProtoClickMenu = 'icqtrayicon' then
+  if V_TrayProtoClickMenu = 'icqtrayicon' then
     begin
       StatusTray1.ImageIndex := ICQToolButton.ImageIndex;
       // Очищаем пункты субменю
@@ -5114,7 +5129,7 @@ begin
             end;
         end;
     end
-  else if TrayProtoClickMenu = 'mratrayicon' then
+  else if V_TrayProtoClickMenu = 'mratrayicon' then
     begin
       StatusTray1.ImageIndex := MRAToolButton.ImageIndex;
       // Очищаем пункты субменю
@@ -5132,7 +5147,7 @@ begin
             end;
         end;
     end
-  else if TrayProtoClickMenu = 'jabbertrayicon' then
+  else if V_TrayProtoClickMenu = 'jabbertrayicon' then
     begin
       StatusTray1.ImageIndex := JabberToolButton.ImageIndex;
       // Очищаем пункты субменю
@@ -5176,8 +5191,8 @@ begin
         JvXML_Create(JvXML);
         try
           // Увеличиваем статистику входящего трафика
-          TrafRecev := TrafRecev + TwitterHttpClient.RcvdCount;
-          AllTrafRecev := AllTrafRecev + TwitterHttpClient.RcvdCount;
+          V_TrafRecev := V_TrafRecev + TwitterHttpClient.RcvdCount;
+          V_AllTrafRecev := V_AllTrafRecev + TwitterHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
             OpenTrafficClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
@@ -5193,11 +5208,11 @@ begin
                 begin
                   XML_Node := Root.Items.ItemNamed['error'];
                   if XML_Node <> nil then
-                    DAShow(S_Errorhead, XML_Node.Value, EmptyStr, 134, 2, 0);
+                    DAShow(Lang_Vars[17].L_S, XML_Node.Value, EmptyStr, 134, 2, 0);
                   // Проверяем на успешную публикацию
                   XML_Node := Root.Items.ItemNamed['created_at'];
                   if XML_Node <> nil then
-                    DAShow(S_InfoHead, S_TwitPostOK, EmptyStr, 133, 3, 0);
+                    DAShow(Lang_Vars[16].L_S, S_TwitPostOK, EmptyStr, 133, 3, 0);
                   // Начинаем разбор списка
                   if Root.Properties.Value('type') = 'array' then
                     begin
@@ -5247,7 +5262,7 @@ begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (TwitterHttpClient.StatusCode = 0) or (TwitterHttpClient.StatusCode >= 400) then
     begin
-      DAShow(S_Errorhead, Format(ErrorHttpClient(TwitterHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(TwitterHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -5286,9 +5301,9 @@ begin
   if not Assigned(UniqForm) then
     UniqForm := TUniqForm.Create(Self);
   if (ContactList.SelectedItem as TButtonItem).ContactType = C_Icq then
-    UniqForm.AccountPanel.Caption := ICQAccountInfo + C_BN + (ContactList.SelectedItem as TButtonItem).UIN
-  else if (ContactList.SelectedItem as TButtonItem).ContactType = S_Jabber then
-    UniqForm.AccountPanel.Caption := JabberAccountInfo + C_BN + (ContactList.SelectedItem as TButtonItem).UIN;
+    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + (ContactList.SelectedItem as TButtonItem).UIN
+  else if (ContactList.SelectedItem as TButtonItem).ContactType = C_Jabber then
+    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + (ContactList.SelectedItem as TButtonItem).UIN;
   // Отображаем окно
   XShowForm(UniqForm);
 end;
@@ -5359,8 +5374,8 @@ end;
 procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);
 begin
   // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + (Sender as THttpCli).SentCount;
-  AllTrafSend := AllTrafSend + (Sender as THttpCli).SentCount;
+  V_TrafSend := V_TrafSend + (Sender as THttpCli).SentCount;
+  V_AllTrafSend := V_AllTrafSend + (Sender as THttpCli).SentCount;
   if Assigned(TrafficForm) then
     OpenTrafficClick(nil);
 end;
@@ -5376,7 +5391,7 @@ begin
   if (UpdateHttpClient.StatusCode = 0) or (UpdateHttpClient.StatusCode >= 400) then
     begin
       S := Format(ErrorHttpClient(UpdateHttpClient.StatusCode), [C_RN]);
-      DAShow(S_Errorhead, S, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
       if Assigned(UpdateForm) then
         UpdateForm.InfoMemo.Lines.Add(C_RN + S);
     end;
@@ -5390,7 +5405,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -5399,14 +5414,14 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
 procedure TMainForm.ICQWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(S_Errorhead, NotifyConnectError(C_Icq, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   ICQ_GoOffline;
 end;
@@ -5414,7 +5429,7 @@ end;
 procedure TMainForm.MRAWSocketError(Sender: TObject);
 begin
   // Отображаем ошибки сокета
-  DAShow(S_Errorhead, NotifyConnectError(S_Mra, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   MRA_GoOffline;
 end;
@@ -5422,8 +5437,8 @@ end;
 procedure TMainForm.MRAWSocketSendData(Sender: TObject; BytesSent: Integer);
 begin
   // Увеличиваем статистику исходящего трафика
-  TrafSend := TrafSend + BytesSent;
-  AllTrafSend := AllTrafSend + BytesSent;
+  V_TrafSend := V_TrafSend + BytesSent;
+  V_AllTrafSend := V_AllTrafSend + BytesSent;
   if Assigned(TrafficForm) then
     OpenTrafficClick(nil);
 end;
@@ -5433,7 +5448,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -5444,7 +5459,7 @@ begin
   // Если при отключении возникла ошибка, то сообщаем об этом
   if (not MRA_Connect_Phaze) and (not MRA_Offline_Phaze) then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
       // Если нужно переподключаться, то активируем этот таймер
@@ -5462,12 +5477,12 @@ begin
   // Если при подключении возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
   // HTTP прокси коннект
-  if HttpProxy_Enable then
+  if V_HttpProxy_Enable then
     begin
       // Составляем адрес
       if MRA_Connect_Phaze then
@@ -5475,9 +5490,9 @@ begin
       else
         Http_data := MRA_Bos_IP + ':' + MRA_Bos_Port;
       // Если авторизация на прокси
-      if HttpProxy_Auth then
+      if V_HttpProxy_Auth then
         begin
-          Http_login := Base64Encode(HttpProxy_Login + ':' + HttpProxy_Password);
+          Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
           Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
         end;
       // Формируем основной запрос для http прокси
@@ -5498,7 +5513,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
     begin
-      DAShow(S_Errorhead, NotifyConnectError(S_Mra, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, ErrCode), EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;
@@ -5509,7 +5524,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + S_Mra + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;

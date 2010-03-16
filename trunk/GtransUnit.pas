@@ -122,10 +122,10 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(MyPath + Format(LangPath, [CurrentLang])) then
+        if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
           begin
             // Загружаем файл языка
-            LoadFromFile(MyPath + Format(LangPath, [CurrentLang]));
+            LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_GTFormCode];
@@ -149,7 +149,7 @@ begin
   SetCustomWidthComboBox(YourLangComboBox);
   SetCustomWidthComboBox(ToLangComboBox);
   // Другое
-  CancelBitBtn.Caption := S_Cancel;
+  CancelBitBtn.Caption := Lang_Vars[9].L_S;
 end;
 
 {$ENDREGION}
@@ -168,9 +168,9 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + AnketaFileName + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr') then
+        if FileExists(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr') then
           begin
-            LoadFromFile(ProfilePath + AnketaFileName + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
+            LoadFromFile(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
             if Root <> nil then
               begin
                 // Загружаем настройки перевода
@@ -188,7 +188,7 @@ begin
   end;
   // По умолчанию выставляем язык локализации
   if YourLangComboBox.ItemIndex = -1 then
-    YourLangComboBox.ItemIndex := YourLangComboBox.Items.IndexOfName('[' + CurrentLang + ']');
+    YourLangComboBox.ItemIndex := YourLangComboBox.Items.IndexOfName('[' + V_CurrentLang + ']');
 end;
 
 {$ENDREGION}
@@ -209,9 +209,9 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + AnketaFileName + GUserType + C_BN + GUIN + '.usr') then
+        if FileExists(V_ProfilePath + C_AnketaFolder + GUserType + C_BN + GUIN + '.usr') then
           begin
-            LoadFromFile(ProfilePath + AnketaFileName + GUserType + C_BN + GUIN + '.usr');
+            LoadFromFile(V_ProfilePath + C_AnketaFolder + GUserType + C_BN + GUIN + '.usr');
             if Root <> nil then
               begin
                 XML_Node := Root.Items.ItemNamed[C_UniqGT];
@@ -255,7 +255,7 @@ begin
   if (YourLangComboBox.ItemIndex = -1) or (ToLangComboBox.ItemIndex = -1) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(S_InfoHead, S_GtransErr2, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, S_GtransErr2, EmptyStr, 133, 3, 0);
       Exit;
     end;
   // Активируем режим перевода для этого контакта
@@ -263,14 +263,14 @@ begin
   ToLangCode := IsolateTextString(ToLangComboBox.Text, '[', ']');
   // Запоминаем параметры перевода для этого контакта
   // Создаём необходимые папки
-  ForceDirectories(ProfilePath);
+  ForceDirectories(V_ProfilePath);
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
       begin
-        if FileExists(ProfilePath + AnketaFileName + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr') then
-          LoadFromFile(ProfilePath + AnketaFileName + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
+        if FileExists(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr') then
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
         if Root <> nil then
           begin
             XML_Node := Root.Items.ItemNamed[C_UniqGT];
@@ -283,7 +283,7 @@ begin
             XML_Node.Properties.Add('t', ToLangCode);
             XML_Node.BoolValue := True;
             // Записываем сам файл
-            SaveToFile(ProfilePath + AnketaFileName + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
+            SaveToFile(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
           end;
       end;
   finally
@@ -361,7 +361,7 @@ begin
       GTranslation := False;
       if ChatForm.InfoPanel2.Caption = GUIN then
         ChatForm.NotifyPanel.Caption := Format(GtransErrL, [IntToStr(GtransHttpClient.StatusCode)]);
-      DAShow(S_Errorhead, Format(ErrorHttpClient(GtransHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(GtransHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -371,7 +371,7 @@ begin
   if ErrCode <> 0 then
     begin
       GTranslation := False;
-      DAShow(S_Errorhead, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -381,7 +381,7 @@ begin
   if Error <> 0 then
     begin
       GTranslation := False;
-      DAShow(S_Errorhead, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -421,8 +421,8 @@ begin
         List := TStringList.Create;
         try
           // Увеличиваем статистику входящего трафика
-          TrafRecev := TrafRecev + GtransHttpClient.RcvdCount;
-          AllTrafRecev := AllTrafRecev + GtransHttpClient.RcvdCount;
+          V_TrafRecev := V_TrafRecev + GtransHttpClient.RcvdCount;
+          V_AllTrafRecev := V_AllTrafRecev + GtransHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
             MainForm.OpenTrafficClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
@@ -452,7 +452,7 @@ begin
                           // Формируем сообщение
                           HMsg := GText + C_RN + '(' + Msg + ')';
                           // Добавляем сообщение в файл истории и в чат
-                          MsgD := YouAt + ' [' + DateTimeChatMess + ']';
+                          MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
                           // Форматируем сообщение под html формат
                           CheckMessage_BR(HMsg);
                           CheckMessage_ClearTag(HMsg);
@@ -469,25 +469,25 @@ begin
                               // Отправляем сообщение в юникод формате
                               ICQ_SendMessage_0406(GUIN, Msg, True);
                               // Формируем файл с историей
-                              HistoryFile := ProfilePath + HistoryFileName + GUserType + C_BN + ICQ_LoginUIN + C_BN + GUIN + '.htm';
+                              HistoryFile := V_ProfilePath + C_HistoryFolder + GUserType + C_BN + ICQ_LoginUIN + C_BN + GUIN + '.htm';
                             end
-                          else if UserType = S_Jabber then
+                          else if UserType = C_Jabber then
                             begin
                               // Если нет подключения к серверу Jabber, то выходим
-                              if NotProtoOnline(S_Jabber) then
+                              if NotProtoOnline(C_Jabber) then
                                 goto X;
                               // Отправляем сообщение
                               Jab_SendMessage(GUIN, Msg);
                               // Формируем файл с историей
-                              HistoryFile := ProfilePath + HistoryFileName + GUserType + C_BN + Jabber_LoginUIN + C_BN + GUIN + '.htm';
+                              HistoryFile := V_ProfilePath + C_HistoryFolder + GUserType + C_BN + Jabber_LoginUIN + C_BN + GUIN + '.htm';
                             end
-                          else if UserType = S_Mra then
+                          else if UserType = C_Mra then
                             begin
                               // Если нет подключения к серверу MRA, то выходим
-                              if NotProtoOnline(S_Mra) then
+                              if NotProtoOnline(C_Mra) then
                                 goto X;
                               // Формируем файл с историей
-                              HistoryFile := ProfilePath + HistoryFileName + GUserType + C_BN + MRA_LoginUIN + C_BN + GUIN + '.htm';
+                              HistoryFile := V_ProfilePath + C_HistoryFolder + GUserType + C_BN + MRA_LoginUIN + C_BN + GUIN + '.htm';
                             end
                           else
                             goto X;
@@ -499,7 +499,7 @@ begin
                               // Оповещаем о удачном переводе
                               NotifyPanel.Caption := GtransOKL;
                               // Если включены графические смайлики, то форматируем сообщение под смайлы
-                              if not TextSmilies then
+                              if not V_TextSmilies then
                                 CheckMessage_Smilies(HMsg);
                               // Увеличиваем счётчик исходящих сообщений
                               Inc(OutMessIndex);
@@ -528,7 +528,7 @@ begin
                 begin
                   if ChatForm.InfoPanel2.Caption = GUIN then
                     ChatForm.NotifyPanel.Caption := Format(GtransErrL, [GStatus]);
-                  DAShow(S_Errorhead, Format(GtransErrL, [GStatus]), EmptyStr, 134, 2, 0);
+                  DAShow(Lang_Vars[17].L_S, Format(GtransErrL, [GStatus]), EmptyStr, 134, 2, 0);
                   // Удаляем это сообщение из списка буфера
                   GtransListView.Items.Delete(0);
                 end;
