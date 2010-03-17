@@ -1007,7 +1007,7 @@ begin
   if not Assigned(UniqForm) then
     UniqForm := TUniqForm.Create(Self);
   if UserType = C_Icq then
-    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + InfoPanel2.Caption
+    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + UpperCase(C_Icq) + C_TN + InfoPanel2.Caption
   else if UserType = C_Jabber then
     UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + InfoPanel2.Caption;
   // Отображаем окно

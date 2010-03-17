@@ -817,7 +817,7 @@ begin
   if (MRA_LoginUIN = EmptyStr) or (MRA_LoginPassword = EmptyStr) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(Lang_Vars[16].L_S, MRAAccountInfo_1, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [UpperCase(C_Mra)]), EmptyStr, 133, 3, 0);
       // Открываем настройки MRA
       MRASettingsClick(Self);
       // Ставим фокусы в поле ввода логина или пароля
@@ -983,7 +983,7 @@ begin
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(Lang_Vars[16].L_S, JabberAccountInfo_1, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Jabber]), EmptyStr, 133, 3, 0);
       // Открываем настройки ICQ
       JabberSettingsClick(Self);
       // Ставим фокусы в поле ввода логина или пароля
@@ -1371,7 +1371,7 @@ begin
   if (ICQ_LoginUIN = EmptyStr) or (ICQ_LoginPassword = EmptyStr) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(Lang_Vars[16].L_S, ICQAccountInfo_1, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [UpperCase(C_Icq)]), EmptyStr, 133, 3, 0);
       // Открываем настройки ICQ
       ICQSettingsClick(Self);
       // Ставим фокусы в поле ввода логина или пароля
@@ -1641,7 +1641,7 @@ begin
     if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
         ICQ_GoOffline;
         Exit;
       end;
@@ -2042,7 +2042,7 @@ begin
               begin
                 // Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
                 ICQ_GoOffline;
                 Exit;
               end;
@@ -2148,7 +2148,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2489,7 +2489,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
@@ -3232,7 +3232,7 @@ begin
     if ((MRA_BuffPkt > EmptyStr) and (Text2Hex(LeftStr(MRA_BuffPkt, 4)) <> MRA_MagKey)) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
         MRA_GoOffline;
         Exit;
       end;
@@ -3324,7 +3324,7 @@ begin
               begin
                 // --Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(Lang_Vars[17].L_S, ParsingPktError + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
                 MRA_GoOffline;
                 Exit;
               end;
@@ -5301,7 +5301,7 @@ begin
   if not Assigned(UniqForm) then
     UniqForm := TUniqForm.Create(Self);
   if (ContactList.SelectedItem as TButtonItem).ContactType = C_Icq then
-    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + (ContactList.SelectedItem as TButtonItem).UIN
+    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + UpperCase(C_Icq) + C_TN + (ContactList.SelectedItem as TButtonItem).UIN
   else if (ContactList.SelectedItem as TButtonItem).ContactType = C_Jabber then
     UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + (ContactList.SelectedItem as TButtonItem).UIN;
   // Отображаем окно
@@ -5414,7 +5414,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -5524,7 +5524,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;

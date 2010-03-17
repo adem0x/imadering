@@ -645,7 +645,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := SocketConnErrorInfo_1 + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(HttpSocketErrCodeL, [Errcode]) + C_RN + '[ ' + SocketL + C_BN + SName + ' ]';
+  Result := Lang_Vars[23].L_S + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(HttpSocketErrCodeL, [Errcode]) + C_RN + '[ ' + SocketL + C_BN + SName + ' ]';
 end;
 
 {$ENDREGION}
@@ -1920,7 +1920,7 @@ end;
 function ErrorHttpClient(ErrCode: Integer): string;
 begin
   case Errcode of
-    0: Result := SocketConnErrorInfo_1;
+    0: Result := Lang_Vars[23].L_S;
     400: Result := Err400;
     401: Result := Err401;
     402: Result := Err402;
@@ -1946,7 +1946,7 @@ begin
     504: Result := Err504;
     505: Result := Err505
     else
-      Result := SocketConnErrorInfo_1;
+      Result := Lang_Vars[23].L_S;
   end;
   Result := Result + '%s' + '[ ' + Format(HttpSocketErrCodeL, [Errcode]) + ' ]';
 end;
@@ -2003,7 +2003,7 @@ begin
   P := Pos('<', Sbuff);
   if P <= 0 then
     begin
-      Dashow(Lang_Vars[17].L_S, Parsingpkterror, EmptyStr, 134, 2, 0);
+      Dashow(Lang_Vars[17].L_S, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
       Exit;
     end;
   Tmps := Copy(Sbuff, P, L - P + 1);

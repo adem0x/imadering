@@ -206,7 +206,7 @@ begin
       AddHTML(TopHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
       // Учётная запись контакта
       if ReqProto = C_Icq then
-        AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + ReqUIN, 'cbold')
+        AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + UpperCase(C_Icq) + C_TN + ReqUIN, 'cbold')
       else if ReqProto = C_Jabber then
         AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + ReqUIN, 'cbold');
       AddHTML(TopHTMLViewer, '<hr>', EmptyStr, False, True);
@@ -280,7 +280,7 @@ begin
   AddHTML(TopHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
   AddHTML(BottomHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
   // Учётная запись контакта
-  AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + C_Icq + C_TN + ReqUIN, 'cbold');
+  AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + UpperCase(C_Icq) + C_TN + ReqUIN, 'cbold');
   AddHTML(TopHTMLViewer, '<hr>', EmptyStr, False, True);
   // Загружаем информацию из распакованного xml файла с инфой
   // Инициализируем XML

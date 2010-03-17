@@ -334,8 +334,8 @@ var
 {$ENDREGION}
 {$REGION 'LangVars'}
 
-  // Переменные для языка | Lang_Vars[20].L_S
-  Lang_Vars: array [0 .. 20] of record L_N: string;
+  // Переменные для языка | Lang_Vars[25].L_S
+  Lang_Vars: array [0 .. 25] of record L_N: string;
   L_S: string;
 end
 = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
@@ -358,28 +358,14 @@ end
   (L_N: 'ErrorHead'; L_S: ''), // 17
   (L_N: 'AlertHead'; L_S: ''), // 18
   (L_N: 'WarningHead'; L_S: ''), // 19
-  (L_N: 'Account'; L_S: '')); // 20
+  (L_N: 'Account'; L_S: ''), // 20
+  (L_N: 'LoginError'; L_S: ''), // 21
+  (L_N: 'ParsingPktError'; L_S: ''), // 22
+  (L_N: 'ConnectError'; L_S: ''), // 23
+  (L_N: 'UnknownError'; L_S: ''), // 24
+  (L_N: 'AddContactError'; L_S: '')); // 25
 
-ICQAccountInfo_1 :
-string = 'Перед тем как подключиться к ICQ серверу, сначала укажите в настройках свой ICQ номер и пароль!';
-JabberAccountInfo_1 :
-string = 'Перед тем как подключиться к Jabber серверу, сначала укажите в настройках свой JID аккаунт и пароль!';
-MRAAccountInfo :
-string = 'Учётная запись MRA:';
-MRAAccountInfo_1 :
-string = 'Перед тем как подключиться к MRA серверу, сначала укажите в настройках свой Email и пароль!';
-PassLabelInfo :
-string = 'Пароль:';
-ParsingPktError :
-string = 'Неудалось произвести разбор пакета данных полученных от сервера.';
-SocketConnErrorInfo_1 :
-string = 'Соединение не установлено.';
-RegNewAlert_1 :
-string = 'Укажите пароль для новой учётной записи.';
-UnknownError :
-string = 'Неизвестная ошибка';
-AddContactError :
-string = 'Ошибка при добавлении контакта.';
+
 AddGroupError :
 string = 'Ошибка при добавлении группы.';
 DelGroupError :

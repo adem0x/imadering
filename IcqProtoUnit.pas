@@ -4338,7 +4338,7 @@ begin
   else if ErrCode = '0022' then
     Result := ConnectErrors_0022
   else
-    Result := UnknownError + ' (' + ErrCode + ')';
+    Result := Lang_Vars[24].L_S + ' (' + ErrCode + ')';
   XLog('ICQ | ' + Result, C_Icq);
 end;
 
