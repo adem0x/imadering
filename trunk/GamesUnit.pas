@@ -648,7 +648,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, SocketConnErrorInfo_1 + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
