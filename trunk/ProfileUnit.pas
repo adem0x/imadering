@@ -361,7 +361,7 @@ A :;
   if not ForceDirectories(V_ProfilePath) then
     begin
       // Сообщаем, что прав на запись обновления у нас нет
-      DAShow(Lang_Vars[17].L_S, S_UnPackErr, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[63].L_S, EmptyStr, 134, 2, 0);
       goto A;
     end;
 end;

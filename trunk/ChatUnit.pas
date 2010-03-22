@@ -299,7 +299,7 @@ begin
                   // Если сжатие истории закончено успешно, то удаляем файл истории
                   DeleteFile(HistoryFile);
                   // Сообщаем о создании архива и записываем это в новый файл для памятки
-                  HistoryText := '<span class=d>' + HistoryCompressedL + '</span><br><br>';
+                  HistoryText := '<span class=d>' + Lang_Vars[66].L_S + '</span><br><br>';
                   SaveTextInHistory(HistoryText, HistoryFile);
                 end
               else
@@ -538,9 +538,9 @@ begin
   else
     begin
       // Иначе добавляем быстрые ответы по умолчанию
-      List.Add(QReply1L);
-      List.Add(QReply2L);
-      List.Add(QReply3L);
+      List.Add(Parse(';', Lang_Vars[43].L_S, 1));
+      List.Add(Parse(';', Lang_Vars[43].L_S, 2));
+      List.Add(Parse(';', Lang_Vars[43].L_S, 3));
     end;
   try
     // Добаляем быстрые ответы в раздел меню поля ввода текста
@@ -628,6 +628,7 @@ begin
   LoadHTMLStrings(HTMLMsg, Doc);
   HTMLMsg.SelectAll;
   Msg := HTMLMsg.SelText;
+  Msg := ReplaceStr(Msg, #$A0, C_BN);
 end;
 
 {$ENDREGION}
@@ -1862,14 +1863,12 @@ begin
             // Выходим и предоставляем заверщить отправку сообщения технологии Gtans
             Exit;
           end;
-        HMsg := Msg;
+        HMsg := Text2XML(Msg);
         // Добавляем сообщение в файл истории и в чат
         MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
         // Форматируем сообщение под html формат
         CheckMessage_BR(HMsg);
         CheckMessage_ClearTag(HMsg);
-        CheckMessage_BR(HMsg);
-        DecorateURL(HMsg);
         // Если тип контакта ICQ, то отправляем сообщение по ICQ протоколу
         if UserType = C_Icq then
           begin
@@ -1889,7 +1888,7 @@ begin
             if NotProtoOnline(C_Jabber) then
               Exit;
             // Отправляем сообщение
-            Jab_SendMessage(InfoPanel2.Caption, Msg);
+            Jab_SendMessage(InfoPanel2.Caption, Text2XML(Msg));
             // Формируем файл с историей
             HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + Jabber_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
           end
@@ -1906,6 +1905,9 @@ begin
         else
           Exit;
         // Записываем историю в файл этого контакта
+        HMsg := Text2XML(HMsg);
+        CheckMessage_BR(HMsg);
+        DecorateURL(HMsg);
         SaveTextInHistory('<span class=a>' + MsgD + '</span><br><span class=c>' + HMsg + '</span><br><br>', HistoryFile);
         // Если включены графические смайлики, то форматируем сообщение под смайлы
         if not V_TextSmilies then

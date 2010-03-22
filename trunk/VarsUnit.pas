@@ -34,6 +34,7 @@ const
 {$REGION 'SysConst'}
 
   C_RN = #13#10;
+  C_BR = '<br>';
   C_BN = ' ';
   C_PN = ' | ';
   C_LN = '; ';
@@ -86,6 +87,7 @@ const
   C_Profiles = 'profiles';
   C_Cur = 'current';
   C_Auto = 'auto_login';
+  C_Email = 'Email';
   //
   C_NameInfo = 'name_info';
   C_Nick = 'nick';
@@ -334,8 +336,8 @@ var
 {$ENDREGION}
 {$REGION 'LangVars'}
 
-  // Переменные для языка | Lang_Vars[25].L_S
-  Lang_Vars: array [0 .. 25] of record L_N: string;
+  // Переменные для языка | Lang_Vars[83].L_S
+  Lang_Vars: packed array [0 .. 83] of record L_N: string;
   L_S: string;
 end
 = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
@@ -363,91 +365,76 @@ end
   (L_N: 'ParsingPktError'; L_S: ''), // 22
   (L_N: 'ConnectError'; L_S: ''), // 23
   (L_N: 'UnknownError'; L_S: ''), // 24
-  (L_N: 'AddContactError'; L_S: '')); // 25
+  (L_N: 'AddContactError'; L_S: ''), // 25
+  (L_N: 'AddGroupError'; L_S: ''), // 26
+  (L_N: 'DellGroupError'; L_S: ''), // 27
+  (L_N: 'AccountX'; L_S: ''), // 28
+  (L_N: 'NoPassChange'; L_S: ''), // 29
+  (L_N: 'OkPassChange'; L_S: ''), // 30
+  (L_N: 'OnlineAlert'; L_S: ''), // 31
+  (L_N: 'TempGroupCaption'; L_S: ''), // 32
+  (L_N: 'NoCLGroupCaption'; L_S: ''), // 33
+  (L_N: 'PhoneGroupCaption'; L_S: ''), // 34
+  (L_N: 'ConnectTime'; L_S: ''), // 35
+  (L_N: 'RegDate'; L_S: ''), // 36
+  (L_N: 'ProtoVersion'; L_S: ''), // 37
+  (L_N: 'ClientVariable'; L_S: ''), // 38
+  (L_N: 'CellularPhone'; L_S: ''), // 39
+  (L_N: 'Note'; L_S: ''), // 40
+  (L_N: 'UpDateAuto'; L_S: ''), // 41
+  (L_N: 'UpDateCaption'; L_S: ''), // 42
+  (L_N: 'QReply'; L_S: ''), // 43
+  (L_N: 'HistoryDell'; L_S: ''), // 44
+  (L_N: 'UserCloseChat'; L_S: ''), // 45
+  (L_N: 'UserTyping'; L_S: ''), // 46
+  (L_N: 'UserStatus'; L_S: ''), // 47
+  (L_N: 'OnlineInfo_1'; L_S: ''), // 48
+  (L_N: 'OnlineInfo_2'; L_S: ''), // 49
+  (L_N: 'OnlineInfo_3'; L_S: ''), // 50
+  (L_N: 'OnlineInfo_4'; L_S: ''), // 51
+  (L_N: 'OnlineInfo_5'; L_S: ''), // 52
+  (L_N: 'OnlineInfo_6'; L_S: ''), // 53
+  (L_N: 'InfoSaveOK'; L_S: ''), // 54
+  (L_N: 'UserInfoOK'; L_S: ''), // 55
+  (L_N: 'UserInfoReq'; L_S: ''), // 56
+  (L_N: 'UserInfoCap'; L_S: ''), // 57
+  (L_N: 'GameCaption'; L_S: ''), // 58
+  (L_N: 'EmailCount'; L_S: ''), // 59
+  (L_N: 'TwitPostOK'; L_S: ''), // 60
+  (L_N: 'PostInTwitter'; L_S: ''), // 61
+  (L_N: 'CharsCount'; L_S: ''), // 62
+  (L_N: 'NoAdmin'; L_S: ''), // 63
+  (L_N: 'DownCount'; L_S: ''), // 64
+  (L_N: 'NewProgErr'; L_S: ''), // 65
+  (L_N: 'HistoryCompressed'; L_S: ''), // 66
+  (L_N: 'Status1'; L_S: ''), // 67 Готов поболтать
+  (L_N: 'Status2'; L_S: ''), // 68 Злой
+  (L_N: 'Status3'; L_S: ''), // 69 Депрессия
+  (L_N: 'Status4'; L_S: ''), // 70 Дома
+  (L_N: 'Status5'; L_S: ''), // 71 На работе
+  (L_N: 'Status6'; L_S: ''), // 72 Кушаю
+  (L_N: 'Status7'; L_S: ''), // 73 Отошёл
+  (L_N: 'Status8'; L_S: ''), // 74 Недоступен
+  (L_N: 'Status9'; L_S: ''), // 75 Занят
+  (L_N: 'Status10'; L_S: ''), // 76 Не беспокоить
+  (L_N: 'Status11'; L_S: ''), // 77 В сети
+  (L_N: 'Status12'; L_S: ''), // 78 Невидимый
+  (L_N: 'Status13'; L_S: ''), // 79 Невидимый для всех
+  (L_N: 'Status14'; L_S: ''), // 80 Не в сети
+  (L_N: 'Status15'; L_S: ''), // 81 Неопределённый
+  (L_N: 'Status16'; L_S: ''), // 82 Необходима авторизация
+  (L_N: 'DellContact'; L_S: '')); // 83
 
 
-AddGroupError :
-string = 'Ошибка при добавлении группы.';
-DelGroupError :
-string = 'Ошибка при удалении группы.';
-ICQxUIN :
-string = 'Ваш номер ICQ используется на другом компьютере.';
-PassChangeAlert_1 :
-string = 'Пароль не был изменён. Текущий или новый пароль введён неверно.';
-PassChangeAlert_2 :
-string = 'Пароль изменён.';
-OnlineAlert :
-string = 'Для выполнения этого действия необходимо подключиться.';
-HideContactGroupCaption :
-string = 'Временные';
-NoInListGroupCaption :
-string = 'Не в списке';
-PhoneGroupCaption :
-string = 'Телефонные';
-ConnTimeL :
-string = 'Подключён:';
-RegDateL :
-string = 'Рег. дата:';
-ChatDateL :
-string = 'Последний чат:';
-ProtoVerL :
-string = 'Версия протокола:';
-ClientVariableL :
-string = 'Возможный клиент:';
-CellularPhoneL :
-string = 'Сотовый:';
-NoteL :
-string = 'Заметка:';
-EmailL :
-string = 'Email:';
-ConnectFlagL :
-string = 'Флаг подключения:';
-UpDate1L :
-string = 'Обновить версию автоматически?';
-UpDate2L :
-string = 'На официальном сайте www.imadering.com доступно обновление программы IMadering';
-UpDate3L :
-string = 'Обновление';
-QReply1L :
-string = 'Привет!';
-QReply2L :
-string = 'Как дела?';
-QReply3L :
-string = 'Пока';
-HistoryDelL :
-string = 'Вы действительно хотите удалить историю сообщений?';
-CloseChatWindowsL :
-string = 'Собеседник закрыл окно чата!';
-TypingTextL :
-string = 'Печатает...';
-ClientL :
-string = 'Клиент:';
-StatusL :
-string = 'Статус:';
-OnlineInfo1L :
-string = 'Дата начала сбора статистики';
-OnlineInfo2L :
-string = 'Дней проведено в сети';
-OnlineInfo3L :
-string = 'Всего отправлено Away сообщений';
-OnlineInfo4L :
-string = 'URL ссылки от сервера';
-OnlineInfo5L :
-string = 'IP адрес ICQ сервера';
-OnlineInfo6L :
-string = 'Hash аватара';
-OnlineInfo7L :
-string = 'Записей в серверном списке контактов';
-PassChangeOKL :
-string = 'Пароль изменён';
-AnketaSaveOKL :
-string = 'Ваши данные успешно обновлены на сервере.';
-InfoOKL :
-string = 'Информация о контакте найдена!';
-InfoReqL :
-string = 'Получение информации...';
-InfoCaptionL :
-string = 'Информация о контакте';
+
+
+
+
+
+
+
+
+
 InfoNickL :
 string = 'Ник:';
 InfoNameL :
@@ -518,8 +505,7 @@ InfoHairL :
 string = 'Цвет волос:';
 InfoChildrenL1 :
 string = 'Детей:';
-DellContactL :
-string = 'Контакт "%s" будет удалён. Вы уверены?';
+
 DellGroupL :
 string = 'Группа "%s" будет удалёна. Вы уверены?';
 DellYourSelfL :
@@ -612,8 +598,6 @@ S_FileTransfer6 :
 string;
 SocketL :
 string = 'Сокет:';
-HistoryCompressedL :
-string = 'Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории.';
 GtransProcessL :
 string = 'Перевод ...';
 GtransOKL :
@@ -622,22 +606,6 @@ GtransErrL :
 string = 'Ошибка перевода: %s';
 S_GtransErr2 :
 string;
-NewProgErrL :
-string = 'Ошибка запуска другого профиля программы.';
-S_DownCount :
-string;
-S_UnPackErr :
-string = 'У вас нет прав на запись файлов!_r_Необходимы права администратора.';
-S_CharsCount :
-string = '%d из %d';
-S_PostInTwitter :
-string;
-S_TwitPostOK :
-string;
-EmailMessagesL :
-string = 'У вас в ящике %s непрочитанных писем!' + C_RN + C_RN + 'Всего в ящике %s писем.';
-S_Game :
-string = 'Игра %s';
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}
@@ -707,43 +675,6 @@ ConnectErrors_0020 :
 string = 'Неверный SecureID.';
 ConnectErrors_0022 :
 string = 'Эта учётная запись недоступна из-за вашего возраста (меньше 13).';
-
-{$ENDREGION}
-{$REGION 'StatusesLangVars'}
-
-// Основные статусы плюс расширенные из QIP
-S_Status1 :
-string; // Готов поболтать
-S_Status2 :
-string; // Злой
-S_Status3 :
-string; // Депрессия
-S_Status4 :
-string; // Дома
-S_Status5 :
-string; // На работе
-S_Status6 :
-string; // Кушаю
-S_Status7 :
-string; // Отошёл
-S_Status8 :
-string; // Недоступен
-S_Status9 :
-string; // Занят
-S_Status10 :
-string; // Не беспокоить
-S_Status11 :
-string; // В сети
-S_Status12 :
-string; // Невидимый
-S_Status13 :
-string; // Невидимый для всех
-S_Status14 :
-string; // Не в сети
-S_Status15 :
-string; // Неопределённый
-S_Status16 :
-string; // Необходима авторизация
 
 {$ENDREGION}
 {$REGION 'HTTP_Errors_Vars'}
@@ -938,7 +869,7 @@ begin
                       begin
                         Sub_Node := XML_Node.Items.ItemNamed[Lang_Vars[I].L_N];
                         if Sub_Node <> nil then
-                          Lang_Vars[I].L_S := CheckText_RN(Sub_Node.Properties.Value('c'));
+                          Lang_Vars[I].L_S := XML2Text(CheckText_RN(Sub_Node.Properties.Value('c')));
                       end;
                   end;
               end;

@@ -153,7 +153,8 @@ uses
   IcqContactInfoUnit,
   IcqOptionsUnit,
   RosterUnit,
-  JvSimpleXml;
+  JvSimpleXml,
+  OverbyteIcsUrl;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -239,7 +240,7 @@ begin
           RosterItem.Caption := C_NoCL;
           // Подготавиливаем все значения
           RosterForm.RosterItemSetFull(RosterItem);
-          RosterItem.SubItems[1] := NoInListGroupCaption;
+          RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
         end;
       // Добавляем этот контакт в Ростер
       RosterItem := RosterForm.RosterJvListView.Items.Add;

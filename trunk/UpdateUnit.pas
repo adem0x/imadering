@@ -155,7 +155,7 @@ begin
   if InfoMemo.Text <> EmptyStr then
     InfoMemo.Lines.Add(EmptyStr);
   // Обнуляем показатели прогресса
-  LoadSizeLabel.Caption := Format(S_DownCount, ['0']);
+  LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, ['0']);
   DownloadProgressBar.Position := 0;
   // Выводим информацию о начале закачки обноления
   InfoMemo.Lines.Add(S_UpDateStart + ' (' + V_UpdateVersionPath + ')');

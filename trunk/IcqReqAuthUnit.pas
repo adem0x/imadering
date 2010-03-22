@@ -151,7 +151,7 @@ begin
           SetLength(S, 140);
           InfoMemo.Text := S;
         end;
-      CountLabel.Caption := Format(S_CharsCount, [InfoMemo.GetTextLen, 140]);
+      CountLabel.Caption := Format(Lang_Vars[62].L_S, [InfoMemo.GetTextLen, 140]);
     end;
 end;
 
@@ -174,10 +174,10 @@ begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(6, Icon);
   // Отображаем информацию и запрос на закачку новой версии
-  Caption := UpDate3L;
-  HeadLabel.Caption := UpDate1L;
+  Caption := Lang_Vars[42].L_S;
+  HeadLabel.Caption := Lang_Vars[41].L_S;
   CountLabel.Caption := EmptyStr;
-  InfoMemo.Text := UpDate2L + C_RN + C_RN + M;
+  InfoMemo.Text := Lang_Vars[13].L_S + C_RN + C_RN + M;
   // Ставим флаги функции окна
   UpDate := True;
   Invite := False;
@@ -195,8 +195,8 @@ begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(272, Icon);
   // Отображаем информацию и запрос на закачку новой версии
-  Caption := C_Twitter + ': ' + S_PostInTwitter;
-  HeadLabel.Caption := S_PostInTwitter;
+  Caption := C_Twitter + C_TN + Lang_Vars[61].L_S;
+  HeadLabel.Caption := Lang_Vars[61].L_S;
   InfoMemo.Text := M;
   // Ставим флаги функции окна
   UpDate := False;

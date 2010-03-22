@@ -357,7 +357,7 @@ begin
   // Отображаем процесс получения данных
   if GameLoadHttpClient.ContentLength > -1 then
     begin
-      LoadSizeLabel.Caption := Format(S_DownCount, [FloatToStrF(GameLoadHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
+      LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(GameLoadHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
       LoadGameProgressBar.Max := GameLoadHttpClient.ContentLength;
       LoadGameProgressBar.Position := GameLoadHttpClient.RcvdCount;
     end;
@@ -519,7 +519,7 @@ begin
       LoadGameBitBtn.Visible := True;
     end;
   // В заголовке отображаем название игры
-  Caption := Format(S_Game, ['- ' + CatalogButtonGroup.Items.Items[index].Caption]);
+  Caption := Format(Lang_Vars[58].L_S, ['- ' + CatalogButtonGroup.Items.Items[index].Caption]);
 end;
 
 {$ENDREGION}

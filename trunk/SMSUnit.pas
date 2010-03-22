@@ -219,7 +219,7 @@ begin
       SetLength(S, 41);
       SMSTextMemo.Text := S;
     end;
-  CountLabel.Caption := Format(S_CharsCount, [SMSTextMemo.GetTextLen, 41]);
+  CountLabel.Caption := Format(Lang_Vars[62].L_S, [SMSTextMemo.GetTextLen, 41]);
 end;
 
 {$ENDREGION}

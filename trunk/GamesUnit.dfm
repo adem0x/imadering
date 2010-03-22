@@ -158,6 +158,9 @@ object GamesForm: TGamesForm
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
+        DesignSize = (
+          399
+          50)
         object LoadLabel: TLabel
           Left = 8
           Top = 4
@@ -176,6 +179,7 @@ object GamesForm: TGamesForm
           Width = 3
           Height = 13
           Alignment = taRightJustify
+          Anchors = [akTop, akRight]
         end
         object LoadGameProgressBar: TProgressBar
           AlignWithMargins = True
