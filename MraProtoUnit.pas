@@ -111,7 +111,7 @@ const
 
   // Расшифровка пакетов для лога
 MRA_Pkt_Names :
-array [0 .. 30] of record Pkt_Code: Integer;
+packed array [0 .. 30] of record Pkt_Code: Integer;
 Pkt_Name :
 string;
 end
@@ -288,7 +288,7 @@ begin
     begin
       Len := HexToInt(Text2Hex(NextData(PktData, 4)));
       Len := Swap32(Len);
-      Mess := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)));
+      Mess := Text2XML(UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len))));
     end;
   // Обрабатываем сообщение и отображаем
   if (M_From <> EmptyStr) and (Mess <> EmptyStr) then
@@ -300,8 +300,6 @@ begin
       CheckMessage_BR(Mess);
       ChatForm.CheckMessage_ClearTag(Mess);
       PopMsg := Mess;
-      CheckMessage_BR(Mess);
-      DecorateURL(Mess);
       // Ищем эту запись в Ростере
       RosterItem := RosterForm.ReqRosterItem(M_From);
       if RosterItem <> nil then
@@ -333,7 +331,7 @@ begin
               RosterItem.Caption := C_NoCL;
               // Подготавиливаем все значения
               RosterForm.RosterItemSetFull(RosterItem);
-              RosterItem.SubItems[1] := URLEncode(NoInListGroupCaption);
+              RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
             end;
           // Добавляем этот контакт в Ростер
           RosterItem := RosterForm.RosterJvListView.Items.Add;
@@ -357,6 +355,9 @@ begin
         end;
       // Записываем история в файл истории с этим контактов
       HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + '.htm';
+      Mess := Text2XML(Mess);
+      CheckMessage_BR(Mess);
+      DecorateURL(Mess);
       SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
       // Добавляем сообщение в текущий чат
       RosterItem.SubItems[36] := 'X';
@@ -451,7 +452,7 @@ begin
           S_Log := S_Log + MRA_Email_Unread + C_RN;
           // Сообщаем всплывашкой сколько Email сообщений
           if MRA_Email_Unread <> '0' then
-            DAShow(Lang_Vars[16].L_S, Format(EmailMessagesL, [MRA_Email_Unread, MRA_Email_Total]), EmptyStr, 133, 3, 60000);
+            DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[59].L_S, [MRA_Email_Unread, MRA_Email_Total]), EmptyStr, 133, 3, 60000);
         end
       else if S = 'MRIM.NICKNAME' then
         begin
@@ -541,7 +542,7 @@ begin
         ListItemD := RosterForm.RosterJvListView.Items.Add;
         ListItemD.Caption := '999';
         RosterForm.RosterItemSetFull(ListItemD);
-        ListItemD.SubItems[1] := URLEncode(PhoneGroupCaption);
+        ListItemD.SubItems[1] := URLEncode(Lang_Vars[34].L_S);
         ListItemD.SubItems[3] := C_Mra;
         ListItemD.SubItems[4] := 'phone';
         // Получаем контакты

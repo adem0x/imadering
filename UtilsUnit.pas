@@ -156,11 +156,36 @@ procedure AppBarCreate;
 procedure AppBarSetPos(const Left: boolean);
 procedure AppBarDestroy;
 function ExtractUrlFileName(const AUrl: string): string;
+function Text2XML(Str: string): string;
+function XML2Text(Str: string): string;
 
 {$ENDREGION}
 
 implementation
 
+{$REGION 'XML and Text'}
+
+  function Text2XML(Str: string): string;
+  begin
+    Result := Str;
+    Result := ReplaceStr(Result, '&', '&amp;');
+    Result := ReplaceStr(Result, '<', '&lt;');
+    Result := ReplaceStr(Result, '>', '&gt;');
+    Result := ReplaceStr(Result, '"', '&quot;');
+    Result := ReplaceStr(Result, '''', '&apos;');
+  end;
+
+  function XML2Text(Str: string): string;
+  begin
+    Result := Str;
+    Result := ReplaceStr(Result, '&amp;', '&');
+    Result := ReplaceStr(Result, '&lt;', '<');
+    Result := ReplaceStr(Result, '&gt;', '>');
+    Result := ReplaceStr(Result, '&quot;', '"');
+    Result := ReplaceStr(Result, '&apos;', '''');
+  end;
+
+{$ENDREGION}
 {$REGION 'ExtractUrlFileName'}
 
   function ExtractUrlFileName(const AUrl: string): string;
@@ -757,13 +782,19 @@ begin
   Result := False;
   // Проверяем онлайн ли клиент для этого протокола
   if (Proto = C_Icq) and (not Icq_work_phaze) then
-    Result := True
+    begin
+      Proto := UpperCase(Proto);
+      Result := True;
+    end
   else if (Proto = C_Jabber) and (not Jabber_work_phaze) then
     Result := True
   else if (Proto = C_Mra) and (not Mra_work_phaze) then
-    Result := True;
+    begin
+      Proto := UpperCase(Proto);
+      Result := True;
+    end;
   if Result then
-    Dashow(Lang_Vars[18].L_S, Onlinealert, EmptyStr, 133, 3, 0);
+    Dashow(Lang_Vars[18].L_S, Format(Lang_Vars[31].L_S, [Proto]), EmptyStr, 133, 3, 0);
 end;
 
 {$ENDREGION}
@@ -772,7 +803,10 @@ end;
 procedure CheckMessage_BR(var Msg: string);
 begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
-  Msg := ReplaceStr(Msg, C_RN, '<br>');
+  Msg := ReplaceStr(Msg, C_RN, C_BR);
+  Msg := ReplaceStr(Msg, #10, C_BR);
+  Msg := ReplaceStr(Msg, C_BR + C_BN, C_BR + '&nbsp;');
+  Msg := ReplaceStr(Msg, C_BN + C_BN, '&nbsp;&nbsp;');
 end;
 
 {$ENDREGION}

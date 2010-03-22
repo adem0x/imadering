@@ -630,70 +630,70 @@ begin
   TopTrafficONMenu.Caption := TrafficONMenu.Caption;
   SearchInCL.Caption := SearchInCLMainMenu.Caption;
   TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
-  PostMessageTwitterMenu.Caption := S_PostInTwitter;
+  PostMessageTwitterMenu.Caption := Lang_Vars[61].L_S;
   // Применяем перевод статусов в меню
-  ICQStatusFFC.Caption := S_Status1;
-  ICQStatusEvil.Caption := S_Status2;
-  ICQStatusDepres.Caption := S_Status3;
-  ICQStatusHome.Caption := S_Status4;
-  ICQStatusWork.Caption := S_Status5;
-  ICQStatusLunch.Caption := S_Status6;
-  ICQStatusAway.Caption := S_Status7;
-  ICQStatusNA.Caption := S_Status8;
-  ICQStatusOccupied.Caption := S_Status9;
-  ICQStatusDND.Caption := S_Status10;
-  ICQStatusOnline.Caption := S_Status11;
-  ICQStatusInvisible.Caption := S_Status12;
-  ICQStatusInvisibleForAll.Caption := S_Status13;
-  ICQStatusOffline.Caption := S_Status14;
+  ICQStatusFFC.Caption := Lang_Vars[67].L_S;
+  ICQStatusEvil.Caption := Lang_Vars[68].L_S;
+  ICQStatusDepres.Caption := Lang_Vars[69].L_S;
+  ICQStatusHome.Caption := Lang_Vars[70].L_S;
+  ICQStatusWork.Caption := Lang_Vars[71].L_S;
+  ICQStatusLunch.Caption := Lang_Vars[72].L_S;
+  ICQStatusAway.Caption := Lang_Vars[73].L_S;
+  ICQStatusNA.Caption := Lang_Vars[74].L_S;
+  ICQStatusOccupied.Caption := Lang_Vars[75].L_S;
+  ICQStatusDND.Caption := Lang_Vars[76].L_S;
+  ICQStatusOnline.Caption := Lang_Vars[77].L_S;
+  ICQStatusInvisible.Caption := Lang_Vars[78].L_S;
+  ICQStatusInvisibleForAll.Caption := Lang_Vars[79].L_S;
+  ICQStatusOffline.Caption := Lang_Vars[80].L_S;
   //
   MRASettings.Caption := ICQSettings.Caption;
   MRAXStatus.Caption := ICQXStatus.Caption;
-  MRAStatusFFC.Caption := S_Status1;
-  MRAStatusAway.Caption := S_Status7;
-  MRAStatusDND.Caption := S_Status10;
-  MRAStatusOnline.Caption := S_Status11;
-  MRAStatusInvisible.Caption := S_Status12;
-  MRAStatusOffline.Caption := S_Status14;
+  MRAStatusFFC.Caption := Lang_Vars[67].L_S;
+  MRAStatusAway.Caption := Lang_Vars[73].L_S;
+  MRAStatusDND.Caption := Lang_Vars[76].L_S;
+  MRAStatusOnline.Caption := Lang_Vars[77].L_S;
+  MRAStatusInvisible.Caption := Lang_Vars[78].L_S;
+  MRAStatusOffline.Caption := Lang_Vars[80].L_S;
   PingMRAServer.Caption := PingICQServer.Caption;
   UnstableMRAStatus.Caption := UnstableICQStatus.Caption;
   //
   JabberSettings.Caption := ICQSettings.Caption;
   JabberSearchNewContact.Caption := ICQSearchNewContact.Caption;
   JabberXStatus.Caption := ICQXStatus.Caption;
-  JabberStatusFFC.Caption := S_Status1;
-  JabberStatusEvil.Caption := S_Status2;
-  JabberStatusDepression.Caption := S_Status3;
-  JabberStatusHome.Caption := S_Status4;
-  JabberStatusWork.Caption := S_Status5;
-  JabberStatusLunch.Caption := S_Status6;
-  JabberStatusAway.Caption := S_Status7;
-  JabberStatusNA.Caption := S_Status8;
-  JabberStatusOccupied.Caption := S_Status9;
-  JabberStatusDND.Caption := S_Status10;
-  JabberStatusOnline.Caption := S_Status11;
-  JabberStatusInvisible.Caption := S_Status12;
-  JabberStatusOffline.Caption := S_Status14;
+  JabberStatusFFC.Caption := Lang_Vars[67].L_S;
+  JabberStatusEvil.Caption := Lang_Vars[68].L_S;
+  JabberStatusDepression.Caption := Lang_Vars[69].L_S;
+  JabberStatusHome.Caption := Lang_Vars[70].L_S;
+  JabberStatusWork.Caption := Lang_Vars[71].L_S;
+  JabberStatusLunch.Caption := Lang_Vars[72].L_S;
+  JabberStatusAway.Caption := Lang_Vars[73].L_S;
+  JabberStatusNA.Caption := Lang_Vars[74].L_S;
+  JabberStatusOccupied.Caption := Lang_Vars[75].L_S;
+  JabberStatusDND.Caption := Lang_Vars[76].L_S;
+  JabberStatusOnline.Caption := Lang_Vars[77].L_S;
+  JabberStatusInvisible.Caption := Lang_Vars[78].L_S;
+  JabberStatusOffline.Caption := Lang_Vars[80].L_S;
   PingJabberServer.Caption := PingICQServer.Caption;
   UnstableJabberStatus.Caption := UnstableICQStatus.Caption;
   //
-  AllStatusFFC.Caption := S_Status1;
-  AllStatusEvil.Caption := S_Status2;
-  AllStatusDepres.Caption := S_Status3;
-  AllStatusHome.Caption := S_Status4;
-  AllStatusWork.Caption := S_Status5;
-  AllStatusLunch.Caption := S_Status6;
-  AllStatusAway.Caption := S_Status7;
-  AllStatusNA.Caption := S_Status8;
-  AllStatusOccupied.Caption := S_Status9;
-  AllStatusDND.Caption := S_Status10;
-  AllStatusOnline.Caption := S_Status11;
-  AllStatusInvisible.Caption := S_Status12;
-  AllStatusOffline.Caption := S_Status14;
+  AllStatusFFC.Caption := Lang_Vars[67].L_S;
+  AllStatusEvil.Caption := Lang_Vars[68].L_S;
+  AllStatusDepres.Caption := Lang_Vars[69].L_S;
+  AllStatusHome.Caption := Lang_Vars[70].L_S;
+  AllStatusWork.Caption := Lang_Vars[71].L_S;
+  AllStatusLunch.Caption := Lang_Vars[72].L_S;
+  AllStatusAway.Caption := Lang_Vars[73].L_S;
+  AllStatusNA.Caption := Lang_Vars[74].L_S;
+  AllStatusOccupied.Caption := Lang_Vars[75].L_S;
+  AllStatusDND.Caption := Lang_Vars[76].L_S;
+  AllStatusOnline.Caption := Lang_Vars[77].L_S;
+  AllStatusInvisible.Caption := Lang_Vars[78].L_S;
+  AllStatusOffline.Caption := Lang_Vars[80].L_S;
   //
   TwitterSettingsMenu.Caption := ICQSettings.Caption;
-  OnlineTwitterMenu.Caption := S_Status11;
-  OfflineTwitterMenu.Caption := S_Status14;
+  OnlineTwitterMenu.Caption := Lang_Vars[77].L_S;
+  OfflineTwitterMenu.Caption := Lang_Vars[80].L_S;
 end;
 
 {$ENDREGION}
@@ -1160,7 +1160,7 @@ begin
         begin
           if UpdateHttpClient.ContentLength > -1 then
             begin
-              LoadSizeLabel.Caption := Format(S_DownCount, [FloatToStrF(UpdateHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
+              LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(UpdateHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
               DownloadProgressBar.Max := UpdateHttpClient.ContentLength;
               DownloadProgressBar.Position := UpdateHttpClient.RcvdCount;
             end;
@@ -1285,7 +1285,7 @@ begin
                           else
                             begin
                               // Сообщаем, что прав на запись обновления у нас нет
-                              DAShow(Lang_Vars[17].L_S, S_UnPackErr, EmptyStr, 134, 2, 0);
+                              DAShow(Lang_Vars[17].L_S, Lang_Vars[63].L_S, EmptyStr, 134, 2, 0);
                               // Открываем папку со скачанным архивом
                               ShellExecute(0, 'open', PChar(V_Profile), nil, nil, SW_SHOW);
                             end;
@@ -1834,7 +1834,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Add_Contact_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(Lang_Vars[17].L_S, AddContactError, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[25].L_S, EmptyStr, 134, 2, 0);
                                     end
                                   else
                                   // Если фаза добавления группы
@@ -1844,7 +1844,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Add_Group_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(Lang_Vars[17].L_S, AddGroupError, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[26].L_S, EmptyStr, 134, 2, 0);
                                     end
                                   else
                                   // Если фаза удаления группы
@@ -1854,7 +1854,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Group_Delete_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(Lang_Vars[17].L_S, DelGroupError, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[27].L_S, EmptyStr, 134, 2, 0);
                                     end;
                                 end;
                               $0006: begin
@@ -2026,7 +2026,7 @@ begin
                             $0009: // TLV с кодом ошибки
                               begin
                                 // Выводим сообщение о том, что наш номер используется кем то другим
-                                DAShow(Lang_Vars[17].L_S, ICQxUIN, EmptyStr, 134, 2, 100000000);
+                                DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[28].L_S, [UpperCase(C_Icq)]), EmptyStr, 134, 2, 100000000);
                                 // Активиуем режим оффлайн
                                 ICQ_GoOffline;
                               end;
@@ -2761,7 +2761,7 @@ begin
                                   ChatItem.ImageIndex := StrToInt(Items[I].SubItems[6]);
                                   // Ставим сообщение о наборе текста
                                   NotifyPanel.Font.Color := ClBlue;
-                                  NotifyPanel.Caption := TypingTextL;
+                                  NotifyPanel.Caption := Lang_Vars[46].L_S;
                                 end
                               else
                                 begin
@@ -3428,9 +3428,7 @@ begin
       if (ContactList.SelectedItem as TButtonItem).ContactType = C_Icq then
         begin
           if ICQ_Work_Phaze then
-            ICQ_ReqStatus0215((ContactList.SelectedItem as TButtonItem).UIN)
-          else
-            DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
+            ICQ_ReqStatus0215((ContactList.SelectedItem as TButtonItem).UIN);
         end;
     end;
 end;
@@ -3556,7 +3554,7 @@ begin
   R := ShellExecute(0, 'open', 'Imadering.exe', nil, PChar(V_MyPath), SW_SHOW);
   XLog(Spath + C_BN + IntToStr(R), EmptyStr);
   if R < 32 then
-    DAShow(Lang_Vars[17].L_S, NewProgErrL, EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[17].L_S, Lang_Vars[65].L_S, EmptyStr, 134, 2, 0);
 end;
 
 {$ENDREGION}
@@ -4149,9 +4147,7 @@ begin
         // Выводим вопрос на подтверждение действия
         if MessageBox(Handle, PChar(Format(DellYourSelfL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
           if ICQ_Work_Phaze then
-            ICQ_DellMyFromCL((ContactList.SelectedItem as TButtonItem).UIN)
-          else
-            DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
+            ICQ_DellMyFromCL((ContactList.SelectedItem as TButtonItem).UIN);
       finally
         // Разблокировываем окно контактов
         MainForm.Enabled := True;
@@ -4572,9 +4568,7 @@ begin
   if ContactList.SelectedItem <> nil then
     begin
       if ICQ_Work_Phaze then
-        ICQ_SendGrandAuth((ContactList.SelectedItem as TButtonItem).UIN)
-      else
-        DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
+        ICQ_SendGrandAuth((ContactList.SelectedItem as TButtonItem).UIN);
     end;
 end;
 
@@ -4909,9 +4903,7 @@ begin
   if ContactList.SelectedItem <> nil then
     begin
       if ICQ_Work_Phaze then
-        ICQ_SendYouAdded((ContactList.SelectedItem as TButtonItem).UIN)
-      else
-        DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 133, 3, 0);
+        ICQ_SendYouAdded((ContactList.SelectedItem as TButtonItem).UIN);
     end;
 end;
 
@@ -5212,7 +5204,7 @@ begin
                   // Проверяем на успешную публикацию
                   XML_Node := Root.Items.ItemNamed['created_at'];
                   if XML_Node <> nil then
-                    DAShow(Lang_Vars[16].L_S, S_TwitPostOK, EmptyStr, 133, 3, 0);
+                    DAShow(Lang_Vars[16].L_S, Lang_Vars[60].L_S, EmptyStr, 133, 3, 0);
                   // Начинаем разбор списка
                   if Root.Properties.Value('type') = 'array' then
                     begin

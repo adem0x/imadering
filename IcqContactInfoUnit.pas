@@ -182,14 +182,14 @@ var
   AvatarFile: string;
 begin
   // Устанавливаем заголовок окна
-  Caption := InfoCaptionL + ': ' + ReqUIN;
+  Caption := Lang_Vars[57].L_S + C_TN + ReqUIN;
   // Стираем отображение предыдущей инфы
   TopHTMLViewer.Clear;
   BottomHTMLViewer.Clear;
   // Ищем локально файл с информацией
   if FileExists(V_ProfilePath + C_AnketaFolder + ReqProto + C_BN + ReqUIN + '.xml') then
     begin
-      InfoLabel.Caption := InfoOKL;
+      InfoLabel.Caption := Lang_Vars[55].L_S;
       // Запускаем создание суммарного инфо из распакованного файла
       CreateSummery;
     end
@@ -199,7 +199,7 @@ begin
       InfoLabel.Caption := EmptyStr;
       if ICQ_Work_Phaze then
         begin
-          InfoLabel.Caption := InfoReqL;
+          InfoLabel.Caption := Lang_Vars[56].L_S;
           ICQ_ReqInfo_New_Pkt(ReqUIN);
         end;
       // Добавляем стили
@@ -324,22 +324,22 @@ begin
                   begin
                     if Trim(Email0) <> EmptyStr then
                       begin
-                        AddHTML(BottomHTMLViewer, EmailL + C_BN, 'cbold');
+                        AddHTML(BottomHTMLViewer, C_Email + C_TN, 'cbold');
                         AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email0 + '">' + Email1 + '</a>', 'cmargin', True);
                       end;
                     if Trim(Email1) <> EmptyStr then
                       begin
-                        AddHTML(BottomHTMLViewer, EmailL + C_BN, 'cbold');
+                        AddHTML(BottomHTMLViewer, C_Email + C_TN, 'cbold');
                         AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email1 + '">' + Email1 + '</a>', 'cmargin', True);
                       end;
                     if Trim(Email2) <> EmptyStr then
                       begin
-                        AddHTML(BottomHTMLViewer, EmailL + C_BN, 'cbold');
+                        AddHTML(BottomHTMLViewer, C_Email + C_TN, 'cbold');
                         AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email2 + '">' + Email2 + '</a>', 'cmargin', True);
                       end;
                     if Trim(Email3) <> EmptyStr then
                       begin
-                        AddHTML(BottomHTMLViewer, EmailL + C_BN, 'cbold');
+                        AddHTML(BottomHTMLViewer, C_Email + C_TN, 'cbold');
                         AddHTML(BottomHTMLViewer, '<a href="mailto:' + Email3 + '">' + Email3 + '</a>', 'cmargin', True);
                       end;
                     // Вставляем разделитель
@@ -817,7 +817,7 @@ begin
   // Запрашиваем информацию о контакте
   if (ReqUIN > EmptyStr) and (ICQ_Work_Phaze) then
     begin
-      InfoLabel.Caption := InfoReqL;
+      InfoLabel.Caption := Lang_Vars[56].L_S;
       ICQ_ReqInfo_New_Pkt(ReqUIN);
     end;
 end;

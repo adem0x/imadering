@@ -693,43 +693,43 @@ begin
   // Обрезаем статус до 4 символов для чистоты распознавания статуса
   ShortStatus := RightStr(StatusCode, 4);
   //
-  Result := S_Status15;
+  Result := Lang_Vars[81].L_S;
   if ShortStatus = ICQ_Status_ONLINE then
-    Result := S_Status11
+    Result := Lang_Vars[77].L_S
   else if ShortStatus = ICQ_Status_AWAY then
-    Result := S_Status7
+    Result := Lang_Vars[73].L_S
   else if ShortStatus = ICQ_Status_OFFLINE then
-    Result := S_Status14
+    Result := Lang_Vars[80].L_S
   else if ShortStatus = ICQ_Status_INVISIBLE then
-    Result := S_Status12
+    Result := Lang_Vars[78].L_S
   else if ShortStatus = ICQ_Status_OCCUPIED then
-    Result := S_Status9
+    Result := Lang_Vars[75].L_S
   else if ShortStatus = ICQ_Status_OCCUPIED1 then
-    Result := S_Status9
+    Result := Lang_Vars[75].L_S
   else if ShortStatus = ICQ_Status_DND then
-    Result := S_Status10
+    Result := Lang_Vars[76].L_S
   else if ShortStatus = ICQ_Status_DND1 then
-    Result := S_Status10
+    Result := Lang_Vars[76].L_S
   else if ShortStatus = ICQ_Status_DND2 then
-    Result := S_Status10
+    Result := Lang_Vars[76].L_S
   else if ShortStatus = ICQ_Status_NA then
-    Result := S_Status8
+    Result := Lang_Vars[74].L_S
   else if ShortStatus = ICQ_Status_NA1 then
-    Result := S_Status8
+    Result := Lang_Vars[74].L_S
   else if ShortStatus = ICQ_Status_LUNCH then
-    Result := S_Status6
+    Result := Lang_Vars[72].L_S
   else if ShortStatus = ICQ_Status_FFC then
-    Result := S_Status1
+    Result := Lang_Vars[67].L_S
   else if ShortStatus = ICQ_Status_DEPRESSION then
-    Result := S_Status3
+    Result := Lang_Vars[69].L_S
   else if ShortStatus = ICQ_Status_EVIL then
-    Result := S_Status2
+    Result := Lang_Vars[68].L_S
   else if ShortStatus = ICQ_Status_ATHOME then
-    Result := S_Status4
+    Result := Lang_Vars[70].L_S
   else if ShortStatus = ICQ_Status_ATWORK then
-    Result := S_Status5
+    Result := Lang_Vars[71].L_S
   else if ShortStatus = ICQ_Status_UNK then
-    Result := S_Status15;
+    Result := Lang_Vars[81].L_S;
 end;
 
 {$ENDREGION}
@@ -754,41 +754,38 @@ begin
         Result := Result + '<b>' + LnLf + '</b><br>';
       // Если стасут оффлайн или неизвестный, то пишем "Не в сети"
       if (RosterItem.SubItems[6] = '9') or (RosterItem.SubItems[6] = '214') then
-        Result := Result + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
+        Result := Result + Lang_Vars[47].L_S + C_TN + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
         // Если статус требует авторизации, то пишем об этом
       else if RosterItem.SubItems[6] = '80' then
-        Result := Result + '<font color=clred>' + S_Status16
+        Result := Result + Lang_Vars[47].L_S + C_TN + '<font color=clred>' + Lang_Vars[82].L_S
         // Определяем статус и пишем его словами
       else
-        Result := Result + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
+        Result := Result + Lang_Vars[47].L_S + C_TN + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
       Result := Result + '</font>';
       // Если есть текст доп. статуса, то пишем его
       if RosterItem.SubItems[31] <> EmptyStr then
         Result := Result + '<br><font color=clred>' + URLDecode(RosterItem.SubItems[31]) + '</font>';
       // Время подключения
       if RosterItem.SubItems[30] <> EmptyStr then
-        Result := Result + '<br>' + ConnTimeL + C_BN + RosterItem.SubItems[30];
+        Result := Result + '<br>' + Lang_Vars[35].L_S + C_TN + RosterItem.SubItems[30];
       // Дата регистрации UIN
       if RosterItem.SubItems[26] <> EmptyStr then
-        Result := Result + '<br>' + RegDateL + C_BN + RosterItem.SubItems[26];
+        Result := Result + '<br>' + Lang_Vars[36].L_S + C_TN + RosterItem.SubItems[26];
       // Версия протокола
       if RosterItem.SubItems[25] <> EmptyStr then
-        Result := Result + '<br>' + ProtoVerL + C_BN + RosterItem.SubItems[25];
+        Result := Result + '<br>' + Lang_Vars[37].L_S + C_TN + RosterItem.SubItems[25];
       // Клиент
       if RosterItem.SubItems[32] <> EmptyStr then
-        Result := Result + '<br>' + ClientVariableL + C_BN + RosterItem.SubItems[32];
+        Result := Result + '<br>' + Lang_Vars[38].L_S + C_TN + RosterItem.SubItems[32];
       // Телефон
       if RosterItem.SubItems[9] <> EmptyStr then
-        Result := Result + '<br>' + CellularPhoneL + C_BN + RosterItem.SubItems[9];
+        Result := Result + '<br>' + Lang_Vars[39].L_S + C_TN + URLDecode(RosterItem.SubItems[9]);
       // Заметка
       if RosterItem.SubItems[10] <> EmptyStr then
-        Result := Result + '<br>' + NoteL + C_BN + RosterItem.SubItems[10];
+        Result := Result + '<br>' + Lang_Vars[40].L_S + C_TN + URLDecode(RosterItem.SubItems[10]);
       // Email
       if RosterItem.SubItems[11] <> EmptyStr then
-        Result := Result + '<br>' + EmailL + C_BN + RosterItem.SubItems[11];
-      // Флаг подключения
-      if RosterItem.SubItems[24] <> EmptyStr then
-        Result := Result + '<br>' + ConnectFlagL + C_BN + RosterItem.SubItems[20] + C_BN + RosterItem.SubItems[24];
+        Result := Result + '<br>' + C_Email + C_TN + URLDecode(RosterItem.SubItems[11]);
     end;
 end;
 
@@ -893,7 +890,7 @@ begin
                 begin
                   // Добавляем в чат сообщение о закрытиеи чата собеседником
                   Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
-                  Doc := Doc + '<span class=d>' + CloseChatWindowsL + '</span><br><br>';
+                  Doc := Doc + '<span class=d>' + Lang_Vars[45].L_S + '</span><br><br>';
                   LoadHTMLStrings(HTMLChatViewer, Doc);
                   // Прокручиваем чат до конца
                   HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
@@ -902,7 +899,7 @@ begin
               if Typing then
                 begin
                   NotifyPanel.Font.Color := ClBlue;
-                  NotifyPanel.Caption := TypingTextL;
+                  NotifyPanel.Caption := Lang_Vars[46].L_S;
                 end
               else // Сбрасываем сообщение о наборе текста
                 begin
@@ -1925,7 +1922,7 @@ begin
           begin
             ICQ_LoginPassword := ICQ_ChangePassword;
             // Информируем об успешной смене пароля
-            DAShow(Lang_Vars[16].L_S, PassChangeOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, Lang_Vars[30].L_S, EmptyStr, 133, 3, 0);
             Exit;
           end;
       end;
@@ -1934,7 +1931,7 @@ begin
         if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
           begin
             ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);
-            DAShow(Lang_Vars[16].L_S, AnketaSaveOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, Lang_Vars[54].L_S, EmptyStr, 133, 3, 0);
             Exit;
           end;
       end;
@@ -2773,7 +2770,7 @@ begin
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
   // Обрабатываем сообщение
-  Mess := Msg;
+  Mess := Text2XML(Msg);
   CheckMessage_BR(Mess);
   ChatForm.CheckMessage_ClearTag(Mess);
   // Если это сообщение с переводом, то переходим дальше
@@ -2817,8 +2814,6 @@ begin
   // Обрабатываем сообщение
 X :;
   PopMsg := Mess;
-  CheckMessage_BR(Mess);
-  DecorateURL(Mess);
   // Ищем эту запись в Ростере
   RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
@@ -2850,7 +2845,7 @@ X :;
           RosterItem.Caption := C_NoCL;
           // Подготавиливаем все значения
           RosterForm.RosterItemSetFull(RosterItem);
-          RosterItem.SubItems[1] := URLEncode(NoInListGroupCaption);
+          RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
         end;
       // Добавляем этот контакт в Ростер
       RosterItem := RosterForm.RosterJvListView.Items.Add;
@@ -2878,6 +2873,9 @@ X :;
     end;
   // Записываем история в файл истории с этим контактов
   HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm';
+  Mess := Text2XML(Mess);
+  CheckMessage_BR(Mess);
+  DecorateURL(Mess);
   SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
   // Добавляем сообщение в текущий чат
   RosterItem.SubItems[36] := 'X';
@@ -3953,7 +3951,7 @@ begin
                       // Подготавиливаем все значения
                       RosterForm.RosterItemSetFull(ListItemD);
                       // Обновляем субстроки
-                      SubItems[1] := URLEncode(HideContactGroupCaption);
+                      SubItems[1] := URLEncode(Lang_Vars[32].L_S);
                       SubItems[3] := C_Icq;
                       SubItems[4] := QGroupId;
                     end;
@@ -4262,9 +4260,9 @@ begin
   if Nick > EmptyStr then
     Nick := InfoNickL + C_BN + Nick;
   if IClient > EmptyStr then
-    Client := ClientL + C_BN + IClient;
+    Client := Lang_Vars[38].L_S + C_TN + IClient;
   // Отображаем всплывающим сообщением статус контакта
-  DAShow(Lang_Vars[16].L_S, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + StatusL + C_BN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
+  DAShow(Lang_Vars[16].L_S, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + Lang_Vars[47].L_S + C_TN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
 end;
 
 {$ENDREGION}

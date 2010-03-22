@@ -724,19 +724,17 @@ end;
 
 procedure TIcqOptionsForm.ChangePassButtonClick(Sender: TObject);
 begin
-  if ICQ_Work_Phaze then
+  if not NotProtoOnline(C_Icq) then
     begin
       if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) or (NewPassChangeEdit.Text = EmptyStr) or (Length(NewPassChangeEdit.Text) < 6) or
         (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
-        DAShow(Lang_Vars[18].L_S, PassChangeAlert_1, EmptyStr, 134, 2, 0)
+        DAShow(Lang_Vars[18].L_S, Lang_Vars[29].L_S, EmptyStr, 134, 2, 0)
       else
         begin
           ICQ_PassChange(RetypeNewPassEdit.Text);
           ICQ_ChangePassword := RetypeNewPassEdit.Text;
         end;
-    end
-  else
-    DAShow(Lang_Vars[18].L_S, OnlineAlert, EmptyStr, 134, 2, 0);
+    end;
 end;
 
 {$ENDREGION}
@@ -904,17 +902,17 @@ begin
   ParamInfoRichEdit.Lines.BeginUpdate;
   // Добавляем информацию не вошедшую в другие разделы
   if ICQ_CollSince <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(OnlineInfo1L + ': ' + ICQ_CollSince);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[48].L_S + C_TN + ICQ_CollSince);
   if ICQ_OnlineTime <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(OnlineInfo2L + ': ' + ICQ_OnlineTime);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[49].L_S + C_TN + ICQ_OnlineTime);
   if ICQ_AwayMess <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(OnlineInfo3L + ': ' + ICQ_AwayMess);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[50].L_S + C_TN + ICQ_AwayMess);
   if ICQ_Bos_Addr <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(OnlineInfo5L + ': ' + ICQ_Bos_Addr);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[51].L_S + C_TN + ICQ_Bos_Addr);
   if ICQ_MyIcon_Hash <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(OnlineInfo6L + ': ' + ICQ_MyIcon_Hash);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[52].L_S + C_TN + ICQ_MyIcon_Hash);
   if ICQ_CL_Count > 0 then
-    ParamInfoRichEdit.Lines.Add(OnlineInfo7L + ': ' + IntToStr(ICQ_CL_Count));
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[53].L_S + C_TN + IntToStr(ICQ_CL_Count));
   if ICQ_Connect_Count <> EmptyStr then
     ParamInfoRichEdit.Lines.Add(Log_Connect_Count + ICQ_Connect_Count);
   // Заканчиваем заполнение строк

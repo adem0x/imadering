@@ -269,7 +269,7 @@ begin
   if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Выводим запрос на удаление файла истории
-  I := MessageBox(Handle, PChar(HistoryDelL), PChar(Lang_Vars[19].L_S), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
+  I := MessageBox(Handle, PChar(Lang_Vars[44].L_S), PChar(Lang_Vars[19].L_S), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION);
   // Если ответ положительный
   if I = IDYES then
     begin

@@ -364,14 +364,14 @@ begin
                     // Подготавиливаем все значения
                     RosterForm.RosterItemSetFull(ListItemD);
                     // Обновляем субстроки
-                    ListItemD.SubItems[0] := URLEncode(XML_Node.Properties.Value('name'));
+                    ListItemD.SubItems[0] := URLEncode(XML2Text(XML_Node.Properties.Value('name')));
                     if ListItemD.SubItems[0] = EmptyStr then
                       ListItemD.SubItems[0] := ListItemD.Caption;
                     ListItemD.SubItems[2] := XML_Node.Properties.Value('subscription');
                     // Открываем ключ группы
                     Sub_Node := XML_Node.Items.ItemNamed['group'];
                     if Sub_Node <> nil then
-                      ListItemD.SubItems[1] := URLEncode(Sub_Node.Value);
+                      ListItemD.SubItems[1] := URLEncode(XML2Text(Sub_Node.Value));
                     if ListItemD.SubItems[1] = EmptyStr then
                       ListItemD.SubItems[1] := URLEncode(JabberNullGroup);
                     ListItemD.SubItems[3] := C_Jabber;
@@ -589,8 +589,6 @@ begin
                 CheckMessage_BR(Mess);
                 ChatForm.CheckMessage_ClearTag(Mess);
                 PopMsg := Mess;
-                CheckMessage_BR(Mess);
-                DecorateURL(Mess);
                 // Ищем эту запись в Ростере
                 RosterItem := RosterForm.ReqRosterItem(PJID);
                 if RosterItem <> nil then
@@ -622,7 +620,7 @@ begin
                         RosterItem.Caption := C_NoCL;
                         // Подготавиливаем все значения
                         RosterForm.RosterItemSetFull(RosterItem);
-                        RosterItem.SubItems[1] := URLEncode(NoInListGroupCaption);
+                        RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
                       end;
                     // Добавляем этот контакт в Ростер
                     RosterItem := RosterForm.RosterJvListView.Items.Add;
@@ -644,9 +642,11 @@ begin
                     MainForm.JvTimerList.Events[11].Enabled := False;
                     MainForm.JvTimerList.Events[11].Enabled := True;
                   end;
-
                 // Записываем история в файл истории с этим контактов
                 HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + '.htm';
+                Mess := Text2XML(Mess);
+                CheckMessage_BR(Mess);
+                DecorateURL(Mess);
                 SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
                 // Добавляем сообщение в текущий чат
                 RosterItem.SubItems[36] := 'X';
