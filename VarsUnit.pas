@@ -51,7 +51,10 @@ const
   C_AvatarFolder = 'Avatars\';
   C_HistoryFolder = 'History\';
   C_GamesFolder = 'Games\';
-  C_FlagsFolder = 'Icons\Flags\';
+  C_FlagsFolder = 'Flags\';
+  C_IconsFolder = 'Icons\';
+  C_SmiliesFolder = 'Smilies\';
+  C_SoundsFolder = 'Sounds\';
   C_SettingsFileName = 'Settings.xml';
   C_ProfilesFileName = 'Profiles.xml';
   C_GroupsFileName = 'Groups.xml';
@@ -84,7 +87,7 @@ const
   C_ExeName = 'Imadering.exe';
   C_Host = 'host';
   C_Port = 'port';
-  C_Profiles = 'profiles';
+  C_Profile = 'profile';
   C_Cur = 'current';
   C_Auto = 'auto_login';
   C_Email = 'Email';
@@ -336,8 +339,8 @@ var
 {$ENDREGION}
 {$REGION 'LangVars'}
 
-  // Переменные для языка | Lang_Vars[83].L_S
-  Lang_Vars: packed array [0 .. 83] of record L_N: string;
+  // Переменные для языка | Lang_Vars[117].L_S
+  Lang_Vars: packed array [0 .. 117] of record L_N: string;
   L_S: string;
 end
 = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
@@ -365,9 +368,9 @@ end
   (L_N: 'ParsingPktError'; L_S: ''), // 22
   (L_N: 'ConnectError'; L_S: ''), // 23
   (L_N: 'UnknownError'; L_S: ''), // 24
-  (L_N: 'AddContactError'; L_S: ''), // 25
-  (L_N: 'AddGroupError'; L_S: ''), // 26
-  (L_N: 'DellGroupError'; L_S: ''), // 27
+  (L_N: 'DellYourSelf'; L_S: ''), // 25
+  (L_N: 'HistorySearchNo'; L_S: ''), // 26
+  (L_N: '---'; L_S: ''), // 27
   (L_N: 'AccountX'; L_S: ''), // 28
   (L_N: 'NoPassChange'; L_S: ''), // 29
   (L_N: 'OkPassChange'; L_S: ''), // 30
@@ -423,16 +426,45 @@ end
   (L_N: 'Status14'; L_S: ''), // 80 Не в сети
   (L_N: 'Status15'; L_S: ''), // 81 Неопределённый
   (L_N: 'Status16'; L_S: ''), // 82 Необходима авторизация
-  (L_N: 'DellContact'; L_S: '')); // 83
+  (L_N: 'DellContact'; L_S: ''), // 83
+  (L_N: 'GtransErr_2'; L_S: ''), // 84
+  (L_N: 'GtransErr_1'; L_S: ''), // 85
+  (L_N: 'GtransOK'; L_S: ''), // 86
+  (L_N: 'GtransProcess'; L_S: ''), // 87
+  (L_N: 'FileTransfer_1'; L_S: ''), // 88
+  (L_N: 'FileTransfer_2'; L_S: ''), // 89
+  (L_N: 'FileTransfer_3'; L_S: ''), // 90
+  (L_N: 'FileTransfer_4'; L_S: ''), // 91
+  (L_N: 'FileTransfer_5'; L_S: ''), // 92
+  (L_N: 'FileTransfer_6'; L_S: ''), // 93
+  (L_N: 'Socket'; L_S: ''), // 94
+  (L_N: 'JabberNullGroup'; L_S: ''), // 95
+  (L_N: 'AddNewGroup'; L_S: ''), // 96
+  (L_N: 'AddGroupErr_1'; L_S: ''), // 97
+  (L_N: 'AddGroupErr_2'; L_S: ''), // 98
+  (L_N: 'DellGroupErr'; L_S: ''), // 99
+  (L_N: 'DellGroupOK'; L_S: ''), // 100
+  (L_N: 'AddGroupOK'; L_S: ''), // 101
+  (L_N: 'SearchQMess'; L_S: ''), // 102
+  (L_N: 'AddContactErr_1'; L_S: ''), // 103
+  (L_N: 'AddContactErr_2'; L_S: ''), // 104
+  (L_N: 'AddContactErr_3'; L_S: ''), // 105
+  (L_N: 'AddContactErr_4'; L_S: ''), // 106
+  (L_N: 'AddContactOK'; L_S: ''), // 107
+  (L_N: 'URLOpenErr'; L_S: ''), // 108
+  (L_N: 'HistoryNotFile'; L_S: ''), // 109
+  (L_N: 'UpDateStart'; L_S: ''), // 110
+  (L_N: 'UpDateAbort'; L_S: ''), // 111
+  (L_N: 'UpDateLoad'; L_S: ''), // 112
+  (L_N: 'UpDateUn'; L_S: ''), // 113
+  (L_N: 'UpDateOK'; L_S: ''), // 114
+  (L_N: 'GroupContacts'; L_S: ''), // 115
+  (L_N: 'HistoryLoading'; L_S: ''), // 116
+  (L_N: 'DellGroup'; L_S: '')); // 117
 
 
-
-
-
-
-
-
-
+HistorySearchNoL :
+string = 'Такой текст не найден.';
 
 
 InfoNickL :
@@ -506,28 +538,6 @@ string = 'Цвет волос:';
 InfoChildrenL1 :
 string = 'Детей:';
 
-DellGroupL :
-string = 'Группа "%s" будет удалёна. Вы уверены?';
-DellYourSelfL :
-string = 'Удалить себя из списка контакта: %s. Вы уверены?';
-HistoryNotFileL :
-string = 'История сообщений с этим контактом отсутствует';
-GroupInv :
-string = ' из ';
-HistorySearchNoL :
-string = 'Такой текст не найден.';
-HistoryLoadFileL :
-string = 'Загружается история...';
-S_UpDateStart :
-string;
-S_UpDateAbort :
-string;
-S_UpDateLoad :
-string;
-S_UpDateUn :
-string;
-S_UpDateOK :
-string;
 ProxyConnectErrL1 :
 string = 'Неверный логин или пароль для прокси.';
 ProxyConnectErrL2 :
@@ -538,12 +548,6 @@ MraLoginErrorL :
 string = 'Неправильный Email или пароль.';
 HttpSocketErrCodeL :
 string = 'Код ошибки: %d';
-SelectDirL :
-string = 'Выберите папку для хранения вашего профиля';
-DelProfile :
-string = 'Удалить старый профиль?';
-URLOpenErrL :
-string = 'Браузер для открытия ссылки не найден.' + C_RN + 'Ссылка скопирована в буфер обмена.';
 SearchInfoGoL :
 string = 'Идёт поиск ...';
 SearchInfoEndL :
@@ -554,58 +558,8 @@ SearchInfoAuthL :
 string = 'Авторизация';
 SearchInfoAuthNoL :
 string = 'Не нужна';
-SearchNextPage1 :
-string = 'Далее';
 SearchNextPage2 :
 string = 'Страница - %d';
-S_SearchQMess :
-string;
-AddContactErr1 :
-string = 'Такой контакт уже существует в вашем списке контактов.';
-AddContactErr2 :
-string = 'Пожалуйста, дождитесь окончания предыдущей операции с серверным списком контактов.';
-AddContactErr3 :
-string = 'Сначала создайте хоть одну группу';
-AddContactErr4 :
-string = 'Ошибка при добавлении контакта.';
-AddContactOKL :
-string = 'Контакт успешно добавлен в ваш список контактов!';
-AddNewGroupL :
-string = 'Новая группа';
-AddNewGroupErr1 :
-string = 'Такая группа уже существует в вашем списке контактов.';
-AddNewGroupErr2 :
-string = 'Ошибка при добавлении группы.';
-DellGroupErrL :
-string = 'Ошибка при удалении группы.';
-DellGroupOKL :
-string = 'Группа успешно удалена из вашего списка контактов!';
-AddNewGroupOKL :
-string = 'Группа успешно добавлена в ваш список контактов!';
-JabberNullGroup :
-string = 'Общая';
-S_FileTransfer1 :
-string;
-S_FileTransfer2 :
-string;
-S_FileTransfer3 :
-string;
-S_FileTransfer4 :
-string;
-S_FileTransfer5 :
-string;
-S_FileTransfer6 :
-string;
-SocketL :
-string = 'Сокет:';
-GtransProcessL :
-string = 'Перевод ...';
-GtransOKL :
-string = 'Переведено';
-GtransErrL :
-string = 'Ошибка перевода: %s';
-S_GtransErr2 :
-string;
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}

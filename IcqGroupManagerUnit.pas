@@ -95,7 +95,7 @@ begin
       // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
       if ICQ_SSI_Phaze then
         begin
-          DAShow(Lang_Vars[19].L_S, AddContactErr2, EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[19].L_S, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
           Exit;
         end;
       // Если это добавление новой групы
@@ -111,7 +111,7 @@ begin
                 begin
                   if (Items[I].SubItems[3] = C_Icq) and (LowerCase(GNameEdit.Text, LoUserLocale) = LowerCase(Items[I].SubItems[1], LoUserLocale)) then
                     begin
-                      DAShow(Lang_Vars[19].L_S, AddNewGroupErr1, EmptyStr, 133, 0, 0);
+                      DAShow(Lang_Vars[19].L_S, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
                       Exit;
                     end;
                 end;

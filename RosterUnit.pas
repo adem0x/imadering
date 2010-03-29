@@ -662,7 +662,7 @@ begin
                     case Categories[C].Items[Cc].Status of
                       9, 23, 25, 30, 41, 42, 80, 214: Dec(I);
                     end;
-                  Categories[C].Caption := Categories[C].GroupCaption + ' - ' + IntToStr(I) + GroupInv + IntToStr(Categories[C].Items.Count);
+                  Categories[C].Caption := Categories[C].GroupCaption + ' - ' + Format(Lang_Vars[115].L_S, [I, Categories[C].Items.Count]);
                 end;
             end;
           // Восстанавливаем состояние свёрнутых групп

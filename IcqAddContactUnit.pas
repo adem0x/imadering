@@ -148,19 +148,19 @@ begin
               RosterItem := RosterForm.ReqRosterItem(AccountEdit.Text);
               if RosterItem <> nil then // Если такой контакт уже добавлен в список, то сообщаем об этом
                 begin
-                  DAShow(Lang_Vars[19].L_S, AddContactErr1, EmptyStr, 133, 0, 0);
+                  DAShow(Lang_Vars[19].L_S, Lang_Vars[103].L_S, EmptyStr, 133, 0, 0);
                   Exit;
                 end;
               // Если фаза добавления контакта ещё активна, то ждём её окончания
               if ICQ_SSI_Phaze then
                 begin
-                  DAShow(Lang_Vars[19].L_S, AddContactErr2, EmptyStr, 134, 2, 0);
+                  DAShow(Lang_Vars[19].L_S, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
                   Exit;
                 end;
               // Если группа не выбрана
               if GroupComboBox.ItemIndex = -1 then
                 begin
-                  DAShow(Lang_Vars[18].L_S, AddContactErr3, EmptyStr, 134, 2, 0);
+                  DAShow(Lang_Vars[18].L_S, Lang_Vars[105].L_S, EmptyStr, 134, 2, 0);
                   goto Y;
                 end;
               // Генерируем идентификатор для этого контакта

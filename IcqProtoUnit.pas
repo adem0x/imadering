@@ -1525,7 +1525,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении контакта
-            DAShow(Lang_Vars[16].L_S, AddContactOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
           end;
         $0E: begin
             // Создаём список для занесения в него всех идентификаторов контактов
@@ -1582,7 +1582,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении контакта
-            DAShow(Lang_Vars[16].L_S, AddContactOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1591,7 +1591,7 @@ begin
             ICQ_Add_Contact_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об ошибке добавления нового контакта в серверный КЛ
-            DAShow(Lang_Vars[17].L_S, AddContactErr4, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
           end;
       end;
     end
@@ -1638,7 +1638,7 @@ begin
             // Строим локальный КЛ
             RosterForm.UpdateFullCL;
             // Сообщаем об успешном добавлении группы
-            DAShow(Lang_Vars[16].L_S, AddNewGroupOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1647,7 +1647,7 @@ begin
             ICQ_Add_Group_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об ошибке добавления новой группы в серверный КЛ
-            DAShow(Lang_Vars[17].L_S, AddNewGroupErr2, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
           end;
       end;
     end
@@ -1680,7 +1680,7 @@ begin
             ICQ_Group_Delete_Phaze := False;
             ICQ_SSI_Phaze := False;
             // Сообщаем об успешном добавлении группы
-            DAShow(Lang_Vars[16].L_S, DellGroupOKL, EmptyStr, 133, 3, 0);
+            DAShow(Lang_Vars[16].L_S, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
           end
         else
           begin
@@ -1688,7 +1688,7 @@ begin
             ICQ_AddEnd;
             ICQ_Group_Delete_Phaze := False;
             ICQ_SSI_Phaze := False;
-            DAShow(Lang_Vars[17].L_S, DellGroupErrL, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
           end;
       end;
     end;

@@ -1260,7 +1260,7 @@ begin
                           // Читаем данные в память
                           UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
                           // Информируем о успешной закачке файла обновления
-                          InfoMemo.Lines.Add(S_UpDateLoad);
+                          InfoMemo.Lines.Add(Lang_Vars[112].L_S);
                           // Сохраняем полученный файл
                           UpdateFile.SaveToFile(V_Profile + V_UpdateVersionPath);
                           // Проверяем есть ли у нас права на запись в папку с программой
@@ -1270,14 +1270,14 @@ begin
                               if DirectoryExists(V_MyPath + C_Infos) then
                                 RemoveDir(V_MyPath + C_Infos);
                               // Начинаем установку обновления
-                              InfoMemo.Lines.Add(S_UpDateUn);
+                              InfoMemo.Lines.Add(Lang_Vars[113].L_S);
                               // Переименовываем файл Imadering.exe
                               if FileExists(V_MyPath + C_ExeName) then
                                 RenameFile(V_MyPath + C_ExeName, V_MyPath + 'Imadering.old');
                               // Распаковываем архив
                               if UnpackArhive(V_Profile + V_UpdateVersionPath) then
                                 begin
-                                  InfoMemo.Lines.Add(S_UpDateOK);
+                                  InfoMemo.Lines.Add(Lang_Vars[114].L_S);
                                   if FileExists(V_Profile + V_UpdateVersionPath) then
                                     DeleteFile(V_Profile + V_UpdateVersionPath);
                                 end;
@@ -1609,12 +1609,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными ICQ
         Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1641,7 +1641,7 @@ begin
     if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
         ICQ_GoOffline;
         Exit;
       end;
@@ -1834,7 +1834,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Add_Contact_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[25].L_S, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
                                     end
                                   else
                                   // Если фаза добавления группы
@@ -1844,7 +1844,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Add_Group_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[26].L_S, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
                                     end
                                   else
                                   // Если фаза удаления группы
@@ -1854,7 +1854,7 @@ begin
                                       ICQ_AddEnd;
                                       ICQ_Group_Delete_Phaze := False;
                                       ICQ_SSI_Phaze := False;
-                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[27].L_S, EmptyStr, 134, 2, 0);
+                                      DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
                                     end;
                                 end;
                               $0006: begin
@@ -2042,7 +2042,7 @@ begin
               begin
                 // Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
                 ICQ_GoOffline;
                 Exit;
               end;
@@ -2148,7 +2148,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2200,18 +2200,13 @@ end;
 
 procedure TMainForm.JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
 var
-  PktZ: RawByteString;
   Pkt, Challenge: string;
   ProxyErr, I, CntPkt: Integer;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
   try
-    // Получаем пришедшие от сервера данные с сокета
-    PktZ := JabberWSocket.ReceiveStr;
-    // Указываем кодовую страницу UTF-8 для полученных данных
-    SetCodePage(PktZ, CP_UTF8, False);
-    Pkt := PktZ;
+    Pkt := JabberWSocket.ReceiveStr;
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
       begin
@@ -2244,12 +2239,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными Jabber
         Pkt := Jabber_myBeautifulSocketBuffer;
@@ -2489,7 +2484,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
@@ -3166,12 +3161,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными MRA
         Pkt := MRA_myBeautifulSocketBuffer;
@@ -3232,7 +3227,7 @@ begin
     if ((MRA_BuffPkt > EmptyStr) and (Text2Hex(LeftStr(MRA_BuffPkt, 4)) <> MRA_MagKey)) then
       begin
         // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
         MRA_GoOffline;
         Exit;
       end;
@@ -3324,7 +3319,7 @@ begin
               begin
                 // --Если начальная метка пакета не правильная,
                 // то выводим сообщение об ошибке разбора и выходим в оффлайн
-                DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+                DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
                 MRA_GoOffline;
                 Exit;
               end;
@@ -4044,7 +4039,7 @@ begin
           end;
       end;
     // Выводим диалог подтверждения удаления контакта
-    if MessageBox(Handle, PChar(Format(DellGroupL, [GroupName])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
+    if MessageBox(Handle, PChar(Format(Lang_Vars[117].L_S, [GroupName])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
       begin
         // Удаляем группу вместе с контактами из локального КЛ
         for I := 0 to ContactList.Categories.Count - 1 do
@@ -4145,7 +4140,7 @@ begin
       MainForm.Enabled := False;
       try
         // Выводим вопрос на подтверждение действия
-        if MessageBox(Handle, PChar(Format(DellYourSelfL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
+        if MessageBox(Handle, PChar(Format(Lang_Vars[25].L_S, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
           if ICQ_Work_Phaze then
             ICQ_DellMyFromCL((ContactList.SelectedItem as TButtonItem).UIN);
       finally
@@ -4288,7 +4283,7 @@ begin
       begin
         Caption := (Sender as TMenuItem).Caption;
         // Добавляем название группы по умолчанию
-        GNameEdit.Text := AddNewGroupL;
+        GNameEdit.Text := Lang_Vars[96].L_S;
         // Ставим флаг, что это добавление новой группы
         Create_Group := True;
         // Ставим флаг какой протокол
@@ -4858,12 +4853,12 @@ begin
       if CancelBitBtn.Enabled then
         begin
           XShowForm(FileTransferForm);
-          DAShow(Lang_Vars[18].L_S, S_FileTransfer6, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[18].L_S, Lang_Vars[93].L_S, EmptyStr, 133, 3, 0);
           Exit;
         end;
       // Выбираем способ передачи файла
       Tag := (Sender as TMenuItem).Tag;
-      TopInfoPanel.Caption := S_FileTransfer1 + (ContactList.SelectedItem as TButtonItem).Caption;
+      TopInfoPanel.Caption := Lang_Vars[88].L_S + (ContactList.SelectedItem as TButtonItem).Caption;
       T_UIN := (ContactList.SelectedItem as TButtonItem).UIN;
       T_UserType := (ContactList.SelectedItem as TButtonItem).ContactType;
       // --Открываем диалог выбора файла для передачи
@@ -5406,7 +5401,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -5516,7 +5511,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;

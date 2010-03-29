@@ -35,7 +35,8 @@ uses
   ComCtrls,
   JvSimpleXml,
   Mmsystem,
-  ShellApi;
+  ShellApi,
+  IOUtils;
 
 type
   TSettingsForm = class(TForm)
@@ -200,7 +201,8 @@ uses
   FileTransferUnit,
   GTransUnit,
   SmilesUnit,
-  GamesUnit;
+  GamesUnit,
+  OverbyteIcsUtils;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -341,7 +343,7 @@ var
   I: Integer;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  TS: TStringList;
+  Folder: string;
 begin
   // Устанавливаем галочки включенных протоколов
   ProtocolsListView.Clear;
@@ -566,25 +568,21 @@ begin
   if HeaderTextEdit.Text = EmptyStr then
     HeaderTextEdit.Text := C_ProgName;
   // Устанавливаем список папок со Смайлпаками
-  GetTreeDirs(V_MyPath + 'Smilies', TS);
-  SmiliesComboBox.Items := TS;
-  if TS <> nil then
-    TS.Free;
+  SmiliesComboBox.Clear;
+  for Folder in TDirectory.GetDirectories(V_MyPath + C_SmiliesFolder) do
+    SmiliesComboBox.Items.Add(IcsExtractLastDir(Folder));
   SmiliesComboBox.ItemIndex := SmiliesComboBox.Items.IndexOf(V_CurrentSmiles);
   SmiliesComboBoxChange(nil);
   // Устанавливаем список папок с Иконпаками
-  GetTreeDirs(V_MyPath + 'Icons', TS);
-  IconsComboBox.Items := TS;
-  if TS <> nil then
-    TS.Free;
-  IconsComboBox.Items.Delete(IconsComboBox.Items.IndexOf('Flags'));
+  IconsComboBox.Clear;
+  for Folder in TDirectory.GetDirectories(V_MyPath + C_IconsFolder) do
+    IconsComboBox.Items.Add(IcsExtractLastDir(Folder));
   IconsComboBox.ItemIndex := IconsComboBox.Items.IndexOf(V_CurrentIcons);
   IconsComboBoxChange(nil);
   // Устанавливаем список папок со Звуками
-  GetTreeDirs(V_MyPath + 'Sounds', TS);
-  SoundPackComboBox.Items := TS;
-  if TS <> nil then
-    TS.Free;
+  SoundPackComboBox.Clear;
+  for Folder in TDirectory.GetDirectories(V_MyPath + C_SoundsFolder) do
+    SoundPackComboBox.Items.Add(IcsExtractLastDir(Folder));
   SoundPackComboBox.ItemIndex := SoundPackComboBox.Items.IndexOf(V_CurrentSounds);
   // Деактивируем кнопку применения настроек
   ApplyBitBtn.Enabled := False;

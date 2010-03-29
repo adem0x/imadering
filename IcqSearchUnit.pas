@@ -296,7 +296,7 @@ begin
         end;
     end;
   // Другое
-  QMessageEdit.Text := S_SearchQMess;
+  QMessageEdit.Text := Lang_Vars[102].L_S;
 end;
 
 {$ENDREGION}
@@ -394,7 +394,7 @@ begin
         begin
           // Сбрасываем кнопку листания страниц в результатов
           SPageInc := False;
-          SearchNextPageBitBtn.Caption := SearchNextPage1;
+          SearchNextPageBitBtn.Caption := Lang_Vars[7].L_S;
           // Ищем
           GlobalSearch;
         end;
@@ -463,7 +463,7 @@ begin
           FOptions := [];
           Include(FOptions, FsBold);
           Font.Style := FOptions;
-          Text := C_BN + S_SearchQMess;
+          Text := C_BN + Lang_Vars[102].L_S;
           Tag := 1;
         end;
     end;
