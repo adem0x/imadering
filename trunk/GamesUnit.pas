@@ -603,10 +603,13 @@ end;
 procedure TGamesForm.AllowNetworkingCheckBoxClick(Sender: TObject);
 begin
   // Включаем или выключаем разрешение флэшке доступ к системе
-  if AllowNetworkingCheckBox.Checked then
-    Flash.AllowNetworking := 'all'
-  else
-    Flash.AllowNetworking := 'none';
+  if Flash <> nil then
+  begin
+    if AllowNetworkingCheckBox.Checked then
+      Flash.AllowNetworking := 'all'
+    else
+      Flash.AllowNetworking := 'none';
+  end;
 end;
 
 procedure TGamesForm.LoadAbortButtonClick(Sender: TObject);
@@ -648,7 +651,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 

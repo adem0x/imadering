@@ -364,16 +364,16 @@ begin
                     // Подготавиливаем все значения
                     RosterForm.RosterItemSetFull(ListItemD);
                     // Обновляем субстроки
-                    ListItemD.SubItems[0] := URLEncode(XML2Text(XML_Node.Properties.Value('name')));
+                    ListItemD.SubItems[0] := URLEncode(UTF8ToString(XML2Text(XML_Node.Properties.Value('name'))));
                     if ListItemD.SubItems[0] = EmptyStr then
                       ListItemD.SubItems[0] := ListItemD.Caption;
                     ListItemD.SubItems[2] := XML_Node.Properties.Value('subscription');
                     // Открываем ключ группы
                     Sub_Node := XML_Node.Items.ItemNamed['group'];
                     if Sub_Node <> nil then
-                      ListItemD.SubItems[1] := URLEncode(XML2Text(Sub_Node.Value));
+                      ListItemD.SubItems[1] := URLEncode(UTF8ToString(XML2Text(Sub_Node.Value)));
                     if ListItemD.SubItems[1] = EmptyStr then
-                      ListItemD.SubItems[1] := URLEncode(JabberNullGroup);
+                      ListItemD.SubItems[1] := URLEncode(Lang_Vars[95].L_S);
                     ListItemD.SubItems[3] := C_Jabber;
                     ListItemD.SubItems[6] := '30';
                   end;
@@ -484,7 +484,7 @@ var
   M: string;
 begin
   // Отправляем сообщение для jabber контакта
-  M := Format(J_MessHead, [MJID, Jabber_Seq]) + '<body>' + Msg + '</body></message>';
+  M := Format(J_MessHead, [MJID, Jabber_Seq]) + '<body>' + Text2XML(Msg) + '</body></message>';
   Jab_SendPkt(M);
   // Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
@@ -578,7 +578,7 @@ begin
             PJID := Root.Properties.Value('from');
             XML_Node := Root.Items.ItemNamed['body'];
             if XML_Node <> nil then
-              InMsg := XML_Node.Value;
+              InMsg := UTF8ToString(XML_Node.Value);
             if (PJID <> EmptyStr) and (InMsg <> EmptyStr) then
               begin
                 // Отделяем ресурс

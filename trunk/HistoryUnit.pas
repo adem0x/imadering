@@ -126,7 +126,7 @@ begin
     MyHUIN := Jabber_LoginUIN;
   // --Очистили компонент истории и выводим надпись, что история загружается
   Doc := HTMLStyle;
-  Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+  Doc := Doc + '<span class=b>' + Lang_Vars[116].L_S + '</span>';
   LoadHTMLStrings(HTMLHistoryViewer, Doc);
   HTMLHistoryViewer.Refresh;
   // Загружаем файл истории сообщений
@@ -160,7 +160,7 @@ begin
       // Очистили компонент истории и выводим сообщение, что история не найдена
       HTMLHistoryViewer.Clear;
       Doc := HTMLStyle;
-      Doc := Doc + '<span class=d>' + HistoryNotFileL + '</span>';
+      Doc := Doc + '<span class=d>' + Lang_Vars[109].L_S + '</span>';
       LoadHTMLStrings(HTMLHistoryViewer, Doc);
     end;
   // Ищем архивы истории с этим контактом
@@ -293,7 +293,7 @@ begin
   // Загружаем файл с историей выбранного контакта
   // --Очистили компонент истории и выводим надпись, что история загружается
   Doc := HTMLStyle;
-  Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+  Doc := Doc + '<span class=b>' + Lang_Vars[116].L_S + '</span>';
   LoadHTMLStrings(HTMLHistoryViewer, Doc);
   HTMLHistoryViewer.Refresh;
   // Загружаем файл истории сообщений

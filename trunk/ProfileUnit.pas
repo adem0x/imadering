@@ -28,7 +28,8 @@ uses
   StdCtrls,
   JvSimpleXml,
   Buttons,
-  ShellApi;
+  ShellApi,
+  IOUtils;
 
 type
   TProfileForm = class(TForm)
@@ -86,14 +87,14 @@ uses
   RosterUnit,
   FirstStartUnit,
   LogUnit,
-  ProfilesFolderUnit;
+  ProfilesFolderUnit,
+  OverbyteIcsUtils;
 
 {$ENDREGION}
 {$REGION 'SaveSettings'}
 
 procedure TProfileForm.SaveSettings;
 var
-  I: Integer;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
@@ -110,11 +111,8 @@ begin
         Root.Items.Add(C_Auto, AutoSignCheckBox.Checked);
         V_ProfileAuto := AutoSignCheckBox.Checked;
         // Сохраняем профиль по умолчанию
-        XML_Node := Root.Items.Add(C_Profiles);
-        XML_Node.Properties.Add(C_Cur, V_Profile);
-        // Сохраняем список всех других профилей
-        for I := 0 to ProfileComboBox.Items.Count - 1 do
-          XML_Node.Items.Add('i' + IntToStr(I), ProfileComboBox.Items.Strings[I]);
+        XML_Node := Root.Items.Add(C_Profile);
+        XML_Node.Value := V_Profile;
         // Записываем сам файл
         SaveToFile(V_ProfilePath + C_ProfilesFileName);
       end;
@@ -128,7 +126,6 @@ end;
 
 procedure TProfileForm.LoadSettings;
 var
-  I: Integer;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
@@ -153,14 +150,9 @@ begin
                   AutoSignCheckBox.Checked := XML_Node.BoolValue;
                 V_ProfileAuto := AutoSignCheckBox.Checked;
                 // Получаем имя последнего профиля
-                XML_Node := Root.Items.ItemNamed[C_Profiles];
+                XML_Node := Root.Items.ItemNamed[C_Profile];
                 if XML_Node <> nil then
-                  begin
-                    ProfileComboBox.Text := XML_Node.Properties.Value(C_Cur);
-                    // Получаем список других профилей
-                    for I := 0 to XML_Node.Items.Count - 1 do
-                      ProfileComboBox.Items.Add(XML_Node.Items.Value('i' + IntToStr(I)));
-                  end;
+                  ProfileComboBox.Text := XML_Node.Value;
               end;
           end;
       end;
@@ -322,6 +314,7 @@ label
   A;
 var
   FrmFolder: TProfilesFolderForm;
+  Folder: string;
 begin
   // Присваиваем иконку окну и кнопкам
   MainForm.AllImageList.GetIcon(253, Icon);
@@ -335,6 +328,9 @@ begin
   // Загружаем настройки
   LoadSettings;
   ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
+  // Подгружаем список всех папок профилей
+  for Folder in TDirectory.GetDirectories(V_ProfilePath) do
+    ProfileComboBox.Items.Add(IcsExtractLastDir(Folder));
   // Назначаем разделитель значений для списков
   LangComboBox.Items.NameValueSeparator := C_BN;
   // Устанавливаем язык

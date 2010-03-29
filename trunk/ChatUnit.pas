@@ -1034,12 +1034,12 @@ begin
       if CancelBitBtn.Enabled then
         begin
           XShowForm(FileTransferForm);
-          DAShow(Lang_Vars[18].L_S, S_FileTransfer6, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[18].L_S, Lang_Vars[93].L_S, EmptyStr, 133, 3, 0);
           Exit;
         end;
       // Выбираем способ передачи файла
       Tag := (Sender as TMenuItem).Tag; // 1 - UpWap.ru
-      TopInfoPanel.Caption := S_FileTransfer1 + InfoPanel1.Caption;
+      TopInfoPanel.Caption := Lang_Vars[88].L_S + InfoPanel1.Caption;
       T_UIN := InfoPanel2.Caption;
       T_UserType := UserType;
       // Открываем диалог выбора файла для передачи
@@ -1591,7 +1591,7 @@ begin
             begin
               // Очистили компонент истории и выводим надпись, что история загружается
               Doc := HTMLStyle;
-              Doc := Doc + '<span class=b>' + HistoryLoadFileL + '</span>';
+              Doc := Doc + '<span class=b>' + Lang_Vars[116].L_S + '</span>';
               LoadHTMLStrings(HTMLChatViewer, Doc);
               HTMLChatViewer.Refresh;
               // Добавляем стили
@@ -1856,7 +1856,7 @@ begin
                 SubItems.Add(Msg);
                 SubItems.Add(UserType);
               end;
-            NotifyPanel.Caption := GtransProcessL;
+            NotifyPanel.Caption := Lang_Vars[87].L_S;
             // Очищаем поле ввода теста
             InputRichEdit.Clear;
             InputRichEditChange(Self);
@@ -1888,7 +1888,7 @@ begin
             if NotProtoOnline(C_Jabber) then
               Exit;
             // Отправляем сообщение
-            Jab_SendMessage(InfoPanel2.Caption, Text2XML(Msg));
+            Jab_SendMessage(InfoPanel2.Caption, Msg);
             // Формируем файл с историей
             HistoryFile := V_ProfilePath + C_HistoryFolder + UserType + C_BN + Jabber_LoginUIN + C_BN + InfoPanel2.Caption + '.htm';
           end

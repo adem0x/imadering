@@ -135,8 +135,8 @@ begin
         // Формируем URL запроса
         SendFileHttpClient.URL := UpWapRootURL + '/upload/';
         // Выводим информацию о начале процесса
-        BottomInfoPanel.Caption := S_FileTransfer2;
-        Xlog(S_FileTransfer2 + C_BN + SendFileHttpClient.URL, EmptyStr);
+        BottomInfoPanel.Caption := Lang_Vars[89].L_S;
+        Xlog(Lang_Vars[89].L_S + C_BN + SendFileHttpClient.URL, EmptyStr);
         // Начинаем запрос данных
         SendFileHttpClient.GetASync;
       end;
@@ -211,7 +211,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -230,8 +230,8 @@ begin
   PassEdit.Color := ClWindow;
   if Sender <> nil then
     begin
-      BottomInfoPanel.Caption := S_FileTransfer4;
-      Xlog(C_SF + S_FileTransfer4, EmptyStr);
+      BottomInfoPanel.Caption := Lang_Vars[91].L_S;
+      Xlog(C_SF + Lang_Vars[91].L_S, EmptyStr);
       SendFileButton.Enabled := True;
     end;
 end;
@@ -377,13 +377,13 @@ begin
                     // Ищем информацию об успешной закачке файла на сервер
                     if Pos('Файл размещен', Doc) > 0 then
                       begin
-                        BottomInfoPanel.Caption := S_FileTransfer3;
+                        BottomInfoPanel.Caption := Lang_Vars[90].L_S;
                         // Воспроизводим звук удачной пересылки файла
                         ImPlaySnd(6);
                         // Формируем текст со ссылкой
                         OKURL := UpWapRootURL + IsolateTextString(Doc, 'action="', '"');
                         case Tag of
-                          1: OKURL := Format(S_FileTransfer5, [T_FileName, OKURL, 'upwap.ru', FileSizePanel.Caption]);
+                          1: OKURL := Format(Lang_Vars[92].L_S, [T_FileName, OKURL, 'upwap.ru', FileSizePanel.Caption]);
                         end;
                         Xlog(C_SF + C_RN + OKURL, EmptyStr);
                         MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
@@ -431,7 +431,7 @@ begin
                             if InfoPanel2.Caption = T_UIN then
                               begin
                                 // Оповещаем о удачной передаче файла
-                                NotifyPanel.Caption := S_FileTransfer3;
+                                NotifyPanel.Caption := Lang_Vars[90].L_S;
                                 // Увеличиваем счётчик исходящих сообщений
                                 Inc(OutMessIndex);
                                 // Добавляем в чат сообщение

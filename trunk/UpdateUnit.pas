@@ -92,7 +92,7 @@ begin
   MainForm.UpdateHttpClient.Tag := 2;
   MainForm.UpdateHttpClient.Abort;
   // Выводим информацию о прекрашении закачки обноления
-  InfoMemo.Lines.Add(S_UpDateAbort);
+  InfoMemo.Lines.Add(Lang_Vars[111].L_S);
 end;
 
 {$ENDREGION}
@@ -158,7 +158,7 @@ begin
   LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, ['0']);
   DownloadProgressBar.Position := 0;
   // Выводим информацию о начале закачки обноления
-  InfoMemo.Lines.Add(S_UpDateStart + ' (' + V_UpdateVersionPath + ')');
+  InfoMemo.Lines.Add(Lang_Vars[110].L_S + ' (' + V_UpdateVersionPath + ')');
   // Запускаем закачку файла обновления с сайта
   MainForm.UpdateHttpClient.Abort;
   MainForm.UpdateHttpClient.URL := C_GoogleCodeURL + V_UpdateVersionPath;

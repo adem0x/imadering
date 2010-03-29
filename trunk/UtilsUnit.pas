@@ -58,7 +58,6 @@ uses
 
 function Parse(Char, S: string; Count: Integer): string;
 procedure ListFileInDir(Path, Eext: string; FileList: TStrings);
-procedure GetTreeDirs(Root: string; out OutString: TStringList);
 function Hex2Text(HexText: string): string;
 function Text2Hex(Msg: RawByteString): string;
 function RightStr(const Str: string; Size: Word): string;
@@ -670,7 +669,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := Lang_Vars[23].L_S + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(HttpSocketErrCodeL, [Errcode]) + C_RN + '[ ' + SocketL + C_BN + SName + ' ]';
+  Result := Lang_Vars[23].L_S + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(HttpSocketErrCodeL, [Errcode]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + SName + ' ]';
 end;
 
 {$ENDREGION}
@@ -853,6 +852,7 @@ procedure XShowForm(Xform: Tform);
 begin
   // Автоматизируем показ окон
   Xform.Show;
+  ShowWindow(Xform.Handle, SW_SHOW);
   if Xform.WindowState = wsMinimized then
     ShowWindow(Xform.Handle, SW_Restore);
   SetForeGroundWindow(Xform.Handle);
@@ -1800,26 +1800,6 @@ assembler;
   end;
 
 {$ENDREGION}
-{$REGION 'GetTreeDirs'}
-
-procedure GetTreeDirs(Root: string; out OutString: TStringList);
-var
-  SResult: TSearchRec;
-begin
-  OutString := TStringList.Create;
-  if not DirectoryExists(Root) then
-    Exit;
-  if FindFirst(Root + '\*', FaAnyFile, SResult) = 0 then
-    begin
-      repeat
-        if (SResult.name <> '.') and (SResult.name <> '..') and ((SResult.Attr and FaDirectory) = FaDirectory) then
-          OutString.Add(SResult.name);
-      until FindNext(SResult) <> 0;
-      FindClose(SResult);
-    end;
-end;
-
-{$ENDREGION}
 {$REGION 'Parse'}
 
 function Parse(Char, S: string; Count: Integer): string;
@@ -2258,7 +2238,7 @@ begin
   if Ts = EmptyStr then
     begin
       SetClipBoardText(Url);
-      Dashow(Lang_Vars[17].L_S, UrlOpenErrL, EmptyStr, 134, 2, 0);
+      Dashow(Lang_Vars[17].L_S, Lang_Vars[108].L_S, EmptyStr, 134, 2, 0);
       Exit;
     end;
   if Pos('"', Ts) > 0 then

@@ -255,7 +255,7 @@ begin
   if (YourLangComboBox.ItemIndex = -1) or (ToLangComboBox.ItemIndex = -1) then
     begin
       // Показываем сообщение об этой ошибке
-      DAShow(Lang_Vars[16].L_S, S_GtransErr2, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S, Lang_Vars[84].L_S, EmptyStr, 133, 3, 0);
       Exit;
     end;
   // Активируем режим перевода для этого контакта
@@ -360,7 +360,7 @@ begin
     begin
       GTranslation := False;
       if ChatForm.InfoPanel2.Caption = GUIN then
-        ChatForm.NotifyPanel.Caption := Format(GtransErrL, [IntToStr(GtransHttpClient.StatusCode)]);
+        ChatForm.NotifyPanel.Caption := Format(Lang_Vars[85].L_S, [IntToStr(GtransHttpClient.StatusCode)]);
       DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(GtransHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
     end;
 end;
@@ -381,7 +381,7 @@ begin
   if Error <> 0 then
     begin
       GTranslation := False;
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + SocketL + C_BN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -497,7 +497,7 @@ begin
                           if InfoPanel2.Caption = GUIN then
                             begin
                               // Оповещаем о удачном переводе
-                              NotifyPanel.Caption := GtransOKL;
+                              NotifyPanel.Caption := Lang_Vars[86].L_S;
                               // Если включены графические смайлики, то форматируем сообщение под смайлы
                               if not V_TextSmilies then
                                 CheckMessage_Smilies(HMsg);
@@ -527,8 +527,8 @@ begin
               else
                 begin
                   if ChatForm.InfoPanel2.Caption = GUIN then
-                    ChatForm.NotifyPanel.Caption := Format(GtransErrL, [GStatus]);
-                  DAShow(Lang_Vars[17].L_S, Format(GtransErrL, [GStatus]), EmptyStr, 134, 2, 0);
+                    ChatForm.NotifyPanel.Caption := Format(Lang_Vars[85].L_S, [GStatus]);
+                  DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[85].L_S, [GStatus]), EmptyStr, 134, 2, 0);
                   // Удаляем это сообщение из списка буфера
                   GtransListView.Items.Delete(0);
                 end;
