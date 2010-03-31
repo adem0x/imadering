@@ -6,13 +6,14 @@ object ProfileForm: TProfileForm
   ClientHeight = 281
   ClientWidth = 259
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery

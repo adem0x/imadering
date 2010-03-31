@@ -177,7 +177,7 @@ begin
       if SPageInc then
         begin
           Inc(SPage);
-          SearchNextPageBitBtn.Caption := Format(SearchNextPage2, [SPage]);
+          SearchNextPageBitBtn.Caption := Format(Lang_Vars[126].L_S, [SPage]);
         end
       else
         SPage := 0;
@@ -198,7 +198,7 @@ begin
             MaritalInd := StrToInt(IsolateTextString(MaritalComboBox.Text, '[', ']'));
         end;
       // Начинаем поиск
-      StatusPanel.Caption := SearchInfoGoL;
+      StatusPanel.Caption := Lang_Vars[121].L_S;
       ICQ_SearchNewBase(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, KeyWordEdit.Text, GenderComboBox.ItemIndex, AgeComboBox.ItemIndex, MaritalInd, CountryInd, LangInd, SPage,
         OnlyOnlineCheckBox.Checked);
     end;
@@ -365,7 +365,7 @@ begin
         end;
       if ICQ_Work_Phaze then
         begin
-          StatusPanel.Caption := SearchInfoGoL;
+          StatusPanel.Caption := Lang_Vars[121].L_S;
           ICQ_SearchPoUIN_new(UINSearchEdit.Text);
         end;
     end
@@ -374,7 +374,7 @@ begin
     begin
       if ICQ_Work_Phaze then
         begin
-          StatusPanel.Caption := SearchInfoGoL;
+          StatusPanel.Caption := Lang_Vars[121].L_S;
           ICQ_SearchPoEmail_new(EmailSearchEdit.Text);
         end;
     end
@@ -383,7 +383,7 @@ begin
     begin
       if ICQ_Work_Phaze then
         begin
-          StatusPanel.Caption := SearchInfoGoL;
+          StatusPanel.Caption := Lang_Vars[121].L_S;
           ICQ_SearchPoText_new(KeyWordSearchEdit.Text, OnlyOnlineCheckBox.Checked);
         end;
     end

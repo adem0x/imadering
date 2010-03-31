@@ -66,7 +66,7 @@ const
   C_ReplyFileName = 'Reply.txt';
 
 {$ENDREGION}
-{$REGION 'AllConst'}
+{$REGION 'CommandsConst'}
 
   // Команды смежного использования
   C_Icq = 'Icq';
@@ -165,6 +165,59 @@ const
   C_TwitUserInfo = 'http://twitter.com/users/show/';
   C_TwitOpenLenta = 'http://twitter.com/statuses/friends_timeline/%s.xml?count=%d';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
+
+{$ENDREGION}
+{$REGION 'LogLangVars'}
+
+  // Для Лога
+  LogMyPath: string = 'Program path';
+  LogProfile: string = 'Profile path';
+  LogIconCount: string = 'Uploaded %d icons';
+  Log_WinVer: string = 'Windows version: %u.%u.%u %s';
+  Log_Lang_Code: string = 'Language ID';
+  Log_Get: string = ' get | ';
+  Log_Send: string = ' send | ';
+  Log_Parsing: string = ' parsing | ';
+
+  Log_Connect: string = 'Подключение к серверу: ';
+  Log_HTTP_Proxy_Connect: string = 'Подключение к прокси: ';
+  Log_Login: string = 'Логин для авторизации: ';
+  Log_Set_Status: string = 'Выбран статус: ';
+
+  Log_Exception1: string = 'В программе произошла ошибка' + C_RN;
+  Log_Exception2: string = C_RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
+    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
+
+  Log_Proxy_OK: string = 'Подключение к прокси установлено успешно.';
+
+  Log_Server_Hello: string = 'Получено приглашение сервера.';
+  Log_Get_Server: string = 'Получен адрес сервера: ';
+
+  Log_Unk_Data: string = 'Получены неизвестные или неважные данные:';
+
+  Log_Close_Server: string = 'Сеанс связи с сервером заверщён.';
+
+  Log_ConnTime: string = 'Время подключения: ';
+  Log_UIN_RegTime: string = 'Дата регистрации: ';
+  Log_Ext_IP: string = 'Внешний IP: ';
+  Log_Int_IP: string = 'Внутренний IP: ';
+  Log_Icon_Hash: string = 'Хэш аватар:';
+  Log_User_Online_Event: string = 'Получен пакет онлайн статуса от контакта: ';
+  Log_User_Offline_Event: string = 'Получен пакет оффлайн статуса от контакта: ';
+  Log_UserClass: string = 'Класс контакта: ';
+  Log_ConnFlag: string = 'Флаг подключения: ';
+  Log_ProtoVer: string = 'Версия протокола: ';
+  Log_Status: string = 'Код статуса: ';
+  Log_TimeInOnline: string = 'Время проведённое в онлайн: ';
+  Log_ReqMessage: string = 'Получен пакет с сообщением от контакта: ';
+  Log_Msg_Chanel: string = 'Канал сообщения: ';
+  Log_Msg_Type: string = 'Тип сообщения: ';
+  Log_Msg_Text: string = 'Текст сообщения:';
+  Log_Connect_Count: string = 'Количество подключений к серверу: ';
+  Log_Contact_Info: string = 'Получен пакет информации о контакте: ';
+
+  Log_Gtrans_Req: string = 'Получены данные перевода: %s на %s';
+  Log_Gtrans_URL: string = 'Запрос для перевода: %s на %s';
 
 {$ENDREGION}
 
@@ -339,8 +392,8 @@ var
 {$ENDREGION}
 {$REGION 'LangVars'}
 
-  // Переменные для языка | Lang_Vars[117].L_S
-  Lang_Vars: packed array [0 .. 117] of record L_N: string;
+  // Переменные для языка | Lang_Vars[126].L_S
+  Lang_Vars: packed array [0 .. 126] of record L_N: string;
   L_S: string;
 end
 = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
@@ -370,7 +423,7 @@ end
   (L_N: 'UnknownError'; L_S: ''), // 24
   (L_N: 'DellYourSelf'; L_S: ''), // 25
   (L_N: 'HistorySearchNo'; L_S: ''), // 26
-  (L_N: '---'; L_S: ''), // 27
+  (L_N: 'HttpErrCode'; L_S: ''), // 27
   (L_N: 'AccountX'; L_S: ''), // 28
   (L_N: 'NoPassChange'; L_S: ''), // 29
   (L_N: 'OkPassChange'; L_S: ''), // 30
@@ -460,12 +513,16 @@ end
   (L_N: 'UpDateOK'; L_S: ''), // 114
   (L_N: 'GroupContacts'; L_S: ''), // 115
   (L_N: 'HistoryLoading'; L_S: ''), // 116
-  (L_N: 'DellGroup'; L_S: '')); // 117
-
-
-HistorySearchNoL :
-string = 'Такой текст не найден.';
-
+  (L_N: 'DellGroup'; L_S: ''), // 117
+  (L_N: 'ProxyConErr_1'; L_S: ''), // 118
+  (L_N: 'ProxyConErr_2'; L_S: ''), // 119
+  (L_N: 'LoginError'; L_S: ''), // 120
+  (L_N: 'SearchGo'; L_S: ''), // 121
+  (L_N: 'SearchEnd'; L_S: ''), // 122
+  (L_N: 'SearchNo'; L_S: ''), // 123
+  (L_N: 'SearchAuth'; L_S: ''), // 124
+  (L_N: 'SearchAuthNo'; L_S: ''), // 125
+  (L_N: 'SearchNextPage'; L_S: '')); // 126
 
 InfoNickL :
 string = 'Ник:';
@@ -537,29 +594,6 @@ InfoHairL :
 string = 'Цвет волос:';
 InfoChildrenL1 :
 string = 'Детей:';
-
-ProxyConnectErrL1 :
-string = 'Неверный логин или пароль для прокси.';
-ProxyConnectErrL2 :
-string = 'Неизвестная прокси ошибка.';
-JabberLoginErrorL :
-string = 'Неправильный JID или пароль.';
-MraLoginErrorL :
-string = 'Неправильный Email или пароль.';
-HttpSocketErrCodeL :
-string = 'Код ошибки: %d';
-SearchInfoGoL :
-string = 'Идёт поиск ...';
-SearchInfoEndL :
-string = 'Поиск завершён';
-SearchInfoNoL :
-string = 'Не найден';
-SearchInfoAuthL :
-string = 'Авторизация';
-SearchInfoAuthNoL :
-string = 'Не нужна';
-SearchNextPage2 :
-string = 'Страница - %d';
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}
@@ -682,106 +716,6 @@ Err504 :
 string = 'Истекло время ожидания от шлюза.';
 Err505 :
 string = 'Не поддерживаемая версия HTTP.';
-
-{$ENDREGION}
-{$REGION 'LogLangVars'}
-
-// Для Лога
-LogMyPath :
-string = 'Путь к программе: ';
-LogProfile :
-string = 'Путь к профилю: ';
-LogIconCount :
-string = 'Загружено %d иконок';
-LogNickCash :
-string = 'Количество ников в файле кэша: ';
-LogSmiliesCount :
-string = 'Количество загруженных смайликов: ';
-LogRosterCount :
-string = 'Количество записей в файле кэша списка контактов: ';
-Log_Connect :
-string = 'Подключение к серверу: ';
-Log_HTTP_Proxy_Connect :
-string = 'Подключение к прокси: ';
-Log_Login :
-string = 'Логин для авторизации: ';
-Log_Set_Status :
-string = 'Выбран статус: ';
-Log_Jabber_Plain :
-string = 'Jabber | Авторизация по механизму PLAIN';
-Log_MD5_Nonce :
-string = 'Получен ключ для MD5 авторизации: ';
-Log_Clear :
-string = 'Лог событий автоматически очищен.';
-Log_Exception1 :
-string = 'В программе произошла ошибка:' + C_RN;
-Log_Exception2 :
-string = C_RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
-  'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
-Log_Proxy_OK :
-string = 'Подключение к прокси установлено успешно.';
-Log_Server_Hello :
-string = 'Получено приглашение сервера.';
-Log_Get_Server :
-string = 'Получен адрес сервера: ';
-Log_Unk_Data :
-string = 'Получены неизвестные или неважные данные:';
-Log_Close_Server :
-string = 'Сеанс связи с сервером заверщён.';
-Log_Get_CL :
-string = 'Получен список контактов.';
-Log_ConnTime :
-string = 'Время подключения: ';
-Log_UIN_RegTime :
-string = 'Дата регистрации: ';
-Log_Ext_IP :
-string = 'Внешний IP: ';
-Log_Int_IP :
-string = 'Внутренний IP: ';
-Log_Icon_Hash :
-string = 'Хэш аватар:';
-Log_User_Online_Event :
-string = 'Получен пакет онлайн статуса от контакта: ';
-Log_User_Offline_Event :
-string = 'Получен пакет оффлайн статуса от контакта: ';
-Log_UserClass :
-string = 'Класс контакта: ';
-Log_ConnFlag :
-string = 'Флаг подключения: ';
-Log_ProtoVer :
-string = 'Версия протокола: ';
-Log_Status :
-string = 'Код статуса: ';
-Log_TimeInOnline :
-string = 'Время проведённое в онлайн: ';
-Log_ReqMessage :
-string = 'Получен пакет с сообщением от контакта: ';
-Log_Msg_Chanel :
-string = 'Канал сообщения: ';
-Log_Msg_Type :
-string = 'Тип сообщения: ';
-Log_Msg_Text :
-string = 'Текст сообщения:';
-Log_Connect_Count :
-string = 'Количество подключений к серверу: ';
-Log_Lang_Code :
-string = 'Код языка системы: ';
-Log_Contact_Info :
-string = 'Получен пакет информации о контакте: ';
-Log_Gtrans_Req :
-string = 'Получены данные перевода: %s на %s';
-Log_Gtrans_URL :
-string = 'Запрос для перевода: %s на %s';
-Log_Get :
-string = ' get | ';
-Log_Send :
-string = ' send | ';
-Log_Parsing :
-string = ' parsing | ';
-Log_SetLang :
-string = 'Перевод формы: ';
-Log_WinVer :
-string = 'Версия Windows: %u.%u.%u %s';
 
 {$ENDREGION}
 

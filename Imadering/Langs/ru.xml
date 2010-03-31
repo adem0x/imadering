@@ -126,6 +126,16 @@
     <HistoryLoading c="Загружается история ..."/>
     <DellYourSelf c="Удалить себя из списка контакта: %s._r_Вы уверены?"/>
     <HistorySearchNo c="Такой текст не найден."/>
+    <ProxyConErr_1 c="Неверный логин или пароль для прокси."/>
+    <ProxyConErr_2 c="Неизвестная прокси ошибка."/>
+    <HttpErrCode c="Код ошибки: %d"/>
+    <LoginError c="Неправильный %s логин или пароль."/>
+    <SearchGo c="Идёт поиск ..."/>
+    <SearchEnd c="Поиск завершён"/>
+    <SearchNo c="Не найден"/>
+    <SearchAuth c="Авторизация"/>
+    <SearchAuthNo c="Не нужна"/>
+    <SearchNextPage c="Страница - %d"/>
   </vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>

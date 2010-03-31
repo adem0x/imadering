@@ -187,7 +187,7 @@ begin
   PR := V_ProfilePath;
   V_ProfilePath := V_ProfilePath + V_Profile + '\';
   V_Profile := PR;
-  XLog(LogProfile + V_ProfilePath, EmptyStr);
+  XLog(LogProfile + C_TN + V_ProfilePath, EmptyStr);
   // Создаём форму с настройками для применения настроек
   SettingsForm := TSettingsForm.Create(MainForm);
   SettingsForm.ApplySettings;
@@ -224,10 +224,8 @@ begin
   V_SmilesList := TStringList.Create;
   if FileExists(V_ProfilePath + C_Nick_BD_FileName) then
     V_AccountToNick.LoadFromFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
-  XLog(LogNickCash + IntToStr(V_AccountToNick.Count), EmptyStr);
   if FileExists(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles])) then
     V_SmilesList.LoadFromFile(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles]), TEncoding.UTF8);
-  XLog(LogSmiliesCount + IntToStr(V_SmilesList.Count - 1), EmptyStr);
   // Запускаем обработку Ростера
   RosterForm.UpdateFullCL;
   // Если не активно запускаться свёрнутой в трэй то показываем клавное окно
