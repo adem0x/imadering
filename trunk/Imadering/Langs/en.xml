@@ -126,6 +126,16 @@
     <HistoryLoading c="Loading history ..."/>
     <DellYourSelf c="Remove myself from contacts list: %s._r_Are you sure?"/>
     <HistorySearchNo c="This text is not found."/>
+    <ProxyConErr_1 c="Wrong username or password for the proxy."/>
+    <ProxyConErr_2 c="Unknown proxy error."/>
+    <HttpErrCode c="Error code: %d"/>
+    <LoginError c="Invalid %s username or password."/>
+    <SearchGo c="Searching ..."/>
+    <SearchEnd c="Search completed"/>
+    <SearchNo c="Not found"/>
+    <SearchAuth c="Authorization"/>
+    <SearchAuthNo c="Not needed"/>
+    <SearchNextPage c="Page - %d"/>
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>

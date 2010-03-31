@@ -214,7 +214,7 @@ begin
   HTMLHistoryViewer.SelLength := 0;
   // Делаем поиск текста в истории
   if not HTMLHistoryViewer.FindEx(SearchTextEdit.Text, RegistrCheckBox.Checked, UpSearchCheckBox.Checked) then
-    Showmessage(HistorySearchNoL);
+    Showmessage(Lang_Vars[26].L_S);
 end;
 
 procedure THistoryForm.ReloadHistoryBitBtnClick(Sender: TObject);

@@ -743,7 +743,6 @@ begin
   // Загружаем копию локальную списка контактов
   if FileExists(V_ProfilePath + C_ContactListFileName) then
     RosterJvListView.LoadFromCSV(V_ProfilePath + C_ContactListFileName);
-  XLog(LogRosterCount + IntToStr(RosterJvListView.Items.Count), EmptyStr);
 end;
 
 {$ENDREGION}

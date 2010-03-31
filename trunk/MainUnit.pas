@@ -1609,12 +1609,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными ICQ
         Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1861,7 +1861,6 @@ begin
                                   // Пропускаем раздел флагов
                                   NextData(HexPkt, 6);
                                   // Разбираем пакет со списком контактов
-                                  XLog(C_Icq + Log_Get + Log_Get_CL, C_Icq);
                                   if ICQ_Parse_1306(HexPkt) then
                                     begin
                                       // Запрашиваем нашу инфу обязательно!
@@ -2148,7 +2147,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       ICQ_GoOffline;
     end;
@@ -2239,12 +2238,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными Jabber
         Pkt := Jabber_myBeautifulSocketBuffer;
@@ -2314,7 +2313,7 @@ begin
                         else if Pos('<not-authorized', Pkt) > 0 then
                           begin
                             // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                            DAShow(Lang_Vars[17].L_S, JabberLoginErrorL, EmptyStr, 134, 2, 0);
+                            DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Jabber]), EmptyStr, 134, 2, 0);
                             Jab_GoOffline;
                             Exit;
                           end
@@ -2484,7 +2483,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       Jab_GoOffline;
     end;
@@ -3161,12 +3160,12 @@ begin
           if StartsStr('HTTP/1.0 407', Pkt) then
           begin
             ProxyErr := 1;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL1 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
           end
         else
           begin
             ProxyErr := 2;
-            DAShow(Lang_Vars[17].L_S, ProxyConnectErrL2 + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
           end;
         // Забираем из буфера пакет с данными MRA
         Pkt := MRA_myBeautifulSocketBuffer;
@@ -3300,7 +3299,7 @@ begin
                       if Pos('Invalid login', HexPkt) > 0 then
                         begin
                           // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                          DAShow(Lang_Vars[17].L_S, MraLoginErrorL, EmptyStr, 134, 2, 0);
+                          DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [UpperCase(C_Mra)]), EmptyStr, 134, 2, 0);
                           MRA_GoOffline;
                           Exit;
                         end;
@@ -4416,9 +4415,9 @@ begin
   GetVersionEx(VI);
   XLog(Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]), EmptyStr);
   // Пишем в лог путь к программе
-  XLog(LogMyPath + V_MyPath, EmptyStr);
+  XLog(LogMyPath + C_TN + V_MyPath, EmptyStr);
   // Пишем в лог код локального языка системы
-  XLog(Log_Lang_Code + IntToStr(Lang), EmptyStr);
+  XLog(Log_Lang_Code + C_TN + IntToStr(Lang), EmptyStr);
   // Если профиль не найден, то создаём его в настройках юзера виндовс
   V_ProfilePath := V_MyPath + 'Profiles\';
   if not DirectoryExists(V_ProfilePath) then
@@ -4427,7 +4426,7 @@ begin
       Size := ExpandEnvironmentStrings(PChar(S), Buf, Sizeof(Buf));
       V_ProfilePath := Copy(Buf, 1, Size);
     end;
-  XLog(LogProfile + V_ProfilePath, EmptyStr);
+  XLog(LogProfile + C_TN + V_ProfilePath, EmptyStr);
   // Загрузка иконок для программы
   LoadImageList(AllImageList, V_MyPath + 'Icons\' + V_CurrentIcons + '\icons.bmp');
   // Устанавливаем иконку окна
@@ -5401,7 +5400,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
     end;
 end;
 
@@ -5511,7 +5510,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(HttpSocketErrCodeL, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
       // Активируем режим оффлайн
       MRA_GoOffline;
     end;

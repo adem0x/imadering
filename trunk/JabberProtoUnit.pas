@@ -116,7 +116,6 @@ function Jab_Plain_Auth: string;
 var
   Uu, Upass, Ujid, C, Buff: string;
 begin
-  XLog(C_Jabber + Log_Get + Log_Jabber_Plain, C_Jabber);
   Ujid := Jabber_JID;
   Uu := Jabber_LoginUIN;
   Upass := Jabber_LoginPassword;
@@ -143,7 +142,6 @@ begin
   Nc := '00000001';
   Gop := 'auth';
   Razdel := Ord(':');
-  XLog(C_Jabber + Log_Parsing + Log_MD5_Nonce + Nonce, C_Jabber);
   // Вычисляем А1 по формуле RFC 2831
   SJID := Format('%S:%S:%S', [UserName, Realm, Pass]);
   MD5Init(Context);

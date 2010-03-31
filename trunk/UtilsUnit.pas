@@ -435,7 +435,7 @@ var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
-  Xlog(Log_SetLang + Xform.name, EmptyStr);
+  //Xlog(Xform.name, EmptyStr);
   List := Tstringlist.Create;
   try
     // Инициализируем XML
@@ -669,7 +669,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := Lang_Vars[23].L_S + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(HttpSocketErrCodeL, [Errcode]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + SName + ' ]';
+  Result := Lang_Vars[23].L_S + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(Lang_Vars[27].L_S, [Errcode]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + SName + ' ]';
 end;
 
 {$ENDREGION}
@@ -716,11 +716,7 @@ begin
 A :;
   // Если количество строк в логе слишком большое, то очищаем его
   if LogForm.LogMemo.Lines.Count > 5000 then
-    begin
-      LogForm.LogMemo.Clear;
-      LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Clear);
-      LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
-    end;
+    LogForm.LogMemo.Clear;
   // Добавляем в лог новое сообщение
   LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + XLogData);
   LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
@@ -1962,7 +1958,7 @@ begin
     else
       Result := Lang_Vars[23].L_S;
   end;
-  Result := Result + '%s' + '[ ' + Format(HttpSocketErrCodeL, [Errcode]) + ' ]';
+  Result := Result + '%s' + '[ ' + Format(Lang_Vars[27].L_S, [Errcode]) + ' ]';
 end;
 
 {$ENDREGION}

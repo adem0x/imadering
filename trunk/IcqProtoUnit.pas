@@ -1829,12 +1829,12 @@ begin
           // Если UIN пустой и конец поиска, то сообщаем, что не найден
           if (AUIN = EmptyStr) and (AEndSearch) then
             begin
-              StatusPanel.Caption := SearchInfoNoL;
+              StatusPanel.Caption := Lang_Vars[123].L_S;
               Exit;
             end;
           // Если конец поиска, то сообщаем, что поиск завершён
           if AEndSearch then
-            StatusPanel.Caption := SearchInfoEndL;
+            StatusPanel.Caption := Lang_Vars[122].L_S;
           // Проверяем есть ли уже такой контакт в списке найденных
           for I := 0 to SearchResultJvListView.Items.Count - 1 do
             begin
@@ -1873,9 +1873,9 @@ begin
                   Gend := AAge;
                 SubItems.Add(Gend);
                 if AAuth then
-                  SubItems.Add(SearchInfoAuthL)
+                  SubItems.Add(Lang_Vars[124].L_S)
                 else
-                  SubItems.Add(SearchInfoAuthNoL);
+                  SubItems.Add(Lang_Vars[125].L_S);
                 SubItems.Add(EmptyStr); // Иконка быстрых сообщений
                 SubItems.Add(ACountry);
                 SubItems.Add(ACity);
@@ -4224,7 +4224,6 @@ var
   State: TMd5Context;
   Digest: TMD5Digest;
 begin
-  XLog(C_Icq + Log_Parsing + Log_MD5_Nonce + CKey, C_Icq);
   // Уменьшаем длинну пароля до 8 символов (ограничение протокола ICQ)
   if Length(ICQ_LoginPassword) > 8 then
     Setlength(ICQ_LoginPassword, 8);
