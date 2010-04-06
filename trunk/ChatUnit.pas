@@ -334,7 +334,7 @@ begin
           InfoPanel3.Caption := V_GetCityPanel;
           InfoPanel4.Caption := V_GetAgePanel;
           // Ставим флаг страны
-          ImageFile := V_MyPath + 'Icons\Flags\' + V_GetFlagImage + '.gif';
+          ImageFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, V_GetFlagImage, EmptyStr);
           if FileExists(ImageFile) then
             FlagImage.Picture.LoadFromFile(ImageFile)
           else

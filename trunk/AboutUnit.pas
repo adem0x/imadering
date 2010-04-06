@@ -31,7 +31,7 @@ uses
   JvBehaviorLabel,
   UtilsUnit,
   ComCtrls,
-  JvSimpleXml;
+  JvSimpleXml, Menus;
 
 type
   TAboutForm = class(TForm)
@@ -52,6 +52,8 @@ type
     AboutRichEdit: TRichEdit;
     SVNLabel: TLabel;
     FlagImage: TImage;
+    RichPopupMenu: TPopupMenu;
+    CopyRichText: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure URLLabelMouseEnter(Sender: TObject);
@@ -69,6 +71,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure SVNLabelClick(Sender: TObject);
+    procedure RichPopupMenuPopup(Sender: TObject);
+    procedure CopyRichTextClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -165,6 +169,15 @@ begin
   Close;
 end;
 
+procedure TAboutForm.RichPopupMenuPopup(Sender: TObject);
+begin
+  // Управляем пунктами меню
+  if AboutRichEdit.SelLength = 0 then
+    CopyRichText.Enabled := False
+  else
+    CopyRichText.Enabled := True;
+end;
+
 procedure TAboutForm.SubJvBehaviorLabelStart(Sender: TObject);
 begin
   // Берём заголовок строки из списка About
@@ -216,6 +229,12 @@ begin
   OpenURL('http://imadering.mybb.ru');
 end;
 
+procedure TAboutForm.CopyRichTextClick(Sender: TObject);
+begin
+  // Копируем выделенный текст из RichEdit в буфер обмена
+  AboutRichEdit.CopyToClipboard;
+end;
+
 procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Указываем уничтожаться окну при закрытии
@@ -238,10 +257,10 @@ begin
   // Переводим форму на другие языки
   TranslateForm;
   // Загружаем логотип программы
-  LogoFile := V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif';
+  LogoFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_NoAvatarFileName;
   if FileExists(LogoFile) then
     LogoImage.Picture.LoadFromFile(LogoFile);
-  LogoFile := V_MyPath + C_FlagsFolder + '\7.gif';
+  LogoFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, 'ru');
   if FileExists(LogoFile) then
     FlagImage.Picture.LoadFromFile(LogoFile);
   // Помещаем кнопку формы в таскбар и делаем независимой
@@ -269,6 +288,7 @@ end;
 procedure TAboutForm.FormShow(Sender: TObject);
 begin
   // Прокручиваем рич в верх против глюка в вайн
+  AboutRichEdit.SelStart := 0;
   SendMessage(AboutRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
 end;
 

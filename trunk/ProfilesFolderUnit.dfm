@@ -36,7 +36,6 @@ object ProfilesFolderForm: TProfilesFolderForm
     Height = 17
     Checked = True
     TabOrder = 0
-    TabStop = True
   end
   object Folder1Edit: TEdit
     Left = 24

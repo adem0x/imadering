@@ -157,11 +157,35 @@ procedure AppBarDestroy;
 function ExtractUrlFileName(const AUrl: string): string;
 function Text2XML(Str: string): string;
 function XML2Text(Str: string): string;
+function GetFlagFile(Path, CountryCode, CountryName: string): string;
 
 {$ENDREGION}
 
 implementation
 
+{$REGION 'GetFlagFile'}
+
+  function GetFlagFile(Path, CountryCode, CountryName: string): string;
+  const
+    FileExt = '.gif';
+  var
+    SearchRec: TSearchRec;
+    FileMask: string;
+  begin
+    Result := EmptyStr;
+    if CountryCode <> EmptyStr then
+      FileMask := Path + CountryCode + '_*' + FileExt
+    else if CountryName <> EmptyStr then
+      FileMask := Path + '*_' + CountryName + FileExt;
+    if FindFirst(FileMask, FaAnyFile, SearchRec) = 0 then
+      try
+        Result := SearchRec.Name;
+      finally
+        FindClose(SearchRec);
+      end;
+  end;
+
+{$ENDREGION}
 {$REGION 'XML and Text'}
 
   function Text2XML(Str: string): string;

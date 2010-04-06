@@ -242,13 +242,27 @@ object AboutForm: TAboutForm
     Color = clBtnFace
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
+    Font.Height = -12
+    Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
     PlainText = True
+    PopupMenu = RichPopupMenu
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 3
+  end
+  object RichPopupMenu: TPopupMenu
+    Alignment = paCenter
+    AutoHotkeys = maManual
+    Images = MainForm.AllImageList
+    OnPopup = RichPopupMenuPopup
+    Left = 232
+    Top = 112
+    object CopyRichText: TMenuItem
+      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 144
+      OnClick = CopyRichTextClick
+    end
   end
 end

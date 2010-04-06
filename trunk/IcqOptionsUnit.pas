@@ -77,9 +77,6 @@ type
     YesAutoAuthRadioButton: TRadioButton;
     ShowWebAwareCheckBox: TCheckBox;
     PrivatLevelGroupBox: TGroupBox;
-    PrivatLevelLabel: TLabel;
-    PrivatLevelInfoLabel: TLabel;
-    PrivatLevelTrackBar: TTrackBar;
     AutoReqAuthCheckBox: TCheckBox;
     CustomICQPacketGroupBox: TGroupBox;
     SendCustomICQPacketButton: TButton;
@@ -232,6 +229,7 @@ type
     ClientIdInfoRichEdit: TRichEdit;
     PassChangeInfoRichEdit: TRichEdit;
     PersonalBirthDayInfoLabel: TLabel;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -879,8 +877,11 @@ begin
   OptionJvPageList.ActivePage := AccountPage;
   IcqOptionButtonGroup.ItemIndex := 0;
   // Прокручиваем рич в верх против глюка в вайн
+  ClientIdInfoRichEdit.SelStart := 0;
   SendMessage(ClientIdInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+  PassChangeInfoRichEdit.SelStart := 0;
   SendMessage(PassChangeInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+  DumpInfoRichEdit.SelStart := 0;
   SendMessage(DumpInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
 end;
 

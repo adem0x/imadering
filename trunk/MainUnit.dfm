@@ -338,6 +338,16 @@ object MainForm: TMainForm
       ShowHint = True
       OnClick = OpenTrafficClick
     end
+    object TopModeToolButton: TToolButton
+      Left = 207
+      Top = 0
+      ImageIndex = 288
+      ParentShowHint = False
+      PopupMenu = TopPanelPopupMenu
+      ShowHint = True
+      Style = tbsCheck
+      OnClick = TopModeToolButtonClick
+    end
   end
   object ICQTrayIcon: TTrayIcon
     Hint = 'ICQ'

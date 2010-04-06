@@ -382,40 +382,6 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 2
-          object PrivatLevelLabel: TLabel
-            Left = 83
-            Top = 24
-            Width = 9
-            Height = 13
-            Caption = '#'
-          end
-          object PrivatLevelInfoLabel: TLabel
-            Left = 83
-            Top = 45
-            Width = 8
-            Height = 13
-            Caption = '#'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object PrivatLevelTrackBar: TTrackBar
-            Left = 16
-            Top = 17
-            Width = 44
-            Height = 76
-            Enabled = False
-            Max = 2
-            Orientation = trVertical
-            Position = 2
-            ShowSelRange = False
-            TabOrder = 0
-            ThumbLength = 24
-            TickMarks = tmBoth
-          end
         end
       end
       object IDClientPage: TJvStandardPage
@@ -438,7 +404,7 @@ object IcqOptionsForm: TIcqOptionsForm
           TabOrder = 0
           object ClientIDLabel: TLabel
             Left = 15
-            Top = 115
+            Top = 116
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -450,7 +416,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientProtoVerLabel: TLabel
             Left = 15
-            Top = 170
+            Top = 171
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -462,7 +428,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientCapsLabel: TLabel
             Left = 15
-            Top = 233
+            Top = 238
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -474,7 +440,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientVersionLabel: TLabel
             Left = 240
-            Top = 115
+            Top = 116
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -486,7 +452,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientIDComboBox: TComboBox
             Left = 13
-            Top = 134
+            Top = 135
             Width = 210
             Height = 21
             AutoDropDown = True
@@ -506,7 +472,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientProtoVerEdit: TEdit
             Left = 14
-            Top = 189
+            Top = 190
             Width = 209
             Height = 21
             Color = clBtnFace
@@ -522,7 +488,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientCaps1Edit: TEdit
             Left = 13
-            Top = 251
+            Top = 256
             Width = 403
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -535,7 +501,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientCaps2Edit: TEdit
             Left = 13
-            Top = 284
+            Top = 289
             Width = 403
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -548,7 +514,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientCaps3Edit: TEdit
             Left = 13
-            Top = 317
+            Top = 322
             Width = 403
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -561,7 +527,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ClientVersionEdit: TEdit
             Left = 239
-            Top = 134
+            Top = 135
             Width = 177
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -576,15 +542,15 @@ object IcqOptionsForm: TIcqOptionsForm
             Left = 13
             Top = 20
             Width = 403
-            Height = 84
+            Height = 77
             TabStop = False
             BevelKind = bkFlat
             BorderStyle = bsNone
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -614,7 +580,7 @@ object IcqOptionsForm: TIcqOptionsForm
           TabOrder = 0
           object RetypeNewPassLabel: TLabel
             Left = 113
-            Top = 233
+            Top = 241
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -626,7 +592,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object NewPassChangeLabel: TLabel
             Left = 113
-            Top = 179
+            Top = 187
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -638,7 +604,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ReqPassChangeLabel: TLabel
             Left = 113
-            Top = 150
+            Top = 158
             Width = 3
             Height = 13
             Cursor = crHandPoint
@@ -654,7 +620,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object CurrentPassChangeLabel: TLabel
             Left = 113
-            Top = 104
+            Top = 112
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -666,7 +632,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ChangePassButton: TButton
             Left = 112
-            Top = 309
+            Top = 317
             Width = 207
             Height = 25
             Font.Charset = DEFAULT_CHARSET
@@ -680,7 +646,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object ShowPassChangeCheckBox: TCheckBox
             Left = 112
-            Top = 279
+            Top = 287
             Width = 296
             Height = 17
             Font.Charset = DEFAULT_CHARSET
@@ -694,7 +660,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object RetypeNewPassEdit: TEdit
             Left = 112
-            Top = 252
+            Top = 260
             Width = 207
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -709,7 +675,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object NewPassChangeEdit: TEdit
             Left = 112
-            Top = 198
+            Top = 206
             Width = 207
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -724,7 +690,7 @@ object IcqOptionsForm: TIcqOptionsForm
           end
           object CurrentPassChangeEdit: TEdit
             Left = 112
-            Top = 123
+            Top = 131
             Width = 207
             Height = 21
             Font.Charset = DEFAULT_CHARSET
@@ -737,18 +703,18 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 4
           end
           object PassChangeInfoRichEdit: TRichEdit
-            Left = 12
+            Left = 13
             Top = 20
-            Width = 404
-            Height = 70
+            Width = 403
+            Height = 77
             TabStop = False
             BevelKind = bkFlat
             BorderStyle = bsNone
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -2512,7 +2478,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object ParamInfoRichEdit: TRichEdit
             Left = 13
             Top = 20
-            Width = 402
+            Width = 403
             Height = 324
             TabStop = False
             BevelKind = bkFlat
@@ -2520,8 +2486,8 @@ object IcqOptionsForm: TIcqOptionsForm
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -2549,8 +2515,21 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
+          object Label1: TLabel
+            Left = 14
+            Top = 89
+            Width = 159
+            Height = 13
+            Caption = '#'#1055#1072#1082#1077#1090' '#1076#1072#1085#1085#1099#1093' '#1074' HEX '#1092#1086#1088#1084#1072#1090#1077
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
           object SendCustomICQPacketButton: TButton
-            Left = 322
+            Left = 320
             Top = 324
             Width = 96
             Height = 25
@@ -2565,15 +2544,15 @@ object IcqOptionsForm: TIcqOptionsForm
             OnClick = SendCustomICQPacketButtonClick
           end
           object SendCustomICQPacketRichEdit: TRichEdit
-            Left = 9
-            Top = 80
-            Width = 409
-            Height = 238
+            Left = 13
+            Top = 108
+            Width = 403
+            Height = 210
             TabStop = False
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -13
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -2581,18 +2560,18 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 1
           end
           object DumpInfoRichEdit: TRichEdit
-            Left = 9
-            Top = 18
-            Width = 409
-            Height = 56
+            Left = 13
+            Top = 20
+            Width = 403
+            Height = 61
             TabStop = False
             BevelKind = bkFlat
             BorderStyle = bsNone
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
