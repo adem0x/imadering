@@ -109,29 +109,35 @@ object ProfileForm: TProfileForm
       Text = 'Profile1'
       OnChange = ProfileComboBoxChange
     end
-    object LoginButton: TButton
+    object LoginButton: TBitBtn
       Left = 10
       Top = 120
       Width = 102
       Height = 25
       Default = True
+      DoubleBuffered = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+      ParentDoubleBuffered = False
       ParentFont = False
       ParentShowHint = False
       ShowHint = False
       TabOrder = 1
+      TabStop = False
       OnClick = LoginButtonClick
     end
-    object DeleteButton: TButton
+    object DeleteButton: TBitBtn
       Left = 126
       Top = 120
       Width = 102
       Height = 25
+      DoubleBuffered = True
+      ParentDoubleBuffered = False
       TabOrder = 2
+      TabStop = False
       OnClick = DeleteButtonClick
     end
     object LangComboBox: TComboBox
@@ -152,6 +158,7 @@ object ProfileForm: TProfileForm
       Top = 97
       Width = 218
       Height = 17
+      TabStop = False
       TabOrder = 4
     end
   end

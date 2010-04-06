@@ -14164,6 +14164,9 @@ begin
     ENM_CHANGE or ENM_SELCHANGE or ENM_REQUESTRESIZE or
     ENM_PROTECTED);
   SendMessage(Handle, EM_SETBKGNDCOLOR, 0, ColorToRGB(Color));
+
+  SendMessage(Handle, EM_SETLANGOPTIONS, 0, 0); // Добавил
+
   if FMemStream <> nil then
   begin
     Plain := PlainText;

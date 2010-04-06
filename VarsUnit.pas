@@ -64,6 +64,7 @@ const
   C_ContactListFileName = 'Contacts.txt';
   C_Nick_BD_FileName = 'Nicks.txt';
   C_ReplyFileName = 'Reply.txt';
+  C_NoAvatarFileName = '\noavatar.gif';
 
 {$ENDREGION}
 {$REGION 'CommandsConst'}
@@ -392,8 +393,8 @@ var
 {$ENDREGION}
 {$REGION 'LangVars'}
 
-  // Переменные для языка | Lang_Vars[126].L_S
-  Lang_Vars: packed array [0 .. 126] of record L_N: string;
+  // Переменные для языка | Lang_Vars[127].L_S
+  Lang_Vars: packed array [0 .. 127] of record L_N: string;
   L_S: string;
 end
 = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
@@ -522,7 +523,8 @@ end
   (L_N: 'SearchNo'; L_S: ''), // 123
   (L_N: 'SearchAuth'; L_S: ''), // 124
   (L_N: 'SearchAuthNo'; L_S: ''), // 125
-  (L_N: 'SearchNextPage'; L_S: '')); // 126
+  (L_N: 'SearchNextPage'; L_S: ''), // 126
+  (L_N: 'DellProfile'; L_S: '')); // 127
 
 InfoNickL :
 string = 'Ник:';

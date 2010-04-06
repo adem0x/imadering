@@ -362,7 +362,7 @@ begin
                   begin
                     AddHTML(BottomHTMLViewer, InfoHomeL + C_BN, 'cbold');
                     if Country <> EmptyStr then
-                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Icons/Flags/' + XML_Node.Properties.Value(C_Country) + '.gif" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([Country, City]), 'cdef',
+                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Flags/' + GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr) + '" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([Country, City]), 'cdef',
                         True)
                     else
                       AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), 'cdef', True);
@@ -445,7 +445,7 @@ begin
                   begin
                     AddHTML(BottomHTMLViewer, InfoOHomeL + C_BN, 'cbold');
                     if OCountry <> EmptyStr then
-                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Icons/Flags/' + XML_Node.Properties.Value(C_Country) + '.gif" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([OCountry, OCity]),
+                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Flags/' + GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr) + '" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([OCountry, OCity]),
                         'cdef', True)
                     else
                       AddHTML(BottomHTMLViewer, StrArrayToStr([OCountry, OCity]), 'cdef', True);
@@ -483,7 +483,7 @@ begin
                   begin
                     AddHTML(BottomHTMLViewer, InfoWorkL + C_BN, 'cbold');
                     if WCountry <> EmptyStr then
-                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Icons/Flags/' + XML_Node.Properties.Value(C_Country) + '.gif" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([WCountry, WCity]),
+                      AddHTML(BottomHTMLViewer, '<IMG NAME=i SRC="./Flags/' + GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr) + '" ALIGN=ABSMIDDLE BORDER=0> ' + StrArrayToStr([WCountry, WCity]),
                         'cdef', True)
                     else
                       AddHTML(BottomHTMLViewer, StrArrayToStr([WCountry, WCity]), 'cdef', True);
@@ -774,7 +774,7 @@ begin
   else
     HoroImage.Picture.Assign(nil);
   // Загружаем аватар
-  AvatarImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif');
+  AvatarImage.Picture.LoadFromFile(V_MyPath + C_IconsFolder + V_CurrentIcons + C_NoAvatarFileName);
   { if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
     (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
     (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then

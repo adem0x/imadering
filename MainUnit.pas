@@ -300,6 +300,7 @@ type
     N39: TMenuItem;
     OpenGameMenu: TMenuItem;
     N38: TMenuItem;
+    TopModeToolButton: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -481,6 +482,7 @@ type
     procedure JvTimerListEvents15Timer(Sender: TObject);
     procedure OpenGameMenuClick(Sender: TObject);
     procedure AppMinimize(Sender: TObject);
+    procedure TopModeToolButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -5023,6 +5025,21 @@ begin
   // Скрываем кнопку главного меню на верхней панели
   TopMainButtonONMenu.Checked := not TopMainButtonONMenu.Checked;
   MainToolTopButton.Visible := not MainToolTopButton.Visible;
+end;
+
+procedure TMainForm.TopModeToolButtonClick(Sender: TObject);
+begin
+  // Управляем режимом "поверх всех окон" из окна КЛ
+  if TopModeToolButton.Down then
+    begin
+      FormStyle := FsStayOnTop;
+      TopModeToolButton.ImageIndex := 287;
+    end
+  else
+    begin
+      FormStyle := FsNormal;
+      TopModeToolButton.ImageIndex := 288;
+    end;
 end;
 
 procedure TMainForm.TopOnlyOnlineONMenuClick(Sender: TObject);

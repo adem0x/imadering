@@ -136,6 +136,7 @@
     <SearchAuth c="Authorization"/>
     <SearchAuthNo c="Not needed"/>
     <SearchNextPage c="Page - %d"/>
+    <DellProfile c="Delete profile: %s._r_Are you sure?"/>
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>

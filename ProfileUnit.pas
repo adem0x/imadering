@@ -37,8 +37,8 @@ type
     CenterPanel: TPanel;
     ProfileComboBox: TComboBox;
     ProfileLabel: TLabel;
-    LoginButton: TButton;
-    DeleteButton: TButton;
+    LoginButton: TBitBtn;
+    DeleteButton: TBitBtn;
     VersionLabel: TLabel;
     SiteLabel: TLabel;
     LangLabel: TLabel;
@@ -168,6 +168,8 @@ procedure TProfileForm.LoginButtonClick(Sender: TObject);
 var
   PR: string;
 begin
+  // Нормализуем имя профиля
+  ProfileComboBox.Text := Trim(RafinePath(ProfileComboBox.Text));
   // Запускаем выбранный профиль
   if ProfileComboBox.Text = EmptyStr then
     begin
@@ -175,8 +177,6 @@ begin
       DAShow(Lang_Vars[17].L_S, Lang_Vars[5].L_S, EmptyStr, 134, 2, 0);
       Exit;
     end;
-  // Нормализуем имя профиля
-  ProfileComboBox.Text := RafinePath(ProfileComboBox.Text);
   // Запоминаем имя профиля
   V_Profile := ProfileComboBox.Text;
   if ProfileComboBox.Items.IndexOf(V_Profile) = -1 then
@@ -292,15 +292,21 @@ procedure TProfileForm.DeleteButtonClick(Sender: TObject);
 var
   N: Integer;
 begin
-  // Удаляем профиль из списка
-  ProfileComboBox.Text := EmptyStr;
-  ProfileComboBox.Hint := EmptyStr;
-  N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
-  if N > -1 then
+  // Удаляем профиль из списка и с диска
+  if ProfileComboBox.Text = EmptyStr then
+    Exit;
+  if MessageBox(Handle, PChar(Format(Lang_Vars[127].L_S, [ProfileComboBox.Text])), PChar(Lang_Vars[19].L_S), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
     begin
-      ProfileComboBox.Items.Delete(N);
-      ProfileComboBox.Text := EmptyStr;
-      SaveSettings;
+      if DirectoryExists(V_ProfilePath + ProfileComboBox.Text) then
+        TDirectory.Delete(V_ProfilePath + ProfileComboBox.Text, True);
+      N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
+      if N > -1 then
+        begin
+          ProfileComboBox.Items.Delete(N);
+          ProfileComboBox.Text := EmptyStr;
+          ProfileComboBox.Hint := EmptyStr;
+          SaveSettings;
+        end;
     end;
 end;
 
@@ -317,6 +323,8 @@ begin
   // Присваиваем иконку окну и кнопкам
   MainForm.AllImageList.GetIcon(253, Icon);
   MainForm.AllImageList.GetBitmap(227, OpenProfilesSpeedButton.Glyph);
+  MainForm.AllImageList.GetBitmap(140, LoginButton.Glyph);
+  MainForm.AllImageList.GetBitmap(139, DeleteButton.Glyph);
   // Загружаем логотип программы
   if FileExists(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png') then
     LogoImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png');
@@ -325,10 +333,6 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Загружаем настройки
   LoadSettings;
-  ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
-  // Подгружаем список всех папок профилей
-  for Folder in TDirectory.GetDirectories(V_ProfilePath) do
-    ProfileComboBox.Items.Add(IcsExtractLastDir(Folder));
   // Назначаем разделитель значений для списков
   LangComboBox.Items.NameValueSeparator := C_BN;
   // Устанавливаем язык
@@ -358,6 +362,10 @@ A :;
       DAShow(Lang_Vars[17].L_S, Lang_Vars[63].L_S, EmptyStr, 134, 2, 0);
       goto A;
     end;
+  // Подгружаем список всех папок профилей
+  for Folder in TDirectory.GetDirectories(V_ProfilePath) do
+    ProfileComboBox.Items.Add(IcsExtractLastDir(Folder));
+  ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
 end;
 
 {$ENDREGION}
