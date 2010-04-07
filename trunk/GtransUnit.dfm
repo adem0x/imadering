@@ -145,6 +145,7 @@ object GTransForm: TGTransForm
   end
   object ClearMessPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = ClearMessPopupMenuPopup
     Left = 192

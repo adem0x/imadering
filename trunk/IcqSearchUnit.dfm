@@ -557,6 +557,7 @@ object IcqSearchForm: TIcqSearchForm
   end
   object SearchResultPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = SearchResultPopupMenuPopup
     Left = 280

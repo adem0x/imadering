@@ -87,6 +87,7 @@ type
     SendCustomXMLPacketButton: TButton;
     AvatarPage: TJvStandardPage;
     ProxyGroupBox: TGroupBox;
+    Label1: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);

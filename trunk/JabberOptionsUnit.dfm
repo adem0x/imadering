@@ -547,19 +547,32 @@ object JabberOptionsForm: TJabberOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
+          object Label1: TLabel
+            Left = 14
+            Top = 88
+            Width = 159
+            Height = 13
+            Caption = '#'#1055#1072#1082#1077#1090' '#1076#1072#1085#1085#1099#1093' '#1074' XML '#1092#1086#1088#1084#1072#1090#1077
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
           object DumpInfoRichEdit: TRichEdit
-            Left = 9
-            Top = 18
-            Width = 409
-            Height = 56
+            Left = 13
+            Top = 20
+            Width = 403
+            Height = 61
             TabStop = False
             BevelKind = bkFlat
             BorderStyle = bsNone
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -568,15 +581,15 @@ object JabberOptionsForm: TJabberOptionsForm
             TabOrder = 0
           end
           object SendCustomXMLPacketRichEdit: TRichEdit
-            Left = 9
-            Top = 80
-            Width = 409
-            Height = 238
+            Left = 13
+            Top = 107
+            Width = 403
+            Height = 211
             TabStop = False
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -13
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True

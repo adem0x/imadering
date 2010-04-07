@@ -88,7 +88,7 @@ object ProfileForm: TProfileForm
       ParentFont = False
     end
     object OpenProfilesSpeedButton: TSpeedButton
-      Left = 205
+      Left = 180
       Top = 70
       Width = 23
       Height = 22
@@ -97,10 +97,28 @@ object ProfileForm: TProfileForm
       ShowHint = True
       OnClick = OpenProfilesSpeedButtonClick
     end
+    object DellProfileSpeedButton: TSpeedButton
+      Left = 205
+      Top = 70
+      Width = 23
+      Height = 22
+      Hint = '#'#1059#1076#1072#1083#1080#1090#1100' '#1087#1088#1086#1092#1080#1083#1100
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = DellProfileSpeedButtonClick
+    end
+    object FlagImage: TImage
+      Left = 210
+      Top = 28
+      Width = 18
+      Height = 13
+      Center = True
+    end
     object ProfileComboBox: TComboBox
       Left = 10
       Top = 70
-      Width = 189
+      Width = 164
       Height = 21
       ParentShowHint = False
       ShowHint = True
@@ -112,7 +130,7 @@ object ProfileForm: TProfileForm
     object LoginButton: TBitBtn
       Left = 10
       Top = 120
-      Width = 102
+      Width = 218
       Height = 25
       Default = True
       DoubleBuffered = True
@@ -129,25 +147,14 @@ object ProfileForm: TProfileForm
       TabStop = False
       OnClick = LoginButtonClick
     end
-    object DeleteButton: TBitBtn
-      Left = 126
-      Top = 120
-      Width = 102
-      Height = 25
-      DoubleBuffered = True
-      ParentDoubleBuffered = False
-      TabOrder = 2
-      TabStop = False
-      OnClick = DeleteButtonClick
-    end
     object LangComboBox: TComboBox
       Left = 10
       Top = 24
-      Width = 218
+      Width = 194
       Height = 21
       Style = csDropDownList
       DropDownCount = 15
-      TabOrder = 3
+      TabOrder = 2
       TabStop = False
       Items.Strings = (
         '[ru] '#1056#1091#1089#1089#1082#1080#1081
@@ -159,7 +166,7 @@ object ProfileForm: TProfileForm
       Width = 218
       Height = 17
       TabStop = False
-      TabOrder = 4
+      TabOrder = 3
     end
   end
 end
