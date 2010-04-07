@@ -832,6 +832,7 @@ object ChatForm: TChatForm
   end
   object CloseTabPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 40
     Top = 104
@@ -852,6 +853,7 @@ object ChatForm: TChatForm
     end
   end
   object HistoryShowPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     AutoPopup = False
     Images = MainForm.AllImageList
     Left = 160
@@ -914,6 +916,7 @@ object ChatForm: TChatForm
   end
   object HtmlPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = HtmlPopupMenuPopup
     Left = 160
@@ -946,6 +949,7 @@ object ChatForm: TChatForm
   end
   object SendPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 8
     Top = 104
@@ -960,6 +964,7 @@ object ChatForm: TChatForm
   end
   object TabPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 160
     Top = 112
@@ -969,11 +974,13 @@ object ChatForm: TChatForm
     end
   end
   object ConfPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 416
     Top = 152
   end
   object ChatUserPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 48
     Top = 288
@@ -983,6 +990,7 @@ object ChatForm: TChatForm
     end
   end
   object FileTransferPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     Left = 200
     Top = 192

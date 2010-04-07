@@ -106,6 +106,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
   end
   object TopPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = TopPopupMenuPopup
     Left = 240
@@ -121,6 +122,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
   end
   object BottomPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = BottomPopupMenuPopup
     Left = 240

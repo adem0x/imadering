@@ -741,8 +741,8 @@ object SettingsForm: TSettingsForm
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -834,8 +834,8 @@ object SettingsForm: TSettingsForm
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -898,8 +898,8 @@ object SettingsForm: TSettingsForm
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True

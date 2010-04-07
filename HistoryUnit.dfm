@@ -205,6 +205,7 @@ object HistoryForm: THistoryForm
   end
   object HistoryPopupMenu: TPopupMenu
     Alignment = paCenter
+    AutoHotkeys = maManual
     Images = MainForm.AllImageList
     OnPopup = HistoryPopupMenuPopup
     Left = 240

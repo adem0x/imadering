@@ -38,13 +38,14 @@ type
     ProfileComboBox: TComboBox;
     ProfileLabel: TLabel;
     LoginButton: TBitBtn;
-    DeleteButton: TBitBtn;
     VersionLabel: TLabel;
     SiteLabel: TLabel;
     LangLabel: TLabel;
     LangComboBox: TComboBox;
     AutoSignCheckBox: TCheckBox;
     OpenProfilesSpeedButton: TSpeedButton;
+    DellProfileSpeedButton: TSpeedButton;
+    FlagImage: TImage;
     procedure SiteLabelMouseEnter(Sender: TObject);
     procedure SiteLabelMouseLeave(Sender: TObject);
     procedure SiteLabelClick(Sender: TObject);
@@ -53,10 +54,10 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure LoginButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure DeleteButtonClick(Sender: TObject);
     procedure ProfileComboBoxChange(Sender: TObject);
     procedure OpenProfilesSpeedButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure DellProfileSpeedButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -286,31 +287,6 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'Other'}
-
-procedure TProfileForm.DeleteButtonClick(Sender: TObject);
-var
-  N: Integer;
-begin
-  // Удаляем профиль из списка и с диска
-  if ProfileComboBox.Text = EmptyStr then
-    Exit;
-  if MessageBox(Handle, PChar(Format(Lang_Vars[127].L_S, [ProfileComboBox.Text])), PChar(Lang_Vars[19].L_S), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
-    begin
-      if DirectoryExists(V_ProfilePath + ProfileComboBox.Text) then
-        TDirectory.Delete(V_ProfilePath + ProfileComboBox.Text, True);
-      N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
-      if N > -1 then
-        begin
-          ProfileComboBox.Items.Delete(N);
-          ProfileComboBox.Text := EmptyStr;
-          ProfileComboBox.Hint := EmptyStr;
-          SaveSettings;
-        end;
-    end;
-end;
-
-{$ENDREGION}
 {$REGION 'FormCreate'}
 
 procedure TProfileForm.FormCreate(Sender: TObject);
@@ -324,7 +300,7 @@ begin
   MainForm.AllImageList.GetIcon(253, Icon);
   MainForm.AllImageList.GetBitmap(227, OpenProfilesSpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(140, LoginButton.Glyph);
-  MainForm.AllImageList.GetBitmap(139, DeleteButton.Glyph);
+  MainForm.AllImageList.GetBitmap(139, DellProfileSpeedButton.Glyph);
   // Загружаем логотип программы
   if FileExists(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png') then
     LogoImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png');
@@ -372,9 +348,16 @@ end;
 {$REGION 'LangComboBoxChange'}
 
 procedure TProfileForm.LangComboBoxChange(Sender: TObject);
+var
+  FlagFile: string;
 begin
   // Устанавливаем язык
   V_CurrentLang := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
+
+  FlagFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, V_CurrentLang);
+  if FileExists(FlagFile) then
+    FlagImage.Picture.LoadFromFile(FlagFile);
+
   // Подгружаем переменные языка
   SetLangVars;
   // Переводим форму
@@ -383,6 +366,29 @@ begin
   LogForm.TranslateForm;
   // Применяем язык к главной форме
   MainForm.TranslateForm;
+end;
+
+{$ENDREGION}
+{$REGION 'DellProfile'}
+
+procedure TProfileForm.DellProfileSpeedButtonClick(Sender: TObject);
+var
+  N: Integer;
+begin
+  // Удаляем профиль из списка и с диска
+  if ProfileComboBox.Text = EmptyStr then
+    Exit;
+  if MessageBox(Handle, PChar(Format(Lang_Vars[127].L_S, [ProfileComboBox.Text])), PChar(Lang_Vars[19].L_S), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
+    begin
+      if DirectoryExists(V_ProfilePath + ProfileComboBox.Text) then
+        TDirectory.Delete(V_ProfilePath + ProfileComboBox.Text, True);
+      N := ProfileComboBox.Items.IndexOf(ProfileComboBox.Text);
+      if N > -1 then
+        ProfileComboBox.Items.Delete(N);
+      ProfileComboBox.Text := EmptyStr;
+      ProfileComboBox.Hint := EmptyStr;
+      SaveSettings;
+    end;
 end;
 
 {$ENDREGION}

@@ -338,11 +338,11 @@ object TwitterOptionsForm: TTwitterOptionsForm
           ParentFont = False
           TabOrder = 0
           object CustomURLLabel: TLabel
-            Left = 11
+            Left = 14
             Top = 86
-            Width = 23
+            Width = 68
             Height = 13
-            Caption = 'URL:'
+            Caption = '#URL '#1079#1072#1087#1088#1086#1089':'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -351,9 +351,9 @@ object TwitterOptionsForm: TTwitterOptionsForm
             ParentFont = False
           end
           object DumpInfoRichEdit: TRichEdit
-            Left = 10
-            Top = 18
-            Width = 408
+            Left = 13
+            Top = 20
+            Width = 403
             Height = 56
             TabStop = False
             BevelKind = bkFlat
@@ -361,8 +361,8 @@ object TwitterOptionsForm: TTwitterOptionsForm
             Color = clBtnFace
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'MS Sans Serif'
+            Font.Height = -12
+            Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             PlainText = True
@@ -371,9 +371,9 @@ object TwitterOptionsForm: TTwitterOptionsForm
             TabOrder = 0
           end
           object CustomURLEdit: TEdit
-            Left = 10
+            Left = 13
             Top = 105
-            Width = 408
+            Width = 403
             Height = 21
             TabStop = False
             Font.Charset = DEFAULT_CHARSET
