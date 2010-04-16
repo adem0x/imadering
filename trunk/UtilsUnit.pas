@@ -101,7 +101,7 @@ function Mra_BodySize(Pkt: string): Integer;
 function IsNotNull(StringsArr: array of string): Boolean;
 procedure DecorateURL(var Text: string);
 function NameAndLast(CId, CProto: string): string;
-procedure PopUp(Compon: TComponent; Pm: TPopupMenu);
+procedure PopUp_Top(Compon: TComponent; Pm: TPopupMenu);
 procedure PopUp_Down(Compon: TComponent; Pm: TPopupMenu);
 function InitBuildInfo: string;
 function GetFileSize(FileName: string): Longint;
@@ -1859,9 +1859,9 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'PopUp'}
+{$REGION 'PopUp_Top'}
 
-procedure PopUp(Compon: TComponent; Pm: TPopupMenu);
+procedure PopUp_Top(Compon: TComponent; Pm: TPopupMenu);
 var
   XPoint: TPoint;
 begin

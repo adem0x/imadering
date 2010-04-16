@@ -3,7 +3,7 @@ object ProfileForm: TProfileForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 281
+  ClientHeight = 256
   ClientWidth = 259
   Color = clBtnFace
   DefaultMonitor = dmMainForm
@@ -31,24 +31,44 @@ object ProfileForm: TProfileForm
     Transparent = True
     ExplicitWidth = 257
   end
+  object LangsSpeedButton: TSpeedButton
+    Left = 227
+    Top = 230
+    Width = 24
+    Height = 23
+    Flat = True
+    ParentShowHint = False
+    ShowHint = True
+    Spacing = 0
+    Transparent = False
+    OnClick = LangsSpeedButtonClick
+    OnMouseDown = LangsSpeedButtonMouseDown
+  end
+  object FlagImage: TImage
+    Left = 198
+    Top = 234
+    Width = 16
+    Height = 11
+    Visible = False
+  end
   object VersionLabel: TLabel
     Left = 9
-    Top = 260
+    Top = 235
     Width = 3
     Height = 13
   end
   object CenterPanel: TPanel
     Left = 8
-    Top = 79
+    Top = 73
     Width = 243
-    Height = 175
+    Height = 155
     BevelKind = bkTile
     BevelOuter = bvNone
     ShowCaption = False
     TabOrder = 0
     object ProfileLabel: TLabel
       Left = 11
-      Top = 51
+      Top = 10
       Width = 3
       Height = 13
       Font.Charset = DEFAULT_CHARSET
@@ -60,7 +80,7 @@ object ProfileForm: TProfileForm
     end
     object SiteLabel: TLabel
       Left = 62
-      Top = 151
+      Top = 127
       Width = 114
       Height = 13
       Cursor = crHandPoint
@@ -75,21 +95,9 @@ object ProfileForm: TProfileForm
       OnMouseEnter = SiteLabelMouseEnter
       OnMouseLeave = SiteLabelMouseLeave
     end
-    object LangLabel: TLabel
-      Left = 11
-      Top = 5
-      Width = 3
-      Height = 13
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
     object OpenProfilesSpeedButton: TSpeedButton
       Left = 180
-      Top = 70
+      Top = 29
       Width = 23
       Height = 22
       Flat = True
@@ -99,25 +107,17 @@ object ProfileForm: TProfileForm
     end
     object DellProfileSpeedButton: TSpeedButton
       Left = 205
-      Top = 70
+      Top = 29
       Width = 23
       Height = 22
-      Hint = '#'#1059#1076#1072#1083#1080#1090#1100' '#1087#1088#1086#1092#1080#1083#1100
       Flat = True
       ParentShowHint = False
       ShowHint = True
       OnClick = DellProfileSpeedButtonClick
     end
-    object FlagImage: TImage
-      Left = 210
-      Top = 28
-      Width = 18
-      Height = 13
-      Center = True
-    end
     object ProfileComboBox: TComboBox
       Left = 10
-      Top = 70
+      Top = 29
       Width = 164
       Height = 21
       ParentShowHint = False
@@ -129,7 +129,7 @@ object ProfileForm: TProfileForm
     end
     object LoginButton: TBitBtn
       Left = 10
-      Top = 120
+      Top = 91
       Width = 218
       Height = 25
       Default = True
@@ -147,26 +147,26 @@ object ProfileForm: TProfileForm
       TabStop = False
       OnClick = LoginButtonClick
     end
-    object LangComboBox: TComboBox
-      Left = 10
-      Top = 24
-      Width = 194
-      Height = 21
-      Style = csDropDownList
-      DropDownCount = 15
-      TabOrder = 2
-      TabStop = False
-      Items.Strings = (
-        '[ru] '#1056#1091#1089#1089#1082#1080#1081
-        '[en] English')
-    end
     object AutoSignCheckBox: TCheckBox
       Left = 10
-      Top = 97
+      Top = 60
       Width = 218
       Height = 17
       TabStop = False
-      TabOrder = 3
+      TabOrder = 2
     end
+  end
+  object LangsPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
+    AutoPopup = False
+    Images = LangsImageList
+    Left = 96
+    Top = 24
+  end
+  object LangsImageList: TImageList
+    Height = 11
+    Masked = False
+    Left = 136
+    Top = 24
   end
 end

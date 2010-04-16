@@ -29,7 +29,8 @@ uses
   JvSimpleXml,
   Buttons,
   ShellApi,
-  IOUtils;
+  IOUtils,
+  ImgList;
 
 type
   TProfileForm = class(TForm)
@@ -38,19 +39,19 @@ type
     ProfileComboBox: TComboBox;
     ProfileLabel: TLabel;
     LoginButton: TBitBtn;
-    VersionLabel: TLabel;
     SiteLabel: TLabel;
-    LangLabel: TLabel;
-    LangComboBox: TComboBox;
     AutoSignCheckBox: TCheckBox;
     OpenProfilesSpeedButton: TSpeedButton;
+    LangsPopupMenu: TPopupMenu;
+    LangsImageList: TImageList;
+    LangsSpeedButton: TSpeedButton;
     DellProfileSpeedButton: TSpeedButton;
     FlagImage: TImage;
+    VersionLabel: TLabel;
     procedure SiteLabelMouseEnter(Sender: TObject);
     procedure SiteLabelMouseLeave(Sender: TObject);
     procedure SiteLabelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure LangComboBoxChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure LoginButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -58,12 +59,15 @@ type
     procedure OpenProfilesSpeedButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DellProfileSpeedButtonClick(Sender: TObject);
+    procedure LangsSpeedButtonClick(Sender: TObject);
+    procedure LangsSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 
   private
     { Private declarations }
     FClose: Boolean;
     procedure SaveSettings;
     procedure LoadSettings;
+    procedure LangMenuClick(Sender: TObject);
 
   public
     { Public declarations }
@@ -273,6 +277,43 @@ begin
   ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
 end;
 
+procedure TProfileForm.LangsSpeedButtonClick(Sender: TObject);
+var
+  XPoint: TPoint;
+begin
+  // Открываем меню над этим элементом
+  GetParentForm(TWinControl(LangsSpeedButton)).SendCancelMode(nil);
+  LangsPopupMenu.PopUpComponent := TWinControl(LangsSpeedButton);
+  XPoint := Point(TWinControl(LangsSpeedButton).Width, TWinControl(LangsSpeedButton).Top - (CenterPanel.Top + CenterPanel.Height));
+  with TWinControl(LangsSpeedButton).ClientToScreen(XPoint) do
+    LangsPopupMenu.PopUp(X, Y);
+end;
+
+procedure TProfileForm.LangsSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  // Открываем меню над этим элементом
+  if Button = MbRight then
+    LangsSpeedButtonClick(Sender);
+end;
+
+procedure TProfileForm.LangMenuClick(Sender: TObject);
+begin
+  // Применяем язык выбранный в меню
+  TMenuItem(Sender).Default := true;
+  V_CurrentLang := IsolateTextString(TMenuItem(Sender).Caption, '[', ']');
+  // Подгружаем переменные языка
+  SetLangVars;
+  // Переводим форму
+  TranslateForm;
+  // Применяем язык к форме лога
+  LogForm.TranslateForm;
+  // Применяем язык к главной форме
+  MainForm.TranslateForm;
+  // Устанавливаем иконку флага страны на кнопку
+  LangsSpeedButton.Glyph.Assign(nil);
+  LangsImageList.GetBitmap(TMenuItem(Sender).ImageIndex, LangsSpeedButton.Glyph);
+end;
+
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
@@ -290,11 +331,17 @@ end;
 {$REGION 'FormCreate'}
 
 procedure TProfileForm.FormCreate(Sender: TObject);
+const
+  Logo = '\logo.png';
 label
   A;
 var
   FrmFolder: TProfilesFolderForm;
-  Folder: string;
+  Folder, Langs, LangCode, FlagFile: string;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
+  FlagImg: TBitmap;
+  I: integer;
 begin
   // Присваиваем иконку окну и кнопкам
   MainForm.AllImageList.GetIcon(253, Icon);
@@ -302,20 +349,70 @@ begin
   MainForm.AllImageList.GetBitmap(140, LoginButton.Glyph);
   MainForm.AllImageList.GetBitmap(139, DellProfileSpeedButton.Glyph);
   // Загружаем логотип программы
-  if FileExists(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png') then
-    LogoImage.Picture.LoadFromFile(V_MyPath + 'Icons\' + V_CurrentIcons + '\logo.png');
+  if FileExists(V_MyPath + C_IconsFolder + V_CurrentIcons + Logo) then
+    LogoImage.Picture.LoadFromFile(V_MyPath + C_IconsFolder + V_CurrentIcons + Logo);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Загружаем настройки
   LoadSettings;
-  // Назначаем разделитель значений для списков
-  LangComboBox.Items.NameValueSeparator := C_BN;
   // Устанавливаем язык
-  LangComboBox.ItemIndex := LangComboBox.Items.IndexOfName('[' + V_CurrentLang + ']');
-  // Переводим форму
-  LangComboBox.OnChange := LangComboBoxChange;
-  LangComboBoxChange(nil);
+  LangsSpeedButton.Glyph.TransparentColor := clNone;
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
+      begin
+        for Langs in TDirectory.GetFiles(V_MyPath + C_LangsFolder, '*.xml') do
+          begin
+            LangCode := IcsExtractNameOnlyW(Langs);
+            if FileExists(Langs) then
+              begin
+                // Загружаем файл языка
+                LoadFromFile(Langs);
+                if Root <> nil then
+                  begin
+                    // Получаем название языка
+                    XML_Node := Root.Items.ItemNamed[C_LangVars];
+                    if XML_Node <> nil then
+                      begin
+                        // Добавляем пункт этого языка в меню
+                        LangsPopupMenu.Items.Add(NewItem('[' + LangCode + '] ' + XML_Node.Properties.Value(C_Lang), 0, False, True, LangMenuClick, 0, LangCode));
+                        LangsPopupMenu.Items[LangsPopupMenu.Items.Count - 1].Hint := LangCode;
+                        // Получаем флаг страны этого языка
+                        FlagFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, LangCode);
+                        if FileExists(FlagFile) then
+                          begin
+                            // Добавляем иконку флага ImageList
+                            FlagImg := TBitmap.Create;
+                            FlagImage.Picture.Assign(nil);
+                            FlagImage.Picture.LoadFromFile(FlagFile);
+                            try
+                              FlagImg.Height := 11;
+                              FlagImg.Width := 16;
+                              FlagImg.Canvas.Draw(0, 0, FlagImage.Picture.Graphic);
+                              LangsImageList.Add(FlagImg, nil);
+                            finally
+                              FlagImg.Free;
+                            end;
+                            // Подставляем иконку флага страны этого языка в пункт меню
+                            LangsPopupMenu.Items[LangsPopupMenu.Items.Count - 1].ImageIndex := LangsImageList.Count - 1;
+                          end
+                        else
+                          LangsImageList.Add(nil, nil);
+                      end;
+                  end;
+              end;
+          end;
+      end;
+  finally
+    JvXML.Free;
+  end;
+  // Применяем текущий язык
+  for I := 0 to LangsPopupMenu.Items.Count - 1 do
+    begin
+      if LangsPopupMenu.Items[I].Hint = V_CurrentLang then
+        LangMenuClick(LangsPopupMenu.Items[I]);
+    end;
 A :;
   // Проверяем если ли папки профилей и если нету, то спрашиваем где их хранить
   if not DirectoryExists(V_ProfilePath) then
@@ -342,30 +439,6 @@ A :;
   for Folder in TDirectory.GetDirectories(V_ProfilePath) do
     ProfileComboBox.Items.Add(IcsExtractLastDir(Folder));
   ProfileComboBox.Hint := V_ProfilePath + ProfileComboBox.Text;
-end;
-
-{$ENDREGION}
-{$REGION 'LangComboBoxChange'}
-
-procedure TProfileForm.LangComboBoxChange(Sender: TObject);
-var
-  FlagFile: string;
-begin
-  // Устанавливаем язык
-  V_CurrentLang := IsolateTextString(LangComboBox.Items.Names[LangComboBox.ItemIndex], '[', ']');
-
-  FlagFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, V_CurrentLang);
-  if FileExists(FlagFile) then
-    FlagImage.Picture.LoadFromFile(FlagFile);
-
-  // Подгружаем переменные языка
-  SetLangVars;
-  // Переводим форму
-  TranslateForm;
-  // Применяем язык к форме лога
-  LogForm.TranslateForm;
-  // Применяем язык к главной форме
-  MainForm.TranslateForm;
 end;
 
 {$ENDREGION}

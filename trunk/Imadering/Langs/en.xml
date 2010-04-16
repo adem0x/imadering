@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <root>
-  <vars>
+  <vars language="English">
     <RestoreFromTray c="Show IMadering"/>
     <HideInTray c="Hide IMadering"/>
     <RestoreProfileFromTray c="Show profile selection"/>
@@ -140,9 +140,9 @@
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
-    <LoginButton c="Sign"/>
-    <DeleteButton c="Remove"/>
-    <LangLabel c="Language:"/>
+    <LoginButton c="Sign in profile"/>
+    <DellProfileSpeedButton h="_b_Delete profile_d__r_Remove the profile folder from the hard disk"/>
+    <LangsSpeedButton h="_b_Interface language_d__r_Choose the localization of the program"/>
     <AutoSignCheckBox c="Login automatically"/>
     <OpenProfilesSpeedButton h="_b_Profile folder_d__r_Open the profile folder for remove or copying"/>
   </ProfileForm>

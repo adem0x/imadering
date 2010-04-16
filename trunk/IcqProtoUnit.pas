@@ -2769,7 +2769,10 @@ begin
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     ChatForm := TChatForm.Create(MainForm);
-  // Обрабатываем сообщение
+  // Обрабатываем сообщение на наличие формата HTML
+  if Copy(Msg, 1, 6) = '<HTML>' then
+    ChatForm.CheckMessage_ClearTag(Msg);
+  // Окончательно обрабатываем сообщение
   Mess := Text2XML(Msg);
   CheckMessage_BR(Mess);
   ChatForm.CheckMessage_ClearTag(Mess);
