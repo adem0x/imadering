@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <root>
-  <vars>
+  <vars language="Русский">
     <RestoreFromTray c="Показать IMadering"/>
     <HideInTray c="Скрыть IMadering"/>
     <RestoreProfileFromTray c="Показать выбор профиля"/>
@@ -140,9 +140,9 @@
   </vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>
-    <LangLabel c="Язык интерфейса:"/>
-    <LoginButton c="Войти"/>
-    <DeleteButton c="Удалить"/>
+    <LangsSpeedButton h="_b_Язык интерфейса_d__r_Выбрать локализацию программы"/>
+    <LoginButton c="Войти в профиль"/>
+    <DellProfileSpeedButton h="_b_Удалить профиль_d__r_Стереть папку с профилем с жёсткого диска"/>
     <AutoSignCheckBox c="Входить автоматически"/>
     <OpenProfilesSpeedButton h="_b_Папка профилей_d__r_Открыть папку с профилями для их удаления или копирования"/>
   </ProfileForm>

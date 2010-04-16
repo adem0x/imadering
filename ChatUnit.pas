@@ -488,14 +488,14 @@ end;
 procedure TChatForm.QRepSpeedButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(QRepSpeedButton, QmessPopupMenu);
+  PopUp_Top(QRepSpeedButton, QmessPopupMenu);
 end;
 
 procedure TChatForm.QRepSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Открываем меню над этим элементом
   if Button = MbRight then
-    Popup(QRepSpeedButton, QmessPopupMenu);
+    PopUp_Top(QRepSpeedButton, QmessPopupMenu);
 end;
 
 procedure TChatForm.QSpeedButtonClick(Sender: TObject);
@@ -813,14 +813,14 @@ end;
 procedure TChatForm.SendFileSpeedButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(SendFileSpeedButton, FileTransferPopupMenu);
+  PopUp_Top(SendFileSpeedButton, FileTransferPopupMenu);
 end;
 
 procedure TChatForm.SendFileSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Открываем меню над этим элементом
   if Button = MbRight then
-    Popup(SendFileSpeedButton, FileTransferPopupMenu);
+    PopUp_Top(SendFileSpeedButton, FileTransferPopupMenu);
 end;
 
 procedure TChatForm.SendMessageBitBtnClick(Sender: TObject);
@@ -1393,7 +1393,7 @@ procedure TChatForm.HistorySpeedButtonMouseDown(Sender: TObject; Button: TMouseB
 begin
   // Открываем меню над этим элементом
   if Button = MbRight then
-    Popup(HistorySpeedButton, HistoryShowPopupMenu);
+    PopUp_Top(HistorySpeedButton, HistoryShowPopupMenu);
 end;
 
 procedure TChatForm.HTMLChatViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
@@ -1516,13 +1516,13 @@ end;
 procedure TChatForm.ContactMenuToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(ContactMenuToolButton, ChatUserPopupMenu);
+  PopUp_Top(ContactMenuToolButton, ChatUserPopupMenu);
 end;
 
 procedure TChatForm.ContactMenuToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  Popup(ContactMenuToolButton, ChatUserPopupMenu);
+  PopUp_Top(ContactMenuToolButton, ChatUserPopupMenu);
 end;
 
 procedure TChatForm.ClearChatSpeedButtonClick(Sender: TObject);

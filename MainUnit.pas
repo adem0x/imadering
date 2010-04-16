@@ -1465,13 +1465,13 @@ end;
 procedure TMainForm.ICQToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(ICQToolButton, ICQPopupMenu);
+  PopUp_Top(ICQToolButton, ICQPopupMenu);
 end;
 
 procedure TMainForm.ICQToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  Popup(ICQToolButton, RightICQPopupMenu);
+  PopUp_Top(ICQToolButton, RightICQPopupMenu);
 end;
 
 procedure TMainForm.MainButtonONMenuClick(Sender: TObject);
@@ -2180,13 +2180,13 @@ end;
 procedure TMainForm.JabberToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(JabberToolButton, JabberPopupMenu);
+  PopUp_Top(JabberToolButton, JabberPopupMenu);
 end;
 
 procedure TMainForm.JabberToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  Popup(JabberToolButton, RightJabberPopupMenu);
+  PopUp_Top(JabberToolButton, RightJabberPopupMenu);
 end;
 
 procedure TMainForm.SocketBgException(Sender: TObject; E: Exception; var CanClose: Boolean);
@@ -3069,14 +3069,14 @@ procedure TMainForm.MainToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
   MainPopupMenu.Alignment := PaLeft;
-  Popup(MainToolButton, MainPopupMenu);
+  PopUp_Top(MainToolButton, MainPopupMenu);
 end;
 
 procedure TMainForm.MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
   MainPopupMenu.Alignment := PaLeft;
-  Popup(MainToolButton, MainPopupMenu);
+  PopUp_Top(MainToolButton, MainPopupMenu);
 end;
 
 procedure TMainForm.MainToolTopButtonClick(Sender: TObject);
@@ -3098,7 +3098,7 @@ end;
 procedure TMainForm.MRAToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(MRAToolButton, MRAPopupMenu);
+  PopUp_Top(MRAToolButton, MRAPopupMenu);
 end;
 
 procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
@@ -3106,7 +3106,7 @@ procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  Popup(MRAToolButton, RightMRAPopupMenu);
+  PopUp_Top(MRAToolButton, RightMRAPopupMenu);
 end;
 
 {$ENDREGION}
@@ -5286,13 +5286,13 @@ end;
 procedure TMainForm.TwitterToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
-  Popup(TwitterToolButton, TwitterPopupMenu);
+  PopUp_Top(TwitterToolButton, TwitterPopupMenu);
 end;
 
 procedure TMainForm.TwitterToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  Popup(TwitterToolButton, TwitterPopupMenu);
+  PopUp_Top(TwitterToolButton, TwitterPopupMenu);
 end;
 
 {$ENDREGION}

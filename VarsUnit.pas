@@ -55,6 +55,7 @@ const
   C_IconsFolder = 'Icons\';
   C_SmiliesFolder = 'Smilies\';
   C_SoundsFolder = 'Sounds\';
+  C_LangsFolder = 'Langs\';
   C_SettingsFileName = 'Settings.xml';
   C_ProfilesFileName = 'Profiles.xml';
   C_GroupsFileName = 'Groups.xml';
