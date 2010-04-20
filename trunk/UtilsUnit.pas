@@ -1575,14 +1575,31 @@ end;
 procedure ICQ_SendPkt(Channel, Data: string);
 var
   Str: RawByteString;
-  Len: Integer;
+  I, Len, PktType: Integer;
+  S_Name: string;
 begin
   // Вычисляем длинну данных
   Len := Length(Hex2text(Data));
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(Icq_seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
-  XLog(C_Icq + Log_Send + C_RN + Trim(Dump(Str)), C_Icq);
+  if LogForm.ICQDumpSpeedButton.Down then
+    begin
+      if Length(Str) >= 10 then
+        PktType := HexToInt(Text2Hex(Str[8] + Str[10]))
+      else
+        PktType := 0;
+      for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
+        if ICQ_Pkt_Names[I].Pkt_Code = PktType then
+          begin
+            if (PktType = $0001) or (PktType = 0) then
+              S_Name := ICQ_Pkt_Names[I + 1].Pkt_Name
+            else
+              S_Name := ICQ_Pkt_Names[I].Pkt_Name;
+            Break;
+          end;
+      XLog(C_Icq + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
+    end;
   // Отсылаем данные по сокету
   MainForm.IcqWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
