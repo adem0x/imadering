@@ -270,6 +270,44 @@ const
   ICQ_FLAP_HEAD_SIZE = 6;
 
 {$ENDREGION}
+{$REGION 'Array Pkt Names'}
+
+  // Расшифровка пакетов для лога
+  ICQ_Pkt_Names:
+  packed array [0 .. 28] of record
+  Pkt_Code: Integer;
+  Pkt_Name: string;
+  end = ((Pkt_Code: $0001; Pkt_Name: 'SRV_HELLO'), // 0
+  (Pkt_Code: $0001; Pkt_Name: 'CLI_HELLO'), // 1
+  (Pkt_Code: 0; Pkt_Name: 'SRV_CLOSE'), // 2
+  (Pkt_Code: 0; Pkt_Name: 'CLI_CLOSE'), // 3
+  (Pkt_Code: $1706; Pkt_Name: 'CLI_LOGIN_UIN'), // 4
+  (Pkt_Code: $1707; Pkt_Name: 'SRV_MD5_KEY'), // 5
+  (Pkt_Code: $1702; Pkt_Name: 'CLI_LOGIN'), // 6
+  (Pkt_Code: $1703; Pkt_Name: 'SRV_BOS_SERVER_COOKIE'), // 7
+  (Pkt_Code: $0103; Pkt_Name: 'SRV_SERVICES_SUPPORT'), // 8
+  (Pkt_Code: $0115; Pkt_Name: 'SRV_WELL_KNOWN_URL'), // 9
+  (Pkt_Code: $0117; Pkt_Name: 'CLI_SERVICES_SET'), // 10
+  (Pkt_Code: $0118; Pkt_Name: 'SRV_SERVICES_VER'), // 11
+  (Pkt_Code: $0113; Pkt_Name: 'SRV_MESSAGE_DAY'), // 12
+  (Pkt_Code: $0108; Pkt_Name: 'CLI_RATE_INFO_ACK'), // 13
+  (Pkt_Code: $010E; Pkt_Name: 'CLI_SELF_INFO_REQ'), // 14
+  (Pkt_Code: $1302; Pkt_Name: 'CLI_SSI_RIGHTS_REQ'), // 15
+  (Pkt_Code: $1305; Pkt_Name: 'CLI_CONTACTS_LIST_REQ'), // 16
+  (Pkt_Code: $0202; Pkt_Name: 'CLI_LOC_RIGHTS_REQ'), // 17
+  (Pkt_Code: $0302; Pkt_Name: 'CLI_BUDDY_RIGHTS_REQ'), // 18
+  (Pkt_Code: $0404; Pkt_Name: 'CLI_MESS_PARAM_INFO_REQ'), // 19
+  (Pkt_Code: $0902; Pkt_Name: 'CLI_PRIVACY_RIGHTS_REQ'), // 20
+  (Pkt_Code: $010F; Pkt_Name: 'SRV_SELF_INFO'), // 21
+  (Pkt_Code: $0203; Pkt_Name: 'SRV_LOC_RIGHTS_INFO'), // 22
+  (Pkt_Code: $0303; Pkt_Name: 'SRV_BUDDY_RIGHTS_INFO'), // 23
+  (Pkt_Code: $0405; Pkt_Name: 'SRV_MESS_PARAM_INFO'), // 24
+  (Pkt_Code: $0903; Pkt_Name: 'SRV_PRIVACY_RIGHTS_INFO'), // 25
+  (Pkt_Code: $1303; Pkt_Name: 'SRV_SSI_RIGHTS_INFO'), // 26
+  (Pkt_Code: $1306; Pkt_Name: 'SRV_CONTACTS_LIST'), // 27
+  (Pkt_Code: $1307; Pkt_Name: 'CLI_CONTACTS_LIST_ACK')); // 28
+
+{$ENDREGION}
 {$REGION 'Vars'}
 
 var
@@ -303,8 +341,7 @@ var
   ICQ_Online_IP: string;
   ICQ_MyUIN_RegTime: string;
   ICQ_Show_HideContacts: Boolean = False;
-  ICQ_CollSince, ICQ_SendMess, ICQ_OnlineTime, ICQ_AwayMess, ICQ_RecMess, ICQ_LastActive: string; // Vanity info
-  ICQ_Connect_Count: string;
+  ICQ_CollSince, ICQ_SendMess, ICQ_OnlineDays, ICQ_AwayMess, ICQ_RecMess, ICQ_LastActive: string; // Vanity info
   ICQ_MyIcon_Hash: string;
   ICQ_KeepAlive: Boolean = True;
   ICQ_Reconnect: Boolean = False;
@@ -326,7 +363,6 @@ var
   MyConnTime: string;
   NewKL: Boolean;
   ICQ_Bos_Addr: string = '';
-  ICQ_CL_Count: Integer = 0;
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -2938,7 +2974,7 @@ begin
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  S_Log := S_Log + C_Icq + Log_Parsing + Log_UIN_RegTime + TimeReg + C_RN;
+                  S_Log := S_Log + C_Icq + Log_Parsing + TimeReg + C_RN;
                 end;
               $001D: // Аватар хэш и другие доп. статусы
                 begin
@@ -2955,7 +2991,7 @@ begin
                 begin
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  S_Log := S_Log + C_Icq + Log_Parsing + Log_ConnTime + ConnTime + C_RN;
+                  S_Log := S_Log + C_Icq + Log_Parsing + ConnTime + C_RN;
                 end
               else
                 begin
@@ -3033,7 +3069,7 @@ begin
               $0005: begin // Дата регистраций UIN
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  S_Log := S_Log + C_Icq + Log_Parsing + Log_UIN_RegTime + TimeReg + C_RN;
+                  S_Log := S_Log + C_Icq + Log_Parsing + TimeReg + C_RN;
                 end;
               $001D: begin // Аватар хэш и другие доп. статусы
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
@@ -3047,7 +3083,7 @@ begin
               $0003: begin // Время подключения
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  S_Log := S_Log + C_Icq + Log_Parsing + Log_ConnTime + ConnTime + C_RN;
+                  S_Log := S_Log + C_Icq + Log_Parsing + ConnTime + C_RN;
                 end
               else
                 begin
@@ -3080,11 +3116,11 @@ begin
                         $0004: begin // Внешний IP
                             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                             ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                            S_Log := S_Log + C_Icq + Log_Parsing + Log_Ext_IP + ExtIP + C_RN;
+                            S_Log := S_Log + C_Icq + Log_Parsing + ExtIP + C_RN;
                           end;
                         $0005: begin // Внутренний порт
                             IntPort := IntToStr(HexToInt(Text2Hex(NextData(PktData, 4))));
-                            S_Log := S_Log + C_Icq + Log_Parsing + Log_Int_IP + IntIP + ':' + IntPort + C_RN;
+                            S_Log := S_Log + C_Icq + Log_Parsing + IntIP + ':' + IntPort + C_RN;
                           end;
                         $2711: begin // Сообщение
                             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
@@ -3173,7 +3209,7 @@ begin
               $0005: begin // Дата регистраций UIN
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  S_Log := S_Log + C_Icq + Log_Parsing + Log_UIN_RegTime + TimeReg + C_RN;
+                  S_Log := S_Log + C_Icq + Log_Parsing + TimeReg + C_RN;
                 end;
               $001D: begin // Аватар хэш и другие доп. статусы
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
@@ -3187,7 +3223,7 @@ begin
               $0003: begin // Время подключения
                   Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                   ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                  S_Log := S_Log + C_Icq + Log_Parsing + Log_ConnTime + ConnTime + C_RN;
+                  S_Log := S_Log + C_Icq + Log_Parsing + ConnTime + C_RN;
                 end
               else
                 begin
@@ -3595,7 +3631,7 @@ begin
             // Внутрений IP адрес и порт
             IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(DCInfo, 4)))));
             IntPort := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 4))));
-            XLog(C_Icq + Log_Parsing + Log_Int_IP + IntIP + ':' + IntPort, C_Icq);
+            XLog(C_Icq + Log_Parsing + IntIP + ':' + IntPort, C_Icq);
             // Флаг подключения и версия протокола
             ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
             XLog(C_Icq + Log_Parsing + Log_ConnFlag + ConnFlag, C_Icq);
@@ -3612,7 +3648,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog(C_Icq + Log_Parsing + Log_Ext_IP + ExtIP, C_Icq);
+            XLog(C_Icq + Log_Parsing + ExtIP, C_Icq);
           end;
         $0006: // Статус
           begin
@@ -3624,7 +3660,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog(C_Icq + Log_Parsing + Log_UIN_RegTime + TimeReg, C_Icq);
+            XLog(C_Icq + Log_Parsing + TimeReg, C_Icq);
           end;
         $0019: // Укороченные капабилитисы
           begin
@@ -3661,7 +3697,7 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog(C_Icq + Log_Parsing + Log_ConnTime + ConnTime, C_Icq);
+            XLog(C_Icq + Log_Parsing + ConnTime, C_Icq);
           end
         else
           begin
@@ -3839,7 +3875,8 @@ function ICQ_Parse_1306(PktData: string): Boolean;
 var
   Len, Count, I: Integer;
   CLTimeStamp: DWord;
-  SubData, QSN, QGroupId, QID, QType, Rsu, QNick, TLV: string;
+  SubData, QSN, QGroupId, QID, QType, Rsu, QNick, TLV, S_Log: string;
+  QPhone, QNote, QEmail, QTimeId: string;
   Dt: TDateTime;
   Hour, Min, Sec, MSec: Word;
   ListItemD: TListItem;
@@ -3850,7 +3887,7 @@ begin
   NextData(PktData, 1);
   // Получаем количесво записей в нашем КЛ
   Count := HexToInt(Text2Hex(NextData(PktData, 2)));
-  ICQ_CL_Count := ICQ_CL_Count + Count;
+  S_Log := S_Log + 'ItemsCount' + C_TN + IntToStr(Count) + C_RN;
   // Разбираем записи
   // Начинаем добаление записей контактов в Ростер
   RosterForm.RosterJvListView.Items.BeginUpdate;
@@ -3861,12 +3898,16 @@ begin
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
         // Получаем имя записи
         QSN := Utf8ToString(NextData(PktData, Len));
+        S_Log := S_Log + 'Buddy' + C_TN + QSN + C_LN;
         // Получаем идентификатор группы
         QGroupId := Text2Hex(NextData(PktData, 2));
+        S_Log := S_Log + 'GroupId' + C_TN + QGroupId + C_LN;
         // Идентификатор записи
         QID := Text2Hex(NextData(PktData, 2));
+        S_Log := S_Log + 'Id' + C_TN + QID + C_LN;
         // Тип записи
         QType := Text2Hex(NextData(PktData, 2));
+        S_Log := S_Log + 'Type' + C_TN + QType + C_LN;
         // Длинна TLV записи
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
         // Получаем субпакет записи
@@ -3898,19 +3939,22 @@ begin
                         $0131: // Ник контакта
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            QNick := URLEncode(Utf8ToString(NextData(SubData, Len)));
+                            QNick := Utf8ToString(NextData(SubData, Len));
+                            S_Log := S_Log + 'Nick' + C_BN + C_TL + TLV + C_TV + QNick + C_LN;
                             if QNick <> EmptyStr then
-                              SubItems[0] := QNick;
+                              SubItems[0] := URLEncode(QNick);
                           end;
                         $013A: // Номер сотового телефона
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[9] := URLEncode(Utf8ToString(NextData(SubData, Len)));
+                            QPhone := Utf8ToString(NextData(SubData, Len));
+                            S_Log := S_Log + 'Phone' + C_BN + C_TL + TLV + C_TV + QPhone + C_LN;
+                            SubItems[9] := URLEncode(QPhone);
                           end;
                         $0066: // Авторизован ли контакт для нашего КЛ
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            NextData(SubData, Len);
+                            S_Log := S_Log + 'Auth' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
                             // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
                             SubItems.Strings[2] := 'none';
                             SubItems.Strings[6] := '80';
@@ -3919,23 +3963,29 @@ begin
                         $013C: // Заметка о контакте
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[10] := URLEncode(Utf8ToString(NextData(SubData, Len)));
+                            QNote := Utf8ToString(NextData(SubData, Len));
+                            S_Log := S_Log + 'Note' + C_BN + C_TL + TLV + C_TV + QNote + C_LN;
+                            SubItems[10] := URLEncode(QNote);
                           end;
                         $0137: // Email контакта
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[11] := URLEncode(Utf8ToString(NextData(SubData, Len)));
+                            QEmail := Utf8ToString(NextData(SubData, Len));
+                            S_Log := S_Log + 'Email' + C_BN + C_TL + TLV + C_TV + QEmail + C_LN;
+                            SubItems[11] := URLEncode(QEmail);
                           end;
                         $006D: // TimeId
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[12] := Text2Hex(NextData(SubData, Len));
+                            QTimeId := Text2Hex(NextData(SubData, Len));
+                            S_Log := S_Log + 'TimeId' + C_BN + C_TL + TLV + C_TV + QTimeId + C_LN;
+                            SubItems[12] := QTimeId;
                           end
                         else
                           begin
                             // Если пакет содержит другие TLV, то пропускаем их
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'BUDDY_NORMAL_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))), C_Icq);
+                            S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
                           end;
                       end;
                     end;
@@ -3981,6 +4031,7 @@ begin
           BUDDY_UPGROUP: // Код для приватных групп
             begin
               ICQ_UpdatePrivateGroup_Code := QID;
+              S_Log := S_Log + 'PrivateGroupCode' + C_TN + QID + C_LN;
             end;
           BUDDY_IGNORE: // Игнорируемые контакты
             begin
@@ -4023,14 +4074,15 @@ begin
                         $006D: // TimeId
                           begin
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            SubItems[12] := Text2Hex(NextData(SubData, Len));
-                            // DateTimeToStr(UnixToDateTime(HexToInt(LeftStr(qTimeId, 8))));
+                            QTimeId := Text2Hex(NextData(SubData, Len));
+                            S_Log := S_Log + 'TimeId' + C_BN + C_TL + TLV + C_TV + QTimeId + C_LN;
+                            SubItems[12] := QTimeId;
                           end
                         else
                           begin
                             // Если пакет содержит другие TLV, то пропускаем их
                             Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                            NextData(SubData, Len);
+                            S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
                           end;
                       end;
                     end;
@@ -4047,11 +4099,13 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
+                        S_Log := S_Log + 'CollSince' + C_BN + C_TL + TLV + C_TV + ICQ_CollSince + C_LN;
                       end;
                     $0150: // Всего отправлено сообщений
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                        S_Log := S_Log + 'SendMess' + C_BN + C_TL + TLV + C_TV + ICQ_SendMess + C_LN;
                       end;
                     $0151: // Дней проведено в сети
                       begin
@@ -4072,28 +4126,32 @@ begin
                         if Sec > 0 then
                           Rsu := Rsu + Format('%d s, ', [Sec]);
                         Delete(Rsu, Length(Rsu) - 1, 2);
-                        ICQ_OnlineTime := Rsu;
+                        ICQ_OnlineDays := Rsu;
+                        S_Log := S_Log + 'OnlineDays' + C_BN + C_TL + TLV + C_TV + ICQ_OnlineDays + C_LN;
                       end;
                     $0152: // Всего отправлено Away сообщений
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                        S_Log := S_Log + 'AwayMess' + C_BN + C_TL + TLV + C_TV + ICQ_AwayMess + C_LN;
                       end;
                     $0153: // Всего получено сообщений
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                        S_Log := S_Log + 'RecMess' + C_BN + C_TL + TLV + C_TV + ICQ_RecMess + C_LN;
                       end;
                     $0160: // Активность
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
+                        S_Log := S_Log + 'LastActive' + C_BN + C_TL + TLV + C_TV + ICQ_LastActive + C_LN;
                       end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                        XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'BUDDY_VANITY_TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubData, Len))), C_Icq);
+                        S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
                       end;
                   end;
                 end;
@@ -4102,6 +4160,7 @@ begin
                 IcqOptionsForm.SetOnlineVars;
             end;
         end;
+        S_Log := S_Log + C_RN;
       end;
   finally
     // Заканчиваем добаление записей контактов в Ростер
@@ -4109,6 +4168,7 @@ begin
   end;
   // Финальное время контакт листа
   CLTimeStamp := HexToInt(Text2Hex(NextData(PktData, 4)));
+  S_Log := S_Log + 'TimeStamp' + C_TN + FloatToStr(CLTimeStamp) + C_RN;
   // Если время больше нуля, то заканчиваем с наполнением КЛ
   if CLTimeStamp <> 0 then
     begin
@@ -4130,6 +4190,8 @@ begin
       V_CollapseGroupsRestore := True;
       RosterForm.UpdateFullCL;
     end;
+  // Пишем в лог данные пакета
+  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[27].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -4138,18 +4200,19 @@ end;
 procedure ICQ_Parse_010F(PktData: string);
 var
   Len, Count, I: Integer;
-  TLV: string;
+  TLV, S_Log: string;
 begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
     Exit;
   // При ошибочных данных инкапсулированных в пакет O_o
   if PktData[1] = #$00 then
-    XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(NextData(PktData, 8))), C_Icq);
+    S_Log := S_Log + 'Unk' + C_TN + Text2Hex(NextData(PktData, 8)) + C_RN;
   // Пропускаем наш UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
-  NextData(PktData, Len);
-  NextData(PktData, 2); // Пропускаем уровень предупреждений (в icq протоколе всегда равен 0)
+  S_Log := S_Log + 'UIN' + C_TN + NextData(PktData, Len) + C_RN;
+  // Пропускаем уровень предупреждений (в icq протоколе всегда равен 0)
+  NextData(PktData, 2);
   // Получаем количесво вложенных в пакет TLV
   Count := HexToInt(Text2Hex(NextData(PktData, 2)));
   for I := 0 to Count - 1 do
@@ -4157,20 +4220,11 @@ begin
       TLV := Text2Hex(NextData(PktData, 2));
       // Сканируем пакет на наличие нужных нам TLV
       case HexToInt(TLV) of
-        $0003: // Время подключения
-          begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            MyConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog(C_Icq + Log_Parsing + Log_ConnTime + MyConnTime, C_Icq);
-            // Отображаем это в окне настроек ICQ
-            if Assigned(IcqOptionsForm) then
-              IcqOptionsForm.ConnectTimeInfoEdit.Text := MyConnTime;
-          end;
         $0005: // Дата регистрации нашего UIN
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog(C_Icq + Log_Parsing + Log_UIN_RegTime + ICQ_MyUIN_RegTime, C_Icq);
+            S_Log := S_Log + 'RegDate' + C_BN + C_TL + TLV + C_TV + ICQ_MyUIN_RegTime + C_RN;
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
@@ -4179,24 +4233,21 @@ begin
           begin
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
             ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-            XLog(C_Icq + Log_Parsing + Log_Ext_IP + ICQ_Online_IP, C_Icq);
+            S_Log := S_Log + 'ExtIP' + C_BN + C_TL + TLV + C_TV + ICQ_Online_IP + C_RN;
             // Отображаем это в окне настроек ICQ
             if Assigned(IcqOptionsForm) then
               IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
-          end;
-        $0028: begin
-            Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            ICQ_Connect_Count := IntToStr(HexToInt(Text2Hex(NextData(PktData, Len))));
-            XLog(C_Icq + Log_Parsing + Log_Connect_Count + ICQ_Connect_Count, C_Icq);
           end
         else
           begin
             // Если пакет содержит другие TLV, то пропускаем их
             Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-            XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))), C_Icq);
+            S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(PktData, Len)) + C_RN;
           end;
       end;
     end;
+    // Пишем в лог данные пакета
+    XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[21].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -4204,7 +4255,18 @@ end;
 
 function ICQ_CliFamilyPkt: string;
 begin
-  Result := '00010017000000000017' + '002200010001000400130004000200010003000' + '100150001000400010006000100090001000A0001000B0001';
+  Result := '00010017000000000017' + // Pkt Head
+    '00220001' + // Unk Family
+    '00010004' + // Generic Family
+    '00130004' + // SSI Family
+    '00020001' + // Location Family
+    '00030001' + // Buddylist Family
+    '00150001' + // ICQ Family
+    '00040001' + // Messaging Family
+    '00060001' + // Invitation Family
+    '00090001' + // BOS Family
+    '000A0001' + // User Lookup Family
+    '000B0001'; // Stats Family
 end;
 
 {$ENDREGION}
@@ -4212,9 +4274,8 @@ end;
 
 function ICQ_CliCookiePkt(Cookie: string): string;
 begin
-  Result := '000000010006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex
-    (5, 4) + '00190002' + IntToHex(0, 4) + '001a0002' + IntToHex(102, 4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex(30007, 8) + '000f' + IntToHex(Length('ru'), 4) + Text2Hex('ru')
-    + '000e' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100' + '8003000400100000';
+  Result := '000000010006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client') + '001700020006' + '001800020005' + '001900020000' + '001A000207E8' + '00160002010A' + '0014000400007537' + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang)
+    + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) + '0094000100' + '8003000400100000';
 end;
 
 {$ENDREGION}
@@ -4243,8 +4304,8 @@ begin
   MD5hash := PacketToHex(@Digest, SizeOf(TMD5Digest));
   // Формируем пакет
   Result := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN) + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex
-    ('ICQ Client') + '00170002' + IntToHex(6, 4) + '00180002' + IntToHex(5, 4) + '00190002' + IntToHex(0, 4) + '001A0002' + IntToHex(102, 4) + '00160002' + IntToHex(266, 4) + '00140004' + IntToHex
-    (30007, 8) + '000F' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '000E' + IntToHex(Length('ru'), 4) + Text2Hex('ru') + '0094000100';
+    ('ICQ Client') + '001700020006' + '001800020005' + '001900020000' + '001A000207E8' + '00160002010A' + '0014000400007537' + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang)
+    + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) + '0094000100';
 end;
 
 {$ENDREGION}
@@ -4386,7 +4447,7 @@ begin
   ICQ_UpdatePrivateGroup_Code := EmptyStr;
   ICQ_CollSince := EmptyStr;
   ICQ_SendMess := EmptyStr;
-  ICQ_OnlineTime := EmptyStr;
+  ICQ_OnlineDays := EmptyStr;
   ICQ_AwayMess := EmptyStr;
   ICQ_RecMess := EmptyStr;
   ICQ_LastActive := EmptyStr;

@@ -25,6 +25,7 @@ object LogForm: TLogForm
     Width = 586
     Height = 371
     Align = alClient
+    HideSelection = False
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 0
@@ -94,7 +95,7 @@ object LogForm: TLogForm
       ShowHint = True
     end
     object WriteLogSpeedButton: TSpeedButton
-      Left = 491
+      Left = 462
       Top = 2
       Width = 23
       Height = 22
@@ -128,5 +129,19 @@ object LogForm: TLogForm
       ShowHint = True
       OnClick = SaveLogSpeedButtonClick
     end
+    object SearchSpeedButton: TSpeedButton
+      Left = 491
+      Top = 2
+      Width = 23
+      Height = 22
+      Anchors = [akTop, akRight]
+      Flat = True
+      OnClick = SearchSpeedButtonClick
+    end
+  end
+  object LogFindDialog: TFindDialog
+    OnFind = LogFindDialogFind
+    Left = 304
+    Top = 192
   end
 end

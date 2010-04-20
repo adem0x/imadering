@@ -318,7 +318,6 @@ type
     procedure MRAToolButtonClick(Sender: TObject);
     procedure JabberToolButtonClick(Sender: TObject);
     procedure MRAXStatusClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SoundOnOffToolButtonClick(Sender: TObject);
     procedure OnlyOnlineContactsToolButtonClick(Sender: TObject);
     procedure TrayPopupMenuPopup(Sender: TObject);
@@ -1573,8 +1572,8 @@ label
   X,
   Z;
 var
-  Pkt, HexPkt, TLV: string;
-  Len, ProxyErr, PktSize: Integer;
+  Pkt, HexPkt, TLV, S_Name, MD5_Key, S, S_Log: string;
+  I, Len, ProxyErr, PktSize, PktType: Integer;
 begin
   try
     // Получаем пришедшие от сервера данные с сокета
@@ -1656,23 +1655,37 @@ begin
       begin
         // Забираем из буфера один целый пакет
         HexPkt := NextData(ICQ_BuffPkt, ICQ_FLAP_HEAD_SIZE + PktSize);
-        // Пишем в лог данные пакета
-        XLog(C_Icq + Log_Get + C_RN + Trim(Dump(HexPkt)), C_Icq);
         // Разбираем пакет данных если его длинна больше нуля
         if Length(HexPkt) > 0 then
           begin
+            // Пишем в лог данные пакета
+            S_Name := EmptyStr;
+            if LogForm.ICQDumpSpeedButton.Down then
+              begin
+                if Length(HexPkt) >= 10 then
+                  PktType := HexToInt(Text2Hex(HexPkt[8] + HexPkt[10]))
+                else
+                  PktType := 0;
+                for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
+                  if ICQ_Pkt_Names[I].Pkt_Code = PktType then
+                    begin
+                      S_Name := ICQ_Pkt_Names[I].Pkt_Name;
+                      Break;
+                    end;
+                XLog(C_Icq + Log_Get + S_Name + C_RN + Trim(Dump(HexPkt)), C_Icq);
+              end;
             // Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
             if NextData(HexPkt, 1) = #$2A then
               begin
                 // Смотрим какой канал у пакета
                 case HexToInt(Text2Hex(NextData(HexPkt, 1))) of
                   $01: begin
-                      XLog(C_Icq + Log_Get + Log_Server_Hello, C_Icq);
                       // Пропускаем Seq (счётчик) и длинну пакета
                       NextData(HexPkt, 4);
                       // Если AOL прислал приглашение и мы в фазе подключения к серверу
                       if (ICQ_Connect_Phaze) and (HexPkt = #$00#$00#$00#$01) then
                         begin
+                          //Xlog(ICQ_Pkt_Names[0], C_Icq);
                           // Тоже отсылаем серверу "привет" + что-то новое в протоколе
                           ICQ_SendPkt('1', '00000001' + '8003000400100000');
                           // Отсылаем серверу наш логин
@@ -1702,7 +1715,6 @@ begin
                                       RosterForm.ClearContacts(C_Icq);
                                       // Пока думаем, что у нас новый (обсолютно чистый) список контактов
                                       NewKL := True;
-                                      ICQ_CL_Count := 0;
                                       // Отсылаем серверу пакет с допустимыми для нас фэмили
                                       ICQ_SendPkt('2', ICQ_CliFamilyPkt);
                                     end;
@@ -1720,8 +1732,8 @@ begin
                                       // Отсылаем стандартные пакеты данных для окончательной авторизации
                                       ICQ_SendPkt('2', '00010008000000000008' + '00010002000300040005');
                                       ICQ_SendPkt('2', '0001000E00000000000E');
-                                      ICQ_SendPkt('2', '00130002000000000002' + '000b0002000F');
-                                      ICQ_SendPkt('2', '001300050000344A0005' + '4A32107F003D');
+                                      ICQ_SendPkt('2', '00130002000000000002' + '000B0002000F');
+                                      ICQ_SendPkt('2', '00130005000000010005' + '000000000000');
                                       ICQ_SendPkt('2', '00020002000000000002');
                                       ICQ_SendPkt('2', '00030002000000000002' + '000500020003');
                                       ICQ_SendPkt('2', '00040004000000000004');
@@ -1736,8 +1748,10 @@ begin
                                     begin
                                       TLV := Text2Hex(NextData(HexPkt, 2)); // Пропускаем TLV
                                       Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                      XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + NextData(HexPkt, Len), C_Icq);
+                                      S_Log := S_Log + 'URL' + C_BN + C_TL + TLV + C_TV + NextData(HexPkt, Len) + C_RN;
                                     end;
+                                  // Пишем в лог данные пакета
+                                  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
                                 end;
                               $000F: begin
                                   // Пропускаем раздел флагов
@@ -1865,12 +1879,16 @@ begin
                                   // Разбираем пакет со списком контактов
                                   if ICQ_Parse_1306(HexPkt) then
                                     begin
-                                      // Запрашиваем нашу инфу обязательно!
-                                      ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
+                                      // Отсылаем онлайн параметры клиента
+                                      ICQ_SendPkt('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
+
+
+
+
                                       // Отсылаем подтверждение получения пакета с контактами
                                       ICQ_SendPkt('2', '00130007000000000007');
-                                      // Отсылаем первоначальную онлайн инфу
-                                      ICQ_SendPkt('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
+                                      // Запрашиваем нашу инфу обязательно!
+                                      ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
                                       // Отсылаем параметры ограничений
                                       ICQ_SendPkt('2', ICQ_CliSetICBMparametersPkt);
                                       // Отсылаем первый пакет со статусом
@@ -1899,6 +1917,8 @@ begin
                                       // Запускаем таймер отсылки пинг пакетов
                                       if ICQ_KeepAlive then
                                         JvTimerList.Events[5].Enabled := True;
+                                      // Запоминаем время подключения
+                                      MyConnTime := DateTimeToStr(now);
                                     end;
                                 end;
                               $000E: begin
@@ -1934,10 +1954,12 @@ begin
                               $0007: begin
                                   // Пропускаем раздел флагов
                                   NextData(HexPkt, 6);
-                                  // Узнаём длинну пакета и увеличиваем её в двое для HEX формата
+                                  // Узнаём длинну данных
                                   Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                   // Отсылаем логин в формате MD5 шифрования
-                                  ICQ_SendPkt('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, NextData(HexPkt, Len)));
+                                  MD5_Key := NextData(HexPkt, Len);
+                                  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[5].Pkt_Name + C_RN + MD5_Key, C_Icq);
+                                  ICQ_SendPkt('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, MD5_Key));
                                 end;
                               $0003: begin
                                   // Пропускаем раздел флагов
@@ -1949,28 +1971,32 @@ begin
                                       case HexToInt(TLV) of
                                         $0008: begin // TLV с ошибкой авторизации
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                            DAShow(Lang_Vars[17].L_S, ICQ_NotifyAuthCookieError(Text2Hex(NextData(HexPkt, Len))), EmptyStr, 134, 2, 0);
+                                            S := Text2Hex(NextData(HexPkt, Len));
+                                            S_Log := S_Log + 'ErrorCode' + C_BN + C_TL + TLV + C_TV + S + C_RN;
+                                            DAShow(Lang_Vars[17].L_S, ICQ_NotifyAuthCookieError(S), EmptyStr, 134, 2, 0);
                                             ICQ_GoOffline;
                                           end;
                                         $0005: begin // TLV с адресом для коннекта к основному серверу
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                             ICQ_Bos_Addr := NextData(HexPkt, Len);
-                                            XLog(C_Icq + Log_Parsing + Log_Get_Server + ICQ_Bos_Addr, C_Icq);
+                                            S_Log := S_Log + 'BosServer' + C_BN + C_TL + TLV + C_TV + ICQ_Bos_Addr + C_RN;
                                             ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
                                             ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                           end;
                                         $0006: begin // TLV с куком для коннекта к основному серверу
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                             ICQ_Bos_Cookie := Text2Hex(NextData(HexPkt, Len));
-                                            XLog(C_Icq + Log_Parsing + 'Cookie', C_Icq);
+                                            S_Log := S_Log + 'BosCookie' + C_BN + C_TL + TLV + C_TV + ICQ_Bos_Cookie + C_RN;
                                           end
                                         else // Если пакет содержит другие TLV, то пропускаем их
                                           begin
                                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                            XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(HexPkt, Len))), C_Icq);
+                                            S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(HexPkt, Len)) + C_RN;
                                           end;
                                       end;
                                     end;
+                                    // Пишем в лог данные пакета
+                                    XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[7].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
                                 end;
                             end;
                           end;
@@ -3194,7 +3220,7 @@ begin
     if MRA_Connect_Phaze then
       begin
         MRA_Bos_Addr := MRA_BuffPkt;
-        XLog(C_Mra + Log_Parsing + Log_Get_Server + MRA_Bos_Addr, C_Mra);
+        XLog(C_Mra + Log_Parsing + 'BosServer' + C_TN + MRA_Bos_Addr, C_Mra);
         // Получаем адрес Bos сервера для подключения
         MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
         MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
@@ -4185,6 +4211,8 @@ begin
     end
   else
     begin
+      // Сохраняем настройки окна
+      SaveMainFormSettings;
       // Останавливаем таймеры
       JvTimerList.Active := False;
       // Переводим все протоколы в оффлайн
@@ -4334,12 +4362,6 @@ begin
   ShowMessage(Lang_Vars[6].L_S);
 end;
 
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  // Сохраняем настройки окна
-  SaveMainFormSettings;
-end;
-
 procedure TMainForm.AppActivate(Sender: TObject);
 begin
   FormActivate(Self);
@@ -4442,6 +4464,7 @@ begin
   AllImageList.GetBitmap(249, LogForm.WriteLogSpeedButton.Glyph);
   AllImageList.GetBitmap(268, LogForm.TwitDumpSpeedButton.Glyph);
   AllImageList.GetBitmap(225, LogForm.SaveLogSpeedButton.Glyph);
+  AllImageList.GetBitmap(221, LogForm.SearchSpeedButton.Glyph);
   // Делаем всплывающие подсказки неисчезающими
   Application.HintHidePause := MaxInt;
   Application.OnHint := HintMaxTime;

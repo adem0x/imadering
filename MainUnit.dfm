@@ -17,7 +17,6 @@ object MainForm: TMainForm
   OldCreateOrder = False
   Scaled = False
   OnActivate = FormActivate
-  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDblClick = FormDblClick

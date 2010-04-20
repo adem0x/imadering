@@ -39,6 +39,8 @@ const
   C_PN = ' | ';
   C_LN = '; ';
   C_TN = ': ';
+  C_TL = 'TLV: ';
+  C_TV = ' Value: ';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -192,17 +194,10 @@ const
 
   Log_Proxy_OK: string = 'Подключение к прокси установлено успешно.';
 
-  Log_Server_Hello: string = 'Получено приглашение сервера.';
-  Log_Get_Server: string = 'Получен адрес сервера: ';
-
   Log_Unk_Data: string = 'Получены неизвестные или неважные данные:';
 
   Log_Close_Server: string = 'Сеанс связи с сервером заверщён.';
 
-  Log_ConnTime: string = 'Время подключения: ';
-  Log_UIN_RegTime: string = 'Дата регистрации: ';
-  Log_Ext_IP: string = 'Внешний IP: ';
-  Log_Int_IP: string = 'Внутренний IP: ';
   Log_Icon_Hash: string = 'Хэш аватар:';
   Log_User_Online_Event: string = 'Получен пакет онлайн статуса от контакта: ';
   Log_User_Offline_Event: string = 'Получен пакет оффлайн статуса от контакта: ';
@@ -215,7 +210,6 @@ const
   Log_Msg_Chanel: string = 'Канал сообщения: ';
   Log_Msg_Type: string = 'Тип сообщения: ';
   Log_Msg_Text: string = 'Текст сообщения:';
-  Log_Connect_Count: string = 'Количество подключений к серверу: ';
   Log_Contact_Info: string = 'Получен пакет информации о контакте: ';
 
   Log_Gtrans_Req: string = 'Получены данные перевода: %s на %s';
@@ -395,10 +389,10 @@ var
 {$REGION 'LangVars'}
 
   // Переменные для языка | Lang_Vars[127].L_S
-  Lang_Vars: packed array [0 .. 127] of record L_N: string;
+  Lang_Vars: packed array [0 .. 127] of record
+  L_N: string;
   L_S: string;
-end
-= ((L_N: 'RestoreFromTray'; L_S: ''), // 0
+  end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
   (L_N: 'HideInTray'; L_S: ''), // 1
   (L_N: 'RestoreProfileFromTray'; L_S: ''), // 2
   (L_N: 'HideProfileInTray'; L_S: ''), // 3

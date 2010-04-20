@@ -110,12 +110,11 @@ const
 {$REGION 'Array Pkt Codes'}
 
   // Расшифровка пакетов для лога
-MRA_Pkt_Names :
-packed array [0 .. 30] of record Pkt_Code: Integer;
-Pkt_Name :
-string;
-end
-= ((Pkt_Code: $1001; Pkt_Name: 'HELLO'), // 0
+  MRA_Pkt_Names:
+  packed array [0 .. 30] of record
+  Pkt_Code: Integer;
+  Pkt_Name: string;
+  end = ((Pkt_Code: $1001; Pkt_Name: 'HELLO'), // 0
   (Pkt_Code: $1002; Pkt_Name: 'HELLO_ACK'), // 1
   (Pkt_Code: $1004; Pkt_Name: 'LOGIN_ACK'), // 2
   (Pkt_Code: $1005; Pkt_Name: 'LOGIN_REJ'), // 3

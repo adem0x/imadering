@@ -904,18 +904,14 @@ begin
   // Добавляем информацию не вошедшую в другие разделы
   if ICQ_CollSince <> EmptyStr then
     ParamInfoRichEdit.Lines.Add(Lang_Vars[48].L_S + C_TN + ICQ_CollSince);
-  if ICQ_OnlineTime <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[49].L_S + C_TN + ICQ_OnlineTime);
+  if ICQ_OnlineDays <> EmptyStr then
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[49].L_S + C_TN + ICQ_OnlineDays);
   if ICQ_AwayMess <> EmptyStr then
     ParamInfoRichEdit.Lines.Add(Lang_Vars[50].L_S + C_TN + ICQ_AwayMess);
   if ICQ_Bos_Addr <> EmptyStr then
     ParamInfoRichEdit.Lines.Add(Lang_Vars[51].L_S + C_TN + ICQ_Bos_Addr);
   if ICQ_MyIcon_Hash <> EmptyStr then
     ParamInfoRichEdit.Lines.Add(Lang_Vars[52].L_S + C_TN + ICQ_MyIcon_Hash);
-  if ICQ_CL_Count > 0 then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[53].L_S + C_TN + IntToStr(ICQ_CL_Count));
-  if ICQ_Connect_Count <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Log_Connect_Count + ICQ_Connect_Count);
   // Заканчиваем заполнение строк
   ParamInfoRichEdit.Lines.EndUpdate;
 end;

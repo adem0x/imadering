@@ -105,6 +105,7 @@ object HistoryForm: THistoryForm
       Top = 77
       Width = 164
       Height = 17
+      Enabled = False
       TabOrder = 5
     end
     object UpSearchCheckBox: TRadioButton
