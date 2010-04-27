@@ -153,7 +153,7 @@ begin
   // Ставим иконку доп. статуса в меню icq
   MainForm.ICQXStatus.ImageIndex := XButtonGroup.Items[XButtonGroup.ItemIndex].ImageIndex;
   // Отправляем пакеты с инфой о новом статусе
-  ICQ_SendPkt('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
+  ICQ_SendPkt('2', ICQ_CliSetOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
   ICQ_SetInfoP;
   ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
   // Если шарик дня рождения то активируем этот режим

@@ -21,3 +21,6 @@ del /s *.dpr
 del /s *.dproj
 del /s *.res
 del /s *.todo
+del /s *.ini
+del /s Clear.bat
+del /s .htaccess

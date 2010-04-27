@@ -1685,7 +1685,6 @@ begin
                       // Если AOL прислал приглашение и мы в фазе подключения к серверу
                       if (ICQ_Connect_Phaze) and (HexPkt = #$00#$00#$00#$01) then
                         begin
-                          //Xlog(ICQ_Pkt_Names[0], C_Icq);
                           // Тоже отсылаем серверу "привет" + что-то новое в протоколе
                           ICQ_SendPkt('1', '00000001' + '8003000400100000');
                           // Отсылаем серверу наш логин
@@ -1720,8 +1719,11 @@ begin
                                     end;
                                 end;
                               $0005: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с адресом сервера icq аватар
                                   // ICQ_Parse_0105(HexPkt);
                                 end;
@@ -1730,19 +1732,22 @@ begin
                                   if ICQ_BosConnect_Phaze then
                                     begin
                                       // Отсылаем стандартные пакеты данных для окончательной авторизации
-                                      ICQ_SendPkt('2', '00010008000000000008' + '00010002000300040005');
-                                      ICQ_SendPkt('2', '0001000E00000000000E');
-                                      ICQ_SendPkt('2', '00130002000000000002' + '000B0002000F');
-                                      ICQ_SendPkt('2', '00130005000000010005' + '000000000000');
-                                      ICQ_SendPkt('2', '00020002000000000002');
-                                      ICQ_SendPkt('2', '00030002000000000002' + '000500020003');
-                                      ICQ_SendPkt('2', '00040004000000000004');
-                                      ICQ_SendPkt('2', '00090002000000000002');
+                                      ICQ_SendPkt('2', '00010008000000000008' + '00010002000300040005'); // Rate Info Ack
+                                      ICQ_SendPkt('2', '0001000E00000000000E'); // Self Info Request
+                                      ICQ_SendPkt('2', '00130002000000000002' + '000B0002000F'); // SSI Request Rights
+                                      ICQ_SendPkt('2', '00130004000000010004'); // SSI Request List (first time)
+                                      ICQ_SendPkt('2', '00020002000000000002'); // Location Request Rights
+                                      ICQ_SendPkt('2', '00030002000000000002' + '000500020003'); // Buddylist Rights Request
+                                      ICQ_SendPkt('2', '00040004000000000004'); // Messaging Request Parameter Info
+                                      ICQ_SendPkt('2', '00090002000000000002'); // Privacy Management Rights Query
                                     end;
                                 end;
                               $0015: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с "добрыми" ссылками
                                   while Length(HexPkt) > 0 do
                                     begin
@@ -1754,14 +1759,20 @@ begin
                                   XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
                                 end;
                               $000F: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с онлайн инфой о нашем подключении и аккаунте
                                   ICQ_Parse_010F(HexPkt);
                                 end;
                               $0021: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Получаем аватар Hash нашего аккаунта
                                   if NextData(HexPkt, 2) = #$00#$01 then
                                     begin
@@ -1780,8 +1791,11 @@ begin
                             // Смотрим какая субфэмили у пакета
                             case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
                               $0006: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с онлайн инфой о контакте
                                   ICQ_UserOnline_030B(HexPkt, True);
                                 end;
@@ -1791,26 +1805,38 @@ begin
                             // Смотрим какая субфэмили у пакета
                             case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
                               $0007: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с сообщением от контакта
                                   ICQ_ReqMessage_0407(HexPkt);
                                 end;
                               $0014: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с нотификацией о наборе сообщения контактом
                                   ICQ_UserSentTyping_0414(HexPkt);
                                 end;
                               $000C: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с сообщением о принятии нашего сообщения сервером
                                   ICQ_SRV_MSGACK_ADVANCED(HexPkt, False);
                                 end;
                               $000B: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с сообщением о принятии нашего сообщения контактом
                                   ICQ_SRV_MSGACK_ADVANCED(HexPkt, True);
                                 end;
@@ -1820,20 +1846,29 @@ begin
                             // Смотрим какая субфэмили у пакета
                             case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
                               $000A: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с неизвестным статусом контакта
                                   ICQ_UserUnkStatus_030A(HexPkt);
                                 end;
                               $000B: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с онлайн инфой о контакте
                                   ICQ_UserOnline_030B(HexPkt, False);
                                 end;
                               $000C: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет с оффлайн инфой о контакте
                                   ICQ_UserOffline_030C(HexPkt);
                                 end;
@@ -1874,35 +1909,34 @@ begin
                                     end;
                                 end;
                               $0006: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет со списком контактов
                                   if ICQ_Parse_1306(HexPkt) then
                                     begin
-                                      // Отсылаем онлайн параметры клиента
-                                      ICQ_SendPkt('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
-
-
-
-
                                       // Отсылаем подтверждение получения пакета с контактами
                                       ICQ_SendPkt('2', '00130007000000000007');
-                                      // Запрашиваем нашу инфу обязательно!
-                                      ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
+                                      // Отсылаем онлайн параметры клиента
+                                      ICQ_SendPkt('2', ICQ_CliSetOnlineInfoPkt('IMadering', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr));
                                       // Отсылаем параметры ограничений
                                       ICQ_SendPkt('2', ICQ_CliSetICBMparametersPkt);
                                       // Отсылаем первый пакет со статусом
-                                      ICQ_SendPkt('2', ICQ_CliSetFirstStatusPkt);
+                                      ICQ_SendPkt('2', ICQ_CliSetFullStatusPkt);
                                       // Отсылаем стандартные параметры клиента
                                       ICQ_SendPkt('2', ICQ_CliClientReadyPkt);
                                       // Отсылаем возможность приёма сообщений от AIM
                                       ICQ_SendPkt('2', '00040010000000040010');
+                                      // Запрашиваем нашу инфу обязательно!
+                                      ICQ_ReqInfo_New_Pkt(ICQ_LoginUIN);
                                       // Отсылаем короткий статус
                                       ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);
                                       // Если ещё есть доп. статус то отсылаем пакеты установки правильного доп. статуса как в ICQ 6
                                       if ICQ_X_CurrentStatus > 0 then
                                         begin
-                                          ICQ_SendPkt('2', ICQ_CliSetFirstOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
+                                          ICQ_SendPkt('2', ICQ_CliSetOnlineInfoPkt('IMadering', EmptyStr, ICQ_X_CurrentStatus_Cap, EmptyStr, EmptyStr, EmptyStr));
                                           ICQ_SetInfoP;
                                           ICQ_SetStatusXText(ICQ_X_CurrentStatus_Text, ICQ_X_CurrentStatus_Code);
                                         end;
@@ -1918,12 +1952,15 @@ begin
                                       if ICQ_KeepAlive then
                                         JvTimerList.Events[5].Enabled := True;
                                       // Запоминаем время подключения
-                                      MyConnTime := DateTimeToStr(now);
+                                      MyConnTime := DateTimeToStr(Now);
                                     end;
                                 end;
                               $000E: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Разбираем пакет подтверждения операций со списком контактов
                                   // ICQ_Parse_130E_UpdateAck(HexPkt);
                                 end;
@@ -1933,8 +1970,11 @@ begin
                             // Смотрим какая субфэмили у пакета
                             case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
                               $0003: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Пропускаем данные о размере пакета и UIN получателя
                                   NextData(HexPkt, 10);
                                   case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
@@ -1952,8 +1992,11 @@ begin
                             // Смотрим какая субфэмили у пакета
                             case HexToInt(Text2Hex(NextData(HexPkt, 2))) of
                               $0007: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Узнаём длинну данных
                                   Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                   // Отсылаем логин в формате MD5 шифрования
@@ -1962,8 +2005,11 @@ begin
                                   ICQ_SendPkt('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, MD5_Key));
                                 end;
                               $0003: begin
-                                  // Пропускаем раздел флагов
-                                  NextData(HexPkt, 6);
+                                  // Смотрим раздел флагов
+                                  if HexPkt[1] = #$80 then
+                                    NextData(HexPkt, 14)
+                                  else
+                                    NextData(HexPkt, 6);
                                   // Сканируем пакет на наличие нужных нам TLV
                                   while Length(HexPkt) > 0 do
                                     begin
@@ -1995,8 +2041,8 @@ begin
                                           end;
                                       end;
                                     end;
-                                    // Пишем в лог данные пакета
-                                    XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[7].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+                                  // Пишем в лог данные пакета
+                                  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[7].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
                                 end;
                             end;
                           end;
@@ -4450,7 +4496,6 @@ begin
       Size := ExpandEnvironmentStrings(PChar(S), Buf, Sizeof(Buf));
       V_ProfilePath := Copy(Buf, 1, Size);
     end;
-  XLog(LogProfile + C_TN + V_ProfilePath, EmptyStr);
   // Загрузка иконок для программы
   LoadImageList(AllImageList, V_MyPath + 'Icons\' + V_CurrentIcons + '\icons.bmp');
   // Устанавливаем иконку окна
@@ -5353,7 +5398,7 @@ procedure TMainForm.OpenGameMenuClick(Sender: TObject);
 begin
   // Открываем в окне чата закладку с играми
   if not Assigned(GamesForm) then
-    GamesForm := TGamesForm.Create(self);
+    GamesForm := TGamesForm.Create(Self);
   XShowForm(GamesForm);
 end;
 
@@ -5440,7 +5485,8 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
     begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134,
+        2, 0);
     end;
 end;
 

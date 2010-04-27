@@ -30,17 +30,12 @@ type
   TGrpButtonItems = class;
   TGrpButtonItemsClass = class of TGrpButtonItems;
 
-  TGrpButtonOptions = set of (GboAllowReorder, GboFullSize, GboGroupStyle,
-    GboShowCaptions);
+  TGrpButtonOptions = set of (GboAllowReorder, GboFullSize, GboGroupStyle, GboShowCaptions);
 
   TGrpButtonEvent = procedure(Sender: TObject; index: Integer) of object;
-  TGrpButtonDrawEvent = procedure(Sender: TObject; index: Integer;
-    Canvas: TCanvas; Rect: TRect; State: TButtonDrawState) of object;
-  TGrpButtonDrawIconEvent = procedure(Sender: TObject; index: Integer;
-    Canvas: TCanvas; Rect: TRect; State: TButtonDrawState;
-    var TextOffset: Integer) of object;
-  TGrpButtonReorderEvent = procedure(Sender: TObject;
-    OldIndex, NewIndex: Integer) of object;
+  TGrpButtonDrawEvent = procedure(Sender: TObject; index: Integer; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState) of object;
+  TGrpButtonDrawIconEvent = procedure(Sender: TObject; index: Integer; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState; var TextOffset: Integer) of object;
+  TGrpButtonReorderEvent = procedure(Sender: TObject; OldIndex, NewIndex: Integer) of object;
 
   { Note: TButtonGroup requires (Win98 | Win NT 4.0) or above }
   TButtonGroup = class(TCustomControl)
@@ -92,20 +87,13 @@ type
     procedure SetItemIndex(const Value: Integer);
     procedure SetImages(const Value: TCustomImageList);
     procedure ShowScrollBar(const Visible: Boolean);
-    procedure CMHintShow(var message: TCMHintShow);
-    message CM_HINTSHOW;
-    procedure CNKeydown(var message: TWMKeyDown);
-    message CN_KEYDOWN;
-    procedure WMSetFocus(var message: TWMSetFocus);
-    message WM_SETFOCUS;
-    procedure WMKillFocus(var message: TWMKillFocus);
-    message WM_KILLFOCUS;
-    procedure WMMouseLeave(var message: TMessage);
-    message WM_MOUSELEAVE;
-    procedure WMHScroll(var message: TWMHScroll);
-    message WM_HSCROLL;
-    procedure WMVScroll(var message: TWMVScroll);
-    message WM_VSCROLL;
+    procedure CMHintShow(var message: TCMHintShow); message CM_HINTSHOW;
+    procedure CNKeydown(var message: TWMKeyDown); message CN_KEYDOWN;
+    procedure WMSetFocus(var message: TWMSetFocus); message WM_SETFOCUS;
+    procedure WMKillFocus(var message: TWMKillFocus); message WM_KILLFOCUS;
+    procedure WMMouseLeave(var message: TMessage); message WM_MOUSELEAVE;
+    procedure WMHScroll(var message: TWMHScroll); message WM_HSCROLL;
+    procedure WMVScroll(var message: TWMVScroll); message WM_VSCROLL;
 
     // procedure SetDragIndex(const Value: Integer);
   protected
@@ -113,32 +101,23 @@ type
     procedure CreateHandle; override;
     procedure CreateParams(var Params: TCreateParams); override;
     // procedure DoEndDrag(Target: TObject; X: Integer; Y: Integer); override;
-    procedure DoGesture(const EventInfo: TGestureEventInfo;
-      var Handled: Boolean); override;
-    procedure DoHotButton;
-    dynamic;
-    function DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean;
-      override;
-    function DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean;
-      override;
+    procedure DoGesture(const EventInfo: TGestureEventInfo; var Handled: Boolean); override;
+    procedure DoHotButton; dynamic;
+    function DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
+    function DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
     // procedure DoReorderButton(const OldIndex, NewIndex: Integer);
     // procedure DoStartDrag(var DragObject: TDragObject); override;
     { procedure DragOver(Source: TObject; X: Integer; Y: Integer;
       State: TDragState; var Accept: Boolean); override; }
-    procedure DrawButton(index: Integer; Canvas: TCanvas; Rect: TRect;
-      State: TButtonDrawState); virtual;
+    procedure DrawButton(index: Integer; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState); virtual;
     procedure DoItemClicked(const index: Integer); virtual;
     function GetButtonClass: TGrpButtonItemClass; virtual;
     function GetButtonsClass: TGrpButtonItemsClass; virtual;
-    function IsTouchPropertyStored(AProperty: TTouchProperty): Boolean;
-      override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer;
-      Y: Integer); override;
+    function IsTouchPropertyStored(AProperty: TTouchProperty): Boolean; override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X: Integer; Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X: Integer;
-      Y: Integer); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure Paint; override;
     procedure Resize; override;
     procedure UpdateButton(const index: Integer);
@@ -180,14 +159,10 @@ type
     property BevelKind;
     property BevelWidth;
     property BorderWidth;
-    property BorderStyle
-      : TBorderStyle read FBorderStyle write SetBorderStyle default BsSingle;
-    property ButtonHeight
-      : Integer read FButtonHeight write SetButtonHeight default 24;
-    property ButtonWidth
-      : Integer read FButtonWidth write SetButtonWidth default 24;
-    property ButtonOptions: TGrpButtonOptions read FButtonOptions write
-      SetGrpButtonOptions default[GboShowCaptions];
+    property BorderStyle: TBorderStyle read FBorderStyle write SetBorderStyle default BsSingle;
+    property ButtonHeight: Integer read FButtonHeight write SetButtonHeight default 24;
+    property ButtonWidth: Integer read FButtonWidth write SetButtonWidth default 24;
+    property ButtonOptions: TGrpButtonOptions read FButtonOptions write SetGrpButtonOptions default[GboShowCaptions];
     property DockSite;
     property DoubleBuffered;
     // property DragCursor;
@@ -209,8 +184,7 @@ type
     property Visible;
     property OnAlignInsertBefore;
     property OnAlignPosition;
-    property OnButtonClicked
-      : TGrpButtonEvent read FOnButtonClicked write FOnButtonClicked;
+    property OnButtonClicked: TGrpButtonEvent read FOnButtonClicked write FOnButtonClicked;
     property OnClick: TNotifyEvent read FOnClick write FOnClick;
     property OnContextPopup;
     property OnDockDrop;
@@ -222,20 +196,15 @@ type
     property OnEnter;
     property OnExit;
     property OnHotButton: TGrpButtonEvent read FOnHotButton write FOnHotButton;
-    property OnAfterDrawButton
-      : TGrpButtonDrawEvent read FOnAfterDrawButton write FOnAfterDrawButton;
-    property OnBeforeDrawButton
-      : TGrpButtonDrawEvent read FOnBeforeDrawButton write FOnBeforeDrawButton;
-    property OnDrawButton: TGrpButtonDrawEvent read FOnDrawButton write
-      SetOnDrawButton;
-    property OnDrawIcon: TGrpButtonDrawIconEvent read FOnDrawIcon write
-      SetOnDrawIcon;
+    property OnAfterDrawButton: TGrpButtonDrawEvent read FOnAfterDrawButton write FOnAfterDrawButton;
+    property OnBeforeDrawButton: TGrpButtonDrawEvent read FOnBeforeDrawButton write FOnBeforeDrawButton;
+    property OnDrawButton: TGrpButtonDrawEvent read FOnDrawButton write SetOnDrawButton;
+    property OnDrawIcon: TGrpButtonDrawIconEvent read FOnDrawIcon write SetOnDrawIcon;
     property OnGesture;
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
-    property OnReorderButton
-      : TGrpButtonReorderEvent read FOnReorderButton write FOnReorderButton;
+    property OnReorderButton: TGrpButtonReorderEvent read FOnReorderButton write FOnReorderButton;
     property OnMouseActivate;
     property OnMouseDown;
     property OnMouseEnter;
@@ -282,8 +251,7 @@ type
     procedure BeginUpdate; override;
     function Insert(index: Integer): TGrpButtonItem;
     property ButtonGroup: TButtonGroup read FButtonGroup;
-    property Items[index: Integer]: TGrpButtonItem read GetItem write SetItem;
-    default;
+    property Items[index: Integer]: TGrpButtonItem read GetItem write SetItem; default;
   end;
 
 implementation
@@ -332,9 +300,7 @@ begin
   FFocusIndex := -1;
   TabStop := True;
   Touch.InteractiveGestures := [IgPan, IgPressAndTap];
-  Touch.InteractiveGestureOptions := [IgoPanInertia,
-    IgoPanSingleFingerHorizontal, IgoPanSingleFingerVertical, IgoPanGutter,
-    IgoParentPassthrough];
+  Touch.InteractiveGestureOptions := [IgoPanInertia, IgoPanSingleFingerHorizontal, IgoPanSingleFingerVertical, IgoPanGutter, IgoParentPassthrough];
 end;
 
 function TButtonGroup.CreateButton: TGrpButtonItem;
@@ -403,8 +369,7 @@ begin
   UpdateAllButtons;
 end;
 
-procedure TButtonGroup.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TButtonGroup.Notification(AComponent: TComponent; Operation: TOperation);
 var
   I: Integer;
 begin
@@ -456,8 +421,7 @@ begin
 
       for X := HiddenCount to HiddenCount + VisibleCount - 1 do
         begin
-          ItemRect := Bounds(CurOffset.X, CurOffset.Y, ActualWidth,
-            ActualHeight);
+          ItemRect := Bounds(CurOffset.X, CurOffset.Y, ActualWidth, ActualHeight);
           DrawState := [];
 
           // Начало изменения
@@ -496,8 +460,7 @@ begin
             begin
               { Erase to the end }
               Inc(CurOffset.X, ActualWidth);
-              DoFillRect(Rect(CurOffset.X, CurOffset.Y, ClientWidth,
-                  CurOffset.Y + ActualHeight));
+              DoFillRect(Rect(CurOffset.X, CurOffset.Y, ClientWidth, CurOffset.Y + ActualHeight));
               RowPos := 0;
               CurOffset.X := 0;
               Inc(CurOffset.Y, ActualHeight);
@@ -506,11 +469,9 @@ begin
             Inc(CurOffset.X, ActualWidth);
         end;
       { Erase to the end }
-      DoFillRect(Rect(CurOffset.X, CurOffset.Y, ClientWidth,
-          CurOffset.Y + ActualHeight));
+      DoFillRect(Rect(CurOffset.X, CurOffset.Y, ClientWidth, CurOffset.Y + ActualHeight));
       { Erase to the bottom }
-      DoFillRect(Rect(0, CurOffset.Y + ActualHeight, ClientWidth, ClientHeight)
-        );
+      DoFillRect(Rect(0, CurOffset.Y + ActualHeight, ClientWidth, ClientHeight));
     end
   else
     DoFillRect(ClientRect);
@@ -706,8 +667,7 @@ begin
     ScrollPosChanged(TScrollCode(ScrollCode), Pos);
 end;
 
-procedure TButtonGroup.ScrollPosChanged(ScrollCode: TScrollCode;
-  ScrollPos: Integer);
+procedure TButtonGroup.ScrollPosChanged(ScrollCode: TScrollCode; ScrollPos: Integer);
 var
   OldPos: Integer;
 begin
@@ -749,8 +709,7 @@ begin
     Canvas.FillRect(Rect);
 end;
 
-procedure TButtonGroup.DoGesture(const EventInfo: TGestureEventInfo;
-  var Handled: Boolean);
+procedure TButtonGroup.DoGesture(const EventInfo: TGestureEventInfo; var Handled: Boolean);
 begin
   if EventInfo.GestureID = IgiPan then
     begin
@@ -769,8 +728,7 @@ begin
     end;
 end;
 
-procedure TButtonGroup.DrawButton(index: Integer; Canvas: TCanvas; Rect: TRect;
-  State: TButtonDrawState);
+procedure TButtonGroup.DrawButton(index: Integer; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState);
 var
   TextLeft, TextTop: Integer;
   RectHeight: Integer;
@@ -842,8 +800,7 @@ begin
       TextOffset := 0;
       if Assigned(FOnDrawIcon) then
         FOnDrawIcon(Self, index, Canvas, OrgRect, State, TextOffset)
-      else if (FImages <> nil) and (ButtonItem.ImageIndex > -1) and
-        (ButtonItem.ImageIndex < FImages.Count) then
+      else if (FImages <> nil) and (ButtonItem.ImageIndex > -1) and (ButtonItem.ImageIndex < FImages.Count) then
         begin
           ImgTop := Rect.Top + (RectHeight - FImages.Height) div 2;
           if ImgTop < Rect.Top then
@@ -855,8 +812,7 @@ begin
         end;
 
       { Show insert indications }
-      if [BdsInsertLeft, BdsInsertTop, BdsInsertRight, BdsInsertBottom]
-        * State <> [] then
+      if [BdsInsertLeft, BdsInsertTop, BdsInsertRight, BdsInsertBottom] * State <> [] then
         begin
           Canvas.Brush.Color := GetShadowColor(EdgeColor);
           InsertIndication := Rect;
@@ -922,8 +878,7 @@ end;
 
 {$IFDEF CLR}
 
-[UIPermission(SecurityAction.LinkDemand, Window = UIPermissionWindow.AllWindows)
-  ]
+[UIPermission(SecurityAction.LinkDemand, Window = UIPermissionWindow.AllWindows)]
 
 {$ENDIF}
 
@@ -952,8 +907,7 @@ begin
     end; }
 end;
 
-procedure TButtonGroup.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+procedure TButtonGroup.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   LastDown: Integer;
 begin
@@ -1065,8 +1019,7 @@ begin
     end;
 end;
 
-procedure TButtonGroup.MouseUp(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+procedure TButtonGroup.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 // var
 // LastDown: Integer;
 begin
@@ -1122,12 +1075,8 @@ function TButtonGroup.IsTouchPropertyStored(AProperty: TTouchProperty): Boolean;
 begin
   Result := inherited IsTouchPropertyStored(AProperty);
   case AProperty of
-    TpInteractiveGestures:
-      Result := Touch.InteractiveGestures <> [IgPan, IgPressAndTap];
-    TpInteractiveGestureOptions:
-      Result := Touch.InteractiveGestureOptions <> [IgoPanInertia,
-        IgoPanSingleFingerHorizontal, IgoPanSingleFingerVertical, IgoPanGutter,
-        IgoParentPassthrough];
+    TpInteractiveGestures: Result := Touch.InteractiveGestures <> [IgPan, IgPressAndTap];
+    TpInteractiveGestureOptions: Result := Touch.InteractiveGestureOptions <> [IgoPanInertia, IgoPanSingleFingerHorizontal, IgoPanSingleFingerVertical, IgoPanGutter, IgoParentPassthrough];
   end;
 end;
 
@@ -1140,11 +1089,9 @@ begin
     begin
       LButton := TGrpButtonItem(FButtonItems[index]);
       LOnClick := LButton.OnClick;
-      if Assigned(LOnClick) and (LButton.Action <> nil) and not DelegatesEqual
-        (@LOnClick, @LButton.Action.OnExecute) then
+      if Assigned(LOnClick) and (LButton.Action <> nil) and not DelegatesEqual(@LOnClick, @LButton.Action.OnExecute) then
         LOnClick(Self)
-      else if not(CsDesigning in ComponentState) and
-        (LButton.ActionLink <> nil) then
+      else if not(CsDesigning in ComponentState) and (LButton.ActionLink <> nil) then
         LButton.ActionLink.Execute(Self)
       else if Assigned(LOnClick) then
         LOnClick(Self)
@@ -1436,8 +1383,7 @@ begin
     begin
       if (GboGroupStyle in ButtonOptions) and (FItemIndex <> -1) then
         DoItemClicked(FItemIndex) { Click the current item index }
-      else if (GboGroupStyle in ButtonOptions) and (FFocusIndex >= 0) and
-        (FFocusIndex < FButtonItems.Count) then
+      else if (GboGroupStyle in ButtonOptions) and (FFocusIndex >= 0) and (FFocusIndex < FButtonItems.Count) then
         DoItemClicked(FFocusIndex) { Click the focused index }
       else
         inherited;
@@ -1535,8 +1481,7 @@ begin
   message.Result := 1; { Don't show the hint }
   if message.HintInfo.HintControl = Self then
     begin
-      ItemIndex := IndexOfButtonAt(message.HintInfo.CursorPos.X,
-        message.HintInfo.CursorPos.Y);
+      ItemIndex := IndexOfButtonAt(message.HintInfo.CursorPos.X, message.HintInfo.CursorPos.Y);
       if (ItemIndex >= 0) and (ItemIndex < Items.Count) then
         begin
           LHintInfo := message.HintInfo;
@@ -1620,8 +1565,7 @@ end;
   FDragStarted := True;
   end; *)
 
-function TButtonGroup.DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint)
-  : Boolean;
+function TButtonGroup.DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean;
 begin
   Result := inherited DoMouseWheelDown(Shift, MousePos);
   if not Result then
@@ -1643,8 +1587,7 @@ begin
     end;
 end;
 
-function TButtonGroup.DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint)
-  : Boolean;
+function TButtonGroup.DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean;
 begin
   Result := inherited DoMouseWheelUp(Shift, MousePos);
   if not Result then
@@ -1700,8 +1643,7 @@ begin
   Result := TGrpButtonItem( inherited Add);
 end;
 
-function TGrpButtonItems.AddItem(Item: TGrpButtonItem; index: Integer)
-  : TGrpButtonItem;
+function TGrpButtonItems.AddItem(Item: TGrpButtonItem; index: Integer): TGrpButtonItem;
 begin
   if (Item = nil) and (FButtonGroup <> nil) then
     Result := FButtonGroup.CreateButton
