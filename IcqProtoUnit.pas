@@ -273,11 +273,12 @@ const
 {$REGION 'Array Pkt Names'}
 
   // Расшифровка пакетов для лога
-  ICQ_Pkt_Names:
-  packed array [0 .. 28] of record
-  Pkt_Code: Integer;
-  Pkt_Name: string;
-  end = ((Pkt_Code: $0001; Pkt_Name: 'SRV_HELLO'), // 0
+ICQ_Pkt_Names :
+packed array [0 .. 35] of record Pkt_Code: Integer;
+Pkt_Name :
+string;
+end
+= ((Pkt_Code: $0001; Pkt_Name: 'SRV_HELLO'), // 0
   (Pkt_Code: $0001; Pkt_Name: 'CLI_HELLO'), // 1
   (Pkt_Code: 0; Pkt_Name: 'SRV_CLOSE'), // 2
   (Pkt_Code: 0; Pkt_Name: 'CLI_CLOSE'), // 3
@@ -305,7 +306,14 @@ const
   (Pkt_Code: $0903; Pkt_Name: 'SRV_PRIVACY_RIGHTS_INFO'), // 25
   (Pkt_Code: $1303; Pkt_Name: 'SRV_SSI_RIGHTS_INFO'), // 26
   (Pkt_Code: $1306; Pkt_Name: 'SRV_CONTACTS_LIST'), // 27
-  (Pkt_Code: $1307; Pkt_Name: 'CLI_CONTACTS_LIST_ACK')); // 28
+  (Pkt_Code: $1307; Pkt_Name: 'CLI_SSI_ACTIVATE'), // 28
+  (Pkt_Code: $0204; Pkt_Name: 'CLI_SET_ONLINE_INFO'), // 29
+  (Pkt_Code: $0402; Pkt_Name: 'CLI_SET_ICBM_PARAM'), // 30
+  (Pkt_Code: $011E; Pkt_Name: 'CLI_SET_STATUS'), // 31
+  (Pkt_Code: $0102; Pkt_Name: 'CLI_SET_READY'), // 32
+  (Pkt_Code: $1502; Pkt_Name: 'CLI_ICQ_REQUEST'), // 33
+  (Pkt_Code: $0410; Pkt_Name: 'CLI_AIM_MESSAGING'), // 34
+  (Pkt_Code: $1304; Pkt_Name: 'CLI_CONTACTS_LIST_REQ')); // 35
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -376,9 +384,9 @@ function ICQ_CliFamilyPkt: string;
 procedure ICQ_Parse_010F(PktData: string);
 function ICQ_Parse_1306(PktData: string): Boolean;
 function ICQ_GenerateClientCaps(ClientName, CVer: string): string;
-function ICQ_CliSetFirstOnlineInfoPkt(XClient, XVer, XStatusCap, Cap1, Cap2, Cap3: string): string;
+function ICQ_CliSetOnlineInfoPkt(XClient, XVer, XStatusCap, Cap1, Cap2, Cap3: string): string;
 function ICQ_CliSetICBMparametersPkt: string;
-function ICQ_CliSetFirstStatusPkt: string;
+function ICQ_CliSetFullStatusPkt: string;
 function ICQ_StatusImgId2Code(ImgId: Integer): string;
 function ICQ_CliClientReadyPkt: string;
 function ICQ_CreateShortStatusPkt: string;
@@ -1212,13 +1220,17 @@ var
   Pkt, Pkt1, Pkt2, Pkt3: string;
 begin
   // Составляем пакет с запросом инфы о контакте (новый способ QIP)
-  Pkt3 := '0032' + IntToHex(Length(SUIN), 4) + Text2Hex(SUIN);
+  Pkt3 := '0032' + IntToHex(Length(SUIN), 4) + Text2Hex(SUIN); // Req UIN
   Len3 := Length(Hex2Text(Pkt3));
-  Pkt2 := '05B90FA0000000000000000004E300000002000300000001' + IntToHex(Len3, 4) + Pkt3;
+  Pkt2 := '05B90FA0000000000000000004E300000002000300000001' + IntToHex(Len3, 4) + Pkt3; // Unk
   Len2 := Length(Hex2Text(Pkt2));
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'D007' + IntToHex(Random($AAAA), 4) + 'A00F' + IntToHex(Swap16(Len2), 4) + Pkt2;
+  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) // Owner UIN
+    + 'D007' // Metainfo Request (2000)
+    + IntToHex(Random($AAAA), 4) // Request Sequence Number
+    + 'A00F' + IntToHex(Swap16(Len2), 4) + Pkt2; // Meta Request Subtype (Fullinfo Request)
   Len1 := Length(Hex2Text(Pkt1));
-  Pkt := '001500020000' + IntToHex(StrToInt(SUIN), 8) + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1;
+  Pkt := '001500020000' + IntToHex(StrToInt(SUIN), 8) // Pkt Head
+    + '0001' + IntToHex(Len1 + 2, 4) + IntToHex(Swap16(Len1), 4) + Pkt1; // Encapsulated ICQ Meta Data
   // Запоминаем UIN кого мы запрашивали
   ICQ_ReqInfo_UIN := SUIN;
   // Отсылаем пакет
@@ -3748,8 +3760,18 @@ function ICQ_CliClientReadyPkt: string;
 var
   Pkt: string;
 begin
-  Pkt := '00010002000000000002' + '002200010110164f000100040110164f' + '001300040110164f000200010110164f' + '000300010110164f001500010110164f' + '000400010110164f000600010110164f' +
-    '000900010110164f000a00010110164f' + '000b00010110164f';
+  Pkt := '00010002000000000002' // Pkt Head
+    + '002200010110164F' // Unknown Family (0x22)
+    + '000100040110164F' // AIM Generic (0x1)
+    + '001300040110164F' // AIM SSI (0x13)
+    + '000200010110164F' // AIM Location (0x2)
+    + '000300010110164F' // AIM Buddylist (0x3)
+    + '001500010110164F' // AIM ICQ (0x15)
+    + '000400010110164F' // AIM Messaging (0x4)
+    + '000600010110164F' // AIM Invitation (0x6)
+    + '000900010110164F' // AIM BOS (0x9)
+    + '000A00010110164F' // AIM User Lookup (0xa)
+    + '000B00010110164F'; // AIM Stats (0xb)
   Result := Pkt;
 end;
 
@@ -3828,19 +3850,34 @@ begin
       ICQ_UpdatePrivate_Group('04');
     end;
   // Формируем пакет
-  Pkt := '0001001E000000000000' + '00060004' + ICQ_StatusImgId2Code(ICQ_CurrentStatus);
+  Pkt := '0001001E00000000001E' // Pkt Head
+    + '00060004' + ICQ_StatusImgId2Code(ICQ_CurrentStatus); // Online Status
   Result := Pkt;
 end;
 
 {$ENDREGION}
 {$REGION 'ICQ_CliSetFirstStatusPkt'}
 
-function ICQ_CliSetFirstStatusPkt: string;
+function ICQ_CliSetFullStatusPkt: string;
 var
   Pkt: string;
 begin
-  Pkt := '0001001E00000000001E' + '00060004' + ICQ_StatusImgId2Code(ICQ_CurrentStatus_bac) + '000800020A06000C' +
-    '002500000000000000000000090000000000000000000000000000000000000000000000000000001D0008000E000000020000001F00020000';
+  Pkt := '0001001E00000000001E' // Pkt Head
+    + '00060004' + ICQ_StatusImgId2Code(ICQ_CurrentStatus_bac) // Online status
+    + '000800020000' // Unk
+    + '000C0025' // DC Info
+    + '00000000' // Internal IP address
+    + '00000000' // TCP Port
+    + '04' // DC not possible
+    + '0009' // Protocol Version
+    + '00000000' // Authorization Cookie
+    + '0000' // Web Front Port
+    + '00000000' // Client Futures
+    + '00000000' // Last Info Update
+    + '00000000' // Last Extended Info Update (DcInfo1)
+    + '00000000' // Last Extended Status Update (DcInfo2)
+    + '00000000' // Unk (DcInfo3)
+    + '001F00020000'; // Upper bytes of Nick Flags
   Result := Pkt;
 end;
 
@@ -3851,20 +3888,27 @@ function ICQ_CliSetICBMparametersPkt: string;
 var
   Pkt: string;
 begin
-  Pkt := '00040002000000000002' + '00000000070B1F4003E703E700000000';
+  Pkt := '00040002000000000002' // Pkt Head
+    + '0000' // Chanel to setup
+    + '0000070B' // Message Flags
+    + '1F40' // Max SNAC Size
+    + '03E7' // Max sender warn level
+    + '03E7' // max receiver warn level
+    + '00000000'; // Minimum message interval (milliseconds)
   Result := Pkt;
 end;
 
 {$ENDREGION}
 {$REGION 'ICQ_CliSetFirstOnlineInfoPkt'}
 
-function ICQ_CliSetFirstOnlineInfoPkt(XClient, XVer, XStatusCap, Cap1, Cap2, Cap3: string): string;
+function ICQ_CliSetOnlineInfoPkt(XClient, XVer, XStatusCap, Cap1, Cap2, Cap3: string): string;
 var
   Pkt, Caps: string;
 begin
   Caps := ICQ_GenerateClientCaps(XClient, XVer);
   Caps := Caps + XStatusCap + Text2Hex(Cap1 + Cap2 + Cap3);
-  Pkt := '00020004000000000004' + '0005' + IntToHex(Length(Hex2Text(Caps)), 4) + Caps;
+  Pkt := '00020004000000000004' // Pkt Head
+    + '0005' + IntToHex(Length(Hex2Text(Caps)), 4) + Caps; // Client Capabilities
   Result := Pkt;
 end;
 
@@ -4205,9 +4249,6 @@ begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
     Exit;
-  // При ошибочных данных инкапсулированных в пакет O_o
-  if PktData[1] = #$00 then
-    S_Log := S_Log + 'Unk' + C_TN + Text2Hex(NextData(PktData, 8)) + C_RN;
   // Пропускаем наш UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   S_Log := S_Log + 'UIN' + C_TN + NextData(PktData, Len) + C_RN;
@@ -4246,8 +4287,8 @@ begin
           end;
       end;
     end;
-    // Пишем в лог данные пакета
-    XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[21].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+  // Пишем в лог данные пакета
+  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[21].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -4255,33 +4296,48 @@ end;
 
 function ICQ_CliFamilyPkt: string;
 begin
-  Result := '00010017000000000017' + // Pkt Head
-    '00220001' + // Unk Family
-    '00010004' + // Generic Family
-    '00130004' + // SSI Family
-    '00020001' + // Location Family
-    '00030001' + // Buddylist Family
-    '00150001' + // ICQ Family
-    '00040001' + // Messaging Family
-    '00060001' + // Invitation Family
-    '00090001' + // BOS Family
-    '000A0001' + // User Lookup Family
-    '000B0001'; // Stats Family
+  Result := '00010017000000000017' // Pkt Head
+    + '00220001' // Unknown Family (0x22), Version: 1
+    + '00010004' // AIM Generic (0x1), Version: 4
+    + '00130004' // AIM SSI (0x13), Version: 4
+    + '00020001' // AIM Location (0x2), Version: 1
+    + '00030001' // AIM Buddylist (0x3), Version: 1
+    + '00150001' // AIM ICQ (0x15), Version: 1
+    + '00040001' // AIM Messaging (0x4), Version: 1
+    + '00060001' // AIM Invitation (0x6), Version: 1
+    + '00090001' // AIM BOS (0x9), Version: 1
+    + '000A0001' // AIM User Lookup (0xa), Version: 1
+    + '000B0001'; // AIM Stats (0xb), Version: 1
 end;
 
 {$ENDREGION}
 {$REGION 'ICQ_CliCookiePkt'}
 
 function ICQ_CliCookiePkt(Cookie: string): string;
+const
+  ClientId = 'ICQ Client';
 begin
-  Result := '000000010006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex('ICQ Client') + '001700020006' + '001800020005' + '001900020000' + '001A000207E8' + '00160002010A' + '0014000400007537' + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang)
-    + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) + '0094000100' + '8003000400100000';
+  Result := '00000001' // Proto Ver
+    + '0006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie // Auth Cookie
+    + '0003' + IntToHex(Length(ClientId), 4) + Text2Hex(ClientId) // Client Id string
+    + '001700020006' // Client Major Ver
+    + '001800020005' // Client Minor Ver
+    + '001900020000' // Client Lesser Ver
+    + '001A000207E8' // Client Build Number
+    + '00160002010A' // Client Id Number
+    + '0014000400007537' // Client Distribution Number
+    + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Lang
+    + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Country
+    + '0094000100' // Unk
+    + '8003000400100000'; // Unk
 end;
 
 {$ENDREGION}
 {$REGION 'ICQ_MD5CliLoginPkt'}
 
 function ICQ_MD5CliLoginPkt(CPass, CKey: RawByteString): string;
+const
+  ClientId = 'ICQ Client';
 var
   CLIENT_MD5_STRING: RawByteString;
   MD5hash: string;
@@ -4303,9 +4359,20 @@ begin
   MD5Final(Digest, State);
   MD5hash := PacketToHex(@Digest, SizeOf(TMD5Digest));
   // Формируем пакет
-  Result := '00170002000000000000' + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN) + '00250010' + MD5hash + '004C0000' + '0003' + IntToHex(Length('ICQ Client'), 4) + Text2Hex
-    ('ICQ Client') + '001700020006' + '001800020005' + '001900020000' + '001A000207E8' + '00160002010A' + '0014000400007537' + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang)
-    + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) + '0094000100';
+  Result := '00170002000000000000' // Pkt Head
+    + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN) // Screen Name
+    + '00250010' + MD5hash // Password Hash (MD5)
+    + '004C0000' // Unk
+    + '0003' + IntToHex(Length(ClientId), 4) + Text2Hex(ClientId) // Client Id string
+    + '001700020006' // Client Major Ver
+    + '001800020005' // Client Minor Ver
+    + '001900020000' // Client Lesser Ver
+    + '001A000207E8' // Client Build Number
+    + '00160002010A' // Client Id Number
+    + '0014000400007537' // Client Distribution Number
+    + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Lang
+    + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Country
+    + '0094000100'; // Unk
 end;
 
 {$ENDREGION}
