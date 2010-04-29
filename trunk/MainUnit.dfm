@@ -52,7 +52,7 @@ object MainForm: TMainForm
     RegularButtonColor = clWhite
     SelectedButtonColor = 15717318
     ShowHint = True
-    TabOrder = 1
+    TabOrder = 0
     TabStop = False
     OnButtonClicked = ContactListButtonClicked
     OnCategoryCollapase = ContactListCategoryCollapase
@@ -73,7 +73,7 @@ object MainForm: TMainForm
     List = True
     ParentColor = False
     ParentDoubleBuffered = False
-    TabOrder = 0
+    TabOrder = 1
     Transparent = False
     Wrapable = False
     OnMouseDown = BottomToolBarMouseDown

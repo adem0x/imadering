@@ -402,11 +402,12 @@ type
     FOnClick: TNotifyEvent;
     // Добавляем новые свойства для кнопок
     FUIN: string;
-    FGroupId: string;
     FStatus: Integer;
     FXImageIndex: TImageIndex;
     FCImageIndex: TImageIndex;
     FContactType: string;
+    FNickColor: Integer;
+    FNickBold: Boolean;
 
     // Конец добавления новых свойств
   protected
@@ -443,11 +444,12 @@ type
     property OnClick: TNotifyEvent read FOnClick write FOnClick stored IsOnClickStored;
     // Добавляем новые свойства для кнопок
     property UIN: string read FUIN write FUIN;
-    property GroupId: string read FGroupId write FGroupId;
     property Status: Integer read FStatus write FStatus default 0;
     property XImageIndex: TImageIndex read FXImageIndex write SetXImageIndex stored IsImageIndexStored;
     property CImageIndex: TImageIndex read FCImageIndex write SetCImageIndex stored IsImageIndexStored;
     property ContactType: string read FContactType write FContactType;
+    property NickColor: Integer read FNickColor write FNickColor default 0;
+    property NickBold: Boolean read FNickBold write FNickBold default False;
   end;
 
   { TButtonItem }
@@ -1663,7 +1665,27 @@ begin
         FOnBeforeDrawButton(Self, Button, Canvas, Rect, State);
       InflateRect(Rect, -1, -1);
 
-      Canvas.Font.Color := ClBtnText; // Внёс изменения
+      // Начало вноса изменений
+
+      if Button.NickColor = 0 then
+        Canvas.Font.Color := clBlack // Стандартный
+      else if Button.NickColor = 1 then
+        Canvas.Font.Color := clMaroon // Не в сети
+      else if Button.NickColor = 2 then
+        Canvas.Font.Color := clNavy // В сети
+      else if Button.NickColor = 3 then
+        Canvas.Font.Color := $00005000 // Видимый
+      else if Button.NickColor = 4 then
+        Canvas.Font.Color := clRed; // Невидимый
+
+      if Button.NickBold then
+        Canvas.Font.Style := [fsBold]
+      else
+        Canvas.Font.Style := [];
+
+
+      // Конец вноса изменений
+
       if BdsHot in State then
         begin
           FillColor := FHotButtonColor;

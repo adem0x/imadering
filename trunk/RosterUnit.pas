@@ -390,13 +390,23 @@ begin
                                         begin
                                           // Поднимаем этот контакт вверх группы
                                           index := 0;
+                                          // Назначаем ему синий цвет
+                                          NickColor := 2;
                                         end
                                       else // Если статус не в сети и скрывать оффлайн контакты
                                         begin
                                           if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> C_NoCL) then
                                             Free
                                           else
+                                          begin
+                                            // Опускаем контакт в конец группы
                                             index := Categories[C].Items.Count - 1;
+                                            // Назначаем ему темнокрасный цвет
+                                            if Categories[C].GroupId <> C_NoCL then
+                                              NickColor := 1
+                                            else
+                                              NickColor := 0;
+                                          end;
                                         end;
                                     end;
                                   // Продолжаем сканирование Ростера
@@ -416,6 +426,10 @@ begin
                               XImageIndex := -1;
                               CImageIndex := -1;
                               ContactType := C_Jabber;
+                              if Categories[C].GroupId <> C_NoCL then
+                                NickColor := 1
+                              else
+                                NickColor := 0;
                             end;
                           // Продолжаем сканирование Ростера
                           goto X;
@@ -441,6 +455,10 @@ begin
                           XImageIndex := -1;
                           CImageIndex := -1;
                           ContactType := C_Jabber;
+                          if GroupId <> C_NoCL then
+                            NickColor := 1
+                          else
+                            NickColor := 0;
                         end;
                     end;
                 end
@@ -507,13 +525,23 @@ begin
                                             begin
                                               // Поднимаем этот контакт вверх группы
                                               index := 0;
+                                              // Назначаем ему синий цвет
+                                              NickColor := 2;
                                             end
                                           else // Если статус не в сети и скрывать оффлайн контакты
                                             begin
                                               if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> C_NoCL) and (Categories[C].GroupId <> '0000') then
                                                 Free
                                               else
-                                                index := Categories[C].Items.Count - 1;
+                                                begin
+                                                  // Опускаем контакт в конец группы
+                                                  index := Categories[C].Items.Count - 1;
+                                                  // Назначаем ему темнокрасный цвет
+                                                  if (Categories[C].GroupId <> C_NoCL) and (Categories[C].GroupId <> '0000') then
+                                                    NickColor := 1
+                                                  else
+                                                    NickColor := 0;
+                                                end;
                                             end;
                                         end;
                                       // Продолжаем сканирование Ростера
@@ -534,6 +562,10 @@ begin
                                   CImageIndex := StrToInt(Items[I].SubItems[8]);
                                   ContactType := C_Icq;
                                   Hint := URLDecode(Items[I].SubItems[34]);
+                                  if (Categories[C].GroupId <> C_NoCL) and (Categories[C].GroupId <> '0000') then
+                                    NickColor := 1
+                                  else
+                                    NickColor := 0;
                                 end;
                               // Продолжаем сканирование Ростера
                               goto X;
@@ -596,13 +628,23 @@ begin
                                             begin
                                               // Поднимаем этот контакт вверх группы
                                               index := 0;
+                                              // Назначаем ему синий цвет
+                                              NickColor := 2;
                                             end
                                           else // Если статус не в сети и скрывать оффлайн контакты
                                             begin
                                               if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> C_NoCL) then
                                                 Free
                                               else
+                                              begin
+                                                // Опускаем контакт в конец группы
                                                 index := Categories[C].Items.Count - 1;
+                                                // Назначаем ему темнокрасный цвет
+                                                if Categories[C].GroupId <> C_NoCL then
+                                                  NickColor := 1
+                                                else
+                                                  NickColor := 0;
+                                              end;
                                             end;
                                         end;
                                       // Продолжаем сканирование Ростера
@@ -628,6 +670,10 @@ begin
                                       ImageIndex := 275;
                                     end;
                                   // Hint := URLDecode(Items[I].SubItems[34]);
+                                  if Categories[C].GroupId <> C_NoCL then
+                                    NickColor := 1
+                                  else
+                                    NickColor := 0;
                                 end;
                               // Продолжаем сканирование Ростера
                               goto X;
