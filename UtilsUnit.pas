@@ -165,100 +165,105 @@ implementation
 
 {$REGION 'GetFlagFile'}
 
-  function GetFlagFile(Path, CountryCode, CountryName: string): string;
-  const
-    FileExt = '.gif';
-  var
-    SearchRec: TSearchRec;
-    FileMask: string;
-  begin
-    Result := EmptyStr;
-    if CountryCode <> EmptyStr then
-      FileMask := Path + CountryCode + '_*' + FileExt
-    else if CountryName <> EmptyStr then
-      FileMask := Path + '*_' + CountryName + FileExt;
-    if FindFirst(FileMask, FaAnyFile, SearchRec) = 0 then
-      try
-        Result := SearchRec.Name;
-      finally
-        FindClose(SearchRec);
-      end;
-  end;
+function GetFlagFile(Path, CountryCode, CountryName: string): string;
+const
+  FileExt = '.gif';
+var
+  SearchRec: TSearchRec;
+  FileMask: string;
+begin
+  Result := EmptyStr;
+  if CountryCode <> EmptyStr then
+    FileMask := Path + CountryCode + '_*' + FileExt
+  else if CountryName <> EmptyStr then
+    FileMask := Path + '*_' + CountryName + FileExt;
+  if FindFirst(FileMask, FaAnyFile, SearchRec) = 0 then
+    try
+      Result := SearchRec.Name;
+    finally
+      FindClose(SearchRec);
+    end;
+end;
 
 {$ENDREGION}
 {$REGION 'XML and Text'}
 
-  function Text2XML(Str: string): string;
-  begin
-    Result := Str;
-    Result := ReplaceStr(Result, '&', '&amp;');
-    Result := ReplaceStr(Result, '<', '&lt;');
-    Result := ReplaceStr(Result, '>', '&gt;');
-    Result := ReplaceStr(Result, '"', '&quot;');
-    Result := ReplaceStr(Result, '''', '&apos;');
-  end;
+function Text2XML(Str: string): string;
+begin
+  Result := Str;
+  Result := ReplaceStr(Result, '&', '&amp;');
+  Result := ReplaceStr(Result, '<', '&lt;');
+  Result := ReplaceStr(Result, '>', '&gt;');
+  Result := ReplaceStr(Result, '"', '&quot;');
+  Result := ReplaceStr(Result, '''', '&apos;');
+end;
 
-  function XML2Text(Str: string): string;
-  begin
-    Result := Str;
-    Result := ReplaceStr(Result, '&amp;', '&');
-    Result := ReplaceStr(Result, '&lt;', '<');
-    Result := ReplaceStr(Result, '&gt;', '>');
-    Result := ReplaceStr(Result, '&quot;', '"');
-    Result := ReplaceStr(Result, '&apos;', '''');
-  end;
+function XML2Text(Str: string): string;
+begin
+  Result := Str;
+  Result := ReplaceStr(Result, '&amp;', '&');
+  Result := ReplaceStr(Result, '&lt;', '<');
+  Result := ReplaceStr(Result, '&gt;', '>');
+  Result := ReplaceStr(Result, '&quot;', '"');
+  Result := ReplaceStr(Result, '&apos;', '''');
+end;
 
 {$ENDREGION}
 {$REGION 'ExtractUrlFileName'}
 
-  function ExtractUrlFileName(const AUrl: string): string;
-    var
-      i: Integer;
-    begin
-      i := LastDelimiter('/', AUrl);
-     Result := Copy(AUrl, i + 1, Length(AUrl) - (i));
-    end;
+function ExtractUrlFileName(const AUrl: string): string;
+var
+  i: Integer;
+begin
+  i := LastDelimiter('/', AUrl);
+  Result := Copy(AUrl, i + 1, Length(AUrl) - (i));
+end;
 
 {$ENDREGION}
 {$REGION 'AppBar Tools'}
-  procedure AppBarCreate;
-  begin
-    V_AppBarDataCL.cbSize := SizeOf(TAppBarData);
-    V_AppBarDataCL.hWnd := MainForm.Handle;
-    V_AppBarDataCL.uCallbackMessage := C_WM_APPBAR;
-    // Register the application bar within the system
-    if SHAppBarMessage(ABM_NEW, V_AppBarDataCL) <> 0 then
-      SetWindowPos(V_AppBarDataCL.hWnd, V_AppBarDataCL.hWnd, 0, 0, 0, 0, SWP_FRAMECHANGED or SWP_NOACTIVATE or SWP_NOSIZE or SWP_SHOWWINDOW);
-  end;
 
-  procedure AppBarSetPos(const Left: boolean);
-  var
-    W: Integer;
-  begin
-    if Left then V_AppBarDataCL.uEdge := ABE_LEFT
-    else V_AppBarDataCL.uEdge := ABE_RIGHT;
-    W := MainForm.Width;
-    V_AppBarDataCL.rc.Right := GetSystemMetrics(SM_CXSCREEN);
-    V_AppBarDataCL.rc.Bottom := GetSystemMetrics(SM_CYSCREEN);
-    if V_AppBarDataCL.uEdge = ABE_LEFT then V_AppBarDataCL.rc.Left := 0
-    else V_AppBarDataCL.rc.Left := GetSystemMetrics(SM_CXSCREEN) - W + 40;
-    V_AppBarDataCL.rc.Top := 0;
-    if SHAppBarMessage(ABM_QUERYPOS, V_AppBarDataCL) <> 0 then
-      case V_AppBarDataCL.uEdge of
-        ABE_LEFT:
-          V_AppBarDataCL.rc.Right := V_AppBarDataCL.rc.Left + W;
-        ABE_RIGHT:
-          V_AppBarDataCL.rc.Left := V_AppBarDataCL.rc.Right - W;
-      end;
-    // Set the new size
-    SHAppBarMessage(ABM_SETPOS, V_AppBarDataCL);
-  end;
+procedure AppBarCreate;
+begin
+  V_AppBarDataCL.cbSize := SizeOf(TAppBarData);
+  V_AppBarDataCL.hWnd := MainForm.Handle;
+  V_AppBarDataCL.uCallbackMessage := C_WM_APPBAR;
+  // Register the application bar within the system
+  if SHAppBarMessage(ABM_NEW, V_AppBarDataCL) <> 0 then
+    SetWindowPos(V_AppBarDataCL.hWnd, V_AppBarDataCL.hWnd, 0, 0, 0, 0, SWP_FRAMECHANGED or SWP_NOACTIVATE or SWP_NOSIZE or SWP_SHOWWINDOW);
+end;
 
-  procedure AppBarDestroy;
-  begin
-    // Remove the application bar
-    SHAppBarMessage(ABM_REMOVE, V_AppBarDataCL);
-  end;
+procedure AppBarSetPos(const Left: boolean);
+var
+  W: Integer;
+begin
+  if Left then
+    V_AppBarDataCL.uEdge := ABE_LEFT
+  else
+    V_AppBarDataCL.uEdge := ABE_RIGHT;
+  W := MainForm.Width;
+  V_AppBarDataCL.rc.Right := GetSystemMetrics(SM_CXSCREEN);
+  V_AppBarDataCL.rc.Bottom := GetSystemMetrics(SM_CYSCREEN);
+  if V_AppBarDataCL.uEdge = ABE_LEFT then
+    V_AppBarDataCL.rc.Left := 0
+  else
+    V_AppBarDataCL.rc.Left := GetSystemMetrics(SM_CXSCREEN) - W + 40;
+  V_AppBarDataCL.rc.Top := 0;
+  if SHAppBarMessage(ABM_QUERYPOS, V_AppBarDataCL) <> 0 then
+    case V_AppBarDataCL.uEdge of
+      ABE_LEFT:
+        V_AppBarDataCL.rc.Right := V_AppBarDataCL.rc.Left + W;
+      ABE_RIGHT:
+        V_AppBarDataCL.rc.Left := V_AppBarDataCL.rc.Right - W;
+    end;
+  // Set the new size
+  SHAppBarMessage(ABM_SETPOS, V_AppBarDataCL);
+end;
+
+procedure AppBarDestroy;
+begin
+  // Remove the application bar
+  SHAppBarMessage(ABM_REMOVE, V_AppBarDataCL);
+end;
 {$ENDREGION}
 {$REGION 'FormShowInWorkArea'}
 
@@ -269,19 +274,19 @@ begin
   // Вычисляем позицию окна от позиции курсора
   GetCursorPos(FCursor);
   with XForm do
-    begin
-      Top := FCursor.Y - (Height div 2);
-      Left := FCursor.X - (Width div 2);
-      // Определяем не находится ли окно за пределами экрана
-      if Top < Screen.WorkAreaTop then
-        Top := Screen.WorkAreaTop;
-      if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
-        Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
-      if Left < Screen.WorkAreaLeft then
-        Left := Screen.WorkAreaLeft;
-      // Показываем окно доп. статуса
-      XShowForm(XForm);
-    end;
+  begin
+    Top := FCursor.Y - (Height div 2);
+    Left := FCursor.X - (Width div 2);
+    // Определяем не находится ли окно за пределами экрана
+    if Top < Screen.WorkAreaTop then
+      Top := Screen.WorkAreaTop;
+    if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
+      Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
+    if Left < Screen.WorkAreaLeft then
+      Left := Screen.WorkAreaLeft;
+    // Показываем окно доп. статуса
+    XShowForm(XForm);
+  end;
 end;
 
 {$ENDREGION}
@@ -290,17 +295,17 @@ end;
 procedure FormSetInWorkArea(XForm: TForm);
 begin
   with XForm do
-    begin
-      // Определяем не находится ли окно за пределами экрана
-      if Top < Screen.WorkAreaTop then
-        Top := Screen.WorkAreaTop;
-      if Top + Height > (Screen.WorkAreaTop + Screen.WorkAreaHeight) then
-        Top := (Screen.WorkAreaTop + Screen.WorkAreaHeight) - Height;
-      if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
-        Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
-      if Left < Screen.WorkAreaLeft then
-        Left := Screen.WorkAreaLeft;
-    end;
+  begin
+    // Определяем не находится ли окно за пределами экрана
+    if Top < Screen.WorkAreaTop then
+      Top := Screen.WorkAreaTop;
+    if Top + Height > (Screen.WorkAreaTop + Screen.WorkAreaHeight) then
+      Top := (Screen.WorkAreaTop + Screen.WorkAreaHeight) - Height;
+    if Left + Width > (Screen.WorkAreaLeft + Screen.WorkAreaWidth) then
+      Left := (Screen.WorkAreaLeft + Screen.WorkAreaWidth) - Width;
+    if Left < Screen.WorkAreaLeft then
+      Left := Screen.WorkAreaLeft;
+  end;
 end;
 
 {$ENDREGION}
@@ -327,11 +332,11 @@ begin
     S := 3;
   // Начинаем проверку
   for I := 1 to Count do
-    begin
-      if HexStr[S] = '0' then
-        Inc(U);
-      Inc(S, 4);
-    end;
+  begin
+    if HexStr[S] = '0' then
+      Inc(U);
+    Inc(S, 4);
+  end;
   if U = Count then
     Result := True;
 end;
@@ -356,9 +361,9 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Msg) do
-    begin
-      Result := Result + ReverseHexUnicodeChar(IntToHex(Ord(Msg[I]), 4));
-    end;
+  begin
+    Result := Result + ReverseHexUnicodeChar(IntToHex(Ord(Msg[I]), 4));
+  end;
 end;
 
 {$ENDREGION}
@@ -383,13 +388,13 @@ var
 begin
   Result := EmptyStr;
   for I := low(StrArr) to high(StrArr) do
-    begin
-      S := StrArr[I];
-      if (S > EmptyStr) and (Ss > EmptyStr) then
-        Ss := Ss + ', ' + S
-      else if (S > EmptyStr) and (Ss = EmptyStr) then
-        Ss := S;
-    end;
+  begin
+    S := StrArr[I];
+    if (S > EmptyStr) and (Ss > EmptyStr) then
+      Ss := Ss + ', ' + S
+    else if (S > EmptyStr) and (Ss = EmptyStr) then
+      Ss := S;
+  end;
   Result := Ss;
 end;
 
@@ -429,9 +434,9 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Msg) do
-    begin
-      Result := Result + IntToHex(Ord(Msg[I]), 4);
-    end;
+  begin
+    Result := Result + IntToHex(Ord(Msg[I]), 4);
+  end;
 end;
 
 {$ENDREGION}
@@ -466,128 +471,132 @@ begin
     JvXML_Create(JvXML);
     try
       with JvXML do
+      begin
+        if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
         begin
-          if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
+          // Загружаем файл языка
+          LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
+          if Root <> nil then
+          begin
+            // Переводим заголовок формы и получаем все остальные пункты
+            XML_Node := Root.Items.ItemNamed[Xform.name];
+            if XML_Node <> nil then
             begin
-              // Загружаем файл языка
-              LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
-              if Root <> nil then
-                begin
-                  // Переводим заголовок формы и получаем все остальные пункты
-                  XML_Node := Root.Items.ItemNamed[Xform.name];
-                  if XML_Node <> nil then
-                    begin
-                      Xform.Caption := XML_Node.Properties.Value('c');
-                      List.Text := XML_Node.SaveToString;
-                    end;
-                end;
+              Xform.Caption := XML_Node.Properties.Value('c');
+              List.Text := XML_Node.SaveToString;
             end;
+          end;
         end;
+      end;
     finally
       JvXML.Free;
     end;
     // Переводим компоненты формы с Caption
     with Xform do
       for I := 0 to ComponentCount - 1 do
+      begin
+        // Если этот компонент меню
+        if (Components[I] is TPopupMenu) then
         begin
-          // Если этот компонент меню
-          if (Components[I] is TPopupMenu) then
+          for M := 0 to (Components[I] as TPopupMenu).Items.Count - 1 do
+          begin
+            for II := 0 to List.Count - 1 do
             begin
-              for M := 0 to (Components[I] as TPopupMenu).Items.Count - 1 do
-                begin
-                  for II := 0 to List.Count - 1 do
-                    begin
-                      if (Components[I] as TPopupMenu).Items[M].name = IsolateTextString(List.Strings[II], '<', C_BN) then
-                        begin (Components[I] as TPopupMenu)
-                          .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                          Break;
-                        end;
-                    end;
-                end;
-              Continue;
+              if (Components[I] as TPopupMenu).Items[M].name = IsolateTextString(List.Strings[II], '<', C_BN) then
+              begin
+                (Components[I] as TPopupMenu)
+                  .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                Break;
+              end;
             end;
-          // Если этот компонент ЛистВиев
-          if (Xform.Components[I] is TJvListView) then
-            begin
-              for M := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
-                begin
-                  for II := 0 to List.Count - 1 do
-                    begin
-                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
-                        begin (Components[I] as TJvListView)
-                          .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                          Break;
-                        end;
-                    end;
-                end;
-              Continue;
-            end;
-          if (Xform.Components[I] is TListView) then
-            begin
-              for M := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
-                begin
-                  for II := 0 to List.Count - 1 do
-                    begin
-                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
-                        begin (Components[I] as TListView)
-                          .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                          Break;
-                        end;
-                    end;
-                end;
-              Continue;
-            end;
-          // Если этот компонент Категория кнопок
-          if (Xform.Components[I] is TButtonGroup) then
-            begin
-              for M := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
-                begin
-                  for II := 0 to List.Count - 1 do
-                    begin
-                      if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TButtonGroup).Items[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
-                        begin (Components[I] as TButtonGroup)
-                          .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                          Break;
-                        end;
-                    end;
-                end;
-              Continue;
-            end;
-          // Ищем компонент в списке по имени
-          for II := 0 to List.Count - 1 do
-            begin
-              if Components[I].name = IsolateTextString(List.Strings[II], '<', C_BN) then
-                begin
-                  // Устанавливаем Caption через технологию RTTI
-                  Str := EmptyStr;
-                  Str := IsolateTextString(List.Strings[II], 'c="', '"');
-                  if Str <> EmptyStr then
-                    begin
-                      PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
-                      if PropInfo <> nil then
-                        begin
-                          TK := PropInfo^.PropType^.Kind;
-                          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                            SetStrProp(Components[I], PropInfo, Str);
-                        end;
-                    end;
-                  // Устанавливаем Hint через технологию RTTI
-                  Str := EmptyStr;
-                  Str := IsolateTextString(List.Strings[II], 'h="', '"');
-                  if Str <> EmptyStr then
-                    begin
-                      PropInfo := GetPropInfo(Components[I].ClassInfo, 'Hint');
-                      if PropInfo <> nil then
-                        begin
-                          TK := PropInfo^.PropType^.Kind;
-                          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                            SetStrProp(Components[I], PropInfo, CheckText_Hint(Str));
-                        end;
-                    end;
-                  Break;
-                end;
-            end;
+          end;
+          Continue;
         end;
+        // Если этот компонент ЛистВиев
+        if (Xform.Components[I] is TJvListView) then
+        begin
+          for M := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
+          begin
+            for II := 0 to List.Count - 1 do
+            begin
+              if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
+              begin
+                (Components[I] as TJvListView)
+                  .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                Break;
+              end;
+            end;
+          end;
+          Continue;
+        end;
+        if (Xform.Components[I] is TListView) then
+        begin
+          for M := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
+          begin
+            for II := 0 to List.Count - 1 do
+            begin
+              if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
+              begin
+                (Components[I] as TListView)
+                  .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                Break;
+              end;
+            end;
+          end;
+          Continue;
+        end;
+        // Если этот компонент Категория кнопок
+        if (Xform.Components[I] is TButtonGroup) then
+        begin
+          for M := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
+          begin
+            for II := 0 to List.Count - 1 do
+            begin
+              if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TButtonGroup).Items[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
+              begin
+                (Components[I] as TButtonGroup)
+                  .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
+                Break;
+              end;
+            end;
+          end;
+          Continue;
+        end;
+        // Ищем компонент в списке по имени
+        for II := 0 to List.Count - 1 do
+        begin
+          if Components[I].name = IsolateTextString(List.Strings[II], '<', C_BN) then
+          begin
+            // Устанавливаем Caption через технологию RTTI
+            Str := EmptyStr;
+            Str := IsolateTextString(List.Strings[II], 'c="', '"');
+            if Str <> EmptyStr then
+            begin
+              PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
+              if PropInfo <> nil then
+              begin
+                TK := PropInfo^.PropType^.Kind;
+                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                  SetStrProp(Components[I], PropInfo, Str);
+              end;
+            end;
+            // Устанавливаем Hint через технологию RTTI
+            Str := EmptyStr;
+            Str := IsolateTextString(List.Strings[II], 'h="', '"');
+            if Str <> EmptyStr then
+            begin
+              PropInfo := GetPropInfo(Components[I].ClassInfo, 'Hint');
+              if PropInfo <> nil then
+              begin
+                TK := PropInfo^.PropType^.Kind;
+                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                  SetStrProp(Components[I], PropInfo, CheckText_Hint(Str));
+              end;
+            end;
+            Break;
+          end;
+        end;
+      end;
   finally
     List.Free;
   end;
@@ -700,6 +709,7 @@ end;
 {$REGION 'RafinePath'}
 
 // На случай, если в имени контакта символы, не поддерживаемые ФС
+
 function RafinePath(const Path: string): string;
 begin
   Result := Path;
@@ -737,7 +747,7 @@ begin
     goto A
   else
     Exit;
-A :;
+  A: ;
   // Если количество строк в логе слишком большое, то очищаем его
   if LogForm.LogMemo.Lines.Count > 5000 then
     LogForm.LogMemo.Clear;
@@ -756,21 +766,21 @@ var
 begin
   S := Copy(Xmldata, 2, 1);
   if (S <> '?') and (S <> '/') and (S <> #09) then
-    begin
-      // Форматируем данные пакета
-      Pkt := '<xml>' + Xmldata + '</xml>';
-      JvXML_Create(JvXML);
-      try
-        with JvXML do
-          begin
-            JvXML_LoadStr(JvXML, Pkt);
-            // Пишем в лог данные пакета
-            XLog(C_Jabber + Log_Send + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), C_Jabber);
-          end;
-      finally
-        JvXML.Free;
+  begin
+    // Форматируем данные пакета
+    Pkt := '<xml>' + Xmldata + '</xml>';
+    JvXML_Create(JvXML);
+    try
+      with JvXML do
+      begin
+        JvXML_LoadStr(JvXML, Pkt);
+        // Пишем в лог данные пакета
+        XLog(C_Jabber + Log_Send + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), C_Jabber);
       end;
-    end
+    finally
+      JvXML.Free;
+    end;
+  end
   else
     XLog(C_Jabber + Log_Send + C_RN + XMLData, C_Jabber);
   // Отправляем данные через сокет
@@ -801,17 +811,17 @@ begin
   Result := False;
   // Проверяем онлайн ли клиент для этого протокола
   if (Proto = C_Icq) and (not Icq_work_phaze) then
-    begin
-      Proto := UpperCase(Proto);
-      Result := True;
-    end
+  begin
+    Proto := UpperCase(Proto);
+    Result := True;
+  end
   else if (Proto = C_Jabber) and (not Jabber_work_phaze) then
     Result := True
   else if (Proto = C_Mra) and (not Mra_work_phaze) then
-    begin
-      Proto := UpperCase(Proto);
-      Result := True;
-    end;
+  begin
+    Proto := UpperCase(Proto);
+    Result := True;
+  end;
   if Result then
     Dashow(Lang_Vars[18].L_S, Format(Lang_Vars[31].L_S, [Proto]), EmptyStr, 133, 3, 0);
 end;
@@ -931,62 +941,62 @@ begin
   // Ищем файл с анкетой этого контакта
   AFile := V_ProfilePath + C_AnketaFolder + CProto + C_BN + CId + '.xml';
   if FileExists(AFile) then
-    begin
-      // Инициализируем XML
-      JvXML_Create(JvXML);
-      try
-        with JvXML do
+  begin
+    // Инициализируем XML
+    JvXML_Create(JvXML);
+    try
+      with JvXML do
+      begin
+        LoadFromFile(AFile);
+        if Root <> nil then
+        begin
+          // Загружаем Имя и Фамилию
+          XML_Node := Root.Items.ItemNamed[C_NameInfo];
+          if XML_Node <> nil then
           begin
-            LoadFromFile(AFile);
-            if Root <> nil then
-              begin
-                // Загружаем Имя и Фамилию
-                XML_Node := Root.Items.ItemNamed[C_NameInfo];
-                if XML_Node <> nil then
-                  begin
-                    Ln := URLDecode(XML_Node.Properties.Value(C_First));
-                    Lf := URLDecode(XML_Node.Properties.Value(C_Last));
-                  end;
-                // Загружаем Город и Страну для флага
-                XML_Node := Root.Items.ItemNamed[C_HomeInfo];
-                if XML_Node <> nil then
-                  begin
-                    V_GetCityPanel := URLDecode(XML_Node.Properties.Value(C_City));
-                    V_GetFlagImage := XML_Node.Properties.Value(C_Country);
-                  end;
-                if V_GetCityPanel = EmptyStr then
-                  V_GetCityPanel := NoVal;
-                // Загружаем Возраст
-                XML_Node := Root.Items.ItemNamed[C_AgeInfo];
-                if XML_Node <> nil then
-                  begin
-                    La := XML_Node.Properties.Value(C_Age);
-                    if La <> '0' then
-                      V_GetAgePanel := Infoagel + C_BN + La;
-                  end;
-                // Загружаем иконку пола
-                XML_Node := Root.Items.ItemNamed[C_PerInfo];
-                if XML_Node <> nil then
-                  begin
-                    V_GetGenderImage := XML_Node.Properties.Value(C_Gender);
-                    case V_GetGenderImage[1] of
-                      '1': V_GetGenderImage := 'girl';
-                      '2': V_GetGenderImage := 'boy';
-                    end;
-                  end;
-              end;
+            Ln := URLDecode(XML_Node.Properties.Value(C_First));
+            Lf := URLDecode(XML_Node.Properties.Value(C_Last));
           end;
-      finally
-        JvXML.Free;
+          // Загружаем Город и Страну для флага
+          XML_Node := Root.Items.ItemNamed[C_HomeInfo];
+          if XML_Node <> nil then
+          begin
+            V_GetCityPanel := URLDecode(XML_Node.Properties.Value(C_City));
+            V_GetFlagImage := XML_Node.Properties.Value(C_Country);
+          end;
+          if V_GetCityPanel = EmptyStr then
+            V_GetCityPanel := NoVal;
+          // Загружаем Возраст
+          XML_Node := Root.Items.ItemNamed[C_AgeInfo];
+          if XML_Node <> nil then
+          begin
+            La := XML_Node.Properties.Value(C_Age);
+            if La <> '0' then
+              V_GetAgePanel := Infoagel + C_BN + La;
+          end;
+          // Загружаем иконку пола
+          XML_Node := Root.Items.ItemNamed[C_PerInfo];
+          if XML_Node <> nil then
+          begin
+            V_GetGenderImage := XML_Node.Properties.Value(C_Gender);
+            case V_GetGenderImage[1] of
+              '1': V_GetGenderImage := 'girl';
+              '2': V_GetGenderImage := 'boy';
+            end;
+          end;
+        end;
       end;
-      // Формируем строку
-      if Ln > EmptyStr then
-        Result := Result + Ln;
-      if (Ln > EmptyStr) and (Lf > EmptyStr) then
-        Result := Result + C_BN + Lf
-      else if (Ln = EmptyStr) and (Lf > EmptyStr) then
-        Result := Result + Lf;
+    finally
+      JvXML.Free;
     end;
+    // Формируем строку
+    if Ln > EmptyStr then
+      Result := Result + Ln;
+    if (Ln > EmptyStr) and (Lf > EmptyStr) then
+      Result := Result + C_BN + Lf
+    else if (Ln = EmptyStr) and (Lf > EmptyStr) then
+      Result := Result + Lf;
+  end;
 end;
 
 {$ENDREGION}
@@ -1006,43 +1016,43 @@ begin
   Text := Stringreplace(Text, 'www.', ' <a href="www.', [RfReplaceAll, RfIgnoreCase]);
   //
   Str := Text;
-A :;
+  A: ;
   P := Pos('href="', Str);
   if P > 0 then
+  begin
+    FinalText := FinalText + NextData(Str, P + 5);
+    B := Pos(' ', Str);
+    R := Pos('<br>', Str);
+    if (B > 0) or (R > 0) then
     begin
-      FinalText := FinalText + NextData(Str, P + 5);
-      B := Pos(' ', Str);
-      R := Pos('<br>', Str);
-      if (B > 0) or (R > 0) then
-        begin
-          if (B > 0) and (B < R) then
-            begin
-              UrlText := NextData(Str, B - 1);
-              FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
-            end
-          else if (B > 0) and (B > R) and (R <> 0) then
-            begin
-              UrlText := NextData(Str, R - 1);
-              FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
-            end
-          else if (R > 0) and (R < B) then
-            begin
-              UrlText := NextData(Str, R - 1);
-              FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
-            end
-          else if (B > 0) and (R = 0) then
-            begin
-              UrlText := NextData(Str, B - 1);
-              FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
-            end;
-        end
-      else
-        begin
-          UrlText := NextData(Str, Length(Str));
-          FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
-        end;
-      goto A;
+      if (B > 0) and (B < R) then
+      begin
+        UrlText := NextData(Str, B - 1);
+        FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
+      end
+      else if (B > 0) and (B > R) and (R <> 0) then
+      begin
+        UrlText := NextData(Str, R - 1);
+        FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
+      end
+      else if (R > 0) and (R < B) then
+      begin
+        UrlText := NextData(Str, R - 1);
+        FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
+      end
+      else if (B > 0) and (R = 0) then
+      begin
+        UrlText := NextData(Str, B - 1);
+        FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
+      end;
+    end
+    else
+    begin
+      UrlText := NextData(Str, Length(Str));
+      FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
     end;
+    goto A;
+  end;
   Text := FinalText + Str;
 end;
 
@@ -1055,10 +1065,10 @@ var
 begin
   Result := True;
   for I := low(StringsArr) to high(StringsArr) do
-    begin
-      if Trim(StringsArr[I]) <> EmptyStr then
-        Exit;
-    end;
+  begin
+    if Trim(StringsArr[I]) <> EmptyStr then
+      Exit;
+  end;
   Result := False;
 end;
 
@@ -1176,12 +1186,12 @@ begin
       Inc(Ch, Ord('A') - Ord('9') - 1);
     Temp[B] := AnsiChar(Ch);
     Dec(B);
-      asm
+    asm
         MOV     EAX,DWORD PTR [C+4];
         SHRD    DWORD PTR [C],EAX,4
         SHR     EAX,4
         MOV     DWORD PTR[C+4],EAX
-      end
+    end
     ;
   until (I64.Lo = 0) and (I64.Hi = 0);
   Temp[B] := '$';
@@ -1273,18 +1283,18 @@ begin
   repeat
     PScan := StrPos(PScan, PTag1);
     if PScan <> nil then
+    begin
+      Inc(PScan, Length(Tag1));
+      PEnd := StrPos(PScan, PTag2);
+      if PEnd <> nil then
       begin
-        Inc(PScan, Length(Tag1));
-        PEnd := StrPos(PScan, PTag2);
-        if PEnd <> nil then
-          begin
-            SetString(FoundText, PChar(S) + (PScan - PChar(SearchText)), PEnd - PScan);
-            Result := FoundText;
-            PScan := PEnd + Length(Tag2);
-          end
-        else
-          PScan := nil;
-      end;
+        SetString(FoundText, PChar(S) + (PScan - PChar(SearchText)), PEnd - PScan);
+        Result := FoundText;
+        PScan := PEnd + Length(Tag2);
+      end
+      else
+        PScan := nil;
+    end;
   until PScan = nil;
 end;
 
@@ -1321,11 +1331,11 @@ end;
 function Chop(I, L: Integer; var S: string): string;
 begin
   if I = 0 then
-    begin
-      Result := S;
-      S := EmptyStr;
-      Exit;
-    end;
+  begin
+    Result := S;
+    S := EmptyStr;
+    Exit;
+  end;
   Result := Copy(S, 1, I - 1);
   Delete(S, 1, I - 1 + L);
 end;
@@ -1337,17 +1347,17 @@ procedure SetClipBoardText(Value: string);
 begin
   // Копируем строку в буфер обмена вот таким способом (тупо и универсально для wine)
   with TEdit.Create(nil) do
-    begin
-      try
-        Visible := False;
-        Parent := LogForm;
-        Text := Value;
-        SelectAll;
-        CopyToClipboard;
-      finally
-        Free;
-      end;
+  begin
+    try
+      Visible := False;
+      Parent := LogForm;
+      Text := Value;
+      SelectAll;
+      CopyToClipboard;
+    finally
+      Free;
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -1360,21 +1370,21 @@ begin
   DecodeDate(BirthDay, Year, Month, Day);
   DecodeDate(CurrentDate, CurrentYear, CurrentMonth, CurrentDay);
   if (Year = CurrentYear) and (Month = CurrentMonth) and (Day = CurrentDay) then
-    begin
-      Result := 0;
-    end
+  begin
+    Result := 0;
+  end
   else
+  begin
+    Result := CurrentYear - Year;
+    if (Month > CurrentMonth) then
+      Dec(Result)
+    else
     begin
-      Result := CurrentYear - Year;
-      if (Month > CurrentMonth) then
-        Dec(Result)
-      else
-        begin
-          if Month = CurrentMonth then
-            if (Day > CurrentDay) then
-              Dec(Result);
-        end;
+      if Month = CurrentMonth then
+        if (Day > CurrentDay) then
+          Dec(Result);
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -1389,9 +1399,10 @@ begin
   Result := 0;
   case Length(Hex) of
     0: Result := 0;
-    1 .. 16: for I := 1 to Length(Hex) do
+    1..16: for I := 1 to Length(Hex) do
         Result := 16 * Result + Pos(UpCase(Hex[I]), HexValues) - 1;
-  else for I := 1 to 16 do
+  else
+    for I := 1 to 16 do
       Result := 16 * Result + Pos(UpCase(Hex[I]), HexValues) - 1;
   end;
 end;
@@ -1401,17 +1412,17 @@ end;
 
 function ExisValidCharactersText(Value: string): Boolean;
 const
-  ValidChars = ['a' .. 'z', 'A' .. 'Z'];
+  ValidChars = ['a'..'z', 'A'..'Z'];
 var
   I: Integer;
 begin
   Result := True;
   for I := 1 to Length(Value) do
     if not CharInSet(Value[I], ValidChars) then
-      begin
-        Result := False;
-        Exit;
-      end;
+    begin
+      Result := False;
+      Exit;
+    end;
 end;
 
 {$ENDREGION}
@@ -1419,17 +1430,17 @@ end;
 
 function ExisValidCharactersDigit(Value: string): Boolean;
 const
-  ValidChars = ['0' .. '9'];
+  ValidChars = ['0'..'9'];
 var
   I: Integer;
 begin
   Result := True;
   for I := 1 to Length(Value) do
     if not CharInSet(Value[I], ValidChars) then
-      begin
-        Result := False;
-        Exit;
-      end;
+    begin
+      Result := False;
+      Exit;
+    end;
 end;
 
 {$ENDREGION}
@@ -1528,26 +1539,26 @@ begin
   Result := EmptyStr;
   Ofs := 0;
   while Ofs < Length(Data) do
-    begin
-      S1 := EmptyStr;
-      S2 := EmptyStr;
-      for I := 1 to Cols do
-        if Ofs + I <= Length(Data) then
-          begin
-            S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
-            if I = 8 then
-              S1 := S1 + C_BN + C_BN
-            else
-              S1 := S1 + C_BN;
-            if Data[Ofs + I] < #32 then
-              S2 := S2 + '.'
-            else
-              S2 := S2 + Data[Ofs + I];
-          end;
-      S1 := S1 + StringOfChar(C_BN, Cols * 3 + 4 - Length(S1));
-      Result := Result + S1 + S2 + C_RN;
-      Inc(Ofs, Cols);
-    end;
+  begin
+    S1 := EmptyStr;
+    S2 := EmptyStr;
+    for I := 1 to Cols do
+      if Ofs + I <= Length(Data) then
+      begin
+        S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
+        if I = 8 then
+          S1 := S1 + C_BN + C_BN
+        else
+          S1 := S1 + C_BN;
+        if Data[Ofs + I] < #32 then
+          S2 := S2 + '.'
+        else
+          S2 := S2 + Data[Ofs + I];
+      end;
+    S1 := S1 + StringOfChar(C_BN, Cols * 3 + 4 - Length(S1));
+    Result := Result + S1 + S2 + C_RN;
+    Inc(Ofs, Cols);
+  end;
 end;
 
 {$ENDREGION}
@@ -1584,22 +1595,22 @@ begin
   Str := Hex2text('2A0' + Channel + IntToHex(Icq_seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
   if LogForm.ICQDumpSpeedButton.Down then
-    begin
-      if Length(Str) >= 10 then
-        PktType := HexToInt(Text2Hex(Str[8] + Str[10]))
-      else
-        PktType := 0;
-      for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
-        if ICQ_Pkt_Names[I].Pkt_Code = PktType then
-          begin
-            if (PktType = $0001) or (PktType = 0) then
-              S_Name := ICQ_Pkt_Names[I + 1].Pkt_Name
-            else
-              S_Name := ICQ_Pkt_Names[I].Pkt_Name;
-            Break;
-          end;
-      XLog(C_Icq + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
-    end;
+  begin
+    if Length(Str) >= 10 then
+      PktType := HexToInt(Text2Hex(Str[8] + Str[10]))
+    else
+      PktType := 0;
+    for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
+      if ICQ_Pkt_Names[I].Pkt_Code = PktType then
+      begin
+        if (PktType = $0001) or (PktType = 0) then
+          S_Name := ICQ_Pkt_Names[I + 1].Pkt_Name
+        else
+          S_Name := ICQ_Pkt_Names[I].Pkt_Name;
+        Break;
+      end;
+    XLog(C_Icq + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
+  end;
   // Отсылаем данные по сокету
   MainForm.IcqWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1644,16 +1655,16 @@ begin
   Str := Hex2text(Mra_magkey + Mra_protover + IntToHex(Swap32(Mra_seq), 8) + PktType + IntToHex(Swap32(Len), 8) + Data);
   // Пишем в лог данные пакета
   if LogForm.MRADumpSpeedButton.Down then
-    begin
-      C := Swap16(HexToInt(LeftStr(PktType, 4)));
-      for I := low(MRA_Pkt_Names) to high(MRA_Pkt_Names) do
-        if MRA_Pkt_Names[I].Pkt_Code = C then
-          begin
-            S_Name := MRA_Pkt_Names[I].Pkt_Name;
-            Break;
-          end;
-      XLog(C_Mra + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
-    end;
+  begin
+    C := Swap16(HexToInt(LeftStr(PktType, 4)));
+    for I := low(MRA_Pkt_Names) to high(MRA_Pkt_Names) do
+      if MRA_Pkt_Names[I].Pkt_Code = C then
+      begin
+        S_Name := MRA_Pkt_Names[I].Pkt_Name;
+        Break;
+      end;
+    XLog(C_Mra + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
+  end;
   // Отсылаем данные по сокету
   Mainform.MraWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1674,7 +1685,7 @@ end;
 
 function NormalizeIcqNumber(Sn: string): string;
 const
-  ValidChars = ['0' .. '9'];
+  ValidChars = ['0'..'9'];
 var
   I: Integer;
 begin
@@ -1769,9 +1780,9 @@ var
 begin
   Result := EmptyStr;
   for I := 1 to Length(Msg) do
-    begin
-      Result := Result + IntToHex(Ord(Msg[I]), 2);
-    end;
+  begin
+    Result := Result + IntToHex(Ord(Msg[I]), 2);
+  end;
 end;
 
 {$ENDREGION}
@@ -1803,16 +1814,16 @@ var
   Blok: string;
 begin
   if Count <= 0 then
-    begin
-      Result := EmptyStr;
-      Exit;
-    end;
+  begin
+    Result := EmptyStr;
+    Exit;
+  end;
   if Count > Length(Data) then
-    begin
-      Result := Data;
-      SetLength(Data, 0);
-      Exit;
-    end;
+  begin
+    Result := Data;
+    SetLength(Data, 0);
+    Exit;
+  end;
   Blok := Leftstr(Data, Count);
   Data := Rightstr(Data, Length(Data) - Count);
   Result := Blok;
@@ -1822,19 +1833,19 @@ end;
 {$REGION 'Swap16'}
 
 function Swap16(Value: Word): Word;
-assembler;
-  asm
+  assembler;
+asm
     rol   ax,8
-  end;
+end;
 
 {$ENDREGION}
 {$REGION 'Swap32'}
 
 function Swap32(Value: Longword): Longword;
-assembler;
-  asm
+  assembler;
+asm
     bswap eax
-  end;
+end;
 
 {$ENDREGION}
 {$REGION 'Parse'}
@@ -1849,10 +1860,10 @@ begin
   if S[Length(S)] <> Char then
     S := S + Char;
   for I := 1 to Count do
-    begin
-      T := Copy(S, 0, Pos(Char, S) - 1);
-      S := Copy(S, Pos(Char, S) + 1, Length(S));
-    end;
+  begin
+    T := Copy(S, 0, Pos(Char, S) - 1);
+    S := Copy(S, Pos(Char, S) + 1, Length(S));
+  end;
   Result := T;
 end;
 
@@ -1864,15 +1875,15 @@ var
   Sr: TSearchRec;
 begin
   if FindFirst(Path, FaAnyFile, Sr) = 0 then
-    begin
-      repeat
-        if (Sr.Attr <> FaDirectory) then
-          begin
-            FileList.Add(Parse(Eext, Sr.name, 1));
-          end;
-      until FindNext(Sr) <> 0;
-      FindClose(Sr);
-    end;
+  begin
+    repeat
+      if (Sr.Attr <> FaDirectory) then
+      begin
+        FileList.Add(Parse(Eext, Sr.name, 1));
+      end;
+    until FindNext(Sr) <> 0;
+    FindClose(Sr);
+  end;
 end;
 
 {$ENDREGION}
@@ -1917,19 +1928,19 @@ begin
   S := Application.Exename;
   Sz := GetFileVersionInfoSize(PChar(S), H);
   if Sz > 0 then
-    begin
-      try
-        Buf := Allocmem(Sz);
-        GetFileVersionInfo(PChar(S), H, Sz, Buf);
-        VerQueryValue(Buf, '\VarFileInfo\Translation', Value, Len);
-        Ts := IntToHex(Makelong(Hiword(Longint(Value^)), Loword(Longint(Value^))), 8);
-        // Получаем номер билда
-        VerQueryValue(Buf, PChar('StringFileInfo\' + Ts + '\FileVersion'), Pointer(Value), Len);
-        if Len > 1 then
-          Result := StrPas(PChar(Value));
-      except
-      end;
+  begin
+    try
+      Buf := Allocmem(Sz);
+      GetFileVersionInfo(PChar(S), H, Sz, Buf);
+      VerQueryValue(Buf, '\VarFileInfo\Translation', Value, Len);
+      Ts := IntToHex(Makelong(Hiword(Longint(Value^)), Loword(Longint(Value^))), 8);
+      // Получаем номер билда
+      VerQueryValue(Buf, PChar('StringFileInfo\' + Ts + '\FileVersion'), Pointer(Value), Len);
+      if Len > 1 then
+        Result := StrPas(PChar(Value));
+    except
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -1942,9 +1953,9 @@ var
   I: Integer;
 begin
   for I := 1 to Buflen do
-    begin
-      S := S + IntToHex(Pbyte(Longword(Buffer) + I - 1)^, 2);
-    end;
+  begin
+    S := S + IntToHex(Pbyte(Longword(Buffer) + I - 1)^, 2);
+  end;
   Result := S;
 end;
 
@@ -1960,9 +1971,9 @@ var
 begin
   Result := EmptyStr;
   for I := 0 to BytesCount do
-    begin
-      Result := Result + Bit16[Random(15) + 1];
-    end;
+  begin
+    Result := Result + Bit16[Random(15) + 1];
+  end;
 end;
 
 {$ENDREGION}
@@ -1996,8 +2007,8 @@ begin
     503: Result := Err503;
     504: Result := Err504;
     505: Result := Err505
-    else
-      Result := Lang_Vars[23].L_S;
+  else
+    Result := Lang_Vars[23].L_S;
   end;
   Result := Result + '%s' + '[ ' + Format(Lang_Vars[27].L_S, [Errcode]) + ' ]';
 end;
@@ -2017,27 +2028,28 @@ end;
 {$REGION 'GetFullTag'}
 
 // Thanks Exodus Project
+
 function GetFullTag(Adata: string): string;
 
-function Rpos(Find_data, In_data: string): Cardinal;
-var
-  Lastpos, Newpos: Cardinal;
-  Mybuff: string;
-  Origlen: Cardinal;
-begin
-  Lastpos := 0;
-  Newpos := 0;
-  Origlen := Length(Adata);
-  repeat
-    Mybuff := Copy(In_data, Lastpos + 1, Origlen - Newpos);
-    Newpos := Pos(Find_data, Mybuff);
-    if (Newpos > 0) then
+  function Rpos(Find_data, In_data: string): Cardinal;
+  var
+    Lastpos, Newpos: Cardinal;
+    Mybuff: string;
+    Origlen: Cardinal;
+  begin
+    Lastpos := 0;
+    Newpos := 0;
+    Origlen := Length(Adata);
+    repeat
+      Mybuff := Copy(In_data, Lastpos + 1, Origlen - Newpos);
+      Newpos := Pos(Find_data, Mybuff);
+      if (Newpos > 0) then
       begin
         Lastpos := Lastpos + Newpos;
       end;
-  until (Newpos <= 0);
-  Result := Lastpos;
-end;
+    until (Newpos <= 0);
+    Result := Lastpos;
+  end;
 
 var
   Froot, Sbuff, R, Stag, Etag, Tmps: string;
@@ -2053,81 +2065,81 @@ begin
     Exit;
   P := Pos('<', Sbuff);
   if P <= 0 then
-    begin
-      Dashow(Lang_Vars[17].L_S, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
-      Exit;
-    end;
+  begin
+    Dashow(Lang_Vars[17].L_S, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
+    Exit;
+  end;
   Tmps := Copy(Sbuff, P, L - P + 1);
   E := Pos('>', Tmps);
   I := Pos('/>', Tmps);
   if ((E = 0) and (I = 0)) then
     Exit;
   if Froot = EmptyStr then
-    begin
-      Sp := Pos(C_BN, Tmps);
-      Tb := Pos(#09, Tmps);
-      Cr := Pos(#10, Tmps);
-      Nl := Pos(#13, Tmps);
-      Ws := Sp;
-      if (Tb > 0) then
-        Ws := Min(Ws, Tb);
-      if (Cr > 0) then
-        Ws := Min(Ws, Cr);
-      if (Nl > 0) then
-        Ws := Min(Ws, Nl);
-      if ((I > 0) and (I < Ws)) then
-        Froot := Trim(Copy(Sbuff, P + 1, I - 2))
-      else if (E < Ws) then
-        Froot := Trim(Copy(Sbuff, P + 1, E - 2))
-      else
-        Froot := Trim(Copy(Sbuff, P + 1, Ws - 2));
-      if (Froot = '?xml') or (Froot = '!ENTITY') or (Froot = '!--') or (Froot = '!ATTLIST') or (Froot = J_RootTag) then
-        begin
-          R := Copy(Sbuff, P, E);
-          Froot := EmptyStr;
-          Jabber_buffpkt := Copy(Sbuff, P + E, L - E - P + 1);
-          Result := R;
-          Exit;
-        end;
-    end;
-  if (E = (I + 1)) then
+  begin
+    Sp := Pos(C_BN, Tmps);
+    Tb := Pos(#09, Tmps);
+    Cr := Pos(#10, Tmps);
+    Nl := Pos(#13, Tmps);
+    Ws := Sp;
+    if (Tb > 0) then
+      Ws := Min(Ws, Tb);
+    if (Cr > 0) then
+      Ws := Min(Ws, Cr);
+    if (Nl > 0) then
+      Ws := Min(Ws, Nl);
+    if ((I > 0) and (I < Ws)) then
+      Froot := Trim(Copy(Sbuff, P + 1, I - 2))
+    else if (E < Ws) then
+      Froot := Trim(Copy(Sbuff, P + 1, E - 2))
+    else
+      Froot := Trim(Copy(Sbuff, P + 1, Ws - 2));
+    if (Froot = '?xml') or (Froot = '!ENTITY') or (Froot = '!--') or (Froot = '!ATTLIST') or (Froot = J_RootTag) then
     begin
       R := Copy(Sbuff, P, E);
       Froot := EmptyStr;
       Jabber_buffpkt := Copy(Sbuff, P + E, L - E - P + 1);
-    end
-  else
-    begin
-      I := P;
-      Stag := '<' + Froot;
-      Etag := '</' + Froot + '>';
-      Ls := Length(Stag);
-      Le := Length(Etag);
-      R := EmptyStr;
-      repeat
-        Tmps := Copy(Sbuff, I, L - I + 1);
-        Ps := Pos(Stag, Tmps);
-        if (Ps > 0) then
-          begin
-            _counter := _counter + 1;
-            I := I + Ps + Ls - 1;
-          end;
-        Tmps := Copy(Sbuff, I, L - I + 1);
-        Pe := Rpos(Etag, Tmps);
-        if ((Pe > 0) and ((Ps > 0) and (Pe > Ps))) then
-          begin
-            _counter := _counter - 1;
-            I := I + Pe + Le - 1;
-            if (_counter <= 0) then
-              begin
-                R := Copy(Sbuff, P, I - P);
-                Froot := EmptyStr;
-                Jabber_buffpkt := Copy(Sbuff, I, L - I + 1);
-                Break;
-              end;
-          end;
-      until ((Pe <= 0) or (Ps <= 0) or (Tmps = EmptyStr));
+      Result := R;
+      Exit;
     end;
+  end;
+  if (E = (I + 1)) then
+  begin
+    R := Copy(Sbuff, P, E);
+    Froot := EmptyStr;
+    Jabber_buffpkt := Copy(Sbuff, P + E, L - E - P + 1);
+  end
+  else
+  begin
+    I := P;
+    Stag := '<' + Froot;
+    Etag := '</' + Froot + '>';
+    Ls := Length(Stag);
+    Le := Length(Etag);
+    R := EmptyStr;
+    repeat
+      Tmps := Copy(Sbuff, I, L - I + 1);
+      Ps := Pos(Stag, Tmps);
+      if (Ps > 0) then
+      begin
+        _counter := _counter + 1;
+        I := I + Ps + Ls - 1;
+      end;
+      Tmps := Copy(Sbuff, I, L - I + 1);
+      Pe := Rpos(Etag, Tmps);
+      if ((Pe > 0) and ((Ps > 0) and (Pe > Ps))) then
+      begin
+        _counter := _counter - 1;
+        I := I + Pe + Le - 1;
+        if (_counter <= 0) then
+        begin
+          R := Copy(Sbuff, P, I - P);
+          Froot := EmptyStr;
+          Jabber_buffpkt := Copy(Sbuff, I, L - I + 1);
+          Break;
+        end;
+      end;
+    until ((Pe <= 0) or (Ps <= 0) or (Tmps = EmptyStr));
+  end;
   Result := R;
 end;
 
@@ -2164,43 +2176,46 @@ begin
     10 - Удаление текста
     11 - Отправка текста }
   if V_SoundON then
-    begin
-      case Snd of
-        1: if (V_SoundStartProg) and (FileExists(V_SoundStartProg_Path)) then
-            Sndplaysound(PChar(V_SoundStartProg_Path), Snd_async);
-        2: if (V_SoundIncMsg) and (FileExists(V_SoundIncMsg_Path)) then
-            Sndplaysound(PChar(V_SoundIncMsg_Path), Snd_async);
-        3: if (V_SoundMsgSend) and (FileExists(V_SoundMsgSend_Path)) then
-            Sndplaysound(PChar(V_SoundMsgSend_Path), Snd_async);
-        4: if (V_SoungUserOnline) and (FileExists(V_SoungUserOnline_Path)) then
-            Sndplaysound(PChar(V_SoungUserOnline_Path), Snd_async);
-        5: if (V_SoundEvent) and (FileExists(V_SoundEvent_Path)) then
-            Sndplaysound(PChar(V_SoundEvent_Path), Snd_async);
-        6: if (V_SoundFileSend) and (FileExists(V_SoundFileSend_Path)) then
-            Sndplaysound(PChar(V_SoundFileSend_Path), Snd_async);
-        7: if (V_SoundError) and (FileExists(V_SoundError_Path)) then
-            Sndplaysound(PChar(V_SoundError_Path), Snd_async);
-        8: if (V_SoundOpen) and (FileExists(V_SoundOpen_Path)) then
-            Sndplaysound(PChar(V_SoundOpen_Path), Snd_async);
-        9: begin
-            SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Type.wav';
-            if (FileExists(SFilePath)) then
-              Sndplaysound(PChar(SFilePath), Snd_async);
-          end;
-        10: begin
-            SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Back.wav';
-            if (FileExists(SFilePath)) then
-              Sndplaysound(PChar(SFilePath), Snd_async);
-          end;
-        11: begin
-            if (V_SoundON) and (V_SoundMsgSend) then
-              Exit;
-            SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\MsgSend.wav';
-            if (FileExists(SFilePath)) then
-              Sndplaysound(PChar(SFilePath), Snd_async);
-          end;
-      end;
+  begin
+    case Snd of
+      1: if (V_SoundStartProg) and (FileExists(V_SoundStartProg_Path)) then
+          Sndplaysound(PChar(V_SoundStartProg_Path), Snd_async);
+      2: if (V_SoundIncMsg) and (FileExists(V_SoundIncMsg_Path)) then
+          Sndplaysound(PChar(V_SoundIncMsg_Path), Snd_async);
+      3: if (V_SoundMsgSend) and (FileExists(V_SoundMsgSend_Path)) then
+          Sndplaysound(PChar(V_SoundMsgSend_Path), Snd_async);
+      4: if (V_SoungUserOnline) and (FileExists(V_SoungUserOnline_Path)) then
+          Sndplaysound(PChar(V_SoungUserOnline_Path), Snd_async);
+      5: if (V_SoundEvent) and (FileExists(V_SoundEvent_Path)) then
+          Sndplaysound(PChar(V_SoundEvent_Path), Snd_async);
+      6: if (V_SoundFileSend) and (FileExists(V_SoundFileSend_Path)) then
+          Sndplaysound(PChar(V_SoundFileSend_Path), Snd_async);
+      7: if (V_SoundError) and (FileExists(V_SoundError_Path)) then
+          Sndplaysound(PChar(V_SoundError_Path), Snd_async);
+      8: if (V_SoundOpen) and (FileExists(V_SoundOpen_Path)) then
+          Sndplaysound(PChar(V_SoundOpen_Path), Snd_async);
+      9:
+        begin
+          SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Type.wav';
+          if (FileExists(SFilePath)) then
+            Sndplaysound(PChar(SFilePath), Snd_async);
+        end;
+      10:
+        begin
+          SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Back.wav';
+          if (FileExists(SFilePath)) then
+            Sndplaysound(PChar(SFilePath), Snd_async);
+        end;
+      11:
+        begin
+          if (V_SoundON) and (V_SoundMsgSend) then
+            Exit;
+          SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\MsgSend.wav';
+          if (FileExists(SFilePath)) then
+            Sndplaysound(PChar(SFilePath), Snd_async);
+        end;
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -2213,18 +2228,18 @@ begin
   Result := CId;
   // Проверяем создан ли список ников
   if Assigned(V_AccountToNick) then
+  begin
+    // Находим ники в списке ников по учётной записи
+    for I := 0 to V_AccountToNick.Count - 1 do
     begin
-      // Находим ники в списке ников по учётной записи
-      for I := 0 to V_AccountToNick.Count - 1 do
-        begin
-          if (Ctype + C_BN + Cid) = V_AccountToNick.Strings[I] then
-            begin
-              Result := V_AccountToNick.Strings[I + 1];
-              // Выходим из цикла
-              Break;
-            end;
-        end;
+      if (Ctype + C_BN + Cid) = V_AccountToNick.Strings[I] then
+      begin
+        Result := V_AccountToNick.Strings[I + 1];
+        // Выходим из цикла
+        Break;
+      end;
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -2237,18 +2252,18 @@ begin
   // Выравниваем ширину списка по самой длинной строке
   ItemWidth := 0;
   with Cb do
+  begin
+    for I := 0 to Items.Count - 1 do
     begin
-      for I := 0 to Items.Count - 1 do
-        begin
-          CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[I]);
-          if CWidth > ItemWidth then
-            ItemWidth := CWidth;
-        end;
-      if Items.Count > DropDownCount then
-        Perform(Cb_SetDroppedWidth, Itemwidth + 25, 0)
-      else
-        Perform(Cb_SetDroppedWidth, Itemwidth + 8, 0);
+      CWidth := Application.MainForm.Canvas.TextWidth(Items.Strings[I]);
+      if CWidth > ItemWidth then
+        ItemWidth := CWidth;
     end;
+    if Items.Count > DropDownCount then
+      Perform(Cb_SetDroppedWidth, Itemwidth + 25, 0)
+    else
+      Perform(Cb_SetDroppedWidth, Itemwidth + 8, 0);
+  end;
 end;
 
 {$ENDREGION}
@@ -2273,21 +2288,21 @@ begin
       Free;
     end;
   if Ts = EmptyStr then
-    begin
-      SetClipBoardText(Url);
-      Dashow(Lang_Vars[17].L_S, Lang_Vars[108].L_S, EmptyStr, 134, 2, 0);
-      Exit;
-    end;
+  begin
+    SetClipBoardText(Url);
+    Dashow(Lang_Vars[17].L_S, Lang_Vars[108].L_S, EmptyStr, 134, 2, 0);
+    Exit;
+  end;
   if Pos('"', Ts) > 0 then
     Ts := Parse('"', Ts, 2);
   // Проверяем под wine запущена программа или нет
   if Pos('winebrowser.exe', Ts) = 0 then
     Url := ChangeSpaces(Url) // Преобразуем пробелы в %20
   else
-    begin
-      if Pos(':\', Url) > 0 then
-        Url := '"' + ChangeSlash(Url) + '"'; // Для открытия в winebrowser
-    end;
+  begin
+    if Pos(':\', Url) > 0 then
+      Url := '"' + ChangeSlash(Url) + '"'; // Для открытия в winebrowser
+  end;
   ShellExecute(0, 'open', PChar(Ts), PChar(Url), nil, SW_Show);
 end;
 
@@ -2307,38 +2322,39 @@ begin
   Result := False;
   // Проверяем размер файла истории
   if Getfilesize(HFile) > 1000000 then
+  begin
+    FreeAndNil(V_FArchive);
+    // Проверяем какой номер архива свободен
+    N := 1;
+    HArhFile := Copy(HFile, 1, Length(HFile) - 4);
+    while FileExists(HArhFile + ' [' + IntToStr(N) + '].7z') do
+      Inc(N);
+    HArhFile := HArhFile + ' [' + IntToStr(N) + '].7z';
+    // Инициализируем архиватор по расширению 7z
+    AFormat := GetArchiveFormats.FindCompressFormat(HArhFile);
+    if AFormat <> nil then
     begin
+      // Устанавливаем параметры архивирования
+      V_FArchive := AFormat.Create(HArhFile);
+      V_FArchive.Password := EmptyStr;
+      (V_FArchive as TJclCompressArchive)
+        .AddFile(ExtractFileName(HFile), HFile);
+      Supports(IUnknown(V_FArchive), IJclArchiveCompressionLevel, FCompressionLevel);
+      Supports(IUnknown(V_FArchive), IJclArchiveCompressHeader, FCompressHeader);
+      Supports(IUnknown(V_FArchive), IJclArchiveSaveCreationDateTime, FSaveCreationDateTime);
+      Supports(IUnknown(V_FArchive), IJclArchiveSaveLastAccessDateTime, FSaveLastAccessDateTime);
+      FCompressionLevel.CompressionLevel := 9;
+      FCompressHeader.CompressHeader := True;
+      FCompressHeader.CompressHeaderFull := True;
+      FSaveLastAccessDateTime.SaveLastAccessDateTime := False;
+      FSaveCreationDateTime.SaveCreationDateTime := False;
+      // Упаковываем файл архиватором 7zip
+      (V_FArchive as TJclCompressArchive).Compress;
+      // Завершаем процесс архивирования
       FreeAndNil(V_FArchive);
-      // Проверяем какой номер архива свободен
-      N := 1;
-      HArhFile := Copy(HFile, 1, Length(HFile) - 4);
-      while FileExists(HArhFile + ' [' + IntToStr(N) + '].7z') do
-        Inc(N);
-      HArhFile := HArhFile + ' [' + IntToStr(N) + '].7z';
-      // Инициализируем архиватор по расширению 7z
-      AFormat := GetArchiveFormats.FindCompressFormat(HArhFile);
-      if AFormat <> nil then
-        begin
-          // Устанавливаем параметры архивирования
-          V_FArchive := AFormat.Create(HArhFile);
-          V_FArchive.Password := EmptyStr; (V_FArchive as TJclCompressArchive)
-          .AddFile(ExtractFileName(HFile), HFile);
-          Supports(IUnknown(V_FArchive), IJclArchiveCompressionLevel, FCompressionLevel);
-          Supports(IUnknown(V_FArchive), IJclArchiveCompressHeader, FCompressHeader);
-          Supports(IUnknown(V_FArchive), IJclArchiveSaveCreationDateTime, FSaveCreationDateTime);
-          Supports(IUnknown(V_FArchive), IJclArchiveSaveLastAccessDateTime, FSaveLastAccessDateTime);
-          FCompressionLevel.CompressionLevel := 9;
-          FCompressHeader.CompressHeader := True;
-          FCompressHeader.CompressHeaderFull := True;
-          FSaveLastAccessDateTime.SaveLastAccessDateTime := False;
-          FSaveCreationDateTime.SaveCreationDateTime := False;
-          // Упаковываем файл архиватором 7zip
-          (V_FArchive as TJclCompressArchive).Compress;
-          // Завершаем процесс архивирования
-          FreeAndNil(V_FArchive);
-          Result := True;
-        end;
+      Result := True;
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -2355,17 +2371,17 @@ begin
   ArchiveFileName := HFile;
   AFormat := GetArchiveFormats.FindDecompressFormat(ArchiveFileName);
   if AFormat <> nil then
+  begin
+    V_FArchive := AFormat.Create(ArchiveFileName);
+    V_FArchive.Password := EmptyStr;
+    V_FArchive.OnProgress := UpdateForm.ArchiveProgress;
+    if V_FArchive is TJclDecompressArchive then
     begin
-      V_FArchive := AFormat.Create(ArchiveFileName);
-      V_FArchive.Password := EmptyStr;
-      V_FArchive.OnProgress := UpdateForm.ArchiveProgress;
-      if V_FArchive is TJclDecompressArchive then
-        begin
-          TJclDecompressArchive(V_FArchive).ListFiles;
-          TJclDecompressArchive(V_FArchive).ExtractAll(V_MyPath, True);
-        end;
-      Result := True;
+      TJclDecompressArchive(V_FArchive).ListFiles;
+      TJclDecompressArchive(V_FArchive).ExtractAll(V_MyPath, True);
     end;
+    Result := True;
+  end;
 end;
 
 {$ENDREGION}
@@ -2376,29 +2392,29 @@ var
   ImgTag, Cod: string;
   I, II: Integer;
 
-function GenTag(Path, Alt: string): string;
-begin
-  Result := Format(ImgTag, [Path, Alt]);
-end;
+  function GenTag(Path, Alt: string): string;
+  begin
+    Result := Format(ImgTag, [Path, Alt]);
+  end;
 
 begin
   // Определяем html тэги для вставки смайлов заместо их текстовых обозначений
   ImgTag := '<img src="./Smilies/' + V_CurrentSmiles + '/%s" ALIGN="ABSMIDDLE" vspace="3" BORDER="0" alt="%s">';
   // Сканируем список кодов смайлов на совпадения
   for I := 1 to V_SmilesList.Count - 1 do
+  begin
+    for II := 1 to 20 do
     begin
-      for II := 1 to 20 do
-        begin
-          Cod := Parse(',', V_SmilesList.Strings[I], II);
-          if Cod > EmptyStr then
-            begin
-              if Pos(Cod, Msg) > 0 then
-                Msg := ReplaceText(Msg, Cod, GenTag(IntToStr(I) + '.gif', Cod));
-            end
-          else
-            Break;
-        end;
+      Cod := Parse(',', V_SmilesList.Strings[I], II);
+      if Cod > EmptyStr then
+      begin
+        if Pos(Cod, Msg) > 0 then
+          Msg := ReplaceText(Msg, Cod, GenTag(IntToStr(I) + '.gif', Cod));
+      end
+      else
+        Break;
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -2411,21 +2427,21 @@ begin
   I := 1;
   HtmlLength := Length(HtmlText);
   while I <= HtmlLength do
+  begin
+    if (HtmlText[I] = '&') and (HtmlText[I + 1] = '#') then
     begin
-      if (HtmlText[I] = '&') and (HtmlText[I + 1] = '#') then
+      for J := I + 2 to HtmlLength do
+        if HtmlText[J] = ';' then
         begin
-          for J := I + 2 to HtmlLength do
-            if HtmlText[J] = ';' then
-              begin
-                Result := Result + Char(StrToIntDef(Copy(HTMLText, I + 2, J - (I + 2)), 0));
-                I := J;
-                Break;
-              end;
-        end
-      else
-        Result := Result + HtmlText[I];
-      Inc(I);
-    end;
+          Result := Result + Char(StrToIntDef(Copy(HTMLText, I + 2, J - (I + 2)), 0));
+          I := J;
+          Break;
+        end;
+    end
+    else
+      Result := Result + HtmlText[I];
+    Inc(I);
+  end;
 end;
 
 {$ENDREGION}
@@ -2495,37 +2511,38 @@ var
 begin
   // Определяем показывать ли всплывающие подсказки
   if Assigned(SH_HintWindow) then
+  begin
+    Inc(SH_TimerCount);
+    GetCursorPos(Pt);
+    Pt1 := HtmlV.ScreenToClient(Pt);
+    TitleStr := HtmlV.TitleAttr;
+    if (TitleStr = EmptyStr) or not PtInRect(HtmlV.ClientRect, Pt1) then
     begin
-      Inc(SH_TimerCount);
-      GetCursorPos(Pt);
-      Pt1 := HtmlV.ScreenToClient(Pt);
-      TitleStr := HtmlV.TitleAttr;
-      if (TitleStr = EmptyStr) or not PtInRect(HtmlV.ClientRect, Pt1) then
-        begin
-          SH_OldTitle := EmptyStr;
-          CloseSmiliesHint;
-          Exit;
-        end;
-      if TitleStr <> SH_OldTitle then
-        begin
-          SH_TimerCount := 0;
-          SH_OldTitle := TitleStr;
-          SH_HintWindow.ReleaseHandle;
-          SH_HintVisible := False;
-          Exit;
-        end;
-      if SH_TimerCount > EndCount then
-        CloseSmiliesHint
-      else if (SH_TimerCount >= StartCount) and not SH_HintVisible then
-        begin
-          ARect := SH_HintWindow.CalcHintRect(300, TitleStr, nil);
-          with ARect do
-            SH_HintWindow.ActivateHint(Rect(Pt.X, Pt.Y + 18, Pt.X + Right, Pt.Y + 18 + Bottom), TitleStr);
-          SH_HintVisible := True;
-        end;
+      SH_OldTitle := EmptyStr;
+      CloseSmiliesHint;
+      Exit;
     end;
+    if TitleStr <> SH_OldTitle then
+    begin
+      SH_TimerCount := 0;
+      SH_OldTitle := TitleStr;
+      SH_HintWindow.ReleaseHandle;
+      SH_HintVisible := False;
+      Exit;
+    end;
+    if SH_TimerCount > EndCount then
+      CloseSmiliesHint
+    else if (SH_TimerCount >= StartCount) and not SH_HintVisible then
+    begin
+      ARect := SH_HintWindow.CalcHintRect(300, TitleStr, nil);
+      with ARect do
+        SH_HintWindow.ActivateHint(Rect(Pt.X, Pt.Y + 18, Pt.X + Right, Pt.Y + 18 + Bottom), TitleStr);
+      SH_HintVisible := True;
+    end;
+  end;
 end;
 
 {$ENDREGION}
 
 end.
+
