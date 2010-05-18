@@ -36,28 +36,16 @@ type
   TRosterForm = class(TForm)
     RosterJvListView: TJvListView;
     RosterPopupMenu: TPopupMenu;
-    ClearICQ: TMenuItem;
-    ClearJabber: TMenuItem;
-    ClearMRA: TMenuItem;
     BottomPanel: TPanel;
     UINEdit: TEdit;
     SearchBitBtn: TBitBtn;
     UINLabel: TLabel;
-    N1: TMenuItem;
     RosterSendMessMenu: TMenuItem;
-    N2: TMenuItem;
-    ClearTempIcqContacts: TMenuItem;
-    ClearNoCLContacts: TMenuItem;
     procedure FormCreate(Sender: TObject);
-    procedure ClearICQClick(Sender: TObject);
-    procedure ClearJabberClick(Sender: TObject);
     procedure RosterJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
-    procedure ClearMRAClick(Sender: TObject);
     procedure SearchBitBtnClick(Sender: TObject);
     procedure RosterSendMessMenuClick(Sender: TObject);
     procedure RosterPopupMenuPopup(Sender: TObject);
-    procedure ClearNoCLContactsClick(Sender: TObject);
-    procedure ClearTempIcqContactsClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
 
   private
@@ -836,40 +824,6 @@ begin
             end;
         end;
     end;
-end;
-
-{$ENDREGION}
-{$REGION 'Other'}
-
-procedure TRosterForm.ClearICQClick(Sender: TObject);
-begin
-  // Стираем в Ростере все ICQ контакты
-  if ClearContacts(C_Icq) then
-    RosterForm.UpdateFullCL;
-end;
-
-procedure TRosterForm.ClearJabberClick(Sender: TObject);
-begin
-  // Стираем в Ростере все Jabber контакты
-  if ClearContacts(C_Jabber) then
-    RosterForm.UpdateFullCL;
-end;
-
-procedure TRosterForm.ClearMRAClick(Sender: TObject);
-begin
-  // Стираем в Ростере все MRA контакты
-  if ClearContacts(C_Mra) then
-    RosterForm.UpdateFullCL;
-end;
-
-procedure TRosterForm.ClearNoCLContactsClick(Sender: TObject);
-begin
-  ShowMessage(Lang_Vars[6].L_S);
-end;
-
-procedure TRosterForm.ClearTempIcqContactsClick(Sender: TObject);
-begin
-  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 {$ENDREGION}

@@ -5,7 +5,7 @@
     <HideInTray c="Скрыть IMadering"/>
     <RestoreProfileFromTray c="Показать выбор профиля"/>
     <HideProfileInTray c="Скрыть выбор профиля"/>
-    <Version c="Версия: %s alpha"/>
+    <Version c="Версия: %s"/>
     <ProfileError c="Сначала необходимо ввести или выбрать название профиля."/>
     <DevelMess c="Данная функция находится в разработке! Следите за обновлениями проекта."/>
     <Next c="Далее"/>
@@ -144,6 +144,7 @@
     <LoginButton c="Войти в профиль"/>
     <DellProfileSpeedButton h="_b_Удалить профиль_d__r_Стереть папку с профилем с жёсткого диска"/>
     <AutoSignCheckBox c="Входить автоматически"/>
+    <AutoDellProfileCheckBox c="Удалить профиль при выходе"/>
     <OpenProfilesSpeedButton h="_b_Папка профилей_d__r_Открыть папку с профилями для их удаления или копирования"/>
   </ProfileForm>
   <LogForm c="Лог событий программы">
@@ -152,8 +153,11 @@
     <MRADumpSpeedButton h="_b_Дампы MRA_d__r_Включить или выключить_r_отображение в логе данных протокола"/>
     <TwitDumpSpeedButton h="_b_Пакеты Twitter_d__r_Включить или выключить_r_отображение в логе данных протокола"/>
     <WriteLogSpeedButton h="_b_Запись в лог_d__r_Разрешить или приостановить запись событий в лог"/>
+    <SearchSpeedButton h="_b_Поиск_d__r_Искать текст в логе"/>
     <SaveLogSpeedButton h="_b_Сохранить_d__r_Записать данные лога в файл"/>
     <ClearLogSpeedButton h="_b_Очистить_d__r_Удалить все сообщения лога"/>
+    <SendEmailSpeedButton h="_b_Отправить по E-mail_d__r_Отослать весь или выделенный текст разработчикам"/>
+    <RosterSpeedButton h="_b_Открыть ростер_d__r_База данных контактов"/>
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram c="Выйти из IMadering"/>
@@ -166,12 +170,9 @@
     <GroupOnOffToolButton h="_b_Группы контактов_d__r_Показывать или скрывать группы"/>
     <SoundOnOffToolButton h="_b_Звуки_d__r_Включить или выключить озвучивание событий"/>
     <TopPanelToolButton h="_b_Верхняя панель_d__r_Показать или скрыть панель"/>
-    <PrivatToolButton h="_b_Приватные списки_d__r_Управление списками приватности"/>
     <HistoryToolButton h="_b_История сообщений_d__r_Просмотр архивов переписки"/>
     <SettingsToolButton h="_b_Настройки_d__r_Открыть окно настроек программы"/>
     <TrafficToolButton h="_b_Трафик_d__r_Открыть статистику потраченного трафика"/>
-    <RosterMainMenu c="БД списка контактов"/>
-    <PrivatListMenu c="Приватные списки"/>
     <SearchInCLMainMenu c="Поиск по списку контактов"/>
     <OpenTraffic c="Трафик"/>
     <OpenHistory c="История сообщений"/>
@@ -180,15 +181,10 @@
     <OpenGroupsCL c="Открыть группы"/>
     <CloseGroupsCL c="Закрыть группы"/>
     <HideEmptyGroups c="Скрывать пустые группы"/>
-    <AddNewGroupICQ c="Создать новую группу ICQ"/>
-    <AddNewGroupJabber c="Создать новую группу Jabber"/>
-    <AddNewGroupMRA c="Создать новую группу MRA"/>
+    <AddNewGroupICQ c="Создать новую группу"/>
     <RenemeGroupCL c="Переименовать группу"/>
     <DeleteGroupCL c="Удалить группу"/>
-    <SearchInCL c="Поиск по списку контактов"/>
-    <AddNewContactICQ c="Добавить контакт ICQ"/>
-    <AddNewContactJabber c="Добавить контакт Jabber"/>
-    <AddNewContactMRA c="Добавить контакт MRA"/>
+    <AddNewContactICQ c="Добавить контакт"/>
     <ICQSettings c="Настройки сети"/>
     <ICQSearchNewContact c="Поиск новых контактов"/>
     <ICQXStatus c="Дополнительный статус"/>
@@ -215,7 +211,6 @@
     <OnlyOnlineONMenu c="Кнопка - Скрыть оффлайн контакты"/>
     <GroupONMenu c="Кнопка - Скрыть группы"/>
     <SoundsONMenu c="Кнопка - Звуки"/>
-    <PrivatONMenu c="Кнопка - Приватные списки"/>
     <HistoryONMenu c="Кнопка - История сообщений"/>
     <SettingsONMenu c="Кнопка - Настройки"/>
     <TrafficONMenu c="Кнопка - Трафик"/>
@@ -230,53 +225,10 @@
     <SnapToRight c="К правому краю экрана"/>
     <SnapToLeft c="К левому краю экрана"/>
   </MainForm>
-  <RosterForm c="БД списка контактов">
-    <RosterJvListView_0 c="Учётная запись"/>
-    <RosterJvListView_1 c="Ник"/>
-    <RosterJvListView_2 c="Группа"/>
-    <RosterJvListView_3 c="Авторизация"/>
-    <RosterJvListView_4 c="Протокол"/>
-    <RosterJvListView_5 c="Идентификатор"/>
-    <RosterJvListView_6 c="Тип"/>
-    <RosterJvListView_7 c="Статус"/>
-    <RosterJvListView_8 c="Доп. статус"/>
-    <RosterJvListView_9 c="Клиент"/>
-    <RosterJvListView_10 c="Телефон"/>
-    <RosterJvListView_11 c="Заметка"/>
-    <RosterJvListView_12 c="Email"/>
-    <RosterJvListView_13 c="TimeId"/>
-    <RosterJvListView_14 c="---"/>
-    <RosterJvListView_15 c="Исходящее сообщение"/>
-    <RosterJvListView_16 c="Входящее сообщение"/>
-    <RosterJvListView_17 c="Оффлайн сообщения"/>
-    <RosterJvListView_18 c="Плавающий"/>
-    <RosterJvListView_19 c="Событие онлайн"/>
-    <RosterJvListView_20 c="Событие оффлайн"/>
-    <RosterJvListView_21 c="Класс контакта"/>
-    <RosterJvListView_22 c="IP внутренний"/>
-    <RosterJvListView_23 c="Порт внутренний"/>
-    <RosterJvListView_24 c="IP внешний"/>
-    <RosterJvListView_25 c="Флаг подключения"/>
-    <RosterJvListView_26 c="Версия протокола"/>
-    <RosterJvListView_27 c="Дата регистрации"/>
-    <RosterJvListView_28 c="CapsId"/>
-    <RosterJvListView_29 c="Caps"/>
-    <RosterJvListView_30 c="Hash аватар"/>
-    <RosterJvListView_31 c="Время подключения"/>
-    <RosterJvListView_32 c="Текст доп. статуса"/>
-    <RosterJvListView_33 c="Название клиента"/>
-    <RosterJvListView_34 c="UTF8 поддержка"/>
-    <RosterJvListView_35 c="Подсказка"/>
-    <RosterJvListView_36 c="Счётчик набора сообщения"/>
-    <RosterJvListView_37 c="Непрочитанные сообщения"/>
+  <RosterForm c="Ростер">
     <UINLabel c="Учётная запись:"/>
     <SearchBitBtn c="Найти"/>
     <RosterSendMessMenu c="Отправить сообщение"/>
-    <ClearNoCLContacts c="Удалить не серверные контакты (локально)"/>
-    <ClearTempIcqContacts c="Удалить временные ICQ контакты (с сервера)"/>
-    <ClearICQ c="Удалить ICQ контакты (локально)"/>
-    <ClearJabber c="Удалить Jabber контакты (локально)"/>
-    <ClearMRA c="Удалить MRA контакты (локально)"/>
   </RosterForm>
   <SettingsForm c="Настройки">
     <SettingButtonGroup_0 c="Общие"/>
@@ -360,7 +312,7 @@
     <DataLabel c="Дата сборки:"/>
     <HistoryLabel c="История"/>
     <LegalLabel c="Лицензия"/>
-    <CheckUpdateBitBtn c="Проверить наличие обновлений"/>
+    <CheckUpdateBitBtn c="Проверить обновление"/>
     <ForumBitBtn c="Обсуждение на форуме"/>
   </AboutForm>
   <Devels>

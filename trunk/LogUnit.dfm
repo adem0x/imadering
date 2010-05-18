@@ -4,8 +4,8 @@ object LogForm: TLogForm
   ClientHeight = 397
   ClientWidth = 586
   Color = clBtnFace
-  Constraints.MinHeight = 200
-  Constraints.MinWidth = 200
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 500
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -95,7 +95,7 @@ object LogForm: TLogForm
       ShowHint = True
     end
     object WriteLogSpeedButton: TSpeedButton
-      Left = 462
+      Left = 433
       Top = 2
       Width = 23
       Height = 22
@@ -119,7 +119,7 @@ object LogForm: TLogForm
       ShowHint = True
     end
     object SaveLogSpeedButton: TSpeedButton
-      Left = 520
+      Left = 491
       Top = 2
       Width = 23
       Height = 22
@@ -130,13 +130,36 @@ object LogForm: TLogForm
       OnClick = SaveLogSpeedButtonClick
     end
     object SearchSpeedButton: TSpeedButton
-      Left = 491
+      Left = 462
       Top = 2
       Width = 23
       Height = 22
       Anchors = [akTop, akRight]
       Flat = True
+      ParentShowHint = False
+      ShowHint = True
       OnClick = SearchSpeedButtonClick
+    end
+    object SendEmailSpeedButton: TSpeedButton
+      Left = 520
+      Top = 2
+      Width = 23
+      Height = 22
+      Anchors = [akTop, akRight]
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SendEmailSpeedButtonClick
+    end
+    object RosterSpeedButton: TSpeedButton
+      Left = 121
+      Top = 2
+      Width = 23
+      Height = 22
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = RosterSpeedButtonClick
     end
   end
   object LogFindDialog: TFindDialog

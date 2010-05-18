@@ -92,25 +92,25 @@ begin
     CLSearchJvListView.Columns[I].ImageIndex := -1;
   // Делаем поиск текста
   if CLSearchEdit.Text <> EmptyStr then
+  begin
+    with RosterForm.RosterJvListView do
     begin
-      with RosterForm.RosterJvListView do
+      for I := 0 to Items.Count - 1 do
+      begin
+        // Если это группы ICQ или NoCL, то пропускаем
+        if (Length(Items[I].Caption) <= 4) or (Items[I].Caption = C_NoCL) then
+          Continue;
+        // Если нашли текст в учётной записи или нике
+        if (Pos(WideUpperCase(CLSearchEdit.Text), WideUpperCase(Items[I].Caption)) > 0) or (Pos(WideUpperCase(CLSearchEdit.Text),
+          WideUpperCase(URLDecode(Items[I].SubItems[0]))) > 0) then
         begin
-          for I := 0 to Items.Count - 1 do
-            begin
-              // Если это группы ICQ или NoCL, то пропускаем
-              if (Length(Items[I].Caption) <= 4) or (Items[I].Caption = C_NoCL) then
-                Continue;
-              // Если нашли текст в учётной записи или нике
-              if (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale), UpperCase(Items[I].Caption, LoUserLocale)) > 0) or (Pos(UpperCase(CLSearchEdit.Text, LoUserLocale),
-                  UpperCase(URLDecode(Items[I].SubItems[0]), LoUserLocale)) > 0) then
-                begin
-                  CLSearchJvListView.Items.Add.Caption := Items[I].Caption;
-                  CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Items[I].SubItems[0]));
-                  CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Items[I].SubItems[6]);
-                end;
-            end;
+          CLSearchJvListView.Items.Add.Caption := Items[I].Caption;
+          CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Items[I].SubItems[0]));
+          CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Items[I].SubItems[6]);
         end;
+      end;
     end;
+  end;
 end;
 
 {$ENDREGION}
@@ -135,10 +135,10 @@ procedure TCLSearchForm.CLSearchJvListViewDblClick(Sender: TObject);
 begin
   // Если выделили контакт, то выделяем его и в КЛ
   if CLSearchJvListView.Selected <> nil then
-    begin
-      // Открываем чат с этим контактом
-      RosterForm.OpenChatPage(nil, CLSearchJvListView.Selected.Caption);
-    end;
+  begin
+    // Открываем чат с этим контактом
+    RosterForm.OpenChatPage(nil, CLSearchJvListView.Selected.Caption);
+  end;
 end;
 
 procedure TCLSearchForm.CLSearchJvListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
@@ -147,17 +147,17 @@ var
 begin
   // Если выделили контакт, то выделяем его и в КЛ
   if Selected then
+  begin
+    CLItem := RosterForm.ReqCLContact(Item.Caption);
+    if CLItem <> nil then
     begin
-      CLItem := RosterForm.ReqCLContact(Item.Caption);
-      if CLItem <> nil then
-        begin
-          // Выделяем этот контакт в КЛ
-          MainForm.ContactList.SelectedItem := CLItem;
-          if CLItem.Category.Collapsed then
-            CLItem.Category.Collapsed := False;
-          MainForm.ContactList.ScrollIntoView(CLItem);
-        end;
+      // Выделяем этот контакт в КЛ
+      MainForm.ContactList.SelectedItem := CLItem;
+      if CLItem.Category.Collapsed then
+        CLItem.Category.Collapsed := False;
+      MainForm.ContactList.ScrollIntoView(CLItem);
     end;
+  end;
 end;
 
 procedure TCLSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -188,26 +188,26 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      // Загружаем настройки
+      if FileExists(V_ProfilePath + C_SettingsFileName) then
       begin
-        // Загружаем настройки
-        if FileExists(V_ProfilePath + C_SettingsFileName) then
+        LoadFromFile(V_ProfilePath + C_SettingsFileName);
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
+          if XML_Node <> nil then
           begin
-            LoadFromFile(V_ProfilePath + C_SettingsFileName);
-            if Root <> nil then
-              begin
-                XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
-                if XML_Node <> nil then
-                  begin
-                    Top := XML_Node.Properties.IntValue('t');
-                    Left := XML_Node.Properties.IntValue('l');
-                    Height := XML_Node.Properties.IntValue('h');
-                    Width := XML_Node.Properties.IntValue('w');
-                    // Определяем не находится ли окно за пределами экрана
-                    FormSetInWorkArea(Self);
-                  end;
-              end;
+            Top := XML_Node.Properties.IntValue('t');
+            Left := XML_Node.Properties.IntValue('l');
+            Height := XML_Node.Properties.IntValue('h');
+            Width := XML_Node.Properties.IntValue('w');
+            // Определяем не находится ли окно за пределами экрана
+            FormSetInWorkArea(Self);
           end;
+        end;
       end;
+    end;
   finally
     JvXML.Free;
   end;
@@ -235,26 +235,26 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      if FileExists(V_ProfilePath + C_SettingsFileName) then
+        LoadFromFile(V_ProfilePath + C_SettingsFileName);
+      if Root <> nil then
       begin
-        if FileExists(V_ProfilePath + C_SettingsFileName) then
-          LoadFromFile(V_ProfilePath + C_SettingsFileName);
-        if Root <> nil then
-          begin
-            // Очищаем раздел формы если он есть
-            XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
-            if XML_Node <> nil then
-              XML_Node.Clear
-            else
-              XML_Node := Root.Items.Add(C_CLSearchForm);
-            // Сохраняем позицию окна
-            XML_Node.Properties.Add('t', Top);
-            XML_Node.Properties.Add('l', Left);
-            XML_Node.Properties.Add('h', Height);
-            XML_Node.Properties.Add('w', Width);
-          end;
-        // Записываем сам файл
-        SaveToFile(V_ProfilePath + C_SettingsFileName);
+        // Очищаем раздел формы если он есть
+        XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
+        if XML_Node <> nil then
+          XML_Node.Clear
+        else
+          XML_Node := Root.Items.Add(C_CLSearchForm);
+        // Сохраняем позицию окна
+        XML_Node.Properties.Add('t', Top);
+        XML_Node.Properties.Add('l', Left);
+        XML_Node.Properties.Add('h', Height);
+        XML_Node.Properties.Add('w', Width);
       end;
+      // Записываем сам файл
+      SaveToFile(V_ProfilePath + C_SettingsFileName);
+    end;
   finally
     JvXML.Free;
   end;
@@ -274,3 +274,4 @@ end;
 {$ENDREGION}
 
 end.
+
