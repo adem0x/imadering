@@ -48,6 +48,7 @@ type
     DellProfileSpeedButton: TSpeedButton;
     FlagImage: TImage;
     VersionLabel: TLabel;
+    AutoDellProfileCheckBox: TCheckBox;
     procedure SiteLabelMouseEnter(Sender: TObject);
     procedure SiteLabelMouseLeave(Sender: TObject);
     procedure SiteLabelClick(Sender: TObject);
@@ -61,6 +62,7 @@ type
     procedure DellProfileSpeedButtonClick(Sender: TObject);
     procedure LangsSpeedButtonClick(Sender: TObject);
     procedure LangsSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure AutoDellProfileCheckBoxClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -112,9 +114,11 @@ begin
       begin
         // Сохраняем язык по умолчанию
         Root.Items.Add(C_Lang, V_CurrentLang);
-        // Сохраняем отображение окна профиля
+        // Сохраняем автовход в профиль
         Root.Items.Add(C_Auto, AutoSignCheckBox.Checked);
         V_ProfileAuto := AutoSignCheckBox.Checked;
+        // Сохраняем автоудаление профиля
+        Root.Items.Add(C_AutoDell, AutoDellProfileCheckBox.Checked);
         // Сохраняем профиль по умолчанию
         XML_Node := Root.Items.Add(C_Profile);
         XML_Node.Value := V_Profile;
@@ -149,11 +153,16 @@ begin
                 XML_Node := Root.Items.ItemNamed[C_Lang];
                 if XML_Node <> nil then
                   V_CurrentLang := XML_Node.Value;
-                // Загружаем отображение окна профиля
+                // Загружаем автовход в профиль
                 XML_Node := Root.Items.ItemNamed[C_Auto];
                 if XML_Node <> nil then
                   AutoSignCheckBox.Checked := XML_Node.BoolValue;
                 V_ProfileAuto := AutoSignCheckBox.Checked;
+                // Загружаем автоудаление профиля
+                XML_Node := Root.Items.ItemNamed[C_AutoDell];
+                if XML_Node <> nil then
+                  AutoDellProfileCheckBox.Checked := XML_Node.BoolValue;
+                V_AutoDellProfile := AutoDellProfileCheckBox.Checked;
                 // Получаем имя последнего профиля
                 XML_Node := Root.Items.ItemNamed[C_Profile];
                 if XML_Node <> nil then
@@ -443,6 +452,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'DellProfile'}
+
+procedure TProfileForm.AutoDellProfileCheckBoxClick(Sender: TObject);
+begin
+  // Активируем удаление профиля при выходе
+  V_AutoDellProfile := AutoDellProfileCheckBox.Checked;
+end;
 
 procedure TProfileForm.DellProfileSpeedButtonClick(Sender: TObject);
 var

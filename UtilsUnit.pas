@@ -753,7 +753,7 @@ begin
     LogForm.LogMemo.Clear;
   // Добавляем в лог новое сообщение
   LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + XLogData);
-  LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
+  LogForm.LogMemo.Lines.Add(C_LogBR);
 end;
 
 {$ENDREGION}
@@ -1630,7 +1630,7 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(ICQ_Avatar_Seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
-  XLog(C_Icq_Avatar + Log_Send + C_RN + Trim(Dump(Str)), C_Icq);
+  XLog(C_Icq + 'A' + Log_Send + C_RN + Trim(Dump(Str)), C_Icq);
   // Отсылаем данные по сокету
   Mainform.IcqAvatarWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -2297,7 +2297,15 @@ begin
     Ts := Parse('"', Ts, 2);
   // Проверяем под wine запущена программа или нет
   if Pos('winebrowser.exe', Ts) = 0 then
-    Url := ChangeSpaces(Url) // Преобразуем пробелы в %20
+  begin
+    Url := ChangeSpaces(Url); // Преобразуем пробелы в %20
+    // Проверяем мыло это или ссылка
+    if Copy(URL, 1, 7) = C_MailTo then
+    begin
+      Ts := URL;
+      URL := EmptyStr;
+    end;
+  end
   else
   begin
     if Pos(':\', Url) > 0 then

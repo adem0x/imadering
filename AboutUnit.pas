@@ -54,6 +54,7 @@ type
     FlagImage: TImage;
     RichPopupMenu: TPopupMenu;
     CopyRichText: TMenuItem;
+    EmailBitBtn: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure URLLabelMouseEnter(Sender: TObject);
@@ -73,6 +74,7 @@ type
     procedure SVNLabelClick(Sender: TObject);
     procedure RichPopupMenuPopup(Sender: TObject);
     procedure CopyRichTextClick(Sender: TObject);
+    procedure EmailBitBtnClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -80,7 +82,7 @@ type
   public
     { Public declarations }
     AboutLen: Integer;
-    AboutList: array [1 .. 10] of string;
+    AboutList: array[1..10] of string;
     procedure TranslateForm;
   end;
 
@@ -96,7 +98,8 @@ implementation
 
 uses
   MainUnit,
-  VarsUnit;
+  VarsUnit,
+  OverbyteIcsUrl;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -124,34 +127,34 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      // Загружаем настройки
+      if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
       begin
-        // Загружаем настройки
-        if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
+        // Загружаем файл языка
+        LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
+        if Root <> nil then
+        begin
+          // Загружаем "о программе"
+          XML_Node := Root.Items.ItemNamed[C_Infos];
+          if XML_Node <> nil then
           begin
-            // Загружаем файл языка
-            LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
-            if Root <> nil then
-              begin
-                // Загружаем "о программе"
-                XML_Node := Root.Items.ItemNamed[C_Infos];
-                if XML_Node <> nil then
-                  begin
-                    XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[C_InfoAbout];
-                    if XML_Node <> nil then
-                      AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value('c'));
-                  end;
-                // Загружаем список разработчиков
-                XML_Node := Root.Items.ItemNamed[C_InfoDev];
-                if XML_Node <> nil then
-                  for I := 1 to Length(AboutList) do
-                    begin
-                      XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed['c' + IntToStr(I)];
-                      if XML_Node <> nil then
-                        AboutList[I] := XML_Node.Properties.Value('c');
-                    end;
-              end;
+            XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[C_InfoAbout];
+            if XML_Node <> nil then
+              AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value('c'));
           end;
+          // Загружаем список разработчиков
+          XML_Node := Root.Items.ItemNamed[C_InfoDev];
+          if XML_Node <> nil then
+            for I := 1 to Length(AboutList) do
+            begin
+              XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed['c' + IntToStr(I)];
+              if XML_Node <> nil then
+                AboutList[I] := XML_Node.Properties.Value('c');
+            end;
+        end;
       end;
+    end;
   finally
     JvXML.Free;
   end;
@@ -208,13 +211,15 @@ begin
 end;
 
 procedure TAboutForm.URLLabelMouseEnter(Sender: TObject);
-begin (Sender as TLabel)
-  .Font.Color := ClBlue;
+begin
+  (Sender as TLabel)
+    .Font.Color := ClBlue;
 end;
 
 procedure TAboutForm.URLLabelMouseLeave(Sender: TObject);
-begin (Sender as TLabel)
-  .Font.Color := ClNavy;
+begin
+  (Sender as TLabel)
+    .Font.Color := ClNavy;
 end;
 
 procedure TAboutForm.CheckUpdateBitBtnClick(Sender: TObject);
@@ -233,6 +238,12 @@ procedure TAboutForm.CopyRichTextClick(Sender: TObject);
 begin
   // Копируем выделенный текст из RichEdit в буфер обмена
   AboutRichEdit.CopyToClipboard;
+end;
+
+procedure TAboutForm.EmailBitBtnClick(Sender: TObject);
+begin
+  // Открываем форму отправки письма
+  OpenURL(C_MailTo + 'imadering@mail.ru?subject=' + C_IMadering + '&body=' + URLEncode(C_IMadering + C_BN + WideLowerCase(VersionLabel.Caption)));
 end;
 
 procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -254,6 +265,7 @@ begin
   MainForm.AllImageList.GetBitmap(6, CheckUpdateBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(271, ForumBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(185, EmailBitBtn.Glyph);
   // Переводим форму на другие языки
   TranslateForm;
   // Загружаем логотип программы
@@ -320,3 +332,4 @@ end;
 {$ENDREGION}
 
 end.
+

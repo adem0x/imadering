@@ -42,7 +42,8 @@ uses
   AppEvnts,
   JclDebug,
   JvSimpleXml,
-  ExtDlgs;
+  ExtDlgs,
+  IOUtils;
 
 type
   TMainForm = class(TForm)
@@ -74,7 +75,6 @@ type
     AboutIMadering: TMenuItem;
     OpenSettings: TMenuItem;
     HideMainInTray1: TMenuItem;
-    OpenTest: TMenuItem;
     ContactListPopupMenu: TPopupMenu;
     ICQPopupMenu: TPopupMenu;
     MRAPopupMenu: TPopupMenu;
@@ -172,7 +172,6 @@ type
     JabberStatusDepression: TMenuItem;
     JabberStatusEvil: TMenuItem;
     JabberStatusFFC: TMenuItem;
-    RosterMainMenu: TMenuItem;
     UnstableMRAStatus: TMenuItem;
     UnstableJabberStatus: TMenuItem;
     SearchInCLMainMenu: TMenuItem;
@@ -181,7 +180,6 @@ type
     ICQSearchNewContact: TMenuItem;
     CheckUpdateMenu: TMenuItem;
     N29: TMenuItem;
-    PrivatListMenu: TMenuItem;
     JabberSearchNewContact: TMenuItem;
     MainActionList: TActionList;
     CloseActiveFormAction: TAction;
@@ -200,12 +198,9 @@ type
     OnlyOnlineContactsTopButton: TToolButton;
     GroupOnOffToolTopButton: TToolButton;
     SoundOnOffToolTopButton: TToolButton;
-    PrivatTopToolButton: TToolButton;
     HistoryTopToolButton: TToolButton;
-    PrivatToolButton: TToolButton;
     HistoryToolButton: TToolButton;
     SettingsToolButton: TToolButton;
-    PrivatONMenu: TMenuItem;
     HistoryONMenu: TMenuItem;
     SettingsONMenu: TMenuItem;
     MainToolTopButton: TToolButton;
@@ -216,7 +211,6 @@ type
     TopOnlyOnlineONMenu: TMenuItem;
     TopGroupONMenu: TMenuItem;
     TopSoundsONMenu: TMenuItem;
-    TopPrivatONMenu: TMenuItem;
     TopHistoryONMenu: TMenuItem;
     TopTrafficONMenu: TMenuItem;
     AddNewGroupJabber: TMenuItem;
@@ -307,7 +301,6 @@ type
     procedure MainToolButtonClick(Sender: TObject);
     procedure OpenSettingsClick(Sender: TObject);
     procedure ICQTrayIconClick(Sender: TObject);
-    procedure OpenTestClick(Sender: TObject);
     procedure AboutIMaderingClick(Sender: TObject);
     procedure UpdateHttpClientDocBegin(Sender: TObject);
     procedure JvTimerListEvents2Timer(Sender: TObject);
@@ -349,7 +342,6 @@ type
     procedure AddNewGroupICQClick(Sender: TObject);
     procedure RenemeGroupCLClick(Sender: TObject);
     procedure DeleteGroupCLClick(Sender: TObject);
-    procedure SearchInCLClick(Sender: TObject);
     procedure AddNewContactICQClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
@@ -386,7 +378,6 @@ type
     procedure JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure JvTimerListEvents9Timer(Sender: TObject);
-    procedure RosterMainMenuClick(Sender: TObject);
     procedure JvTimerListEvents11Timer(Sender: TObject);
     procedure JvTimerListEvents12Timer(Sender: TObject);
     procedure JabberXStatusClick(Sender: TObject);
@@ -397,7 +388,6 @@ type
     procedure HideInTrayClick(Sender: TObject);
     procedure GroupOnOffToolButtonClick(Sender: TObject);
     procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-    procedure PrivatListMenuClick(Sender: TObject);
     procedure JabberSearchNewContactClick(Sender: TObject);
     procedure ICQSearchNewContactClick(Sender: TObject);
     procedure CloseActiveFormActionExecute(Sender: TObject);
@@ -417,7 +407,6 @@ type
     procedure GroupOnOffToolTopButtonClick(Sender: TObject);
     procedure OnlyOnlineContactsTopButtonClick(Sender: TObject);
     procedure SoundOnOffToolTopButtonClick(Sender: TObject);
-    procedure PrivatONMenuClick(Sender: TObject);
     procedure HistoryONMenuClick(Sender: TObject);
     procedure SettingsONMenuClick(Sender: TObject);
     procedure TrafficONMenuClick(Sender: TObject);
@@ -425,7 +414,6 @@ type
     procedure TopOnlyOnlineONMenuClick(Sender: TObject);
     procedure TopGroupONMenuClick(Sender: TObject);
     procedure TopSoundsONMenuClick(Sender: TObject);
-    procedure TopPrivatONMenuClick(Sender: TObject);
     procedure TopHistoryONMenuClick(Sender: TObject);
     procedure TopSettingsONMenuClick(Sender: TObject);
     procedure TopTrafficONMenuClick(Sender: TObject);
@@ -482,6 +470,8 @@ type
     procedure OpenGameMenuClick(Sender: TObject);
     procedure AppMinimize(Sender: TObject);
     procedure TopModeToolButtonClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure SearchInCLMainMenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -603,7 +593,6 @@ begin
   OnlyOnlineContactsTopButton.Hint := OnlyOnlineContactsToolButton.Hint;
   GroupOnOffToolTopButton.Hint := GroupOnOffToolButton.Hint;
   SoundOnOffToolTopButton.Hint := SoundOnOffToolButton.Hint;
-  PrivatTopToolButton.Hint := PrivatToolButton.Hint;
   HistoryTopToolButton.Hint := HistoryToolButton.Hint;
   SettingsTopToolButton.Hint := SettingsToolButton.Hint;
   TrafficTopToolButton.Hint := TrafficToolButton.Hint;
@@ -625,7 +614,6 @@ begin
   TopOnlyOnlineONMenu.Caption := OnlyOnlineONMenu.Caption;
   TopGroupONMenu.Caption := GroupONMenu.Caption;
   TopSoundsONMenu.Caption := SoundsONMenu.Caption;
-  TopPrivatONMenu.Caption := PrivatONMenu.Caption;
   TopHistoryONMenu.Caption := HistoryONMenu.Caption;
   TopSettingsONMenu.Caption := SettingsONMenu.Caption;
   TopTrafficONMenu.Caption := TrafficONMenu.Caption;
@@ -748,7 +736,7 @@ begin
       FreeAndNil(IcqOptionsForm);
     // Стираем из Ростера контакты ICQ
     if Assigned(RosterForm) then
-      RosterForm.ClearICQClick(Self);
+      RosterForm.ClearContacts(C_Icq);
   end;
 end;
 
@@ -776,7 +764,7 @@ begin
       FreeAndNil(MraOptionsForm);
     // Стираем из Ростера контакты MRA
     if Assigned(RosterForm) then
-      RosterForm.ClearMRAClick(Self);
+      RosterForm.ClearContacts(C_Mra);
   end;
 end;
 
@@ -922,7 +910,7 @@ begin
       FreeAndNil(JabberOptionsForm);
     // Стираем из Ростера контакты Jabber
     if Assigned(RosterForm) then
-      RosterForm.ClearJabberClick(Self);
+      RosterForm.ClearContacts(C_Jabber);
   end;
 end;
 
@@ -1763,7 +1751,7 @@ begin
                             begin
                               TLV := Text2Hex(NextData(HexPkt, 2)); // Пропускаем TLV
                               Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                              S_Log := S_Log + 'URL' + C_BN + C_TL + TLV + C_TV + NextData(HexPkt, Len) + C_RN;
+                              S_Log := S_Log + 'URL' + C_BN + C_TLV + TLV + C_Value + NextData(HexPkt, Len) + C_RN;
                             end;
                             // Пишем в лог данные пакета
                             XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
@@ -2050,7 +2038,7 @@ begin
                                   begin // TLV с ошибкой авторизации
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     S := Text2Hex(NextData(HexPkt, Len));
-                                    S_Log := S_Log + 'ErrorCode' + C_BN + C_TL + TLV + C_TV + S + C_RN;
+                                    S_Log := S_Log + 'ErrorCode' + C_BN + C_TLV + TLV + C_Value + S + C_RN;
                                     DAShow(Lang_Vars[17].L_S, ICQ_NotifyAuthCookieError(S), EmptyStr, 134, 2, 0);
                                     ICQ_GoOffline;
                                   end;
@@ -2058,7 +2046,7 @@ begin
                                   begin // TLV с адресом для коннекта к основному серверу
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     ICQ_Bos_Addr := NextData(HexPkt, Len);
-                                    S_Log := S_Log + 'BosServer' + C_BN + C_TL + TLV + C_TV + ICQ_Bos_Addr + C_RN;
+                                    S_Log := S_Log + 'BosServer' + C_BN + C_TLV + TLV + C_Value + ICQ_Bos_Addr + C_RN;
                                     ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
                                     ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                   end;
@@ -2066,12 +2054,12 @@ begin
                                   begin // TLV с куком для коннекта к основному серверу
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     ICQ_Bos_Cookie := Text2Hex(NextData(HexPkt, Len));
-                                    S_Log := S_Log + 'BosCookie' + C_BN + C_TL + TLV + C_TV + ICQ_Bos_Cookie + C_RN;
+                                    S_Log := S_Log + 'BosCookie' + C_BN + C_TLV + TLV + C_Value + ICQ_Bos_Cookie + C_RN;
                                   end
                               else // Если пакет содержит другие TLV, то пропускаем их
                                 begin
                                   Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                  S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(HexPkt, Len)) + C_RN;
+                                  S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(HexPkt, Len)) + C_RN;
                                 end;
                               end;
                             end;
@@ -2277,10 +2265,10 @@ begin
   if Assigned(LogForm) then
   begin
     XShowForm(LogForm);
-    LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + Log_Exception1);
+    LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + Log_Exception1);
     JclLastExceptStackListToStrings(LogForm.LogMemo.Lines, False, False, False, False);
     LogForm.LogMemo.Lines.Add(Log_Exception2);
-    LogForm.LogMemo.Lines.Add('-----------------------------------------------------------');
+    LogForm.LogMemo.Lines.Add(C_LogBR);
   end;
 end;
 
@@ -3138,7 +3126,6 @@ var
   I, AllIconCount: Integer;
   Img1, Img2: TBitmap;
 begin
-  AllIconCount := 0;
   // Создаём компонент иконки
   Img1 := TBitmap.Create;
   Img2 := TBitmap.Create;
@@ -3164,7 +3151,6 @@ begin
     Img1.Free;
     Img2.Free;
   end;
-  XLog(Format(LogIconCount, [AllIconCount - 1]), EmptyStr);
 end;
 
 {$ENDREGION}
@@ -3582,25 +3568,32 @@ begin
             FloatHandle := Screen.Forms[I].Handle;
             if FloatHandle = StrToInt(SubItems[17]) then
             begin
-              // (Screen.Forms[i] as FloatingForm)
               Screen.Forms[I].Close;
               SubItems[17] := EmptyStr;
               Exit;
             end;
           end;
         end;
+        // Создаём плавающее окно с контактом
         V_FloatingFrm := TFloatingForm.Create(Self);
+        // Записываем в Ростер хэндл плавающего окна
         SubItems[17] := IntToStr(V_FloatingFrm.Handle);
-        V_FloatingFrm.NickLabel.Caption := SubItems[0];
+        // Отображаем ник контакта
+        V_FloatingFrm.NickLabel.Caption := UrlDecode(SubItems[0]);
+        // Запоминаем UIN этого контакта в плавающем окне
         V_FloatingFrm.NickLabel.Hint := RosterItem.Caption;
+        // Устанавливаем статус картинки в плавающем окне
         MainForm.AllImageList.GetBitmap(StrToInt(SubItems[6]), V_FloatingFrm.StatusImage.Picture.Bitmap);
         V_FloatingFrm.XStatusImage.Visible := False;
         V_FloatingFrm.ClientImage.Visible := False;
+        // Устанавливаем размер плавающего окна
         V_FloatingFrm.Width := V_FloatingFrm.NickLabel.Width + 28;
         if V_FloatingFrm.XStatusImage.Visible then
           V_FloatingFrm.Width := V_FloatingFrm.Width + 18;
         if V_FloatingFrm.ClientImage.Visible then
           V_FloatingFrm.Width := V_FloatingFrm.Width + 20;
+        // Отображаем плавающее окно
+        V_FloatingFrm.ScreenSnap := true;
         V_FloatingFrm.Show;
       end;
     end;
@@ -3632,18 +3625,6 @@ begin
   XShowForm(IcqReqAuthForm);
 end;
 
-procedure TMainForm.PrivatListMenuClick(Sender: TObject);
-begin
-  ShowMessage(Lang_Vars[6].L_S);
-end;
-
-procedure TMainForm.PrivatONMenuClick(Sender: TObject);
-begin
-  // Скрываем кнопку приватных списков на нижней панели
-  PrivatONMenu.Checked := not PrivatONMenu.Checked;
-  PrivatToolButton.Visible := not PrivatToolButton.Visible;
-end;
-
 {$ENDREGION}
 {$REGION 'ProfileOpenMenuClick'}
 
@@ -3658,15 +3639,6 @@ begin
   XLog(Spath + C_BN + IntToStr(R), EmptyStr);
   if R < 32 then
     DAShow(Lang_Vars[17].L_S, Lang_Vars[65].L_S, EmptyStr, 134, 2, 0);
-end;
-
-{$ENDREGION}
-{$REGION 'OpenTestClick'}
-
-procedure TMainForm.OpenTestClick(Sender: TObject);
-begin
-  // Место для запуска тестов
-
 end;
 
 {$ENDREGION}
@@ -3787,12 +3759,6 @@ begin
     else
       ImageIndex := 230;
   end;
-end;
-
-procedure TMainForm.RosterMainMenuClick(Sender: TObject);
-begin
-  // Открываем окно списка контактов
-  XShowForm(RosterForm);
 end;
 
 procedure TMainForm.AboutIMaderingClick(Sender: TObject);
@@ -4487,6 +4453,7 @@ end;
 
 procedure TMainForm.AppMinimize(Sender: TObject);
 begin
+  // Скрываем кнопку программы в панели задач
   ShowWindow(Application.Handle, SW_HIDE);
 end;
 
@@ -4497,6 +4464,7 @@ var
   Size: Integer;
   Lang: Word;
   VI: TOSVersionInfo;
+  Language: array [0..100] of char;
 begin
   // Управляем скрытием кнопки на панели задач
   Application.ShowMainForm := False;
@@ -4504,13 +4472,13 @@ begin
   Application.OnRestore := AppMinimize;
   Application.MainFormOnTaskbar := True;
   // Устанавливаем начальное значение ширины окна КЛ
-  Width := 199;
+  Width := 200;
   // Узнаём путь откуда запущена программа
   V_MyPath := ExtractFilePath(Application.ExeName);
   // Смотрим язык системы
   Lang := GetSystemDefaultLangID;
-  if Lang <> 1049 then
-    V_CurrentLang := 'en';
+  if Lang = 1049 then
+    V_CurrentLang := 'ru';
   // Загружаем переменные языка
   SetLangVars;
   // Создаём окно лога
@@ -4519,20 +4487,21 @@ begin
   VI.DwOSVersionInfoSize := SizeOf(TOSVersionInfo);
   GetVersionEx(VI);
   XLog(Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]), EmptyStr);
+  // Пишем в лог код локального языка системы
+  VerLanguageName(Lang, Language, 100);
+  XLog(Log_Lang_Code + C_TN + IntToStr(Lang) + C_BN + string(Language), EmptyStr);
   // Пишем в лог путь к программе
   XLog(LogMyPath + C_TN + V_MyPath, EmptyStr);
-  // Пишем в лог код локального языка системы
-  XLog(Log_Lang_Code + C_TN + IntToStr(Lang), EmptyStr);
   // Если профиль не найден, то создаём его в настройках юзера виндовс
-  V_ProfilePath := V_MyPath + 'Profiles\';
+  V_ProfilePath := V_MyPath + C_Profiles;
   if not DirectoryExists(V_ProfilePath) then
   begin
-    S := '%APPDATA%\IMadering\';
+    S := '%APPDATA%' + C_SN + C_IMadering + C_SN;
     Size := ExpandEnvironmentStrings(PChar(S), Buf, Sizeof(Buf));
     V_ProfilePath := Copy(Buf, 1, Size);
   end;
   // Загрузка иконок для программы
-  LoadImageList(AllImageList, V_MyPath + C_IconsFolder + V_CurrentIcons + '\icons.bmp');
+  LoadImageList(AllImageList, V_MyPath + Format(C_IconsPath, [V_CurrentIcons]));
   // Устанавливаем иконку окна
   AllImageList.GetIcon(1, Icon);
   // Устанавливаем иконки окна лога
@@ -4545,6 +4514,8 @@ begin
   AllImageList.GetBitmap(268, LogForm.TwitDumpSpeedButton.Glyph);
   AllImageList.GetBitmap(225, LogForm.SaveLogSpeedButton.Glyph);
   AllImageList.GetBitmap(221, LogForm.SearchSpeedButton.Glyph);
+  AllImageList.GetBitmap(185, LogForm.SendEmailSpeedButton.Glyph);
+  AllImageList.GetBitmap(1, LogForm.RosterSpeedButton.Glyph);
   // Делаем всплывающие подсказки неисчезающими
   Application.HintHidePause := MaxInt;
   Application.OnHint := HintMaxTime;
@@ -4801,19 +4772,16 @@ begin
               SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue('b3');
               TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
               //
-              PrivatTopToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
-              TopPrivatONMenu.Checked := PrivatTopToolButton.Visible;
-              //
-              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
+              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
               TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
               //
-              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
+              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
               TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
               //
-              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
               TopCLSearchONMenu.Checked := CLSearchTopToolButton.Visible;
               //
-              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
+              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
               TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
               //
               if not Sub_Node.BoolValue then
@@ -4839,22 +4807,19 @@ begin
               SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue('b3');
               SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
               //
-              PrivatToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
-              PrivatONMenu.Checked := PrivatToolButton.Visible;
-              //
-              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
+              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
               HistoryONMenu.Checked := HistoryToolButton.Visible;
               //
-              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
+              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
               SettingsONMenu.Checked := SettingsToolButton.Visible;
               //
-              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
               CLSearchONMenu.Checked := CLSearchToolButton.Visible;
               //
-              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
+              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
               TrafficONMenu.Checked := TrafficToolButton.Visible;
               //
-              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('b9');
+              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
               TopPanelONMenu.Checked := TopPanelToolButton.Visible;
             end;
           end;
@@ -4987,7 +4952,7 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TMainForm.SearchInCLClick(Sender: TObject);
+procedure TMainForm.SearchInCLMainMenuClick(Sender: TObject);
 begin
   // Открываем окно поиска контактов в контактном листе
   if not Assigned(CLSearchForm) then
@@ -5166,13 +5131,6 @@ begin
     TopToolBar.Visible := True
   else
     TopToolBar.Visible := False;
-end;
-
-procedure TMainForm.TopPrivatONMenuClick(Sender: TObject);
-begin
-  // Скрываем кнопку приватные списки на верхней панели
-  TopPrivatONMenu.Checked := not TopPrivatONMenu.Checked;
-  PrivatTopToolButton.Visible := not PrivatTopToolButton.Visible;
 end;
 
 procedure TMainForm.TopSettingsONMenuClick(Sender: TObject);
@@ -5656,6 +5614,17 @@ begin
   ShowWindow(Application.Handle, SW_HIDE);
 end;
 
+{$ENDREGION}
+{$REGION 'FormDestroy'}
+  procedure TMainForm.FormDestroy(Sender: TObject);
+  begin
+    // Удаляем профиль автоматически если указано
+    if V_AutoDellProfile then
+    begin
+      if DirectoryExists(V_ProfilePath) then
+        TDirectory.Delete(V_ProfilePath, True);
+    end;
+  end;
 {$ENDREGION}
 {$REGION 'Init and Final'}
 

@@ -215,7 +215,7 @@ begin
       if JabberJIDEdit.Text <> Jabber_LoginUIN then
         begin
           if Assigned(RosterForm) then
-            RosterForm.ClearJabberClick(Self); // Очищаем контакты предыдущего UIN
+            RosterForm.ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта
           Jabber_JID := JabberJIDEdit.Text;
         end;
       Jabber_LoginPassword := PassEdit.Hint;

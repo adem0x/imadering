@@ -68,7 +68,7 @@ object ProfileForm: TProfileForm
     TabOrder = 0
     object ProfileLabel: TLabel
       Left = 11
-      Top = 10
+      Top = 5
       Width = 3
       Height = 13
       Font.Charset = DEFAULT_CHARSET
@@ -80,7 +80,7 @@ object ProfileForm: TProfileForm
     end
     object SiteLabel: TLabel
       Left = 62
-      Top = 127
+      Top = 132
       Width = 114
       Height = 13
       Cursor = crHandPoint
@@ -97,7 +97,7 @@ object ProfileForm: TProfileForm
     end
     object OpenProfilesSpeedButton: TSpeedButton
       Left = 180
-      Top = 29
+      Top = 24
       Width = 23
       Height = 22
       Flat = True
@@ -107,7 +107,7 @@ object ProfileForm: TProfileForm
     end
     object DellProfileSpeedButton: TSpeedButton
       Left = 205
-      Top = 29
+      Top = 24
       Width = 23
       Height = 22
       Flat = True
@@ -117,7 +117,7 @@ object ProfileForm: TProfileForm
     end
     object ProfileComboBox: TComboBox
       Left = 10
-      Top = 29
+      Top = 24
       Width = 164
       Height = 21
       ParentShowHint = False
@@ -129,7 +129,7 @@ object ProfileForm: TProfileForm
     end
     object LoginButton: TBitBtn
       Left = 10
-      Top = 91
+      Top = 101
       Width = 218
       Height = 25
       Default = True
@@ -149,11 +149,20 @@ object ProfileForm: TProfileForm
     end
     object AutoSignCheckBox: TCheckBox
       Left = 10
-      Top = 60
+      Top = 51
       Width = 218
       Height = 17
       TabStop = False
       TabOrder = 2
+    end
+    object AutoDellProfileCheckBox: TCheckBox
+      Left = 10
+      Top = 74
+      Width = 218
+      Height = 17
+      TabStop = False
+      TabOrder = 3
+      OnClick = AutoDellProfileCheckBoxClick
     end
   end
   object LangsPopupMenu: TPopupMenu

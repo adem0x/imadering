@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   ClientHeight = 401
-  ClientWidth = 329
+  ClientWidth = 303
   Color = clWhite
   Constraints.MinHeight = 200
   Constraints.MinWidth = 100
@@ -20,6 +20,7 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDblClick = FormDblClick
+  OnDestroy = FormDestroy
   OnDeactivate = FormDeactivate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
@@ -29,7 +30,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 0
     Top = 26
-    Width = 329
+    Width = 303
     Height = 350
     Margins.Left = 0
     Margins.Top = 1
@@ -63,7 +64,7 @@ object MainForm: TMainForm
   object BottomToolBar: TToolBar
     Left = 0
     Top = 376
-    Width = 329
+    Width = 303
     Height = 25
     Align = alBottom
     Color = clBtnFace
@@ -173,18 +174,8 @@ object MainForm: TMainForm
       Visible = False
       OnClick = SoundOnOffToolButtonClick
     end
-    object PrivatToolButton: TToolButton
-      Left = 184
-      Top = 0
-      ImageIndex = 236
-      ParentShowHint = False
-      PopupMenu = BottomPanelPopupMenu
-      ShowHint = True
-      Visible = False
-      OnClick = PrivatListMenuClick
-    end
     object HistoryToolButton: TToolButton
-      Left = 207
+      Left = 184
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -194,7 +185,7 @@ object MainForm: TMainForm
       OnClick = OpenHistoryClick
     end
     object SettingsToolButton: TToolButton
-      Left = 230
+      Left = 207
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -204,17 +195,16 @@ object MainForm: TMainForm
       OnClick = OpenSettingsClick
     end
     object CLSearchToolButton: TToolButton
-      Left = 253
+      Left = 230
       Top = 0
       ImageIndex = 215
       ParentShowHint = False
       PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Visible = False
-      OnClick = SearchInCLClick
     end
     object TrafficToolButton: TToolButton
-      Left = 276
+      Left = 253
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -224,7 +214,7 @@ object MainForm: TMainForm
       OnClick = OpenTrafficClick
     end
     object TopPanelToolButton: TToolButton
-      Left = 299
+      Left = 276
       Top = 0
       Down = True
       ImageIndex = 244
@@ -238,7 +228,7 @@ object MainForm: TMainForm
   object TopToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 329
+    Width = 303
     Height = 25
     Color = clBtnFace
     DoubleBuffered = True
@@ -292,17 +282,8 @@ object MainForm: TMainForm
       Style = tbsCheck
       OnClick = SoundOnOffToolTopButtonClick
     end
-    object PrivatTopToolButton: TToolButton
-      Left = 92
-      Top = 0
-      ImageIndex = 236
-      ParentShowHint = False
-      PopupMenu = TopPanelPopupMenu
-      ShowHint = True
-      OnClick = PrivatListMenuClick
-    end
     object HistoryTopToolButton: TToolButton
-      Left = 115
+      Left = 92
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -311,7 +292,7 @@ object MainForm: TMainForm
       OnClick = OpenHistoryClick
     end
     object SettingsTopToolButton: TToolButton
-      Left = 138
+      Left = 115
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -320,16 +301,16 @@ object MainForm: TMainForm
       OnClick = OpenSettingsClick
     end
     object CLSearchTopToolButton: TToolButton
-      Left = 161
+      Left = 138
       Top = 0
       ImageIndex = 215
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
       ShowHint = True
-      OnClick = SearchInCLClick
+      OnClick = SearchInCLMainMenuClick
     end
     object TrafficTopToolButton: TToolButton
-      Left = 184
+      Left = 161
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -338,7 +319,7 @@ object MainForm: TMainForm
       OnClick = OpenTrafficClick
     end
     object TopModeToolButton: TToolButton
-      Left = 207
+      Left = 184
       Top = 0
       ImageIndex = 288
       ParentShowHint = False
@@ -396,7 +377,6 @@ object MainForm: TMainForm
     Top = 296
   end
   object JvTimerList: TJvTimerList
-    Active = True
     Events = <
       item
         Name = 'Profile Form Timer'
@@ -504,11 +484,6 @@ object MainForm: TMainForm
     Images = AllImageList
     Left = 16
     Top = 328
-    object OpenTest: TMenuItem
-      Caption = 'Test'
-      Visible = False
-      OnClick = OpenTestClick
-    end
     object OpenGameMenu: TMenuItem
       ImageIndex = 286
       OnClick = OpenGameMenuClick
@@ -530,17 +505,9 @@ object MainForm: TMainForm
     object N39: TMenuItem
       Caption = '-'
     end
-    object RosterMainMenu: TMenuItem
-      ImageIndex = 1
-      OnClick = RosterMainMenuClick
-    end
-    object PrivatListMenu: TMenuItem
-      ImageIndex = 236
-      OnClick = PrivatListMenuClick
-    end
     object SearchInCLMainMenu: TMenuItem
       ImageIndex = 215
-      OnClick = SearchInCLClick
+      OnClick = SearchInCLMainMenuClick
     end
     object OpenTraffic: TMenuItem
       ImageIndex = 226
@@ -832,7 +799,7 @@ object MainForm: TMainForm
     end
     object SearchInCL: TMenuItem
       ImageIndex = 215
-      OnClick = SearchInCLClick
+      OnClick = SearchInCLMainMenuClick
     end
     object N18: TMenuItem
       Caption = '-'
@@ -1281,11 +1248,6 @@ object MainForm: TMainForm
       ImageIndex = 140
       OnClick = TopSoundsONMenuClick
     end
-    object TopPrivatONMenu: TMenuItem
-      Checked = True
-      ImageIndex = 140
-      OnClick = TopPrivatONMenuClick
-    end
     object TopHistoryONMenu: TMenuItem
       Checked = True
       ImageIndex = 140
@@ -1329,10 +1291,6 @@ object MainForm: TMainForm
     object SoundsONMenu: TMenuItem
       ImageIndex = 230
       OnClick = SoundsONMenuClick
-    end
-    object PrivatONMenu: TMenuItem
-      ImageIndex = 230
-      OnClick = PrivatONMenuClick
     end
     object HistoryONMenu: TMenuItem
       ImageIndex = 230

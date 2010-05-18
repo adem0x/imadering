@@ -175,7 +175,7 @@ begin
       if (MraEmailEdit.Text + MRAEmailComboBox.Text) <> MRA_LoginUIN then
         begin
           if Assigned(RosterForm) then
-            RosterForm.ClearMRAClick(Self); // Очищаем контакты предыдущего UIN
+            RosterForm.ClearContacts(C_Mra); // Очищаем контакты предыдущего аккаунта
           MRA_LoginUIN := MraEmailEdit.Text + MRAEmailComboBox.Text;
         end;
       MRA_LoginPassword := PassEdit.Hint;

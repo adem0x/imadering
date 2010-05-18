@@ -524,6 +524,7 @@ type
     FGroupSelected: Boolean;
     FGroupCaption: string;
     FGroupType: string;
+    FGroupImage: Integer;
 
     // Конец добавления
   protected
@@ -566,6 +567,7 @@ type
     property GroupSelected: Boolean read FGroupSelected write FGroupSelected default False;
     property GroupCaption: string read FGroupCaption write FGroupCaption;
     property GroupType: string read FGroupType write FGroupType;
+    property GroupImage: Integer read FGroupImage write FGroupImage default 0;
   end;
 
   { TButtonCategories }
@@ -1037,7 +1039,7 @@ begin
 end;
 
 const
-  CDropDownSize = 13;
+  CDropDownSize = 20;
 
 function TCategoryButtons.GetChevronBounds(const CategoryBounds: TRect): TRect;
 begin
@@ -1122,7 +1124,7 @@ end;
 
 var
   I: Integer;
-  ButtonTop, ButtonLeft, ButtonRight: Integer;
+  ButtonTop, ButtonLeft, ButtonRight, ImgTop: Integer;
   ButtonRect: TRect;
   ActualWidth: Integer;
   ButtonStart: Integer;
@@ -1331,6 +1333,17 @@ begin
             end;
         end;
     end;
+
+    // Внёс изменения
+    if (FImages <> nil) and (Category.GroupImage > -1) and (Category.GroupImage < FImages.Count) then
+    begin
+      ImgTop := CaptionRect.Top + ((CaptionRect.Bottom - CaptionRect.Top) - FImages.Height) div 2;
+      if ImgTop < CaptionRect.Top then
+        ImgTop := CaptionRect.Top;
+      FImages.Draw(Canvas, 18, ImgTop, Category.GroupImage);
+    end;
+    // Конец внесения изменений
+
 end;
 
 procedure TCategoryButtons.Paint;

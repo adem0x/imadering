@@ -200,7 +200,7 @@ object AboutForm: TAboutForm
   object CheckUpdateBitBtn: TBitBtn
     Left = 8
     Top = 65
-    Width = 269
+    Width = 177
     Height = 25
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -220,9 +220,9 @@ object AboutForm: TAboutForm
     OnClick = ForumBitBtnClick
   end
   object OKBitBtn: TBitBtn
-    Left = 200
+    Left = 191
     Top = 304
-    Width = 77
+    Width = 86
     Height = 25
     Caption = 'OK'
     DoubleBuffered = True
@@ -251,6 +251,18 @@ object AboutForm: TAboutForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 3
+  end
+  object EmailBitBtn: TBitBtn
+    Left = 191
+    Top = 65
+    Width = 86
+    Height = 25
+    Caption = 'E-mail'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
+    TabOrder = 4
+    TabStop = False
+    OnClick = EmailBitBtnClick
   end
   object RichPopupMenu: TPopupMenu
     Alignment = paCenter

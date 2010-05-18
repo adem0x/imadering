@@ -5,7 +5,7 @@
     <HideInTray c="Hide IMadering"/>
     <RestoreProfileFromTray c="Show profile selection"/>
     <HideProfileInTray c="Hide profile selection"/>
-    <Version c="Version: %s alpha"/>
+    <Version c="Version: %s"/>
     <ProfileError c="First you must enter or select the profile name."/>
     <DevelMess c="This feature is in development! Look for updates of the project."/>
     <Next c="Next"/>
@@ -144,6 +144,7 @@
     <DellProfileSpeedButton h="_b_Delete profile_d__r_Remove the profile folder from the hard disk"/>
     <LangsSpeedButton h="_b_Interface language_d__r_Choose the localization of the program"/>
     <AutoSignCheckBox c="Login automatically"/>
+    <AutoDellProfileCheckBox c="Delete profile when exit"/>
     <OpenProfilesSpeedButton h="_b_Profile folder_d__r_Open the profile folder for remove or copying"/>
   </ProfileForm>
   <LogForm c="Event log program">
@@ -152,8 +153,11 @@
     <MRADumpSpeedButton h="_b_Dumps MRA_d__r_Enable or disable_r_the display of log data protocol"/>
     <TwitDumpSpeedButton h="_b_Packages Twitter_d__r_Enable or disable_r_the display of log data protocol"/>
     <WriteLogSpeedButton h="_b_An entry in the log_d__r_Allow or pause the recording of events in the log"/>
+    <SearchSpeedButton h="_b_Search_d__r_Find for text in the log"/>
     <SaveLogSpeedButton h="_b_Save_d__r_Record data in the log file"/>
     <ClearLogSpeedButton h="_b_Clean_d__r_Delete all the log"/>
+    <SendEmailSpeedButton h="_b_Send by E-mail_d__r_Send all or selected text to the developers"/>
+    <RosterSpeedButton h="_b_Open roster_d__r_Database of contacts"/>
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram c="Exit IMadering"/>
@@ -166,12 +170,9 @@
     <GroupOnOffToolButton h="_b_Group contacts_d__r_Show or hide the group"/>
     <SoundOnOffToolButton h="_b_Sounds_d__r_Enable or disable the sound events"/>
     <TopPanelToolButton h="_b_Upper panel_d__r_Show or hide the panel"/>
-    <PrivatToolButton h="_b_Private lists_d__r_Manage lists privacy"/>
     <HistoryToolButton h="_b_Message history_d__r_Browse the archives of correspondence"/>
     <SettingsToolButton h="_b_Settings_d__r_Open settings window"/>
     <TrafficToolButton h="_b_Traffic_d__r_View stats traffic"/>
-    <RosterMainMenu c="DB contact list"/>
-    <PrivatListMenu c="Private lists"/>
     <SearchInCLMainMenu c="Search the list of contacts"/>
     <OpenTraffic c="Traffic"/>
     <OpenHistory c="Message history"/>
@@ -180,14 +181,10 @@
     <OpenGroupsCL c="Open groups"/>
     <CloseGroupsCL c="Close groups"/>
     <HideEmptyGroups c="Hide empty groups"/>
-    <AddNewGroupICQ c="Create a new group ICQ"/>
-    <AddNewGroupJabber c="Create a new group Jabber"/>
-    <AddNewGroupMRA c="Create a new group MRA"/>
+    <AddNewGroupICQ c="Create a new group"/>
     <RenemeGroupCL c="Rename group"/>
     <DeleteGroupCL c="Remove group"/>
-    <AddNewContactICQ c="Add contact ICQ"/>
-    <AddNewContactJabber c="Add contact Jabber"/>
-    <AddNewContactMRA c="Add contact MRA"/>
+    <AddNewContactICQ c="Add contact"/>
     <ICQSettings c="Network settings"/>
     <ICQSearchNewContact c="Search for new contacts"/>
     <ICQXStatus c="Additional status"/>
@@ -214,7 +211,6 @@
     <OnlyOnlineONMenu c="Button - Hide offline contacts"/>
     <GroupONMenu c="Button - Hide group"/>
     <SoundsONMenu c="Button - Sounds"/>
-    <PrivatONMenu c="Button - Private lists"/>
     <HistoryONMenu c="Button - Message history"/>
     <SettingsONMenu c="Button - Settings"/>
     <TrafficONMenu c="Button - Traffic"/>
@@ -229,53 +225,10 @@
     <SnapToRight c="Right screen edge"/>
     <SnapToLeft c="Left screen edge"/>
   </MainForm>
-  <RosterForm c="DB contact list">
-    <RosterJvListView_0 c="Account"/>
-    <RosterJvListView_1 c="Nickname"/>
-    <RosterJvListView_2 c="Group"/>
-    <RosterJvListView_3 c="Authorization"/>
-    <RosterJvListView_4 c="Protocol"/>
-    <RosterJvListView_5 c="Id"/>
-    <RosterJvListView_6 c="Type"/>
-    <RosterJvListView_7 c="Status"/>
-    <RosterJvListView_8 c="Extras status"/>
-    <RosterJvListView_9 c="Client"/>
-    <RosterJvListView_10 c="Phone"/>
-    <RosterJvListView_11 c="Note"/>
-    <RosterJvListView_12 c="Email"/>
-    <RosterJvListView_13 c="TimeId"/>
-    <RosterJvListView_14 c="---"/>
-    <RosterJvListView_15 c="Outgoing message"/>
-    <RosterJvListView_16 c="Incoming message"/>
-    <RosterJvListView_17 c="Offline messages"/>
-    <RosterJvListView_18 c="Floating"/>
-    <RosterJvListView_19 c="Event online"/>
-    <RosterJvListView_20 c="Event offline"/>
-    <RosterJvListView_21 c="Class contact"/>
-    <RosterJvListView_22 c="IP internal"/>
-    <RosterJvListView_23 c="Internal Port"/>
-    <RosterJvListView_24 c="IP external"/>
-    <RosterJvListView_25 c="Flag connection"/>
-    <RosterJvListView_26 c="Protocol version"/>
-    <RosterJvListView_27 c="Registered"/>
-    <RosterJvListView_28 c="CapsId"/>
-    <RosterJvListView_29 c="Caps"/>
-    <RosterJvListView_30 c="Hash avatar"/>
-    <RosterJvListView_31 c="Time connection"/>
-    <RosterJvListView_32 c="Text extra status"/>
-    <RosterJvListView_33 c="Client name"/>
-    <RosterJvListView_34 c="UTF8 support"/>
-    <RosterJvListView_35 c="Tip hint"/>
-    <RosterJvListView_36 c="Counter typing message"/>
-    <RosterJvListView_37 c="Unread messages"/>
+  <RosterForm c="Roster">
     <UINLabel c="Account:"/>
     <SearchBitBtn c="Find"/>
     <RosterSendMessMenu c="Send message"/>
-    <ClearNoCLContacts c="Delete does not contact the server (locally)"/>
-    <ClearTempIcqContacts c="Delete temporary ICQ contacts (from server)"/>
-    <ClearICQ c="Remove ICQ contacts (locally)"/>
-    <ClearJabber c="Remove Jabber contacts (locally)"/>
-    <ClearMRA c="Remove MRA contacts (locally)"/>
   </RosterForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
@@ -359,7 +312,7 @@
     <DataLabel c="Build date:"/>
     <HistoryLabel c="History"/>
     <LegalLabel c="License"/>
-    <CheckUpdateBitBtn c="Check for updates"/>
+    <CheckUpdateBitBtn c="Check update"/>
     <ForumBitBtn c="Discussion on Forum"/>
   </AboutForm>
   <Devels>

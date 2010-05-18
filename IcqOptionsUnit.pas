@@ -370,7 +370,7 @@ begin
       if ICQUINEdit.Text <> ICQ_LoginUIN then
         begin
           if Assigned(RosterForm) then
-            RosterForm.ClearICQClick(Self); // Очищаем контакты предыдущего UIN
+            RosterForm.ClearContacts(C_Icq); // Очищаем контакты предыдущего аккаунта
           ICQ_LoginUIN := ICQUINEdit.Text;
         end;
       ICQ_LoginPassword := PassEdit.Hint;

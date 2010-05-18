@@ -781,7 +781,7 @@ end;
 
 function ICQ_CreateHint(RosterItem: TListItem): string;
 var
-  LnLf: string;
+  LnLf, XText: string;
 begin
   // Формируем всплывающую подсказку для контакта ICQ
   if RosterItem <> nil then
@@ -808,7 +808,12 @@ begin
     Result := Result + '</font>';
     // Если есть текст доп. статуса, то пишем его
     if RosterItem.SubItems[31] <> EmptyStr then
-      Result := Result + '<br><font color=clred>' + URLDecode(RosterItem.SubItems[31]) + '</font>';
+    begin
+      XText := URLDecode(RosterItem.SubItems[31]);
+      if Length(XText) > 20 then
+        XText := Copy(XText, 1, 20) + '...';
+      Result := Result + '<br><font color=clred>' + XText + '</font>';
+    end;
     // Время подключения
     if RosterItem.SubItems[30] <> EmptyStr then
       Result := Result + '<br>' + Lang_Vars[35].L_S + C_TN + RosterItem.SubItems[30];
@@ -4011,7 +4016,7 @@ begin
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                       QNick := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Nick' + C_BN + C_TL + TLV + C_TV + QNick + C_LN;
+                      S_Log := S_Log + 'Nick' + C_BN + C_TLV + TLV + C_Value + QNick + C_LN;
                       if QNick <> EmptyStr then
                         SubItems[0] := URLEncode(QNick);
                     end;
@@ -4019,13 +4024,13 @@ begin
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                       QPhone := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Phone' + C_BN + C_TL + TLV + C_TV + QPhone + C_LN;
+                      S_Log := S_Log + 'Phone' + C_BN + C_TLV + TLV + C_Value + QPhone + C_LN;
                       SubItems[9] := URLEncode(QPhone);
                     end;
                   $0066: // Авторизован ли контакт для нашего КЛ
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      S_Log := S_Log + 'Auth' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
+                      S_Log := S_Log + 'Auth' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
                       // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
                       SubItems.Strings[2] := 'none';
                       SubItems.Strings[6] := '80';
@@ -4035,28 +4040,28 @@ begin
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                       QNote := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Note' + C_BN + C_TL + TLV + C_TV + QNote + C_LN;
+                      S_Log := S_Log + 'Note' + C_BN + C_TLV + TLV + C_Value + QNote + C_LN;
                       SubItems[10] := URLEncode(QNote);
                     end;
                   $0137: // Email контакта
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                       QEmail := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Email' + C_BN + C_TL + TLV + C_TV + QEmail + C_LN;
+                      S_Log := S_Log + 'Email' + C_BN + C_TLV + TLV + C_Value + QEmail + C_LN;
                       SubItems[11] := URLEncode(QEmail);
                     end;
                   $006D: // TimeId
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                       QTimeId := Text2Hex(NextData(SubData, Len));
-                      S_Log := S_Log + 'TimeId' + C_BN + C_TL + TLV + C_TV + QTimeId + C_LN;
+                      S_Log := S_Log + 'TimeId' + C_BN + C_TLV + TLV + C_Value + QTimeId + C_LN;
                       SubItems[12] := QTimeId;
                     end
                 else
                   begin
                     // Если пакет содержит другие TLV, то пропускаем их
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
+                    S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
                   end;
                 end;
               end;
@@ -4191,14 +4196,14 @@ begin
                     begin
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                       QTimeId := Text2Hex(NextData(SubData, Len));
-                      S_Log := S_Log + 'TimeId' + C_BN + C_TL + TLV + C_TV + QTimeId + C_LN;
+                      S_Log := S_Log + 'TimeId' + C_BN + C_TLV + TLV + C_Value + QTimeId + C_LN;
                       SubItems[12] := QTimeId;
                     end
                 else
                   begin
                     // Если пакет содержит другие TLV, то пропускаем их
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
+                    S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
                   end;
                 end;
               end;
@@ -4215,13 +4220,13 @@ begin
                   begin
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                     ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                    S_Log := S_Log + 'CollSince' + C_BN + C_TL + TLV + C_TV + ICQ_CollSince + C_LN;
+                    S_Log := S_Log + 'CollSince' + C_BN + C_TLV + TLV + C_Value + ICQ_CollSince + C_LN;
                   end;
                 $0150: // Всего отправлено сообщений
                   begin
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                     ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                    S_Log := S_Log + 'SendMess' + C_BN + C_TL + TLV + C_TV + ICQ_SendMess + C_LN;
+                    S_Log := S_Log + 'SendMess' + C_BN + C_TLV + TLV + C_Value + ICQ_SendMess + C_LN;
                   end;
                 $0151: // Дней проведено в сети
                   begin
@@ -4243,31 +4248,31 @@ begin
                       Rsu := Rsu + Format('%d s, ', [Sec]);
                     Delete(Rsu, Length(Rsu) - 1, 2);
                     ICQ_OnlineDays := Rsu;
-                    S_Log := S_Log + 'OnlineDays' + C_BN + C_TL + TLV + C_TV + ICQ_OnlineDays + C_LN;
+                    S_Log := S_Log + 'OnlineDays' + C_BN + C_TLV + TLV + C_Value + ICQ_OnlineDays + C_LN;
                   end;
                 $0152: // Всего отправлено Away сообщений
                   begin
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                     ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                    S_Log := S_Log + 'AwayMess' + C_BN + C_TL + TLV + C_TV + ICQ_AwayMess + C_LN;
+                    S_Log := S_Log + 'AwayMess' + C_BN + C_TLV + TLV + C_Value + ICQ_AwayMess + C_LN;
                   end;
                 $0153: // Всего получено сообщений
                   begin
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                     ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                    S_Log := S_Log + 'RecMess' + C_BN + C_TL + TLV + C_TV + ICQ_RecMess + C_LN;
+                    S_Log := S_Log + 'RecMess' + C_BN + C_TLV + TLV + C_Value + ICQ_RecMess + C_LN;
                   end;
                 $0160: // Активность
                   begin
                     Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                     ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                    S_Log := S_Log + 'LastActive' + C_BN + C_TL + TLV + C_TV + ICQ_LastActive + C_LN;
+                    S_Log := S_Log + 'LastActive' + C_BN + C_TLV + TLV + C_Value + ICQ_LastActive + C_LN;
                   end
               else
                 begin
                   // Если пакет содержит другие TLV, то пропускаем их
                   Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                  S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(SubData, Len)) + C_LN;
+                  S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
                 end;
               end;
             end;
@@ -4337,7 +4342,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'RegDate' + C_BN + C_TL + TLV + C_TV + ICQ_MyUIN_RegTime + C_RN;
+          S_Log := S_Log + 'RegDate' + C_BN + C_TLV + TLV + C_Value + ICQ_MyUIN_RegTime + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
@@ -4346,7 +4351,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'ExtIP' + C_BN + C_TL + TLV + C_TV + ICQ_Online_IP + C_RN;
+          S_Log := S_Log + 'ExtIP' + C_BN + C_TLV + TLV + C_Value + ICQ_Online_IP + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
@@ -4355,7 +4360,7 @@ begin
       begin
         // Если пакет содержит другие TLV, то пропускаем их
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        S_Log := S_Log + 'Unk' + C_BN + C_TL + TLV + C_TV + Text2Hex(NextData(PktData, Len)) + C_RN;
+        S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(PktData, Len)) + C_RN;
       end;
     end;
   end;

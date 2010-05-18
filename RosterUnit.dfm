@@ -4,6 +4,8 @@ object RosterForm: TRosterForm
   ClientHeight = 409
   ClientWidth = 585
   Color = clBtnFace
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 500
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -24,83 +26,98 @@ object RosterForm: TRosterForm
     Align = alClient
     Columns = <
       item
-        Width = 100
+        Caption = 'Account'
+        Width = 150
       end
       item
-        Width = 100
+        Caption = 'Proto'
       end
       item
-        Width = 100
+        Caption = 'Nick'
       end
       item
+        Caption = 'Group'
       end
       item
+        Caption = 'Id'
       end
       item
+        Caption = 'Type'
       end
       item
+        Caption = 'Auth'
       end
       item
+        Caption = 'Status'
       end
       item
+        Caption = 'XStatus'
       end
       item
+        Caption = 'Client'
       end
       item
+        Caption = 'Phone'
       end
       item
+        Caption = 'Note'
       end
       item
+        Caption = 'Email'
       end
       item
+        Caption = 'Time Id'
       end
       item
+        Caption = 'Out Mess'
       end
       item
+        Caption = 'In Mess'
       end
       item
+        Caption = 'Offline Mess'
       end
       item
+        Caption = 'Float'
       end
       item
+        Caption = 'Online Event'
       end
       item
+        Caption = 'Offline Event'
       end
       item
+        Caption = 'Proto Ver'
       end
       item
+        Caption = 'Reg Date'
       end
       item
+        Caption = 'Caps Short'
       end
       item
+        Caption = 'Caps Full'
       end
       item
+        Caption = 'Avatar Hash'
       end
       item
+        Caption = 'Conn Time'
       end
       item
+        Caption = 'Status Text'
       end
       item
+        Caption = 'Client Name'
       end
       item
+        Caption = 'Hint'
       end
       item
+        Caption = 'Typing Event'
       end
       item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
+        Caption = 'Mess Event'
       end>
     ColumnClick = False
     DoubleBuffered = True
@@ -117,25 +134,10 @@ object RosterForm: TRosterForm
     OnGetImageIndex = RosterJvListViewGetImageIndex
     AutoSelect = False
     ColumnsOrder = 
-      '0=100,1=100,2=100,3=50,4=50,5=50,6=50,7=50,8=50,9=50,10=50,11=50' +
-      ',12=50,13=50,14=50,15=50,16=50,17=50,18=50,19=50,20=50,21=50,22=' +
-      '50,23=50,24=50,25=50,26=50,27=50,28=50,29=50,30=50,31=50,32=50,3' +
-      '3=50,34=50,35=50,36=50,37=50'
+      '0=150,1=50,2=50,3=50,4=50,5=50,6=50,7=50,8=50,9=50,10=50,11=50,1' +
+      '2=50,13=50,14=50,15=50,16=50,17=50,18=50,19=50,20=50,21=50,22=50' +
+      ',23=50,24=50,25=50,26=50,27=50,28=50,29=50,30=50'
     ExtendedColumns = <
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
-      item
-      end
       item
       end
       item
@@ -242,32 +244,6 @@ object RosterForm: TRosterForm
     object RosterSendMessMenu: TMenuItem
       ImageIndex = 163
       OnClick = RosterSendMessMenuClick
-    end
-    object N1: TMenuItem
-      Caption = '-'
-    end
-    object ClearNoCLContacts: TMenuItem
-      ImageIndex = 139
-      OnClick = ClearNoCLContactsClick
-    end
-    object ClearTempIcqContacts: TMenuItem
-      ImageIndex = 139
-      OnClick = ClearTempIcqContactsClick
-    end
-    object N2: TMenuItem
-      Caption = '-'
-    end
-    object ClearICQ: TMenuItem
-      ImageIndex = 139
-      OnClick = ClearICQClick
-    end
-    object ClearJabber: TMenuItem
-      ImageIndex = 139
-      OnClick = ClearJabberClick
-    end
-    object ClearMRA: TMenuItem
-      ImageIndex = 139
-      OnClick = ClearMRAClick
     end
   end
 end

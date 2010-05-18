@@ -39,8 +39,7 @@ const
   C_PN = ' | ';
   C_LN = '; ';
   C_TN = ': ';
-  C_TL = 'TLV: ';
-  C_TV = ' Value: ';
+  C_SN = '\';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -49,13 +48,15 @@ const
 {$ENDREGION}
 {$REGION 'FilesConst'}
 
+  C_IMadering = 'IMadering';
+  C_Profiles = 'Profiles\';
   C_AnketaFolder = 'Contacts\';
   C_AvatarFolder = 'Avatars\';
   C_HistoryFolder = 'History\';
   C_GamesFolder = 'Games\';
   C_FlagsFolder = 'Flags\';
-  C_IconsFolder = 'Icons\';
   C_SmiliesFolder = 'Smilies\';
+  C_IconsFolder = 'Icons\';
   C_SoundsFolder = 'Sounds\';
   C_LangsFolder = 'Langs\';
   C_SettingsFileName = 'Settings.xml';
@@ -64,6 +65,7 @@ const
   C_GamesCatalogFileName = 'Catalog.txt';
   C_LangPath = 'Langs\%s.xml';
   C_SmiliesPath = 'Smilies\%s\smilies.txt';
+  C_IconsPath = 'Icons\%s\icons.bmp';
   C_ContactListFileName = 'Contacts.txt';
   C_Nick_BD_FileName = 'Nicks.txt';
   C_ReplyFileName = 'Reply.txt';
@@ -73,15 +75,18 @@ const
 {$REGION 'CommandsConst'}
 
   // Команды смежного использования
-  C_Icq = 'Icq';
-  C_Icq_Avatar = 'Icq avatar';
+  C_Icq = 'ICQ';
   C_Jabber = 'Jabber';
-  C_Mra = 'Mra';
+  C_Mra = 'MRA';
   C_Twitter = 'Twitter';
   //
+  C_TLV = 'TLV: ';
+  C_Value = ' Value: ';
   C_NoCL = 'NoCL';
+  C_IgCL = 'IgCL';
   C_UniqGT = 'gtrans';
   C_MaskPass = '----------------------';
+  C_LogBR = '-----------------------------------------------------------';
   C_Login = 'login';
   C_Pass = 'password';
   C_SavePass = 'save_password';
@@ -94,7 +99,9 @@ const
   C_Profile = 'profile';
   C_Cur = 'current';
   C_Auto = 'auto_login';
+  C_AutoDell = 'auto_dellete';
   C_Email = 'Email';
+  C_MailTo = 'mailto:';
   //
   C_NameInfo = 'name_info';
   C_Nick = 'nick';
@@ -178,7 +185,7 @@ const
   LogProfile: string = 'Profile path';
   LogIconCount: string = 'Uploaded %d icons';
   Log_WinVer: string = 'Windows version: %u.%u.%u %s';
-  Log_Lang_Code: string = 'Language ID';
+  Log_Lang_Code: string = 'System language';
   Log_Get: string = ' get | ';
   Log_Send: string = ' send | ';
   Log_Parsing: string = ' parsing | ';
@@ -187,10 +194,6 @@ const
   Log_HTTP_Proxy_Connect: string = 'Подключение к прокси: ';
   Log_Login: string = 'Логин для авторизации: ';
   Log_Set_Status: string = 'Выбран статус: ';
-
-  Log_Exception1: string = 'В программе произошла ошибка' + C_RN;
-  Log_Exception2: string = C_RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
-    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
 
   Log_Proxy_OK: string = 'Подключение к прокси установлено успешно.';
 
@@ -226,7 +229,7 @@ var
   V_ProfilePath: string;
   V_Profile: string = '';
   V_CurrentIcons: string = 'Imadering';
-  V_CurrentLang: string = 'ru';
+  V_CurrentLang: string = 'en';
   V_CurrentSmiles: string = 'Imadering';
   V_CurrentSounds: string = 'Imadering';
   V_ProgramCloseCommand: Boolean = False;
@@ -241,6 +244,7 @@ var
   V_FullVersion: string;
   V_ProfileAuto: Boolean = False;
   V_FArchive: TJclCompressionArchive;
+  V_AutoDellProfile: Boolean = False;
 
 {$ENDREGION}
 {$REGION 'CL_Vars'}
@@ -390,8 +394,7 @@ var
 
   // Переменные для языка | Lang_Vars[127].L_S
   Lang_Vars: packed array[0..127] of record
-    L_N: string;
-    L_S: string;
+    L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
     (L_N: 'RestoreProfileFromTray'; L_S: ''), // 2
@@ -520,6 +523,13 @@ var
     (L_N: 'SearchAuthNo'; L_S: ''), // 125
     (L_N: 'SearchNextPage'; L_S: ''), // 126
     (L_N: 'DellProfile'; L_S: '')); // 127
+
+
+  Log_Exception1: string = 'В программе произошла ошибка' + C_RN;
+
+  Log_Exception2: string = C_RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
+    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
+
 
   InfoNickL:
     string = 'Ник:';

@@ -7,6 +7,7 @@ object FloatingForm: TFloatingForm
   ClientHeight = 20
   ClientWidth = 162
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -15,6 +16,7 @@ object FloatingForm: TFloatingForm
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   PopupMenu = FloatPopupMenu
+  Position = poScreenCenter
   Scaled = False
   ScreenSnap = True
   OnClose = FormClose
