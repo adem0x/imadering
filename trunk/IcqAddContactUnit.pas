@@ -63,8 +63,7 @@ implementation
 uses
   MainUnit,
   IcqProtoUnit,
-  UtilsUnit,
-  RosterUnit;
+  UtilsUnit;
 
 {$ENDREGION}
 {$REGION 'BuildGroupList'}
@@ -73,7 +72,7 @@ procedure TIcqAddContactForm.BuildGroupList(GProto: string);
 var
   I: Integer;
 begin
-  // Составляем список групп из Ростера
+  {// Составляем список групп из Ростера
   with RosterForm.RosterJvListView do
     begin
       // Список для ICQ
@@ -104,7 +103,7 @@ begin
     end;
   // Выставляем по умолчанию первую группу в списке выбора групп
   if GroupComboBox.Items.Count > 0 then
-    GroupComboBox.ItemIndex := 0;
+    GroupComboBox.ItemIndex := 0;}
 end;
 
 {$ENDREGION}
@@ -132,7 +131,7 @@ var
   NewId, IGpId: string;
   I: Integer;
 begin
-  // Добавляем контакты по протоколу ICQ
+  {// Добавляем контакты по протоколу ICQ
   if ContactType = C_Icq then
     begin
       if ICQ_Work_Phaze then
@@ -204,7 +203,7 @@ begin
     end;
   // Выходим и закрываем модальное окно
 Y :;
-  ModalResult := MrOk;
+  ModalResult := MrOk;}
 end;
 
 {$ENDREGION}

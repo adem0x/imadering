@@ -390,7 +390,7 @@ begin
           V_TrafRecev := V_TrafRecev + GameLoadHttpClient.RcvdCount;
           V_AllTrafRecev := V_AllTrafRecev + GameLoadHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
-            MainForm.OpenTrafficClick(nil);
+            MainForm.Traffic_MenuClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
           GameLoadHttpClient.RcvdStream.Position := 0;
           ForceDirectories(V_ProfilePath + C_GamesFolder);

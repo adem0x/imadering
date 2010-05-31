@@ -125,9 +125,6 @@
 			<DCCReference Include="TrafficUnit.pas">
 				<Form>TrafficForm</Form>
 			</DCCReference>
-			<DCCReference Include="RosterUnit.pas">
-				<Form>RosterForm</Form>
-			</DCCReference>
 			<DCCReference Include="FileTransferUnit.pas">
 				<Form>FileTransferForm</Form>
 			</DCCReference>

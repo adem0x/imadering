@@ -51,20 +51,12 @@ type
     BottomToolBar: TToolBar;
     MainToolButton: TToolButton;
     ICQToolButton: TToolButton;
-    ICQTrayIcon: TTrayIcon;
-    TrayPopupMenu: TPopupMenu;
     AllImageList: TImageList;
     JvTimerList: TJvTimerList;
     MainPopupMenu: TPopupMenu;
-    CloseProgram: TMenuItem;
-    HideInTray: TMenuItem;
+    CloseProgram_Menu: TMenuItem;
+    HideInTray_Menu: TMenuItem;
     N3: TMenuItem;
-    CloseProgramTray1: TMenuItem;
-    N1: TMenuItem;
-    SettingsTray1: TMenuItem;
-    N2: TMenuItem;
-    MRATrayIcon: TTrayIcon;
-    JabberTrayIcon: TTrayIcon;
     ICQWSocket: TWSocket;
     MRAWSocket: TWSocket;
     JabberWSocket: TSslWSocket;
@@ -72,9 +64,8 @@ type
     UpdateHttpClient: THttpCli;
     MRAToolButton: TToolButton;
     JabberToolButton: TToolButton;
-    AboutIMadering: TMenuItem;
-    OpenSettings: TMenuItem;
-    HideMainInTray1: TMenuItem;
+    AboutIMadering_Menu: TMenuItem;
+    Settings_Menu: TMenuItem;
     ContactListPopupMenu: TPopupMenu;
     ICQPopupMenu: TPopupMenu;
     MRAPopupMenu: TPopupMenu;
@@ -120,10 +111,7 @@ type
     JabberSettings: TMenuItem;
     SoundOnOffToolButton: TToolButton;
     OnlyOnlineContactsToolButton: TToolButton;
-    N19: TMenuItem;
-    StatusTray1: TMenuItem;
     ContactPopupMenu: TPopupMenu;
-    CheckUpdateTray1: TMenuItem;
     RightICQPopupMenu: TPopupMenu;
     UnstableICQStatus: TMenuItem;
     OpenGroupsCL: TMenuItem;
@@ -152,8 +140,8 @@ type
     DelYourSelfContact: TMenuItem;
     SendInviteContact: TMenuItem;
     AddNewContact: TMenuItem;
-    OpenHistory: TMenuItem;
-    OpenTraffic: TMenuItem;
+    History_Menu: TMenuItem;
+    Traffic_Menu: TMenuItem;
     MRAAvatarHttpClient: THttpCli;
     RightMRAPopupMenu: TPopupMenu;
     RightJabberPopupMenu: TPopupMenu;
@@ -174,11 +162,11 @@ type
     JabberStatusFFC: TMenuItem;
     UnstableMRAStatus: TMenuItem;
     UnstableJabberStatus: TMenuItem;
-    SearchInCLMainMenu: TMenuItem;
+    SearchInCL_Menu: TMenuItem;
     HideEmptyGroups: TMenuItem;
     GroupOnOffToolButton: TToolButton;
     ICQSearchNewContact: TMenuItem;
-    CheckUpdateMenu: TMenuItem;
+    CheckUpdate_Menu: TMenuItem;
     N29: TMenuItem;
     JabberSearchNewContact: TMenuItem;
     MainActionList: TActionList;
@@ -221,24 +209,22 @@ type
     SendFileMenu: TMenuItem;
     SendFileUpWapru: TMenuItem;
     SendFileOpenDialog: TOpenDialog;
-    LogFormMenu: TMenuItem;
+    ShowLog_Menu: TMenuItem;
     IMaderingEvents: TApplicationEvents;
     UniqContactSettingsMenu: TMenuItem;
     FloatContactMenu: TMenuItem;
     N27: TMenuItem;
-    ProfileOpenMenu: TMenuItem;
-    XTrayIcon: TTrayIcon;
-    XTrayPopupMenu: TPopupMenu;
-    HideProfileInTray: TMenuItem;
-    CloseProgramTray2: TMenuItem;
+    SwitchProfile_Menu: TMenuItem;
+    TrayIcon: TTrayIcon;
+    TrayPopupMenu: TPopupMenu;
+    CloseProgram_MenuTray: TMenuItem;
     N24: TMenuItem;
-    ShowLogTray: TMenuItem;
+    ShowLog_MenuTray: TMenuItem;
     N28: TMenuItem;
-    HideMainInTray2: TMenuItem;
-    StatusTray2: TMenuItem;
+    HideInTray_MenuTray: TMenuItem;
+    Status_MenuTray: TMenuItem;
     N30: TMenuItem;
-    SettingsTray2: TMenuItem;
-    CheckUpdateTray2: TMenuItem;
+    Settings_MenuTray: TMenuItem;
     AllStatusOffline: TMenuItem;
     N32: TMenuItem;
     AllStatusInvisible: TMenuItem;
@@ -288,20 +274,20 @@ type
     PostsMeLentaTwitterMenu: TMenuItem;
     FavoriteLentaTwitterMenu: TMenuItem;
     OutMessTwitterMenu: TMenuItem;
-    SnapContactList: TMenuItem;
+    SnapCL_Menu: TMenuItem;
     SnapToRight: TMenuItem;
     SnapToLeft: TMenuItem;
     N39: TMenuItem;
-    OpenGameMenu: TMenuItem;
+    OpenGame_Menu: TMenuItem;
     N38: TMenuItem;
     TopModeToolButton: TToolButton;
+    SwitchProfile_MenuTray: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
     procedure MainToolButtonClick(Sender: TObject);
-    procedure OpenSettingsClick(Sender: TObject);
-    procedure ICQTrayIconClick(Sender: TObject);
-    procedure AboutIMaderingClick(Sender: TObject);
+    procedure Settings_MenuClick(Sender: TObject);
+    procedure AboutIMadering_MenuClick(Sender: TObject);
     procedure UpdateHttpClientDocBegin(Sender: TObject);
     procedure JvTimerListEvents2Timer(Sender: TObject);
     procedure ICQSettingsClick(Sender: TObject);
@@ -313,8 +299,6 @@ type
     procedure MRAXStatusClick(Sender: TObject);
     procedure SoundOnOffToolButtonClick(Sender: TObject);
     procedure OnlyOnlineContactsToolButtonClick(Sender: TObject);
-    procedure TrayPopupMenuPopup(Sender: TObject);
-    procedure ICQTrayIconMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ICQStatusOnlineClick(Sender: TObject);
     procedure ICQStatusOfflineClick(Sender: TObject);
     procedure ICQWSocketSessionClosed(Sender: TObject; ErrCode: Word);
@@ -324,7 +308,6 @@ type
     procedure FormDeactivate(Sender: TObject);
     procedure MRASettingsClick(Sender: TObject);
     procedure JabberSettingsClick(Sender: TObject);
-    procedure CheckUpdateTray1Click(Sender: TObject);
     procedure ICQToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure JabberToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
@@ -350,8 +333,8 @@ type
     procedure DelYourSelfContactClick(Sender: TObject);
     procedure SendInviteContactClick(Sender: TObject);
     procedure UnstableICQStatusClick(Sender: TObject);
-    procedure OpenHistoryClick(Sender: TObject);
-    procedure OpenTrafficClick(Sender: TObject);
+    procedure History_MenuClick(Sender: TObject);
+    procedure Traffic_MenuClick(Sender: TObject);
     procedure UpdateHttpClientSendEnd(Sender: TObject);
     procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
     procedure UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
@@ -385,7 +368,6 @@ type
     procedure ContactListPopupMenuPopup(Sender: TObject);
     procedure HideEmptyGroupsClick(Sender: TObject);
     procedure RightICQPopupMenuPopup(Sender: TObject);
-    procedure HideInTrayClick(Sender: TObject);
     procedure GroupOnOffToolButtonClick(Sender: TObject);
     procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure JabberSearchNewContactClick(Sender: TObject);
@@ -431,14 +413,13 @@ type
     procedure SocketBgException(Sender: TObject; E: Exception; var CanClose: Boolean);
     procedure SendFileUpWapruClick(Sender: TObject);
     procedure ContactListCategoryCollapase(Sender: TObject; const Category: TButtonCategory);
-    procedure LogFormMenuClick(Sender: TObject);
+    procedure ShowLog_MenuClick(Sender: TObject);
     procedure IMaderingEventsException(Sender: TObject; E: Exception);
     procedure UniqContactSettingsMenuClick(Sender: TObject);
     procedure FloatContactMenuClick(Sender: TObject);
-    procedure ProfileOpenMenuClick(Sender: TObject);
-    procedure HideProfileInTrayClick(Sender: TObject);
-    procedure XTrayIconClick(Sender: TObject);
-    procedure CloseProgramClick(Sender: TObject);
+    procedure SwitchProfile_MenuClick(Sender: TObject);
+    procedure TrayIconClick(Sender: TObject);
+    procedure CloseProgram_MenuClick(Sender: TObject);
     procedure PingICQServerClick(Sender: TObject);
     procedure JvTimerListEvents8Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -467,11 +448,11 @@ type
     procedure PostImageTwitterMenuClick(Sender: TObject);
     procedure SnapToRightClick(Sender: TObject);
     procedure JvTimerListEvents15Timer(Sender: TObject);
-    procedure OpenGameMenuClick(Sender: TObject);
+    procedure OpenGame_MenuClick(Sender: TObject);
     procedure AppMinimize(Sender: TObject);
     procedure TopModeToolButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure SearchInCLMainMenuClick(Sender: TObject);
+    procedure SearchInCL_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -530,7 +511,6 @@ uses
   IcqAddContactUnit,
   JabberProtoUnit,
   MraProtoUnit,
-  RosterUnit,
   IcqSearchUnit,
   IcqGroupManagerUnit,
   ShowCertUnit,
@@ -598,18 +578,14 @@ begin
   TrafficTopToolButton.Hint := TrafficToolButton.Hint;
   CLSearchTopToolButton.Hint := CLSearchToolButton.Hint;
   // Применяем перевод меню
-  HideProfileInTray.Caption := Lang_Vars[3].L_S;
-  HideInTray.Caption := Lang_Vars[1].L_S;
-  HideMainInTray1.Caption := Lang_Vars[1].L_S;
-  HideMainInTray2.Caption := Lang_Vars[1].L_S;
-  SettingsTray1.Caption := OpenSettings.Caption;
-  SettingsTray2.Caption := OpenSettings.Caption;
-  CloseProgramTray1.Caption := CloseProgram.Caption;
-  CloseProgramTray2.Caption := CloseProgram.Caption;
-  CheckUpdateTray1.Caption := CheckUpdateMenu.Caption;
-  CheckUpdateTray2.Caption := CheckUpdateMenu.Caption;
-  StatusTray2.Caption := StatusTray1.Caption;
-  LogFormMenu.Caption := ShowLogTray.Caption;
+  HideInTray_Menu.Caption := Lang_Vars[1].L_S;
+  HideInTray_MenuTray.Caption := Lang_Vars[1].L_S;
+  Settings_MenuTray.Caption := Settings_Menu.Caption;
+  CloseProgram_MenuTray.Caption := CloseProgram_Menu.Caption;
+
+
+
+  ShowLog_Menu.Caption := ShowLog_MenuTray.Caption;
   TopMainButtonONMenu.Caption := MainButtonONMenu.Caption;
   TopOnlyOnlineONMenu.Caption := OnlyOnlineONMenu.Caption;
   TopGroupONMenu.Caption := GroupONMenu.Caption;
@@ -617,7 +593,7 @@ begin
   TopHistoryONMenu.Caption := HistoryONMenu.Caption;
   TopSettingsONMenu.Caption := SettingsONMenu.Caption;
   TopTrafficONMenu.Caption := TrafficONMenu.Caption;
-  SearchInCL.Caption := SearchInCLMainMenu.Caption;
+  SearchInCL.Caption := SearchInCL_Menu.Caption;
   TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
   PostMessageTwitterMenu.Caption := Lang_Vars[61].L_S;
   // Применяем перевод статусов в меню
@@ -702,14 +678,14 @@ begin
   Msg.Result := 1;
 end;
 
-procedure TMainForm.XTrayIconClick(Sender: TObject);
+procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
   // Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
-  if (Sender as TTrayIcon).Tag = 0 then
+  {if (Sender as TTrayIcon).Tag = 0 then
   begin
     if Assigned(ProfileForm) then
       HideProfileInTrayClick(nil);
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -723,20 +699,20 @@ begin
     if not Assigned(IcqOptionsForm) then
       IcqOptionsForm := TIcqOptionsForm.Create(Self);
     // Ставим иконки в окне контактов и в трэе
-    ICQTrayIcon.Visible := True;
+    //ICQTrayIcon.Visible := True;
     ICQToolButton.Visible := True;
   end
   else
   begin
     // Прячем иконки в окне контактов и в трэе
-    ICQTrayIcon.Visible := False;
+    //ICQTrayIcon.Visible := False;
     ICQToolButton.Visible := False;
     // Высвобождаем окно настроек протокола ICQ
     if Assigned(IcqOptionsForm) then
       FreeAndNil(IcqOptionsForm);
     // Стираем из Ростера контакты ICQ
-    if Assigned(RosterForm) then
-      RosterForm.ClearContacts(C_Icq);
+    {if Assigned(RosterForm) then
+      RosterForm.ClearContacts(C_Icq);}
   end;
 end;
 
@@ -751,20 +727,20 @@ begin
     if not Assigned(MraOptionsForm) then
       MraOptionsForm := TMraOptionsForm.Create(Self);
     // Ставим иконки в окне контактов и в трэе
-    MRATrayIcon.Visible := True;
+    //MRATrayIcon.Visible := True;
     MRAToolButton.Visible := True;
   end
   else
   begin
     // Прячем иконки в окне контактов и в трэе
-    MRATrayIcon.Visible := False;
+    //MRATrayIcon.Visible := False;
     MRAToolButton.Visible := False;
     // Высвобождаем окно настроек протокола MRA
     if Assigned(MraOptionsForm) then
       FreeAndNil(MraOptionsForm);
     // Стираем из Ростера контакты MRA
-    if Assigned(RosterForm) then
-      RosterForm.ClearContacts(C_Mra);
+    {if Assigned(RosterForm) then
+      RosterForm.ClearContacts(C_Mra);}
   end;
 end;
 
@@ -830,7 +806,7 @@ begin
   // Ставим иконки статусов в окне и в трэе
   if not MRA_Offline_Phaze then
   begin
-    MRATrayIcon.IconIndex := MRA_CurrentStatus;
+    //MRATrayIcon.IconIndex := MRA_CurrentStatus;
     MRAToolButton.ImageIndex := MRA_CurrentStatus;
   end;
   // Подключаемся к MRA серверу
@@ -838,7 +814,7 @@ begin
   begin
     S_Log := S_Log + C_Mra + C_PN + Log_Login + MRA_LoginUIN + C_RN;
     // Ставим иконки подключения в окне и в трэе
-    MRATrayIcon.IconIndex := 162;
+    //MRATrayIcon.IconIndex := 162;
     MRAToolButton.ImageIndex := 162;
     // Блокируем контролы логина и пароля ICQ
     if Assigned(MraOptionsForm) then
@@ -897,20 +873,20 @@ begin
     if not Assigned(JabberOptionsForm) then
       JabberOptionsForm := TJabberOptionsForm.Create(Self);
     // Ставим иконки в окне контактов и в трэе
-    JabberTrayIcon.Visible := True;
+    //JabberTrayIcon.Visible := True;
     JabberToolButton.Visible := True;
   end
   else
   begin
     // Прячем иконки в окне контактов и в трэе
-    JabberTrayIcon.Visible := False;
+    //JabberTrayIcon.Visible := False;
     JabberToolButton.Visible := False;
     // Высвобождаем окно настроек протокола Jabber
     if Assigned(JabberOptionsForm) then
       FreeAndNil(JabberOptionsForm);
     // Стираем из Ростера контакты Jabber
-    if Assigned(RosterForm) then
-      RosterForm.ClearContacts(C_Jabber);
+    {if Assigned(RosterForm) then
+      RosterForm.ClearContacts(C_Jabber);}
   end;
 end;
 
@@ -997,7 +973,7 @@ begin
   if not Jabber_Offline_Phaze then
   begin
     JabberToolButton.ImageIndex := Jabber_CurrentStatus;
-    JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+    //JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
   end;
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
@@ -1015,7 +991,7 @@ begin
       end;
     // Ставим иконки статуса в окне и в трэе
     JabberToolButton.ImageIndex := 162;
-    JabberTrayIcon.IconIndex := 162;
+    //JabberTrayIcon.IconIndex := 162;
     // Блокируем контролы логина и пароля Jabber
     if Assigned(JabberOptionsForm) then
     begin
@@ -1079,34 +1055,8 @@ begin
       Checked := True;
   end;
   // Запускаем обработку Ростера
-  if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;
-end;
-
-procedure TMainForm.HideInTrayClick(Sender: TObject);
-begin
-  // Скрываем окно в трэй или наоборот
-  MainFormHideInTray;
-end;
-
-procedure TMainForm.HideProfileInTrayClick(Sender: TObject);
-begin
-  // Показываем или сворачиваем окно профиля или главное окно
-  if Assigned(ProfileForm) then
-  begin
-    if ProfileForm.Visible then
-    begin
-      ProfileForm.Hide;
-      HideProfileInTray.Caption := Lang_Vars[2].L_S;
-      HideProfileInTray.ImageIndex := 5;
-    end
-    else
-    begin
-      XShowForm(ProfileForm);
-      HideProfileInTray.Caption := Lang_Vars[3].L_S;
-      HideProfileInTray.ImageIndex := 4;
-    end;
-  end;
+  {if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;}
 end;
 
 procedure TMainForm.HintMaxTime(Sender: TObject);
@@ -1203,7 +1153,7 @@ begin
         V_TrafRecev := V_TrafRecev + UpdateHttpClient.RcvdCount;
         V_AllTrafRecev := V_AllTrafRecev + UpdateHttpClient.RcvdCount;
         if Assigned(TrafficForm) then
-          OpenTrafficClick(nil);
+          Traffic_MenuClick(nil);
         // Обнуляем позицию начала чтения в блоке памяти
         UpdateHttpClient.RcvdStream.Position := 0;
         // Определяем выполнение задания для данных по флагу
@@ -1388,7 +1338,7 @@ begin
   // Ставим иконки статусов в окне и в трэе
   if not ICQ_Offline_Phaze then
   begin
-    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    //ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
     ICQToolButton.ImageIndex := ICQ_CurrentStatus;
   end;
   // Отключаем статус Нестабильный если он включен
@@ -1402,7 +1352,7 @@ begin
   begin
     S_Log := S_Log + C_Icq + C_PN + Log_Login + ICQ_LoginUIN + C_RN;
     // Ставим иконки подключения в окне и в трэе
-    ICQTrayIcon.IconIndex := 162;
+    //ICQTrayIcon.IconIndex := 162;
     ICQToolButton.ImageIndex := 162;
     // Блокируем контролы логина и пароля ICQ
     if Assigned(IcqOptionsForm) then
@@ -1472,25 +1422,6 @@ begin
   MainToolButton.Visible := not MainToolButton.Visible;
 end;
 
-procedure TMainForm.ICQTrayIconClick(Sender: TObject);
-begin
-  // Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
-  if (Sender as TTrayIcon).Tag = 0 then
-    MainFormHideInTray
-  else
-    OpenFromTrayMessage(EmptyStr);
-end;
-
-procedure TMainForm.ICQTrayIconMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  // Определяем какой протокол вызвал меню в трэе
-  if Button = MbRight then
-    V_TrayProtoClickMenu := LowerCase((Sender as TTrayIcon).name)
-      // Выводим список контактов на передний план если нажали средней клавишей мыши
-  else if Button = MbMiddle then
-    SetForeGroundWindow(Handle);
-end;
-
 {$ENDREGION}
 {$REGION 'MainFormHideInTray'}
 
@@ -1500,8 +1431,8 @@ begin
   if Visible then
   begin
     Hide;
-    HideMainInTray1.Caption := Lang_Vars[0].L_S;
-    HideMainInTray1.ImageIndex := 5;
+    //HideMainInTray1.Caption := Lang_Vars[0].L_S;
+    //HideMainInTray1.ImageIndex := 5;
     // Удаляем AppBar если он есть
     if V_DockAppBar then
       AppBarDestroy;
@@ -1519,8 +1450,8 @@ begin
     // Отображем окно контактов
     Show;
     SetForeGroundWindow(Application.MainForm.Handle);
-    HideMainInTray1.Caption := Lang_Vars[1].L_S;
-    HideMainInTray1.ImageIndex := 4;
+    //HideMainInTray1.Caption := Lang_Vars[1].L_S;
+    //HideMainInTray1.ImageIndex := 4;
   end;
 end;
 
@@ -1541,9 +1472,9 @@ begin
   // Если список входящих сообщений пустой, то обнуляем флаг и выходим
   if V_InMessList.Count = 0 then
   begin
-    ICQTrayIcon.Tag := 0;
-    MRATrayIcon.Tag := 0;
-    JabberTrayIcon.Tag := 0;
+    //ICQTrayIcon.Tag := 0;
+    //MRATrayIcon.Tag := 0;
+    //JabberTrayIcon.Tag := 0;
     Exit;
   end;
   // Получаем учётную запись отправителя сообщения с самого низа списка
@@ -1553,7 +1484,7 @@ begin
     Exit;
   X: ;
   // Открываем чат с этим контактом
-  RosterForm.OpenChatPage(nil, MUIN);
+  //RosterForm.OpenChatPage(nil, MUIN);
 end;
 
 {$ENDREGION}
@@ -1626,7 +1557,7 @@ begin
     V_TrafRecev := V_TrafRecev + Length(Pkt);
     V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
-      OpenTrafficClick(nil);
+      Traffic_MenuClick(nil);
     // Прибавляем данные к специальному буферу накопления таких преобразованных данных
     ICQ_BuffPkt := ICQ_BuffPkt + Pkt;
     // Ищем ошибки в буфере пакетов
@@ -1706,7 +1637,7 @@ begin
                             if ICQ_BosConnect_Phaze then
                             begin
                               // Очищаем группы ICQ в Ростере
-                              RosterForm.ClearContacts(C_Icq);
+                              //RosterForm.ClearContacts(C_Icq);
                               // Пока думаем, что у нас новый (обсолютно чистый) список контактов
                               NewKL := True;
                               // Отсылаем серверу пакет с допустимыми для нас фэмили
@@ -2163,7 +2094,7 @@ begin
   V_TrafSend := V_TrafSend + BytesSent;
   V_AllTrafSend := V_AllTrafSend + BytesSent;
   if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
+    Traffic_MenuClick(nil);
 end;
 
 procedure TMainForm.ICQWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
@@ -2359,7 +2290,7 @@ begin
     V_TrafRecev := V_TrafRecev + Length(Pkt);
     V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
-      OpenTrafficClick(nil);
+      Traffic_MenuClick(nil);
     // Проверяем пакет окончания сессии
     if Pkt = ('</' + J_RootTag + '>') then
     begin
@@ -2426,7 +2357,7 @@ begin
                   if Jabber_KeepAlive then
                     JvTimerList.Events[9].Enabled := True;
                   // Очищаем группы Jabber в Ростере
-                  RosterForm.ClearContacts(C_Jabber);
+                  //RosterForm.ClearContacts(C_Jabber);
                   // Закрепляем сессию с жаббер сервером
                   // Если сервер и порт указаны вручную
                   if JabberOptionsForm.CustomServerCheckBox.Checked then
@@ -2492,7 +2423,7 @@ begin
   V_TrafSend := V_TrafSend + BytesSent;
   V_AllTrafSend := V_AllTrafSend + BytesSent;
   if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
+    Traffic_MenuClick(nil);
 end;
 
 procedure TMainForm.JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
@@ -2625,32 +2556,21 @@ end;
 procedure TMainForm.JvTimerListEvents0Timer(Sender: TObject);
 var
   HMutex: THandle;
-
-  procedure ShowAllTrayIcon;
-  begin
-    // Подгружаем иконку программы в трэй
-    AllImageList.GetIcon(0, XTrayIcon.Icon);
-    XTrayIcon.Visible := True;
-  end;
-
 begin
-  // Создаём и отображаем окно выбора профиля пользователя
-  ProfileForm := TProfileForm.Create(Self);
+  // Создаём окно выбора профиля пользователя
+  Application.CreateForm(TProfileForm, ProfileForm);
+  // Подгружаем иконку программы в трэй
+  AllImageList.GetIcon(0, TrayIcon.Icon);
+  TrayIcon.Visible := True;
   // Отображаем окно выбора профиля или входим в профиль автоматически
   // Проверяем не запущена ли уже программа
   HMutex := CreateMutex(nil, True, 'IMadering client');
   if GetLastError = ERROR_ALREADY_EXISTS then
-  begin
-    ShowAllTrayIcon;
-    XShowForm(ProfileForm);
-  end
+    XShowForm(ProfileForm)
   else if (ProfileForm.AutoSignCheckBox.Checked) and (ProfileForm.ProfileComboBox.Text <> EmptyStr) then
     ProfileForm.LoginButton.Click
   else
-  begin
-    ShowAllTrayIcon;
     XShowForm(ProfileForm);
-  end;
 end;
 
 {$HINTS ON}
@@ -2667,13 +2587,13 @@ end;
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
 begin
   // Обрабатываем Ростер
-  if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;
+  {if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;}
 end;
 
 procedure TMainForm.JvTimerListEvents12Timer(Sender: TObject);
 begin
-  // Перерисовываем иконки в трэе против глюка в вайн в линукс
+  {// Перерисовываем иконки в трэе против глюка в вайн в линукс
   if ICQTrayIcon.Visible then
     ICQTrayIcon.Refresh;
   //
@@ -2684,7 +2604,7 @@ begin
     JabberTrayIcon.Refresh;
   //
   if XTrayIcon.Visible then
-    XTrayIcon.Refresh;
+    XTrayIcon.Refresh;}
 end;
 
 procedure TMainForm.JvTimerListEvents13Timer(Sender: TObject);
@@ -2739,7 +2659,7 @@ var
   CLItem: TButtonItem;
   ChatItem: TToolButton;
 begin
-  // Отображаем иконки мигающих сообщений и события
+  {// Отображаем иконки мигающих сообщений и события
   YesMsgICQ := False;
   YesMsgJabber := False;
   YesMsgMRA := False;
@@ -2801,7 +2721,8 @@ begin
             YesMsgMRA := True;
         end
         else
-          {// Если таймер задержки Ростера активен, то игнорируем события статусов} if not JvTimerList.Events[11].Enabled then
+          // Если таймер задержки Ростера активен, то игнорируем события статусов
+          if not JvTimerList.Events[11].Enabled then
           begin
             // Если контакт вышел в онлайн, то отображаем это иконкой двери
             if Items[I].SubItems[18] <> '0' then
@@ -2938,7 +2859,7 @@ begin
       MraTrayIcon.Tag := 0;
       MraTrayIcon.IconIndex := Mra_CurrentStatus;
     end;
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -2967,7 +2888,7 @@ procedure TMainForm.JvTimerListEvents3Timer(Sender: TObject);
 var
   NoStopTimer: Boolean;
 begin
-  NoStopTimer := False;
+ { NoStopTimer := False;
   // Отображаем мигающую иконку подключения к серверу ICQ
   if (ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze) then
   begin
@@ -3030,7 +2951,7 @@ begin
   end;
   // Останавливаем таймер
   if not NoStopTimer then
-    JvTimerList.Events[3].Enabled := False;
+    JvTimerList.Events[3].Enabled := False;   }
 end;
 
 {$ENDREGION}
@@ -3277,7 +3198,7 @@ begin
     V_TrafRecev := V_TrafRecev + Length(Pkt);
     V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
-      OpenTrafficClick(nil);
+      Traffic_MenuClick(nil);
     // Прибавляем данные к специальному буферу накопления таких преобразованных данных
     MRA_BuffPkt := MRA_BuffPkt + Pkt;
     // Если фаза первого подключания к серверу MRA
@@ -3387,7 +3308,7 @@ begin
                 // Отключаем метку пересоединения ведь мы уже и так онлайн!
                 MRA_Reconnect := False;
                 // Очищаем группы MRA в Ростере
-                RosterForm.ClearContacts(C_Mra);
+                //RosterForm.ClearContacts(C_Mra);
               end;
             $1005:
               begin
@@ -3522,16 +3443,10 @@ begin
   end;
 end;
 
-procedure TMainForm.CheckUpdateTray1Click(Sender: TObject);
-begin
-  // Запускаем проверку обновлений программы на сайте
-  JvTimerListEvents2Timer(nil);
-end;
-
 {$ENDREGION}
 {$REGION 'OpenTrafficClick'}
 
-procedure TMainForm.OpenTrafficClick(Sender: TObject);
+procedure TMainForm.Traffic_MenuClick(Sender: TObject);
 begin
   // Отображаем окно трафика
   if not Assigned(TrafficForm) then
@@ -3552,7 +3467,7 @@ var
   I, FloatHandle: Integer;
   RosterItem: TListItem;
 begin
-  // Ищем этот контакт в Ростере
+  {// Ищем этот контакт в Ростере
   if ContactList.SelectedItem <> nil then
   begin
     RosterItem := RosterForm.ReqRosterItem((ContactList.SelectedItem as TButtonItem).UIN);
@@ -3597,7 +3512,7 @@ begin
         V_FloatingFrm.Show;
       end;
     end;
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -3628,7 +3543,7 @@ end;
 {$ENDREGION}
 {$REGION 'ProfileOpenMenuClick'}
 
-procedure TMainForm.ProfileOpenMenuClick(Sender: TObject);
+procedure TMainForm.SwitchProfile_MenuClick(Sender: TObject);
 var
   Spath: string;
   R: Integer;
@@ -3676,8 +3591,8 @@ begin
     OnlyOnlineContactsTopButton.ImageIndex := 138;
   end;
   // Запускаем обработку Ростера
-  if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;
+  {if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;}
 end;
 
 procedure TMainForm.OnlyOnlineContactsTopButtonClick(Sender: TObject);
@@ -3694,7 +3609,7 @@ begin
   OnlyOnlineContactsToolButton.Visible := not OnlyOnlineContactsToolButton.Visible;
 end;
 
-procedure TMainForm.OpenSettingsClick(Sender: TObject);
+procedure TMainForm.Settings_MenuClick(Sender: TObject);
 begin
   // Открываем окно с настройками программы
   if not Assigned(SettingsForm) then
@@ -3761,7 +3676,7 @@ begin
   end;
 end;
 
-procedure TMainForm.AboutIMaderingClick(Sender: TObject);
+procedure TMainForm.AboutIMadering_MenuClick(Sender: TObject);
 begin
   // Открываем окно о программе
   if not Assigned(AboutForm) then
@@ -3788,7 +3703,7 @@ begin
     MainForm.ContactList.Categories[I].Collapsed := True;
 end;
 
-procedure TMainForm.CloseProgramClick(Sender: TObject);
+procedure TMainForm.CloseProgram_MenuClick(Sender: TObject);
 begin
   // Закрываем программу
   V_ProgramCloseCommand := True;
@@ -3819,7 +3734,7 @@ begin
     // Меняем иконку кнопки контакта на его статус
     Button.ImageIndex := Button.Status;
     // Открываем чат с этим контактом
-    RosterForm.OpenChatPage(Button);
+    //RosterForm.OpenChatPage(Button);
   end;
   // Запоминаем индекс кнопки
   ButtonInd := Button.index;
@@ -4098,7 +4013,7 @@ var
   I: Integer;
   TCL: TStringList;
 begin
-  // Блокируем всё окно со списком контактов
+  {// Блокируем всё окно со списком контактов
   MainForm.Enabled := False;
   try
     // Смотрим какого это протокола группа
@@ -4200,7 +4115,7 @@ begin
   finally
     // В любом случае разблокировываем окно контактов
     MainForm.Enabled := True;
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -4249,6 +4164,8 @@ end;
 {$REGION 'FormCloseQuery'}
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  I: Integer;
 begin
   // Делаем окно не закрывающим программу, а сворачиваем его в трэй
   if not V_ProgramCloseCommand then
@@ -4261,6 +4178,7 @@ begin
     // Сохраняем настройки окна
     SaveMainFormSettings;
     // Останавливаем таймеры
+    JvTimerList.Events.Deactivate;
     JvTimerList.Active := False;
     // Переводим все протоколы в оффлайн
     if not ICQ_Offline_Phaze then
@@ -4295,25 +4213,21 @@ begin
       FreeAndNil(V_XStatusImg);
     if Assigned(V_XStatusMem) then
       FreeAndNil(V_XStatusMem);
-    // Уничтожаем окно смайлов
-    if Assigned(SmilesForm) then
-      FreeAndNil(SmilesForm);
-    // Уничтожаем окно чата
-    if Assigned(ChatForm) then
-      FreeAndNil(ChatForm);
     // Делаем текущую локальную копию списка контактов для отображения при запуске программы
-    if Assigned(RosterForm) then
+    {if Assigned(RosterForm) then
     begin
       RosterForm.RosterJvListView.SaveToCSV(V_ProfilePath + C_ContactListFileName);
       // Уничтожаем окно Ростера
       FreeAndNil(RosterForm);
-    end;
+    end;}
     // Высвобождаем окно подсказок
     if Assigned(SH_HintWindow) then
       FreeAndNil(SH_HintWindow);
     // Если создан AppBar, то уничтожаем его
     if V_DockAppBar then
       AppBarDestroy;
+
+
   end;
 end;
 
@@ -4467,10 +4381,19 @@ var
   Language: array [0..100] of char;
 begin
   // Управляем скрытием кнопки на панели задач
-  Application.ShowMainForm := False;
-  Application.OnMinimize := AppMinimize;
-  Application.OnRestore := AppMinimize;
-  Application.MainFormOnTaskbar := True;
+  with Application do
+  begin
+    ShowMainForm := False;
+    OnMinimize := AppMinimize;
+    OnRestore := AppMinimize;
+    MainFormOnTaskbar := True;
+    // Делаем всплывающие подсказки неисчезающими
+    HintHidePause := MaxInt;
+    OnHint := HintMaxTime;
+    // Назначаем продвинутые функции активации и деактивации
+    OnActivate := AppActivate;
+    OnDeactivate := AppDeactivate;
+  end;
   // Устанавливаем начальное значение ширины окна КЛ
   Width := 200;
   // Узнаём путь откуда запущена программа
@@ -4479,10 +4402,8 @@ begin
   Lang := GetSystemDefaultLangID;
   if Lang = 1049 then
     V_CurrentLang := 'ru';
-  // Загружаем переменные языка
-  SetLangVars;
   // Создаём окно лога
-  LogForm := TLogForm.Create(Self);
+  LogForm := TLogForm.Create(Application);
   // Узнаём версию Windows
   VI.DwOSVersionInfoSize := SizeOf(TOSVersionInfo);
   GetVersionEx(VI);
@@ -4503,42 +4424,40 @@ begin
   // Загрузка иконок для программы
   LoadImageList(AllImageList, V_MyPath + Format(C_IconsPath, [V_CurrentIcons]));
   // Устанавливаем иконку окна
-  AllImageList.GetIcon(1, Icon);
-  // Устанавливаем иконки окна лога
-  AllImageList.GetIcon(245, LogForm.Icon);
-  AllImageList.GetBitmap(159, LogForm.ClearLogSpeedButton.Glyph);
-  AllImageList.GetBitmap(81, LogForm.ICQDumpSpeedButton.Glyph);
-  AllImageList.GetBitmap(43, LogForm.JabberDumpSpeedButton.Glyph);
-  AllImageList.GetBitmap(66, LogForm.MRADumpSpeedButton.Glyph);
-  AllImageList.GetBitmap(249, LogForm.WriteLogSpeedButton.Glyph);
-  AllImageList.GetBitmap(268, LogForm.TwitDumpSpeedButton.Glyph);
-  AllImageList.GetBitmap(225, LogForm.SaveLogSpeedButton.Glyph);
-  AllImageList.GetBitmap(221, LogForm.SearchSpeedButton.Glyph);
-  AllImageList.GetBitmap(185, LogForm.SendEmailSpeedButton.Glyph);
-  AllImageList.GetBitmap(1, LogForm.RosterSpeedButton.Glyph);
-  // Делаем всплывающие подсказки неисчезающими
-  Application.HintHidePause := MaxInt;
-  Application.OnHint := HintMaxTime;
+  with AllImageList do
+  begin
+    GetIcon(1, Icon);
+    // Устанавливаем иконки окна лога
+    with LogForm do
+    begin
+      GetIcon(245, Icon);
+      GetBitmap(159, ClearLogSpeedButton.Glyph);
+      GetBitmap(81, ICQDumpSpeedButton.Glyph);
+      GetBitmap(43, JabberDumpSpeedButton.Glyph);
+      GetBitmap(66, MRADumpSpeedButton.Glyph);
+      GetBitmap(249, WriteLogSpeedButton.Glyph);
+      GetBitmap(268, TwitDumpSpeedButton.Glyph);
+      GetBitmap(225, SaveLogSpeedButton.Glyph);
+      GetBitmap(221, SearchSpeedButton.Glyph);
+      GetBitmap(185, SendEmailSpeedButton.Glyph);
+      GetBitmap(1, RosterSpeedButton.Glyph);
+    end;
+  end;
   // Скрываем кнопку главное меню в верхней панели
   MainToolTopButton.Visible := False;
-  // Назначаем продвинутые функции активации и деактивации
-  Application.OnActivate := AppActivate;
-  Application.OnDeactivate := AppDeactivate;
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
   // Проверяем если ли старый файл после обновления, если есть, то удаляем
-  if FileExists(V_MyPath + 'Imadering.old') then
-    DeleteFile(V_MyPath + 'Imadering.old');
+  if FileExists(V_MyPath + C_ImaderingOld) then
+    DeleteFile(V_MyPath + C_ImaderingOld);
   // Проверяем могут ли воспроизводится звуки на компьютере
   if InitMixer = 0 then
     V_SoundON := False;
   // Запоминаем текущую версию имадеринг
   V_FullVersion := InitBuildInfo;
   // Создаём окно подсказок
-  SH_HintWindow := THintWindow.Create(Self);
+  SH_HintWindow := THintWindow.Create(Application);
   SH_HintWindow.Color := ClInfoBk;
-  // Активируем отображение формы при перетаскивании
-  SystemParametersInfo(SPI_SETDRAGFULLWINDOWS, Ord(True), nil, 0);
   // Запускаем таймер отображения окна выбора профиля
   JvTimerList.Events[0].Enabled := True;
 end;
@@ -4665,8 +4584,8 @@ begin
     GroupOnOffToolTopButton.ImageIndex := 232;
   end;
   // Запускаем обработку Ростера
-  if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;
+  {if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;}
 end;
 
 procedure TMainForm.GroupOnOffToolTopButtonClick(Sender: TObject);
@@ -4952,7 +4871,7 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TMainForm.SearchInCLMainMenuClick(Sender: TObject);
+procedure TMainForm.SearchInCL_MenuClick(Sender: TObject);
 begin
   // Открываем окно поиска контактов в контактном листе
   if not Assigned(CLSearchForm) then
@@ -5167,71 +5086,6 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'TrayPopupMenuPopup'}
-
-procedure TMainForm.TrayPopupMenuPopup(Sender: TObject);
-var
-  I: Integer;
-begin
-  // Определяем какой протокол в трэе вызвал это меню и назначаем
-  // соответствующую иконку и таг для идентификации на пуект меню выбора статуса
-  if V_TrayProtoClickMenu = 'icqtrayicon' then
-  begin
-    StatusTray1.ImageIndex := ICQToolButton.ImageIndex;
-    // Очищаем пункты субменю
-    StatusTray1.Clear;
-    // Заполняем субменю пунктами из основного ICQ меню
-    with StatusTray1 do
-    begin
-      for I := 0 to ICQPopupMenu.Items.Count - 1 do
-      begin
-        Add(NewItem(ICQPopupMenu.Items[I].Caption, 0, False, True, ICQPopupMenu.Items[I].OnClick, 0, 'MenuItem' + IntToStr(I)));
-        // Назначаем иконку для пункта меню
-        Items[I].ImageIndex := ICQPopupMenu.Items[I].ImageIndex;
-        // Назначаем выделение для пункта меню
-        Items[I].default := ICQPopupMenu.Items[I].default;
-      end;
-    end;
-  end
-  else if V_TrayProtoClickMenu = 'mratrayicon' then
-  begin
-    StatusTray1.ImageIndex := MRAToolButton.ImageIndex;
-    // Очищаем пункты субменю
-    StatusTray1.Clear;
-    // Заполняем субменю пунктами из основного ICQ меню
-    with StatusTray1 do
-    begin
-      for I := 0 to MRAPopupMenu.Items.Count - 1 do
-      begin
-        Add(NewItem(MRAPopupMenu.Items[I].Caption, 0, False, True, MRAPopupMenu.Items[I].OnClick, 0, 'MenuItem' + IntToStr(I)));
-        // Назначаем иконку для пункта меню
-        Items[I].ImageIndex := MRAPopupMenu.Items[I].ImageIndex;
-        // Назначаем выделение для пункта меню
-        Items[I].default := MRAPopupMenu.Items[I].default;
-      end;
-    end;
-  end
-  else if V_TrayProtoClickMenu = 'jabbertrayicon' then
-  begin
-    StatusTray1.ImageIndex := JabberToolButton.ImageIndex;
-    // Очищаем пункты субменю
-    StatusTray1.Clear;
-    // Заполняем субменю пунктами из основного ICQ меню
-    with StatusTray1 do
-    begin
-      for I := 0 to JabberPopupMenu.Items.Count - 1 do
-      begin
-        Add(NewItem(JabberPopupMenu.Items[I].Caption, 0, False, True, JabberPopupMenu.Items[I].OnClick, 0, 'MenuItem' + IntToStr(I)));
-        // Назначаем иконку для пункта меню
-        Items[I].ImageIndex := JabberPopupMenu.Items[I].ImageIndex;
-        // Назначаем выделение для пункта меню
-        Items[I].default := JabberPopupMenu.Items[I].default;
-      end;
-    end;
-  end;
-end;
-
-{$ENDREGION}
 {$REGION 'TwitterHttpClientRequestDone'}
 
 procedure TMainForm.TwitterHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
@@ -5258,7 +5112,7 @@ begin
         V_TrafRecev := V_TrafRecev + TwitterHttpClient.RcvdCount;
         V_AllTrafRecev := V_AllTrafRecev + TwitterHttpClient.RcvdCount;
         if Assigned(TrafficForm) then
-          OpenTrafficClick(nil);
+          Traffic_MenuClick(nil);
         // Обнуляем позицию начала чтения в блоке памяти
         TwitterHttpClient.RcvdStream.Position := 0;
         // Читаем данные в лист
@@ -5387,7 +5241,7 @@ begin
     UnstableICQStatus.Checked := False;
 end;
 
-procedure TMainForm.OpenGameMenuClick(Sender: TObject);
+procedure TMainForm.OpenGame_MenuClick(Sender: TObject);
 begin
   // Открываем в окне чата закладку с играми
   if not Assigned(GamesForm) then
@@ -5404,7 +5258,7 @@ begin
     MainForm.ContactList.Categories[I].Collapsed := False;
 end;
 
-procedure TMainForm.OpenHistoryClick(Sender: TObject);
+procedure TMainForm.History_MenuClick(Sender: TObject);
 begin
   // Открываем пустое окно истории сообщений
   if not Assigned(HistoryForm) then
@@ -5441,7 +5295,7 @@ begin
   V_TrafSend := V_TrafSend + (Sender as THttpCli).SentCount;
   V_AllTrafSend := V_AllTrafSend + (Sender as THttpCli).SentCount;
   if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
+    Traffic_MenuClick(nil);
 end;
 
 {$ENDREGION}
@@ -5505,7 +5359,7 @@ begin
   V_TrafSend := V_TrafSend + BytesSent;
   V_AllTrafSend := V_AllTrafSend + BytesSent;
   if Assigned(TrafficForm) then
-    OpenTrafficClick(nil);
+    Traffic_MenuClick(nil);
 end;
 
 procedure TMainForm.MRAWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
@@ -5595,7 +5449,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LogFormMenuClick(Sender: TObject);
+procedure TMainForm.ShowLog_MenuClick(Sender: TObject);
 begin
   // Отображаем окно
   XShowForm(LogForm);

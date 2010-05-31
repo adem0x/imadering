@@ -424,7 +424,7 @@ begin
           V_TrafRecev := V_TrafRecev + GtransHttpClient.RcvdCount;
           V_AllTrafRecev := V_AllTrafRecev + GtransHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
-            MainForm.OpenTrafficClick(nil);
+            MainForm.Traffic_MenuClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
           GtransHttpClient.RcvdStream.Position := 0;
           // Читаем данные в лист

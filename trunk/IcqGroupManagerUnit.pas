@@ -61,8 +61,7 @@ implementation
 uses
   MainUnit,
   IcqProtoUnit,
-  UtilsUnit,
-  RosterUnit;
+  UtilsUnit;
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
@@ -89,7 +88,7 @@ var
   I: Integer;
   NewId: string;
 begin
-  // Управляем группой по протоколу ICQ
+  {// Управляем группой по протоколу ICQ
   if GroupType = C_Icq then
     begin
       // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
@@ -196,7 +195,7 @@ begin
     end;
   // Выходим и закрываем модальное окно
 Y :;
-  ModalResult := MrOk;
+  ModalResult := MrOk;}
 end;
 
 {$ENDREGION}

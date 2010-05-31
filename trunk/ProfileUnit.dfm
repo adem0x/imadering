@@ -15,7 +15,6 @@ object ProfileForm: TProfileForm
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
-  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow

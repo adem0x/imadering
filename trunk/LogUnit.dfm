@@ -17,6 +17,7 @@ object LogForm: TLogForm
   ScreenSnap = True
   OnCreate = FormCreate
   OnDblClick = FormDblClick
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object LogMemo: TMemo

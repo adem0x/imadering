@@ -103,7 +103,6 @@ uses
   UtilsUnit,
   VarsUnit,
   MraProtoUnit,
-  RosterUnit,
   OverbyteIcsMimeUtils,
   OverbyteIcsUrl;
 
@@ -174,8 +173,8 @@ begin
     begin
       if (MraEmailEdit.Text + MRAEmailComboBox.Text) <> MRA_LoginUIN then
         begin
-          if Assigned(RosterForm) then
-            RosterForm.ClearContacts(C_Mra); // Очищаем контакты предыдущего аккаунта
+          {if Assigned(RosterForm) then
+            RosterForm.ClearContacts(C_Mra); // Очищаем контакты предыдущего аккаунта}
           MRA_LoginUIN := MraEmailEdit.Text + MRAEmailComboBox.Text;
         end;
       MRA_LoginPassword := PassEdit.Hint;

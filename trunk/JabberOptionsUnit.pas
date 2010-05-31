@@ -133,7 +133,6 @@ uses
   SettingsUnit,
   UtilsUnit,
   VarsUnit,
-  RosterUnit,
   OverbyteIcsMimeUtils,
   OverbyteIcsUrl;
 
@@ -214,8 +213,8 @@ begin
     begin
       if JabberJIDEdit.Text <> Jabber_LoginUIN then
         begin
-          if Assigned(RosterForm) then
-            RosterForm.ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта
+          {if Assigned(RosterForm) then
+            RosterForm.ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта}
           Jabber_JID := JabberJIDEdit.Text;
         end;
       Jabber_LoginPassword := PassEdit.Hint;

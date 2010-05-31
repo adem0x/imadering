@@ -107,7 +107,6 @@ uses
   UtilsUnit,
   VarsUnit,
   MraProtoUnit,
-  RosterUnit,
   OverbyteIcsMimeUtils,
   OverbyteIcsUrl,
   TwitProtoUnit;

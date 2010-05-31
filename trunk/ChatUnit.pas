@@ -236,7 +236,6 @@ uses
   HistoryUnit,
   IcqContactInfoUnit,
   UtilsUnit,
-  RosterUnit,
   JabberProtoUnit,
   FileTransferUnit,
   GtransUnit,
@@ -266,7 +265,7 @@ var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
-  // Применяем параметры нового чата
+  {// Применяем параметры нового чата
   UIN := CButton.HelpKeyword;
   // Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
   RosterItem := RosterForm.ReqRosterItem(UIN);
@@ -502,13 +501,13 @@ procedure TChatForm.QSpeedButtonClick(Sender: TObject);
 var
   RosterItem: TListItem;
 begin
-  // Достаём из Ростера последнее сообщение от этого контакта
+  {// Достаём из Ростера последнее сообщение от этого контакта
   RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
   if RosterItem <> nil then
     begin
       if RosterItem.SubItems[15] <> EmptyStr then
         InputRichEdit.Lines.Add('> ' + URLDecode(RosterItem.SubItems[15]));
-    end;
+    end;}
 end;
 
 procedure TChatForm.QuickMessClick(Sender: TObject);
@@ -931,13 +930,13 @@ procedure TChatForm.Save_Input_Text(S_UIN: string);
 var
   RosterItem: TListItem;
 begin
-  // Сохраняем набранный текст для этой вкладки
+  {// Сохраняем набранный текст для этой вкладки
   if S_UIN <> EmptyStr then
     begin
       RosterItem := RosterForm.ReqRosterItem(S_UIN);
       if RosterItem <> nil then
         RosterItem.SubItems[14] := URLEncode(InputRichEdit.Text);
-    end;
+    end;}
 end;
 
 {$ENDREGION}
@@ -1069,7 +1068,7 @@ var
   RosterItem: TListItem;
   ChatTabB: TToolButton;
 begin
-  // Сбрасываем иконку в активной вкладке в окне чата
+  {// Сбрасываем иконку в активной вкладке в окне чата
   ChatTabB := RosterForm.ReqChatPage(InfoPanel2.Caption);
   if ChatTabB = nil then
     Exit;
@@ -1079,7 +1078,7 @@ begin
   if RosterItem <> nil then
     RosterItem.SubItems[36] := EmptyStr;
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
-  RosterForm.DellcIdInMessList(InfoPanel2.Caption);
+  RosterForm.DellcIdInMessList(InfoPanel2.Caption);}
 end;
 
 {$ENDREGION}
@@ -1577,7 +1576,7 @@ var
   Doc: string;
   RosterItem: TListItem;
 begin
-  // Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
+  {// Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
   RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
   if RosterItem <> nil then
     begin
@@ -1615,7 +1614,7 @@ begin
               HTMLChatViewer.CaretPos := Length(Doc);
             end;
         end;
-    end;
+    end;}
 end;
 
 {$ENDREGION}

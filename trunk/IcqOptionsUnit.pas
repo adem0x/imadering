@@ -277,7 +277,6 @@ uses
   IcqProtoUnit,
   SettingsUnit,
   UtilsUnit,
-  RosterUnit,
   OverbyteIcsMimeUtils,
   OverbyteIcsUrl;
 
@@ -369,8 +368,8 @@ begin
     begin
       if ICQUINEdit.Text <> ICQ_LoginUIN then
         begin
-          if Assigned(RosterForm) then
-            RosterForm.ClearContacts(C_Icq); // Очищаем контакты предыдущего аккаунта
+          {if Assigned(RosterForm) then
+            RosterForm.ClearContacts(C_Icq); // Очищаем контакты предыдущего аккаунта}
           ICQ_LoginUIN := ICQUINEdit.Text;
         end;
       ICQ_LoginPassword := PassEdit.Hint;
@@ -379,8 +378,8 @@ begin
   // Отображение временных контактов в КЛ
   ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
   // Запускаем обработку Ростера
-  if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;
+  {if Assigned(RosterForm) then
+    RosterForm.UpdateFullCL;}
   // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;

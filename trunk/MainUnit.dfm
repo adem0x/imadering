@@ -182,7 +182,7 @@ object MainForm: TMainForm
       PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Visible = False
-      OnClick = OpenHistoryClick
+      OnClick = History_MenuClick
     end
     object SettingsToolButton: TToolButton
       Left = 207
@@ -192,7 +192,7 @@ object MainForm: TMainForm
       PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Visible = False
-      OnClick = OpenSettingsClick
+      OnClick = Settings_MenuClick
     end
     object CLSearchToolButton: TToolButton
       Left = 230
@@ -211,7 +211,7 @@ object MainForm: TMainForm
       PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Visible = False
-      OnClick = OpenTrafficClick
+      OnClick = Traffic_MenuClick
     end
     object TopPanelToolButton: TToolButton
       Left = 276
@@ -289,7 +289,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
       ShowHint = True
-      OnClick = OpenHistoryClick
+      OnClick = History_MenuClick
     end
     object SettingsTopToolButton: TToolButton
       Left = 115
@@ -298,7 +298,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
       ShowHint = True
-      OnClick = OpenSettingsClick
+      OnClick = Settings_MenuClick
     end
     object CLSearchTopToolButton: TToolButton
       Left = 138
@@ -307,7 +307,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
       ShowHint = True
-      OnClick = SearchInCLMainMenuClick
+      OnClick = SearchInCL_MenuClick
     end
     object TrafficTopToolButton: TToolButton
       Left = 161
@@ -316,7 +316,7 @@ object MainForm: TMainForm
       ParentShowHint = False
       PopupMenu = TopPanelPopupMenu
       ShowHint = True
-      OnClick = OpenTrafficClick
+      OnClick = Traffic_MenuClick
     end
     object TopModeToolButton: TToolButton
       Left = 184
@@ -327,49 +327,6 @@ object MainForm: TMainForm
       ShowHint = True
       Style = tbsCheck
       OnClick = TopModeToolButtonClick
-    end
-  end
-  object ICQTrayIcon: TTrayIcon
-    Hint = 'ICQ'
-    Icons = AllImageList
-    PopupMenu = TrayPopupMenu
-    OnClick = ICQTrayIconClick
-    OnMouseDown = ICQTrayIconMouseDown
-    Left = 16
-    Top = 32
-  end
-  object TrayPopupMenu: TPopupMenu
-    AutoHotkeys = maManual
-    Images = AllImageList
-    OnPopup = TrayPopupMenuPopup
-    Left = 16
-    Top = 128
-    object HideMainInTray1: TMenuItem
-      ImageIndex = 4
-      OnClick = HideInTrayClick
-    end
-    object N19: TMenuItem
-      Caption = '-'
-    end
-    object StatusTray1: TMenuItem
-    end
-    object N1: TMenuItem
-      Caption = '-'
-    end
-    object SettingsTray1: TMenuItem
-      ImageIndex = 2
-      OnClick = OpenSettingsClick
-    end
-    object CheckUpdateTray1: TMenuItem
-      ImageIndex = 6
-      OnClick = CheckUpdateTray1Click
-    end
-    object N2: TMenuItem
-      Caption = '-'
-    end
-    object CloseProgramTray1: TMenuItem
-      ImageIndex = 3
-      OnClick = CloseProgramClick
     end
   end
   object AllImageList: TImageList
@@ -428,6 +385,7 @@ object MainForm: TMainForm
       end
       item
         Name = 'Gtranslation Timer'
+        Enabled = False
         Interval = 3000
         OnTimer = JvTimerListEvents8Timer
       end
@@ -452,6 +410,7 @@ object MainForm: TMainForm
       end
       item
         Name = 'Tray Refresh Timer'
+        Enabled = False
         Interval = 20000
         OnTimer = JvTimerListEvents12Timer
       end
@@ -476,7 +435,7 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents15Timer
       end>
     Left = 16
-    Top = 168
+    Top = 184
   end
   object MainPopupMenu: TPopupMenu
     AutoHotkeys = maManual
@@ -484,14 +443,14 @@ object MainForm: TMainForm
     Images = AllImageList
     Left = 16
     Top = 328
-    object OpenGameMenu: TMenuItem
+    object OpenGame_Menu: TMenuItem
       ImageIndex = 286
-      OnClick = OpenGameMenuClick
+      OnClick = OpenGame_MenuClick
     end
     object N38: TMenuItem
       Caption = '-'
     end
-    object SnapContactList: TMenuItem
+    object SnapCL_Menu: TMenuItem
       ImageIndex = 278
       object SnapToRight: TMenuItem
         ImageIndex = 279
@@ -505,70 +464,50 @@ object MainForm: TMainForm
     object N39: TMenuItem
       Caption = '-'
     end
-    object SearchInCLMainMenu: TMenuItem
+    object SearchInCL_Menu: TMenuItem
       ImageIndex = 215
-      OnClick = SearchInCLMainMenuClick
+      OnClick = SearchInCL_MenuClick
     end
-    object OpenTraffic: TMenuItem
+    object Traffic_Menu: TMenuItem
       ImageIndex = 226
-      OnClick = OpenTrafficClick
+      OnClick = Traffic_MenuClick
     end
-    object OpenHistory: TMenuItem
+    object History_Menu: TMenuItem
       ImageIndex = 147
-      OnClick = OpenHistoryClick
+      OnClick = History_MenuClick
     end
-    object OpenSettings: TMenuItem
+    object Settings_Menu: TMenuItem
       ImageIndex = 2
-      OnClick = OpenSettingsClick
+      OnClick = Settings_MenuClick
     end
-    object LogFormMenu: TMenuItem
+    object ShowLog_Menu: TMenuItem
       ImageIndex = 245
-      OnClick = LogFormMenuClick
+      OnClick = ShowLog_MenuClick
     end
     object N29: TMenuItem
       Caption = '-'
     end
-    object CheckUpdateMenu: TMenuItem
+    object CheckUpdate_Menu: TMenuItem
       ImageIndex = 6
-      OnClick = CheckUpdateTray1Click
     end
-    object AboutIMadering: TMenuItem
+    object AboutIMadering_Menu: TMenuItem
       ImageIndex = 0
-      OnClick = AboutIMaderingClick
+      OnClick = AboutIMadering_MenuClick
     end
     object N3: TMenuItem
       Caption = '-'
     end
-    object ProfileOpenMenu: TMenuItem
+    object SwitchProfile_Menu: TMenuItem
       ImageIndex = 253
-      OnClick = ProfileOpenMenuClick
+      OnClick = SwitchProfile_MenuClick
     end
-    object HideInTray: TMenuItem
+    object HideInTray_Menu: TMenuItem
       ImageIndex = 4
-      OnClick = HideInTrayClick
     end
-    object CloseProgram: TMenuItem
+    object CloseProgram_Menu: TMenuItem
       ImageIndex = 3
-      OnClick = CloseProgramClick
+      OnClick = CloseProgram_MenuClick
     end
-  end
-  object MRATrayIcon: TTrayIcon
-    Hint = 'MRA'
-    Icons = AllImageList
-    PopupMenu = TrayPopupMenu
-    OnClick = ICQTrayIconClick
-    OnMouseDown = ICQTrayIconMouseDown
-    Left = 16
-    Top = 64
-  end
-  object JabberTrayIcon: TTrayIcon
-    Hint = 'Jabber'
-    Icons = AllImageList
-    PopupMenu = TrayPopupMenu
-    OnClick = ICQTrayIconClick
-    OnMouseDown = ICQTrayIconMouseDown
-    Left = 16
-    Top = 96
   end
   object ICQWSocket: TWSocket
     LineMode = False
@@ -606,7 +545,7 @@ object MainForm: TMainForm
     OnError = ICQWSocketError
     OnBgException = SocketBgException
     OnSocksError = ICQWSocketSocksError
-    Left = 48
+    Left = 16
     Top = 32
   end
   object MRAWSocket: TWSocket
@@ -645,7 +584,7 @@ object MainForm: TMainForm
     OnError = MRAWSocketError
     OnBgException = SocketBgException
     OnSocksError = MRAWSocketSocksError
-    Left = 48
+    Left = 16
     Top = 64
   end
   object JabberWSocket: TSslWSocket
@@ -688,7 +627,7 @@ object MainForm: TMainForm
     SslEnable = False
     SslMode = sslModeClient
     OnSslVerifyPeer = JabberWSocketSslVerifyPeer
-    Left = 48
+    Left = 16
     Top = 96
   end
   object ICQAvatarWSocket: TWSocket
@@ -719,7 +658,7 @@ object MainForm: TMainForm
     ReqVerLow = 1
     ReqVerHigh = 1
     OnBgException = SocketBgException
-    Left = 80
+    Left = 48
     Top = 32
   end
   object UpdateHttpClient: THttpCli
@@ -746,7 +685,7 @@ object MainForm: TMainForm
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = UpdateHttpClientSocksConnected
     OnSocksError = UpdateHttpClientSocksError
-    Left = 48
+    Left = 16
     Top = 128
   end
   object ContactListPopupMenu: TPopupMenu
@@ -755,7 +694,7 @@ object MainForm: TMainForm
     Images = AllImageList
     OnPopup = ContactListPopupMenuPopup
     Left = 16
-    Top = 232
+    Top = 240
     object OpenGroupsCL: TMenuItem
       ImageIndex = 151
       OnClick = OpenGroupsCLClick
@@ -799,7 +738,7 @@ object MainForm: TMainForm
     end
     object SearchInCL: TMenuItem
       ImageIndex = 215
-      OnClick = SearchInCLMainMenuClick
+      OnClick = SearchInCL_MenuClick
     end
     object N18: TMenuItem
       Caption = '-'
@@ -1066,7 +1005,7 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     Left = 48
-    Top = 232
+    Top = 240
     object SendMessageForContact: TMenuItem
       ImageIndex = 163
       OnClick = SendMessageForContactClick
@@ -1179,7 +1118,7 @@ object MainForm: TMainForm
     BandwidthSampling = 1000
     Options = []
     SocksAuthentication = socksNoAuthentication
-    Left = 80
+    Left = 48
     Top = 64
   end
   object RightMRAPopupMenu: TPopupMenu
@@ -1209,8 +1148,8 @@ object MainForm: TMainForm
     end
   end
   object MainActionList: TActionList
-    Left = 16
-    Top = 200
+    Left = 208
+    Top = 48
     object CloseActiveFormAction: TAction
       Caption = 'CloseActiveFormAction'
       ShortCut = 27
@@ -1227,8 +1166,8 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
-    Left = 160
-    Top = 144
+    Left = 208
+    Top = 160
     object TopMainButtonONMenu: TMenuItem
       ImageIndex = 230
       OnClick = TopMainButtonONMenuClick
@@ -1273,8 +1212,8 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
-    Left = 160
-    Top = 176
+    Left = 208
+    Top = 192
     object MainButtonONMenu: TMenuItem
       Checked = True
       ImageIndex = 140
@@ -1324,44 +1263,38 @@ object MainForm: TMainForm
     SslVersionMethod = sslV23
     SslSessionTimeout = 0
     SslSessionCacheSize = 20480
-    Left = 80
+    Left = 48
     Top = 96
   end
   object SendFileOpenDialog: TOpenDialog
-    Left = 48
-    Top = 200
+    Left = 152
+    Top = 48
   end
   object IMaderingEvents: TApplicationEvents
     OnException = IMaderingEventsException
-    Left = 48
-    Top = 168
+    Left = 208
+    Top = 80
   end
-  object xTrayIcon: TTrayIcon
+  object TrayIcon: TTrayIcon
     Hint = 'IMadering'
     Icons = AllImageList
-    PopupMenu = xTrayPopupMenu
-    OnClick = xTrayIconClick
-    Left = 80
-    Top = 168
+    PopupMenu = TrayPopupMenu
+    OnClick = TrayIconClick
+    Left = 152
+    Top = 160
   end
-  object xTrayPopupMenu: TPopupMenu
+  object TrayPopupMenu: TPopupMenu
     AutoHotkeys = maManual
     Images = AllImageList
-    Left = 80
-    Top = 200
-    object HideProfileInTray: TMenuItem
+    Left = 152
+    Top = 192
+    object HideInTray_MenuTray: TMenuItem
       ImageIndex = 4
-      OnClick = HideProfileInTrayClick
-    end
-    object HideMainInTray2: TMenuItem
-      ImageIndex = 4
-      Visible = False
-      OnClick = HideInTrayClick
     end
     object N30: TMenuItem
       Caption = '-'
     end
-    object StatusTray2: TMenuItem
+    object Status_MenuTray: TMenuItem
       ImageIndex = 256
       Visible = False
       object AllStatusFFC: TMenuItem
@@ -1417,26 +1350,25 @@ object MainForm: TMainForm
     object N28: TMenuItem
       Caption = '-'
     end
-    object ShowLogTray: TMenuItem
+    object ShowLog_MenuTray: TMenuItem
       ImageIndex = 245
-      OnClick = LogFormMenuClick
+      OnClick = ShowLog_MenuClick
     end
-    object SettingsTray2: TMenuItem
+    object Settings_MenuTray: TMenuItem
       ImageIndex = 2
       Visible = False
-      OnClick = OpenSettingsClick
+      OnClick = Settings_MenuClick
     end
-    object CheckUpdateTray2: TMenuItem
-      ImageIndex = 6
+    object SwitchProfile_MenuTray: TMenuItem
+      ImageIndex = 253
       Visible = False
-      OnClick = CheckUpdateTray1Click
     end
     object N24: TMenuItem
       Caption = '-'
     end
-    object CloseProgramTray2: TMenuItem
+    object CloseProgram_MenuTray: TMenuItem
       ImageIndex = 3
-      OnClick = CloseProgramClick
+      OnClick = CloseProgram_MenuClick
     end
   end
   object TwitterPopupMenu: TPopupMenu
@@ -1542,7 +1474,7 @@ object MainForm: TMainForm
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = UpdateHttpClientSocksConnected
     OnSocksError = UpdateHttpClientSocksError
-    Left = 80
+    Left = 48
     Top = 128
   end
   object SaveTextAsFileDialog: TSaveTextFileDialog
@@ -1550,7 +1482,7 @@ object MainForm: TMainForm
     Filter = 'Text Files (*.txt)|*.txt'
     Encodings.Strings = (
       'Unicode')
-    Left = 80
-    Top = 232
+    Left = 152
+    Top = 80
   end
 end

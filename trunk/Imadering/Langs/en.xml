@@ -3,8 +3,7 @@
   <vars language="English">
     <RestoreFromTray c="Show IMadering"/>
     <HideInTray c="Hide IMadering"/>
-    <RestoreProfileFromTray c="Show profile selection"/>
-    <HideProfileInTray c="Hide profile selection"/>
+    <QuitProgram c="Quit program?"/>
     <Version c="Version: %s"/>
     <ProfileError c="First you must enter or select the profile name."/>
     <DevelMess c="This feature is in development! Look for updates of the project."/>
@@ -140,9 +139,9 @@
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
+    <LangsSpeedButton h="_b_Interface language_d__r_Choose the localization of the program"/>
     <LoginButton c="Sign in profile"/>
     <DellProfileSpeedButton h="_b_Delete profile_d__r_Remove the profile folder from the hard disk"/>
-    <LangsSpeedButton h="_b_Interface language_d__r_Choose the localization of the program"/>
     <AutoSignCheckBox c="Login automatically"/>
     <AutoDellProfileCheckBox c="Delete profile when exit"/>
     <OpenProfilesSpeedButton h="_b_Profile folder_d__r_Open the profile folder for remove or copying"/>
@@ -157,14 +156,14 @@
     <SaveLogSpeedButton h="_b_Save_d__r_Record data in the log file"/>
     <ClearLogSpeedButton h="_b_Clean_d__r_Delete all the log"/>
     <SendEmailSpeedButton h="_b_Send by E-mail_d__r_Send all or selected text to the developers"/>
-    <RosterSpeedButton h="_b_Open roster_d__r_Database of contacts"/>
+    <RosterSpeedButton h="_b_Unload roster_d__r_Save the database of contacts in the file"/>
   </LogForm>
   <MainForm c="IMadering">
-    <CloseProgram c="Exit IMadering"/>
-    <ShowLogTray c="Event log program"/>
-    <StatusTray1 c="Status"/>
-    <OpenSettings c="Settings"/>
-    <CheckUpdateMenu c="Check update"/>
+    <CloseProgram_Menu c="Exit IMadering"/>
+    <ShowLog_MenuTray c="Event log program"/>
+    <Status_MenuTray c="Status"/>
+    <Settings_Menu c="Settings"/>
+    <CheckUpdate_Menu c="Check update"/>
     <MainToolButton h="_b_Main menu_d__r_Access to essential items"/>
     <OnlyOnlineContactsToolButton h="_b_Offline contacts_d__r_Show or hide offline contacts"/>
     <GroupOnOffToolButton h="_b_Group contacts_d__r_Show or hide the group"/>
@@ -173,11 +172,11 @@
     <HistoryToolButton h="_b_Message history_d__r_Browse the archives of correspondence"/>
     <SettingsToolButton h="_b_Settings_d__r_Open settings window"/>
     <TrafficToolButton h="_b_Traffic_d__r_View stats traffic"/>
-    <SearchInCLMainMenu c="Search the list of contacts"/>
-    <OpenTraffic c="Traffic"/>
-    <OpenHistory c="Message history"/>
-    <AboutIMadering c="About"/>
-    <ProfileOpenMenu c="Another profile"/>
+    <SearchInCL_Menu c="Search the list of contacts"/>
+    <Traffic_Menu c="Traffic"/>
+    <History_Menu c="Message history"/>
+    <AboutIMadering_Menu c="About"/>
+    <SwitchProfile_Menu c="Another profile"/>
     <OpenGroupsCL c="Open groups"/>
     <CloseGroupsCL c="Close groups"/>
     <HideEmptyGroups c="Hide empty groups"/>
@@ -220,16 +219,11 @@
     <OpenSiteTwitterMinu c="Open website Twitter"/>
     <OpenMyPageMenu c="Your page on the site"/>
     <OpenLentaTwitterMenu c="My timeline"/>
-    <OpenGameMenu c="Play games"/>
-    <SnapContactList c="Dock contact list"/>
+    <OpenGame_Menu c="Play games"/>
+    <SnapCL_Menu c="Dock contact list"/>
     <SnapToRight c="Right screen edge"/>
     <SnapToLeft c="Left screen edge"/>
   </MainForm>
-  <RosterForm c="Roster">
-    <UINLabel c="Account:"/>
-    <SearchBitBtn c="Find"/>
-    <RosterSendMessMenu c="Send message"/>
-  </RosterForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
     <SettingButtonGroup_1 c="Contact list"/>

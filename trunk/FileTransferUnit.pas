@@ -90,7 +90,6 @@ uses
   VarsUnit,
   UtilsUnit,
   IcqProtoUnit,
-  RosterUnit,
   JabberProtoUnit,
   MraProtoUnit,
   ChatUnit;
@@ -181,7 +180,7 @@ begin
   V_TrafSend := V_TrafSend + SendFileHttpClient.SentCount;
   V_AllTrafSend := V_AllTrafSend + SendFileHttpClient.SentCount;
   if Assigned(TrafficForm) then
-    MainForm.OpenTrafficClick(nil);
+    MainForm.Traffic_MenuClick(nil);
 end;
 
 procedure TFileTransferForm.SendFileHttpClientSessionClosed(Sender: TObject);
@@ -324,7 +323,7 @@ begin
           V_TrafRecev := V_TrafRecev + SendFileHttpClient.RcvdCount;
           V_AllTrafRecev := V_AllTrafRecev + SendFileHttpClient.RcvdCount;
           if Assigned(TrafficForm) then
-            MainForm.OpenTrafficClick(nil);
+            MainForm.Traffic_MenuClick(nil);
           // Обнуляем позицию начала чтения в блоке памяти
           SendFileHttpClient.RcvdStream.Position := 0;
           // Читаем данные в лист

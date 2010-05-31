@@ -18,6 +18,7 @@ object SettingsForm: TSettingsForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDblClick = FormDblClick
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13

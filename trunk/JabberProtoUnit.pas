@@ -30,7 +30,6 @@ uses
   CategoryButtons,
   OverbyteIcsMimeUtils,
   JabberOptionsUnit,
-  RosterUnit,
   JvSimpleXml,
   OverbyteIcsUrl;
 
@@ -245,12 +244,12 @@ begin
       // Ставим иконку и значение статуса оффлайн
       Jabber_CurrentStatus := 30;
       JabberToolButton.ImageIndex := Jabber_CurrentStatus;
-      JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
+      //JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
       // Подсвечиваем в меню статуса Jabber статус оффлайн
       JabberStatusOffline.default := True;
     end;
   // Обнуляем события и переменные в Ростере
-  with RosterForm.RosterJvListView do
+  {with RosterForm.RosterJvListView do
     begin
       for I := 0 to Items.Count - 1 do
         begin
@@ -269,7 +268,7 @@ begin
         end;
     end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  RosterForm.UpdateFullCL;}
 end;
 
 {$ENDREGION}
@@ -339,7 +338,7 @@ var
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
-  // Инициализируем XML
+  {// Инициализируем XML
   JvXML_Create(JvXML);
   // Начинаем добаление записей контактов в Ростер
   RosterForm.RosterJvListView.Items.BeginUpdate;
@@ -385,7 +384,7 @@ begin
   end;
   // Запускаем обработку Ростера
   V_CollapseGroupsRestore := True;
-  RosterForm.UpdateFullCL;
+  RosterForm.UpdateFullCL;}
 end;
 
 {$ENDREGION}
@@ -513,7 +512,7 @@ begin
                 if Pos('/', PJID) > 0 then
                   PJID := Parse('/', PJID, 1);
                 // Ищем эту запись в Ростере
-                RosterItem := RosterForm.ReqRosterItem(PJID);
+                {RosterItem := RosterForm.ReqRosterItem(PJID);
                 if RosterItem <> nil then
                   begin
                     // Выставляем параметры этой записи
@@ -541,7 +540,7 @@ begin
                         MainForm.JvTimerList.Events[11].Enabled := False;
                         MainForm.JvTimerList.Events[11].Enabled := True;
                       end;
-                  end;
+                  end;}
               end;
 
           end;
@@ -588,7 +587,7 @@ begin
                 ChatForm.CheckMessage_ClearTag(Mess);
                 PopMsg := Mess;
                 // Ищем эту запись в Ростере
-                RosterItem := RosterForm.ReqRosterItem(PJID);
+                {RosterItem := RosterForm.ReqRosterItem(PJID);
                 if RosterItem <> nil then
                   begin
                     // Выставляем параметры сообщения в этой записи
@@ -639,7 +638,7 @@ begin
                     // Запускаем таймер задержку событий Ростера
                     MainForm.JvTimerList.Events[11].Enabled := False;
                     MainForm.JvTimerList.Events[11].Enabled := True;
-                  end;
+                  end;}
                 // Записываем история в файл истории с этим контактов
                 HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + '.htm';
                 Mess := Text2XML(Mess);
