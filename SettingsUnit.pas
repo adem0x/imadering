@@ -166,6 +166,7 @@ type
     procedure SoundPathListViewChange(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure SoundPackComboBoxChange(Sender: TObject);
     procedure OpenProfileSpeedButtonClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
 
   private
     { Private declarations }
@@ -1271,6 +1272,11 @@ procedure TSettingsForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
+end;
+
+procedure TSettingsForm.FormDestroy(Sender: TObject);
+begin
+  //ShowMessage('Destroy SettingsForm');
 end;
 
 procedure TSettingsForm.TransparentTrackBarChange(Sender: TObject);

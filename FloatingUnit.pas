@@ -71,8 +71,7 @@ implementation
 
 uses
   MainUnit,
-  UtilsUnit,
-  RosterUnit;
+  UtilsUnit;
 
 {$ENDREGION}
 {$REGION 'Other'}
@@ -122,7 +121,7 @@ end;
 procedure TFloatingForm.OpenChatFloatMenuClick(Sender: TObject);
 begin
   // Открываем чат с этим контактом
-  RosterForm.OpenChatPage(nil, NickLabel.Hint);
+  //RosterForm.OpenChatPage(nil, NickLabel.Hint);
 end;
 
 procedure TFloatingForm.WMNCHitTest(var Msg: TWMNCHitTest);

@@ -409,6 +409,8 @@ begin
   JvXML := TJvSimpleXml.Create(MainForm);
   FOptions := [];
   Include(FOptions, SxoAutoIndent);
+  //Include(FOptions, sxoAutoEncodeValue);
+  //Include(FOptions, sxoAutoEncodeEntity);
   JvXML.Options := FOptions;
   JvXML.Prolog.Encoding := 'UTF-8';
   JvXML.Root.name := 'root';
@@ -886,8 +888,6 @@ begin
   if Xform.WindowState = wsMinimized then
     ShowWindow(Xform.Handle, SW_Restore);
   SetForeGroundWindow(Xform.Handle);
-  // Играем звук открытия окна
-  ImPlaySnd(8);
 end;
 
 {$ENDREGION}

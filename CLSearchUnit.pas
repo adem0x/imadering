@@ -67,7 +67,6 @@ implementation
 uses
   MainUnit,
   UtilsUnit,
-  RosterUnit,
   OverbyteIcsUrl;
 
 {$ENDREGION}
@@ -93,7 +92,7 @@ begin
   // Делаем поиск текста
   if CLSearchEdit.Text <> EmptyStr then
   begin
-    with RosterForm.RosterJvListView do
+    {with RosterForm.RosterJvListView do
     begin
       for I := 0 to Items.Count - 1 do
       begin
@@ -109,7 +108,7 @@ begin
           CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Items[I].SubItems[6]);
         end;
       end;
-    end;
+    end;}
   end;
 end;
 
@@ -137,7 +136,7 @@ begin
   if CLSearchJvListView.Selected <> nil then
   begin
     // Открываем чат с этим контактом
-    RosterForm.OpenChatPage(nil, CLSearchJvListView.Selected.Caption);
+    //RosterForm.OpenChatPage(nil, CLSearchJvListView.Selected.Caption);
   end;
 end;
 
@@ -148,7 +147,7 @@ begin
   // Если выделили контакт, то выделяем его и в КЛ
   if Selected then
   begin
-    CLItem := RosterForm.ReqCLContact(Item.Caption);
+    {CLItem := RosterForm.ReqCLContact(Item.Caption);
     if CLItem <> nil then
     begin
       // Выделяем этот контакт в КЛ
@@ -156,7 +155,7 @@ begin
       if CLItem.Category.Collapsed then
         CLItem.Category.Collapsed := False;
       MainForm.ContactList.ScrollIntoView(CLItem);
-    end;
+    end;}
   end;
 end;
 

@@ -3,8 +3,7 @@
   <vars language="Русский">
     <RestoreFromTray c="Показать IMadering"/>
     <HideInTray c="Скрыть IMadering"/>
-    <RestoreProfileFromTray c="Показать выбор профиля"/>
-    <HideProfileInTray c="Скрыть выбор профиля"/>
+    <QuitProgram c="Выйти из программы?"/>
     <Version c="Версия: %s"/>
     <ProfileError c="Сначала необходимо ввести или выбрать название профиля."/>
     <DevelMess c="Данная функция находится в разработке! Следите за обновлениями проекта."/>
@@ -157,14 +156,14 @@
     <SaveLogSpeedButton h="_b_Сохранить_d__r_Записать данные лога в файл"/>
     <ClearLogSpeedButton h="_b_Очистить_d__r_Удалить все сообщения лога"/>
     <SendEmailSpeedButton h="_b_Отправить по E-mail_d__r_Отослать весь или выделенный текст разработчикам"/>
-    <RosterSpeedButton h="_b_Открыть ростер_d__r_База данных контактов"/>
+    <RosterSpeedButton h="_b_Выгрузить ростер_d__r_Сохранить базу данных контактов в файл"/>
   </LogForm>
   <MainForm c="IMadering">
-    <CloseProgram c="Выйти из IMadering"/>
-    <ShowLogTray c="Лог событий программы"/>		
-    <StatusTray1 c="Статус"/>
-    <OpenSettings c="Настройки"/>
-    <CheckUpdateMenu c="Проверить обновление"/>
+    <CloseProgram_Menu c="Выйти из IMadering"/>
+    <ShowLog_MenuTray c="Лог событий программы"/>		
+    <Status_MenuTray c="Статус"/>
+    <Settings_Menu c="Настройки"/>
+    <CheckUpdate_Menu c="Проверить обновление"/>
     <MainToolButton h="_b_Главное меню_d__r_Доступ к основным пунктам"/>
     <OnlyOnlineContactsToolButton h="_b_Оффлайн контакты_d__r_Показывать или скрывать отключенные контакты"/>
     <GroupOnOffToolButton h="_b_Группы контактов_d__r_Показывать или скрывать группы"/>
@@ -173,11 +172,11 @@
     <HistoryToolButton h="_b_История сообщений_d__r_Просмотр архивов переписки"/>
     <SettingsToolButton h="_b_Настройки_d__r_Открыть окно настроек программы"/>
     <TrafficToolButton h="_b_Трафик_d__r_Открыть статистику потраченного трафика"/>
-    <SearchInCLMainMenu c="Поиск по списку контактов"/>
-    <OpenTraffic c="Трафик"/>
-    <OpenHistory c="История сообщений"/>
-    <AboutIMadering c="О программе"/>
-    <ProfileOpenMenu c="Другой профиль"/>
+    <SearchInCL_Menu c="Поиск по списку контактов"/>
+    <Traffic_Menu c="Трафик"/>
+    <History_Menu c="История сообщений"/>
+    <AboutIMadering_Menu c="О программе"/>
+    <SwitchProfile_Menu c="Другой профиль"/>
     <OpenGroupsCL c="Открыть группы"/>
     <CloseGroupsCL c="Закрыть группы"/>
     <HideEmptyGroups c="Скрывать пустые группы"/>
@@ -220,16 +219,11 @@
     <OpenSiteTwitterMinu c="Открыть сайт Twitter"/>
     <OpenMyPageMenu c="Ваша страница на сайте"/>
     <OpenLentaTwitterMenu c="Моя лента"/>
-    <OpenGameMenu c="Открыть игры"/>
-    <SnapContactList c="Пристыковать список контактов"/>
+    <OpenGame_Menu c="Открыть игры"/>
+    <SnapCL_Menu c="Пристыковать список контактов"/>
     <SnapToRight c="К правому краю экрана"/>
     <SnapToLeft c="К левому краю экрана"/>
   </MainForm>
-  <RosterForm c="Ростер">
-    <UINLabel c="Учётная запись:"/>
-    <SearchBitBtn c="Найти"/>
-    <RosterSendMessMenu c="Отправить сообщение"/>
-  </RosterForm>
   <SettingsForm c="Настройки">
     <SettingButtonGroup_0 c="Общие"/>
     <SettingButtonGroup_1 c="Список контактов"/>

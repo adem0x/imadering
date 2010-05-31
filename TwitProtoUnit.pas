@@ -28,8 +28,7 @@ uses
   IcqContactInfoUnit,
   VarsUnit,
   Graphics,
-  CategoryButtons,
-  RosterUnit;
+  CategoryButtons;
 
 {$ENDREGION}
 {$REGION 'Vars'}

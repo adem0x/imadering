@@ -40,6 +40,9 @@ const
   C_LN = '; ';
   C_TN = ': ';
   C_SN = '\';
+  C_QN = '[';
+  C_WN = '] ';
+  C_EN = ']';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -48,7 +51,6 @@ const
 {$ENDREGION}
 {$REGION 'FilesConst'}
 
-  C_IMadering = 'IMadering';
   C_Profiles = 'Profiles\';
   C_AnketaFolder = 'Contacts\';
   C_AvatarFolder = 'Avatars\';
@@ -70,11 +72,14 @@ const
   C_Nick_BD_FileName = 'Nicks.txt';
   C_ReplyFileName = 'Reply.txt';
   C_NoAvatarFileName = '\noavatar.gif';
+  C_ImaderingOld = 'Imadering.old';
+  C_XML_Files = '*.xml';
 
 {$ENDREGION}
 {$REGION 'CommandsConst'}
 
   // Команды смежного использования
+  C_IMadering = 'IMadering';
   C_Icq = 'ICQ';
   C_Jabber = 'Jabber';
   C_Mra = 'MRA';
@@ -245,6 +250,7 @@ var
   V_ProfileAuto: Boolean = False;
   V_FArchive: TJclCompressionArchive;
   V_AutoDellProfile: Boolean = False;
+  V_Roster: TJvSimpleXml;
 
 {$ENDREGION}
 {$REGION 'CL_Vars'}
@@ -397,8 +403,8 @@ var
     L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
-    (L_N: 'RestoreProfileFromTray'; L_S: ''), // 2
-    (L_N: 'HideProfileInTray'; L_S: ''), // 3
+    (L_N: 'QuitProgram'; L_S: ''), // 2
+    (L_N: '---'; L_S: ''), // 3
     (L_N: 'Version'; L_S: ''), // 4
     (L_N: 'ProfileError'; L_S: ''), // 5
     (L_N: 'DevelMess'; L_S: ''), // 6

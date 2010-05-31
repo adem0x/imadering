@@ -27,7 +27,6 @@ uses
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
   UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
   TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
-  RosterUnit in 'RosterUnit.pas' {RosterForm},
   FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
   ShowCertUnit in 'ShowCertUnit.pas' {ShowCertForm},
   IcqProtoUnit in 'IcqProtoUnit.pas',

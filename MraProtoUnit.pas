@@ -29,8 +29,7 @@ uses
   IcqContactInfoUnit,
   VarsUnit,
   Graphics,
-  CategoryButtons,
-  RosterUnit;
+  CategoryButtons;
 
 {$ENDREGION}
 {$REGION 'Const Users Statuses'}
@@ -300,7 +299,7 @@ begin
     ChatForm.CheckMessage_ClearTag(Mess);
     PopMsg := Mess;
     // Ищем эту запись в Ростере
-    RosterItem := RosterForm.ReqRosterItem(M_From);
+    {RosterItem := RosterForm.ReqRosterItem(M_From);
     if RosterItem <> nil then
     begin
       // Выставляем параметры сообщения в этой записи
@@ -351,7 +350,7 @@ begin
       // Запускаем таймер задержку событий Ростера
       MainForm.JvTimerList.Events[11].Enabled := False;
       MainForm.JvTimerList.Events[11].Enabled := True;
-    end;
+    end;}
     // Записываем история в файл истории с этим контактов
     HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + '.htm';
     Mess := Text2XML(Mess);
@@ -477,7 +476,7 @@ var
   C_Auth: Boolean;
   ListItemD: TListItem;
 begin
-  // Получаем ошибки списка контактов
+  {// Получаем ошибки списка контактов
   UL := Text2Hex(NextData(PktData, 4));
   S_Log := S_Log + 'UL: ' + UL + C_RN;
   // Если ошибок в списке контактов нет
@@ -638,7 +637,7 @@ begin
     RosterForm.UpdateFullCL;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), C_Mra);}
 end;
 
 {$ENDREGION}
@@ -681,14 +680,14 @@ begin
     // Ставим иконку и значение статуса оффлайн
     MRA_CurrentStatus := 23;
     MRAToolButton.ImageIndex := MRA_CurrentStatus;
-    MRATrayIcon.IconIndex := MRA_CurrentStatus;
+    //MRATrayIcon.IconIndex := MRA_CurrentStatus;
     // Подсвечиваем в меню статуса MRA статус оффлайн
     MRAStatusOffline.default := True;
   end;
   // Обнуляем счётчики пакетов
   MRA_Seq := 1;
   // Обнуляем события и переменные в Ростере
-  with RosterForm.RosterJvListView do
+  {with RosterForm.RosterJvListView do
   begin
     for I := 0 to Items.Count - 1 do
     begin
@@ -707,7 +706,7 @@ begin
     end;
   end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  RosterForm.UpdateFullCL;}
 end;
 
 {$ENDREGION}

@@ -152,7 +152,6 @@ uses
   IcqAddContactUnit,
   IcqContactInfoUnit,
   IcqOptionsUnit,
-  RosterUnit,
   JvSimpleXml,
   OverbyteIcsUrl;
 
@@ -227,7 +226,7 @@ procedure TIcqSearchForm.OpenChatResult;
 var
   RosterItem: TListItem;
 begin
-  // Ищем эту запись в Ростере
+  {// Ищем эту запись в Ростере
   RosterItem := RosterForm.ReqRosterItem(SearchResultJvListView.Selected.SubItems[1]);
   if RosterItem = nil then
     begin
@@ -264,7 +263,7 @@ begin
       RosterForm.UpdateFullCL;
     end;
   // Открываем чат с этим контактом
-  RosterForm.OpenChatPage(nil, SearchResultJvListView.Selected.SubItems[1]);
+  RosterForm.OpenChatPage(nil, SearchResultJvListView.Selected.SubItems[1]);}
 end;
 
 {$ENDREGION}

@@ -50,6 +50,7 @@ type
     procedure LogFindDialogFind(Sender: TObject);
     procedure RosterSpeedButtonClick(Sender: TObject);
     procedure SendEmailSpeedButtonClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
 
   private
     { Private declarations }
@@ -72,7 +73,6 @@ uses
   MainUnit,
   UtilsUnit,
   VarsUnit,
-  RosterUnit,
   OverbyteIcsUrl;
 
 const
@@ -218,6 +218,11 @@ begin
   TranslateForm;
 end;
 
+procedure TLogForm.FormDestroy(Sender: TObject);
+begin
+  //ShowMessage('Destroy LogForm');
+end;
+
 procedure TLogForm.LogFindDialogFind(Sender: TObject);
 begin
   // Ищем текст в логе
@@ -227,9 +232,16 @@ end;
 
 procedure TLogForm.RosterSpeedButtonClick(Sender: TObject);
 begin
-  // Отображаем Ростер
-  if Assigned(RosterForm) then
-    XShowForm(RosterForm);
+  // Сохраняем Ростер
+  if V_Roster <> nil then
+  begin
+    with MainForm do
+    begin
+      SaveTextAsFileDialog.FileName := C_ContactListFileName;
+      if SaveTextAsFileDialog.Execute then
+        V_Roster.SaveToFile(SaveTextAsFileDialog.FileName);
+    end;
+  end;
 end;
 
 procedure TLogForm.SaveLogSpeedButtonClick(Sender: TObject);

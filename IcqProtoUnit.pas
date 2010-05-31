@@ -31,7 +31,6 @@ uses
   VarsUnit,
   Graphics,
   CategoryButtons,
-  RosterUnit,
   OverbyteIcsUrl,
   GtransUnit,
   JvSimpleXml,
@@ -920,14 +919,14 @@ begin
     end;
   end;
   // Ставим метку о печати сообщения в Ростере
-  RosterItem := RosterForm.ReqRosterItem(UIN);
+  {RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
   begin
     if Typing then
       RosterItem.SubItems[35] := '30'
     else
       RosterItem.SubItems[35] := '0';
-  end;
+  end;}
   // Отображаем событие о печати сообщения в окне чата
   if Assigned(ChatForm) then
   begin
@@ -1520,7 +1519,7 @@ var
   GrCap: string;
   ListItemD: TListItem;
 begin
-  // Если это не фаза работы с серверным КЛ, то выходим
+  {// Если это не фаза работы с серверным КЛ, то выходим
   if not ICQ_SSI_Phaze then
     Exit;
   // Пропускаем ненужные значения
@@ -1748,7 +1747,7 @@ begin
         DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
       end;
     end;
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -2477,7 +2476,7 @@ begin
           if (Nick > EmptyStr) and (Nick <> UIN) then
           begin
             // Присваиваем этот ник записи в Ростере
-            RosterItem := RosterForm.ReqRosterItem(UIN);
+            {RosterItem := RosterForm.ReqRosterItem(UIN);
             if RosterItem <> nil then
             begin
               if RosterItem.SubItems[0] = UIN then
@@ -2495,7 +2494,7 @@ begin
                   if ChatPage.Caption = UIN then
                     ChatPage.Caption := Nick;
               end;
-            end;
+            end;}
           end;
           // Сохраняем полученные данные в локальный файл инфы о контакте
           // Инициализируем XML
@@ -2875,7 +2874,7 @@ begin
   X: ;
   PopMsg := Mess;
   // Ищем эту запись в Ростере
-  RosterItem := RosterForm.ReqRosterItem(UIN);
+  {RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
   begin
     // Выставляем параметры сообщения в этой записи
@@ -2930,7 +2929,7 @@ begin
     // Запускаем таймер задержку событий Ростера
     MainForm.JvTimerList.Events[11].Enabled := False;
     MainForm.JvTimerList.Events[11].Enabled := True;
-  end;
+  end;}
   // Записываем история в файл истории с этим контактов
   HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm';
   Mess := Text2XML(Mess);
@@ -3550,7 +3549,7 @@ begin
   if (Pos(CAP_UTF8, Caps) > 0) or (Pos('134E', CapsId) > 0) then
     Utf8Sup := True;
   // Обновляем отображение контакта в Ростере
-  RosterItem := RosterForm.ReqRosterItem(UIN);
+  {RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
   begin
     with RosterItem do
@@ -3610,7 +3609,7 @@ begin
   end;
   // Запускаем таймер задержку событий Ростера
   MainForm.JvTimerList.Events[11].Enabled := False;
-  MainForm.JvTimerList.Events[11].Enabled := True;
+  MainForm.JvTimerList.Events[11].Enabled := True;}
 end;
 
 {$ENDREGION}
@@ -3966,7 +3965,7 @@ begin
   S_Log := S_Log + 'ItemsCount' + C_TN + IntToStr(Count) + C_RN;
   // Разбираем записи
   // Начинаем добаление записей контактов в Ростер
-  RosterForm.RosterJvListView.Items.BeginUpdate;
+  {RosterForm.RosterJvListView.Items.BeginUpdate;
   try
     for I := 0 to Count - 1 do
     begin
@@ -4286,7 +4285,7 @@ begin
   finally
     // Заканчиваем добаление записей контактов в Ростер
     RosterForm.RosterJvListView.Items.EndUpdate;
-  end;
+  end;}
   // Финальное время контакт листа
   CLTimeStamp := HexToInt(Text2Hex(NextData(PktData, 4)));
   S_Log := S_Log + 'TimeStamp' + C_TN + FloatToStr(CLTimeStamp) + C_RN;
@@ -4309,7 +4308,7 @@ begin
     Result := True;
     // Запускаем обработку Ростера
     V_CollapseGroupsRestore := True;
-    RosterForm.UpdateFullCL;
+    //RosterForm.UpdateFullCL;
   end;
   // Пишем в лог данные пакета
   XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[27].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
@@ -4461,13 +4460,13 @@ var
   RosterItem: TListItem;
 begin
   // Ищем ник этой учётной записи в КЛ
-  RosterItem := RosterForm.ReqRosterItem(UIN);
+  {RosterItem := RosterForm.ReqRosterItem(UIN);
   if RosterItem <> nil then
     Nick := RosterItem.SubItems[0];
   if Nick > EmptyStr then
     Nick := InfoNickL + C_BN + Nick;
   if IClient > EmptyStr then
-    Client := Lang_Vars[38].L_S + C_TN + IClient;
+    Client := Lang_Vars[38].L_S + C_TN + IClient;}
   // Отображаем всплывающим сообщением статус контакта
   DAShow(Lang_Vars[16].L_S, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + Lang_Vars[47].L_S + C_TN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
 end;
@@ -4605,7 +4604,7 @@ begin
     // Ставим иконку и значение статуса оффлайн
     ICQ_CurrentStatus := 9;
     ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
+    //ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
     // Подсвечиваем в меню статуса ICQ статус оффлайн
     ICQStatusOffline.default := True;
   end;
@@ -4613,7 +4612,7 @@ begin
   ICQ_Seq := $1000;
   ICQ_Avatar_Seq := $2000;
   // Обнуляем события и переменные в Ростере
-  with RosterForm.RosterJvListView do
+  {with RosterForm.RosterJvListView do
   begin
     for I := 0 to Items.Count - 1 do
     begin
@@ -4638,7 +4637,7 @@ begin
     end;
   end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;
+  RosterForm.UpdateFullCL;}
 end;
 
 {$ENDREGION}

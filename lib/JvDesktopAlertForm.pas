@@ -59,8 +59,7 @@ uses
   JvComponent,
   JvConsts,
   JvExForms,
-  ComCtrls,
-  RosterUnit;
+  ComCtrls;
 
 const
   JVDESKTOPALERT_AUTOFREE = WM_USER + 1001;
@@ -614,14 +613,14 @@ begin
     if zUIN <> EmptyStr then
     begin
       //--Сбрасываем иконку сообщения в Ростере
-      RosterItem := RosterForm.ReqRosterItem(zUIN);
+      {RosterItem := RosterForm.ReqRosterItem(zUIN);
       if RosterItem <> nil then RosterItem.SubItems[36] := EmptyStr;
       //--Tray Msg list
       try
         N := V_InMessList.IndexOf(zUIN);
         if N > -1 then V_InMessList.Delete(N);
       except
-      end;
+      end;}
     end;
   end
   //--Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
