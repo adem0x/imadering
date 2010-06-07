@@ -1362,6 +1362,7 @@ object MainForm: TMainForm
     object SwitchProfile_MenuTray: TMenuItem
       ImageIndex = 253
       Visible = False
+      OnClick = SwitchProfile_MenuClick
     end
     object N24: TMenuItem
       Caption = '-'

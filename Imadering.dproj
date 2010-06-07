@@ -131,10 +131,6 @@
 			<DCCReference Include="ShowCertUnit.pas">
 				<Form>ShowCertForm</Form>
 			</DCCReference>
-			<DCCReference Include="IcqProtoUnit.pas"/>
-			<DCCReference Include="JabberProtoUnit.pas"/>
-			<DCCReference Include="MraProtoUnit.pas"/>
-			<DCCReference Include="VarsUnit.pas"/>
 			<DCCReference Include="LogUnit.pas">
 				<Form>LogForm</Form>
 			</DCCReference>
@@ -147,15 +143,6 @@
 			<DCCReference Include="ProfileUnit.pas">
 				<Form>ProfileForm</Form>
 			</DCCReference>
-			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
-			<DCCReference Include="lib\Menus.pas"/>
-			<DCCReference Include="lib\JvListView.pas"/>
-			<DCCReference Include="lib\JvHint.pas"/>
-			<DCCReference Include="lib\JvDesktopAlertForm.pas"/>
-			<DCCReference Include="lib\JvDesktopAlert.pas"/>
-			<DCCReference Include="lib\ComCtrls.pas"/>
-			<DCCReference Include="lib\CategoryButtons.pas"/>
-			<DCCReference Include="lib\ButtonGroup.pas"/>
 			<DCCReference Include="LoginUnit.pas">
 				<Form>LoginForm</Form>
 			</DCCReference>
@@ -171,12 +158,26 @@
 			<DCCReference Include="SMSUnit.pas">
 				<Form>SMSForm</Form>
 			</DCCReference>
-			<DCCReference Include="UtilsUnit.pas"/>
-			<DCCReference Include="lib\ImgList.pas"/>
 			<DCCReference Include="GamesUnit.pas">
 				<Form>GamesForm</Form>
 			</DCCReference>
+			<DCCReference Include="IcqProtoUnit.pas"/>
+			<DCCReference Include="JabberProtoUnit.pas"/>
+			<DCCReference Include="MraProtoUnit.pas"/>
+			<DCCReference Include="VarsUnit.pas"/>
+			<DCCReference Include="RosterUnit.pas"/>
 			<DCCReference Include="TwitProtoUnit.pas"/>
+			<DCCReference Include="UtilsUnit.pas"/>
+			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
+			<DCCReference Include="lib\Menus.pas"/>
+			<DCCReference Include="lib\JvListView.pas"/>
+			<DCCReference Include="lib\JvHint.pas"/>
+			<DCCReference Include="lib\JvDesktopAlertForm.pas"/>
+			<DCCReference Include="lib\JvDesktopAlert.pas"/>
+			<DCCReference Include="lib\ComCtrls.pas"/>
+			<DCCReference Include="lib\CategoryButtons.pas"/>
+			<DCCReference Include="lib\ButtonGroup.pas"/>
+			<DCCReference Include="lib\ImgList.pas"/>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
