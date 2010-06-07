@@ -1,18 +1,15 @@
 ﻿program Imadering;
 
 uses
-  // Модули подключаемые первыми
   ShareMem,
   SysUtils,
   Windows,
   Forms,
-  // Модули с формами
   MainUnit in 'MainUnit.pas' {MainForm},
   SettingsUnit in 'SettingsUnit.pas' {SettingsForm},
   AboutUnit in 'AboutUnit.pas' {AboutForm},
   ChatUnit in 'ChatUnit.pas' {ChatForm},
   CLSearchUnit in 'CLSearchUnit.pas' {CLSearchForm},
-  FirstStartUnit in 'FirstStartUnit.pas' {FirstStartForm},
   FloatingUnit in 'FloatingUnit.pas' {FloatingForm},
   HistoryUnit in 'HistoryUnit.pas' {HistoryForm},
   IcqAddContactUnit in 'IcqAddContactUnit.pas' {IcqAddContactForm},
@@ -41,7 +38,6 @@ uses
   ProfilesFolderUnit in 'ProfilesFolderUnit.pas' {ProfilesFolderForm},
   SMSUnit in 'SMSUnit.pas' {SMSForm},
   GamesUnit in 'GamesUnit.pas' {GamesForm},
-  // Модули без форм
   IcqProtoUnit in 'IcqProtoUnit.pas',
   JabberProtoUnit in 'JabberProtoUnit.pas',
   MraProtoUnit in 'MraProtoUnit.pas',
@@ -49,7 +45,6 @@ uses
   RosterUnit in 'RosterUnit.pas',
   TwitProtoUnit in 'TwitProtoUnit.pas',
   UtilsUnit in 'UtilsUnit.pas',
-  // Модули библиотек
   OverbyteIcsLIBEAY in 'lib\OverbyteIcsLIBEAY.pas',
   Menus in 'lib\Menus.pas',
   JvListView in 'lib\JvListView.pas',
