@@ -218,7 +218,6 @@ const
   C_ProxyVersion = 'version';
   C_ProxyAuth = 'auth';
   C_ProxyNTLM = 'ntlm';
-  C_ProgName = 'IMadering';
   C_StartInTray = 'start_in_tray';
   C_UpdateCheck = 'update_check';
   C_HPriority = 'high_priority';
@@ -458,7 +457,7 @@ begin
                     // ----------------------------------------------------------------------
                     // Загружаем и отображаем Общие настройки
                     // Загружаем автозапуск при старте Windows
-                    StartOnWinStartCheckBox.Checked := IsAppInRun(C_ProgName);
+                    StartOnWinStartCheckBox.Checked := IsAppInRun('');
                     // Загружаем запуск свёрнутой в трэй
                     Sub_Node := XML_Node.Items.ItemNamed[C_StartInTray];
                     if Sub_Node <> nil then
@@ -567,7 +566,7 @@ begin
     end;
   // Заголовок по умолчанию
   if HeaderTextEdit.Text = EmptyStr then
-    HeaderTextEdit.Text := C_ProgName;
+    HeaderTextEdit.Text := MainForm.Caption;
   // Устанавливаем список папок со Смайлпаками
   SmiliesComboBox.Clear;
   for Folder in TDirectory.GetDirectories(V_MyPath + C_SmiliesFolder) do

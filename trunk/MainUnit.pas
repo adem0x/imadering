@@ -582,7 +582,7 @@ begin
   HideInTray_MenuTray.Caption := Lang_Vars[1].L_S;
   Settings_MenuTray.Caption := Settings_Menu.Caption;
   CloseProgram_MenuTray.Caption := CloseProgram_Menu.Caption;
-
+  SwitchProfile_MenuTray.Caption := SwitchProfile_Menu.Caption;
 
 
   ShowLog_Menu.Caption := ShowLog_MenuTray.Caption;
@@ -4213,13 +4213,15 @@ begin
       FreeAndNil(V_XStatusImg);
     if Assigned(V_XStatusMem) then
       FreeAndNil(V_XStatusMem);
+
     // Делаем текущую локальную копию списка контактов для отображения при запуске программы
-    {if Assigned(RosterForm) then
+    if V_Roster <> nil then
     begin
-      RosterForm.RosterJvListView.SaveToCSV(V_ProfilePath + C_ContactListFileName);
-      // Уничтожаем окно Ростера
-      FreeAndNil(RosterForm);
-    end;}
+      V_Roster.SaveToFile(V_ProfilePath + C_ContactListFileName);
+      // Уничтожаем Ростер
+      FreeAndNil(V_Roster);
+    end;
+
     // Высвобождаем окно подсказок
     if Assigned(SH_HintWindow) then
       FreeAndNil(SH_HintWindow);

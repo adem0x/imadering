@@ -1,10 +1,12 @@
 ﻿program Imadering;
 
 uses
+  // Модули подключаемые первыми
   ShareMem,
   SysUtils,
   Windows,
   Forms,
+  // Модули с формами
   MainUnit in 'MainUnit.pas' {MainForm},
   SettingsUnit in 'SettingsUnit.pas' {SettingsForm},
   AboutUnit in 'AboutUnit.pas' {AboutForm},
@@ -29,14 +31,25 @@ uses
   TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
   FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
   ShowCertUnit in 'ShowCertUnit.pas' {ShowCertForm},
-  IcqProtoUnit in 'IcqProtoUnit.pas',
-  JabberProtoUnit in 'JabberProtoUnit.pas',
-  MraProtoUnit in 'MraProtoUnit.pas',
-  VarsUnit in 'VarsUnit.pas',
   LogUnit in 'LogUnit.pas' {LogForm},
   GtransUnit in 'GtransUnit.pas' {GTransForm},
   UniqUnit in 'UniqUnit.pas' {UniqForm},
   ProfileUnit in 'ProfileUnit.pas' {ProfileForm},
+  LoginUnit in 'LoginUnit.pas' {LoginForm},
+  TwitterOptionsUnit in 'TwitterOptionsUnit.pas' {TwitterOptionsForm},
+  HttpUnit in 'HttpUnit.pas' {HttpForm},
+  ProfilesFolderUnit in 'ProfilesFolderUnit.pas' {ProfilesFolderForm},
+  SMSUnit in 'SMSUnit.pas' {SMSForm},
+  GamesUnit in 'GamesUnit.pas' {GamesForm},
+  // Модули без форм
+  IcqProtoUnit in 'IcqProtoUnit.pas',
+  JabberProtoUnit in 'JabberProtoUnit.pas',
+  MraProtoUnit in 'MraProtoUnit.pas',
+  VarsUnit in 'VarsUnit.pas',
+  RosterUnit in 'RosterUnit.pas',
+  TwitProtoUnit in 'TwitProtoUnit.pas',
+  UtilsUnit in 'UtilsUnit.pas',
+  // Модули библиотек
   OverbyteIcsLIBEAY in 'lib\OverbyteIcsLIBEAY.pas',
   Menus in 'lib\Menus.pas',
   JvListView in 'lib\JvListView.pas',
@@ -46,15 +59,7 @@ uses
   ComCtrls in 'lib\ComCtrls.pas',
   CategoryButtons in 'lib\CategoryButtons.pas',
   ButtonGroup in 'lib\ButtonGroup.pas',
-  LoginUnit in 'LoginUnit.pas' {LoginForm},
-  TwitterOptionsUnit in 'TwitterOptionsUnit.pas' {TwitterOptionsForm},
-  HttpUnit in 'HttpUnit.pas' {HttpForm},
-  ProfilesFolderUnit in 'ProfilesFolderUnit.pas' {ProfilesFolderForm},
-  SMSUnit in 'SMSUnit.pas' {SMSForm},
-  UtilsUnit in 'UtilsUnit.pas',
-  ImgList in 'lib\ImgList.pas',
-  GamesUnit in 'GamesUnit.pas' {GamesForm},
-  TwitProtoUnit in 'TwitProtoUnit.pas';
+  ImgList in 'lib\ImgList.pas';
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or

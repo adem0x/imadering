@@ -68,7 +68,7 @@ const
   C_LangPath = 'Langs\%s.xml';
   C_SmiliesPath = 'Smilies\%s\smilies.txt';
   C_IconsPath = 'Icons\%s\icons.bmp';
-  C_ContactListFileName = 'Contacts.txt';
+  C_ContactListFileName = 'Roster.xml';
   C_Nick_BD_FileName = 'Nicks.txt';
   C_ReplyFileName = 'Reply.txt';
   C_NoAvatarFileName = '\noavatar.gif';

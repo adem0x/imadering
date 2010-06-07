@@ -93,7 +93,8 @@ uses
   FirstStartUnit,
   LogUnit,
   ProfilesFolderUnit,
-  OverbyteIcsUtils;
+  OverbyteIcsUtils,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'SaveSettings'}
@@ -191,6 +192,8 @@ begin
   end;
   // Запоминаем имя профиля
   V_Profile := ProfileComboBox.Text;
+  // Делаем заголовок окна КЛ по имени профиля
+  MainForm.Caption := V_Profile;
   if ProfileComboBox.Items.IndexOf(V_Profile) = -1 then
     ProfileComboBox.Items.Add(V_Profile);
   // Сохраняем настройки
@@ -208,6 +211,7 @@ begin
   begin
     Status_MenuTray.Visible := True;
     Settings_MenuTray.Visible := True;
+    SwitchProfile_MenuTray.Visible := True;
   end;
   // Загружаем настройки главного окна
   MainForm.LoadMainFormSettings;
@@ -215,10 +219,8 @@ begin
     V_AllSesDataTraf := DateTimeToStr(Now);
   // Создаём Ростер и загружаем контакты в него
   JvXML_Create(V_Roster);
-
-
-
-
+  if FileExists(V_ProfilePath + C_ContactListFileName) then
+    V_Roster.LoadFromFile(V_ProfilePath + C_ContactListFileName);
   // Если автоматически проверять новые версии при старте
   if SettingsForm.AutoUpdateCheckBox.Checked then
     MainForm.JvTimerList.Events[2].Enabled := True;
@@ -230,6 +232,7 @@ begin
     V_AccountToNick.LoadFromFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
   if FileExists(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles])) then
     V_SmilesList.LoadFromFile(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles]), TEncoding.UTF8);
+
   // Запускаем обработку Ростера
   //RosterForm.UpdateFullCL;
 
