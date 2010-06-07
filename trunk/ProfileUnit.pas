@@ -90,7 +90,6 @@ uses
   VarsUnit,
   UtilsUnit,
   SettingsUnit,
-  FirstStartUnit,
   LogUnit,
   ProfilesFolderUnit,
   OverbyteIcsUtils,
@@ -232,13 +231,8 @@ begin
     V_AccountToNick.LoadFromFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
   if FileExists(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles])) then
     V_SmilesList.LoadFromFile(V_MyPath + Format(C_SmiliesPath, [V_CurrentSmiles]), TEncoding.UTF8);
-
   // Запускаем обработку Ростера
-  //RosterForm.UpdateFullCL;
-
-
-
-
+  UpdateFullCL;
   // Если не активно запускаться свёрнутой в трэй то показываем клавное окно
   if not SettingsForm.HideInTrayProgramStartCheckBox.Checked then
   begin
@@ -250,16 +244,23 @@ begin
   MainForm.JvTimerList.Events[7].Enabled := True;
   // Инициализируем переменную времени начала статистики трафика сессии
   V_SesDataTraf := Now;
-  // Если это первый старт программы то запускаем окно первичной настройки протоколов
+
+
+
+
+  // Если это первый старт программы то запускаем выбор протоколов
   if not V_FirstStart then
   begin
-    // Затем показываем окно начальной настройки протоколов
-    FirstStartForm := TFirstStartForm.Create(MainForm);
-    //Application.CreateForm(TSettingsForm, SettingsForm);
 
-
-    XShowForm(FirstStartForm);
   end;
+
+
+
+
+
+
+
+
   // Запускаем таймер индикации событий
   MainForm.JvTimerList.Events[1].Enabled := True;
   // Выключаем кнопку записи последующих событий в окно лога

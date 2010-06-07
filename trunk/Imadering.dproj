@@ -74,9 +74,6 @@
 			<DCCReference Include="CLSearchUnit.pas">
 				<Form>CLSearchForm</Form>
 			</DCCReference>
-			<DCCReference Include="FirstStartUnit.pas">
-				<Form>FirstStartForm</Form>
-			</DCCReference>
 			<DCCReference Include="FloatingUnit.pas">
 				<Form>FloatingForm</Form>
 			</DCCReference>
@@ -226,7 +223,7 @@
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName">IMadering</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">5 alpha</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion"/>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 					<Excluded_Packages/>

@@ -496,7 +496,6 @@ uses
   IcqOptionsUnit,
   IcqXStatusUnit,
   MraXStatusUnit,
-  FirstStartUnit,
   IcqProtoUnit,
   IcqContactInfoUnit,
   MraOptionsUnit,
@@ -3005,9 +3004,9 @@ end;
 
 procedure TMainForm.JvTimerListEvents7Timer(Sender: TObject);
 begin
-  // Создаём форму со смайликами через секунду после создания окна чата
+  // Создаём форму со смайликами через 2 секунды после входа в профиль
   if not Assigned(SmilesForm) then
-    SmilesForm := TSmilesForm.Create(nil);
+    Application.CreateForm(TSmilesForm, SmilesForm);
 end;
 
 procedure TMainForm.JvTimerListEvents9Timer(Sender: TObject);

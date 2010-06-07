@@ -381,6 +381,7 @@ object MainForm: TMainForm
         Name = 'Create Smilies Timer'
         Cycled = False
         Enabled = False
+        Interval = 2000
         OnTimer = JvTimerListEvents7Timer
       end
       item
