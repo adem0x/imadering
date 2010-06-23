@@ -62,6 +62,7 @@ type
     procedure LangsSpeedButtonClick(Sender: TObject);
     procedure LangsSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure AutoDellProfileCheckBoxClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
   private
     { Private declarations }
@@ -189,14 +190,20 @@ begin
     DAShow(Lang_Vars[17].L_S, Lang_Vars[5].L_S, EmptyStr, 134, 2, 0);
     Exit;
   end;
+  // Скрываем окно профиля
+  Hide;
   // Запоминаем имя профиля
   V_Profile := ProfileComboBox.Text;
-  // Делаем заголовок окна КЛ по имени профиля
-  MainForm.Caption := V_Profile;
   if ProfileComboBox.Items.IndexOf(V_Profile) = -1 then
     ProfileComboBox.Items.Add(V_Profile);
-  // Сохраняем настройки
+  // Сохраняем настройки профиля
   SaveSettings;
+  // Делаем заголовок окна КЛ и иконки в трэе по имени профиля
+  with MainForm do
+  begin
+    Caption := V_Profile;
+    TrayIcon.Hint := V_Profile;
+  end;
   // Инициализируем папку с профилем
   PR := V_ProfilePath;
   V_ProfilePath := V_ProfilePath + V_Profile + C_SN;
@@ -239,34 +246,34 @@ begin
     XShowForm(MainForm);
     // Выводим окно на самый передний план, против глюков в вин и вайн
     Application.BringToFront;
+  end
+  else
+  begin
+    MainForm.HideInTray_MenuTray.Caption := Lang_Vars[0].L_S;
+    MainForm.HideInTray_MenuTray.ImageIndex := 5;
   end;
-  // В фоне создаём окно смайлов
-  MainForm.JvTimerList.Events[7].Enabled := True;
   // Инициализируем переменную времени начала статистики трафика сессии
   V_SesDataTraf := Now;
-
-
-
-
   // Если это первый старт программы то запускаем выбор протоколов
   if not V_FirstStart then
   begin
-
+    XShowForm(SettingsForm);
+    SettingsForm.SettingsJvPageList.ActivePageIndex := 12;
+    SettingsForm.SettingButtonGroup.ItemIndex := 12;
   end;
-
-
-
-
-
-
-
-
-  // Запускаем таймер индикации событий
-  MainForm.JvTimerList.Events[1].Enabled := True;
+  // Запускаем таймер индикации событий в КЛ и чате
+  with MainForm do
+  begin
+    JvTimerList.Events[1].Enabled := True;
+    // Запускаем таймер перерисовки иконки в трэе
+    JvTimerList.Events[12].Enabled := True;
+    // В фоне создаём окно смайлов
+    JvTimerList.Events[7].Enabled := True;
+    // Воспроизводим звук запуска программы
+    JvTimerList.Events[16].Enabled := True;
+  end;
   // Выключаем кнопку записи последующих событий в окно лога
   LogForm.WriteLogSpeedButton.Down := False;
-  // Воспроизводим звук запуска программы
-  ImPlaySnd(1);
   // Закрываем окно
   FClose := True;
   Close;
@@ -490,13 +497,26 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
+procedure TProfileForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if FClose then
+  begin
+    // Уничтожаем форму при закрытии
+    Action := caFree;
+    ProfileForm := nil;
+  end;
+end;
+
 procedure TProfileForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  // Спрашиваем выйти из программы или свернуть в трэй
-  if MessageBox(Handle, PChar(Lang_Vars[2].L_S), PChar(Application.Title), MB_YESNO or MB_ICONQUESTION) = mrYes then
-    MainForm.CloseProgram_MenuClick(nil);
-  //else
-    //MainForm.
+  if not FClose then
+  begin
+    // Спрашиваем выйти из программы или свернуть в трэй
+    if MessageBox(Handle, PChar(Lang_Vars[2].L_S), PChar(Application.Title), MB_YESNO or MB_ICONQUESTION) = mrYes then
+      MainForm.CloseProgram_MenuClick(nil)
+    else
+      MainForm.MainFormHideInTray;
+  end;
 end;
 
 procedure TProfileForm.SiteLabelClick(Sender: TObject);

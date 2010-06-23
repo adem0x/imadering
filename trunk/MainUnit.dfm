@@ -202,6 +202,7 @@ object MainForm: TMainForm
       PopupMenu = BottomPanelPopupMenu
       ShowHint = True
       Visible = False
+      OnClick = SearchInCL_MenuClick
     end
     object TrafficToolButton: TToolButton
       Left = 253
@@ -434,6 +435,13 @@ object MainForm: TMainForm
         Enabled = False
         Interval = 100
         OnTimer = JvTimerListEvents15Timer
+      end
+      item
+        Name = 'Start Sound Timer'
+        Cycled = False
+        Enabled = False
+        Interval = 300
+        OnTimer = JvTimerListEvents16Timer
       end>
     Left = 16
     Top = 184
@@ -490,6 +498,7 @@ object MainForm: TMainForm
     end
     object CheckUpdate_Menu: TMenuItem
       ImageIndex = 6
+      OnClick = CheckUpdate_MenuClick
     end
     object AboutIMadering_Menu: TMenuItem
       ImageIndex = 0
@@ -504,6 +513,7 @@ object MainForm: TMainForm
     end
     object HideInTray_Menu: TMenuItem
       ImageIndex = 4
+      OnClick = HideInTray_MenuClick
     end
     object CloseProgram_Menu: TMenuItem
       ImageIndex = 3
@@ -1277,10 +1287,10 @@ object MainForm: TMainForm
     Top = 80
   end
   object TrayIcon: TTrayIcon
-    Hint = 'IMadering'
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
     OnClick = TrayIconClick
+    OnDblClick = TrayIconDblClick
     Left = 152
     Top = 160
   end
@@ -1291,6 +1301,7 @@ object MainForm: TMainForm
     Top = 192
     object HideInTray_MenuTray: TMenuItem
       ImageIndex = 4
+      OnClick = HideInTray_MenuClick
     end
     object N30: TMenuItem
       Caption = '-'

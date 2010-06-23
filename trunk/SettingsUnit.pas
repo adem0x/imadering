@@ -31,7 +31,6 @@ uses
   OverbyteIcsWndControl,
   OverbyteIcsWSocket,
   OverbyteIcsHttpProt,
-  Registry,
   ComCtrls,
   JvSimpleXml,
   Mmsystem,
@@ -75,7 +74,6 @@ type
     ConnGroupBox: TGroupBox;
     ReconnectCheckBox: TCheckBox;
     HideInTrayProgramStartCheckBox: TCheckBox;
-    StartOnWinStartCheckBox: TCheckBox;
     AutoUpdateCheckBox: TCheckBox;
     TransparentGroupBox: TGroupBox;
     HeadTextGroupBox: TGroupBox;
@@ -236,55 +234,6 @@ const
   C_NoTask = 'no_task';
 
 {$ENDREGION}
-{$REGION 'AutoStartProgram'}
-
-procedure DoAppToRun(RunName, AppName: string);
-var
-  Reg: TRegistry;
-begin
-  Reg := TRegistry.Create;
-  with Reg do
-    begin
-      RootKey := HKEY_LOCAL_MACHINE;
-      OpenKey(C_AppRun, True);
-      WriteString(RunName, AppName);
-      CloseKey;
-      Free;
-    end;
-end;
-
-function IsAppInRun(RunName: string): Boolean;
-var
-  Reg: TRegistry;
-begin
-  Reg := TRegistry.Create;
-  with Reg do
-    begin
-      RootKey := HKEY_LOCAL_MACHINE;
-      OpenKey(C_AppRun, False);
-      Result := ValueExists(RunName);
-      CloseKey;
-      Free;
-    end;
-end;
-
-procedure DelAppFromRun(RunName: string);
-var
-  Reg: TRegistry;
-begin
-  Reg := TRegistry.Create;
-  with Reg do
-    begin
-      RootKey := HKEY_LOCAL_MACHINE;
-      OpenKey(C_AppRun, True);
-      if ValueExists(RunName) then
-        DeleteValue(RunName);
-      CloseKey;
-      Free;
-    end;
-end;
-
-{$ENDREGION}
 {$REGION 'LangComboBoxChange'}
 
 procedure TSettingsForm.LangComboBoxChange(Sender: TObject);
@@ -418,11 +367,6 @@ begin
       Items[6].Checked := True;
       V_SoundError_Path := Format(V_MyPath + V_SoundError_Mask, [V_CurrentSounds]);
       Items[6].SubItems[0] := V_SoundError_Path;
-      //
-      Items[7].Caption := V_SoundOpen_Name;
-      Items[7].Checked := True;
-      V_SoundOpen_Path := Format(V_MyPath + V_SoundOpen_Mask, [V_CurrentSounds]);
-      Items[7].SubItems[0] := V_SoundOpen_Path;
     end;
   // Считываем настройки из xml файла
   if FileExists(V_ProfilePath + C_SettingsFileName) then
@@ -456,8 +400,6 @@ begin
                       end;
                     // ----------------------------------------------------------------------
                     // Загружаем и отображаем Общие настройки
-                    // Загружаем автозапуск при старте Windows
-                    StartOnWinStartCheckBox.Checked := IsAppInRun('');
                     // Загружаем запуск свёрнутой в трэй
                     Sub_Node := XML_Node.Items.ItemNamed[C_StartInTray];
                     if Sub_Node <> nil then
@@ -662,11 +604,6 @@ begin
     end;
   // --------------------------------------------------------------------------
   // Применяем общие настройки
-  // Если "Запускать при старте системы", то ставим это в реестре
-  if StartOnWinStartCheckBox.Checked then
-    DoAppToRun('IMadering', V_MyPath + 'Imadering.exe')
-  else
-    DelAppFromRun('IMadering');
   // Если запускать программу с высоким приоритетом
   if BestPrioritetCheckBox.Checked then
     begin
@@ -766,10 +703,6 @@ begin
             6: begin
                 V_SoundError := Items[I].Checked;
                 V_SoundError_Path := Items[I].SubItems[0];
-              end;
-            7: begin
-                V_SoundOpen := Items[I].Checked;
-                V_SoundOpen_Path := Items[I].SubItems[0];
               end;
           end;
         end;
@@ -1063,8 +996,6 @@ begin
       Items[5].SubItems[0] := Format(V_MyPath + V_SoundFileSend_Mask, [SoundPackComboBox.Text]);
       //
       Items[6].SubItems[0] := Format(V_MyPath + V_SoundError_Mask, [SoundPackComboBox.Text]);
-      //
-      Items[7].SubItems[0] := Format(V_MyPath + V_SoundOpen_Mask, [SoundPackComboBox.Text]);
     end;
   // Активируем кнопку Применить
   ApplyBitBtn.Enabled := True;

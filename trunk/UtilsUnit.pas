@@ -2159,6 +2159,8 @@ end;
 {$REGION 'ImPlaySnd'}
 
 procedure ImPlaySnd(Snd: Integer);
+const
+  f_ext = '.wav';
 var
   SFilePath: string;
 begin
@@ -2170,11 +2172,10 @@ begin
     5 - Сервисные оповещения
     6 - Передача файла завершена
     7 - Оповещение об ошибке
-    8 - Открытие окна
     ------------------------
-    9 - Набор текста
-    10 - Удаление текста
-    11 - Отправка текста }
+    8 - Набор текста
+    9 - Удаление текста
+    10 - Отправка текста }
   if V_SoundON then
   begin
     case Snd of
@@ -2192,25 +2193,23 @@ begin
           Sndplaysound(PChar(V_SoundFileSend_Path), Snd_async);
       7: if (V_SoundError) and (FileExists(V_SoundError_Path)) then
           Sndplaysound(PChar(V_SoundError_Path), Snd_async);
-      8: if (V_SoundOpen) and (FileExists(V_SoundOpen_Path)) then
-          Sndplaysound(PChar(V_SoundOpen_Path), Snd_async);
+      8:
+        begin
+          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + C_SN + 'Type' + f_ext;
+          if (FileExists(SFilePath)) then
+            Sndplaysound(PChar(SFilePath), Snd_async);
+        end;
       9:
         begin
-          SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Type.wav';
+          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + C_SN + 'Back' + f_ext;
           if (FileExists(SFilePath)) then
             Sndplaysound(PChar(SFilePath), Snd_async);
         end;
       10:
         begin
-          SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\Back.wav';
-          if (FileExists(SFilePath)) then
-            Sndplaysound(PChar(SFilePath), Snd_async);
-        end;
-      11:
-        begin
           if (V_SoundON) and (V_SoundMsgSend) then
             Exit;
-          SFilePath := V_MyPath + 'Sounds\' + V_CurrentSounds + '\MsgSend.wav';
+          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + C_SN + 'MsgSend' + f_ext;
           if (FileExists(SFilePath)) then
             Sndplaysound(PChar(SFilePath), Snd_async);
         end;
