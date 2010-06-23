@@ -131,24 +131,9 @@ object SettingsForm: TSettingsForm
             TabOrder = 0
             OnClick = ProxyAddressEditChange
           end
-          object StartOnWinStartCheckBox: TCheckBox
-            Left = 14
-            Top = 45
-            Width = 402
-            Height = 17
-            TabStop = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 1
-            OnClick = ProxyAddressEditChange
-          end
           object AutoUpdateCheckBox: TCheckBox
             Left = 14
-            Top = 68
+            Top = 45
             Width = 402
             Height = 17
             TabStop = False
@@ -160,12 +145,12 @@ object SettingsForm: TSettingsForm
             Font.Style = []
             ParentFont = False
             State = cbChecked
-            TabOrder = 2
+            TabOrder = 1
             OnClick = ProxyAddressEditChange
           end
           object BestPrioritetCheckBox: TCheckBox
             Left = 14
-            Top = 91
+            Top = 68
             Width = 402
             Height = 17
             TabStop = False
@@ -175,7 +160,7 @@ object SettingsForm: TSettingsForm
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 2
             OnClick = ProxyAddressEditChange
           end
         end

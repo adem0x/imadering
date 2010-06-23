@@ -36,7 +36,6 @@ uses
   StrUtils,
   OverbyteIcsMimeUtils,
   StdCtrls,
-  Registry,
   ActnList,
   GifImg,
   AppEvnts,
@@ -453,12 +452,15 @@ type
     procedure TopModeToolButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SearchInCL_MenuClick(Sender: TObject);
+    procedure JvTimerListEvents16Timer(Sender: TObject);
+    procedure HideInTray_MenuClick(Sender: TObject);
+    procedure TrayIconDblClick(Sender: TObject);
+    procedure CheckUpdate_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
     ButtonInd: Integer;
     procedure LoadImageList(ImgList: TImageList; FName: string);
-    procedure MainFormHideInTray;
     procedure AppActivate(Sender: TObject);
     procedure AppDeactivate(Sender: TObject);
     procedure WMQueryEndSession(var Msg: TWMQueryEndSession); message WM_QueryEndSession;
@@ -476,6 +478,7 @@ type
     procedure Jab_Enable(OnOff: Boolean);
     procedure Twit_Enable(OnOff: Boolean);
     procedure OpenFromTrayMessage(HUIN: string);
+    procedure MainFormHideInTray;
   end;
 
 {$ENDREGION}
@@ -541,6 +544,7 @@ const
   C_MainFormHEG = 'empty_group';
   C_MainFormTP = 'top_panel';
   C_MainFormBP = 'bottom_panel';
+  С_MainFormTop = 'top_mode';
   C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
 
 {$ENDREGION}
@@ -679,12 +683,17 @@ end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
-  // Сворачиваем главное окно в трэй или разворачиваем если оно уже свёрнуто
-  {if (Sender as TTrayIcon).Tag = 0 then
-  begin
-    if Assigned(ProfileForm) then
-      HideProfileInTrayClick(nil);
-  end;}
+  // Выводим главное окно на первый план
+  Application.BringToFront;
+  // Если есть непрочитанные сообщения, то открываем их
+  //if (Sender as TTrayIcon).Tag = 1 then
+
+end;
+
+procedure TMainForm.TrayIconDblClick(Sender: TObject);
+begin
+  // Скрываем или отображаем окно КЛ или профиля из трэя
+  MainFormHideInTray;
 end;
 
 {$ENDREGION}
@@ -1058,6 +1067,12 @@ begin
     RosterForm.UpdateFullCL;}
 end;
 
+procedure TMainForm.HideInTray_MenuClick(Sender: TObject);
+begin
+  // Скрываем окно КЛ или профиля в трэй
+  MainFormHideInTray;
+end;
+
 procedure TMainForm.HintMaxTime(Sender: TObject);
 begin
   // Делаем отображение подсказки бесконечным
@@ -1423,37 +1438,55 @@ end;
 
 {$ENDREGION}
 {$REGION 'MainFormHideInTray'}
-
 procedure TMainForm.MainFormHideInTray;
 begin
-  // Показываем или сворачиваем главное окно
-  if Visible then
+  if not Assigned(ProfileForm) then
   begin
-    Hide;
-    //HideMainInTray1.Caption := Lang_Vars[0].L_S;
-    //HideMainInTray1.ImageIndex := 5;
-    // Удаляем AppBar если он есть
-    if V_DockAppBar then
-      AppBarDestroy;
+    // Показываем или сворачиваем главное окно
+    if Visible then
+    begin
+      // Скрываем окно контактов
+      Hide;
+      HideInTray_MenuTray.Caption := Lang_Vars[0].L_S;
+      HideInTray_MenuTray.ImageIndex := 5;
+      // Удаляем AppBar если он есть
+      if V_DockAppBar then
+        AppBarDestroy;
+    end
+    else
+    begin
+      // Если был режим AppBar, то восстанавливаем его
+      if V_DockAppBar then
+      begin
+        if V_DockRigth then
+          SnapToRightClick(SnapToRight)
+        else
+          SnapToRightClick(SnapToLeft);
+      end;
+      // Отображем окно контактов
+      XShowForm(MainForm);
+      HideInTray_MenuTray.Caption := Lang_Vars[1].L_S;
+      HideInTray_MenuTray.ImageIndex := 4;
+    end;
   end
   else
   begin
-    // Если был режим AppBar, то восстанавливаем его
-    if V_DockAppBar then
+    if ProfileForm.Visible then
     begin
-      if V_DockRigth then
-        SnapToRightClick(SnapToRight)
-      else
-        SnapToRightClick(SnapToLeft);
+      // Скрываем окно профиля
+      ProfileForm.Hide;
+      HideInTray_MenuTray.Caption := Lang_Vars[0].L_S;
+      HideInTray_MenuTray.ImageIndex := 5;
+    end
+    else
+    begin
+      // Отображем окно профиля
+      XShowForm(ProfileForm);
+      HideInTray_MenuTray.Caption := Lang_Vars[1].L_S;
+      HideInTray_MenuTray.ImageIndex := 4;
     end;
-    // Отображем окно контактов
-    Show;
-    SetForeGroundWindow(Application.MainForm.Handle);
-    //HideMainInTray1.Caption := Lang_Vars[1].L_S;
-    //HideMainInTray1.ImageIndex := 4;
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'OpenFromTrayMessage'}
 
@@ -2560,6 +2593,7 @@ begin
   Application.CreateForm(TProfileForm, ProfileForm);
   // Подгружаем иконку программы в трэй
   AllImageList.GetIcon(0, TrayIcon.Icon);
+  TrayIcon.Hint := C_IMadering;
   TrayIcon.Visible := True;
   // Отображаем окно выбора профиля или входим в профиль автоматически
   // Проверяем не запущена ли уже программа
@@ -2592,18 +2626,9 @@ end;
 
 procedure TMainForm.JvTimerListEvents12Timer(Sender: TObject);
 begin
-  {// Перерисовываем иконки в трэе против глюка в вайн в линукс
-  if ICQTrayIcon.Visible then
-    ICQTrayIcon.Refresh;
-  //
-  if MRATrayIcon.Visible then
-    MRATrayIcon.Refresh;
-  //
-  if JabberTrayIcon.Visible then
-    JabberTrayIcon.Refresh;
-  //
-  if XTrayIcon.Visible then
-    XTrayIcon.Refresh;}
+  // Перерисовываем иконки в трэе против глюка в вайн в линукс
+  if TrayIcon.Visible then
+    TrayIcon.Refresh;
 end;
 
 procedure TMainForm.JvTimerListEvents13Timer(Sender: TObject);
@@ -2646,6 +2671,12 @@ begin
   MoveWindow(V_AppBarDataCL.HWnd, V_AppBarDataCL.Rc.Left, V_AppBarDataCL.Rc.Top, V_AppBarDataCL.Rc.Right - V_AppBarDataCL.Rc.Left, V_AppBarDataCL.Rc.Bottom - V_AppBarDataCL.Rc.Top, TRUE);
   if not Visible then
     XShowForm(MainForm);
+end;
+
+procedure TMainForm.JvTimerListEvents16Timer(Sender: TObject);
+begin
+  // Воспроизводим звук запуска программы
+  ImPlaySnd(1);
 end;
 
 {$ENDREGION}
@@ -3086,8 +3117,7 @@ end;
 procedure TMainForm.MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  MainPopupMenu.Alignment := PaLeft;
-  PopUp_Top(MainToolButton, MainPopupMenu);
+  MainToolButtonClick(MainToolButton);
 end;
 
 procedure TMainForm.MainToolTopButtonClick(Sender: TObject);
@@ -3097,13 +3127,10 @@ begin
   Popup_down(MainToolTopButton, MainPopupMenu);
 end;
 
-procedure TMainForm.MainToolTopButtonContextPopup(Sender: TObject; MousePos: TPoint;
-
-  var Handled: Boolean);
+procedure TMainForm.MainToolTopButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  MainPopupMenu.Alignment := PaRight;
-  Popup_down(MainToolTopButton, MainPopupMenu);
+  MainToolTopButtonClick(MainToolTopButton);
 end;
 
 procedure TMainForm.MRAToolButtonClick(Sender: TObject);
@@ -3112,9 +3139,7 @@ begin
   PopUp_Top(MRAToolButton, MRAPopupMenu);
 end;
 
-procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint;
-
-  var Handled: Boolean);
+procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
   PopUp_Top(MRAToolButton, RightMRAPopupMenu);
@@ -3442,18 +3467,27 @@ begin
   end;
 end;
 
+procedure TMainForm.CheckUpdate_MenuClick(Sender: TObject);
+begin
+  // Запускаем проверку обновлений программы на сайте
+  JvTimerListEvents2Timer(nil);
+end;
+
 {$ENDREGION}
 {$REGION 'OpenTrafficClick'}
 
 procedure TMainForm.Traffic_MenuClick(Sender: TObject);
+const
+  C_KB = 'KB';
+  C_MB = 'MB';
 begin
   // Отображаем окно трафика
   if not Assigned(TrafficForm) then
-    TrafficForm := TTrafficForm.Create(Self);
+    Application.CreateForm(TTrafficForm, TrafficForm);
   // Показываем сколько трафика передано за эту сессию
-  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + ' KB | ' + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + ' KB | ' + DateTimeToStr(V_SesDataTraf);
+  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_PN + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_PN + DateTimeToStr(V_SesDataTraf);
   // Показываем сколько трафика передано всего
-  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + ' MB | ' + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + ' MB | ' + V_AllSesDataTraf;
+  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_PN + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_PN + V_AllSesDataTraf;
   // Отображаем окно
   XShowForm(TrafficForm);
 end;
@@ -3612,7 +3646,7 @@ procedure TMainForm.Settings_MenuClick(Sender: TObject);
 begin
   // Открываем окно с настройками программы
   if not Assigned(SettingsForm) then
-    SettingsForm := TSettingsForm.Create(Self);
+    Application.CreateForm(TSettingsForm, SettingsForm);
   // Отображаем окно
   XShowForm(SettingsForm);
 end;
@@ -3679,7 +3713,7 @@ procedure TMainForm.AboutIMadering_MenuClick(Sender: TObject);
 begin
   // Открываем окно о программе
   if not Assigned(AboutForm) then
-    AboutForm := TAboutForm.Create(Self);
+    Application.CreateForm(TAboutForm, AboutForm);
   // Отображаем окно
   XShowForm(AboutForm);
 end;
@@ -4212,7 +4246,6 @@ begin
       FreeAndNil(V_XStatusImg);
     if Assigned(V_XStatusMem) then
       FreeAndNil(V_XStatusMem);
-
     // Делаем текущую локальную копию списка контактов для отображения при запуске программы
     if V_Roster <> nil then
     begin
@@ -4220,15 +4253,12 @@ begin
       // Уничтожаем Ростер
       FreeAndNil(V_Roster);
     end;
-
     // Высвобождаем окно подсказок
     if Assigned(SH_HintWindow) then
       FreeAndNil(SH_HintWindow);
     // Если создан AppBar, то уничтожаем его
     if V_DockAppBar then
       AppBarDestroy;
-
-
   end;
 end;
 
@@ -4601,6 +4631,7 @@ end;
 
 procedure TMainForm.LoadMainFormSettings;
 var
+  i: Integer;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
@@ -4620,10 +4651,10 @@ begin
           if XML_Node <> nil then
           begin
             // Загружаем позицию окна
-            Top := XML_Node.Properties.IntValue('t');
-            Left := XML_Node.Properties.IntValue('l');
-            Height := XML_Node.Properties.IntValue('h');
-            Width := XML_Node.Properties.IntValue('w');
+            Top := XML_Node.Properties.IntValue(C_FT);
+            Left := XML_Node.Properties.IntValue(C_FL);
+            Height := XML_Node.Properties.IntValue(C_FH);
+            Width := XML_Node.Properties.IntValue(C_FW);
             // Определяем не находится ли окно за пределами экрана
             FormSetInWorkArea(Self);
             // Загружаем состояние кнопки звуков
@@ -4650,6 +4681,14 @@ begin
                 GroupOnOffToolButton.Down := False;
                 GroupOnOffToolButtonClick(Self);
               end;
+            // Загружаем режим окна КЛ выше всех окон
+            Sub_Node := XML_Node.Items.ItemNamed[С_MainFormTop];
+            if Sub_Node <> nil then
+              if Sub_Node.BoolValue then
+              begin
+                TopModeToolButton.Down := True;
+                TopModeToolButtonClick(Self);
+              end;
             // Загружаем был ли первый старт
             Sub_Node := XML_Node.Items.ItemNamed[C_MainFormFirst];
             if Sub_Node <> nil then
@@ -4667,9 +4706,9 @@ begin
             Sub_Node := XML_Node.Items.ItemNamed[C_Traffic];
             if Sub_Node <> nil then
             begin
-              V_AllTrafSend := Sub_Node.Properties.IntValue('s', 0);
-              V_AllTrafRecev := Sub_Node.Properties.IntValue('r', 0);
-              V_AllSesDataTraf := Sub_Node.Properties.Value('d');
+              V_AllTrafSend := Sub_Node.Properties.IntValue(C_TS, 0);
+              V_AllTrafRecev := Sub_Node.Properties.IntValue(C_TR, 0);
+              V_AllSesDataTraf := Sub_Node.Properties.Value(C_TD);
             end;
             // Загружаем пункты меню
             Sub_Node := XML_Node.Items.ItemNamed[C_MainFormHEG];
@@ -4680,28 +4719,28 @@ begin
             if Sub_Node <> nil then
             begin
               // Загружаем состояние кнопок
-              MainToolTopButton.Visible := Sub_Node.Properties.BoolValue('b0');
+              MainToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '0');
               TopMainButtonONMenu.Checked := MainToolTopButton.Visible;
               //
-              OnlyOnlineContactsTopButton.Visible := Sub_Node.Properties.BoolValue('b1');
+              OnlyOnlineContactsTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '1');
               TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
               //
-              GroupOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue('b2');
+              GroupOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
               TopGroupONMenu.Checked := GroupOnOffToolTopButton.Visible;
               //
-              SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue('b3');
+              SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
               TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
               //
-              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
+              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
               TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
               //
-              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
+              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
               TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
               //
-              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
+              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
               TopCLSearchONMenu.Checked := CLSearchTopToolButton.Visible;
               //
-              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '7');
               TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
               //
               if not Sub_Node.BoolValue then
@@ -4715,31 +4754,31 @@ begin
             if Sub_Node <> nil then
             begin
               // Загружаем состояние кнопок
-              MainToolButton.Visible := Sub_Node.Properties.BoolValue('b0');
+              MainToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '0');
               MainButtonONMenu.Checked := MainToolButton.Visible;
               //
-              OnlyOnlineContactsToolButton.Visible := Sub_Node.Properties.BoolValue('b1');
+              OnlyOnlineContactsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '1');
               OnlyOnlineONMenu.Checked := OnlyOnlineContactsToolButton.Visible;
               //
-              GroupOnOffToolButton.Visible := Sub_Node.Properties.BoolValue('b2');
+              GroupOnOffToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
               GroupONMenu.Checked := GroupOnOffToolButton.Visible;
               //
-              SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue('b3');
+              SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
               SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
               //
-              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue('b4');
+              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
               HistoryONMenu.Checked := HistoryToolButton.Visible;
               //
-              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue('b5');
+              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
               SettingsONMenu.Checked := SettingsToolButton.Visible;
               //
-              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue('b6');
+              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
               CLSearchONMenu.Checked := CLSearchToolButton.Visible;
               //
-              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('b7');
+              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '7');
               TrafficONMenu.Checked := TrafficToolButton.Visible;
               //
-              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('b8');
+              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '8');
               TopPanelONMenu.Checked := TopPanelToolButton.Visible;
             end;
           end;
@@ -4781,18 +4820,19 @@ begin
         else
           XML_Node := Root.Items.Add(C_MainForm);
         // Сохраняем позицию окна
-        XML_Node.Properties.Add('t', Top);
-        XML_Node.Properties.Add('l', Left);
-        XML_Node.Properties.Add('h', Height);
-        XML_Node.Properties.Add('w', Width);
+        XML_Node.Properties.Add(C_FT, Top);
+        XML_Node.Properties.Add(C_FL, Left);
+        XML_Node.Properties.Add(C_FH, Height);
+        XML_Node.Properties.Add(C_FW, Width);
         // Сохраняем звук вкл. выкл.
         XML_Node.Items.Add(C_MainFormSounds, SoundOnOffToolButton.Down);
         // Сохраняем отображать только онлайн вкл. выкл.
         XML_Node.Items.Add(C_MainFormOnlyOnline, OnlyOnlineContactsToolButton.Down);
         // Сохраняем отображать группы вкл. выкл.
         XML_Node.Items.Add(C_MainFormGroups, GroupOnOffToolButton.Down);
-        // Записываем что первый запуск программы уже состоялся и показывать
-        // окно настройки протоколов больше не будем при запуске
+        // Сохраняем режим окна КЛ выше всех окон
+        XML_Node.Items.Add(С_MainFormTop, TopModeToolButton.Down);
+        // Записываем что первый запуск программы уже состоялся и показывать окно настройки протоколов больше не будем при запуске
         XML_Node.Items.Add(C_MainFormFirst, True);
         // Сохраняем активные протоколы
         Sub_Node := XML_Node.Items.Add(C_MainFormProto);
@@ -4802,19 +4842,19 @@ begin
         Sub_Node.Properties.Add(C_Twitter, TwitterToolButton.Visible);
         // Сохраняем трафик
         Sub_Node := XML_Node.Items.Add(C_Traffic);
-        Sub_Node.Properties.Add('s', V_AllTrafSend);
-        Sub_Node.Properties.Add('r', V_AllTrafRecev);
-        Sub_Node.Properties.Add('d', V_AllSesDataTraf);
+        Sub_Node.Properties.Add(C_TS, V_AllTrafSend);
+        Sub_Node.Properties.Add(C_TR, V_AllTrafRecev);
+        Sub_Node.Properties.Add(C_TD, V_AllSesDataTraf);
         // Сохраняем пункты меню
         XML_Node.Items.Add(C_MainFormHEG, HideEmptyGroups.Checked);
         // Сохраняем состояние верхней панели
         Sub_Node := XML_Node.Items.Add(C_MainFormTP, TopPanelToolButton.Down);
         for I := 0 to TopPanelPopupMenu.Items.Count - 1 do
-          Sub_Node.Properties.Add('b' + IntToStr(I), TopPanelPopupMenu.Items[I].Checked);
+          Sub_Node.Properties.Add(C_PB + IntToStr(I), TopPanelPopupMenu.Items[I].Checked);
         // Сохраняем состояние нижней панели
         Sub_Node := XML_Node.Items.Add(C_MainFormBP);
         for I := 0 to BottomPanelPopupMenu.Items.Count - 1 do
-          Sub_Node.Properties.Add('b' + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
+          Sub_Node.Properties.Add(C_PB + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
         // Записываем сам файл
         SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
@@ -4876,7 +4916,7 @@ procedure TMainForm.SearchInCL_MenuClick(Sender: TObject);
 begin
   // Открываем окно поиска контактов в контактном листе
   if not Assigned(CLSearchForm) then
-    CLSearchForm := TCLSearchForm.Create(Self);
+    Application.CreateForm(TCLSearchForm, CLSearchForm);
   // Отображаем окно
   XShowForm(CLSearchForm);
 end;
@@ -5246,7 +5286,7 @@ procedure TMainForm.OpenGame_MenuClick(Sender: TObject);
 begin
   // Открываем в окне чата закладку с играми
   if not Assigned(GamesForm) then
-    GamesForm := TGamesForm.Create(Self);
+    Application.CreateForm(TGamesForm, GamesForm);
   XShowForm(GamesForm);
 end;
 
@@ -5263,7 +5303,7 @@ procedure TMainForm.History_MenuClick(Sender: TObject);
 begin
   // Открываем пустое окно истории сообщений
   if not Assigned(HistoryForm) then
-    HistoryForm := THistoryForm.Create(Self);
+    Application.CreateForm(THistoryForm, HistoryForm);
   // Отображаем окно
   XShowForm(HistoryForm);
 end;

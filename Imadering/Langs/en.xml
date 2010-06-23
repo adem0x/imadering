@@ -310,16 +310,16 @@
     <ForumBitBtn c="Discussion on Forum"/>
   </AboutForm>
   <Devels>
-    <c1 c="Author of the project and lead programmer;Eduard Tolmachev"/>
-    <c2 c="Programming;Francois PIETTE (Ics components)"/>
-    <c3 c="Programming;David Baldwin (HTML components)"/>
-    <c4 c="Programming;Project Jedi (jvcl components)"/>
-    <c5 c="Programming;Igor Pavlov (7-Zip component)"/>
-    <c6 c="Design;Petr Stepanov"/>
-    <c7 c="Design;Michael Niedermayr (www.greensmilies.com)"/>
-    <c8 c="Testing and Support;Pavel Novikov"/>
-    <c9 c="Special thanks;Margarita Evdokimova"/>
-    <c10 c="IMadering;Thank you all!"/>
+    <c0 c="Author of the project and lead programmer;Eduard Tolmachev"/>
+    <c1 c="Programming;Francois PIETTE (Ics components)"/>
+    <c2 c="Programming;David Baldwin (HTML components)"/>
+    <c3 c="Programming;Project Jedi (jvcl components)"/>
+    <c4 c="Programming;Igor Pavlov (7-Zip component)"/>
+    <c5 c="Design;Petr Stepanov"/>
+    <c6 c="Design;Michael Niedermayr (www.greensmilies.com)"/>
+    <c7 c="Testing and Support;Pavel Novikov"/>
+    <c8 c="Special thanks;Margarita Evdokimova"/>
+    <c9 c="IMadering;Thank you all!"/>
   </Devels>
   <TrafficForm c="Counting traffic">
     <TrafGroupBox c="Traffic"/>

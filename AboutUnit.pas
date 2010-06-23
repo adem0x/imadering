@@ -82,7 +82,7 @@ type
   public
     { Public declarations }
     AboutLen: Integer;
-    AboutList: array[1..10] of string;
+    AboutList: array of string;
     procedure TranslateForm;
   end;
 
@@ -110,7 +110,6 @@ const
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
-
 procedure TAboutForm.TranslateForm;
 const
   ReadMe = 'ReadMe.txt';
@@ -141,16 +140,19 @@ begin
           begin
             XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[C_InfoAbout];
             if XML_Node <> nil then
-              AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value('c'));
+              AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value(C_CS));
           end;
           // Загружаем список разработчиков
           XML_Node := Root.Items.ItemNamed[C_InfoDev];
           if XML_Node <> nil then
-            for I := 1 to Length(AboutList) do
+            // Устанавливаем длинну массива
+            SetLength(AboutList, XML_Node.Items.Count);
+            // Загружаем строки в массив
+            for I := 0 to Length(AboutList) - 1 do
             begin
-              XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed['c' + IntToStr(I)];
+              XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed[C_CS + IntToStr(I)];
               if XML_Node <> nil then
-                AboutList[I] := XML_Node.Properties.Value('c');
+                AboutList[I] := XML_Node.Properties.Value(C_CS);
             end;
         end;
       end;
@@ -162,7 +164,6 @@ begin
   if FileExists(V_MyPath + ReadMe) then
     AboutRichEdit.Lines.Text := AboutRichEdit.Lines.Text + C_RN + ReadFromFile(V_MyPath + ReadMe, false);
 end;
-
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -192,8 +193,8 @@ begin
   // Увеличиваем значение длинны списка титров
   Inc(AboutLen);
   // Если список титров не закончился, то продолжаем показ
-  if AboutLen > Length(AboutList) then
-    AboutLen := 1;
+  if AboutLen >= Length(AboutList) then
+    AboutLen := 0;
   // Запустили таймер
   MainForm.JvTimerList.Events[13].Enabled := True;
 end;
@@ -281,9 +282,9 @@ begin
   // Сведения о версии программы
   VersionLabel.Caption := Format(Lang_Vars[4].L_S, [V_FullVersion]);
   // Получаем дату компиляци файла
-  DataLabel.Caption := DataLabel.Caption + C_BN + DateToStr(GetFileDateTime(V_MyPath + 'Imadering.exe'));
+  DataLabel.Caption := DataLabel.Caption + C_BN + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
   // Присваиваем начальное значение длинны списка титров
-  AboutLen := 1;
+  AboutLen := 0;
   // Стартуем показ титров
   HeadJvBehaviorLabel.BehaviorOptions.Active := True;
 end;

@@ -32,7 +32,6 @@ uses
 const
 
 {$REGION 'SysConst'}
-
   C_RN = #13#10;
   C_BR = '<br>';
   C_BN = ' ';
@@ -47,10 +46,8 @@ const
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
   C_WM_APPBAR = WM_USER + 1;
-
 {$ENDREGION}
 {$REGION 'FilesConst'}
-
   C_Profiles = 'Profiles\';
   C_AnketaFolder = 'Contacts\';
   C_AvatarFolder = 'Avatars\';
@@ -74,10 +71,8 @@ const
   C_NoAvatarFileName = '\noavatar.gif';
   C_ImaderingOld = 'Imadering.old';
   C_XML_Files = '*.xml';
-
 {$ENDREGION}
 {$REGION 'CommandsConst'}
-
   // Команды смежного использования
   C_IMadering = 'IMadering';
   C_Icq = 'ICQ';
@@ -181,7 +176,17 @@ const
   C_TwitUserInfo = 'http://twitter.com/users/show/';
   C_TwitOpenLenta = 'http://twitter.com/statuses/friends_timeline/%s.xml?count=%d';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
-
+  //
+  C_FT = 'top';
+  C_FL = 'left';
+  C_FH = 'height';
+  C_FW = 'width';
+  C_TS = 'send';
+  C_TR = 'received';
+  C_TD = 'start_date';
+  C_PB = 'button';
+  C_CS = 'c';
+  C_HS = 'h';
 {$ENDREGION}
 {$REGION 'LogLangVars'}
 
@@ -310,7 +315,6 @@ var
 
 {$ENDREGION}
 {$REGION 'SoundsVars'}
-
   // Переменные звуков
   V_SoundON: Boolean = True;
   // 1
@@ -348,12 +352,6 @@ var
   V_SoundError_Name: string;
   V_SoundError_Path: string;
   V_SoundError_Mask: string = 'Sounds\%s\Error.wav';
-  // 8
-  V_SoundOpen: Boolean;
-  V_SoundOpen_Name: string;
-  V_SoundOpen_Path: string;
-  V_SoundOpen_Mask: string = 'Sounds\%s\Open.wav';
-
 {$ENDREGION}
 {$REGION 'HttpProxyVars'}
 
@@ -530,12 +528,10 @@ var
     (L_N: 'SearchNextPage'; L_S: ''), // 126
     (L_N: 'DellProfile'; L_S: '')); // 127
 
-
   Log_Exception1: string = 'В программе произошла ошибка' + C_RN;
 
   Log_Exception2: string = C_RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
     'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
-
 
   InfoNickL:
     string = 'Ник:';
