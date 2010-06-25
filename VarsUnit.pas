@@ -318,10 +318,10 @@ var
   // Переменные звуков
   V_SoundON: Boolean = True;
   // 1
-  V_SoundStartProg: Boolean;
-  V_SoundStartProg_Name: string;
-  V_SoundStartProg_Path: string;
-  V_SoundStartProg_Mask: string = 'Sounds\%s\Start.wav';
+  V_SoundConnect: Boolean;
+  V_SoundConnect_Name: string;
+  V_SoundConnect_Path: string;
+  V_SoundConnect_Mask: string = 'Sounds\%s\Connect.wav';
   // 2
   V_SoundIncMsg: Boolean;
   V_SoundIncMsg_Name: string;
@@ -352,6 +352,11 @@ var
   V_SoundError_Name: string;
   V_SoundError_Path: string;
   V_SoundError_Mask: string = 'Sounds\%s\Error.wav';
+  // 11
+  V_SoundUserOffline: Boolean;
+  V_SoundUserOffline_Name: string;
+  V_SoundUserOffline_Path: string;
+  V_SoundUserOffline_Mask: string = 'Sounds\%s\UserOffline.wav';
 {$ENDREGION}
 {$REGION 'HttpProxyVars'}
 
