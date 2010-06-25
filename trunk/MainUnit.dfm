@@ -356,9 +356,9 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents2Timer
       end
       item
-        Name = 'Connect Icon Timer'
+        Name = ' '
+        Cycled = False
         Enabled = False
-        OnTimer = JvTimerListEvents3Timer
       end
       item
         Name = 'ICQ FStatus Timer'
@@ -435,13 +435,6 @@ object MainForm: TMainForm
         Enabled = False
         Interval = 100
         OnTimer = JvTimerListEvents15Timer
-      end
-      item
-        Name = 'Start Sound Timer'
-        Cycled = False
-        Enabled = False
-        Interval = 300
-        OnTimer = JvTimerListEvents16Timer
       end>
     Left = 16
     Top = 184

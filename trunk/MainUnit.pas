@@ -342,7 +342,6 @@ type
     procedure JabberWSocketSessionConnected(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketDataAvailable(Sender: TObject; ErrCode: Word);
     procedure JvTimerListEvents4Timer(Sender: TObject);
-    procedure JvTimerListEvents3Timer(Sender: TObject);
     procedure JvTimerListEvents5Timer(Sender: TObject);
     procedure JvTimerListEvents6Timer(Sender: TObject);
     procedure JvTimerListEvents7Timer(Sender: TObject);
@@ -452,7 +451,6 @@ type
     procedure TopModeToolButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SearchInCL_MenuClick(Sender: TObject);
-    procedure JvTimerListEvents16Timer(Sender: TObject);
     procedure HideInTray_MenuClick(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure CheckUpdate_MenuClick(Sender: TObject);
@@ -2609,7 +2607,6 @@ end;
 {$HINTS ON}
 {$ENDREGION}
 {$REGION 'Other'}
-
 procedure TMainForm.JvTimerListEvents10Timer(Sender: TObject);
 begin
   // Отправляем пакет Ping для MRA протокола
@@ -2651,7 +2648,6 @@ begin
     end;
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'Smilies Hint Timer'}
 
@@ -2664,7 +2660,6 @@ end;
 
 {$ENDREGION}
 {$REGION 'Snap CL Timer'}
-
 procedure TMainForm.JvTimerListEvents15Timer(Sender: TObject);
 begin
   // Move the form
@@ -2672,13 +2667,6 @@ begin
   if not Visible then
     XShowForm(MainForm);
 end;
-
-procedure TMainForm.JvTimerListEvents16Timer(Sender: TObject);
-begin
-  // Воспроизводим звук запуска программы
-  ImPlaySnd(1);
-end;
-
 {$ENDREGION}
 {$REGION 'Message Icon Timer'}
 
@@ -2909,79 +2897,6 @@ begin
   // Запускаем проверку обновлений программы на сайте
   UpdateHttpClient.URL := C_UpdateURL;
   UpdateHttpClient.GetASync;
-end;
-
-{$ENDREGION}
-{$REGION 'Connect Icon Timer'}
-
-procedure TMainForm.JvTimerListEvents3Timer(Sender: TObject);
-var
-  NoStopTimer: Boolean;
-begin
- { NoStopTimer := False;
-  // Отображаем мигающую иконку подключения к серверу ICQ
-  if (ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze) then
-  begin
-    NoStopTimer := True;
-    if ICQTrayIcon.IconIndex <> 168 then
-    begin
-      ICQTrayIcon.IconIndex := 168;
-      ICQToolButton.ImageIndex := 168;
-    end
-    else
-    begin
-      ICQTrayIcon.IconIndex := 162;
-      ICQToolButton.ImageIndex := 162;
-    end;
-  end
-  else
-  begin
-    ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-    ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
-  end;
-  // Отображаем мигающую иконку подключения к серверу Jabber
-  if Jabber_Connect_Phaze then
-  begin
-    NoStopTimer := True;
-    if JabberTrayIcon.IconIndex <> 168 then
-    begin
-      JabberTrayIcon.IconIndex := 168;
-      JabberToolButton.ImageIndex := 168;
-    end
-    else
-    begin
-      JabberTrayIcon.IconIndex := 162;
-      JabberToolButton.ImageIndex := 162;
-    end;
-  end
-  else
-  begin
-    JabberToolButton.ImageIndex := Jabber_CurrentStatus;
-    JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
-  end;
-  // Отображаем мигающую иконку подключения к серверу MRA
-  if (MRA_Connect_Phaze) or (MRA_BosConnect_Phaze) then
-  begin
-    NoStopTimer := True;
-    if MRATrayIcon.IconIndex <> 168 then
-    begin
-      MRATrayIcon.IconIndex := 168;
-      MRAToolButton.ImageIndex := 168;
-    end
-    else
-    begin
-      MRATrayIcon.IconIndex := 162;
-      MRAToolButton.ImageIndex := 162;
-    end;
-  end
-  else
-  begin
-    MRAToolButton.ImageIndex := MRA_CurrentStatus;
-    MRATrayIcon.IconIndex := MRA_CurrentStatus;
-  end;
-  // Останавливаем таймер
-  if not NoStopTimer then
-    JvTimerList.Events[3].Enabled := False;   }
 end;
 
 {$ENDREGION}

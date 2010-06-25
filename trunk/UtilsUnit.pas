@@ -2165,7 +2165,7 @@ var
   SFilePath: string;
 begin
   // Играем звуки IMadering
-  { 1 - Старт IMadering
+  { 1 - Подключение протокола
     2 - Входящее сообщение
     3 - Сообщение отправлено
     4 - Контакт вошёл в сеть
@@ -2175,12 +2175,14 @@ begin
     ------------------------
     8 - Набор текста
     9 - Удаление текста
-    10 - Отправка текста }
+    10 - Отправка текста
+    ------------------------
+    11 - Контакт отключился }
   if V_SoundON then
   begin
     case Snd of
-      1: if (V_SoundStartProg) and (FileExists(V_SoundStartProg_Path)) then
-          Sndplaysound(PChar(V_SoundStartProg_Path), Snd_async);
+      1: if (V_SoundConnect) and (FileExists(V_SoundConnect_Path)) then
+          Sndplaysound(PChar(V_SoundConnect_Path), Snd_async);
       2: if (V_SoundIncMsg) and (FileExists(V_SoundIncMsg_Path)) then
           Sndplaysound(PChar(V_SoundIncMsg_Path), Snd_async);
       3: if (V_SoundMsgSend) and (FileExists(V_SoundMsgSend_Path)) then
@@ -2213,6 +2215,8 @@ begin
           if (FileExists(SFilePath)) then
             Sndplaysound(PChar(SFilePath), Snd_async);
         end;
+      11: if (V_SoundUserOffline) and (FileExists(V_SoundUserOffline_Path)) then
+          Sndplaysound(PChar(V_SoundUserOffline_Path), Snd_async);
     end;
   end;
 end;

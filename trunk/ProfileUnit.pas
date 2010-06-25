@@ -269,8 +269,6 @@ begin
     JvTimerList.Events[12].Enabled := True;
     // В фоне создаём окно смайлов
     JvTimerList.Events[7].Enabled := True;
-    // Воспроизводим звук запуска программы
-    JvTimerList.Events[16].Enabled := True;
   end;
   // Выключаем кнопку записи последующих событий в окно лога
   LogForm.WriteLogSpeedButton.Down := False;

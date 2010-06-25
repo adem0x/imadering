@@ -333,10 +333,10 @@ begin
   // Подгружаем названия звуков и их дефолтные значения
   with SoundPathListView do
     begin
-      Items[0].Caption := V_SoundStartProg_Name;
+      Items[0].Caption := V_SoundConnect_Name;
       Items[0].Checked := True;
-      V_SoundStartProg_Path := Format(V_MyPath + V_SoundStartProg_Mask, [V_CurrentSounds]);
-      Items[0].SubItems[0] := V_SoundStartProg_Path;
+      V_SoundConnect_Path := Format(V_MyPath + V_SoundConnect_Mask, [V_CurrentSounds]);
+      Items[0].SubItems[0] := V_SoundConnect_Path;
       //
       Items[1].Caption := V_SoundIncMsg_Name;
       Items[1].Checked := True;
@@ -367,6 +367,11 @@ begin
       Items[6].Checked := True;
       V_SoundError_Path := Format(V_MyPath + V_SoundError_Mask, [V_CurrentSounds]);
       Items[6].SubItems[0] := V_SoundError_Path;
+      //
+      Items[7].Caption := V_SoundUserOffline_Name;
+      Items[7].Checked := True;
+      V_SoundUserOffline_Path := Format(V_MyPath + V_SoundUserOffline_Mask, [V_CurrentSounds]);
+      Items[7].SubItems[0] := V_SoundUserOffline_Path;
     end;
   // Считываем настройки из xml файла
   if FileExists(V_ProfilePath + C_SettingsFileName) then
@@ -677,8 +682,8 @@ begin
         begin
           case I of
             0: begin
-                V_SoundStartProg := Items[I].Checked;
-                V_SoundStartProg_Path := Items[I].SubItems[0];
+                V_SoundConnect := Items[I].Checked;
+                V_SoundConnect_Path := Items[I].SubItems[0];
               end;
             1: begin
                 V_SoundIncMsg := Items[I].Checked;
@@ -703,6 +708,10 @@ begin
             6: begin
                 V_SoundError := Items[I].Checked;
                 V_SoundError_Path := Items[I].SubItems[0];
+              end;
+            7: begin
+                V_SoundUserOffline := Items[I].Checked;
+                V_SoundUserOffline_Path := Items[I].SubItems[0];
               end;
           end;
         end;
@@ -983,7 +992,7 @@ begin
   // Переписываем список на новый путь к звукам
   with SoundPathListView do
     begin
-      Items[0].SubItems[0] := Format(V_MyPath + V_SoundStartProg_Mask, [SoundPackComboBox.Text]);
+      Items[0].SubItems[0] := Format(V_MyPath + V_SoundConnect_Mask, [SoundPackComboBox.Text]);
       //
       Items[1].SubItems[0] := Format(V_MyPath + V_SoundIncMsg_Mask, [SoundPackComboBox.Text]);
       //
@@ -996,6 +1005,8 @@ begin
       Items[5].SubItems[0] := Format(V_MyPath + V_SoundFileSend_Mask, [SoundPackComboBox.Text]);
       //
       Items[6].SubItems[0] := Format(V_MyPath + V_SoundError_Mask, [SoundPackComboBox.Text]);
+      //
+      Items[7].SubItems[0] := Format(V_MyPath + V_SoundUserOffline_Mask, [SoundPackComboBox.Text]);
     end;
   // Активируем кнопку Применить
   ApplyBitBtn.Enabled := True;
