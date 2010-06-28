@@ -24,7 +24,8 @@ uses
   Dialogs,
   StdCtrls,
   ExtCtrls,
-  Buttons;
+  Buttons,
+  StrUtils, Menus;
 
 type
   TLogForm = class(TForm)
@@ -42,6 +43,10 @@ type
     LogFindDialog: TFindDialog;
     SendEmailSpeedButton: TSpeedButton;
     RosterSpeedButton: TSpeedButton;
+    LogPopupMenu: TPopupMenu;
+    HexToText_Menu: TMenuItem;
+    CopySelText_Menu: TMenuItem;
+    CopyAllText_Menu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
@@ -50,7 +55,10 @@ type
     procedure LogFindDialogFind(Sender: TObject);
     procedure RosterSpeedButtonClick(Sender: TObject);
     procedure SendEmailSpeedButtonClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure HexToText_MenuClick(Sender: TObject);
+    procedure LogPopupMenuPopup(Sender: TObject);
+    procedure CopySelText_MenuClick(Sender: TObject);
+    procedure CopyAllText_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -195,17 +203,14 @@ end;
 
 {$ENDREGION}
 {$REGION 'FormCreate'}
-
 procedure TLogForm.FormCreate(Sender: TObject);
 begin
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
 end;
-
 {$ENDREGION}
 {$REGION 'Other'}
-
 procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);
 begin
   // Очищаем лог
@@ -218,9 +223,26 @@ begin
   TranslateForm;
 end;
 
-procedure TLogForm.FormDestroy(Sender: TObject);
+procedure TLogForm.CopySelText_MenuClick(Sender: TObject);
 begin
-  //ShowMessage('Destroy LogForm');
+  // Копируем выделенный текст в буфер обмена
+  LogMemo.CopyToClipboard;
+end;
+
+procedure TLogForm.CopyAllText_MenuClick(Sender: TObject);
+begin
+  // Копируем весь текст в буфер обмена
+  LogMemo.SelectAll;
+  LogMemo.CopyToClipboard;
+end;
+
+procedure TLogForm.HexToText_MenuClick(Sender: TObject);
+begin
+  // Преобразовываем HEX в строку текста
+  try
+    MessageBox(Handle, PChar(Hex2Text(LogMemo.SelText)), PChar(Application.Title), MB_OK);
+  except
+  end;
 end;
 
 procedure TLogForm.LogFindDialogFind(Sender: TObject);
@@ -228,6 +250,23 @@ begin
   // Ищем текст в логе
   if not FindInMemo(LogMemo, LogFindDialog.FindText, FrDown in LogFindDialog.Options, FrMatchCase in LogFindDialog.Options) then
     MessageBox(Handle, PChar(Lang_Vars[26].L_S), PChar(Application.Title), MB_OK or MB_ICONINFORMATION);
+end;
+
+procedure TLogForm.LogPopupMenuPopup(Sender: TObject);
+begin
+  // Управляем активностью пунктов меню
+  if LogMemo.SelText = EmptyStr then
+  begin
+    CopySelText_Menu.Enabled := False;
+    CopyAllText_Menu.Enabled := False;
+    HexToText_Menu.Enabled := False;
+  end
+  else
+  begin
+    CopySelText_Menu.Enabled := True;
+    CopyAllText_Menu.Enabled := True;
+    HexToText_Menu.Enabled := True;
+  end;
 end;
 
 procedure TLogForm.RosterSpeedButtonClick(Sender: TObject);
@@ -271,9 +310,8 @@ begin
   else
     s := LogMemo.SelText;
   v := WideLowerCase(Format(Lang_Vars[4].L_S, [V_FullVersion]));
-  OpenURL(C_MailTo + 'imadering@mail.ru?subject=' + URLEncode(C_IMadering + C_log) + '&body=' + URLEncode(C_IMadering + C_BN + v + C_RN + C_RN + s));
+  OpenURL(C_MailTo + Format(C_MailText, [C_IMadering + C_log, C_IMadering + C_BN + v + ReplaceStr(C_RN + C_RN + s, C_RN, C_MN)]));
 end;
-
 {$ENDREGION}
 
 end.

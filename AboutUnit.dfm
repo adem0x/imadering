@@ -272,7 +272,6 @@ object AboutForm: TAboutForm
     Left = 232
     Top = 112
     object CopyRichText: TMenuItem
-      Caption = '#'#1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 144
       OnClick = CopyRichTextClick
     end

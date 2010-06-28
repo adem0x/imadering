@@ -17,7 +17,6 @@ object LogForm: TLogForm
   ScreenSnap = True
   OnCreate = FormCreate
   OnDblClick = FormDblClick
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object LogMemo: TMemo
@@ -27,6 +26,7 @@ object LogForm: TLogForm
     Height = 371
     Align = alClient
     HideSelection = False
+    PopupMenu = LogPopupMenu
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 0
@@ -165,7 +165,27 @@ object LogForm: TLogForm
   end
   object LogFindDialog: TFindDialog
     OnFind = LogFindDialogFind
-    Left = 304
-    Top = 192
+    Left = 272
+    Top = 160
+  end
+  object LogPopupMenu: TPopupMenu
+    Alignment = paCenter
+    AutoHotkeys = maManual
+    Images = MainForm.AllImageList
+    OnPopup = LogPopupMenuPopup
+    Left = 240
+    Top = 160
+    object CopySelText_Menu: TMenuItem
+      ImageIndex = 144
+      OnClick = CopySelText_MenuClick
+    end
+    object CopyAllText_Menu: TMenuItem
+      ImageIndex = 144
+      OnClick = CopyAllText_MenuClick
+    end
+    object HexToText_Menu: TMenuItem
+      ImageIndex = 289
+      OnClick = HexToText_MenuClick
+    end
   end
 end
