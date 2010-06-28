@@ -33,6 +33,7 @@ const
 
 {$REGION 'SysConst'}
   C_RN = #13#10;
+  C_MN = '%0D%0A';
   C_BR = '<br>';
   C_BN = ' ';
   C_PN = ' | ';
@@ -102,6 +103,7 @@ const
   C_AutoDell = 'auto_dellete';
   C_Email = 'Email';
   C_MailTo = 'mailto:';
+  C_MailText = 'imadering@mail.ru?subject=%s&body=%s';
   //
   C_NameInfo = 'name_info';
   C_Nick = 'nick';

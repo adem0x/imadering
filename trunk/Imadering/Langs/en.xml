@@ -157,6 +157,9 @@
     <ClearLogSpeedButton h="_b_Clean_d__r_Delete all the log"/>
     <SendEmailSpeedButton h="_b_Send by E-mail_d__r_Send all or selected text to the developers"/>
     <RosterSpeedButton h="_b_Unload roster_d__r_Save the database of contacts in the file"/>
+    <CopySelText_Menu c="Copy"/>
+    <CopyAllText_Menu c="Copy all"/>
+    <HexToText_Menu c="Show HEX as text"/>
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram_Menu c="Exit IMadering"/>
@@ -223,6 +226,7 @@
     <SnapCL_Menu c="Dock contact list"/>
     <SnapToRight c="Right screen edge"/>
     <SnapToLeft c="Left screen edge"/>
+    <TopModeToolButton h="_b_Always on top_d__r_Enable or disable window mode"/>
   </MainForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
@@ -308,6 +312,7 @@
     <LegalLabel c="License"/>
     <CheckUpdateBitBtn c="Check update"/>
     <ForumBitBtn c="Discussion on Forum"/>
+    <CopyRichText c="Copy"/>
   </AboutForm>
   <Devels>
     <c0 c="Author of the project and lead programmer;Eduard Tolmachev"/>

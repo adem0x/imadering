@@ -244,7 +244,7 @@ end;
 procedure TAboutForm.EmailBitBtnClick(Sender: TObject);
 begin
   // Открываем форму отправки письма
-  OpenURL(C_MailTo + 'imadering@mail.ru?subject=' + C_IMadering + '&body=' + URLEncode(C_IMadering + C_BN + WideLowerCase(VersionLabel.Caption)));
+  OpenURL(C_MailTo + Format(C_MailText, [C_IMadering, C_IMadering + C_BN + WideLowerCase(VersionLabel.Caption) + C_MN]));
 end;
 
 procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);

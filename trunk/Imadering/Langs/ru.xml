@@ -157,6 +157,9 @@
     <ClearLogSpeedButton h="_b_Очистить_d__r_Удалить все сообщения лога"/>
     <SendEmailSpeedButton h="_b_Отправить по E-mail_d__r_Отослать весь или выделенный текст разработчикам"/>
     <RosterSpeedButton h="_b_Выгрузить ростер_d__r_Сохранить базу данных контактов в файл"/>
+    <CopySelText_Menu c="Копировать"/>
+    <CopyAllText_Menu c="Копировать всё"/>
+    <HexToText_Menu c="Показать HEX как текст"/>
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram_Menu c="Выйти из IMadering"/>
@@ -223,6 +226,7 @@
     <SnapCL_Menu c="Пристыковать список контактов"/>
     <SnapToRight c="К правому краю экрана"/>
     <SnapToLeft c="К левому краю экрана"/>
+    <TopModeToolButton h="_b_Поверх всех окон_d__r_Включить или выключить режим окна"/>
   </MainForm>
   <SettingsForm c="Настройки">
     <SettingButtonGroup_0 c="Общие"/>
@@ -308,6 +312,7 @@
     <LegalLabel c="Лицензия"/>
     <CheckUpdateBitBtn c="Проверить обновление"/>
     <ForumBitBtn c="Обсуждение на форуме"/>
+    <CopyRichText c="Копировать"/>
   </AboutForm>
   <Devels>
     <c0 c="Автор проекта и ведущий программист;Эдуард Толмачёв"/>
