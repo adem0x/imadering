@@ -143,9 +143,6 @@
 			<DCCReference Include="LoginUnit.pas">
 				<Form>LoginForm</Form>
 			</DCCReference>
-			<DCCReference Include="TwitterOptionsUnit.pas">
-				<Form>TwitterOptionsForm</Form>
-			</DCCReference>
 			<DCCReference Include="HttpUnit.pas">
 				<Form>HttpForm</Form>
 			</DCCReference>
@@ -163,7 +160,6 @@
 			<DCCReference Include="MraProtoUnit.pas"/>
 			<DCCReference Include="VarsUnit.pas"/>
 			<DCCReference Include="RosterUnit.pas"/>
-			<DCCReference Include="TwitProtoUnit.pas"/>
 			<DCCReference Include="UtilsUnit.pas"/>
 			<DCCReference Include="lib\OverbyteIcsLIBEAY.pas"/>
 			<DCCReference Include="lib\Menus.pas"/>
@@ -205,7 +201,7 @@
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">298</VersionInfo>
+						<VersionInfo Name="Build">300</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -217,7 +213,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.1.298</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.1.300</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

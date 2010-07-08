@@ -321,14 +321,6 @@ begin
       ImageIndex := 66;
       Checked := MainForm.MRAToolButton.Visible;
     end;
-  // Добавляем Twitter протокол
-  with ProtocolsListView.Items.Add do
-    begin
-      Caption := C_BN + Lang_Vars[12].L_S;
-      GroupID := 3;
-      ImageIndex := 268;
-      Checked := MainForm.TwitterToolButton.Visible;
-    end;
   ProtocolsListView.Items.EndUpdate;
   // Подгружаем названия звуков и их дефолтные значения
   with SoundPathListView do
@@ -498,12 +490,6 @@ begin
                       Items[2].Caption := C_BN + XML_Node.Properties.Value(C_Login);
                     if Items[2].Caption = C_BN then
                       Items[2].Caption := C_BN + Lang_Vars[12].L_S;
-                    // Twitter
-                    XML_Node := Root.Items.ItemNamed[C_Twitter];
-                    if XML_Node <> nil then
-                      Items[3].Caption := C_BN + XML_Node.Properties.Value(C_Login);
-                    if Items[3].Caption = C_BN then
-                      Items[3].Caption := C_BN + Lang_Vars[12].L_S;
                   end;
               end;
           end;
@@ -929,9 +915,7 @@ begin
   else if ProtocolsListView.Selected.index = 1 then
     MainForm.JabberSettingsClick(Self)
   else if ProtocolsListView.Selected.index = 2 then
-    MainForm.MRASettingsClick(Self)
-  else if ProtocolsListView.Selected.index = 3 then
-    MainForm.TwitterSettingsMenuClick(Self);
+    MainForm.MRASettingsClick(Self);
 end;
 
 {$ENDREGION}
@@ -1061,11 +1045,6 @@ begin
         MRA_Enable(False)
       else if (ProtocolsListView.Items[2].Checked) and (not MRAToolButton.Visible) then
         MRA_Enable(True);
-      // Twitter
-      if (not ProtocolsListView.Items[3].Checked) and (TwitterToolButton.Visible) then
-        Twit_Enable(False)
-      else if (ProtocolsListView.Items[3].Checked) and (not TwitterToolButton.Visible) then
-        Twit_Enable(True);
     end;
   // Активируем или деактивируем кнопку настроек протокола
   if ProtocolsListView.Selected <> nil then
