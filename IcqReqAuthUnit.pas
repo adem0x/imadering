@@ -72,8 +72,7 @@ uses
   UpdateUnit,
   OverbyteIcsUrl,
   OverbyteIcsHttpProt,
-  LoginUnit,
-  TwitProtoUnit;
+  LoginUnit;
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
@@ -107,10 +106,10 @@ procedure TIcqReqAuthForm.FormShow(Sender: TObject);
 begin
   // Если Твит, то ставим фокус в поле ввода
   if (Twit) and (InfoMemo.CanFocus) then
-    begin
-      InfoMemo.SetFocus;
-      InfoMemo.SelStart := InfoMemo.GetTextLen;
-    end;
+  begin
+    InfoMemo.SetFocus;
+    InfoMemo.SelStart := InfoMemo.GetTextLen;
+  end;
 end;
 
 {$ENDREGION}
@@ -144,15 +143,15 @@ var
 begin
   // Отображаем счётчик символов
   if Twit then
+  begin
+    S := InfoMemo.Text;
+    if InfoMemo.GetTextLen > 140 then
     begin
-      S := InfoMemo.Text;
-      if InfoMemo.GetTextLen > 140 then
-        begin
-          SetLength(S, 140);
-          InfoMemo.Text := S;
-        end;
-      CountLabel.Caption := Format(Lang_Vars[62].L_S, [InfoMemo.GetTextLen, 140]);
+      SetLength(S, 140);
+      InfoMemo.Text := S;
     end;
+    CountLabel.Caption := Format(Lang_Vars[62].L_S, [InfoMemo.GetTextLen, 140]);
+  end;
 end;
 
 {$ENDREGION}
@@ -221,58 +220,58 @@ var
 begin
   // Автообновление
   if UpDate then
-    begin
-      // Открываем окно автообновления
-      if not Assigned(UpdateForm) then
-        UpdateForm := TUpdateForm.Create(MainForm);
-      // Отображаем окно на передний план
-      XShowForm(UpdateForm);
-      // Запускаем процесс получения информации для обновления
-      UpdateForm.StartBitBtnClick(nil);
-      // Закрываем это окно
-      Close;
-    end
+  begin
+    // Открываем окно автообновления
+    if not Assigned(UpdateForm) then
+      UpdateForm := TUpdateForm.Create(MainForm);
+    // Отображаем окно на передний план
+    XShowForm(UpdateForm);
+    // Запускаем процесс получения информации для обновления
+    UpdateForm.StartBitBtnClick(nil);
+    // Закрываем это окно
+    Close;
+  end
   else if Twit then // Пост в Твиттер
+  begin
+    S := Trim(InfoMemo.Text);
+    if S = EmptyStr then
+      Exit;
+    // Проверяем логин Твита
+    {if (Twit_Login = EmptyStr) or (Twit_Password = EmptyStr) then
     begin
-      S := Trim(InfoMemo.Text);
-      if S = EmptyStr then
-        Exit;
-      // Проверяем логин Твита
-      if (Twit_Login = EmptyStr) or (Twit_Password = EmptyStr) then
+      FrmLogin := TLoginForm.Create(Self);
+      try
+        MainForm.AllImageList.GetIcon(268, FrmLogin.Icon);
+        FrmLogin.Caption := C_Twitter;
+        // Модально спрашиваем логин и пароль
+        if FrmLogin.ShowModal = MrOk then
         begin
-          FrmLogin := TLoginForm.Create(Self);
-          try
-            MainForm.AllImageList.GetIcon(268, FrmLogin.Icon);
-            FrmLogin.Caption := C_Twitter;
-            // Модально спрашиваем логин и пароль
-            if FrmLogin.ShowModal = MrOk then
-              begin
-                Twit_Login := FrmLogin.AccountEdit.Text;
-                Twit_Password := FrmLogin.PasswordEdit.Text;
-              end;
-          finally
-            FreeAndNil(FrmLogin);
-          end;
+          Twit_Login := FrmLogin.AccountEdit.Text;
+          Twit_Password := FrmLogin.PasswordEdit.Text;
         end;
-      // Запускаем метод Post
-      if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
-        begin
-          with MainForm.TwitterHttpClient do
-            begin
-              Abort;
-              Username := Twit_Login;
-              Password := Twit_Password;
-              URL := Format(C_PostInTwit, [URLEncode(S)]);
-              PostData := EmptyStr;
-              SendStream := TMemoryStream.Create;
-              SendStream.write(PostData[1], Length(PostData));
-              SendStream.Seek(0, 0);
-              PostAsync;
-            end;
-        end;
-      // Закрываем это окно
-      Close;
+      finally
+        FreeAndNil(FrmLogin);
+      end;
     end;
+    // Запускаем метод Post
+    if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+    begin
+      with MainForm.TwitterHttpClient do
+      begin
+        Abort;
+        Username := Twit_Login;
+        Password := Twit_Password;
+        URL := Format(C_PostInTwit, [URLEncode(S)]);
+        PostData := EmptyStr;
+        SendStream := TMemoryStream.Create;
+        SendStream.write(PostData[1], Length(PostData));
+        SendStream.Seek(0, 0);
+        PostAsync;
+      end;
+    end;}
+    // Закрываем это окно
+    Close;
+  end;
 
   { if RoasterForm.Roaster_Sel_Button = nil then goto x;
     //
@@ -297,3 +296,4 @@ end;
 {$ENDREGION}
 
 end.
+

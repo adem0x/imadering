@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   ClientHeight = 401
-  ClientWidth = 303
+  ClientWidth = 282
   Color = clWhite
   Constraints.MinHeight = 200
   Constraints.MinWidth = 100
@@ -30,7 +30,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 0
     Top = 26
-    Width = 303
+    Width = 282
     Height = 350
     Margins.Left = 0
     Margins.Top = 1
@@ -60,11 +60,12 @@ object MainForm: TMainForm
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
     OnMouseDown = ContactListMouseDown
+    ExplicitWidth = 303
   end
   object BottomToolBar: TToolBar
     Left = 0
     Top = 376
-    Width = 303
+    Width = 282
     Height = 25
     Align = alBottom
     Color = clBtnFace
@@ -78,6 +79,7 @@ object MainForm: TMainForm
     Transparent = False
     Wrapable = False
     OnMouseDown = BottomToolBarMouseDown
+    ExplicitWidth = 303
     object MainToolButton: TToolButton
       Tag = 1
       Left = 0
@@ -128,20 +130,8 @@ object MainForm: TMainForm
       OnClick = JabberToolButtonClick
       OnContextPopup = JabberToolButtonContextPopup
     end
-    object TwitterToolButton: TToolButton
-      Left = 92
-      Top = 0
-      Hint = '<b>Twitter</b>'
-      ImageIndex = 269
-      ParentShowHint = False
-      PopupMenu = TwitterPopupMenu
-      ShowHint = True
-      Visible = False
-      OnClick = TwitterToolButtonClick
-      OnContextPopup = TwitterToolButtonContextPopup
-    end
     object OnlyOnlineContactsToolButton: TToolButton
-      Left = 115
+      Left = 92
       Top = 0
       ImageIndex = 138
       ParentShowHint = False
@@ -152,7 +142,7 @@ object MainForm: TMainForm
       OnClick = OnlyOnlineContactsToolButtonClick
     end
     object GroupOnOffToolButton: TToolButton
-      Left = 138
+      Left = 115
       Top = 0
       Down = True
       ImageIndex = 231
@@ -164,7 +154,7 @@ object MainForm: TMainForm
       OnClick = GroupOnOffToolButtonClick
     end
     object SoundOnOffToolButton: TToolButton
-      Left = 161
+      Left = 138
       Top = 0
       ImageIndex = 135
       ParentShowHint = False
@@ -175,7 +165,7 @@ object MainForm: TMainForm
       OnClick = SoundOnOffToolButtonClick
     end
     object HistoryToolButton: TToolButton
-      Left = 184
+      Left = 161
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -185,7 +175,7 @@ object MainForm: TMainForm
       OnClick = History_MenuClick
     end
     object SettingsToolButton: TToolButton
-      Left = 207
+      Left = 184
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -195,7 +185,7 @@ object MainForm: TMainForm
       OnClick = Settings_MenuClick
     end
     object CLSearchToolButton: TToolButton
-      Left = 230
+      Left = 207
       Top = 0
       ImageIndex = 215
       ParentShowHint = False
@@ -205,7 +195,7 @@ object MainForm: TMainForm
       OnClick = SearchInCL_MenuClick
     end
     object TrafficToolButton: TToolButton
-      Left = 253
+      Left = 230
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -215,7 +205,7 @@ object MainForm: TMainForm
       OnClick = Traffic_MenuClick
     end
     object TopPanelToolButton: TToolButton
-      Left = 276
+      Left = 253
       Top = 0
       Down = True
       ImageIndex = 244
@@ -229,7 +219,7 @@ object MainForm: TMainForm
   object TopToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 303
+    Width = 282
     Height = 25
     Color = clBtnFace
     DoubleBuffered = True
@@ -242,6 +232,7 @@ object MainForm: TMainForm
     Transparent = False
     Wrapable = False
     OnMouseDown = TopToolBarMouseDown
+    ExplicitWidth = 303
     object MainToolTopButton: TToolButton
       Left = 0
       Top = 0
@@ -1152,7 +1143,7 @@ object MainForm: TMainForm
     end
   end
   object MainActionList: TActionList
-    Left = 208
+    Left = 192
     Top = 48
     object CloseActiveFormAction: TAction
       Caption = 'CloseActiveFormAction'
@@ -1170,7 +1161,7 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
-    Left = 208
+    Left = 192
     Top = 160
     object TopMainButtonONMenu: TMenuItem
       ImageIndex = 230
@@ -1216,7 +1207,7 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
-    Left = 208
+    Left = 192
     Top = 192
     object MainButtonONMenu: TMenuItem
       Checked = True
@@ -1271,12 +1262,12 @@ object MainForm: TMainForm
     Top = 96
   end
   object SendFileOpenDialog: TOpenDialog
-    Left = 152
+    Left = 136
     Top = 48
   end
   object IMaderingEvents: TApplicationEvents
     OnException = IMaderingEventsException
-    Left = 208
+    Left = 192
     Top = 80
   end
   object TrayIcon: TTrayIcon
@@ -1284,13 +1275,13 @@ object MainForm: TMainForm
     PopupMenu = TrayPopupMenu
     OnClick = TrayIconClick
     OnDblClick = TrayIconDblClick
-    Left = 152
+    Left = 136
     Top = 160
   end
   object TrayPopupMenu: TPopupMenu
     AutoHotkeys = maManual
     Images = AllImageList
-    Left = 152
+    Left = 136
     Top = 192
     object HideInTray_MenuTray: TMenuItem
       ImageIndex = 4
@@ -1377,86 +1368,6 @@ object MainForm: TMainForm
       OnClick = CloseProgram_MenuClick
     end
   end
-  object TwitterPopupMenu: TPopupMenu
-    AutoHotkeys = maManual
-    AutoPopup = False
-    Images = AllImageList
-    Left = 144
-    Top = 328
-    object TwitterSettingsMenu: TMenuItem
-      ImageIndex = 160
-      OnClick = TwitterSettingsMenuClick
-    end
-    object MyInfoTwitterMenu: TMenuItem
-      Caption = '#'#1055#1086#1082#1072#1079#1072#1090#1100' '#1084#1086#1080' '#1076#1072#1085#1085#1099#1077
-      ImageIndex = 178
-      OnClick = MyInfoTwitterMenuClick
-    end
-    object TwitterSearchMenu: TMenuItem
-      Caption = '#'#1055#1086#1080#1089#1082' '#1087#1086' Twitter'
-      ImageIndex = 235
-      OnClick = TwitterSearchMenuClick
-    end
-    object N33: TMenuItem
-      Caption = '-'
-    end
-    object OpenSiteTwitterMinu: TMenuItem
-      ImageIndex = 267
-      OnClick = OpenSiteTwitterMinuClick
-    end
-    object OpenMyPageMenu: TMenuItem
-      ImageIndex = 270
-      OnClick = OpenMyPageMenuClick
-    end
-    object N31: TMenuItem
-      Caption = '-'
-    end
-    object AllLentaTwitterMenu: TMenuItem
-      Caption = '#'#1054#1073#1097#1072#1103' '#1083#1077#1085#1090#1072
-      ImageIndex = 271
-      OnClick = AllLentaTwitterMenuClick
-    end
-    object MyLentaTwitterMenu: TMenuItem
-      ImageIndex = 271
-      OnClick = MyLentaTwitterMenuClick
-    end
-    object MyPostsLentaTwitterMenu: TMenuItem
-      Caption = '#'#1052#1086#1080' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
-    end
-    object PostsMeLentaTwitterMenu: TMenuItem
-      Caption = '#'#1054#1090#1074#1077#1090#1099' '#1084#1085#1077
-    end
-    object FavoriteLentaTwitterMenu: TMenuItem
-      Caption = '#'#1048#1079#1073#1088#1072#1085#1085#1099#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
-    end
-    object IncMessTwitterMenu: TMenuItem
-      Caption = '#'#1042#1093#1086#1076#1103#1097#1080#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
-      OnClick = IncMessTwitterMenuClick
-    end
-    object OutMessTwitterMenu: TMenuItem
-      Caption = '#'#1048#1089#1093#1086#1076#1103#1097#1080#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
-    end
-    object N37: TMenuItem
-      Caption = '-'
-    end
-    object PostMessageTwitterMenu: TMenuItem
-      ImageIndex = 272
-      OnClick = PostMessageTwitterMenuClick
-    end
-    object PostImageTwitterMenu: TMenuItem
-      Caption = '#'#1054#1087#1091#1073#1083#1080#1082#1086#1074#1072#1090#1100' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1077
-      OnClick = PostImageTwitterMenuClick
-    end
-    object N36: TMenuItem
-      Caption = '-'
-    end
-    object OnlineTwitterMenu: TMenuItem
-      ImageIndex = 268
-    end
-    object OfflineTwitterMenu: TMenuItem
-      ImageIndex = 269
-    end
-  end
   object TwitterHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
@@ -1488,7 +1399,7 @@ object MainForm: TMainForm
     Filter = 'Text Files (*.txt)|*.txt'
     Encodings.Strings = (
       'Unicode')
-    Left = 152
+    Left = 136
     Top = 80
   end
 end

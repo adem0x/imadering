@@ -247,32 +247,10 @@ type
     CLSearchTopToolButton: TToolButton;
     CLSearchONMenu: TMenuItem;
     TopCLSearchONMenu: TMenuItem;
-    TwitterToolButton: TToolButton;
-    TwitterPopupMenu: TPopupMenu;
-    OpenSiteTwitterMinu: TMenuItem;
-    OpenMyPageMenu: TMenuItem;
-    TwitterSettingsMenu: TMenuItem;
-    N33: TMenuItem;
-    N31: TMenuItem;
-    MyLentaTwitterMenu: TMenuItem;
-    PostMessageTwitterMenu: TMenuItem;
-    N36: TMenuItem;
-    OnlineTwitterMenu: TMenuItem;
-    OfflineTwitterMenu: TMenuItem;
     TwitterHttpClient: THttpCli;
-    MyInfoTwitterMenu: TMenuItem;
-    IncMessTwitterMenu: TMenuItem;
     SaveTextAsFileDialog: TSaveTextFileDialog;
     MraSMSSendMenu: TMenuItem;
     N34: TMenuItem;
-    TwitterSearchMenu: TMenuItem;
-    AllLentaTwitterMenu: TMenuItem;
-    N37: TMenuItem;
-    PostImageTwitterMenu: TMenuItem;
-    MyPostsLentaTwitterMenu: TMenuItem;
-    PostsMeLentaTwitterMenu: TMenuItem;
-    FavoriteLentaTwitterMenu: TMenuItem;
-    OutMessTwitterMenu: TMenuItem;
     SnapCL_Menu: TMenuItem;
     SnapToRight: TMenuItem;
     SnapToLeft: TMenuItem;
@@ -427,23 +405,11 @@ type
     procedure CLSearchONMenuClick(Sender: TObject);
     procedure TwitterHttpClientSessionClosed(Sender: TObject);
     procedure TwitterHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
-    procedure TwitterToolButtonClick(Sender: TObject);
-    procedure TwitterToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-    procedure PostMessageTwitterMenuClick(Sender: TObject);
-    procedure TwitterSettingsMenuClick(Sender: TObject);
-    procedure OpenSiteTwitterMinuClick(Sender: TObject);
-    procedure OpenMyPageMenuClick(Sender: TObject);
-    procedure MyLentaTwitterMenuClick(Sender: TObject);
-    procedure IncMessTwitterMenuClick(Sender: TObject);
-    procedure MyInfoTwitterMenuClick(Sender: TObject);
     procedure JvTimerListEvents10Timer(Sender: TObject);
     procedure MraSMSSendMenuClick(Sender: TObject);
     procedure JvTimerListEvents13Timer(Sender: TObject);
     procedure JvTimerListEvents14Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure TwitterSearchMenuClick(Sender: TObject);
-    procedure AllLentaTwitterMenuClick(Sender: TObject);
-    procedure PostImageTwitterMenuClick(Sender: TObject);
     procedure SnapToRightClick(Sender: TObject);
     procedure JvTimerListEvents15Timer(Sender: TObject);
     procedure OpenGame_MenuClick(Sender: TObject);
@@ -474,7 +440,6 @@ type
     procedure ICQ_Enable(OnOff: Boolean);
     procedure MRA_Enable(OnOff: Boolean);
     procedure Jab_Enable(OnOff: Boolean);
-    procedure Twit_Enable(OnOff: Boolean);
     procedure OpenFromTrayMessage(HUIN: string);
     procedure MainFormHideInTray;
   end;
@@ -523,10 +488,8 @@ uses
   OverbyteIcsUrl,
   ShellApi,
   IcqEditContactUnit,
-  TwitterOptionsUnit,
   SMSUnit,
-  GamesUnit,
-  TwitProtoUnit;
+  GamesUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -596,7 +559,6 @@ begin
   TopTrafficONMenu.Caption := TrafficONMenu.Caption;
   SearchInCL.Caption := SearchInCL_Menu.Caption;
   TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
-  PostMessageTwitterMenu.Caption := Lang_Vars[61].L_S;
   // Применяем перевод статусов в меню
   ICQStatusFFC.Caption := Lang_Vars[67].L_S;
   ICQStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -656,10 +618,6 @@ begin
   AllStatusOnline.Caption := Lang_Vars[77].L_S;
   AllStatusInvisible.Caption := Lang_Vars[78].L_S;
   AllStatusOffline.Caption := Lang_Vars[80].L_S;
-  //
-  TwitterSettingsMenu.Caption := ICQSettings.Caption;
-  OnlineTwitterMenu.Caption := Lang_Vars[77].L_S;
-  OfflineTwitterMenu.Caption := Lang_Vars[80].L_S;
 end;
 
 {$ENDREGION}
@@ -893,29 +851,6 @@ begin
     // Стираем из Ростера контакты Jabber
     {if Assigned(RosterForm) then
       RosterForm.ClearContacts(C_Jabber);}
-  end;
-end;
-
-{$ENDREGION}
-{$REGION 'Twit_Enable'}
-
-procedure TMainForm.Twit_Enable(OnOff: Boolean);
-begin
-  if OnOff then
-  begin
-    // Инициализируем окно настроек протокола Twitter
-    if not Assigned(TwitterOptionsForm) then
-      TwitterOptionsForm := TTwitterOptionsForm.Create(Self);
-    // Ставим иконку в окне контактов
-    TwitterToolButton.Visible := True;
-  end
-  else
-  begin
-    // Прячем иконку в окне контактов
-    TwitterToolButton.Visible := False;
-    // Высвобождаем окно настроек протокола Twitter
-    if Assigned(TwitterOptionsForm) then
-      FreeAndNil(TwitterOptionsForm);
   end;
 end;
 
@@ -3291,7 +3226,6 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
-
 procedure TMainForm.MRAXStatusClick(Sender: TObject);
 begin
   // Открываем окно выбора дополнительного статуса
@@ -3300,23 +3234,6 @@ begin
   // Отображаем окнов рабочей области
   FormShowInWorkArea(MraXStatusForm);
 end;
-
-procedure TMainForm.MyInfoTwitterMenuClick(Sender: TObject);
-begin
-  // Загружаем информацию о пользователе
-  if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
-  begin
-    with TwitterHttpClient do
-    begin
-      Abort;
-      Username := Twit_Login;
-      Password := Twit_Password;
-      URL := C_TwitUserInfo + Twit_Login;
-      GetASync;
-    end;
-  end;
-end;
-
 {$ENDREGION}
 {$REGION 'AddNewContactClick'}
 
@@ -3465,29 +3382,11 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
-
 procedure TMainForm.PingICQServerClick(Sender: TObject);
 begin
   // Отправляем пакет для проверки связи с сервером ICQ
   // if not NotProtoOnline(S_Icq) then
 end;
-
-procedure TMainForm.PostImageTwitterMenuClick(Sender: TObject);
-begin
-  { TODO 2 : Сделать публикацию изображения в Twitter }
-end;
-
-procedure TMainForm.PostMessageTwitterMenuClick(Sender: TObject);
-begin
-  // Если форма не существует, то создаём её
-  if not Assigned(IcqReqAuthForm) then
-    IcqReqAuthForm := TIcqReqAuthForm.Create(Self);
-  // Делаем запрос в форме на обновление программы
-  IcqReqAuthForm.PostInTwitter(EmptyStr);
-  // Отображаем окно
-  XShowForm(IcqReqAuthForm);
-end;
-
 {$ENDREGION}
 {$REGION 'ProfileOpenMenuClick'}
 
@@ -3506,22 +3405,6 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
-
-procedure TMainForm.IncMessTwitterMenuClick(Sender: TObject);
-begin
-  { // Загружаем входящие сообщения
-    if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
-    begin
-    with TwitterHttpClient do
-    begin
-    Abort;
-    Username := Twit_Login;
-    Password := Twit_Password;
-    URL := Format(C_TwitIncMess, [Twit_IncMess_Count]);
-    GetASync;
-    end;
-    end; }
-end;
 
 procedure TMainForm.OnlyOnlineContactsToolButtonClick(Sender: TObject);
 begin
@@ -3565,13 +3448,6 @@ begin
   // Отображаем окно
   XShowForm(SettingsForm);
 end;
-
-procedure TMainForm.OpenSiteTwitterMinuClick(Sender: TObject);
-begin
-  // Открываем сайт Twitter
-  OpenURL(C_TwitSite);
-end;
-
 {$ENDREGION}
 {$REGION 'RenemeGroupCLClick'}
 
@@ -4235,12 +4111,6 @@ begin
     FreeAndNil(FrmAddGroup);
   end;
 end;
-
-procedure TMainForm.AllLentaTwitterMenuClick(Sender: TObject);
-begin
-  { TODO 2 : Сделать открытие общей ленты Twitter }
-end;
-
 {$ENDREGION}
 {$REGION 'AnketaContactClick'}
 
@@ -4615,7 +4485,6 @@ begin
               ICQ_Enable(Sub_Node.Properties.BoolValue(C_Icq, False));
               MRA_Enable(Sub_Node.Properties.BoolValue(C_Mra, False));
               Jab_Enable(Sub_Node.Properties.BoolValue(C_Jabber, False));
-              Twit_Enable(Sub_Node.Properties.BoolValue(C_Twitter, False));
             end;
             // Загружаем данные трафика
             Sub_Node := XML_Node.Items.ItemNamed[C_Traffic];
@@ -4754,7 +4623,6 @@ begin
         Sub_Node.Properties.Add(C_Icq, ICQToolButton.Visible);
         Sub_Node.Properties.Add(C_Mra, MRAToolButton.Visible);
         Sub_Node.Properties.Add(C_Jabber, JabberToolButton.Visible);
-        Sub_Node.Properties.Add(C_Twitter, TwitterToolButton.Visible);
         // Сохраняем трафик
         Sub_Node := XML_Node.Items.Add(C_Traffic);
         Sub_Node.Properties.Add(C_TS, V_AllTrafSend);
@@ -5130,7 +4998,6 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
-
 procedure TMainForm.TwitterHttpClientSessionClosed(Sender: TObject);
 begin
   // Обрабатываем возможные ошибки в работе http сокета
@@ -5139,36 +5006,8 @@ begin
     DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(TwitterHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
   end;
 end;
-
-procedure TMainForm.TwitterSearchMenuClick(Sender: TObject);
-begin
-  { TODO 2 : Сделать поиск по Twitter }
-end;
-
-procedure TMainForm.TwitterSettingsMenuClick(Sender: TObject);
-begin
-  // Открываем окно настроек ICQ протокола
-  if not Assigned(TwitterOptionsForm) then
-    TwitterOptionsForm := TTwitterOptionsForm.Create(Self);
-  // Отображаем окно
-  XShowForm(TwitterOptionsForm);
-end;
-
-procedure TMainForm.TwitterToolButtonClick(Sender: TObject);
-begin
-  // Открываем меню над этим элементом
-  PopUp_Top(TwitterToolButton, TwitterPopupMenu);
-end;
-
-procedure TMainForm.TwitterToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-begin
-  // Открываем меню над этим элементом
-  PopUp_Top(TwitterToolButton, TwitterPopupMenu);
-end;
-
 {$ENDREGION}
 {$REGION 'UniqContactSettingsMenuClick'}
-
 procedure TMainForm.UniqContactSettingsMenuClick(Sender: TObject);
 begin
   // Открываем окно уникальных настроек контакта
@@ -5181,7 +5020,6 @@ begin
   // Отображаем окно
   XShowForm(UniqForm);
 end;
-
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -5221,28 +5059,6 @@ begin
     Application.CreateForm(THistoryForm, HistoryForm);
   // Отображаем окно
   XShowForm(HistoryForm);
-end;
-
-procedure TMainForm.MyLentaTwitterMenuClick(Sender: TObject);
-begin
-  { // Загружаем свои сообщения
-    if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
-    begin
-    with TwitterHttpClient do
-    begin
-    Abort;
-    Username := Twit_Login;
-    Password := Twit_Password;
-    URL := Format(C_TwitOpenLenta, [Twit_Login, Twit_MyMess_Count]);
-    GetASync;
-    end;
-    end; }
-end;
-
-procedure TMainForm.OpenMyPageMenuClick(Sender: TObject);
-begin
-  // Открываем страницу пользователя на Twitter
-  OpenURL(C_TwitSite + Twit_Login);
 end;
 
 procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);
