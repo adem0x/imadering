@@ -7,8 +7,6 @@
     <Version c="Version: %s"/>
     <ProfileError c="First you must enter or select the profile name."/>
     <DevelMess c="This feature is in development! Look for updates of the project."/>
-    <Next c="Next"/>
-    <ProtoSelectAlert c="Do not selected any protocol! In this case, ICQ protocol will be selected automatically."/>
     <InfoHead c="Information"/>
     <ErrorHead c="Error"/>
     <AlertHead c="Action impossible"/>
@@ -53,24 +51,16 @@
     <UpDateLoad c="File update successfully received."/>
     <UpDateUn c="Installing ..."/>
     <UpDateOK c="The update is complete._r__r_To complete the update, you must restart the program IMadering!"/>
-    <SoundStartProg_Name c="IMadering startup"/>
-    <SoundIncMsg_Name c="Incoming message"/>
-    <SoundMsgSend_Name c="Message sent"/>
-    <SoungUserOnline_Name c="Contact online alert"/>
-    <SoundEvent_Name c="Service alert"/>
-    <SoundFileSend_Name c="File transfer complete"/>
-    <SoundError_Name c="Alert message"/>
-    <SoundOpen_Name c="Opening window"/>
-    <PostInTwitter c="Publish a message"/>
-    <TwitPostOK c="Message has been published in your Twitter page."/>
+    <PostInTwitter c="Publish a message in %s"/>
+    <TwitPostOK c="Message has been published in your %s page."/>
     <Account c="Account"/>
     <LoginError c="Before you connect to the %s server, first enter your account and password!"/>
-    <ParsingPktError c="Failed to parse the data packet received from the server."/>
-    <ConnectError c="The connection is not established."/>
-    <UnknownError c="Unknown error"/>
+    <ParsingPktError c="Failed to parse the data received from the server."/>
+    <ConnectError c="The connection to %s is not established."/>
+    <UnknownError c="Unknown error %s"/>
     <AccountX c="Your account %s used on another computer."/>
-    <NoPassChange c="Password not changed. Current or new password is entered incorrectly."/>
-    <OkPassChange c="Password changed!"/>
+    <NoPassChange c="Password for %s not changed. Current or new password is entered incorrectly."/>
+    <OkPassChange c="Password for %s changed!"/>
     <OnlineAlert c="To perform this action, you must first connect to the %s server."/>
     <TempGroupCaption c="Temporary"/>
     <NoCLGroupCaption c="Not in list"/>
@@ -88,13 +78,7 @@
     <UserCloseChat c="The interlocutor closed the chat window!"/>
     <UserTyping c="Typing ..."/>
     <UserStatus c="Status"/>
-    <OnlineInfo_1 c="Start collecting statistics on the server"/>
-    <OnlineInfo_2 c="Days held in the network"/>
-    <OnlineInfo_3 c="Total Away messages sent"/>
-    <OnlineInfo_4 c="IP address of the ICQ server"/>
-    <OnlineInfo_5 c="Avatar hash"/>
-    <OnlineInfo_6 c="Records in the server contacts list"/>
-    <InfoSaveOK c="Your data is successfully updated on the server."/>
+    <InfoSaveOK c="Your data is successfully updated on the server %s."/>
     <UserInfoOK c="Contact information found!"/>
     <UserInfoReq c="Getting information ..."/>
     <UserInfoCap c="Contact details"/>
@@ -105,7 +89,6 @@
     <NewProgErr c="Can not start another profile program."/>
     <HistoryCompressed c="Created archive of the history of communications. To view previous history of messages, open the archive to view history."/>
     <DellContact c="Contact &quot;%s&quot; to be removed. Are you sure?"/>
-    <Socket c="Socket"/>
     <JabberNullGroup c="Group"/>
     <AddNewGroup c="New group"/>
     <AddGroupOK c="Group successfully added to your list of contacts!"/>
@@ -219,14 +202,12 @@
     <TopPanelONMenu c="Button - Upper panel"/>
     <CLSearchONMenu c="Button - Search the list of contacts"/>
     <CLSearchToolButton h="_b_Find_d__r_Search the list of contacts"/>
-    <OpenSiteTwitterMinu c="Open website Twitter"/>
-    <OpenMyPageMenu c="Your page on the site"/>
-    <OpenLentaTwitterMenu c="My timeline"/>
     <OpenGame_Menu c="Play games"/>
     <SnapCL_Menu c="Dock contact list"/>
     <SnapToRight c="Right screen edge"/>
     <SnapToLeft c="Left screen edge"/>
     <TopModeToolButton h="_b_Always on top_d__r_Enable or disable window mode"/>
+	<MraSMSSendMenu c="Send SMS"/>
   </MainForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
@@ -244,7 +225,6 @@
     <SettingButtonGroup_12 c="Accounts"/>
     <GeneralOptionGroupBox c="General parameters"/>
     <HideInTrayProgramStartCheckBox c="Run hide in tray"/>
-    <StartOnWinStartCheckBox c="Run IMadering at system startup (for Windows)"/>
     <AutoUpdateCheckBox c="Check for new version at startup"/>
     <BestPrioritetCheckBox c="Start program with high priority"/>
     <CLWindowGroupBox c="Window"/>
@@ -337,22 +317,6 @@
     <CLSearchJvListView_0 c="Account"/>
     <CLSearchJvListView_1 c="Nickname"/>
   </CLSearchForm>
-  <FirstStartForm c="Initial setup program">
-    <PrevButton c="Back"/>
-    <ICQEnableCheckBox c="Enable ICQ protocol"/>
-    <ICQGroupBox c="Account"/>
-    <ICQUINLabel c="UIN or Email:"/>
-    <ICQPassLabel c="Password:"/>
-    <RegNewUINLabel c="Register a new ICQ"/>
-    <ICQShowPassCheckBox c="Show password"/>
-    <ICQSavePassCheckBox c="Save Password"/>
-    <JabberEnableCheckBox c="Enable Jabber protocol"/>
-    <JabberIDLabel c="Jabber ID:"/>
-    <RegNewJIDLabel c="Register this account"/>
-    <MRAEnableCheckBox c="Enable MRA protocol"/>
-    <MRAEmailLabel c="Email (mail.ru):"/>
-    <MRARegNewEmailLabel c="Register a new Email on www.mail.ru"/>
-  </FirstStartForm>
   <HistoryForm c="History">
     <ContactsLabel c="Contact:"/>
     <ArhiveLabel c="Archive:"/>
@@ -1161,19 +1125,6 @@
     <PasswordLabel c="Password:"/>
     <SavePassCheckBox c="Save password"/>
   </LoginForm>
-  <TwitterOptionsForm c="Options: Twitter">
-    <TwitterOptionButtonGroup_0 c="Account"/>
-    <TwitterOptionButtonGroup_1 c="Connecting"/>
-    <TwitterOptionButtonGroup_2 c="URL console"/>
-    <AccountGroupBox c="Account"/>
-    <ReqPassLabel c="Forgot your password?"/>
-    <AccountLabel c="Account:"/>
-    <PassLabel c="Password:"/>
-    <ShowPassCheckBox c="Show password"/>
-    <SavePassCheckBox c="Save password"/>
-    <RegNewTwitterLabel c="Register a new account"/>
-    <OptionGroupBox c="Options"/>
-  </TwitterOptionsForm>
   <JabberOptionsForm c="Options: Jabber">
     <JabberOptionButtonGroup_0 c="Account"/>
     <JabberOptionButtonGroup_1 c="Connecting"/>
@@ -1216,7 +1167,7 @@
     <ShowPassCheckBox c="Show password"/>
     <SavePassCheckBox c="Save password"/>
     <OptionGroupBox c="Options"/>
-    <GroupBox1 c="Server"/>
+    <ServerGroupBox c="Server"/>
     <MraLoginServerLabel c="Address:"/>
     <MraLoginServerPortLabel c="Port:"/>
   </MraOptionsForm>
@@ -1240,4 +1191,14 @@
     <PlayButton c="Play"/>
     <ResetButton c="Reset"/>
   </GamesForm>
+  <SoundsNames>
+    <0 c="Connection established"/>
+    <1 c="Incoming message"/>
+	<2 c="Message sent"/>
+    <3 c="Contact online alert"/>
+    <4 c="Service alert"/>
+    <5 c="File transfer complete"/>
+    <6 c="Error message"/>
+    <7 c="Contact disconnected"/>
+  </SoundsNames>
 </root>

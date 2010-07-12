@@ -7,8 +7,6 @@
     <Version c="Версия: %s"/>
     <ProfileError c="Сначала необходимо ввести или выбрать название профиля."/>
     <DevelMess c="Данная функция находится в разработке! Следите за обновлениями проекта."/>
-    <Next c="Далее"/>
-    <ProtoSelectAlert c="Не выбран ни один протокол! В таком случае протокол ICQ будет выбран автоматически."/>
     <InfoHead c="Информация"/>
     <ErrorHead c="Ошибка"/>
     <AlertHead c="Действие невозможно"/>
@@ -53,24 +51,16 @@
     <UpDateLoad c="Файл обновления успешно получен."/>
     <UpDateUn c="Установка обновления ..."/>
     <UpDateOK c="Установка обновления завершена._r__r_Для завершения обновления необходимо перезапустить программу IMadering!"/>
-    <SoundStartProg_Name c="Запуск IMadering"/>
-    <SoundIncMsg_Name c="Входящее сообщение"/>
-    <SoundMsgSend_Name c="Сообщение отправлено"/>
-    <SoungUserOnline_Name c="Контакт вошёл в сеть"/>
-    <SoundEvent_Name c="Сервисные оповещения"/>
-    <SoundFileSend_Name c="Передача файла завершена"/>
-    <SoundError_Name c="Оповещение об ошибке"/>
-    <SoundOpen_Name c="Открытие окна"/>
-    <PostInTwitter c="Опубликовать сообщение"/>
-    <TwitPostOK c="Сообщение успешно опубликовано в вашей Twitter странице."/>
+    <PostInTwitter c="Опубликовать сообщение в %s"/>
+    <TwitPostOK c="Сообщение успешно опубликовано в вашей %s странице."/>
     <Account c="Учётная запись"/>
     <LoginError c="Перед тем как подключиться к %s серверу, сначала укажите свой логин и пароль!"/>
-    <ParsingPktError c="Не удалось произвести разбор пакета данных полученных от сервера."/>
-    <ConnectError c="Соединение не установлено."/>
-    <UnknownError c="Неизвестная ошибка"/>
+    <ParsingPktError c="Не удалось произвести разбор данных полученных от сервера."/>
+    <ConnectError c="Соединение с %s не установлено."/>
+    <UnknownError c="Неизвестная ошибка %s"/>
     <AccountX c="Ваша учётная запись %s используется на другом компьютере."/>
-    <NoPassChange c="Пароль не был изменён. Текущий или новый пароль введён неверно."/>
-    <OkPassChange c="Пароль изменён!"/>
+    <NoPassChange c="Пароль для %s не был изменён. Текущий или новый пароль введён неверно."/>
+    <OkPassChange c="Пароль для %s изменён!"/>
     <OnlineAlert c="Для выполнения этого действия необходимо сначала подключиться к %s серверу."/>
     <TempGroupCaption c="Временные"/>
     <NoCLGroupCaption c="Не в списке"/>
@@ -88,13 +78,7 @@
     <UserCloseChat c="Собеседник закрыл окно чата!"/>
     <UserTyping c="Печатает ..."/>
     <UserStatus c="Статус"/>
-    <OnlineInfo_1 c="Дата начала сбора статистики на сервере"/>
-    <OnlineInfo_2 c="Дней проведено в сети"/>
-    <OnlineInfo_3 c="Всего отправлено Away сообщений"/>
-    <OnlineInfo_4 c="IP адрес ICQ сервера"/>
-    <OnlineInfo_5 c="Аватар hash"/>
-    <OnlineInfo_6 c="Записей в серверном списке контактов"/>
-    <InfoSaveOK c="Ваши данные успешно обновлены на сервере."/>
+    <InfoSaveOK c="Ваши данные успешно обновлены на сервере %s."/>
     <UserInfoOK c="Информация о контакте найдена!"/>
     <UserInfoReq c="Получение информации ..."/>
     <UserInfoCap c="Информация о контакте"/>
@@ -105,7 +89,6 @@
     <NewProgErr c="Ошибка запуска другого профиля программы."/>
     <HistoryCompressed c="Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории."/>
     <DellContact c="Контакт &quot;%s&quot; будет удалён. Вы уверены?"/>
-    <Socket c="Сокет"/>
     <JabberNullGroup c="Группа"/>
     <AddNewGroup c="Новая группа"/>
     <AddGroupOK c="Группа успешно добавлена в ваш список контактов!"/>
@@ -219,14 +202,12 @@
     <TopPanelONMenu c="Кнопка - Верхняя панель"/>
     <CLSearchONMenu c="Кнопка - Поиск по списку контактов"/>
     <CLSearchToolButton h="_b_Искать_d__r_Поиск по списку контактов"/>
-    <OpenSiteTwitterMinu c="Открыть сайт Twitter"/>
-    <OpenMyPageMenu c="Ваша страница на сайте"/>
-    <OpenLentaTwitterMenu c="Моя лента"/>
     <OpenGame_Menu c="Открыть игры"/>
     <SnapCL_Menu c="Пристыковать список контактов"/>
     <SnapToRight c="К правому краю экрана"/>
     <SnapToLeft c="К левому краю экрана"/>
     <TopModeToolButton h="_b_Поверх всех окон_d__r_Включить или выключить режим окна"/>
+	<MraSMSSendMenu c="Отправить SMS"/>
   </MainForm>
   <SettingsForm c="Настройки">
     <SettingButtonGroup_0 c="Общие"/>
@@ -244,7 +225,6 @@
     <SettingButtonGroup_12 c="Учётные записи"/>
     <GeneralOptionGroupBox c="Общие параметры программы"/>
     <HideInTrayProgramStartCheckBox c="Запускать свернутой в трэй"/>
-    <StartOnWinStartCheckBox c="Запускать IMadering при старте системы (только для Windows)"/>
     <AutoUpdateCheckBox c="Проверять наличие новой версии при запуске"/>
     <BestPrioritetCheckBox c="Запускать программу с высоким приоритетом"/>
     <CLWindowGroupBox c="Окно"/>
@@ -337,22 +317,6 @@
     <CLSearchJvListView_0 c="Учётная запись"/>
     <CLSearchJvListView_1 c="Ник"/>
   </CLSearchForm>
-  <FirstStartForm c="Начальная настройка программы">
-    <PrevButton c="Назад"/>
-    <ICQEnableCheckBox c="Включить поддержку ICQ протокола"/>
-    <ICQGroupBox c="Учётная запись"/>
-    <ICQUINLabel c="UIN или Email:"/>
-    <ICQPassLabel c="Пароль:"/>
-    <RegNewUINLabel c="Зарегистрировать новый ICQ"/>
-    <ICQShowPassCheckBox c="Показать пароль"/>
-    <ICQSavePassCheckBox c="Сохранить пароль"/>
-    <JabberEnableCheckBox c="Включить поддержку Jabber протокола"/>
-    <JabberIDLabel c="Jabber ID:"/>
-    <RegNewJIDLabel c="Зарегистрировать эту учётную запись"/>
-    <MRAEnableCheckBox c="Включить поддержку MRA протокола"/>
-    <MRAEmailLabel c="Email (mail.ru):"/>
-    <MRARegNewEmailLabel c="Зарегистрировать новый Email на www.mail.ru"/>
-  </FirstStartForm>
   <HistoryForm c="История">
     <ContactsLabel c="Контакт:"/>
     <ArhiveLabel c="Архив:"/>
@@ -1161,19 +1125,6 @@
     <PasswordLabel c="Пароль:"/>
     <SavePassCheckBox c="Сохранить пароль"/>
   </LoginForm>
-  <TwitterOptionsForm c="Опции: Twitter">
-    <TwitterOptionButtonGroup_0 c="Учётная запись"/>
-    <TwitterOptionButtonGroup_1 c="Подключение"/>
-    <TwitterOptionButtonGroup_2 c="URL консоль"/>
-    <AccountGroupBox c="Учётная запись"/>
-    <ReqPassLabel c="Забыли пароль?"/>
-    <AccountLabel c="Аккаунт:"/>
-    <PassLabel c="Пароль:"/>
-    <ShowPassCheckBox c="Показать пароль"/>
-    <SavePassCheckBox c="Сохранить пароль"/>
-    <RegNewTwitterLabel c="Зарегистрировать новый аккаунт"/>
-    <OptionGroupBox c="Опции"/>
-  </TwitterOptionsForm>
   <JabberOptionsForm c="Опции: Jabber">
     <JabberOptionButtonGroup_0 c="Учётная запись"/>
     <JabberOptionButtonGroup_1 c="Подключение"/>
@@ -1216,7 +1167,7 @@
     <ShowPassCheckBox c="Показать пароль"/>
     <SavePassCheckBox c="Сохранить пароль"/>
     <OptionGroupBox c="Опции"/>
-    <GroupBox1 c="Сервер"/>
+    <ServerGroupBox c="Сервер"/>
     <MraLoginServerLabel c="Адрес:"/>
     <MraLoginServerPortLabel c="Порт:"/>
   </MraOptionsForm>
@@ -1240,4 +1191,14 @@
     <PlayButton c="Пуск"/>
     <ResetButton c="Сброс"/>
   </GamesForm>
+  <SoundsNames>
+    <0 c="Подключение установлено"/>
+    <1 c="Входящее сообщение"/>
+	<2 c="Сообщение отправлено"/>
+    <3 c="Контакт вошёл в сеть"/>
+    <4 c="Сервисные оповещения"/>
+    <5 c="Передача файла завершена"/>
+    <6 c="Оповещение об ошибке"/>
+    <7 c="Контакт отключился"/>
+  </SoundsNames>
 </root>

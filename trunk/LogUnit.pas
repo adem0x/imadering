@@ -277,6 +277,7 @@ begin
     with MainForm do
     begin
       SaveTextAsFileDialog.FileName := C_ContactListFileName;
+      SaveTextAsFileDialog.FilterIndex := 2;
       if SaveTextAsFileDialog.Execute then
         V_Roster.SaveToFile(SaveTextAsFileDialog.FileName);
     end;
@@ -289,6 +290,7 @@ begin
   with MainForm do
   begin
     SaveTextAsFileDialog.FileName := C_IMadering + C_log;
+    SaveTextAsFileDialog.FilterIndex := 1;
     if SaveTextAsFileDialog.Execute then
       LogMemo.Lines.SaveToFile(SaveTextAsFileDialog.FileName, TEncoding.Unicode);
   end;

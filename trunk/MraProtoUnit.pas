@@ -152,8 +152,8 @@ var
   MRA_Bos_IP: string;
   MRA_Bos_Port: string;
   MRA_myBeautifulSocketBuffer: string;
-  MRA_LoginServerAddr: string = 'mrim.mail.ru';
-  MRA_LoginServerPort: string = '2042';
+  MRA_LoginServerAddr: string;
+  MRA_LoginServerPort: string;
   MRA_BuffPkt: string;
   MRA_LoginUIN: string;
   MRA_LoginPassword: string;

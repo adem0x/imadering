@@ -2011,7 +2011,7 @@ begin
           ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False, EndSearch);
           Exit;
         end;
-        XLog(C_Icq + Log_Get + Log_Contact_Info, C_Icq);
+        //XLog(C_Icq + Log_Get + Log_Contact_Info, C_Icq);
         // Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := Pos(#$00#$32#$00, PktData);
         if BMRes > 0 then
@@ -2969,8 +2969,8 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
-        S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
+        //S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
+        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -2983,13 +2983,13 @@ begin
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
               end;
             $0006: // Статус
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
               end;
             $0005: // Дата регистраций UIN
               begin
@@ -3001,12 +3001,12 @@ begin
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
               end;
             $000F: // Время в сети
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
               end;
             $0003: // Время подключения
               begin
@@ -3054,7 +3054,7 @@ begin
                       Msg := UnicodeBEHex2Text(Text2Hex(Msg));
                   end;
                 end;
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
               end
           else
             begin
@@ -3069,8 +3069,8 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
-        S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
+        //S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
+        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3083,13 +3083,13 @@ begin
               begin // Класс контакта (вдруг админ постучит)
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
               end;
             $0006:
               begin // Статус
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
               end;
             $0005:
               begin // Дата регистраций UIN
@@ -3101,12 +3101,12 @@ begin
               begin // Аватар хэш и другие доп. статусы
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
               end;
             $000F:
               begin // Время в сети
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
               end;
             $0003:
               begin // Время подключения
@@ -3165,7 +3165,7 @@ begin
                           goto E;
                         NextData(SubData, 26 + 6 + 12); // 1B - 1 Len + FFSeq + Unknown
                         MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
-                        S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Type + IntToHex(MsgType, 1) + C_RN;
+                        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Type + IntToHex(MsgType, 1) + C_RN;
                         NextData(SubData, 1 + 2 + 2); // MsgFlag + status code + priority code
                         if MsgType = M_FILE then // File request
                         begin
@@ -3187,7 +3187,7 @@ begin
                           Msg := NextData(SubData, MsgLen);
                           if IsUtf8Valid(Msg) then // Изза ошибок в кодировке QIP 2005
                             Msg := UTF8ToString(Msg);
-                          S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
+                          //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
                           if Msg <> EmptyStr then
                           begin
                             if MsgType = M_URL then
@@ -3221,8 +3221,8 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
-        S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
+        //S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
+        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3235,13 +3235,13 @@ begin
               begin // Класс контакта (вдруг админ постучит)
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
               end;
             $0006:
               begin // Статус
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
               end;
             $0005:
               begin // Дата регистраций UIN
@@ -3253,12 +3253,12 @@ begin
               begin // Аватар хэш и другие доп. статусы
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
               end;
             $000F:
               begin // Время в сети
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
+                //S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
               end;
             $0003:
               begin // Время подключения
@@ -3280,12 +3280,12 @@ begin
           NextData(PktData, 2);
           NextData(PktData, 4); // UIN
           MsgType := HexToInt(Text2Hex(NextData(PktData, 1)));
-          S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Type + IntToHex(MsgType, 1) + C_RN;
+          //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Type + IntToHex(MsgType, 1) + C_RN;
           NextData(PktData, 1); // MsgFlag
           MsgLen := Swap16(HexToInt(Text2Hex(NextData(PktData, 2))));
           Dec(MsgLen);
           Msg := Utf8ToString(NextData(PktData, MsgLen));
-          S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
+          //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
           if Msg <> EmptyStr then
           begin
             if MsgType = M_URL then
@@ -3646,7 +3646,7 @@ begin
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   // Получаем UIN чей статус нам прислал сервак
   UIN := NextData(PktData, Len);
-  XLog(C_Icq + Log_Get + Log_User_Online_Event + UIN, C_Icq);
+  //XLog(C_Icq + Log_Get + Log_User_Online_Event + UIN, C_Icq);
   // Пропускаем варнинглэвел (в icq всегда равен нулю)
   NextData(PktData, 2);
   // Получаем количество вложенных в пакет TLV
@@ -3663,7 +3663,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           UserClass := Text2Hex(NextData(PktData, Len));
-          XLog(C_Icq + Log_Parsing + Log_UserClass + UserClass, C_Icq);
+          //XLog(C_Icq + Log_Parsing + Log_UserClass + UserClass, C_Icq);
         end;
       $000C: // DC информация
         begin
@@ -3676,9 +3676,9 @@ begin
           XLog(C_Icq + Log_Parsing + IntIP + ':' + IntPort, C_Icq);
           // Флаг подключения и версия протокола
           ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
-          XLog(C_Icq + Log_Parsing + Log_ConnFlag + ConnFlag, C_Icq);
+          //XLog(C_Icq + Log_Parsing + Log_ConnFlag + ConnFlag, C_Icq);
           ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
-          XLog(C_Icq + Log_Parsing + Log_ProtoVer + ProtoVer, C_Icq);
+          //XLog(C_Icq + Log_Parsing + Log_ProtoVer + ProtoVer, C_Icq);
           // Дополнительные поля для как правило для нужд программистов
           XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))), C_Icq);
           XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 8))), C_Icq);
@@ -3696,7 +3696,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           Status := Text2Hex(NextData(PktData, Len));
-          XLog(C_Icq + Log_Parsing + Log_Status + Status, C_Icq);
+          //XLog(C_Icq + Log_Parsing + Log_Status + Status, C_Icq);
         end;
       $0005: // Дата регистраций UIN
         begin
@@ -3728,12 +3728,12 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           IconHash := NextData(PktData, Len);
-          XLog(C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash), C_Icq);
+          //XLog(C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash), C_Icq);
         end;
       $000F: // Время в сети
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-          XLog(C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)), C_Icq);
+          //XLog(C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)), C_Icq);
         end;
       $0003: // Время подключения
         begin
@@ -3776,7 +3776,7 @@ begin
   // Получаем длинну UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   UIN := NextData(PktData, Len);
-  XLog(C_Icq + Log_Get + Log_User_Offline_Event + UIN, C_Icq);
+  //XLog(C_Icq + Log_Get + Log_User_Offline_Event + UIN, C_Icq);
   // Ещё есть данные для расшифровки
 
   // Запускаем событие контакт онлайн со статусом оффлайн номер иконки 9
