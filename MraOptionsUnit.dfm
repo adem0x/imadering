@@ -101,7 +101,7 @@ object MraOptionsForm: TMraOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = AccountPage
+      ActivePage = ConnectPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -284,7 +284,7 @@ object MraOptionsForm: TMraOptionsForm
         Width = 428
         Height = 356
         Caption = 'ConnectPage'
-        object GroupBox1: TGroupBox
+        object ServerGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 428

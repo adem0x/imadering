@@ -51,7 +51,7 @@ type
     RegNewEmailLabel: TLabel;
     OptionGroupBox: TGroupBox;
     ConnectPage: TJvStandardPage;
-    GroupBox1: TGroupBox;
+    ServerGroupBox: TGroupBox;
     MraLoginServerLabel: TLabel;
     MraLoginServerComboBox: TComboBox;
     MraLoginServerPortLabel: TLabel;
@@ -112,7 +112,7 @@ uses
 procedure TMraOptionsForm.LoadSettings;
 var
   JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
   S_email: string;
 begin
   // Инициализируем XML
@@ -131,8 +131,8 @@ begin
                     // --------------------------------------------------------------------------
                     // Загружаем данные логина
                     S_email := XML_Node.Properties.Value(C_Login);
-                    MraEmailEdit.Text := Parse('@', S_email, 1);
-                    MRAEmailComboBox.ItemIndex := MRAEmailComboBox.Items.IndexOf('@' + Parse('@', S_email, 2));
+                    MraEmailEdit.Text := Parse(C_EE, S_email, 1);
+                    MRAEmailComboBox.ItemIndex := MRAEmailComboBox.Items.IndexOf(C_EE + Parse(C_EE, S_email, 2));
                     SavePassCheckBox.Checked := XML_Node.Properties.BoolValue(C_SavePass);
                     // Загружаем пароль
                     PassEdit.OnChange := nil;
@@ -144,8 +144,13 @@ begin
                       end;
                     PassEdit.OnChange := PassEditChange;
                     // --------------------------------------------------------------------------
-                    // Загружаем остальные настройки
-
+                    // Загружаем настройки сервера
+                    Sub_Node := XML_Node.Items.ItemNamed[C_CustomServer];
+                    if Sub_Node <> nil then
+                      begin
+                        MraLoginServerComboBox.Text := Sub_Node.Properties.Value(C_Host);
+                        MraLoginServerPortEdit.Text := Sub_Node.Properties.Value(C_Port);
+                      end;
                     // --------------------------------------------------------------------------
                   end;
               end;
@@ -180,7 +185,13 @@ begin
       MRA_LoginPassword := PassEdit.Hint;
     end;
   // --------------------------------------------------------------------------
-
+  // Применяем настройки сервера
+  if MraLoginServerComboBox.Text = EmptyStr then
+    MraLoginServerComboBox.Text := MraLoginServerComboBox.Items[0];
+  MRA_LoginServerAddr := MraLoginServerComboBox.Text;
+  if MraLoginServerPortEdit.Text = EmptyStr then
+    MraLoginServerPortEdit.Text := '2042';
+  MRA_LoginServerPort := MraLoginServerPortEdit.Text;
   // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
@@ -192,7 +203,7 @@ end;
 procedure TMraOptionsForm.SaveSettings;
 var
   JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Записываем настройки MRA протокола в файл
   // Инициализируем XML
@@ -225,8 +236,10 @@ begin
             if PassEdit.Text <> EmptyStr then
               PassEdit.Text := C_MaskPass;
             // --------------------------------------------------------------------------
-            // Сохраняем другие настройки
-
+            // Сохраняем настройки сервера
+            Sub_Node := XML_Node.Items.Add(C_CustomServer);
+            Sub_Node.Properties.Add(C_Host, MraLoginServerComboBox.Text);
+            Sub_Node.Properties.Add(C_Port, MraLoginServerPortEdit.Text);
             // --------------------------------------------------------------------------
             // Сохраняем файл
             SaveToFile(V_ProfilePath + C_SettingsFileName);

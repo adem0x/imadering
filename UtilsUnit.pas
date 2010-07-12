@@ -704,7 +704,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := Lang_Vars[23].L_S + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(Lang_Vars[27].L_S, [Errcode]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + SName + ' ]';
+  Result := Format(Lang_Vars[23].L_S, [SName]) + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(Lang_Vars[27].L_S, [Errcode]);
 end;
 
 {$ENDREGION}
@@ -1663,7 +1663,7 @@ begin
         S_Name := MRA_Pkt_Names[I].Pkt_Name;
         Break;
       end;
-    XLog(C_Mra + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
+    XLog(C_Mra + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
   end;
   // Отсылаем данные по сокету
   Mainform.MraWSocket.SendStr(Str);

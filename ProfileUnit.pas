@@ -404,7 +404,7 @@ begin
             if XML_Node <> nil then
             begin
               // Добавляем пункт этого языка в меню
-              LangsPopupMenu.Items.Add(NewItem(C_QN + LangCode + C_WN + XML_Node.Properties.Value(C_Lang), 0, False, True, LangMenuClick, 0, LangCode));
+              LangsPopupMenu.Items.Add(NewItem(C_QN + LangCode + C_EN + C_BN + XML_Node.Properties.Value(C_Lang), 0, False, True, LangMenuClick, 0, LangCode));
               LangsPopupMenu.Items[LangsPopupMenu.Items.Count - 1].Hint := LangCode;
               // Получаем флаг страны этого языка
               FlagFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, LangCode);

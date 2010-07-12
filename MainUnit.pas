@@ -654,22 +654,19 @@ end;
 
 {$ENDREGION}
 {$REGION 'ICQ_Enable'}
-
 procedure TMainForm.ICQ_Enable(OnOff: Boolean);
 begin
   if OnOff then
   begin
     // Инициализируем окно настроек протокола ICQ
     if not Assigned(IcqOptionsForm) then
-      IcqOptionsForm := TIcqOptionsForm.Create(Self);
-    // Ставим иконки в окне контактов и в трэе
-    //ICQTrayIcon.Visible := True;
+      Application.CreateForm(TIcqOptionsForm, IcqOptionsForm);
+    // Ставим иконку в окне контактов
     ICQToolButton.Visible := True;
   end
   else
   begin
-    // Прячем иконки в окне контактов и в трэе
-    //ICQTrayIcon.Visible := False;
+    // Прячем иконку в окне контактов
     ICQToolButton.Visible := False;
     // Высвобождаем окно настроек протокола ICQ
     if Assigned(IcqOptionsForm) then
@@ -679,25 +676,21 @@ begin
       RosterForm.ClearContacts(C_Icq);}
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'MRA_Enable'}
-
 procedure TMainForm.MRA_Enable(OnOff: Boolean);
 begin
   if OnOff then
   begin
     // Инициализируем окно настроек протокола MRA
     if not Assigned(MraOptionsForm) then
-      MraOptionsForm := TMraOptionsForm.Create(Self);
-    // Ставим иконки в окне контактов и в трэе
-    //MRATrayIcon.Visible := True;
+      Application.CreateForm(TMraOptionsForm, MraOptionsForm);
+    // Ставим иконку в окне контактов
     MRAToolButton.Visible := True;
   end
   else
   begin
-    // Прячем иконки в окне контактов и в трэе
-    //MRATrayIcon.Visible := False;
+    // Прячем иконку в окне контактов
     MRAToolButton.Visible := False;
     // Высвобождаем окно настроек протокола MRA
     if Assigned(MraOptionsForm) then
@@ -707,7 +700,6 @@ begin
       RosterForm.ClearContacts(C_Mra);}
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -746,7 +738,7 @@ begin
   if (MRA_LoginUIN = EmptyStr) or (MRA_LoginPassword = EmptyStr) then
   begin
     // Показываем сообщение об этой ошибке
-    DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [UpperCase(C_Mra)]), EmptyStr, 133, 3, 0);
+    DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Mra]), EmptyStr, 133, 3, 0);
     // Открываем настройки MRA
     MRASettingsClick(Self);
     // Ставим фокусы в поле ввода логина или пароля
@@ -764,23 +756,19 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   MRA_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_Mra + C_PN + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
+  S_Log := S_Log + C_RN + C_Mra + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   MRA_CurrentStatus_bac := MRA_CurrentStatus;
   // Ставим иконки статусов в окне и в трэе
   if not MRA_Offline_Phaze then
-  begin
-    //MRATrayIcon.IconIndex := MRA_CurrentStatus;
     MRAToolButton.ImageIndex := MRA_CurrentStatus;
-  end;
   // Подключаемся к MRA серверу
   if MRA_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Mra + C_PN + Log_Login + MRA_LoginUIN + C_RN;
-    // Ставим иконки подключения в окне и в трэе
-    //MRATrayIcon.IconIndex := 162;
-    MRAToolButton.ImageIndex := 162;
-    // Блокируем контролы логина и пароля ICQ
+    S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + Log_Login + C_TN + C_BN + MRA_LoginUIN + C_RN;
+    // Ставим иконку подключения
+    MRAToolButton.ImageIndex := 25;
+    // Блокируем контролы логина и пароля MRA
     if Assigned(MraOptionsForm) then
     begin
       with MraOptionsForm do
@@ -792,28 +780,26 @@ begin
         MRAEmailComboBox.Enabled := False;
       end;
     end;
-    // Активируем фазу коннекта к серверу ICQ
+    // Активируем фазу коннекта к серверу MRA
     MRA_Connect_Phaze := True;
     MRA_HTTP_Connect_Phaze := False;
     MRA_BosConnect_Phaze := False;
     MRA_Work_Phaze := False;
     MRA_Offline_Phaze := False;
-    // Запускаем показ иконки коннекта MRA
-    JvTimerList.Events[3].Enabled := True;
     // Устанавливаем параметры сокета
-    MRAWSocket.Proto := 'tcp';
+    MRAWSocket.Proto := C_SocketProto;
     // Устанавливаем настройки прокси
     if V_HttpProxy_Enable then
     begin
       MRAWSocket.Addr := V_HttpProxy_Address;
       MRAWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + C_Mra + C_PN + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port + C_RN;
+      S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       MRAWSocket.Addr := MRA_LoginServerAddr;
       MRAWSocket.Port := MRA_LoginServerPort;
-      S_Log := S_Log + C_Mra + C_PN + Log_Connect + MRA_LoginServerAddr + ':' + MRA_LoginServerPort + C_RN;
+      S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + MRA_LoginServerAddr + C_TN + MRA_LoginServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -823,27 +809,24 @@ begin
   // Отправляем статус
   // if MRA_Work_Phaze then ;
   // Пишем в лог
-  XLog(Trim(S_Log), C_Mra);
+  XLog(S_Log, C_Mra);
 end;
 
 {$ENDREGION}
 {$REGION 'Jab_Enable'}
-
 procedure TMainForm.Jab_Enable(OnOff: Boolean);
 begin
   if OnOff then
   begin
     // Инициализируем окно настроек протокола Jabber
     if not Assigned(JabberOptionsForm) then
-      JabberOptionsForm := TJabberOptionsForm.Create(Self);
-    // Ставим иконки в окне контактов и в трэе
-    //JabberTrayIcon.Visible := True;
+      Application.CreateForm(TJabberOptionsForm, JabberOptionsForm);
+    // Ставим иконку в окне контактов
     JabberToolButton.Visible := True;
   end
   else
   begin
-    // Прячем иконки в окне контактов и в трэе
-    //JabberTrayIcon.Visible := False;
+    // Прячем иконку в окне контактов
     JabberToolButton.Visible := False;
     // Высвобождаем окно настроек протокола Jabber
     if Assigned(JabberOptionsForm) then
@@ -853,7 +836,6 @@ begin
       RosterForm.ClearContacts(C_Jabber);}
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -1678,7 +1660,7 @@ begin
                               Len := HexToInt(Text2Hex(NextData(HexPkt, 1)));
                               // Забираем Hash
                               ICQ_MyIcon_Hash := Text2Hex(NextData(HexPkt, Len));
-                              XLog(C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + ICQ_MyIcon_Hash, C_Icq);
+                              //XLog(C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + ICQ_MyIcon_Hash, C_Icq);
                             end;
                           end;
                       end;
@@ -1971,7 +1953,6 @@ begin
                 // Если длинна пакета ноль, то завершаем связь с сервером
                 if PktSize = 0 then
                 begin
-                  XLog(C_Icq + Log_Get + Log_Close_Server, C_Icq);
                   // Если сокет ещё подключён, то отсылаем "прощание"
                   if ICQWSocket.State = WsConnected then
                     ICQWSocket.SendStr(Hex2Text('2A04' + IntToHex(ICQ_Seq, 4) + '0000'));
@@ -3029,12 +3010,11 @@ begin
       Pkt := Chop(C_RN + C_RN, MRA_myBeautifulSocketBuffer);
       // Обнуляем ошибки прокси
       ProxyErr := 0;
-      // Если ответ положительный и прокси установил соединение,
-      // то активируем фазу подключения через http прокси
-      if StartsStr('HTTPS/1.0 200', Pkt) or StartsStr('HTTPS/1.1 200', Pkt) or StartsStr('HTTP/1.0 200', Pkt) or StartsStr('HTTP/1.1 200', Pkt) then
+      // Если ответ положительный и прокси установил соединение, то активируем фазу подключения через http прокси
+      if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         MRA_HTTP_Connect_Phaze := True;
-        XLog(C_Mra + Log_Get + Log_Proxy_OK, C_Mra);
+        XLog(C_Mra + C_BN + Log_Get + C_BN + Log_Proxy_OK, C_Mra);
         // Если уже подключились в Bos серверу
         if MRA_BosConnect_Phaze then
         begin
@@ -3044,15 +3024,16 @@ begin
         end;
       end
       else
-        {// Сообщаем об ошибках прокси} if StartsStr('HTTP/1.0 407', Pkt) then
+        // Сообщаем об ошибках прокси
+        if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
         begin
           ProxyErr := 1;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
         end
         else
         begin
           ProxyErr := 2;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
         end;
       // Забираем из буфера пакет с данными MRA
       Pkt := MRA_myBeautifulSocketBuffer;
@@ -3073,16 +3054,16 @@ begin
     V_AllTrafRecev := V_AllTrafRecev + Length(Pkt);
     if Assigned(TrafficForm) then
       Traffic_MenuClick(nil);
-    // Прибавляем данные к специальному буферу накопления таких преобразованных данных
+    // Прибавляем данные к специальному буферу накопления
     MRA_BuffPkt := MRA_BuffPkt + Pkt;
     // Если фаза первого подключания к серверу MRA
     if MRA_Connect_Phaze then
     begin
       MRA_Bos_Addr := MRA_BuffPkt;
-      XLog(C_Mra + Log_Parsing + 'BosServer' + C_TN + MRA_Bos_Addr, C_Mra);
+      XLog(C_Mra + C_BN + Log_Parsing + C_BN + Log_BosServer + C_TN + C_BN + MRA_Bos_Addr, C_Mra);
       // Получаем адрес Bos сервера для подключения
-      MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
-      MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
+      MRA_Bos_IP := Parse(C_TN, MRA_Bos_Addr, 1);
+      MRA_Bos_Port := Parse(C_TN, MRA_Bos_Addr, 2);
       // Закрываем сокет и ждём пока он закроется
       MRAWSocket.Close;
       MRAWSocket.WaitForClose;
@@ -3094,7 +3075,7 @@ begin
       MRA_myBeautifulSocketBuffer := EmptyStr;
       MRA_BuffPkt := EmptyStr;
       // Устанавливаем параметры
-      MRAWSocket.Proto := 'tcp';
+      MRAWSocket.Proto := C_SocketProto;
       if V_HttpProxy_Enable then
       begin
         MRAWSocket.Addr := V_HttpProxy_Address;
@@ -3113,7 +3094,7 @@ begin
     if ((MRA_BuffPkt > EmptyStr) and (Text2Hex(LeftStr(MRA_BuffPkt, 4)) <> MRA_MagKey)) then
     begin
       // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
       MRA_GoOffline;
       Exit;
     end;
@@ -3142,7 +3123,7 @@ begin
               S_Name := MRA_Pkt_Names[I].Pkt_Name;
               Break;
             end;
-          XLog(C_Mra + Log_Get + S_Name + C_RN + Trim(Dump(HexPkt)), C_Mra);
+          XLog(C_Mra + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Mra);
         end;
         // Ещё раз делаем проверку на начало пакета MRA протокола по магическому ключу
         if Text2Hex(NextData(HexPkt, 4)) = MRA_MagKey then
@@ -3165,7 +3146,7 @@ begin
                 // Получаем интервал пакетов Ping
                 I := HexToInt(Text2Hex(NextData(HexPkt, Len)));
                 JvTimerList.Events[10].Interval := Swap32(I) * 1000;
-                Xlog(C_Mra + Log_Parsing + 'Ping interval: ' + IntToStr(JvTimerList.Events[10].Interval), C_Mra);
+                Xlog(C_Mra + C_BN + Log_Parsing + C_BN + Log_PingInterval + C_TN + C_BN + IntToStr(JvTimerList.Events[10].Interval), C_Mra);
                 // Отправляем пакет авторизации на сервере
                 MRA_Login_2;
                 // Запускаем таймер MRA Alive
@@ -3183,13 +3164,17 @@ begin
                 MRA_Reconnect := False;
                 // Очищаем группы MRA в Ростере
                 //RosterForm.ClearContacts(C_Mra);
+                // Устанавливаем иконку статуса
+                MRAToolButton.ImageIndex := MRA_CurrentStatus_bac;
+                // Воспроизводим звук удачного логина
+                ImPlaySnd(1);
               end;
             $1005:
               begin
                 if Pos('Invalid login', HexPkt) > 0 then
                 begin
                   // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                  DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [UpperCase(C_Mra)]), EmptyStr, 134, 2, 0);
+                  DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Mra]), EmptyStr, 134, 2, 0);
                   MRA_GoOffline;
                   Exit;
                 end;
@@ -3206,9 +3191,8 @@ begin
         end
         else
         begin
-          // --Если начальная метка пакета не правильная,
-          // то выводим сообщение об ошибке разбора и выходим в оффлайн
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+          // Если начальная метка пакета не правильная, то выводим сообщение об ошибке разбора и выходим в оффлайн
+          DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
           MRA_GoOffline;
           Exit;
         end;

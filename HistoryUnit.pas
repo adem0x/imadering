@@ -238,6 +238,7 @@ begin
     Exit;
   // Указываем начальное имя файла
   MainForm.SaveTextAsFileDialog.FileName := 'History ' + ContactsComboBox.Text;
+  MainForm.SaveTextAsFileDialog.FilterIndex := 1;
   // Открываем диалог сохранения файла
   if MainForm.SaveTextAsFileDialog.Execute then
     begin

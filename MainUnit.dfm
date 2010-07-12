@@ -60,7 +60,6 @@ object MainForm: TMainForm
     OnContextPopup = ContactListContextPopup
     OnHotButton = ContactListHotButton
     OnMouseDown = ContactListMouseDown
-    ExplicitWidth = 303
   end
   object BottomToolBar: TToolBar
     Left = 0
@@ -79,7 +78,6 @@ object MainForm: TMainForm
     Transparent = False
     Wrapable = False
     OnMouseDown = BottomToolBarMouseDown
-    ExplicitWidth = 303
     object MainToolButton: TToolButton
       Tag = 1
       Left = 0
@@ -232,7 +230,6 @@ object MainForm: TMainForm
     Transparent = False
     Wrapable = False
     OnMouseDown = TopToolBarMouseDown
-    ExplicitWidth = 303
     object MainToolTopButton: TToolButton
       Left = 0
       Top = 0
@@ -859,7 +856,6 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MraSMSSendMenu: TMenuItem
-      Caption = '#'#1054#1090#1087#1088#1072#1074#1080#1090#1100' SMS'
       ImageIndex = 276
       OnClick = MraSMSSendMenuClick
     end
@@ -1396,7 +1392,7 @@ object MainForm: TMainForm
   end
   object SaveTextAsFileDialog: TSaveTextFileDialog
     DefaultExt = '.txt'
-    Filter = 'Text Files (*.txt)|*.txt'
+    Filter = 'Text Files (*.txt)|*.txt|XML Files (*.xml)|*.xml'
     Encodings.Strings = (
       'Unicode')
     Left = 136

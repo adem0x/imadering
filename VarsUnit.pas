@@ -36,13 +36,13 @@ const
   C_MN = '%0D%0A';
   C_BR = '<br>';
   C_BN = ' ';
-  C_PN = ' | ';
-  C_LN = '; ';
-  C_TN = ': ';
+  C_PN = '|';
+  C_LN = ';';
+  C_TN = ':';
   C_SN = '\';
   C_QN = '[';
-  C_WN = '] ';
   C_EN = ']';
+  C_EE = '@';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -104,6 +104,8 @@ const
   C_Email = 'Email';
   C_MailTo = 'mailto:';
   C_MailText = 'imadering@mail.ru?subject=%s&body=%s';
+  C_CustomServer = 'custom_server';
+  C_SocketProto = 'tcp';
   //
   C_NameInfo = 'name_info';
   C_Nick = 'nick';
@@ -173,10 +175,6 @@ const
   C_SitePage = 'http://imadering.com';
   C_DownPage = 'http://imadering.com/download.htm';
   C_PostInTwit = 'http://twitter.com/statuses/update.xml?source=IMadering&status=%s&in_reply_to_status_id=';
-  C_TwitSite = 'http://twitter.com/';
-  C_TwitIncMess = 'http://twitter.com/statuses/mentions.xml?count=%d';
-  C_TwitUserInfo = 'http://twitter.com/users/show/';
-  C_TwitOpenLenta = 'http://twitter.com/statuses/friends_timeline/%s.xml?count=%d';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
   //
   C_FT = 'top';
@@ -189,6 +187,15 @@ const
   C_PB = 'button';
   C_CS = 'c';
   C_HS = 'h';
+  //
+  C_Proxy_0_OK = 'HTTP/1.0 200';
+  C_Proxy_1_OK = 'HTTP/1.1 200';
+  C_Proxy_S0_OK = 'HTTPS/1.0 200';
+  C_Proxy_S1_OK = 'HTTPS/1.1 200';
+  C_Proxy_0_Err = 'HTTP/1.0 407';
+  C_Proxy_1_Err = 'HTTP/1.1 407';
+  C_Proxy_S0_Err = 'HTTPS/1.0 407';
+  C_Proxy_S1_Err = 'HTTPS/1.1 407';
 {$ENDREGION}
 {$REGION 'LogLangVars'}
 
@@ -198,37 +205,20 @@ const
   LogIconCount: string = 'Uploaded %d icons';
   Log_WinVer: string = 'Windows version: %u.%u.%u %s';
   Log_Lang_Code: string = 'System language';
-  Log_Get: string = ' get | ';
-  Log_Send: string = ' send | ';
-  Log_Parsing: string = ' parsing | ';
-
-  Log_Connect: string = 'Подключение к серверу: ';
-  Log_HTTP_Proxy_Connect: string = 'Подключение к прокси: ';
-  Log_Login: string = 'Логин для авторизации: ';
-  Log_Set_Status: string = 'Выбран статус: ';
-
-  Log_Proxy_OK: string = 'Подключение к прокси установлено успешно.';
-
-  Log_Unk_Data: string = 'Получены неизвестные или неважные данные:';
-
-  Log_Close_Server: string = 'Сеанс связи с сервером заверщён.';
-
-  Log_Icon_Hash: string = 'Хэш аватар:';
-  Log_User_Online_Event: string = 'Получен пакет онлайн статуса от контакта: ';
-  Log_User_Offline_Event: string = 'Получен пакет оффлайн статуса от контакта: ';
-  Log_UserClass: string = 'Класс контакта: ';
-  Log_ConnFlag: string = 'Флаг подключения: ';
-  Log_ProtoVer: string = 'Версия протокола: ';
-  Log_Status: string = 'Код статуса: ';
-  Log_TimeInOnline: string = 'Время проведённое в онлайн: ';
-  Log_ReqMessage: string = 'Получен пакет с сообщением от контакта: ';
-  Log_Msg_Chanel: string = 'Канал сообщения: ';
-  Log_Msg_Type: string = 'Тип сообщения: ';
-  Log_Msg_Text: string = 'Текст сообщения:';
-  Log_Contact_Info: string = 'Получен пакет информации о контакте: ';
-
-  Log_Gtrans_Req: string = 'Получены данные перевода: %s на %s';
-  Log_Gtrans_URL: string = 'Запрос для перевода: %s на %s';
+  Log_Get: string = 'get';
+  Log_Send: string = 'send';
+  Log_Parsing: string = 'parsing';
+  Log_Set_Status: string = 'Set status';
+  Log_Connect: string = 'Connecting to the server';
+  Log_HTTP_Proxy_Connect: string = 'Connecting to the proxy';
+  Log_Login: string = 'Username for authentication';
+  Log_Proxy_OK: string = 'Connecting to proxy OK.';
+  Log_Unk_Data: string = 'Get unknown or unimportant data';
+  Log_Gtrans_Req: string = 'The data translation: %s into %s';
+  Log_Gtrans_URL: string = 'Request for translation: %s into %s';
+  Log_Socket: string = 'Socket';
+  Log_BosServer: string = 'BosServer';
+  Log_PingInterval: string = 'Ping interval';
 
 {$ENDREGION}
 
@@ -413,11 +403,11 @@ var
     (L_N: 'Version'; L_S: ''), // 4
     (L_N: 'ProfileError'; L_S: ''), // 5
     (L_N: 'DevelMess'; L_S: ''), // 6
-    (L_N: 'Next'; L_S: ''), // 7
+    (L_N: '---'; L_S: ''), // 7
     (L_N: 'Close'; L_S: ''), // 8
     (L_N: 'Cancel'; L_S: ''), // 9
     (L_N: 'Apply'; L_S: ''), // 10
-    (L_N: 'ProtoSelectAlert'; L_S: ''), // 11
+    (L_N: '---'; L_S: ''), // 11
     (L_N: 'Empty'; L_S: ''), // 12
     (L_N: 'NewVerYES'; L_S: ''), // 13
     (L_N: 'NewVerNO'; L_S: ''), // 14
@@ -454,12 +444,12 @@ var
     (L_N: 'UserCloseChat'; L_S: ''), // 45
     (L_N: 'UserTyping'; L_S: ''), // 46
     (L_N: 'UserStatus'; L_S: ''), // 47
-    (L_N: 'OnlineInfo_1'; L_S: ''), // 48
-    (L_N: 'OnlineInfo_2'; L_S: ''), // 49
-    (L_N: 'OnlineInfo_3'; L_S: ''), // 50
-    (L_N: 'OnlineInfo_4'; L_S: ''), // 51
-    (L_N: 'OnlineInfo_5'; L_S: ''), // 52
-    (L_N: 'OnlineInfo_6'; L_S: ''), // 53
+    (L_N: '---'; L_S: ''), // 48
+    (L_N: '---'; L_S: ''), // 49
+    (L_N: '---'; L_S: ''), // 50
+    (L_N: '---'; L_S: ''), // 51
+    (L_N: '---'; L_S: ''), // 52
+    (L_N: '---'; L_S: ''), // 53
     (L_N: 'InfoSaveOK'; L_S: ''), // 54
     (L_N: 'UserInfoOK'; L_S: ''), // 55
     (L_N: 'UserInfoReq'; L_S: ''), // 56
@@ -500,7 +490,7 @@ var
     (L_N: 'FileTransfer_4'; L_S: ''), // 91
     (L_N: 'FileTransfer_5'; L_S: ''), // 92
     (L_N: 'FileTransfer_6'; L_S: ''), // 93
-    (L_N: 'Socket'; L_S: ''), // 94
+    (L_N: '---'; L_S: ''), // 94
     (L_N: 'JabberNullGroup'; L_S: ''), // 95
     (L_N: 'AddNewGroup'; L_S: ''), // 96
     (L_N: 'AddGroupErr_1'; L_S: ''), // 97
@@ -668,7 +658,7 @@ var
   ConnectErrors_001A:
     string = 'Превышен интервал резервации в базе.';
   ConnectErrors_001B:
-    string = 'Вы используете старую версию клиента. Обновите версию.';
+    string = 'Вы используете старую версию протокола ICQ. Обновите версию.';
   ConnectErrors_001C:
     string = 'Вы используете старую версию клиента. Рекомендуется обновить версию.';
   ConnectErrors_001D:

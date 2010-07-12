@@ -137,12 +137,6 @@ uses
   OverbyteIcsUrl;
 
 {$ENDREGION}
-{$REGION 'MyConst'}
-
-const
-  C_CustomServer = 'custom_server';
-
-{$ENDREGION}
 {$REGION 'LoadSettings'}
 
 procedure TJabberOptionsForm.LoadSettings;
