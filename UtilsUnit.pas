@@ -158,13 +158,13 @@ function ExtractUrlFileName(const AUrl: string): string;
 function Text2XML(Str: string): string;
 function XML2Text(Str: string): string;
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
+function UpCaseOne(Str: string): string;
 
 {$ENDREGION}
 
 implementation
 
 {$REGION 'GetFlagFile'}
-
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
 const
   FileExt = '.gif';
@@ -184,7 +184,6 @@ begin
       FindClose(SearchRec);
     end;
 end;
-
 {$ENDREGION}
 {$REGION 'XML and Text'}
 
@@ -2553,6 +2552,16 @@ begin
   end;
 end;
 
+{$ENDREGION}
+{$REGION 'UpCaseOne'}
+  function UpCaseOne(Str: string): string;
+  var
+    s1, s2: string;
+  begin
+    s1 := Str;
+    s2 := NextData(s1, 1);
+    Result := WideUpperCase(s2) + s1;
+  end;
 {$ENDREGION}
 
 end.
