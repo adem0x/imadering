@@ -11,7 +11,6 @@ unit MraProtoUnit;
 interface
 
 {$REGION 'Uses'}
-
 uses
   Windows,
   MainUnit,
@@ -29,8 +28,8 @@ uses
   IcqContactInfoUnit,
   VarsUnit,
   Graphics,
-  CategoryButtons;
-
+  CategoryButtons,
+  JvSimpleXml;
 {$ENDREGION}
 {$REGION 'Const Users Statuses'}
 
@@ -204,7 +203,8 @@ implementation
 uses
   UtilsUnit,
   LogUnit,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'MRA_Login_1'}
@@ -254,8 +254,6 @@ end;
 {$REGION 'MRA_MessageRecv'}
 
 procedure MRA_MessageRecv(PktData: string);
-const
-  M_Log = 'Message ';
 var
   S_Log, M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   Len: Integer;
@@ -263,7 +261,7 @@ var
 begin
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(MainForm);
+    Application.CreateForm(TChatForm, ChatForm);
   // Получаем Id сообщения
   M_Id := Text2Hex(NextData(PktData, 4));
   // Получаем флаг сообщения
@@ -352,20 +350,19 @@ begin
       MainForm.JvTimerList.Events[11].Enabled := True;
     end;}
     // Записываем история в файл истории с этим контактов
-    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + '.htm';
+    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_HtmExt;
     Mess := Text2XML(Mess);
     CheckMessage_BR(Mess);
     DecorateURL(Mess);
-    SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
+    SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
     // Добавляем сообщение в текущий чат
-    RosterItem.SubItems[36] := 'X';
+    {RosterItem.SubItems[36] := 'X';
     if ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess) then
-      RosterItem.SubItems[36] := EmptyStr;
+      RosterItem.SubItems[36] := EmptyStr;}
   end;
   // Пишем в лог
-  S_Log := S_Log + M_Log + C_PN + 'Id: ' + M_Id + C_LN + 'Flag: ' + M_Flag + C_LN //
-  + 'From: ' + M_From + C_LN + 'Text: ' + Mess;
-  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  S_Log := S_Log + 'Id: ' + M_Id + C_LN + 'Flag: ' + M_Flag + C_LN + 'From: ' + M_From + C_LN + 'Text: ' + Mess;
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -459,7 +456,7 @@ begin
     end;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[12].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[12].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -467,179 +464,172 @@ end;
 
 procedure MRA_ParseCL(PktData: string);
 const
-  G_Log = 'Group';
-  C_Log = 'Contact';
+  Mask_u = 'u';
+  Mask_s = 's';
+
 var
-  UL, S_Log, G_Mask, C_Mask, G_Id, G_Name, C_Email, C_Phone: string;
-  C_Status, C_StatusId, C_XText, C_Client, Unk: string;
-  I, M, Len, G_Count: Integer;
-  C_Auth: Boolean;
-  ListItemD: TListItem;
+  UL, S_Log, GMask, CMask, GId, GName, CEmail, CPhone: string;
+  CStatus, CStatusId, CXText, CClient, Unk: string;
+  I, M, Len, GCount: Integer;
+  CAuth: Boolean;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
-  {// Получаем ошибки списка контактов
+  // Получаем ошибки списка контактов
   UL := Text2Hex(NextData(PktData, 4));
   S_Log := S_Log + 'UL: ' + UL + C_RN;
   // Если ошибок в списке контактов нет
   if UL = '00000000' then
   begin
     // Начинаем добаление записей контактов в Ростер
-    RosterForm.RosterJvListView.Items.BeginUpdate;
-    try
-      // Получаем количество групп
-      G_Count := HexToInt(Text2Hex(NextData(PktData, 4)));
-      G_Count := Swap32(G_Count);
-      S_Log := S_Log + G_Log + 'count: ' + IntToStr(G_Count) + C_RN;
-      // Получаем маску группы
-      Len := HexToInt(Text2Hex(NextData(PktData, 4)));
-      Len := Swap32(Len);
-      G_Mask := NextData(PktData, Len);
-      S_Log := S_Log + G_Log + 'mask: ' + G_Mask + C_RN;
-      // Получаем маску контакта
-      Len := HexToInt(Text2Hex(NextData(PktData, 4)));
-      Len := Swap32(Len);
-      C_Mask := NextData(PktData, Len);
-      S_Log := S_Log + C_Log + 'mask: ' + C_Mask + C_RN;
-      // В цикле получаем группы
-      for I := 0 to G_Count - 1 do
+    if V_Roster <> nil then
+    begin
+      with V_Roster do
       begin
-        G_Id := EmptyStr;
-        G_Name := EmptyStr;
-        Unk := EmptyStr;
-        for M := 1 to Length(G_Mask) do
+        if Root <> nil then
         begin
-          case G_Mask[M] of
-            'u':
-              begin
-                if M = 1 then
-                  G_Id := Text2Hex(NextData(PktData, 4))
-                else
-                  Unk := Unk + '[u' + IntToStr(M) + '] ' + Text2Hex(NextData(PktData, 4)) + ', ';
+          // Очищаем раздел MRA если он есть
+          XML_Node := Root.Items.ItemNamed[C_Mra];
+          if XML_Node <> nil then
+            XML_Node.Clear
+          else
+            XML_Node := Root.Items.Add(C_Mra);
+          // Получаем количество групп
+          GCount := HexToInt(Text2Hex(NextData(PktData, 4)));
+          GCount := Swap32(GCount);
+          S_Log := S_Log + C_Group + C_BN + C_Count + C_TN + C_BN + IntToStr(GCount) + C_RN;
+          // Получаем маску группы
+          Len := HexToInt(Text2Hex(NextData(PktData, 4)));
+          Len := Swap32(Len);
+          GMask := NextData(PktData, Len);
+          S_Log := S_Log + C_Group + C_BN + C_Mask + C_TN + C_BN + GMask + C_RN;
+          // Получаем маску контакта
+          Len := HexToInt(Text2Hex(NextData(PktData, 4)));
+          Len := Swap32(Len);
+          CMask := NextData(PktData, Len);
+          S_Log := S_Log + C_Contact + C_BN + C_Mask + C_TN + C_BN + CMask + C_RN;
+          // В цикле получаем группы
+          Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+          for I := 0 to GCount - 1 do
+          begin
+            GId := EmptyStr;
+            GName := EmptyStr;
+            Unk := EmptyStr;
+            for M := 1 to Length(GMask) do
+            begin
+              case GMask[M] of
+                Mask_u:
+                  begin
+                    if M = 1 then
+                      GId := Text2Hex(NextData(PktData, 4))
+                    else
+                      Unk := Unk + C_QN + Mask_u + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, 4)) + C_LN + C_BN;
+                  end;
+                Mask_s:
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(PktData, 4)));
+                    Len := Swap32(Len);
+                    if M = 2 then
+                      GName := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
+                    else
+                      Unk := Unk + C_QN + Mask_s + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, Len)) + C_LN + C_BN;
+                  end;
               end;
-            's':
-              begin
-                Len := HexToInt(Text2Hex(NextData(PktData, 4)));
-                Len := Swap32(Len);
-                if M = 2 then
-                  G_Name := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
-                else
-                  Unk := Unk + '[s' + IntToStr(M) + '] ' + Text2Hex(NextData(PktData, Len)) + ', ';
-              end;
+            end;
+            // Записываем в Ростер
+            Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(I));
+            Tri_Node.Properties.Add(C_Name, URLEncode(GName));
+            Tri_Node.Properties.Add(C_Id, GId);
+            // Заполняем лог
+            S_Log := S_Log + C_Group + C_BN + C_PN + C_BN + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Name + C_TN + C_BN + GName + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
-        end;
-        // Записываем в Ростер
-        ListItemD := RosterForm.RosterJvListView.Items.Add;
-        ListItemD.Caption := IntToStr(I);
-        // Подготавиливаем все значения
-        RosterForm.RosterItemSetFull(ListItemD);
-        // Обновляем субстроки
-        ListItemD.SubItems[1] := URLEncode(G_Name);
-        ListItemD.SubItems[3] := C_Mra;
-        ListItemD.SubItems[4] := G_Id;
-        // Заполняем лог
-        S_Log := S_Log + G_Log + C_PN + 'Id: ' + G_Id + C_LN + 'Name: ' + G_Name + C_LN + 'Unk: ' + Unk + C_RN;
-      end;
-      // Добавляем группу для телефонных контактов
-      ListItemD := RosterForm.RosterJvListView.Items.Add;
-      ListItemD.Caption := '999';
-      RosterForm.RosterItemSetFull(ListItemD);
-      ListItemD.SubItems[1] := URLEncode(Lang_Vars[34].L_S);
-      ListItemD.SubItems[3] := C_Mra;
-      ListItemD.SubItems[4] := 'phone';
-      // Получаем контакты
-      while Length(PktData) > 0 do
-      begin
-        G_Id := EmptyStr;
-        C_Email := EmptyStr;
-        G_Name := EmptyStr;
-        C_Auth := True;
-        C_Status := EmptyStr;
-        C_StatusId := EmptyStr;
-        C_XText := EmptyStr;
-        C_Client := EmptyStr;
-        Unk := EmptyStr;
-        for M := 1 to Length(C_Mask) do
-        begin
-          case C_Mask[M] of
-            'u':
-              begin
-                if M = 2 then
-                  G_Id := Text2Hex(NextData(PktData, 4))
-                else if M = 5 then
-                begin
-                  if Text2Hex(NextData(PktData, 4)) = '01000000' then
-                    C_Auth := False;
-                end
-                else if M = 6 then
-                  C_Status := Text2Hex(NextData(PktData, 4))
-                else
-                  Unk := Unk + '[u' + IntToStr(M) + '] ' + Text2Hex(NextData(PktData, 4)) + ', ';
+          // Добавляем группу для телефонных контактов
+          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_Phone);
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[34].L_S));
+          Tri_Node.Properties.Add(C_Id, EmptyStr);
+          // Получаем контакты
+          Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+          I := -1;
+          while Length(PktData) > 0 do
+          begin
+            Inc(I);
+            GId := EmptyStr;
+            CEmail := EmptyStr;
+            GName := EmptyStr;
+            CAuth := True;
+            CStatus := EmptyStr;
+            CStatusId := EmptyStr;
+            CXText := EmptyStr;
+            CClient := EmptyStr;
+            Unk := EmptyStr;
+            for M := 1 to Length(CMask) do
+            begin
+              case CMask[M] of
+                Mask_u:
+                  begin
+                    if M = 2 then
+                      GId := Text2Hex(NextData(PktData, 4))
+                    else if M = 5 then
+                    begin
+                      if Text2Hex(NextData(PktData, 4)) = '01000000' then
+                        CAuth := False;
+                    end
+                    else if M = 6 then
+                      CStatus := Text2Hex(NextData(PktData, 4))
+                    else
+                      Unk := Unk + C_QN + Mask_u + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, 4)) + C_LN + C_BN;
+                  end;
+                Mask_s:
+                  begin
+                    Len := HexToInt(Text2Hex(NextData(PktData, 4)));
+                    Len := Swap32(Len);
+                    if M = 3 then
+                      CEmail := NextData(PktData, Len)
+                    else if M = 4 then
+                      GName := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
+                    else if M = 7 then
+                      CPhone := NextData(PktData, Len)
+                    else
+                      Unk := Unk + C_QN + Mask_s + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, Len)) + C_LN + C_BN;
+                  end;
               end;
-            's':
+            end;
+            // Записываем в Ростер
+            Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
+            Tri_Node.Properties.Add(C_Email, URLEncode(CEmail));
+            Tri_Node.Properties.Add(C_Group + C_Id, Swap32(HexToInt(GId)));
+            Tri_Node.Properties.Add(UpCaseOne(C_Nick), URLEncode(GName));
+            if CEmail <> C_Phone then
+            begin
+              if CAuth then
               begin
-                Len := HexToInt(Text2Hex(NextData(PktData, 4)));
-                Len := Swap32(Len);
-                if M = 3 then
-                  C_Email := NextData(PktData, Len)
-                else if M = 4 then
-                  G_Name := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
-                else if M = 7 then
-                  C_Phone := NextData(PktData, Len)
-                else
-                  Unk := Unk + '[s' + IntToStr(M) + '] ' + Text2Hex(NextData(PktData, Len)) + ', ';
+                Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthBoth);
+                Tri_Node.Properties.Add(C_Status, 23);
+              end
+              else
+              begin
+                Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthNone);
+                Tri_Node.Properties.Add(C_Status, 25);
+                Tri_Node.Properties.Add(C_Client, 220);
               end;
+            end
+            else
+              Tri_Node.Properties.Add(C_Status, 275);
+            Tri_Node.Properties.Add(UpCaseOne(C_Phone), CPhone);
+            // Заполняем лог
+            S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Email + C_TN + C_BN + CEmail + C_LN //
+            + C_BN + UpCaseOne(C_Nick) + C_TN + C_BN + GName + C_LN + C_BN + UpCaseOne(C_Auth) + C_TN + C_BN + BoolToStr(CAuth) + C_LN + C_BN + C_Status //
+            + C_TN + C_BN + CStatus + C_LN + C_BN + UpCaseOne(C_Phone) + C_TN + C_BN + CPhone + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
+          // Запускаем обработку Ростера
+          V_CollapseGroupsRestore := True;
+          UpdateFullCL;
         end;
-        // Записываем в Ростер
-        ListItemD := RosterForm.RosterJvListView.Items.Add;
-        if C_Email = 'phone' then
-          ListItemD.Caption := C_Phone
-        else
-          ListItemD.Caption := C_Email;
-        // Подготавиливаем все значения
-        RosterForm.RosterItemSetFull(ListItemD);
-        // Обновляем субстроки
-        ListItemD.SubItems[0] := URLEncode(G_Name);
-        if ListItemD.SubItems[0] = EmptyStr then
-          ListItemD.SubItems[0] := ListItemD.Caption;
-        if C_Email = 'phone' then
-          ListItemD.SubItems[1] := '999'
-        else
-          ListItemD.SubItems[1] := IntToStr(Swap32(HexToInt(G_Id)));
-        if C_Auth then
-        begin
-          ListItemD.SubItems[2] := 'both';
-          ListItemD.SubItems[6] := '23';
-        end
-        else
-        begin
-          ListItemD.SubItems[2] := 'none';
-          ListItemD.SubItems[6] := '25';
-          ListItemD.SubItems[8] := '220';
-        end;
-        ListItemD.SubItems[3] := C_Mra;
-        if C_Email = 'phone' then
-        begin
-          ListItemD.SubItems[4] := 'phone';
-          ListItemD.SubItems[6] := '275';
-        end;
-        ListItemD.SubItems[9] := C_Phone;
-        // Заполняем лог
-        S_Log := S_Log + C_Log + C_PN + 'G_Id: ' + G_Id + C_LN + 'Email: ' + C_Email + C_LN //
-        + 'Nick: ' + G_Name + C_LN + 'Auth: ' + BoolToStr(C_Auth) + C_LN + 'Status: ' + C_Status + C_LN //
-        + 'Phone: ' + C_Phone + C_LN + 'Unk: ' + Copy(Unk, 1, Length(Unk) - 2) + C_RN;
       end;
-    finally
-      // Заканчиваем добаление записей контактов в Ростер
-      RosterForm.RosterJvListView.Items.EndUpdate;
     end;
-    // Запускаем обработку Ростера
-    V_CollapseGroupsRestore := True;
-    RosterForm.UpdateFullCL;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Mra + Log_Parsing + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), C_Mra);}
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
-
 {$ENDREGION}
 {$REGION 'MRA_GoOffline'}
 

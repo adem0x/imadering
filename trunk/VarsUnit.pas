@@ -43,6 +43,7 @@ const
   C_QN = '[';
   C_EN = ']';
   C_EE = '@';
+  C_DD = '_';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / (SecsPerDay);
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -106,6 +107,21 @@ const
   C_MailText = 'imadering@mail.ru?subject=%s&body=%s';
   C_CustomServer = 'custom_server';
   C_SocketProto = 'tcp';
+  C_HtmExt = '.htm';
+  C_HistoryIn = '<span class=b>%s</span><br><span class=c>%s</span><br><br>';
+  C_Group = 'Group';
+  C_Contact = 'Contact';
+  C_Count = 'count';
+  C_Mask = 'mask';
+  C_Id = 'Id';
+  C_Name = 'Name';
+  C_Unk = 'Unk';
+  C_Phone = 'phone';
+  C_Status = 'Status';
+  C_Client = 'Client';
+  C_Auth = 'auth';
+  C_AuthBoth = 'both';
+  C_AuthNone = 'none';
   //
   C_NameInfo = 'name_info';
   C_Nick = 'nick';
@@ -113,7 +129,6 @@ const
   C_Last = 'last';
   C_PerInfo = 'personal_info';
   C_Gender = 'gender';
-  C_Auth = 'auth';
   C_WebAware = 'web_aware';
   C_HomePage = 'home_page';
   C_LastChange = 'last_change';
@@ -187,6 +202,7 @@ const
   C_PB = 'button';
   C_CS = 'c';
   C_HS = 'h';
+  C_SS = 's';
   //
   C_Proxy_0_OK = 'HTTP/1.0 200';
   C_Proxy_1_OK = 'HTTP/1.1 200';
@@ -764,7 +780,7 @@ begin
             begin
               Sub_Node := XML_Node.Items.ItemNamed[Lang_Vars[I].L_N];
               if Sub_Node <> nil then
-                Lang_Vars[I].L_S := XML2Text(CheckText_RN(Sub_Node.Properties.Value('c')));
+                Lang_Vars[I].L_S := XML2Text(CheckText_RN(Sub_Node.Properties.Value(C_CS)));
             end;
           end;
         end;

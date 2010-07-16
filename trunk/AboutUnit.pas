@@ -110,6 +110,7 @@ const
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
+
 procedure TAboutForm.TranslateForm;
 const
   ReadMe = 'ReadMe.txt';
@@ -147,13 +148,13 @@ begin
           if XML_Node <> nil then
             // Устанавливаем длинну массива
             SetLength(AboutList, XML_Node.Items.Count);
-            // Загружаем строки в массив
-            for I := 0 to Length(AboutList) - 1 do
-            begin
-              XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed[C_CS + IntToStr(I)];
-              if XML_Node <> nil then
-                AboutList[I] := XML_Node.Properties.Value(C_CS);
-            end;
+          // Загружаем строки в массив
+          for I := 0 to Length(AboutList) - 1 do
+          begin
+            XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed[C_CS + IntToStr(I)];
+            if XML_Node <> nil then
+              AboutList[I] := XML_Node.Properties.Value(C_CS);
+          end;
         end;
       end;
     end;

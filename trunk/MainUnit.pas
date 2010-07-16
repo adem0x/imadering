@@ -5199,7 +5199,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
   begin
-    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Mra + ' ]', EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
     // Активируем режим оффлайн
     MRA_GoOffline;
   end;
