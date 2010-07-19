@@ -545,7 +545,7 @@ begin
           // Добавляем группу для телефонных контактов
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_Phone);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[34].L_S));
-          Tri_Node.Properties.Add(C_Id, EmptyStr);
+          Tri_Node.Properties.Add(C_Id, C_Phone);
           // Получаем контакты
           Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
           I := -1;
@@ -596,7 +596,7 @@ begin
             // Записываем в Ростер
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
             Tri_Node.Properties.Add(C_Email, URLEncode(CEmail));
-            Tri_Node.Properties.Add(C_Group + C_Id, Swap32(HexToInt(GId)));
+            Tri_Node.Properties.Add(C_Group + C_Id, IntToHex(Swap32(HexToInt(GId)), 4));
             Tri_Node.Properties.Add(UpCaseOne(C_Nick), URLEncode(GName));
             if CEmail <> C_Phone then
             begin
@@ -604,6 +604,7 @@ begin
               begin
                 Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthBoth);
                 Tri_Node.Properties.Add(C_Status, 23);
+                Tri_Node.Properties.Add(C_Client, -1);
               end
               else
               begin

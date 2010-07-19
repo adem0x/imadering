@@ -640,6 +640,16 @@ end;
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
   // Выводим главное окно на первый план
+  if Assigned(ProfileForm) then
+  begin
+    if ProfileForm.Visible then
+      XShowForm(ProfileForm);
+  end
+  else
+  begin
+    if MainForm.Visible then
+      XShowForm(MainForm);
+  end;
   Application.BringToFront;
   // Если есть непрочитанные сообщения, то открываем их
   //if (Sender as TTrayIcon).Tag = 1 then
