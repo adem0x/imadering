@@ -1039,7 +1039,7 @@ begin
 end;
 
 const
-  CDropDownSize = 20;
+  CDropDownSize = 31;
 
 function TCategoryButtons.GetChevronBounds(const CategoryBounds: TRect): TRect;
 begin

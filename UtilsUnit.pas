@@ -159,11 +159,23 @@ function Text2XML(Str: string): string;
 function XML2Text(Str: string): string;
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
 function UpCaseOne(Str: string): string;
+function ReverseString(s: string): string;
 
 {$ENDREGION}
 
 implementation
 
+{$REGION 'ReverseString'}
+  function ReverseString(s: string): string;
+  var
+    i: integer;
+  begin
+    Result := EmptyStr;
+    if Trim(s) <> EmptyStr then
+      for i := Length(s) downto 1 do
+        Result := Result + s[i];
+  end;
+{$ENDREGION}
 {$REGION 'GetFlagFile'}
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
 const
@@ -1791,6 +1803,7 @@ function RightStr(const Str: string; Size: Word): string;
 var
   Len: Integer;
 begin
+  if Str = EmptyStr then Exit;
   Len := Length(Str);
   if Size > Len then
     Size := Len;
@@ -1802,6 +1815,7 @@ end;
 
 function LeftStr(const Str: string; Size: Word): string;
 begin
+  if Str = EmptyStr then Exit;
   Result := Copy(Str, 1, Size);
 end;
 
