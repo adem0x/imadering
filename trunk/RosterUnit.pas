@@ -92,7 +92,7 @@ begin
                         GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Name));
                         GroupId := Tri_Node.Properties.Value(C_Id);
                         GroupType := C_Mra;
-                        GroupImage := 268;
+                        GroupImage := 66;
                       end;
                     end;
                   end;

@@ -454,6 +454,18 @@ object MainForm: TMainForm
     object N39: TMenuItem
       Caption = '-'
     end
+    object PostInTwitter_Menu: TMenuItem
+      ImageIndex = 268
+    end
+    object PostInFF_Menu: TMenuItem
+      ImageIndex = 269
+    end
+    object LinkCompress_Menu: TMenuItem
+      ImageIndex = 193
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
     object SearchInCL_Menu: TMenuItem
       ImageIndex = 215
       OnClick = SearchInCL_MenuClick
@@ -873,12 +885,33 @@ object MainForm: TMainForm
       ImageIndex = 26
       OnClick = MRAStatusOnlineClick
     end
+    object MRAStatusEvil: TMenuItem
+      ImageIndex = 290
+    end
+    object MRAStatusDepres: TMenuItem
+      ImageIndex = 291
+    end
+    object MRAStatusHome: TMenuItem
+      ImageIndex = 292
+    end
+    object MRAStatusWork: TMenuItem
+      ImageIndex = 293
+    end
     object N14: TMenuItem
       Caption = '-'
+    end
+    object MRAStatusLunch: TMenuItem
+      ImageIndex = 294
     end
     object MRAStatusAway: TMenuItem
       ImageIndex = 22
       OnClick = MRAStatusOnlineClick
+    end
+    object MRAStatusNA: TMenuItem
+      ImageIndex = 295
+    end
+    object MRAStatusOccupied: TMenuItem
+      ImageIndex = 296
     end
     object MRAStatusDND: TMenuItem
       ImageIndex = 27

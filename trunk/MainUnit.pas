@@ -259,6 +259,17 @@ type
     N38: TMenuItem;
     TopModeToolButton: TToolButton;
     SwitchProfile_MenuTray: TMenuItem;
+    MRAStatusEvil: TMenuItem;
+    MRAStatusDepres: TMenuItem;
+    MRAStatusHome: TMenuItem;
+    MRAStatusWork: TMenuItem;
+    MRAStatusLunch: TMenuItem;
+    MRAStatusNA: TMenuItem;
+    MRAStatusOccupied: TMenuItem;
+    PostInTwitter_Menu: TMenuItem;
+    PostInFF_Menu: TMenuItem;
+    LinkCompress_Menu: TMenuItem;
+    N1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -547,8 +558,6 @@ begin
   Settings_MenuTray.Caption := Settings_Menu.Caption;
   CloseProgram_MenuTray.Caption := CloseProgram_Menu.Caption;
   SwitchProfile_MenuTray.Caption := SwitchProfile_Menu.Caption;
-
-
   ShowLog_Menu.Caption := ShowLog_MenuTray.Caption;
   TopMainButtonONMenu.Caption := MainButtonONMenu.Caption;
   TopOnlyOnlineONMenu.Caption := OnlyOnlineONMenu.Caption;
@@ -559,6 +568,9 @@ begin
   TopTrafficONMenu.Caption := TrafficONMenu.Caption;
   SearchInCL.Caption := SearchInCL_Menu.Caption;
   TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
+  PostInTwitter_Menu.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
+  PostInFF_Menu.Caption := Format(Lang_Vars[61].L_S, [C_FF]);
+  LinkCompress_Menu.Caption := Lang_Vars[3].L_S;
   // Применяем перевод статусов в меню
   ICQStatusFFC.Caption := Lang_Vars[67].L_S;
   ICQStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -578,7 +590,14 @@ begin
   MRASettings.Caption := ICQSettings.Caption;
   MRAXStatus.Caption := ICQXStatus.Caption;
   MRAStatusFFC.Caption := Lang_Vars[67].L_S;
+  MRAStatusEvil.Caption := Lang_Vars[68].L_S;
+  MRAStatusDepres.Caption := Lang_Vars[69].L_S;
+  MRAStatusHome.Caption := Lang_Vars[70].L_S;
+  MRAStatusWork.Caption := Lang_Vars[71].L_S;
+  MRAStatusLunch.Caption := Lang_Vars[72].L_S;
   MRAStatusAway.Caption := Lang_Vars[73].L_S;
+  MRAStatusNA.Caption := Lang_Vars[74].L_S;
+  MRAStatusOccupied.Caption := Lang_Vars[75].L_S;
   MRAStatusDND.Caption := Lang_Vars[76].L_S;
   MRAStatusOnline.Caption := Lang_Vars[77].L_S;
   MRAStatusInvisible.Caption := Lang_Vars[78].L_S;
