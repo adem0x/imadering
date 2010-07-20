@@ -81,6 +81,7 @@ const
   C_Jabber = 'Jabber';
   C_Mra = 'MRA';
   C_Twitter = 'Twitter';
+  C_FF = 'FriendFeed';
   //
   C_TLV = 'TLV: ';
   C_Value = ' Value: ';
@@ -415,7 +416,7 @@ var
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
     (L_N: 'QuitProgram'; L_S: ''), // 2
-    (L_N: '---'; L_S: ''), // 3
+    (L_N: 'LinkCompress'; L_S: ''), // 3
     (L_N: 'Version'; L_S: ''), // 4
     (L_N: 'ProfileError'; L_S: ''), // 5
     (L_N: 'DevelMess'; L_S: ''), // 6

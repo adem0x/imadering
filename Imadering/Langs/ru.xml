@@ -119,6 +119,7 @@
     <SearchAuthNo c="Не нужна"/>
     <SearchNextPage c="Страница - %d"/>
     <DellProfile c="Удалить профиль: %s._r_Вы уверены?"/>
+    <LinkCompress c="Укоротить ссылку URL"/>
   </vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>
