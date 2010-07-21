@@ -420,7 +420,7 @@ var
     (L_N: 'Version'; L_S: ''), // 4
     (L_N: 'ProfileError'; L_S: ''), // 5
     (L_N: 'DevelMess'; L_S: ''), // 6
-    (L_N: '---'; L_S: ''), // 7
+    (L_N: 'NotInGroups'; L_S: ''), // 7
     (L_N: 'Close'; L_S: ''), // 8
     (L_N: 'Cancel'; L_S: ''), // 9
     (L_N: 'Apply'; L_S: ''), // 10

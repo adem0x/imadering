@@ -3027,10 +3027,6 @@ begin
 
           if not Handled then
             HintStr := '<b>' + CurrentCat.GroupCaption + '</b>';
-
-          // --Добавляем свои параметры во всплывающие подсказки у группы
-          if CurrentCat.GroupId > EmptyStr then
-            HintStr := HintStr + '<BR>' + 'Id: ' + CurrentCat.GroupId;
           if CurrentCat.GroupType > EmptyStr then
             HintStr := HintStr + '<BR>' + CurrentCat.GroupType;
 

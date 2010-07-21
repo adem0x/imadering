@@ -127,6 +127,9 @@ begin
                             // Обновляем параметры этого контакта
                             with Categories[G].Items[K] do
                             begin
+
+                              
+
                               Status := Tri_Node.Properties.IntValue(C_Status);
                               ImageIndex := Status;
                               XImageIndex := -1;
@@ -172,7 +175,9 @@ begin
                         begin
                           with Categories[G].Items.Add do
                           begin
-                            Caption := URLDecode(Tri_Node.Properties.Value(UpCaseOne(C_Nick)));
+                            Caption := Trim(URLDecode(Tri_Node.Properties.Value(UpCaseOne(C_Nick))));
+                            if Caption = EmptyStr then
+                              Caption := Tri_Node.Properties.Value(C_Email);
                             UIN := Tri_Node.Properties.Value(C_Email);
                             Status := Tri_Node.Properties.IntValue(C_Status);
                             ImageIndex := Status;
@@ -183,6 +188,10 @@ begin
                             begin
                               Status := 275;
                               ImageIndex := 275;
+                              UIN := UIN + C_TN + Tri_Node.Properties.Value(UpCaseOne(C_Phone));
+
+                              ShowMessage(UIN);
+
                             end;
                             // Hint := URLDecode(Items[I].SubItems[34]);
                             if Categories[G].GroupId <> C_NoCL then
@@ -190,12 +199,15 @@ begin
                             else
                               NickColor := 0;
                           end;
-                          Contact_Yes := True;
+                          Break;
                         end;
                       end;
-                      // Если контакт был найден в греппе
-                      if Contact_Yes then
-                        Break;
+                    end;
+                    // Если такая группа не была найдена
+                    if not Group_Yes then
+                    begin
+                      // Добавляем специальную группу для таких контактов
+                      //ShowMessage(Tri_Node.Properties.Value(C_Email));
                     end;
                   end;
                 end;

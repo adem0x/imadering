@@ -120,6 +120,7 @@
     <SearchNextPage c="Page - %d"/>
     <DellProfile c="Delete profile: %s._r_Are you sure?"/>
     <LinkCompress c="Shorten the link URL"/>
+    <NotInGroups c="Outside groups"/>
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
