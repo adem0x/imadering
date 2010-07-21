@@ -103,6 +103,10 @@ const
   MRA_FLAP_HEAD_SIZE = 44;
   // Пустой набор from и fromport и 16 ресерв
   MRA_Empty = '000000000000000000000000000000000000000000000000';
+  // Магический ключ пакетов MRA
+  MRA_MagKey = 'EFBEADDE';
+  // Версия протокола пакетов MRA
+  MRA_ProtoVer = '13000100';
 
 {$ENDREGION}
 {$REGION 'Array Pkt Codes'}
@@ -156,8 +160,6 @@ var
   MRA_BuffPkt: string;
   MRA_LoginUIN: string;
   MRA_LoginPassword: string;
-  MRA_MagKey: string = 'EFBEADDE';
-  MRA_ProtoVer: string = '13000100';
   MRA_Ident_Client: string = 'client="IMadering" version="5.0" build="0224"';
   MRA_Ident: string = 'IMR 5.0 (build 0224);';
   MRA_Seq: LongWord = 1;
@@ -545,7 +547,11 @@ begin
           // Добавляем группу для телефонных контактов
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_Phone);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[34].L_S));
-          Tri_Node.Properties.Add(C_Id, C_Phone);
+          Tri_Node.Properties.Add(C_Id, LeftStr(C_Phone, 4));
+          // Добавляем группу контактов с ошибочным идентификатором группы
+          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
+          Tri_Node.Properties.Add(C_Id, C_AuthNone);
           // Получаем контакты
           Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
           I := -1;
@@ -596,7 +602,10 @@ begin
             // Записываем в Ростер
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
             Tri_Node.Properties.Add(C_Email, URLEncode(CEmail));
-            Tri_Node.Properties.Add(C_Group + C_Id, IntToHex(Swap32(HexToInt(GId)), 4));
+            if CEmail = C_Phone then
+              Tri_Node.Properties.Add(C_Group + C_Id, LeftStr(C_Phone, 4))
+            else
+              Tri_Node.Properties.Add(C_Group + C_Id, IntToHex(Swap32(HexToInt(GId)), 4));
             Tri_Node.Properties.Add(UpCaseOne(C_Nick), URLEncode(GName));
             if CEmail <> C_Phone then
             begin
