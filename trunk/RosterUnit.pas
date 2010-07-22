@@ -37,6 +37,8 @@ uses
 {$ENDREGION}
 
 procedure UpdateFullCL;
+label
+  A;
 var
   I, G, K: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
@@ -108,6 +110,7 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    A: ;
                     // Сканируем группу контакта в КЛ
                     Group_Yes := False;
                     Contact_Yes := False;
@@ -127,9 +130,6 @@ begin
                             // Обновляем параметры этого контакта
                             with Categories[G].Items[K] do
                             begin
-
-                              
-
                               Status := Tri_Node.Properties.IntValue(C_Status);
                               ImageIndex := Status;
                               XImageIndex := -1;
@@ -184,15 +184,6 @@ begin
                             XImageIndex := -1;
                             CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                             ContactType := C_Mra;
-                            if UIN = C_Phone then
-                            begin
-                              Status := 275;
-                              ImageIndex := 275;
-                              UIN := UIN + C_TN + Tri_Node.Properties.Value(UpCaseOne(C_Phone));
-
-                              ShowMessage(UIN);
-
-                            end;
                             // Hint := URLDecode(Items[I].SubItems[34]);
                             if Categories[G].GroupId <> C_NoCL then
                               NickColor := 1
@@ -206,10 +197,20 @@ begin
                     // Если такая группа не была найдена
                     if not Group_Yes then
                     begin
-                      // Добавляем специальную группу для таких контактов
-                      //ShowMessage(Tri_Node.Properties.Value(C_Email));
+                      // Добавляем такие контакты в специальную группу
+                      Tri_Node.Properties.ItemNamed[C_Group + C_Id].Value := C_AuthNone;
+                      goto A;
                     end;
                   end;
+                end;
+              end;
+              // Если группы "телефонных контактов" и "вне групп" пустые то удаляем их
+              for G := 0 to Categories.Count - 1 do
+              begin
+                if (Categories[G].GroupId = LeftStr(C_Phone, 4)) or (Categories[G].GroupId = C_AuthNone) then
+                begin
+                  if Categories[G].Items.Count = 0 then
+                    Categories[G].Free;
                 end;
               end;
             end;

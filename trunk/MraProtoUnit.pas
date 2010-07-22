@@ -601,11 +601,17 @@ begin
             end;
             // Записываем в Ростер
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
-            Tri_Node.Properties.Add(C_Email, URLEncode(CEmail));
             if CEmail = C_Phone then
-              Tri_Node.Properties.Add(C_Group + C_Id, LeftStr(C_Phone, 4))
+            begin
+              Tri_Node.Properties.Add(C_Email, URLEncode(CEmail + C_TN + CPhone));
+              Tri_Node.Properties.Add(C_Group + C_Id, LeftStr(C_Phone, 4));
+              Tri_Node.Properties.Add(C_Status, 275);
+            end
             else
+            begin
+              Tri_Node.Properties.Add(C_Email, URLEncode(CEmail));
               Tri_Node.Properties.Add(C_Group + C_Id, IntToHex(Swap32(HexToInt(GId)), 4));
+            end;
             Tri_Node.Properties.Add(UpCaseOne(C_Nick), URLEncode(GName));
             if CEmail <> C_Phone then
             begin
@@ -621,9 +627,7 @@ begin
                 Tri_Node.Properties.Add(C_Status, 25);
                 Tri_Node.Properties.Add(C_Client, 220);
               end;
-            end
-            else
-              Tri_Node.Properties.Add(C_Status, 275);
+            end;
             Tri_Node.Properties.Add(UpCaseOne(C_Phone), CPhone);
             // Заполняем лог
             S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Email + C_TN + C_BN + CEmail + C_LN //
