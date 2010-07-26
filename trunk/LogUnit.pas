@@ -240,7 +240,7 @@ procedure TLogForm.HexToText_MenuClick(Sender: TObject);
 begin
   // Преобразовываем HEX в строку текста
   try
-    MessageBox(Handle, PChar(Hex2Text(LogMemo.SelText)), PChar(Application.Title), MB_OK);
+    MessageBox(Handle, PChar(Hex2Text(Trim(DeleteSpaces(LogMemo.SelText)))), PChar(Application.Title), MB_OK);
   except
   end;
 end;

@@ -139,20 +139,8 @@ object MainForm: TMainForm
       Visible = False
       OnClick = OnlyOnlineContactsToolButtonClick
     end
-    object GroupOnOffToolButton: TToolButton
-      Left = 115
-      Top = 0
-      Down = True
-      ImageIndex = 231
-      ParentShowHint = False
-      PopupMenu = BottomPanelPopupMenu
-      ShowHint = True
-      Style = tbsCheck
-      Visible = False
-      OnClick = GroupOnOffToolButtonClick
-    end
     object SoundOnOffToolButton: TToolButton
-      Left = 138
+      Left = 115
       Top = 0
       ImageIndex = 135
       ParentShowHint = False
@@ -163,7 +151,7 @@ object MainForm: TMainForm
       OnClick = SoundOnOffToolButtonClick
     end
     object HistoryToolButton: TToolButton
-      Left = 161
+      Left = 138
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -173,7 +161,7 @@ object MainForm: TMainForm
       OnClick = History_MenuClick
     end
     object SettingsToolButton: TToolButton
-      Left = 184
+      Left = 161
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -183,7 +171,7 @@ object MainForm: TMainForm
       OnClick = Settings_MenuClick
     end
     object CLSearchToolButton: TToolButton
-      Left = 207
+      Left = 184
       Top = 0
       ImageIndex = 215
       ParentShowHint = False
@@ -193,7 +181,7 @@ object MainForm: TMainForm
       OnClick = SearchInCL_MenuClick
     end
     object TrafficToolButton: TToolButton
-      Left = 230
+      Left = 207
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -203,7 +191,7 @@ object MainForm: TMainForm
       OnClick = Traffic_MenuClick
     end
     object TopPanelToolButton: TToolButton
-      Left = 253
+      Left = 230
       Top = 0
       Down = True
       ImageIndex = 244
@@ -250,19 +238,8 @@ object MainForm: TMainForm
       Style = tbsCheck
       OnClick = OnlyOnlineContactsTopButtonClick
     end
-    object GroupOnOffToolTopButton: TToolButton
-      Left = 46
-      Top = 0
-      Down = True
-      ImageIndex = 231
-      ParentShowHint = False
-      PopupMenu = TopPanelPopupMenu
-      ShowHint = True
-      Style = tbsCheck
-      OnClick = GroupOnOffToolTopButtonClick
-    end
     object SoundOnOffToolTopButton: TToolButton
-      Left = 69
+      Left = 46
       Top = 0
       ImageIndex = 135
       ParentShowHint = False
@@ -272,7 +249,7 @@ object MainForm: TMainForm
       OnClick = SoundOnOffToolTopButtonClick
     end
     object HistoryTopToolButton: TToolButton
-      Left = 92
+      Left = 69
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -281,7 +258,7 @@ object MainForm: TMainForm
       OnClick = History_MenuClick
     end
     object SettingsTopToolButton: TToolButton
-      Left = 115
+      Left = 92
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -290,7 +267,7 @@ object MainForm: TMainForm
       OnClick = Settings_MenuClick
     end
     object CLSearchTopToolButton: TToolButton
-      Left = 138
+      Left = 115
       Top = 0
       ImageIndex = 215
       ParentShowHint = False
@@ -299,7 +276,7 @@ object MainForm: TMainForm
       OnClick = SearchInCL_MenuClick
     end
     object TrafficTopToolButton: TToolButton
-      Left = 161
+      Left = 138
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -308,7 +285,7 @@ object MainForm: TMainForm
       OnClick = Traffic_MenuClick
     end
     object TopModeToolButton: TToolButton
-      Left = 184
+      Left = 161
       Top = 0
       ImageIndex = 288
       ParentShowHint = False
@@ -1124,6 +1101,9 @@ object MainForm: TMainForm
       ImageIndex = 230
       OnClick = UnstableICQStatusClick
     end
+    object DumpICQ: TMenuItem
+      ImageIndex = 171
+    end
   end
   object MRAAvatarHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
@@ -1157,6 +1137,10 @@ object MainForm: TMainForm
     object UnstableMRAStatus: TMenuItem
       ImageIndex = 230
     end
+    object DumpMRA: TMenuItem
+      ImageIndex = 171
+      OnClick = DumpMRAClick
+    end
   end
   object RightJabberPopupMenu: TPopupMenu
     AutoHotkeys = maManual
@@ -1169,6 +1153,9 @@ object MainForm: TMainForm
     end
     object UnstableJabberStatus: TMenuItem
       ImageIndex = 230
+    end
+    object DumpJabber: TMenuItem
+      ImageIndex = 171
     end
   end
   object MainActionList: TActionList
@@ -1200,11 +1187,6 @@ object MainForm: TMainForm
       Checked = True
       ImageIndex = 140
       OnClick = TopOnlyOnlineONMenuClick
-    end
-    object TopGroupONMenu: TMenuItem
-      Checked = True
-      ImageIndex = 140
-      OnClick = TopGroupONMenuClick
     end
     object TopSoundsONMenu: TMenuItem
       Checked = True
@@ -1246,10 +1228,6 @@ object MainForm: TMainForm
     object OnlyOnlineONMenu: TMenuItem
       ImageIndex = 230
       OnClick = OnlyOnlineONMenuClick
-    end
-    object GroupONMenu: TMenuItem
-      ImageIndex = 230
-      OnClick = GroupONMenuClick
     end
     object SoundsONMenu: TMenuItem
       ImageIndex = 230

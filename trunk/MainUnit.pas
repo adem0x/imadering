@@ -163,7 +163,6 @@ type
     UnstableJabberStatus: TMenuItem;
     SearchInCL_Menu: TMenuItem;
     HideEmptyGroups: TMenuItem;
-    GroupOnOffToolButton: TToolButton;
     ICQSearchNewContact: TMenuItem;
     CheckUpdate_Menu: TMenuItem;
     N29: TMenuItem;
@@ -180,10 +179,8 @@ type
     TopPanelToolButton: TToolButton;
     SoundsONMenu: TMenuItem;
     OnlyOnlineONMenu: TMenuItem;
-    GroupONMenu: TMenuItem;
     TopPanelONMenu: TMenuItem;
     OnlyOnlineContactsTopButton: TToolButton;
-    GroupOnOffToolTopButton: TToolButton;
     SoundOnOffToolTopButton: TToolButton;
     HistoryTopToolButton: TToolButton;
     HistoryToolButton: TToolButton;
@@ -196,7 +193,6 @@ type
     TrafficONMenu: TMenuItem;
     TopMainButtonONMenu: TMenuItem;
     TopOnlyOnlineONMenu: TMenuItem;
-    TopGroupONMenu: TMenuItem;
     TopSoundsONMenu: TMenuItem;
     TopHistoryONMenu: TMenuItem;
     TopTrafficONMenu: TMenuItem;
@@ -270,6 +266,9 @@ type
     PostInFF_Menu: TMenuItem;
     LinkCompress_Menu: TMenuItem;
     N1: TMenuItem;
+    DumpMRA: TMenuItem;
+    DumpICQ: TMenuItem;
+    DumpJabber: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -355,7 +354,6 @@ type
     procedure ContactListPopupMenuPopup(Sender: TObject);
     procedure HideEmptyGroupsClick(Sender: TObject);
     procedure RightICQPopupMenuPopup(Sender: TObject);
-    procedure GroupOnOffToolButtonClick(Sender: TObject);
     procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure JabberSearchNewContactClick(Sender: TObject);
     procedure ICQSearchNewContactClick(Sender: TObject);
@@ -367,13 +365,11 @@ type
     procedure MainButtonONMenuClick(Sender: TObject);
     procedure SoundsONMenuClick(Sender: TObject);
     procedure OnlyOnlineONMenuClick(Sender: TObject);
-    procedure GroupONMenuClick(Sender: TObject);
     procedure TopPanelONMenuClick(Sender: TObject);
     procedure MainToolTopButtonClick(Sender: TObject);
     procedure BottomToolBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure TopToolBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MainToolTopButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-    procedure GroupOnOffToolTopButtonClick(Sender: TObject);
     procedure OnlyOnlineContactsTopButtonClick(Sender: TObject);
     procedure SoundOnOffToolTopButtonClick(Sender: TObject);
     procedure HistoryONMenuClick(Sender: TObject);
@@ -381,7 +377,6 @@ type
     procedure TrafficONMenuClick(Sender: TObject);
     procedure TopMainButtonONMenuClick(Sender: TObject);
     procedure TopOnlyOnlineONMenuClick(Sender: TObject);
-    procedure TopGroupONMenuClick(Sender: TObject);
     procedure TopSoundsONMenuClick(Sender: TObject);
     procedure TopHistoryONMenuClick(Sender: TObject);
     procedure TopSettingsONMenuClick(Sender: TObject);
@@ -431,6 +426,7 @@ type
     procedure HideInTray_MenuClick(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure CheckUpdate_MenuClick(Sender: TObject);
+    procedure DumpMRAClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -509,7 +505,6 @@ const
   C_MainForm = 'main_form';
   C_MainFormSounds = 'sounds';
   C_MainFormOnlyOnline = 'only_online';
-  C_MainFormGroups = 'groups';
   C_MainFormFirst = 'first_start';
   C_MainFormProto = 'protos';
   C_Traffic = 'traffic';
@@ -546,7 +541,6 @@ begin
   // Выставляем подсказки к кнопкам
   MainToolTopButton.Hint := MainToolButton.Hint;
   OnlyOnlineContactsTopButton.Hint := OnlyOnlineContactsToolButton.Hint;
-  GroupOnOffToolTopButton.Hint := GroupOnOffToolButton.Hint;
   SoundOnOffToolTopButton.Hint := SoundOnOffToolButton.Hint;
   HistoryTopToolButton.Hint := HistoryToolButton.Hint;
   SettingsTopToolButton.Hint := SettingsToolButton.Hint;
@@ -561,7 +555,6 @@ begin
   ShowLog_Menu.Caption := ShowLog_MenuTray.Caption;
   TopMainButtonONMenu.Caption := MainButtonONMenu.Caption;
   TopOnlyOnlineONMenu.Caption := OnlyOnlineONMenu.Caption;
-  TopGroupONMenu.Caption := GroupONMenu.Caption;
   TopSoundsONMenu.Caption := SoundsONMenu.Caption;
   TopHistoryONMenu.Caption := HistoryONMenu.Caption;
   TopSettingsONMenu.Caption := SettingsONMenu.Caption;
@@ -571,6 +564,9 @@ begin
   PostInTwitter_Menu.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
   PostInFF_Menu.Caption := Format(Lang_Vars[61].L_S, [C_FF]);
   LinkCompress_Menu.Caption := Lang_Vars[3].L_S;
+  DumpMRA.Caption := Format(Lang_Vars[11].L_S, [C_MRA]);
+  DumpICQ.Caption := Format(Lang_Vars[11].L_S, [C_ICQ]);
+  DumpJabber.Caption := Format(Lang_Vars[11].L_S, [C_Jabber]);
   // Применяем перевод статусов в меню
   ICQStatusFFC.Caption := Lang_Vars[67].L_S;
   ICQStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -3437,6 +3433,7 @@ begin
   ClearContacts(C_Icq);
   ClearContacts(C_Jabber);
   ClearContacts(C_Mra);
+  V_CollapseGroupsRestore := True;
   UpdateFullCL;
 end;
 
@@ -3597,7 +3594,7 @@ begin
         with ContactList do
         begin
           for I := 0 to Categories.Count - 1 do
-            Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add('c', Categories[I].Collapsed);
+            Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add(C_CS, Categories[I].Collapsed);
         end;
         // Записываем файл
         SaveToFile(V_ProfilePath + C_GroupsFileName);
@@ -3976,7 +3973,6 @@ begin
     end;
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'FormActivate'}
 
@@ -4147,6 +4143,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TMainForm.DumpMRAClick(Sender: TObject);
+begin
+  // Включаем лог отладки протокола MRA
+
+end;
 
 procedure TMainForm.EditContactClick(Sender: TObject);
 begin
@@ -4390,41 +4392,6 @@ begin
       ICQ_SendGrandAuth((ContactList.SelectedItem as TButtonItem).UIN);
   end;
 end;
-
-procedure TMainForm.GroupONMenuClick(Sender: TObject);
-begin
-  // Скрываем кнопку скрыть группы на нижней панели
-  GroupONMenu.Checked := not GroupONMenu.Checked;
-  GroupOnOffToolButton.Visible := not GroupOnOffToolButton.Visible;
-end;
-
-procedure TMainForm.GroupOnOffToolButtonClick(Sender: TObject);
-begin
-  // Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. групп
-  if GroupOnOffToolButton.Down then
-  begin
-    GroupOnOffToolTopButton.Down := True;
-    GroupOnOffToolButton.ImageIndex := 231;
-    GroupOnOffToolTopButton.ImageIndex := 231;
-  end
-  else
-  begin
-    GroupOnOffToolTopButton.Down := False;
-    GroupOnOffToolButton.ImageIndex := 232;
-    GroupOnOffToolTopButton.ImageIndex := 232;
-  end;
-  // Запускаем обработку Ростера
-  {if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;}
-end;
-
-procedure TMainForm.GroupOnOffToolTopButtonClick(Sender: TObject);
-begin
-  // Отображаем иконкой и подсказкой состояние кнопки вкл. выкл. групп
-  GroupOnOffToolButton.Down := not GroupOnOffToolButton.Down;
-  GroupOnOffToolButtonClick(Self);
-end;
-
 {$ENDREGION}
 {$REGION 'LoadMainFormSettings'}
 
@@ -4472,14 +4439,6 @@ begin
                 OnlyOnlineContactsToolButton.Down := True;
                 OnlyOnlineContactsToolButtonClick(Self);
               end;
-            // Загружаем состояние кнопки отображения групп
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormGroups];
-            if Sub_Node <> nil then
-              if not Sub_Node.BoolValue then
-              begin
-                GroupOnOffToolButton.Down := False;
-                GroupOnOffToolButtonClick(Self);
-              end;
             // Загружаем режим окна КЛ выше всех окон
             Sub_Node := XML_Node.Items.ItemNamed[С_MainFormTop];
             if Sub_Node <> nil then
@@ -4523,22 +4482,19 @@ begin
               OnlyOnlineContactsTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '1');
               TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
               //
-              GroupOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
-              TopGroupONMenu.Checked := GroupOnOffToolTopButton.Visible;
-              //
-              SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
+              SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
               TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
               //
-              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
+              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
               TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
               //
-              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
+              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
               TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
               //
-              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
+              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
               TopCLSearchONMenu.Checked := CLSearchTopToolButton.Visible;
               //
-              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '7');
+              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
               TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
               //
               if not Sub_Node.BoolValue then
@@ -4558,25 +4514,22 @@ begin
               OnlyOnlineContactsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '1');
               OnlyOnlineONMenu.Checked := OnlyOnlineContactsToolButton.Visible;
               //
-              GroupOnOffToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
-              GroupONMenu.Checked := GroupOnOffToolButton.Visible;
-              //
-              SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
+              SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
               SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
               //
-              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
+              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
               HistoryONMenu.Checked := HistoryToolButton.Visible;
               //
-              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
+              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
               SettingsONMenu.Checked := SettingsToolButton.Visible;
               //
-              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
+              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
               CLSearchONMenu.Checked := CLSearchToolButton.Visible;
               //
-              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '7');
+              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
               TrafficONMenu.Checked := TrafficToolButton.Visible;
               //
-              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '8');
+              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '7');
               TopPanelONMenu.Checked := TopPanelToolButton.Visible;
             end;
           end;
@@ -4626,8 +4579,6 @@ begin
         XML_Node.Items.Add(C_MainFormSounds, SoundOnOffToolButton.Down);
         // Сохраняем отображать только онлайн вкл. выкл.
         XML_Node.Items.Add(C_MainFormOnlyOnline, OnlyOnlineContactsToolButton.Down);
-        // Сохраняем отображать группы вкл. выкл.
-        XML_Node.Items.Add(C_MainFormGroups, GroupOnOffToolButton.Down);
         // Сохраняем режим окна КЛ выше всех окон
         XML_Node.Items.Add(С_MainFormTop, TopModeToolButton.Down);
         // Записываем что первый запуск программы уже состоялся и показывать окно настройки протоколов больше не будем при запуске
@@ -4829,13 +4780,6 @@ begin
   // Скрываем кнопку поиска на верхней панели
   TopCLSearchONMenu.Checked := not TopCLSearchONMenu.Checked;
   CLSearchTopToolButton.Visible := not CLSearchTopToolButton.Visible;
-end;
-
-procedure TMainForm.TopGroupONMenuClick(Sender: TObject);
-begin
-  // Скрываем кнопку отображать группы на верхней панели
-  TopGroupONMenu.Checked := not TopGroupONMenu.Checked;
-  GroupOnOffToolTopButton.Visible := not GroupOnOffToolTopButton.Visible;
 end;
 
 procedure TMainForm.TopHistoryONMenuClick(Sender: TObject);
