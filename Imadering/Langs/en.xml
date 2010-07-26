@@ -121,6 +121,7 @@
     <DellProfile c="Delete profile: %s._r_Are you sure?"/>
     <LinkCompress c="Shorten the link URL"/>
     <NotInGroups c="Outside groups"/>
+    <DumpProto c="Debugging protocol %s"/>
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
@@ -154,7 +155,6 @@
     <CheckUpdate_Menu c="Check update"/>
     <MainToolButton h="_b_Main menu_d__r_Access to essential items"/>
     <OnlyOnlineContactsToolButton h="_b_Offline contacts_d__r_Show or hide offline contacts"/>
-    <GroupOnOffToolButton h="_b_Group contacts_d__r_Show or hide the group"/>
     <SoundOnOffToolButton h="_b_Sounds_d__r_Enable or disable the sound events"/>
     <TopPanelToolButton h="_b_Upper panel_d__r_Show or hide the panel"/>
     <HistoryToolButton h="_b_Message history_d__r_Browse the archives of correspondence"/>
@@ -196,7 +196,6 @@
     <UnstableICQStatus c="Unstable status"/>
     <MainButtonONMenu c="Button - Main menu"/>
     <OnlyOnlineONMenu c="Button - Hide offline contacts"/>
-    <GroupONMenu c="Button - Hide group"/>
     <SoundsONMenu c="Button - Sounds"/>
     <HistoryONMenu c="Button - Message history"/>
     <SettingsONMenu c="Button - Settings"/>
@@ -209,7 +208,7 @@
     <SnapToRight c="Right screen edge"/>
     <SnapToLeft c="Left screen edge"/>
     <TopModeToolButton h="_b_Always on top_d__r_Enable or disable window mode"/>
-	<MraSMSSendMenu c="Send SMS"/>
+    <MraSMSSendMenu c="Send SMS"/>
   </MainForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
@@ -1196,7 +1195,7 @@
   <SoundsNames>
     <0 c="Connection established"/>
     <1 c="Incoming message"/>
-	<2 c="Message sent"/>
+    <2 c="Message sent"/>
     <3 c="Contact online alert"/>
     <4 c="Service alert"/>
     <5 c="File transfer complete"/>

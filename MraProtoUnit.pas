@@ -717,7 +717,7 @@ end;
 
 procedure MRA_ParseStatus(PktData: string);
 begin
-
+  //ShowMessage(Text2Hex(PktData));
 end;
 
 {$ENDREGION}

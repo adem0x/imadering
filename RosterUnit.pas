@@ -48,6 +48,7 @@ var
   I, G, K, S: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
   Group_Yes, Contact_Yes: Boolean;
+  JvXML: TJvSimpleXml;
 begin
   with MainForm.ContactList do
   begin
@@ -257,9 +258,8 @@ begin
                 Categories[G].Caption := Categories[G].GroupCaption + C_BN + '-' + C_BN + Format('%d/%d', [I, Categories[G].Items.Count]);
               end;
             end;
-
             // Восстанавливаем состояние свёрнутых групп
-            {if V_CollapseGroupsRestore then
+            if V_CollapseGroupsRestore then
             begin
               // Инициализируем XML
               JvXML_Create(JvXML);
@@ -271,11 +271,11 @@ begin
                     LoadFromFile(V_ProfilePath + C_GroupsFileName);
                     if Root <> nil then
                     begin
-                      for C := 0 to Categories.Count - 1 do
+                      for G := 0 to Categories.Count - 1 do
                       begin
-                        XML_Node := Root.Items.ItemNamed[ChangeCP(URLEncode(Categories[C].GroupCaption + Categories[C].GroupType + Categories[C].GroupId))];
+                        XML_Node := Root.Items.ItemNamed[ChangeCP(URLEncode(Categories[G].GroupCaption + Categories[G].GroupType + Categories[G].GroupId))];
                         if XML_Node <> nil then
-                          Categories[C].Collapsed := XML_Node.Properties.BoolValue('c');
+                          Categories[G].Collapsed := XML_Node.Properties.BoolValue(C_CS);
                       end;
                     end;
                   end;
@@ -284,8 +284,7 @@ begin
                 JvXML.Free;
               end;
               V_CollapseGroupsRestore := False;
-            end;}
-
+            end;
           end;
         end;
       end;

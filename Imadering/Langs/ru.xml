@@ -121,6 +121,7 @@
     <DellProfile c="Удалить профиль: %s._r_Вы уверены?"/>
     <LinkCompress c="Укоротить ссылку URL"/>
     <NotInGroups c="Вне групп"/>
+    <DumpProto c="Отладка протокола %s"/>
   </vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>
@@ -154,7 +155,6 @@
     <CheckUpdate_Menu c="Проверить обновление"/>
     <MainToolButton h="_b_Главное меню_d__r_Доступ к основным пунктам"/>
     <OnlyOnlineContactsToolButton h="_b_Оффлайн контакты_d__r_Показывать или скрывать отключенные контакты"/>
-    <GroupOnOffToolButton h="_b_Группы контактов_d__r_Показывать или скрывать группы"/>
     <SoundOnOffToolButton h="_b_Звуки_d__r_Включить или выключить озвучивание событий"/>
     <TopPanelToolButton h="_b_Верхняя панель_d__r_Показать или скрыть панель"/>
     <HistoryToolButton h="_b_История сообщений_d__r_Просмотр архивов переписки"/>
@@ -196,7 +196,6 @@
     <UnstableICQStatus c="Нестабильный статус"/>
     <MainButtonONMenu c="Кнопка - Главное меню"/>
     <OnlyOnlineONMenu c="Кнопка - Скрыть оффлайн контакты"/>
-    <GroupONMenu c="Кнопка - Скрыть группы"/>
     <SoundsONMenu c="Кнопка - Звуки"/>
     <HistoryONMenu c="Кнопка - История сообщений"/>
     <SettingsONMenu c="Кнопка - Настройки"/>
@@ -209,7 +208,7 @@
     <SnapToRight c="К правому краю экрана"/>
     <SnapToLeft c="К левому краю экрана"/>
     <TopModeToolButton h="_b_Поверх всех окон_d__r_Включить или выключить режим окна"/>
-	<MraSMSSendMenu c="Отправить SMS"/>
+    <MraSMSSendMenu c="Отправить SMS"/>
   </MainForm>
   <SettingsForm c="Настройки">
     <SettingButtonGroup_0 c="Общие"/>
@@ -1196,7 +1195,7 @@
   <SoundsNames>
     <0 c="Подключение установлено"/>
     <1 c="Входящее сообщение"/>
-	<2 c="Сообщение отправлено"/>
+    <2 c="Сообщение отправлено"/>
     <3 c="Контакт вошёл в сеть"/>
     <4 c="Сервисные оповещения"/>
     <5 c="Передача файла завершена"/>

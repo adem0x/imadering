@@ -424,7 +424,7 @@ var
     (L_N: 'Close'; L_S: ''), // 8
     (L_N: 'Cancel'; L_S: ''), // 9
     (L_N: 'Apply'; L_S: ''), // 10
-    (L_N: '---'; L_S: ''), // 11
+    (L_N: 'DumpProto'; L_S: ''), // 11
     (L_N: 'Empty'; L_S: ''), // 12
     (L_N: 'NewVerYES'; L_S: ''), // 13
     (L_N: 'NewVerNO'; L_S: ''), // 14
