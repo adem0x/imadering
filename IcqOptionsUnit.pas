@@ -278,7 +278,8 @@ uses
   SettingsUnit,
   UtilsUnit,
   OverbyteIcsMimeUtils,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -368,8 +369,7 @@ begin
     begin
       if ICQUINEdit.Text <> ICQ_LoginUIN then
         begin
-          {if Assigned(RosterForm) then
-            RosterForm.ClearContacts(C_Icq); // Очищаем контакты предыдущего аккаунта}
+          ClearContacts(C_Icq); // Очищаем контакты предыдущего аккаунта
           ICQ_LoginUIN := ICQUINEdit.Text;
         end;
       ICQ_LoginPassword := PassEdit.Hint;

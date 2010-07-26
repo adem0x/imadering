@@ -107,9 +107,6 @@
 			<DCCReference Include="SmilesUnit.pas">
 				<Form>SmilesForm</Form>
 			</DCCReference>
-			<DCCReference Include="MraXStatusUnit.pas">
-				<Form>MraXStatusForm</Form>
-			</DCCReference>
 			<DCCReference Include="MraOptionsUnit.pas">
 				<Form>MraOptionsForm</Form>
 			</DCCReference>

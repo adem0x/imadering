@@ -24,7 +24,10 @@ uses
   JvSimpleXml;
 {$ENDREGION}
 
+{$REGION 'Procedures and Functions'}
 procedure UpdateFullCL;
+procedure ClearContacts(CType: string);
+{$ENDREGION}
 
 implementation
 
@@ -36,11 +39,13 @@ uses
   OverbyteIcsUrl;
 {$ENDREGION}
 
+{$REGION 'UpdateFullCL'}
+
 procedure UpdateFullCL;
 label
-  A;
+  A, Z;
 var
-  I, G, K: Integer;
+  I, G, K, S: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
   Group_Yes, Contact_Yes: Boolean;
 begin
@@ -94,7 +99,7 @@ begin
                         GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Name));
                         GroupId := Tri_Node.Properties.Value(C_Id);
                         GroupType := C_Mra;
-                        GroupImage := 66;
+                        GroupImage := 311;
                       end;
                     end;
                   end;
@@ -111,6 +116,11 @@ begin
                   if Tri_Node <> nil then
                   begin
                     A: ;
+                    // Запоминаем статус этого контакта
+                    S := Tri_Node.Properties.IntValue(C_Status);
+                    // Определяем режим КЛ (если отображать только онлайн контакты)
+                    if (MainForm.OnlyOnlineContactsToolButton.Down and (Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL)) and ((S = 23) or (S = 25)) then
+                      Continue;
                     // Сканируем группу контакта в КЛ
                     Group_Yes := False;
                     Contact_Yes := False;
@@ -130,8 +140,8 @@ begin
                             // Обновляем параметры этого контакта
                             with Categories[G].Items[K] do
                             begin
-                              Status := Tri_Node.Properties.IntValue(C_Status);
-                              ImageIndex := Status;
+                              Status := S;
+                              ImageIndex := S;
                               XImageIndex := -1;
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               if Tri_Node.Properties.Value(C_Email) = C_Phone then
@@ -141,7 +151,7 @@ begin
                               end;
                               // Hint := URLDecode(Items[I].SubItems[34]);
                               // Если статус в сети
-                              if (Status <> 23) and (Status <> 25) then
+                              if (S <> 23) and (S <> 25) then
                               begin
                                 // Поднимаем этот контакт вверх группы
                                 index := 0;
@@ -167,9 +177,6 @@ begin
                             Break;
                           end;
                         end;
-                        // Определяем режим КЛ
-                        {if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[C].GroupId <> C_NoCL) and ((S = 23) or (S = 25)) then
-                          goto X;}
                         // Добавляем контакт в эту группу в КЛ
                         if not Contact_Yes then
                         begin
@@ -179,8 +186,8 @@ begin
                             if Caption = EmptyStr then
                               Caption := Tri_Node.Properties.Value(C_Email);
                             UIN := Tri_Node.Properties.Value(C_Email);
-                            Status := Tri_Node.Properties.IntValue(C_Status);
-                            ImageIndex := Status;
+                            Status := S;
+                            ImageIndex := S;
                             XImageIndex := -1;
                             CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                             ContactType := C_Mra;
@@ -214,6 +221,71 @@ begin
                 end;
               end;
             end;
+            // --------------------------------------------------------------------------------------------------------------------------
+            // Добавляем ICQ контакты в КЛ
+
+            // --------------------------------------------------------------------------------------------------------------------------
+            // Добавляем Jabber контакты в КЛ
+
+            // Если активен режим "Скрывать пустые группы"
+            if MainForm.HideEmptyGroups.Checked then
+            begin
+              // Сканируем КЛ и удаляем пустые группы
+              Z: ;
+              for I := 0 to Categories.Count - 1 do
+                if Categories[I].Items.Count = 0 then
+                begin
+                  Categories[I].Free;
+                  goto Z;
+                end;
+            end;
+            // Вычисляем количесво контактов и количество онлайн-контактов в группах КЛ
+            for G := 0 to Categories.Count - 1 do
+            begin
+              if ((Categories[G].GroupId = '0000') and (Categories[G].GroupType = C_Icq)) //
+              or (Categories[G].GroupId = C_NoCL) or (Categories[G].Items.Count = 0) //
+              or (MainForm.OnlyOnlineContactsToolButton.Down) //
+              or ((Categories[G].GroupId = LeftStr(C_Phone, 4)) and (Categories[G].GroupType = C_Mra)) then
+                Categories[G].Caption := Categories[G].GroupCaption + C_BN + '-' + C_BN + IntToStr(Categories[G].Items.Count)
+              else
+              begin
+                I := Categories[G].Items.Count;
+                for K := 0 to Categories[G].Items.Count - 1 do
+                  case Categories[G].Items[K].Status of
+                    9, 23, 25, 30, 41, 42, 80, 83, 84, 214, 298, 299, 300, 312: Dec(I);
+                  end;
+                Categories[G].Caption := Categories[G].GroupCaption + C_BN + '-' + C_BN + Format('%d/%d', [I, Categories[G].Items.Count]);
+              end;
+            end;
+
+            // Восстанавливаем состояние свёрнутых групп
+            {if V_CollapseGroupsRestore then
+            begin
+              // Инициализируем XML
+              JvXML_Create(JvXML);
+              try
+                with JvXML do
+                begin
+                  if FileExists(V_ProfilePath + C_GroupsFileName) then
+                  begin
+                    LoadFromFile(V_ProfilePath + C_GroupsFileName);
+                    if Root <> nil then
+                    begin
+                      for C := 0 to Categories.Count - 1 do
+                      begin
+                        XML_Node := Root.Items.ItemNamed[ChangeCP(URLEncode(Categories[C].GroupCaption + Categories[C].GroupType + Categories[C].GroupId))];
+                        if XML_Node <> nil then
+                          Categories[C].Collapsed := XML_Node.Properties.BoolValue('c');
+                      end;
+                    end;
+                  end;
+                end;
+              finally
+                JvXML.Free;
+              end;
+              V_CollapseGroupsRestore := False;
+            end;}
+
           end;
         end;
       end;
@@ -223,6 +295,31 @@ begin
     end;
   end;
 end;
+{$ENDREGION}
+{$REGION 'ClearContacts'}
+
+procedure ClearContacts(CType: string);
+label
+  A;
+var
+  I: Integer;
+begin
+  // Удаляем контакты в КЛ
+  with MainForm.ContactList do
+  begin
+    A: ;
+    for I := 0 to Categories.Count - 1 do
+    begin
+      // Удаляем все группы протокола
+      if Categories[I].GroupType = CType then
+      begin
+        Categories[I].Free;
+        goto A;
+      end;
+    end;
+  end;
+end;
+{$ENDREGION}
 
 end.
 

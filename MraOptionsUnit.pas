@@ -104,7 +104,8 @@ uses
   VarsUnit,
   MraProtoUnit,
   OverbyteIcsMimeUtils,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'LoadSettings'}
@@ -178,8 +179,7 @@ begin
     begin
       if (MraEmailEdit.Text + MRAEmailComboBox.Text) <> MRA_LoginUIN then
         begin
-          {if Assigned(RosterForm) then
-            RosterForm.ClearContacts(C_Mra); // Очищаем контакты предыдущего аккаунта}
+          ClearContacts(C_Mra); // Очищаем контакты предыдущего аккаунта
           MRA_LoginUIN := MraEmailEdit.Text + MRAEmailComboBox.Text;
         end;
       MRA_LoginPassword := PassEdit.Hint;

@@ -21,7 +21,6 @@ uses
   IcqSearchUnit in 'IcqSearchUnit.pas' {IcqSearchForm},
   IcqXStatusUnit in 'IcqXStatusUnit.pas' {IcqXStatusForm},
   SmilesUnit in 'SmilesUnit.pas' {SmilesForm},
-  MraXStatusUnit in 'MraXStatusUnit.pas' {MraXStatusForm},
   MraOptionsUnit in 'MraOptionsUnit.pas' {MraOptionsForm},
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
   UpdateUnit in 'UpdateUnit.pas' {UpdateForm},
