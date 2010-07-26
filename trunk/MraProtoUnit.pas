@@ -684,7 +684,6 @@ begin
     // Ставим иконку и значение статуса оффлайн
     MRA_CurrentStatus := 23;
     MRAToolButton.ImageIndex := MRA_CurrentStatus;
-    //MRATrayIcon.IconIndex := MRA_CurrentStatus;
     // Подсвечиваем в меню статуса MRA статус оффлайн
     MRAStatusOffline.default := True;
   end;

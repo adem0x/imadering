@@ -472,7 +472,6 @@ uses
   UtilsUnit,
   IcqOptionsUnit,
   IcqXStatusUnit,
-  MraXStatusUnit,
   IcqProtoUnit,
   IcqContactInfoUnit,
   MraOptionsUnit,
@@ -500,7 +499,8 @@ uses
   ShellApi,
   IcqEditContactUnit,
   SMSUnit,
-  GamesUnit;
+  GamesUnit,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -1007,8 +1007,10 @@ begin
       Checked := True;
   end;
   // Запускаем обработку Ростера
-  {if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;}
+  ClearContacts(C_Icq);
+  ClearContacts(C_Jabber);
+  ClearContacts(C_Mra);
+  UpdateFullCL;
 end;
 
 procedure TMainForm.HideInTray_MenuClick(Sender: TObject);
@@ -1613,7 +1615,7 @@ begin
                             if ICQ_BosConnect_Phaze then
                             begin
                               // Очищаем группы ICQ в Ростере
-                              //RosterForm.ClearContacts(C_Icq);
+                              ClearContacts(C_Icq);
                               // Пока думаем, что у нас новый (обсолютно чистый) список контактов
                               NewKL := True;
                               // Отсылаем серверу пакет с допустимыми для нас фэмили
@@ -2332,7 +2334,7 @@ begin
                   if Jabber_KeepAlive then
                     JvTimerList.Events[9].Enabled := True;
                   // Очищаем группы Jabber в Ростере
-                  //RosterForm.ClearContacts(C_Jabber);
+                  ClearContacts(C_Jabber);
                   // Закрепляем сессию с жаббер сервером
                   // Если сервер и порт указаны вручную
                   if JabberOptionsForm.CustomServerCheckBox.Checked then
@@ -3192,7 +3194,7 @@ begin
                 // Отключаем метку пересоединения ведь мы уже и так онлайн!
                 MRA_Reconnect := False;
                 // Очищаем группы MRA в Ростере
-                //RosterForm.ClearContacts(C_Mra);
+                ClearContacts(C_Mra);
                 // Устанавливаем иконку статуса
                 MRAToolButton.ImageIndex := MRA_CurrentStatus_bac;
                 // Воспроизводим звук удачного логина
@@ -3241,11 +3243,8 @@ end;
 {$REGION 'Other'}
 procedure TMainForm.MRAXStatusClick(Sender: TObject);
 begin
-  // Открываем окно выбора дополнительного статуса
-  if not Assigned(MraXStatusForm) then
-    MraXStatusForm := TMraXStatusForm.Create(Self);
-  // Отображаем окнов рабочей области
-  FormShowInWorkArea(MraXStatusForm);
+  // Открываем окно выбора дополнительного статуса MRA
+
 end;
 {$ENDREGION}
 {$REGION 'AddNewContactClick'}
@@ -3435,8 +3434,10 @@ begin
     OnlyOnlineContactsTopButton.ImageIndex := 138;
   end;
   // Запускаем обработку Ростера
-  {if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;}
+  ClearContacts(C_Icq);
+  ClearContacts(C_Jabber);
+  ClearContacts(C_Mra);
+  UpdateFullCL;
 end;
 
 procedure TMainForm.OnlyOnlineContactsTopButtonClick(Sender: TObject);
