@@ -208,7 +208,9 @@ begin
   PR := V_ProfilePath;
   V_ProfilePath := V_ProfilePath + V_Profile + C_SN;
   V_Profile := PR;
-  XLog(LogProfile + C_TN + V_ProfilePath, EmptyStr);
+  V_StartLog := V_StartLog + C_RN + LogProfile + C_TN + C_BN + V_ProfilePath;
+  if Assigned(LogForm) then
+    LogForm.LoadStartLog;
   // Создаём форму с настройками для применения настроек
   Application.CreateForm(TSettingsForm, SettingsForm);
   SettingsForm.ApplySettings;
@@ -270,8 +272,6 @@ begin
     // В фоне создаём окно смайлов
     JvTimerList.Events[7].Enabled := True;
   end;
-  // Выключаем кнопку записи последующих событий в окно лога
-  LogForm.WriteLogSpeedButton.Down := False;
   // Закрываем окно
   FClose := True;
   Close;
@@ -332,7 +332,8 @@ begin
   // Переводим форму
   TranslateForm;
   // Применяем язык к форме лога
-  LogForm.TranslateForm;
+  if Assigned(LogForm) then
+    LogForm.TranslateForm;
   // Применяем язык к главной форме
   MainForm.TranslateForm;
   // Устанавливаем иконку флага страны на кнопку

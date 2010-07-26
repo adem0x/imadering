@@ -2166,13 +2166,15 @@ end;
 procedure TMainForm.IMaderingEventsException(Sender: TObject; E: Exception);
 begin
   // Перехватываем глобально все ошибки в программе и выводим их в лог
-  if Assigned(LogForm) then
+  if not Assigned(LogForm) then
+    Application.CreateForm(TLogForm, LogForm);
+  XShowForm(LogForm);
+  with LogForm do
   begin
-    XShowForm(LogForm);
-    LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + Log_Exception1);
-    JclLastExceptStackListToStrings(LogForm.LogMemo.Lines, False, False, False, False);
-    LogForm.LogMemo.Lines.Add(Log_Exception2);
-    LogForm.LogMemo.Lines.Add(C_LogBR);
+    LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + C_BN + Log_Exception1);
+    JclLastExceptStackListToStrings(LogMemo.Lines, False, False, False, False);
+    LogMemo.Lines.Add(Log_Exception2);
+    LogMemo.Lines.Add(C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
   end;
 end;
 
@@ -4234,17 +4236,15 @@ begin
   Lang := GetSystemDefaultLangID;
   if Lang = 1049 then
     V_CurrentLang := 'ru';
-  // Создаём окно лога
-  LogForm := TLogForm.Create(Application);
   // Узнаём версию Windows
   VI.DwOSVersionInfoSize := SizeOf(TOSVersionInfo);
   GetVersionEx(VI);
-  XLog(Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]), EmptyStr);
+  V_StartLog := Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]) + C_RN;
   // Пишем в лог код локального языка системы
   VerLanguageName(Lang, Language, 100);
-  XLog(Log_Lang_Code + C_TN + IntToStr(Lang) + C_BN + string(Language), EmptyStr);
+  V_StartLog := V_StartLog + Log_Lang_Code + C_TN + C_BN + C_BN + string(Language) + C_BN + C_QN + IntToStr(Lang) + C_EN + C_RN;
   // Пишем в лог путь к программе
-  XLog(LogMyPath + C_TN + V_MyPath, EmptyStr);
+  V_StartLog := V_StartLog + LogMyPath + C_TN + C_BN + V_MyPath;
   // Если профиль не найден, то создаём его в настройках юзера виндовс
   V_ProfilePath := V_MyPath + C_Profiles;
   if not DirectoryExists(V_ProfilePath) then
@@ -4256,25 +4256,7 @@ begin
   // Загрузка иконок для программы
   LoadImageList(AllImageList, V_MyPath + Format(C_IconsPath, [V_CurrentIcons]));
   // Устанавливаем иконку окна
-  with AllImageList do
-  begin
-    GetIcon(1, Icon);
-    // Устанавливаем иконки окна лога
-    with LogForm do
-    begin
-      GetIcon(245, Icon);
-      GetBitmap(159, ClearLogSpeedButton.Glyph);
-      GetBitmap(81, ICQDumpSpeedButton.Glyph);
-      GetBitmap(43, JabberDumpSpeedButton.Glyph);
-      GetBitmap(66, MRADumpSpeedButton.Glyph);
-      GetBitmap(249, WriteLogSpeedButton.Glyph);
-      GetBitmap(268, TwitDumpSpeedButton.Glyph);
-      GetBitmap(225, SaveLogSpeedButton.Glyph);
-      GetBitmap(221, SearchSpeedButton.Glyph);
-      GetBitmap(185, SendEmailSpeedButton.Glyph);
-      GetBitmap(1, RosterSpeedButton.Glyph);
-    end;
-  end;
+  AllImageList.GetIcon(1, Icon);
   // Скрываем кнопку главное меню в верхней панели
   MainToolTopButton.Visible := False;
   // Делаем окно прилипающим к краям экрана
@@ -5182,6 +5164,8 @@ end;
 procedure TMainForm.ShowLog_MenuClick(Sender: TObject);
 begin
   // Отображаем окно
+  if not Assigned(LogForm) then
+    Application.CreateForm(TLogForm, LogForm);
   XShowForm(LogForm);
 end;
 

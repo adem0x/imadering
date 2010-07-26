@@ -15,6 +15,7 @@ object LogForm: TLogForm
   OldCreateOrder = False
   Scaled = False
   ScreenSnap = True
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDblClick = FormDblClick
   PixelsPerInch = 96
@@ -186,6 +187,18 @@ object LogForm: TLogForm
     object HexToText_Menu: TMenuItem
       ImageIndex = 289
       OnClick = HexToText_MenuClick
+    end
+    object HexToUtf8Text_Menu: TMenuItem
+      ImageIndex = 289
+      OnClick = HexToUtf8Text_MenuClick
+    end
+    object HexToLEText_Menu: TMenuItem
+      ImageIndex = 289
+      OnClick = HexToLEText_MenuClick
+    end
+    object HexToBEText_Menu: TMenuItem
+      ImageIndex = 289
+      OnClick = HexToBEText_MenuClick
     end
   end
 end

@@ -89,7 +89,6 @@ const
   C_IgCL = 'IgCL';
   C_UniqGT = 'gtrans';
   C_MaskPass = '----------------------';
-  C_LogBR = '-----------------------------------------------------------';
   C_Login = 'login';
   C_Pass = 'password';
   C_SavePass = 'save_password';
@@ -265,6 +264,7 @@ var
   V_FArchive: TJclCompressionArchive;
   V_AutoDellProfile: Boolean = False;
   V_Roster: TJvSimpleXml;
+  V_StartLog: string;
 
 {$ENDREGION}
 {$REGION 'CL_Vars'}
@@ -461,7 +461,7 @@ var
     (L_N: 'UserCloseChat'; L_S: ''), // 45
     (L_N: 'UserTyping'; L_S: ''), // 46
     (L_N: 'UserStatus'; L_S: ''), // 47
-    (L_N: '---'; L_S: ''), // 48
+    (L_N: 'HexToText'; L_S: ''), // 48
     (L_N: '---'; L_S: ''), // 49
     (L_N: '---'; L_S: ''), // 50
     (L_N: '---'; L_S: ''), // 51

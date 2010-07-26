@@ -166,17 +166,19 @@ function ReverseString(s: string): string;
 implementation
 
 {$REGION 'ReverseString'}
-  function ReverseString(s: string): string;
-  var
-    i: integer;
-  begin
-    Result := EmptyStr;
-    if Trim(s) <> EmptyStr then
-      for i := Length(s) downto 1 do
-        Result := Result + s[i];
-  end;
+
+function ReverseString(s: string): string;
+var
+  i: integer;
+begin
+  Result := EmptyStr;
+  if Trim(s) <> EmptyStr then
+    for i := Length(s) downto 1 do
+      Result := Result + s[i];
+end;
 {$ENDREGION}
 {$REGION 'GetFlagFile'}
+
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
 const
   FileExt = '.gif';
@@ -741,32 +743,30 @@ end;
 {$REGION 'XLog'}
 
 procedure XLog(XLogData, Proto: string);
-label
-  A;
 begin
+  // Если окно лога не создано, то выходим
+  if not Assigned(LogForm) then
+    Exit;
   // Если запись лога выключена, то выходим
-  if not LogForm.WriteLogSpeedButton.Down then
-    Exit;
-  // Проверяем какой протокол
-  if (Proto = C_Icq) and (LogForm.ICQDumpSpeedButton.Down) then
-    goto A
-  else if (Proto = C_Jabber) and (LogForm.JabberDumpSpeedButton.Down) then
-    goto A
-  else if (Proto = C_Mra) and (LogForm.MRADumpSpeedButton.Down) then
-    goto A
-  else if (Proto = C_Twitter) and (LogForm.TwitDumpSpeedButton.Down) then
-    goto A
-  else if Proto = EmptyStr then
-    goto A
-  else
-    Exit;
-  A: ;
-  // Если количество строк в логе слишком большое, то очищаем его
-  if LogForm.LogMemo.Lines.Count > 5000 then
-    LogForm.LogMemo.Clear;
-  // Добавляем в лог новое сообщение
-  LogForm.LogMemo.Lines.Add(DateTimeToStr(Now) + ': ' + XLogData);
-  LogForm.LogMemo.Lines.Add(C_LogBR);
+  with LogForm do
+  begin
+    if not WriteLogSpeedButton.Down then
+      Exit;
+    // Проверяем какой протокол
+    if ((Proto = C_Icq) and ICQDumpSpeedButton.Down) //
+    or ((Proto = C_Jabber) and JabberDumpSpeedButton.Down) //
+    or ((Proto = C_Mra) and MRADumpSpeedButton.Down) //
+    or ((Proto = C_Twitter) and TwitDumpSpeedButton.Down) //
+    or (Proto = EmptyStr) then
+    begin
+      // Если количество строк в логе слишком большое, то очищаем его
+      if LogMemo.Lines.Count > 5000 then
+        LogMemo.Clear;
+      // Добавляем в лог новое сообщение
+      LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + C_BN + XLogData);
+      LogMemo.Lines.Add(C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
+    end;
+  end;
 end;
 
 {$ENDREGION}
@@ -1803,7 +1803,8 @@ function RightStr(const Str: string; Size: Word): string;
 var
   Len: Integer;
 begin
-  if Str = EmptyStr then Exit;
+  if Str = EmptyStr then
+    Exit;
   Len := Length(Str);
   if Size > Len then
     Size := Len;
@@ -1815,7 +1816,8 @@ end;
 
 function LeftStr(const Str: string; Size: Word): string;
 begin
-  if Str = EmptyStr then Exit;
+  if Str = EmptyStr then
+    Exit;
   Result := Copy(Str, 1, Size);
 end;
 
@@ -2568,14 +2570,15 @@ end;
 
 {$ENDREGION}
 {$REGION 'UpCaseOne'}
-  function UpCaseOne(Str: string): string;
-  var
-    s1, s2: string;
-  begin
-    s1 := Str;
-    s2 := NextData(s1, 1);
-    Result := WideUpperCase(s2) + s1;
-  end;
+
+function UpCaseOne(Str: string): string;
+var
+  s1, s2: string;
+begin
+  s1 := Str;
+  s2 := NextData(s1, 1);
+  Result := WideUpperCase(s2) + s1;
+end;
 {$ENDREGION}
 
 end.
