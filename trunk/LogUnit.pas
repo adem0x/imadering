@@ -47,6 +47,9 @@ type
     HexToText_Menu: TMenuItem;
     CopySelText_Menu: TMenuItem;
     CopyAllText_Menu: TMenuItem;
+    HexToUtf8Text_Menu: TMenuItem;
+    HexToLEText_Menu: TMenuItem;
+    HexToBEText_Menu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
@@ -59,12 +62,17 @@ type
     procedure LogPopupMenuPopup(Sender: TObject);
     procedure CopySelText_MenuClick(Sender: TObject);
     procedure CopyAllText_MenuClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure HexToUtf8Text_MenuClick(Sender: TObject);
+    procedure HexToLEText_MenuClick(Sender: TObject);
+    procedure HexToBEText_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
   public
     { Public declarations }
     procedure TranslateForm;
+    procedure LoadStartLog;
   end;
 
 {$ENDREGION}
@@ -81,7 +89,8 @@ uses
   MainUnit,
   UtilsUnit,
   VarsUnit,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  OverbyteIcsUtils;
 
 const
   C_log = ' log';
@@ -199,18 +208,51 @@ begin
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
+  // Переводим меню
+  HexToText_Menu.Caption := Format(Lang_Vars[48].L_S, ['ANSI']);
+  HexToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, ['UTF-8']);
+  HexToLEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-LE']);
+  HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-BE']);
 end;
 
 {$ENDREGION}
 {$REGION 'FormCreate'}
+
+procedure TLogForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  // Высвобождаем окно при закрытии
+  Action := caFree;
+  LogForm := nil;
+end;
+
 procedure TLogForm.FormCreate(Sender: TObject);
 begin
+  // Устанавливаем иконки окна лога
+  with MainForm.AllImageList do
+  begin
+    GetIcon(245, Icon);
+    GetBitmap(159, ClearLogSpeedButton.Glyph);
+    GetBitmap(81, ICQDumpSpeedButton.Glyph);
+    GetBitmap(43, JabberDumpSpeedButton.Glyph);
+    GetBitmap(66, MRADumpSpeedButton.Glyph);
+    GetBitmap(249, WriteLogSpeedButton.Glyph);
+    GetBitmap(268, TwitDumpSpeedButton.Glyph);
+    GetBitmap(225, SaveLogSpeedButton.Glyph);
+    GetBitmap(221, SearchSpeedButton.Glyph);
+    GetBitmap(185, SendEmailSpeedButton.Glyph);
+    GetBitmap(1, RosterSpeedButton.Glyph);
+  end;
+  // Переводим окно на другие языки
+  TranslateForm;
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  // Подгружаем стартовый лог
+  LoadStartLog;
 end;
 {$ENDREGION}
 {$REGION 'Other'}
+
 procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);
 begin
   // Очищаем лог
@@ -236,11 +278,51 @@ begin
   LogMemo.CopyToClipboard;
 end;
 
-procedure TLogForm.HexToText_MenuClick(Sender: TObject);
+procedure TLogForm.HexToBEText_MenuClick(Sender: TObject);
+var
+  s: string;
 begin
-  // Преобразовываем HEX в строку текста
+  // Преобразовываем HEX в BE строку текста
   try
-    MessageBox(Handle, PChar(Hex2Text(Trim(DeleteSpaces(LogMemo.SelText)))), PChar(Application.Title), MB_OK);
+    s := UnicodeBEHex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
+  except
+  end;
+end;
+
+procedure TLogForm.HexToLEText_MenuClick(Sender: TObject);
+var
+  s: string;
+begin
+  // Преобразовываем HEX в LE строку текста
+  try
+    s := UnicodeLEHex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
+  except
+  end;
+end;
+
+procedure TLogForm.HexToText_MenuClick(Sender: TObject);
+var
+  s: string;
+begin
+  // Преобразовываем HEX в ANSI строку текста
+  try
+    s := Hex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
+  except
+  end;
+end;
+
+procedure TLogForm.HexToUtf8Text_MenuClick(Sender: TObject);
+var
+  s: string;
+begin
+  // Преобразовываем HEX в UTF8 строку текста
+  try
+    s := Hex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    s := UTF8ToString(s);
+    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
   except
   end;
 end;
@@ -260,12 +342,18 @@ begin
     CopySelText_Menu.Enabled := False;
     CopyAllText_Menu.Enabled := False;
     HexToText_Menu.Enabled := False;
+    HexToUtf8Text_Menu.Enabled := False;
+    HexToLEText_Menu.Enabled := False;
+    HexToBEText_Menu.Enabled := False;
   end
   else
   begin
     CopySelText_Menu.Enabled := True;
     CopyAllText_Menu.Enabled := True;
     HexToText_Menu.Enabled := True;
+    HexToUtf8Text_Menu.Enabled := True;
+    HexToLEText_Menu.Enabled := True;
+    HexToBEText_Menu.Enabled := True;
   end;
 end;
 
@@ -313,6 +401,13 @@ begin
     s := LogMemo.SelText;
   v := WideLowerCase(Format(Lang_Vars[4].L_S, [V_FullVersion]));
   OpenURL(C_MailTo + Format(C_MailText, [C_IMadering + C_log, C_IMadering + C_BN + v + ReplaceStr(C_RN + C_RN + s, C_RN, C_MN)]));
+end;
+
+procedure TLogForm.LoadStartLog;
+begin
+  // Подгружаем стартовый лог
+  LogMemo.Clear;
+  LogMemo.Lines.Add(V_StartLog + C_RN + C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
 end;
 {$ENDREGION}
 

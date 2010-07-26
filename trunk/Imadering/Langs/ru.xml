@@ -122,6 +122,7 @@
     <LinkCompress c="Укоротить ссылку URL"/>
     <NotInGroups c="Вне групп"/>
     <DumpProto c="Отладка протокола %s"/>
+    <HexToText c="Показать HEX как %s текст"/>
   </vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>
@@ -145,7 +146,6 @@
     <RosterSpeedButton h="_b_Выгрузить ростер_d__r_Сохранить базу данных контактов в файл"/>
     <CopySelText_Menu c="Копировать"/>
     <CopyAllText_Menu c="Копировать всё"/>
-    <HexToText_Menu c="Показать HEX как текст"/>
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram_Menu c="Выйти из IMadering"/>

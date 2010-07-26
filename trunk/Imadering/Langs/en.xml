@@ -122,6 +122,7 @@
     <LinkCompress c="Shorten the link URL"/>
     <NotInGroups c="Outside groups"/>
     <DumpProto c="Debugging protocol %s"/>
+    <HexToText c="Show HEX as %s text"/>
   </vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
@@ -145,7 +146,6 @@
     <RosterSpeedButton h="_b_Unload roster_d__r_Save the database of contacts in the file"/>
     <CopySelText_Menu c="Copy"/>
     <CopyAllText_Menu c="Copy all"/>
-    <HexToText_Menu c="Show HEX as text"/>
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram_Menu c="Exit IMadering"/>
