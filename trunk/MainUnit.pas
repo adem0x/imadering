@@ -427,6 +427,8 @@ type
     procedure TrayIconDblClick(Sender: TObject);
     procedure CheckUpdate_MenuClick(Sender: TObject);
     procedure DumpMRAClick(Sender: TObject);
+    procedure DumpICQClick(Sender: TObject);
+    procedure DumpJabberClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -4144,13 +4146,35 @@ begin
 end;
 
 {$ENDREGION}
+{$REGION 'OpenDumpProtoLog'}
+  procedure TMainForm.DumpICQClick(Sender: TObject);
+  begin
+    // Включаем лог отладки протокола ICQ
+    if not Assigned(LogForm) then
+      Application.CreateForm(TLogForm, LogForm);
+    LogForm.ICQDumpSpeedButton.Down := True;
+    XShowForm(LogForm);
+  end;
+
+  procedure TMainForm.DumpJabberClick(Sender: TObject);
+  begin
+    // Включаем лог отладки протокола Jabber
+    if not Assigned(LogForm) then
+      Application.CreateForm(TLogForm, LogForm);
+    LogForm.JabberDumpSpeedButton.Down := True;
+    XShowForm(LogForm);
+  end;
+
+  procedure TMainForm.DumpMRAClick(Sender: TObject);
+  begin
+    // Включаем лог отладки протокола MRA
+    if not Assigned(LogForm) then
+      Application.CreateForm(TLogForm, LogForm);
+    LogForm.MRADumpSpeedButton.Down := True;
+    XShowForm(LogForm);
+  end;
+{$ENDREGION}
 {$REGION 'Other'}
-
-procedure TMainForm.DumpMRAClick(Sender: TObject);
-begin
-  // Включаем лог отладки протокола MRA
-
-end;
 
 procedure TMainForm.EditContactClick(Sender: TObject);
 begin
