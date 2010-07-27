@@ -122,6 +122,9 @@ const
   C_Auth = 'auth';
   C_AuthBoth = 'both';
   C_AuthNone = 'none';
+  C_XStatus = 'XStatus';
+  C_XText = 'XText';
+  C_Geo = 'Geo';
   //
   C_NameInfo = 'name_info';
   C_Nick = 'nick';

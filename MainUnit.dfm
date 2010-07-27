@@ -1103,6 +1103,7 @@ object MainForm: TMainForm
     end
     object DumpICQ: TMenuItem
       ImageIndex = 171
+      OnClick = DumpICQClick
     end
   end
   object MRAAvatarHttpClient: THttpCli
@@ -1156,6 +1157,7 @@ object MainForm: TMainForm
     end
     object DumpJabber: TMenuItem
       ImageIndex = 171
+      OnClick = DumpJabberClick
     end
   end
   object MainActionList: TActionList

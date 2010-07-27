@@ -471,7 +471,7 @@ const
 
 var
   UL, S_Log, GMask, CMask, GId, GName, CEmail, CPhone: string;
-  CStatus, CStatusId, CXText, CClient, Unk: string;
+  CStatus, CXStatus, CXText, CClient, CGeo, GeoPkt, Unk: string;
   I, M, Len, GCount: Integer;
   CAuth: Boolean;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
@@ -563,9 +563,11 @@ begin
             GName := EmptyStr;
             CAuth := True;
             CStatus := EmptyStr;
-            CStatusId := EmptyStr;
+            CXStatus := EmptyStr;
             CXText := EmptyStr;
             CClient := EmptyStr;
+            CGeo := EmptyStr;
+            GeoPkt := EmptyStr;
             Unk := EmptyStr;
             for M := 1 to Length(CMask) do
             begin
@@ -594,6 +596,18 @@ begin
                       GName := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
                     else if M = 7 then
                       CPhone := NextData(PktData, Len)
+                    else if M = 8 then
+                      CXStatus := NextData(PktData, Len)
+                    else if M = 9 then
+                      CXText := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
+                    else if M = 12 then
+                      CClient := NextData(PktData, Len)
+                    else if M = 19 then
+                    begin
+                      GeoPkt := NextData(PktData, Len);
+                      // Разбираем GEO инфу контакта
+
+                    end
                     else
                       Unk := Unk + C_QN + Mask_s + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, Len)) + C_LN + C_BN;
                   end;
@@ -629,6 +643,10 @@ begin
               end;
             end;
             Tri_Node.Properties.Add(UpCaseOne(C_Phone), CPhone);
+            Tri_Node.Properties.Add(C_XStatus, CXStatus);
+            Tri_Node.Properties.Add(C_XText, CXText);
+            Tri_Node.Properties.Add(C_Client, CClient);
+            Tri_Node.Properties.Add(C_Geo, CGeo);
             // Заполняем лог
             S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Email + C_TN + C_BN + CEmail + C_LN //
             + C_BN + UpCaseOne(C_Nick) + C_TN + C_BN + GName + C_LN + C_BN + UpCaseOne(C_Auth) + C_TN + C_BN + BoolToStr(CAuth) + C_LN + C_BN + C_Status //
