@@ -81,7 +81,6 @@ type
     ChatSettingsToolButton: TToolButton;
     TypingTextToolButton: TToolButton;
     ChatFontToolButton: TToolButton;
-    KeySoundToolButton: TToolButton;
     TopToolsPanel: TPanel;
     TextLenPanel: TPanel;
     SmiliesSpeedButton: TSpeedButton;
@@ -1133,9 +1132,9 @@ begin
                     if Sub_Node <> nil then
                       TypingTextToolButton.Down := Sub_Node.BoolValue;
                     // Загружаем "звук нажатия клавиш"
-                    Sub_Node := XML_Node.Items.ItemNamed[C_ChatFormKS];
+                    {Sub_Node := XML_Node.Items.ItemNamed[C_ChatFormKS];
                     if Sub_Node <> nil then
-                      KeySoundToolButton.Down := Sub_Node.BoolValue;
+                      KeySoundToolButton.Down := Sub_Node.BoolValue;}
                     // Загружаем состояние панелей аватар
                     Sub_Node := XML_Node.Items.ItemNamed[C_ChatFormAP];
                     if Sub_Node <> nil then
@@ -1255,7 +1254,7 @@ begin
         // Сохраняем отправлять отчёт о печати текста
         XML_Node.Items.Add(C_ChatFormST, TypingTextToolButton.Down);
         // Сохраняем "звук нажатия клавиш"
-        XML_Node.Items.Add(C_ChatFormKS, KeySoundToolButton.Down);
+        //XML_Node.Items.Add(C_ChatFormKS, KeySoundToolButton.Down);
         // Сохраняем состояние панелей аватар
         Sub_Node := XML_Node.Items.Add(C_ChatFormAP);
         Sub_Node.Properties.Add('a1', ContactAvatarPanel.Width);
@@ -1802,13 +1801,13 @@ begin
   if Key <> #13 then
     begin
       // Если нажата кнопка звука нажатия клавиш, то играем звуки
-      if KeySoundToolButton.Down then
+      {if KeySoundToolButton.Down then
         begin
           if (Key = #8) and (InputRichEdit.Text <> EmptyStr) then
             ImPlaySnd(10)
           else if Key <> #8 then
             ImPlaySnd(9);
-        end;
+        end;}
       // Если нажата кнопка отправки оповещения о печати текста
       if TypingTextToolButton.Down then
         begin
@@ -1837,8 +1836,8 @@ begin
         if InputRichEdit.GetTextLen = 0 then
           Exit;
         // Если нажата кнопка звука нажатия клавиш, то играем звуки
-        if KeySoundToolButton.Down then
-          ImPlaySnd(11);
+        {if KeySoundToolButton.Down then
+          ImPlaySnd(11);}
         // Копируем текст сообщения
         Msg := Trim(InputRichEdit.Text);
         // Переводим сообщение если активна функция Gtrans

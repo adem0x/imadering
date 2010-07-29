@@ -104,10 +104,10 @@ object LogForm: TLogForm
       AllowAllUp = True
       Anchors = [akTop, akRight]
       GroupIndex = 5
-      Down = True
       Flat = True
       ParentShowHint = False
       ShowHint = True
+      OnClick = WriteLogSpeedButtonClick
     end
     object TwitDumpSpeedButton: TSpeedButton
       Left = 92

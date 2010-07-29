@@ -33,7 +33,7 @@ object IcqXStatusForm: TIcqXStatusForm
     Images = MainForm.AllImageList
     Items = <
       item
-        ImageIndex = 44
+        ImageIndex = 71
       end
       item
         Caption = 'icqmood23'

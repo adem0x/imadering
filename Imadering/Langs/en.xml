@@ -149,7 +149,7 @@
   </LogForm>
   <MainForm c="IMadering">
     <CloseProgram_Menu c="Exit IMadering"/>
-    <ShowLog_MenuTray c="Event log program"/>
+    <ShowLog_MenuTray c="Debugging program"/>
     <Status_MenuTray c="Status"/>
     <Settings_Menu c="Settings"/>
     <CheckUpdate_Menu c="Check update"/>

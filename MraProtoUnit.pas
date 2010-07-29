@@ -31,74 +31,8 @@ uses
   CategoryButtons,
   JvSimpleXml;
 {$ENDREGION}
-{$REGION 'Const Users Statuses'}
-
-const
-  // Коды статусов
-  M_OFFLINE = '00000000';
-  M_ONLINE = '010000000D0000005354415455535F4F4E4C494E4506000000CEEDEBE0E9ED';
-  M_AWAY = '020000000B0000005354415455535F4157415906000000CEF2EEF8E5EB';
-  M_UNDETERMINATED = '03000000';
-  M_FFC = '040000000B0000007374617475735F636861740F000000C3EEF2EEE220EFEEE1EEEBF2E0F2FC';
-  M_DND = '040000000A0000007374617475735F646E640D000000CDE520E1E5F1EFEEEAEEE8F2FC';
-  M_INVISIBLE = '01000080100000005354415455535F494E56495349424C4507000000CDE5E2E8E4E8EC';
-
-{$ENDREGION}
-{$REGION 'Const XStatuses'}
-
-  // Доп. статусы
-  M_1 = '04000000080000007374617475735F35';
-  M_2 = '04000000090000007374617475735F3138';
-  M_3 = '04000000090000007374617475735F3139';
-  M_4 = '04000000080000007374617475735F37';
-  M_5 = '04000000090000007374617475735F3130';
-  M_6 = '04000000090000007374617475735F3437';
-  M_7 = '04000000090000007374617475735F3232';
-  M_8 = '04000000090000007374617475735F3236';
-  M_9 = '04000000090000007374617475735F3234';
-  M_10 = '04000000090000007374617475735F3237';
-  M_11 = '04000000090000007374617475735F3233';
-  M_12 = '04000000080000007374617475735F34';
-  M_13 = '04000000080000007374617475735F39';
-  M_14 = '04000000080000007374617475735F36';
-  M_15 = '04000000090000007374617475735F3231';
-  M_16 = '04000000090000007374617475735F3230';
-  M_17 = '04000000090000007374617475735F3137';
-  M_18 = '04000000080000007374617475735F38';
-  M_19 = '04000000090000007374617475735F3135';
-  M_20 = '04000000090000007374617475735F3136';
-  M_21 = '04000000090000007374617475735F3238';
-  M_22 = '04000000090000007374617475735F3531';
-  M_23 = '04000000090000007374617475735F3532';
-  M_24 = '04000000090000007374617475735F3436';
-  M_25 = '04000000090000007374617475735F3132';
-  M_26 = '04000000090000007374617475735F3133';
-  M_27 = '04000000090000007374617475735F3131';
-  M_28 = '04000000090000007374617475735F3134';
-  M_29 = '04000000090000007374617475735F3438';
-  M_30 = '04000000090000007374617475735F3533';
-  M_31 = '04000000090000007374617475735F3239';
-  M_32 = '04000000090000007374617475735F3330';
-  M_33 = '04000000090000007374617475735F3332';
-  M_34 = '04000000090000007374617475735F3333';
-  M_35 = '04000000090000007374617475735F3430';
-  M_36 = '04000000090000007374617475735F3431';
-  M_37 = '04000000090000007374617475735F3334';
-  M_38 = '04000000090000007374617475735F3335';
-  M_39 = '04000000090000007374617475735F3336';
-  M_40 = '04000000090000007374617475735F3337';
-  M_41 = '04000000090000007374617475735F3338';
-  M_42 = '04000000090000007374617475735F3339';
-  M_43 = '04000000090000007374617475735F3432';
-  M_44 = '04000000090000007374617475735F3433';
-  M_45 = '04000000090000007374617475735F3439';
-  M_46 = '04000000090000007374617475735F3434';
-  M_47 = '04000000090000007374617475735F3435';
-  M_48 = '04000000090000007374617475735F3530';
-
-{$ENDREGION}
 {$REGION 'Const'}
-
+const
   // Длинна заголовка в MRA пакетах
   MRA_FLAP_HEAD_SIZE = 44;
   // Пустой набор from и fromport и 16 ресерв
@@ -108,6 +42,67 @@ const
   // Версия протокола пакетов MRA
   MRA_ProtoVer = '13000100';
 
+{$ENDREGION}
+{$REGION 'Array Status Codes'}
+  // Иконки для статусов
+  MRA_Status_Icons:
+    packed array[0..52] of record
+    Status_Code: string;
+    XStatus_Code: string;
+    Status_Img: Integer;
+  end = ((Status_Code: '01000000'; XStatus_Code: 'status_1'; Status_Img: 24), // 0
+    (Status_Code: '02000000'; XStatus_Code: 'status_2'; Status_Img: 22), // 1
+    (Status_Code: '03000000'; XStatus_Code: ''; Status_Img: 312), // 2
+    (Status_Code: '04000000'; XStatus_Code: 'status_chat'; Status_Img: 26), // 3
+    (Status_Code: '04000000'; XStatus_Code: 'status_dnd'; Status_Img: 27), // 4
+    (Status_Code: '04000000'; XStatus_Code: 'status_4'; Status_Img: 63), // 5
+    (Status_Code: '04000000'; XStatus_Code: 'status_5'; Status_Img: 292), // 6
+    (Status_Code: '04000000'; XStatus_Code: 'status_6'; Status_Img: 294), // 7
+    (Status_Code: '04000000'; XStatus_Code: 'status_7'; Status_Img: 88), // 8
+    (Status_Code: '04000000'; XStatus_Code: 'status_8'; Status_Img: 73), // 9
+    (Status_Code: '04000000'; XStatus_Code: 'status_9'; Status_Img: 97), // 10
+    (Status_Code: '04000000'; XStatus_Code: 'status_10'; Status_Img: 295), // 11
+    (Status_Code: '04000000'; XStatus_Code: 'status_11'; Status_Img: 111), // 12
+    (Status_Code: '04000000'; XStatus_Code: 'status_12'; Status_Img: 109), // 13
+    (Status_Code: '04000000'; XStatus_Code: 'status_13'; Status_Img: 110), // 14
+    (Status_Code: '04000000'; XStatus_Code: 'status_14'; Status_Img: 72), // 15
+    (Status_Code: '04000000'; XStatus_Code: 'status_15'; Status_Img: 46), // 16
+    (Status_Code: '04000000'; XStatus_Code: 'status_16'; Status_Img: 60), // 17
+    (Status_Code: '04000000'; XStatus_Code: 'status_17'; Status_Img: 101), // 18
+    (Status_Code: '04000000'; XStatus_Code: 'status_18'; Status_Img: 56), // 19
+    (Status_Code: '04000000'; XStatus_Code: 'status_19'; Status_Img: 53), // 20
+    (Status_Code: '04000000'; XStatus_Code: 'status_20'; Status_Img: 49), // 21
+    (Status_Code: '04000000'; XStatus_Code: 'status_21'; Status_Img: 54), // 22
+    (Status_Code: '04000000'; XStatus_Code: 'status_22'; Status_Img: 293), // 23
+    (Status_Code: '04000000'; XStatus_Code: 'status_23'; Status_Img: 47), // 24
+    (Status_Code: '04000000'; XStatus_Code: 'status_24'; Status_Img: 59), // 25
+    (Status_Code: '04000000'; XStatus_Code: 'status_26'; Status_Img: 61), // 26
+    (Status_Code: '04000000'; XStatus_Code: 'status_27'; Status_Img: 94), // 27
+    (Status_Code: '04000000'; XStatus_Code: 'status_28'; Status_Img: 62), // 28
+    (Status_Code: '04000000'; XStatus_Code: 'status_29'; Status_Img: 58), // 29
+    (Status_Code: '04000000'; XStatus_Code: 'status_30'; Status_Img: 116), // 30
+    (Status_Code: '04000000'; XStatus_Code: 'status_32'; Status_Img: 117), // 31
+    (Status_Code: '04000000'; XStatus_Code: 'status_33'; Status_Img: 118), // 32
+    (Status_Code: '04000000'; XStatus_Code: 'status_34'; Status_Img: 291), // 33
+    (Status_Code: '04000000'; XStatus_Code: 'status_35'; Status_Img: 122), // 34
+    (Status_Code: '04000000'; XStatus_Code: 'status_36'; Status_Img: 123), // 35
+    (Status_Code: '04000000'; XStatus_Code: 'status_37'; Status_Img: 124), // 36
+    (Status_Code: '04000000'; XStatus_Code: 'status_38'; Status_Img: 290), // 37
+    (Status_Code: '04000000'; XStatus_Code: 'status_39'; Status_Img: 126), // 38
+    (Status_Code: '04000000'; XStatus_Code: 'status_40'; Status_Img: 76), // 39
+    (Status_Code: '04000000'; XStatus_Code: 'status_41'; Status_Img: 64), // 40
+    (Status_Code: '04000000'; XStatus_Code: 'status_42'; Status_Img: 127), // 41
+    (Status_Code: '04000000'; XStatus_Code: 'status_43'; Status_Img: 128), // 42
+    (Status_Code: '04000000'; XStatus_Code: 'status_44'; Status_Img: 130), // 43
+    (Status_Code: '04000000'; XStatus_Code: 'status_45'; Status_Img: 131), // 44
+    (Status_Code: '04000000'; XStatus_Code: 'status_46'; Status_Img: 296), // 45
+    (Status_Code: '04000000'; XStatus_Code: 'status_47'; Status_Img: 90), // 46
+    (Status_Code: '04000000'; XStatus_Code: 'status_48'; Status_Img: 113), // 47
+    (Status_Code: '04000000'; XStatus_Code: 'status_49'; Status_Img: 129), // 48
+    (Status_Code: '04000000'; XStatus_Code: 'status_50'; Status_Img: 132), // 49
+    (Status_Code: '04000000'; XStatus_Code: 'status_51'; Status_Img: 106), // 50
+    (Status_Code: '04000000'; XStatus_Code: 'status_52'; Status_Img: 107), // 51
+    (Status_Code: '04000000'; XStatus_Code: 'status_53'; Status_Img: 55)); // 52
 {$ENDREGION}
 {$REGION 'Array Pkt Codes'}
 
@@ -416,36 +411,37 @@ var
   S_Log, S: string;
   Len: Integer;
 
-  function GetLast: string;
+  function GetLastLS: string;
+  var
+    Len: Integer;
+    S: string;
   begin
     Result := EmptyStr;
     Len := HexToInt(Text2Hex(NextData(PktData, 4)));
     Len := Swap32(Len);
-    Result := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)));
+    S := NextData(PktData, Len);
+    if IsValidUnicode(S, True) then
+      S := UnicodeLEHex2Text(Text2Hex(S));
+    Result := S;
   end;
 
 begin
   // Разбираем все данные пакета
   while Length(PktData) > 0 do
   begin
-    // Получаем длинну TLV
-    Len := HexToInt(Text2Hex(NextData(PktData, 4)));
-    Len := Swap32(Len);
-    // Получаем данные TLV
-    S := NextData(PktData, Len);
-    if IsValidUnicode(S, True) then
-      S := UnicodeLEHex2Text(Text2Hex(S));
+    // Получаем текущие данные
+    S := GetLastLS;
     // Для лога
     S_Log := S_Log + S + C_RN;
     // Получаем информацию
     if S = 'MESSAGES.TOTAL' then
     begin
-      MRA_Email_Total := GetLast;
+      MRA_Email_Total := GetLastLS;
       S_Log := S_Log + MRA_Email_Total + C_RN;
     end
     else if S = 'MESSAGES.UNREAD' then
     begin
-      MRA_Email_Unread := GetLast;
+      MRA_Email_Unread := GetLastLS;
       S_Log := S_Log + MRA_Email_Unread + C_RN;
       // Сообщаем всплывашкой сколько Email сообщений
       if MRA_Email_Unread <> '0' then
@@ -453,7 +449,7 @@ begin
     end
     else if S = 'MRIM.NICKNAME' then
     begin
-      MRA_MyNick := GetLast;
+      MRA_MyNick := GetLastLS;
       S_Log := S_Log + MRA_MyNick + C_RN;
     end;
   end;
@@ -470,10 +466,10 @@ const
   Mask_s = 's';
 
 var
-  UL, S_Log, GMask, CMask, GId, GName, CEmail, CPhone: string;
-  CStatus, CXStatus, CXText, CClient, CGeo, GeoPkt, Unk: string;
+  UL, S_Log, GMask, KMask, GId, GName, KEmail, KPhone: string;
+  KStatus, KXStatus, KXText, KClient, KGeo, GeoPkt, Unk: string;
   I, M, Len, GCount: Integer;
-  CAuth: Boolean;
+  KAuth: Boolean;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
   // Получаем ошибки списка контактов
@@ -507,8 +503,8 @@ begin
           // Получаем маску контакта
           Len := HexToInt(Text2Hex(NextData(PktData, 4)));
           Len := Swap32(Len);
-          CMask := NextData(PktData, Len);
-          S_Log := S_Log + C_Contact + C_BN + C_Mask + C_TN + C_BN + CMask + C_RN;
+          KMask := NextData(PktData, Len);
+          S_Log := S_Log + C_Contact + C_BN + C_Mask + C_TN + C_BN + KMask + C_RN;
           // В цикле получаем группы
           Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
           for I := 0 to GCount - 1 do
@@ -559,19 +555,19 @@ begin
           begin
             Inc(I);
             GId := EmptyStr;
-            CEmail := EmptyStr;
+            KEmail := EmptyStr;
             GName := EmptyStr;
-            CAuth := True;
-            CStatus := EmptyStr;
-            CXStatus := EmptyStr;
-            CXText := EmptyStr;
-            CClient := EmptyStr;
-            CGeo := EmptyStr;
+            KAuth := True;
+            KStatus := EmptyStr;
+            KXStatus := EmptyStr;
+            KXText := EmptyStr;
+            KClient := EmptyStr;
+            KGeo := EmptyStr;
             GeoPkt := EmptyStr;
             Unk := EmptyStr;
-            for M := 1 to Length(CMask) do
+            for M := 1 to Length(KMask) do
             begin
-              case CMask[M] of
+              case KMask[M] of
                 Mask_u:
                   begin
                     if M = 2 then
@@ -579,10 +575,10 @@ begin
                     else if M = 5 then
                     begin
                       if Text2Hex(NextData(PktData, 4)) = '01000000' then
-                        CAuth := False;
+                        KAuth := False;
                     end
                     else if M = 6 then
-                      CStatus := Text2Hex(NextData(PktData, 4))
+                      KStatus := Text2Hex(NextData(PktData, 4))
                     else
                       Unk := Unk + C_QN + Mask_u + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, 4)) + C_LN + C_BN;
                   end;
@@ -591,17 +587,17 @@ begin
                     Len := HexToInt(Text2Hex(NextData(PktData, 4)));
                     Len := Swap32(Len);
                     if M = 3 then
-                      CEmail := NextData(PktData, Len)
+                      KEmail := NextData(PktData, Len)
                     else if M = 4 then
                       GName := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
                     else if M = 7 then
-                      CPhone := NextData(PktData, Len)
+                      KPhone := NextData(PktData, Len)
                     else if M = 8 then
-                      CXStatus := NextData(PktData, Len)
+                      KXStatus := NextData(PktData, Len)
                     else if M = 9 then
-                      CXText := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
+                      KXText := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
                     else if M = 12 then
-                      CClient := NextData(PktData, Len)
+                      KClient := NextData(PktData, Len)
                     else if M = 19 then
                     begin
                       GeoPkt := NextData(PktData, Len);
@@ -615,21 +611,21 @@ begin
             end;
             // Записываем в Ростер
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
-            if CEmail = C_Phone then
+            if KEmail = C_Phone then
             begin
-              Tri_Node.Properties.Add(C_Email, URLEncode(CEmail + C_TN + CPhone));
+              Tri_Node.Properties.Add(C_Email, URLEncode(KEmail + C_TN + KPhone));
               Tri_Node.Properties.Add(C_Group + C_Id, LeftStr(C_Phone, 4));
               Tri_Node.Properties.Add(C_Status, 275);
             end
             else
             begin
-              Tri_Node.Properties.Add(C_Email, URLEncode(CEmail));
+              Tri_Node.Properties.Add(C_Email, URLEncode(KEmail));
               Tri_Node.Properties.Add(C_Group + C_Id, IntToHex(Swap32(HexToInt(GId)), 4));
             end;
             Tri_Node.Properties.Add(UpCaseOne(C_Nick), URLEncode(GName));
-            if CEmail <> C_Phone then
+            if KEmail <> C_Phone then
             begin
-              if CAuth then
+              if KAuth then
               begin
                 Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthBoth);
                 Tri_Node.Properties.Add(C_Status, 23);
@@ -642,15 +638,17 @@ begin
                 Tri_Node.Properties.Add(C_Client, 220);
               end;
             end;
-            Tri_Node.Properties.Add(UpCaseOne(C_Phone), CPhone);
-            Tri_Node.Properties.Add(C_XStatus, CXStatus);
-            Tri_Node.Properties.Add(C_XText, CXText);
-            Tri_Node.Properties.Add(C_Client, CClient);
-            Tri_Node.Properties.Add(C_Geo, CGeo);
+            Tri_Node.Properties.Add(UpCaseOne(C_Phone), URLEncode(KPhone));
+            Tri_Node.Properties.Add(C_XStatus, URLEncode(KXStatus));
+            Tri_Node.Properties.Add(C_XText, URLEncode(KXText));
+            Tri_Node.Properties.Add(C_Client + C_Name, URLEncode(KClient));
+            Tri_Node.Properties.Add(C_Geo, URLEncode(KGeo));
             // Заполняем лог
-            S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Email + C_TN + C_BN + CEmail + C_LN //
-            + C_BN + UpCaseOne(C_Nick) + C_TN + C_BN + GName + C_LN + C_BN + UpCaseOne(C_Auth) + C_TN + C_BN + BoolToStr(CAuth) + C_LN + C_BN + C_Status //
-            + C_TN + C_BN + CStatus + C_LN + C_BN + UpCaseOne(C_Phone) + C_TN + C_BN + CPhone + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
+            S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Email + C_TN + C_BN + KEmail + C_LN //
+            + C_BN + UpCaseOne(C_Nick) + C_TN + C_BN + GName + C_LN + C_BN + UpCaseOne(C_Auth) + C_TN + C_BN + BoolToStr(KAuth) + C_LN + C_BN + C_Status //
+            + C_TN + C_BN + KStatus + C_LN + C_BN + UpCaseOne(C_Phone) + C_TN + C_BN + KPhone + C_LN + C_BN + C_XStatus + C_TN + C_BN + KXStatus //
+            + C_LN + C_BN + C_XText + C_TN + C_BN + KXText + C_LN + C_BN + C_Client + C_Name + C_TN + C_BN + KClient + C_LN + C_BN //
+            + C_Geo + C_TN + C_BN + Text2Hex(GeoPkt) + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
           // Запускаем обработку Ростера
           V_CollapseGroupsRestore := True;
@@ -734,10 +732,44 @@ end;
 {$REGION 'MRA_ParseStatus'}
 
 procedure MRA_ParseStatus(PktData: string);
-begin
-  //ShowMessage(Text2Hex(PktData));
-end;
+var
+  S_Log, StatusCode, XStatusCode, XStatusText, KEmail, Unk: string;
+  Len: Integer;
 
+  function GetLastLS: string;
+  var
+    Len: Integer;
+    S: string;
+  begin
+    Result := EmptyStr;
+    Len := HexToInt(Text2Hex(NextData(PktData, 4)));
+    Len := Swap32(Len);
+    S := NextData(PktData, Len);
+    if IsValidUnicode(S, True) then
+      S := UnicodeLEHex2Text(Text2Hex(S));
+    Result := S;
+  end;
+
+begin
+  // Получаем код статуса
+  StatusCode := Text2Hex(NextData(PktData, 4));
+  S_Log := S_Log + C_Status + C_TN + C_BN + StatusCode + C_RN;
+  // Получаем код дополнительного статуса
+  XStatusCode := GetLastLS;
+  S_Log := S_Log + C_XStatus + C_TN + C_BN + XStatusCode + C_RN;
+  // Получаем подпись дополнительного статуса
+  XStatusText := GetLastLS;
+  S_Log := S_Log + C_XText + C_TN + C_BN + XStatusText + C_RN;
+  // Получаем неизвестные данные
+  Unk := GetLastLS;
+  S_Log := S_Log + C_Unk + C_TN + C_BN + Unk + C_RN;
+  // Получаем Email от кого пришёл статус
+  KEmail := GetLastLS;
+  S_Log := S_Log + C_Email + C_TN + C_BN + KEmail + C_RN;
+
+  // Пишем в лог данные пакета
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+end;
 {$ENDREGION}
 {$REGION 'MRA_ParseOfflineMess'}
 

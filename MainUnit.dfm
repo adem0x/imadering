@@ -411,7 +411,7 @@ object MainForm: TMainForm
     Left = 16
     Top = 328
     object OpenGame_Menu: TMenuItem
-      ImageIndex = 286
+      ImageIndex = 60
       OnClick = OpenGame_MenuClick
     end
     object N38: TMenuItem
@@ -1069,7 +1069,7 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object NextContactMenu: TMenuItem
-      ImageIndex = 222
+      ImageIndex = 223
       object GrandAuthContact: TMenuItem
         ImageIndex = 140
         OnClick = GrandAuthContactClick
@@ -1355,22 +1355,22 @@ object MainForm: TMainForm
     object N28: TMenuItem
       Caption = '-'
     end
-    object ShowLog_MenuTray: TMenuItem
-      ImageIndex = 245
-      OnClick = ShowLog_MenuClick
-    end
     object Settings_MenuTray: TMenuItem
       ImageIndex = 2
       Visible = False
       OnClick = Settings_MenuClick
     end
+    object ShowLog_MenuTray: TMenuItem
+      ImageIndex = 245
+      OnClick = ShowLog_MenuClick
+    end
+    object N24: TMenuItem
+      Caption = '-'
+    end
     object SwitchProfile_MenuTray: TMenuItem
       ImageIndex = 253
       Visible = False
       OnClick = SwitchProfile_MenuClick
-    end
-    object N24: TMenuItem
-      Caption = '-'
     end
     object CloseProgram_MenuTray: TMenuItem
       ImageIndex = 3
