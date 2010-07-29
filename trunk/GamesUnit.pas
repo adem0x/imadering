@@ -542,7 +542,7 @@ begin
           begin
             Caption := Parse(';', List.Strings[I], 1);
             Hint := Parse(';', List.Strings[I], 2);
-            ImageIndex := 286;
+            ImageIndex := 60;
           end;
       end;
   finally

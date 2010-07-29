@@ -750,7 +750,7 @@ begin
   // Если запись лога выключена, то выходим
   with LogForm do
   begin
-    if not WriteLogSpeedButton.Down then
+    if WriteLogSpeedButton.Down then
       Exit;
     // Проверяем какой протокол
     if ((Proto = C_Icq) and ICQDumpSpeedButton.Down) //

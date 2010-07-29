@@ -66,6 +66,7 @@ type
     procedure HexToUtf8Text_MenuClick(Sender: TObject);
     procedure HexToLEText_MenuClick(Sender: TObject);
     procedure HexToBEText_MenuClick(Sender: TObject);
+    procedure WriteLogSpeedButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -215,6 +216,16 @@ begin
   HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-BE']);
 end;
 
+procedure TLogForm.WriteLogSpeedButtonClick(Sender: TObject);
+begin
+  // Меняем иконки на кнопке паузы записи в лог
+  WriteLogSpeedButton.Glyph.Assign(nil);
+  if WriteLogSpeedButton.Down then
+    MainForm.AllImageList.GetBitmap(224, WriteLogSpeedButton.Glyph)
+  else
+    MainForm.AllImageList.GetBitmap(223, WriteLogSpeedButton.Glyph);
+end;
+
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
@@ -235,7 +246,7 @@ begin
     GetBitmap(81, ICQDumpSpeedButton.Glyph);
     GetBitmap(43, JabberDumpSpeedButton.Glyph);
     GetBitmap(66, MRADumpSpeedButton.Glyph);
-    GetBitmap(249, WriteLogSpeedButton.Glyph);
+    GetBitmap(223, WriteLogSpeedButton.Glyph);
     GetBitmap(268, TwitDumpSpeedButton.Glyph);
     GetBitmap(225, SaveLogSpeedButton.Glyph);
     GetBitmap(221, SearchSpeedButton.Glyph);

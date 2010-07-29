@@ -284,14 +284,6 @@ object ChatForm: TChatForm
           Style = tbsCheck
           OnClick = TypingTextToolButtonClick
         end
-        object KeySoundToolButton: TToolButton
-          Left = 138
-          Top = 0
-          ImageIndex = 183
-          ParentShowHint = False
-          ShowHint = True
-          Style = tbsCheck
-        end
       end
       object SendMessageBitBtn: TBitBtn
         Left = 402

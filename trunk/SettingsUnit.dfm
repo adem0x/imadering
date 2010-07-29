@@ -41,7 +41,7 @@ object SettingsForm: TSettingsForm
         ImageIndex = 1
       end
       item
-        ImageIndex = 165
+        ImageIndex = 112
       end
       item
         ImageIndex = 133
@@ -50,10 +50,10 @@ object SettingsForm: TSettingsForm
         ImageIndex = 147
       end
       item
-        ImageIndex = 181
+        ImageIndex = 44
       end
       item
-        ImageIndex = 170
+        ImageIndex = 228
       end
       item
         ImageIndex = 135

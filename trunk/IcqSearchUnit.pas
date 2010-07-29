@@ -521,7 +521,7 @@ begin
   TranslateForm;
   // Устанавливаем иконки на форму и кнопки
   MainForm.AllImageList.GetIcon(235, Icon);
-  MainForm.AllImageList.GetBitmap(221, SearchBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(235, SearchBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(159, ResultClearSpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(239, SendQMessageSpeedButton.Glyph);
   MainForm.AllImageList.GetBitmap(166, SearchNextPageBitBtn.Glyph);
