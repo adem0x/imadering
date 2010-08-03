@@ -681,6 +681,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'ICQ_Enable'}
+
 procedure TMainForm.ICQ_Enable(OnOff: Boolean);
 begin
   if OnOff then
@@ -705,6 +706,7 @@ begin
 end;
 {$ENDREGION}
 {$REGION 'MRA_Enable'}
+
 procedure TMainForm.MRA_Enable(OnOff: Boolean);
 begin
   if OnOff then
@@ -841,6 +843,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'Jab_Enable'}
+
 procedure TMainForm.Jab_Enable(OnOff: Boolean);
 begin
   if OnOff then
@@ -1005,9 +1008,6 @@ begin
       Checked := True;
   end;
   // Запускаем обработку Ростера
-  ClearContacts(C_Icq);
-  ClearContacts(C_Jabber);
-  ClearContacts(C_Mra);
   UpdateFullCL;
 end;
 
@@ -1382,6 +1382,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'MainFormHideInTray'}
+
 procedure TMainForm.MainFormHideInTray;
 begin
   if not Assigned(ProfileForm) then
@@ -1505,7 +1506,7 @@ begin
         XLog(C_Icq + Log_Get + Log_Proxy_OK, C_Icq);
       end
       else
-        {// Сообщаем об ошибках прокси} if StartsStr('HTTP/1.0 407', Pkt) then
+        if StartsStr('HTTP/1.0 407', Pkt) then
         begin
           ProxyErr := 1;
           DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
@@ -1808,7 +1809,7 @@ begin
                               DAShow(Lang_Vars[17].L_S, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
                             end
                             else
-                              {// Если фаза добавления группы} if ICQ_Add_Group_Phaze then
+                              if ICQ_Add_Group_Phaze then
                               begin
                                 // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
                                 ICQ_AddEnd;
@@ -1817,7 +1818,7 @@ begin
                                 DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
                               end
                               else
-                                {// Если фаза удаления группы} if ICQ_Group_Delete_Phaze then
+                                if ICQ_Group_Delete_Phaze then
                                 begin
                                   // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
                                   ICQ_AddEnd;
@@ -2239,7 +2240,7 @@ begin
         XLog(C_Jabber + Log_Get + Log_Proxy_OK, C_Jabber);
       end
       else
-        {// Сообщаем об ошибках прокси} if StartsStr('HTTP/1.0 407', Pkt) then
+        if StartsStr('HTTP/1.0 407', Pkt) then
         begin
           ProxyErr := 1;
           DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
@@ -2554,6 +2555,7 @@ end;
 {$HINTS ON}
 {$ENDREGION}
 {$REGION 'Other'}
+
 procedure TMainForm.JvTimerListEvents10Timer(Sender: TObject);
 begin
   // Отправляем пакет Ping для MRA протокола
@@ -2564,8 +2566,7 @@ end;
 procedure TMainForm.JvTimerListEvents11Timer(Sender: TObject);
 begin
   // Обрабатываем Ростер
-  {if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;}
+  UpdateFullCL;
 end;
 
 procedure TMainForm.JvTimerListEvents12Timer(Sender: TObject);
@@ -2607,6 +2608,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'Snap CL Timer'}
+
 procedure TMainForm.JvTimerListEvents15Timer(Sender: TObject);
 begin
   // Move the form
@@ -3055,8 +3057,7 @@ begin
         end;
       end
       else
-        // Сообщаем об ошибках прокси
-        if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
+        {// Сообщаем об ошибках прокси} if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
         begin
           ProxyErr := 1;
           DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
@@ -3142,20 +3143,21 @@ begin
       if Length(HexPkt) > 0 then
       begin
         // Пишем в лог данные пакета
-        if LogForm.MRADumpSpeedButton.Down then
-        begin
-          PktType := HexPkt;
-          NextData(PktType, 12);
-          PktType := Text2Hex(NextData(PktType, 4));
-          C := Swap32(HexToInt(PktType));
-          for I := low(MRA_Pkt_Names) to high(MRA_Pkt_Names) do
-            if MRA_Pkt_Names[I].Pkt_Code = C then
-            begin
-              S_Name := MRA_Pkt_Names[I].Pkt_Name;
-              Break;
-            end;
-          XLog(C_Mra + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Mra);
-        end;
+        if Assigned(LogForm) then
+          if LogForm.MRADumpSpeedButton.Down then
+          begin
+            PktType := HexPkt;
+            NextData(PktType, 12);
+            PktType := Text2Hex(NextData(PktType, 4));
+            C := Swap32(HexToInt(PktType));
+            for I := low(MRA_Pkt_Names) to high(MRA_Pkt_Names) do
+              if MRA_Pkt_Names[I].Pkt_Code = C then
+              begin
+                S_Name := MRA_Pkt_Names[I].Pkt_Name;
+                Break;
+              end;
+            XLog(C_Mra + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Mra);
+          end;
         // Ещё раз делаем проверку на начало пакета MRA протокола по магическому ключу
         if Text2Hex(NextData(HexPkt, 4)) = MRA_MagKey then
         begin
@@ -3241,6 +3243,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
 procedure TMainForm.MRAXStatusClick(Sender: TObject);
 begin
   // Открываем окно выбора дополнительного статуса MRA
@@ -3394,6 +3397,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
 procedure TMainForm.PingICQServerClick(Sender: TObject);
 begin
   // Отправляем пакет для проверки связи с сервером ICQ
@@ -3434,9 +3438,6 @@ begin
     OnlyOnlineContactsTopButton.ImageIndex := 138;
   end;
   // Запускаем обработку Ростера
-  ClearContacts(C_Icq);
-  ClearContacts(C_Jabber);
-  ClearContacts(C_Mra);
   V_CollapseGroupsRestore := True;
   UpdateFullCL;
 end;
@@ -4147,32 +4148,33 @@ end;
 
 {$ENDREGION}
 {$REGION 'OpenDumpProtoLog'}
-  procedure TMainForm.DumpICQClick(Sender: TObject);
-  begin
-    // Включаем лог отладки протокола ICQ
-    if not Assigned(LogForm) then
-      Application.CreateForm(TLogForm, LogForm);
-    LogForm.ICQDumpSpeedButton.Down := True;
-    XShowForm(LogForm);
-  end;
 
-  procedure TMainForm.DumpJabberClick(Sender: TObject);
-  begin
-    // Включаем лог отладки протокола Jabber
-    if not Assigned(LogForm) then
-      Application.CreateForm(TLogForm, LogForm);
-    LogForm.JabberDumpSpeedButton.Down := True;
-    XShowForm(LogForm);
-  end;
+procedure TMainForm.DumpICQClick(Sender: TObject);
+begin
+  // Включаем лог отладки протокола ICQ
+  if not Assigned(LogForm) then
+    Application.CreateForm(TLogForm, LogForm);
+  LogForm.ICQDumpSpeedButton.Down := True;
+  XShowForm(LogForm);
+end;
 
-  procedure TMainForm.DumpMRAClick(Sender: TObject);
-  begin
-    // Включаем лог отладки протокола MRA
-    if not Assigned(LogForm) then
-      Application.CreateForm(TLogForm, LogForm);
-    LogForm.MRADumpSpeedButton.Down := True;
-    XShowForm(LogForm);
-  end;
+procedure TMainForm.DumpJabberClick(Sender: TObject);
+begin
+  // Включаем лог отладки протокола Jabber
+  if not Assigned(LogForm) then
+    Application.CreateForm(TLogForm, LogForm);
+  LogForm.JabberDumpSpeedButton.Down := True;
+  XShowForm(LogForm);
+end;
+
+procedure TMainForm.DumpMRAClick(Sender: TObject);
+begin
+  // Включаем лог отладки протокола MRA
+  if not Assigned(LogForm) then
+    Application.CreateForm(TLogForm, LogForm);
+  LogForm.MRADumpSpeedButton.Down := True;
+  XShowForm(LogForm);
+end;
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -4236,7 +4238,7 @@ var
   Size: Integer;
   Lang: Word;
   VI: TOSVersionInfo;
-  Language: array [0..100] of char;
+  Language: array[0..100] of char;
 begin
   // Управляем скрытием кнопки на панели задач
   with Application do
@@ -4962,6 +4964,7 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
 procedure TMainForm.TwitterHttpClientSessionClosed(Sender: TObject);
 begin
   // Обрабатываем возможные ошибки в работе http сокета
@@ -4972,6 +4975,7 @@ begin
 end;
 {$ENDREGION}
 {$REGION 'UniqContactSettingsMenuClick'}
+
 procedure TMainForm.UniqContactSettingsMenuClick(Sender: TObject);
 begin
   // Открываем окно уникальных настроек контакта
@@ -5213,15 +5217,16 @@ end;
 
 {$ENDREGION}
 {$REGION 'FormDestroy'}
-  procedure TMainForm.FormDestroy(Sender: TObject);
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  // Удаляем профиль автоматически если указано
+  if V_AutoDellProfile then
   begin
-    // Удаляем профиль автоматически если указано
-    if V_AutoDellProfile then
-    begin
-      if DirectoryExists(V_ProfilePath) then
-        TDirectory.Delete(V_ProfilePath, True);
-    end;
+    if DirectoryExists(V_ProfilePath) then
+      TDirectory.Delete(V_ProfilePath, True);
   end;
+end;
 {$ENDREGION}
 {$REGION 'Init and Final'}
 

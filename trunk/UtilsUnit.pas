@@ -373,6 +373,8 @@ var
   I: Integer;
 begin
   Result := EmptyStr;
+  if Msg = EmptyStr then
+    Exit;
   for I := 1 to Length(Msg) do
   begin
     Result := Result + ReverseHexUnicodeChar(IntToHex(Ord(Msg[I]), 4));
@@ -387,6 +389,8 @@ var
   I: Integer;
 begin
   Result := EmptyStr;
+  if HexText = EmptyStr then
+    Exit;
   for I := 1 to Length(HexText) div 4 do
     Result := Result + Char(StrToInt('$' + ReverseHexUnicodeChar(Copy(HexText, ((I - 1) * 4) + 1, 4))));
 end;
@@ -448,6 +452,8 @@ var
   I: LongInt;
 begin
   Result := EmptyStr;
+  if Msg = EmptyStr then
+    Exit;
   for I := 1 to Length(Msg) do
   begin
     Result := Result + IntToHex(Ord(Msg[I]), 4);
@@ -462,6 +468,8 @@ var
   I: LongInt;
 begin
   Result := EmptyStr;
+  if HexText = EmptyStr then
+    Exit;
   for I := 1 to Length(HexText) div 4 do
     Result := Result + Char(StrToInt('$' + Copy(HexText, ((I - 1) * 4) + 1, 4)));
 end;
@@ -1665,17 +1673,18 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text(Mra_magkey + Mra_protover + IntToHex(Swap32(Mra_seq), 8) + PktType + IntToHex(Swap32(Len), 8) + Data);
   // Пишем в лог данные пакета
-  if LogForm.MRADumpSpeedButton.Down then
-  begin
-    C := Swap16(HexToInt(LeftStr(PktType, 4)));
-    for I := low(MRA_Pkt_Names) to high(MRA_Pkt_Names) do
-      if MRA_Pkt_Names[I].Pkt_Code = C then
-      begin
-        S_Name := MRA_Pkt_Names[I].Pkt_Name;
-        Break;
-      end;
-    XLog(C_Mra + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
-  end;
+  if Assigned(LogForm) then
+    if LogForm.MRADumpSpeedButton.Down then
+    begin
+      C := Swap16(HexToInt(LeftStr(PktType, 4)));
+      for I := low(MRA_Pkt_Names) to high(MRA_Pkt_Names) do
+        if MRA_Pkt_Names[I].Pkt_Code = C then
+        begin
+          S_Name := MRA_Pkt_Names[I].Pkt_Name;
+          Break;
+        end;
+      XLog(C_Mra + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
+    end;
   // Отсылаем данные по сокету
   Mainform.MraWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1790,6 +1799,8 @@ var
   I: LongInt;
 begin
   Result := EmptyStr;
+  if Length(Msg) = 0 then
+    Exit;
   for I := 1 to Length(Msg) do
   begin
     Result := Result + IntToHex(Ord(Msg[I]), 2);
