@@ -43,66 +43,88 @@ const
   MRA_ProtoVer = '13000100';
 
 {$ENDREGION}
+{$REGION 'MRA_Client_Icons'}
+    MRA_Client_Icons:
+      packed array[0..12] of record
+      Client_Name: string;
+      Client_Img: string;
+    end = ((Client_Name: 'imadering'; Client_Img: '0'), // 0
+      (Client_Name: 'qip infium'; Client_Img: '103'), // 1
+      (Client_Name: 'qip 2010'; Client_Img: '103'), // 2
+      (Client_Name: 'qip pda'; Client_Img: '99'), // 3
+      (Client_Name: 'miranda'; Client_Img: '98'), // 4
+      (Client_Name: 'jimm'; Client_Img: '102'), // 5
+      (Client_Name: 'webagent'; Client_Img: '125'), // 6
+      (Client_Name: 'jagent'; Client_Img: '105'), // 7
+      (Client_Name: 'sagent'; Client_Img: '105'), // 8
+      (Client_Name: 'wmagent'; Client_Img: '105'), // 9
+      (Client_Name: 'qutim'; Client_Img: '104'), // 10
+      (Client_Name: 'magent'; Client_Img: '311'), // 11
+      (Client_Name: 'agent'; Client_Img: '311')); // 12
+{$ENDREGION}
 {$REGION 'Array Status Codes'}
   // Иконки для статусов
   MRA_Status_Icons:
-    packed array[0..52] of record
+    packed array[0..55] of record
     Status_Code: string;
     XStatus_Code: string;
-    Status_Img: Integer;
-  end = ((Status_Code: '01000000'; XStatus_Code: 'status_1'; Status_Img: 24), // 0
-    (Status_Code: '02000000'; XStatus_Code: 'status_2'; Status_Img: 22), // 1
-    (Status_Code: '03000000'; XStatus_Code: ''; Status_Img: 312), // 2
-    (Status_Code: '04000000'; XStatus_Code: 'status_chat'; Status_Img: 26), // 3
-    (Status_Code: '04000000'; XStatus_Code: 'status_dnd'; Status_Img: 27), // 4
-    (Status_Code: '04000000'; XStatus_Code: 'status_4'; Status_Img: 63), // 5
-    (Status_Code: '04000000'; XStatus_Code: 'status_5'; Status_Img: 292), // 6
-    (Status_Code: '04000000'; XStatus_Code: 'status_6'; Status_Img: 294), // 7
-    (Status_Code: '04000000'; XStatus_Code: 'status_7'; Status_Img: 88), // 8
-    (Status_Code: '04000000'; XStatus_Code: 'status_8'; Status_Img: 73), // 9
-    (Status_Code: '04000000'; XStatus_Code: 'status_9'; Status_Img: 97), // 10
-    (Status_Code: '04000000'; XStatus_Code: 'status_10'; Status_Img: 295), // 11
-    (Status_Code: '04000000'; XStatus_Code: 'status_11'; Status_Img: 111), // 12
-    (Status_Code: '04000000'; XStatus_Code: 'status_12'; Status_Img: 109), // 13
-    (Status_Code: '04000000'; XStatus_Code: 'status_13'; Status_Img: 110), // 14
-    (Status_Code: '04000000'; XStatus_Code: 'status_14'; Status_Img: 72), // 15
-    (Status_Code: '04000000'; XStatus_Code: 'status_15'; Status_Img: 46), // 16
-    (Status_Code: '04000000'; XStatus_Code: 'status_16'; Status_Img: 60), // 17
-    (Status_Code: '04000000'; XStatus_Code: 'status_17'; Status_Img: 101), // 18
-    (Status_Code: '04000000'; XStatus_Code: 'status_18'; Status_Img: 56), // 19
-    (Status_Code: '04000000'; XStatus_Code: 'status_19'; Status_Img: 53), // 20
-    (Status_Code: '04000000'; XStatus_Code: 'status_20'; Status_Img: 49), // 21
-    (Status_Code: '04000000'; XStatus_Code: 'status_21'; Status_Img: 54), // 22
-    (Status_Code: '04000000'; XStatus_Code: 'status_22'; Status_Img: 293), // 23
-    (Status_Code: '04000000'; XStatus_Code: 'status_23'; Status_Img: 47), // 24
-    (Status_Code: '04000000'; XStatus_Code: 'status_24'; Status_Img: 59), // 25
-    (Status_Code: '04000000'; XStatus_Code: 'status_26'; Status_Img: 61), // 26
-    (Status_Code: '04000000'; XStatus_Code: 'status_27'; Status_Img: 94), // 27
-    (Status_Code: '04000000'; XStatus_Code: 'status_28'; Status_Img: 62), // 28
-    (Status_Code: '04000000'; XStatus_Code: 'status_29'; Status_Img: 58), // 29
-    (Status_Code: '04000000'; XStatus_Code: 'status_30'; Status_Img: 116), // 30
-    (Status_Code: '04000000'; XStatus_Code: 'status_32'; Status_Img: 117), // 31
-    (Status_Code: '04000000'; XStatus_Code: 'status_33'; Status_Img: 118), // 32
-    (Status_Code: '04000000'; XStatus_Code: 'status_34'; Status_Img: 291), // 33
-    (Status_Code: '04000000'; XStatus_Code: 'status_35'; Status_Img: 122), // 34
-    (Status_Code: '04000000'; XStatus_Code: 'status_36'; Status_Img: 123), // 35
-    (Status_Code: '04000000'; XStatus_Code: 'status_37'; Status_Img: 124), // 36
-    (Status_Code: '04000000'; XStatus_Code: 'status_38'; Status_Img: 290), // 37
-    (Status_Code: '04000000'; XStatus_Code: 'status_39'; Status_Img: 126), // 38
-    (Status_Code: '04000000'; XStatus_Code: 'status_40'; Status_Img: 76), // 39
-    (Status_Code: '04000000'; XStatus_Code: 'status_41'; Status_Img: 64), // 40
-    (Status_Code: '04000000'; XStatus_Code: 'status_42'; Status_Img: 127), // 41
-    (Status_Code: '04000000'; XStatus_Code: 'status_43'; Status_Img: 128), // 42
-    (Status_Code: '04000000'; XStatus_Code: 'status_44'; Status_Img: 130), // 43
-    (Status_Code: '04000000'; XStatus_Code: 'status_45'; Status_Img: 131), // 44
-    (Status_Code: '04000000'; XStatus_Code: 'status_46'; Status_Img: 296), // 45
-    (Status_Code: '04000000'; XStatus_Code: 'status_47'; Status_Img: 90), // 46
-    (Status_Code: '04000000'; XStatus_Code: 'status_48'; Status_Img: 113), // 47
-    (Status_Code: '04000000'; XStatus_Code: 'status_49'; Status_Img: 129), // 48
-    (Status_Code: '04000000'; XStatus_Code: 'status_50'; Status_Img: 132), // 49
-    (Status_Code: '04000000'; XStatus_Code: 'status_51'; Status_Img: 106), // 50
-    (Status_Code: '04000000'; XStatus_Code: 'status_52'; Status_Img: 107), // 51
-    (Status_Code: '04000000'; XStatus_Code: 'status_53'; Status_Img: 55)); // 52
+    Status_Img: string;
+  end = ((Status_Code: '01000000'; XStatus_Code: 'status_1'; Status_Img: '24;-1'), // 0
+    (Status_Code: '02000000'; XStatus_Code: 'status_2'; Status_Img: '22;-1'), // 1
+    (Status_Code: '03000000'; XStatus_Code: ''; Status_Img: '312;-1'), // 2
+    (Status_Code: '04000000'; XStatus_Code: 'status_chat'; Status_Img: '26;-1'), // 3
+    (Status_Code: '04000000'; XStatus_Code: 'status_dnd'; Status_Img: '27;-1'), // 4
+    (Status_Code: '04000000'; XStatus_Code: 'status_4'; Status_Img: '24;63'), // 5
+    (Status_Code: '04000000'; XStatus_Code: 'status_5'; Status_Img: '292;-1'), // 6
+    (Status_Code: '04000000'; XStatus_Code: 'status_6'; Status_Img: '294;-1'), // 7
+    (Status_Code: '04000000'; XStatus_Code: 'status_7'; Status_Img: '24;88'), // 8
+    (Status_Code: '04000000'; XStatus_Code: 'status_8'; Status_Img: '24;73'), // 9
+    (Status_Code: '04000000'; XStatus_Code: 'status_9'; Status_Img: '24;97'), // 10
+    (Status_Code: '04000000'; XStatus_Code: 'status_10'; Status_Img: '295;-1'), // 11
+    (Status_Code: '04000000'; XStatus_Code: 'status_11'; Status_Img: '24;111'), // 12
+    (Status_Code: '04000000'; XStatus_Code: 'status_12'; Status_Img: '24;109'), // 13
+    (Status_Code: '04000000'; XStatus_Code: 'status_13'; Status_Img: '24;110'), // 14
+    (Status_Code: '04000000'; XStatus_Code: 'status_14'; Status_Img: '24;72'), // 15
+    (Status_Code: '04000000'; XStatus_Code: 'status_15'; Status_Img: '24;46'), // 16
+    (Status_Code: '04000000'; XStatus_Code: 'status_16'; Status_Img: '24;60'), // 17
+    (Status_Code: '04000000'; XStatus_Code: 'status_17'; Status_Img: '24;101'), // 18
+    (Status_Code: '04000000'; XStatus_Code: 'status_18'; Status_Img: '24;56'), // 19
+    (Status_Code: '04000000'; XStatus_Code: 'status_19'; Status_Img: '24;53'), // 20
+    (Status_Code: '04000000'; XStatus_Code: 'status_20'; Status_Img: '24;49'), // 21
+    (Status_Code: '04000000'; XStatus_Code: 'status_21'; Status_Img: '24;54'), // 22
+    (Status_Code: '04000000'; XStatus_Code: 'status_22'; Status_Img: '293;-1'), // 23
+    (Status_Code: '04000000'; XStatus_Code: 'status_23'; Status_Img: '24;47'), // 24
+    (Status_Code: '04000000'; XStatus_Code: 'status_24'; Status_Img: '24;59'), // 25
+    (Status_Code: '04000000'; XStatus_Code: 'status_26'; Status_Img: '24;61'), // 26
+    (Status_Code: '04000000'; XStatus_Code: 'status_27'; Status_Img: '24;94'), // 27
+    (Status_Code: '04000000'; XStatus_Code: 'status_28'; Status_Img: '24;62'), // 28
+    (Status_Code: '04000000'; XStatus_Code: 'status_29'; Status_Img: '24;58'), // 29
+    (Status_Code: '04000000'; XStatus_Code: 'status_30'; Status_Img: '24;116'), // 30
+    (Status_Code: '04000000'; XStatus_Code: 'status_32'; Status_Img: '24;117'), // 31
+    (Status_Code: '04000000'; XStatus_Code: 'status_33'; Status_Img: '24;118'), // 32
+    (Status_Code: '04000000'; XStatus_Code: 'status_34'; Status_Img: '291;-1'), // 33
+    (Status_Code: '04000000'; XStatus_Code: 'status_35'; Status_Img: '24;122'), // 34
+    (Status_Code: '04000000'; XStatus_Code: 'status_36'; Status_Img: '24;123'), // 35
+    (Status_Code: '04000000'; XStatus_Code: 'status_37'; Status_Img: '24;124'), // 36
+    (Status_Code: '04000000'; XStatus_Code: 'status_38'; Status_Img: '290;-1'), // 37
+    (Status_Code: '04000000'; XStatus_Code: 'status_39'; Status_Img: '24;126'), // 38
+    (Status_Code: '04000000'; XStatus_Code: 'status_40'; Status_Img: '24;76'), // 39
+    (Status_Code: '04000000'; XStatus_Code: 'status_41'; Status_Img: '24;64'), // 40
+    (Status_Code: '04000000'; XStatus_Code: 'status_42'; Status_Img: '24;127'), // 41
+    (Status_Code: '04000000'; XStatus_Code: 'status_43'; Status_Img: '24;128'), // 42
+    (Status_Code: '04000000'; XStatus_Code: 'status_44'; Status_Img: '24;130'), // 43
+    (Status_Code: '04000000'; XStatus_Code: 'status_45'; Status_Img: '24;131'), // 44
+    (Status_Code: '04000000'; XStatus_Code: 'status_46'; Status_Img: '296;-1'), // 45
+    (Status_Code: '04000000'; XStatus_Code: 'status_47'; Status_Img: '24;90'), // 46
+    (Status_Code: '04000000'; XStatus_Code: 'status_48'; Status_Img: '24;113'), // 47
+    (Status_Code: '04000000'; XStatus_Code: 'status_49'; Status_Img: '24;129'), // 48
+    (Status_Code: '04000000'; XStatus_Code: 'status_50'; Status_Img: '24;132'), // 49
+    (Status_Code: '04000000'; XStatus_Code: 'status_51'; Status_Img: '24;106'), // 50
+    (Status_Code: '04000000'; XStatus_Code: 'status_52'; Status_Img: '24;107'), // 51
+    (Status_Code: '04000000'; XStatus_Code: 'status_53'; Status_Img: '24;55'), // 52
+    (Status_Code: '01000000'; XStatus_Code: 'status_online'; Status_Img: '24;-1'), // 53 old clients
+    (Status_Code: '02000000'; XStatus_Code: 'status_away'; Status_Img: '22;-1'), // 54 old clients
+    (Status_Code: '01000000'; XStatus_Code: ''; Status_Img: '24;-1')); // 55
 {$ENDREGION}
 {$REGION 'Array Pkt Codes'}
 
@@ -190,7 +212,8 @@ procedure MRA_ParseStatus(PktData: string);
 procedure MRA_ParseOfflineMess(PktData: string);
 procedure MRA_SendSMS(ToPhone, Mess: string);
 procedure MRA_GoOffline;
-
+function MRA_StatusCodeToImg(KStatusCode, KXStatusCode: string): string;
+function MRA_ClientToImg(KClient: string): string;
 {$ENDREGION}
 
 implementation
@@ -202,7 +225,41 @@ uses
   LogUnit,
   OverbyteIcsUrl,
   RosterUnit;
+{$ENDREGION}
+{$REGION 'MRA_StatusCodeToImg'}
 
+function MRA_StatusCodeToImg(KStatusCode, KXStatusCode: string): string;
+var
+  i: Integer;
+  s: string;
+begin
+  // Преобразуем коды статусов контакта в иконки статусов
+  Result := '23;-1';
+  s := WideLowerCase(KXStatusCode);
+  for I := low(MRA_Status_Icons) to high(MRA_Status_Icons) do
+    if (MRA_Status_Icons[I].Status_Code = KStatusCode) and (MRA_Status_Icons[I].XStatus_Code = s) then
+    begin
+      Result := MRA_Status_Icons[I].Status_Img;
+      Break;
+    end;
+end;
+{$ENDREGION}
+{$REGION 'MRA_ClientToImg'}
+function MRA_ClientToImg(KClient: string): string;
+var
+  i: Integer;
+  s: string;
+begin
+  // Определяем иконку клиента
+  Result := '-1';
+  s := WideLowerCase(KClient);
+  for I := low(MRA_Client_Icons) to high(MRA_Client_Icons) do
+    if Pos(MRA_Client_Icons[I].Client_Name, s) > 0  then
+    begin
+      Result := MRA_Client_Icons[I].Client_Img;
+      Break;
+    end;
+end;
 {$ENDREGION}
 {$REGION 'MRA_Login_1'}
 
@@ -466,7 +523,7 @@ const
   Mask_s = 's';
 
 var
-  UL, S_Log, GMask, KMask, GId, GName, KEmail, KPhone: string;
+  UL, S_Log, GMask, KMask, GId, GName, KEmail, KPhone, StatusIcons: string;
   KStatus, KXStatus, KXText, KClient, KGeo, GeoPkt, Unk: string;
   I, M, Len, GCount: Integer;
   KAuth: Boolean;
@@ -610,6 +667,7 @@ begin
               end;
             end;
             // Записываем в Ростер
+            StatusIcons := MRA_StatusCodeToImg(KStatus, KXStatus);
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
             if KEmail = C_Phone then
             begin
@@ -628,8 +686,8 @@ begin
               if KAuth then
               begin
                 Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthBoth);
-                Tri_Node.Properties.Add(C_Status, 23);
-                Tri_Node.Properties.Add(C_Client, -1);
+                Tri_Node.Properties.Add(C_Status, Parse(C_LN, StatusIcons, 1));
+                Tri_Node.Properties.Add(C_Client, MRA_ClientToImg(KClient));
               end
               else
               begin
@@ -639,7 +697,8 @@ begin
               end;
             end;
             Tri_Node.Properties.Add(UpCaseOne(C_Phone), URLEncode(KPhone));
-            Tri_Node.Properties.Add(C_XStatus, URLEncode(KXStatus));
+            Tri_Node.Properties.Add(C_XStatus + C_Name, URLEncode(KXStatus));
+            Tri_Node.Properties.Add(C_XStatus, Parse(C_LN, StatusIcons, 2));
             Tri_Node.Properties.Add(C_XText, URLEncode(KXText));
             Tri_Node.Properties.Add(C_Client + C_Name, URLEncode(KClient));
             Tri_Node.Properties.Add(C_Geo, URLEncode(KGeo));
@@ -733,7 +792,7 @@ end;
 
 procedure MRA_ParseStatus(PktData: string);
 var
-  S_Log, StatusCode, XStatusCode, XStatusText, KEmail, Unk: string;
+  S_Log, StatusCode, XStatusCode, XStatusText, KEmail, Unk, KClient, StatusIcons: string;
   Len: Integer;
 
   function GetLastLS: string;
@@ -766,7 +825,22 @@ begin
   // Получаем Email от кого пришёл статус
   KEmail := GetLastLS;
   S_Log := S_Log + C_Email + C_TN + C_BN + KEmail + C_RN;
-
+  // Получаем неизвестные данные
+  Unk := Text2Hex(NextData(PktData, 4));
+  S_Log := S_Log + C_Unk + C_TN + C_BN + Unk + C_RN;
+  // Получаем версию клиента контакта
+  KClient := GetLastLS;
+  S_Log := S_Log + C_Client + C_Name + C_TN + C_BN + KClient + C_RN;
+  // Обновляем данные статуса пользователя в Ростере
+  StatusIcons := MRA_StatusCodeToImg(StatusCode, XStatusCode);
+  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_Status, Parse(C_LN, StatusIcons, 1));
+  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_XStatus + C_Name, XStatusCode);
+  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_XStatus, Parse(C_LN, StatusIcons, 2));
+  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_XText, URLEncode(XStatusText));
+  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_Client + C_Name, URLEncode(KClient));
+  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_Client, MRA_ClientToImg(KClient));
+  // Запускаем обработку КЛ
+  MainForm.JvTimerList.Events[11].Enabled := True;
   // Пишем в лог данные пакета
   XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;

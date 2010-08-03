@@ -83,8 +83,8 @@ const
   C_Twitter = 'Twitter';
   C_FF = 'FriendFeed';
   //
-  C_TLV = 'TLV: ';
-  C_Value = ' Value: ';
+  C_TLV = 'TLV';
+  C_Value = ' Value';
   C_NoCL = 'NoCL';
   C_IgCL = 'IgCL';
   C_UniqGT = 'gtrans';

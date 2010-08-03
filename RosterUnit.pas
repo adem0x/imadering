@@ -27,6 +27,10 @@ uses
 {$REGION 'Procedures and Functions'}
 procedure UpdateFullCL;
 procedure ClearContacts(CType: string);
+procedure RosterDeleteContact(KProto, KItem, KValue: string);
+procedure RosterUpdateContact(KProto, KItem, KValue, UItem, UValue: string);
+procedure RosterDeleteGroup(GProto, GItem, GValue: string);
+procedure RosterUpdateGroup(GProto, GItem, GValue, UItem, UValue: string);
 {$ENDREGION}
 
 implementation
@@ -143,16 +147,11 @@ begin
                             begin
                               Status := S;
                               ImageIndex := S;
-                              XImageIndex := -1;
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                              if Tri_Node.Properties.Value(C_Email) = C_Phone then
-                              begin
-                                Status := 275;
-                                ImageIndex := 275;
-                              end;
                               // Hint := URLDecode(Items[I].SubItems[34]);
                               // Если статус в сети
-                              if (S <> 23) and (S <> 25) then
+                              if (S <> 23) and (S <> 25) and (S <> 275) then
                               begin
                                 // Поднимаем этот контакт вверх группы
                                 index := 0;
@@ -198,8 +197,8 @@ begin
                             else
                               NickColor := 0;
                           end;
-                          Break;
                         end;
+                        Break;
                       end;
                     end;
                     // Если такая группа не была найдена
@@ -302,7 +301,22 @@ label
   A;
 var
   I: Integer;
+  XML_Node: TJvSimpleXmlElem;
 begin
+  // Удаляем контакты из Ростера
+  if V_Roster <> nil then
+  begin
+    with V_Roster do
+    begin
+      if Root <> nil then
+      begin
+        // Очищаем раздел MRA если он есть
+        XML_Node := Root.Items.ItemNamed[CType];
+        if XML_Node <> nil then
+          Root.Items.Delete(CType);
+      end;
+    end;
+  end;
   // Удаляем контакты в КЛ
   with MainForm.ContactList do
   begin
@@ -317,6 +331,79 @@ begin
       end;
     end;
   end;
+end;
+{$ENDREGION}
+{$REGION 'RosterDeleteContact'}
+
+procedure RosterDeleteContact(KProto, KItem, KValue: string);
+begin
+  //
+
+end;
+{$ENDREGION}
+{$REGION 'RosterUpdateContact'}
+
+procedure RosterUpdateContact(KProto, KItem, KValue, UItem, UValue: string);
+var
+  i: Integer;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+begin
+  // Обновляем данные контакта в Ростере
+  if KProto <> EmptyStr then
+  begin
+    if V_Roster <> nil then
+    begin
+      with V_Roster do
+      begin
+        if Root <> nil then
+        begin
+          // Ищем раздел нужного нам протокола
+          XML_Node := Root.Items.ItemNamed[KProto];
+          if XML_Node <> nil then
+          begin
+            // Ищем раздел контактов в этом протоколе
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            if Sub_Node <> nil then
+            begin
+              if (KItem <> EmptyStr) and (KValue <> EmptyStr) and (UItem <> EmptyStr) then
+              begin
+                // Ищем параметр этого контакта
+                for I := 0 to Sub_Node.Items.Count - 1 do
+                begin
+                  Tri_Node := Sub_Node.Items.Item[I];
+                  if Tri_Node <> nil then
+                  begin
+                    if Tri_Node.Properties.Value(KItem) = KValue then
+                    begin
+                      // Обновляем параметр этой записи
+                      Tri_Node.Properties.ItemNamed[UItem].Value := UValue;
+                      Break;
+                    end;
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+{$ENDREGION}
+{$REGION 'RosterDeleteGroup'}
+
+procedure RosterDeleteGroup(GProto, GItem, GValue: string);
+begin
+  //
+
+end;
+{$ENDREGION}
+{$REGION 'RosterUpdateGroup'}
+
+procedure RosterUpdateGroup(GProto, GItem, GValue, UItem, UValue: string);
+begin
+  //
+
 end;
 {$ENDREGION}
 
