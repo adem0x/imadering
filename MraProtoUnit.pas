@@ -44,28 +44,28 @@ const
 
 {$ENDREGION}
 {$REGION 'MRA_Client_Icons'}
-    MRA_Client_Icons:
-      packed array[0..12] of record
-      Client_Name: string;
-      Client_Img: string;
-    end = ((Client_Name: 'imadering'; Client_Img: '0'), // 0
-      (Client_Name: 'qip infium'; Client_Img: '103'), // 1
-      (Client_Name: 'qip 2010'; Client_Img: '103'), // 2
-      (Client_Name: 'qip pda'; Client_Img: '99'), // 3
-      (Client_Name: 'miranda'; Client_Img: '98'), // 4
-      (Client_Name: 'jimm'; Client_Img: '102'), // 5
-      (Client_Name: 'webagent'; Client_Img: '125'), // 6
-      (Client_Name: 'jagent'; Client_Img: '105'), // 7
-      (Client_Name: 'sagent'; Client_Img: '105'), // 8
-      (Client_Name: 'wmagent'; Client_Img: '105'), // 9
-      (Client_Name: 'qutim'; Client_Img: '104'), // 10
-      (Client_Name: 'magent'; Client_Img: '311'), // 11
-      (Client_Name: 'agent'; Client_Img: '311')); // 12
+  MRA_Client_Icons:
+    packed array[0..12] of record
+    Client_Name: string;
+    Client_Img: string;
+  end = ((Client_Name: 'imadering'; Client_Img: '0'), // 0
+    (Client_Name: 'qip infium'; Client_Img: '103'), // 1
+    (Client_Name: 'qip 2010'; Client_Img: '103'), // 2
+    (Client_Name: 'qip pda'; Client_Img: '99'), // 3
+    (Client_Name: 'miranda'; Client_Img: '98'), // 4
+    (Client_Name: 'jimm'; Client_Img: '102'), // 5
+    (Client_Name: 'webagent'; Client_Img: '125'), // 6
+    (Client_Name: 'jagent'; Client_Img: '105'), // 7
+    (Client_Name: 'sagent'; Client_Img: '105'), // 8
+    (Client_Name: 'wmagent'; Client_Img: '105'), // 9
+    (Client_Name: 'qutim'; Client_Img: '104'), // 10
+    (Client_Name: 'magent'; Client_Img: '311'), // 11
+    (Client_Name: 'agent'; Client_Img: '311')); // 12
 {$ENDREGION}
 {$REGION 'Array Status Codes'}
   // Иконки для статусов
   MRA_Status_Icons:
-    packed array[0..55] of record
+    packed array[0..59] of record
     Status_Code: string;
     XStatus_Code: string;
     Status_Img: string;
@@ -124,7 +124,12 @@ const
     (Status_Code: '04000000'; XStatus_Code: 'status_53'; Status_Img: '24;55'), // 52
     (Status_Code: '01000000'; XStatus_Code: 'status_online'; Status_Img: '24;-1'), // 53 old clients
     (Status_Code: '02000000'; XStatus_Code: 'status_away'; Status_Img: '22;-1'), // 54 old clients
-    (Status_Code: '01000000'; XStatus_Code: ''; Status_Img: '24;-1')); // 55
+    (Status_Code: '01000000'; XStatus_Code: ''; Status_Img: '24;-1'), // 55
+    (Status_Code: '02000000'; XStatus_Code: ''; Status_Img: '22;-1'), // 56
+    (Status_Code: '04000000'; XStatus_Code: ''; Status_Img: '24;-1'), // 57
+    (Status_Code: '01000080'; XStatus_Code: ''; Status_Img: '21;-1'), // 58
+    (Status_Code: '01000080'; XStatus_Code: 'status_invisible'; Status_Img: '21;-1')); // 59
+
 {$ENDREGION}
 {$REGION 'Array Pkt Codes'}
 
@@ -245,6 +250,7 @@ begin
 end;
 {$ENDREGION}
 {$REGION 'MRA_ClientToImg'}
+
 function MRA_ClientToImg(KClient: string): string;
 var
   i: Integer;
@@ -254,7 +260,7 @@ begin
   Result := '-1';
   s := WideLowerCase(KClient);
   for I := low(MRA_Client_Icons) to high(MRA_Client_Icons) do
-    if Pos(MRA_Client_Icons[I].Client_Name, s) > 0  then
+    if Pos(MRA_Client_Icons[I].Client_Name, s) > 0 then
     begin
       Result := MRA_Client_Icons[I].Client_Img;
       Break;
@@ -725,6 +731,7 @@ end;
 procedure MRA_GoOffline;
 var
   I: Integer;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
   // Отключаем таймер факстатуса, пингов
   MainForm.UnstableMRAStatus.Checked := False;
@@ -764,27 +771,44 @@ begin
   end;
   // Обнуляем счётчики пакетов
   MRA_Seq := 1;
-  // Обнуляем события и переменные в Ростере
-  {with RosterForm.RosterJvListView do
+  // Обнуляем статусы в Ростере
+  if V_Roster <> nil then
   begin
-    for I := 0 to Items.Count - 1 do
+    with V_Roster do
     begin
-      if Items[I].SubItems[3] = C_Mra then
+      if Root <> nil then
       begin
-        if Items[I].SubItems[6] <> '275' then
-          Items[I].SubItems[6] := '23';
-        Items[I].SubItems[7] := '-1';
-        Items[I].SubItems[8] := '-1';
-        Items[I].SubItems[15] := '';
-        Items[I].SubItems[16] := '';
-        Items[I].SubItems[18] := '0';
-        Items[I].SubItems[19] := '0';
-        Items[I].SubItems[35] := '0';
+        // Очищаем раздел MRA если он есть
+        XML_Node := Root.Items.ItemNamed[C_Mra];
+        if XML_Node <> nil then
+        begin
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          if Sub_Node <> nil then
+          begin
+            for I := 0 to Sub_Node.Items.Count - 1 do
+            begin
+              Tri_Node := Sub_Node.Items.Item[i];
+              if Tri_Node <> nil then
+              begin
+                if Tri_Node.Properties.IntValue(C_Status) <> 275 then
+                begin
+                  Tri_Node.Properties.ItemNamed[C_Status].IntValue := 23;
+                  Tri_Node.Properties.ItemNamed[C_XStatus].IntValue := -1;
+                  Tri_Node.Properties.ItemNamed[C_XStatus + C_Name].Value := EmptyStr;
+                  Tri_Node.Properties.ItemNamed[C_XText].Value := EmptyStr;
+                  Tri_Node.Properties.ItemNamed[C_Client].IntValue := -1;
+                  Tri_Node.Properties.ItemNamed[C_Client + C_Name].Value := EmptyStr;
+                  Tri_Node.Properties.ItemNamed[C_Geo].Value := EmptyStr;
+                end;
+              end;
+            end;
+          end;
+        end;
       end;
     end;
   end;
-  // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;}
+  // Запускаем обработку CL
+  UpdateFullCL;
 end;
 
 {$ENDREGION}
