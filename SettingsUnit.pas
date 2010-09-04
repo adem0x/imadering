@@ -208,30 +208,25 @@ uses
 
 const
   C_AppRun = 'Software\Microsoft\Windows\CurrentVersion\Run';
-  C_Settings = 'settings';
-  C_Proxy = 'proxy';
-  C_ProxyHost = 'host';
-  C_ProxyPort = 'port';
-  C_ProxyType = 'type';
-  C_ProxyVersion = 'version';
-  C_ProxyAuth = 'auth';
-  C_ProxyNTLM = 'ntlm';
-  C_StartInTray = 'start_in_tray';
-  C_UpdateCheck = 'update_check';
-  C_HPriority = 'high_priority';
-  C_CLForm = 'cl_form';
-  C_AlwaysTop = 'always_top';
-  C_TrValue = 'tr_value';
-  C_TrActive = 'tr_active';
-  C_AutoHide = 'auto_hide';
-  C_AutoHideS = 'auto_hide_s';
-  C_CLHeader = 'header';
-  C_Recon = 'reconnect';
-  C_Sounds = 'sounds';
-  C_InfoLang = 'Langs';
-  C_Smile = 'smiles';
-  C_TextSmile = 'text_smilies';
-  C_NoTask = 'no_task';
+  C_Settings = 'Settings';
+  C_Proxy = 'Proxy';
+  C_ProxyType = 'Type';
+  C_ProxyVersion = 'Version';
+  C_ProxyNTLM = 'NTLM';
+  C_StartInTray = 'Start_in_tray';
+  C_UpdateCheck = 'Update_check';
+  C_HPriority = 'High_priority';
+  C_CLForm = 'CL_form';
+  C_AlwaysTop = 'Always_top';
+  C_TrValue = 'Tr_value';
+  C_TrActive = 'Tr_active';
+  C_AutoHide = 'Auto_hide';
+  C_AutoHideS = 'Auto_hide_s';
+  C_CLHeader = 'Header';
+  C_Recon = 'Reconnect';
+  C_Smile = 'Smiles';
+  C_TextSmile = 'Text_smilies';
+  C_NoTask = 'No_task';
 
 {$ENDREGION}
 {$REGION 'LangComboBoxChange'}
@@ -259,11 +254,11 @@ begin
                 LoadFromFile(V_MyPath + Format(C_LangPath, [S]));
                 if Root <> nil then
                   begin
-                    // Загружаем "о программе"
+                    //
                     XML_Node := Root.Items.ItemNamed[C_Infos];
                     if XML_Node <> nil then
                       begin
-                        XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[C_InfoLang];
+                        XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[C_Lang];
                         if XML_Node <> nil then
                           begin
                             LangInfoRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value('c'));
@@ -384,11 +379,11 @@ begin
                     Sub_Node := XML_Node.Items.ItemNamed[C_Proxy];
                     if Sub_Node <> nil then
                       begin
-                        ProxyAddressEdit.Text := Sub_Node.Properties.Value(C_ProxyHost);
-                        ProxyPortEdit.Text := Sub_Node.Properties.Value(C_ProxyPort);
+                        ProxyAddressEdit.Text := Sub_Node.Properties.Value(C_Host);
+                        ProxyPortEdit.Text := Sub_Node.Properties.Value(C_Port);
                         ProxyTypeComboBox.ItemIndex := Sub_Node.Properties.IntValue(C_ProxyType);
                         ProxyVersionComboBox.ItemIndex := Sub_Node.Properties.IntValue(C_ProxyVersion);
-                        ProxyAuthCheckBox.Checked := Sub_Node.Properties.BoolValue(C_ProxyAuth);
+                        ProxyAuthCheckBox.Checked := Sub_Node.Properties.BoolValue(C_Auth);
                         ProxyLoginEdit.Text := Sub_Node.Properties.Value(C_Login);
                         ProxyPasswordEdit.Text := Base64Decode(Sub_Node.Properties.Value(C_Pass));
                         NTLMCheckBox.Checked := Sub_Node.Properties.BoolValue(C_ProxyNTLM);
@@ -745,11 +740,11 @@ begin
             // --------------------------------------------------------------------
             // Записываем настройки прокси
             Sub_Node := XML_Node.Items.Add(C_Proxy);
-            Sub_Node.Properties.Add(C_ProxyHost, ProxyAddressEdit.Text);
-            Sub_Node.Properties.Add(C_ProxyPort, ProxyPortEdit.Text);
+            Sub_Node.Properties.Add(C_Host, ProxyAddressEdit.Text);
+            Sub_Node.Properties.Add(C_Port, ProxyPortEdit.Text);
             Sub_Node.Properties.Add(C_ProxyType, ProxyTypeComboBox.ItemIndex);
             Sub_Node.Properties.Add(C_ProxyVersion, ProxyVersionComboBox.ItemIndex);
-            Sub_Node.Properties.Add(C_ProxyAuth, ProxyAuthCheckBox.Checked);
+            Sub_Node.Properties.Add(C_Auth, ProxyAuthCheckBox.Checked);
             Sub_Node.Properties.Add(C_Login, ProxyLoginEdit.Text);
             Sub_Node.Properties.Add(C_Pass, Base64Encode(ProxyPasswordEdit.Text));
             Sub_Node.Properties.Add(C_ProxyNTLM, NTLMCheckBox.Checked);
@@ -1217,7 +1212,7 @@ begin
   MainForm.AllImageList.GetIcon(2, Icon);
   // Устанавливаем иконки на кнопки
   MainForm.AllImageList.GetBitmap(3, CancelBitBtn.Glyph);
-  MainForm.AllImageList.GetBitmap(6, ApplyBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(222, ApplyBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(186, AddProtoBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(2, SettingsProtoBitBtn.Glyph);

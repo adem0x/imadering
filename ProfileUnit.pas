@@ -234,6 +234,7 @@ begin
     MainForm.JvTimerList.Events[2].Enabled := True;
   // Создаём необходимые листы
   V_AccountToNick := TStringList.Create;
+  V_AccountToNick.NameValueSeparator := C_LN;
   V_InMessList := TStringList.Create;
   V_SmilesList := TStringList.Create;
   if FileExists(V_ProfilePath + C_Nick_BD_FileName) then

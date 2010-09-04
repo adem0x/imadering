@@ -168,13 +168,13 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr') then
+        if FileExists(V_ProfilePath + C_AnketaFolder + ChatForm.User_Proto + C_BN + ChatForm.UIN_Panel.Caption + '.usr') then
           begin
-            LoadFromFile(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
+            LoadFromFile(V_ProfilePath + C_AnketaFolder + ChatForm.User_Proto + C_BN + ChatForm.UIN_Panel.Caption + '.usr');
             if Root <> nil then
               begin
                 // Загружаем настройки перевода
-                XML_Node := Root.Items.ItemNamed[C_UniqGT];
+                XML_Node := Root.Items.ItemNamed[C_Gtrans];
                 if XML_Node <> nil then
                   begin
                     YourLangComboBox.ItemIndex := YourLangComboBox.Items.IndexOfName('[' + XML_Node.Properties.Value('y') + ']');
@@ -214,7 +214,7 @@ begin
             LoadFromFile(V_ProfilePath + C_AnketaFolder + GUserType + C_BN + GUIN + '.usr');
             if Root <> nil then
               begin
-                XML_Node := Root.Items.ItemNamed[C_UniqGT];
+                XML_Node := Root.Items.ItemNamed[C_Gtrans];
                 if XML_Node <> nil then
                   begin
                     // Изменяем направление перевода для исходящих и входящих сообщений
@@ -269,21 +269,21 @@ begin
   try
     with JvXML do
       begin
-        if FileExists(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr') then
-          LoadFromFile(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
+        if FileExists(V_ProfilePath + C_AnketaFolder + ChatForm.User_Proto + C_BN + ChatForm.UIN_Panel.Caption + '.usr') then
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + ChatForm.User_Proto + C_BN + ChatForm.UIN_Panel.Caption + '.usr');
         if Root <> nil then
           begin
-            XML_Node := Root.Items.ItemNamed[C_UniqGT];
+            XML_Node := Root.Items.ItemNamed[C_Gtrans];
             if XML_Node <> nil then
               XML_Node.Clear
             else
-              XML_Node := Root.Items.Add(C_UniqGT);
+              XML_Node := Root.Items.Add(C_Gtrans);
             // Сохраняем настройки языков перевода
             XML_Node.Properties.Add('y', YouLangCode);
             XML_Node.Properties.Add('t', ToLangCode);
             XML_Node.BoolValue := True;
             // Записываем сам файл
-            SaveToFile(V_ProfilePath + C_AnketaFolder + ChatForm.UserType + C_BN + ChatForm.InfoPanel2.Caption + '.usr');
+            SaveToFile(V_ProfilePath + C_AnketaFolder + ChatForm.User_Proto + C_BN + ChatForm.UIN_Panel.Caption + '.usr');
           end;
       end;
   finally
@@ -359,7 +359,7 @@ begin
   if (GtransHttpClient.StatusCode = 0) or (GtransHttpClient.StatusCode >= 400) then
     begin
       GTranslation := False;
-      if ChatForm.InfoPanel2.Caption = GUIN then
+      if ChatForm.UIN_Panel.Caption = GUIN then
         ChatForm.NotifyPanel.Caption := Format(Lang_Vars[85].L_S, [IntToStr(GtransHttpClient.StatusCode)]);
       DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(GtransHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
     end;
@@ -471,7 +471,7 @@ begin
                               // Формируем файл с историей
                               HistoryFile := V_ProfilePath + C_HistoryFolder + GUserType + C_BN + ICQ_LoginUIN + C_BN + GUIN + '.htm';
                             end
-                          else if UserType = C_Jabber then
+                          else if User_Proto = C_Jabber then
                             begin
                               // Если нет подключения к серверу Jabber, то выходим
                               if NotProtoOnline(C_Jabber) then
@@ -481,7 +481,7 @@ begin
                               // Формируем файл с историей
                               HistoryFile := V_ProfilePath + C_HistoryFolder + GUserType + C_BN + Jabber_LoginUIN + C_BN + GUIN + '.htm';
                             end
-                          else if UserType = C_Mra then
+                          else if User_Proto = C_Mra then
                             begin
                               // Если нет подключения к серверу MRA, то выходим
                               if NotProtoOnline(C_Mra) then
@@ -494,7 +494,7 @@ begin
                           // Записываем историю в файл этого контакта
                           SaveTextInHistory('<span class=a>' + MsgD + '</span><br><span class=c>' + HMsg + '</span><br><br>', HistoryFile);
                           // Если вкладка чата совпадает с UIN получателя
-                          if InfoPanel2.Caption = GUIN then
+                          if UIN_Panel.Caption = GUIN then
                             begin
                               // Оповещаем о удачном переводе
                               NotifyPanel.Caption := Lang_Vars[86].L_S;
@@ -526,7 +526,7 @@ begin
                 end
               else
                 begin
-                  if ChatForm.InfoPanel2.Caption = GUIN then
+                  if ChatForm.UIN_Panel.Caption = GUIN then
                     ChatForm.NotifyPanel.Caption := Format(Lang_Vars[85].L_S, [GStatus]);
                   DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[85].L_S, [GStatus]), EmptyStr, 134, 2, 0);
                   // Удаляем это сообщение из списка буфера

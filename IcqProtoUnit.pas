@@ -878,7 +878,7 @@ begin
     with ChatForm do
     begin
       // Если UIN активной вкладки совпадает с UIN из подтверждения
-      if InfoPanel2.Caption = UIN then
+      if UIN_Panel.Caption = UIN then
       begin
         if not ClientOk then
           // Заменяем последнюю икоку исходящих сообщений на зелёную
@@ -932,7 +932,7 @@ begin
   begin
     with ChatForm do
     begin
-      if InfoPanel2.Caption = UIN then
+      if UIN_Panel.Caption = UIN then
       begin
         if CloseW then
         begin
@@ -2529,16 +2529,16 @@ begin
                 XML_Node.Properties.Add(C_State, URLEncode(OState));
                 //
                 XML_Node := Root.Items.Add(C_LangInfo);
-                XML_Node.Properties.Add(C_Lang1, Lang1);
+                {XML_Node.Properties.Add(C_Lang1, Lang1);
                 XML_Node.Properties.Add(C_Lang2, Lang2);
-                XML_Node.Properties.Add(C_Lang3, Lang3);
+                XML_Node.Properties.Add(C_Lang3, Lang3);}
                 //
                 XML_Node := Root.Items.Add(C_PhoneInfo);
-                XML_Node.Properties.Add(C_Phone1, URLEncode(Phone));
+                {XML_Node.Properties.Add(C_Phone1, URLEncode(Phone));
                 XML_Node.Properties.Add(C_Phone2, URLEncode(Fax));
                 XML_Node.Properties.Add(C_Phone3, URLEncode(Cellular));
                 XML_Node.Properties.Add(C_Phone4, URLEncode(WPhone));
-                XML_Node.Properties.Add(C_Phone5, URLEncode(WFax));
+                XML_Node.Properties.Add(C_Phone5, URLEncode(WFax));}
                 //
                 XML_Node := Root.Items.Add(C_WorkInfo);
                 XML_Node.Properties.Add(C_City, URLEncode(WCity));
@@ -2553,10 +2553,10 @@ begin
                 XML_Node.Properties.Add(C_Occup, Occupation);
                 //
                 XML_Node := Root.Items.Add(C_IntInfo);
-                XML_Node.Properties.Add(C_Int1, URLEncode(Int1));
+                {XML_Node.Properties.Add(C_Int1, URLEncode(Int1));
                 XML_Node.Properties.Add(C_Int2, URLEncode(Int2));
                 XML_Node.Properties.Add(C_Int3, URLEncode(Int3));
-                XML_Node.Properties.Add(C_Int4, URLEncode(Int4));
+                XML_Node.Properties.Add(C_Int4, URLEncode(Int4));}
                 //
                 Root.Items.Add(C_AboutInfo, URLEncode(About));
                 //
@@ -2567,16 +2567,16 @@ begin
                 XML_Node.Properties.Add(C_Year, IYear);
                 //
                 XML_Node := Root.Items.Add(C_EmailsInfo);
-                XML_Node.Properties.Add(C_Email0, URLEncode(Email));
+                {XML_Node.Properties.Add(C_Email0, URLEncode(Email));
                 XML_Node.Properties.Add(C_Email1, URLEncode(Email1));
                 XML_Node.Properties.Add(C_Email2, URLEncode(Email2));
-                XML_Node.Properties.Add(C_Email3, URLEncode(Email3));
+                XML_Node.Properties.Add(C_Email3, URLEncode(Email3));}
                 //
                 XML_Node := Root.Items.Add(C_IntIdInfo);
-                XML_Node.Properties.Add(C_IntId1, I1);
+                {XML_Node.Properties.Add(C_IntId1, I1);
                 XML_Node.Properties.Add(C_IntId2, I2);
                 XML_Node.Properties.Add(C_IntId3, I3);
-                XML_Node.Properties.Add(C_IntId4, I4);
+                XML_Node.Properties.Add(C_IntId4, I4);}
                 //
                 XML_Node := Root.Items.Add(C_PersInfo);
                 XML_Node.Properties.Add(C_Marital, Marital);
@@ -2846,7 +2846,7 @@ begin
         LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.usr');
         if Root <> nil then
         begin
-          XML_Node := Root.Items.ItemNamed[C_UniqGT];
+          XML_Node := Root.Items.ItemNamed[C_Gtrans];
           if XML_Node <> nil then
             GtransMsg := XML_Node.BoolValue;
         end;

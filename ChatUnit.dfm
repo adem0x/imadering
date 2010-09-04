@@ -716,7 +716,7 @@ object ChatForm: TChatForm
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 2
-      object InfoPanel2: TPanel
+      object UIN_Panel: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 6
@@ -729,9 +729,9 @@ object ChatForm: TChatForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        OnClick = InfoPanel2Click
+        OnClick = UIN_PanelClick
       end
-      object InfoPanel4: TPanel
+      object Age_Panel: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 36
@@ -764,7 +764,7 @@ object ChatForm: TChatForm
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 3
-      object InfoPanel1: TPanel
+      object Name_Panel: TPanel
         AlignWithMargins = True
         Left = 1
         Top = 6
@@ -778,9 +778,9 @@ object ChatForm: TChatForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        OnClick = InfoPanel1Click
+        OnClick = Name_PanelClick
       end
-      object InfoPanel3: TPanel
+      object City_Panel: TPanel
         AlignWithMargins = True
         Left = 1
         Top = 36

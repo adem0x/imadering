@@ -274,7 +274,7 @@ begin
   // Выставляем иконки формы и кнопок
   MainForm.AllImageList.GetIcon(66, Icon);
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
-  MainForm.AllImageList.GetBitmap(6, ApplyButton.Glyph);
+  MainForm.AllImageList.GetBitmap(222, ApplyButton.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKButton.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);

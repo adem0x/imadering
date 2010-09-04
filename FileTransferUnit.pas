@@ -427,7 +427,7 @@ begin
                         // Если вкладка чата совпадает с UIN получателя
                         with ChatForm do
                           begin
-                            if InfoPanel2.Caption = T_UIN then
+                            if UIN_Panel.Caption = T_UIN then
                               begin
                                 // Оповещаем о удачной передаче файла
                                 NotifyPanel.Caption := Lang_Vars[90].L_S;

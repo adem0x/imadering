@@ -316,10 +316,10 @@ begin
             XML_Node := Root.Items.ItemNamed[C_EmailsInfo];
             if XML_Node <> nil then
               begin
-                Email0 := URLDecode(XML_Node.Properties.Value(C_Email0));
+                {Email0 := URLDecode(XML_Node.Properties.Value(C_Email0));
                 Email1 := URLDecode(XML_Node.Properties.Value(C_Email1));
                 Email2 := URLDecode(XML_Node.Properties.Value(C_Email2));
-                Email3 := URLDecode(XML_Node.Properties.Value(C_Email3));
+                Email3 := URLDecode(XML_Node.Properties.Value(C_Email3));}
                 if IsNotNull([Email0, Email1, Email2, Email3]) then
                   begin
                     if Trim(Email0) <> EmptyStr then
@@ -542,11 +542,11 @@ begin
             XML_Node := Root.Items.ItemNamed[C_PhoneInfo];
             if XML_Node <> nil then
               begin
-                Phone := URLDecode(XML_Node.Properties.Value(C_Phone1));
+                {Phone := URLDecode(XML_Node.Properties.Value(C_Phone1));
                 Fax := URLDecode(XML_Node.Properties.Value(C_Phone2));
                 Cellular := URLDecode(XML_Node.Properties.Value(C_Phone3));
                 WPhone := URLDecode(XML_Node.Properties.Value(C_Phone4));
-                WFax := URLDecode(XML_Node.Properties.Value(C_Phone5));
+                WFax := URLDecode(XML_Node.Properties.Value(C_Phone5));}
                 if IsNotNull([Phone, Fax, Cellular, WPhone, WFax]) then
                   begin
                     if Trim(Phone) <> EmptyStr then
@@ -582,18 +582,18 @@ begin
             XML_Node := Root.Items.ItemNamed[C_IntInfo];
             if XML_Node <> nil then
               begin
-                Int1 := URLDecode(XML_Node.Properties.Value(C_Int1));
+                {Int1 := URLDecode(XML_Node.Properties.Value(C_Int1));
                 Int2 := URLDecode(XML_Node.Properties.Value(C_Int2));
                 Int3 := URLDecode(XML_Node.Properties.Value(C_Int3));
-                Int4 := URLDecode(XML_Node.Properties.Value(C_Int4));
+                Int4 := URLDecode(XML_Node.Properties.Value(C_Int4));}
               end;
             XML_Node := Root.Items.ItemNamed[C_IntIdInfo];
             if XML_Node <> nil then
               begin
-                I1 := XML_Node.Properties.Value(C_IntId1);
+                {I1 := XML_Node.Properties.Value(C_IntId1);
                 I2 := XML_Node.Properties.Value(C_IntId2);
                 I3 := XML_Node.Properties.Value(C_IntId3);
-                I4 := XML_Node.Properties.Value(C_IntId4);
+                I4 := XML_Node.Properties.Value(C_IntId4);}
                 // Получаем название интереса из кода интереса
                 if Assigned(IcqOptionsForm) then
                   begin
@@ -709,9 +709,9 @@ begin
             XML_Node := Root.Items.ItemNamed[C_LangInfo];
             if XML_Node <> nil then
               begin
-                Lang1 := XML_Node.Properties.Value(C_Lang1);
+                {Lang1 := XML_Node.Properties.Value(C_Lang1);
                 Lang2 := XML_Node.Properties.Value(C_Lang2);
-                Lang3 := XML_Node.Properties.Value(C_Lang3);
+                Lang3 := XML_Node.Properties.Value(C_Lang3);}
                 // Получаем название языка из кода языка
                 if Assigned(IcqOptionsForm) then
                   begin

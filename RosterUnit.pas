@@ -21,7 +21,8 @@ uses
   ExtCtrls,
   StdCtrls,
   Buttons,
-  JvSimpleXml;
+  JvSimpleXml,
+  ChatUnit;
 {$ENDREGION}
 
 {$REGION 'Procedures and Functions'}
@@ -31,6 +32,7 @@ procedure RosterDeleteContact(KProto, KItem, KValue: string);
 procedure RosterUpdateContact(KProto, KItem, KValue, UItem, UValue: string);
 procedure RosterDeleteGroup(GProto, GItem, GValue: string);
 procedure RosterUpdateGroup(GProto, GItem, GValue, UItem, UValue: string);
+procedure OpenChatPage(CButton: TButtonItem; UIN: string = '');
 {$ENDREGION}
 
 implementation
@@ -43,11 +45,110 @@ uses
   OverbyteIcsUrl;
 {$ENDREGION}
 
+{$REGION 'OpenChatPage'}
+
+procedure OpenChatPage(CButton: TButtonItem; UIN: string = '');
+label
+  A;
+var
+  ChatTab: TToolButton;
+  I: Integer;
+begin
+  // Если окно чата не создано, то создаём его
+  if not Assigned(ChatForm) then
+    Application.CreateForm(TChatForm, ChatForm);
+  with ChatForm do
+  begin
+    // Сохраняем набранный текст для этой вкладки
+    Save_Input_Text;
+
+    {with ChatPageToolBar do
+      begin
+        // Удаляем кнопку с меткой удаления (против глюка в Wine)
+        if (ButtonCount = 1) and (Buttons[0].AutoSize = False) then
+          RemoveChatPageButton(Buttons[0]);
+        // Если это кнопка
+        if (CButton <> nil) and (UIN = EmptyStr) then
+          begin
+            // Ищем вкладку в табе
+            for I := 0 to ButtonCount - 1 do
+              begin
+                if Buttons[I].HelpKeyword = CButton.UIN then
+                  begin
+                    Buttons[I].Down := True;
+                    CreateNewChat(Buttons[I]);
+                    // Выходим из цикла
+                    goto A;
+                  end;
+              end;
+            // Если вкладку не нашли, то создаём её
+            ChatTab := TToolButton.Create(nil);
+            ChatTab.Parent := ChatPageToolBar;
+            ChatTab.Caption := CButton.Caption;
+            ChatTab.HelpKeyword := CButton.UIN;
+            ChatTab.ShowHint := True;
+            ChatTab.Hint := CButton.Hint;
+            ChatTab.Style := TbsCheck;
+            ChatTab.AutoSize := True;
+            ChatTab.Grouped := True;
+            ChatTab.ImageIndex := CButton.Status;
+            ChatTab.OnMouseDown := ToolButtonMouseDown;
+            ChatTab.OnMouseUp := ToolButtonMouseUp;
+            ChatTab.OnContextPopup := ToolButtonContextPopup;
+            ChatTab.Down := True;
+            ChatTab.PopupMenu := TabPopupMenu;
+            CreateNewChat(ChatTab);
+          end
+        else if (CButton = nil) and (UIN <> EmptyStr) then
+          begin
+            // Ищем вкладку в табе
+            for I := 0 to ButtonCount - 1 do
+              begin
+                if Buttons[I].HelpKeyword = UIN then
+                  begin
+                    Buttons[I].Down := True;
+                    CreateNewChat(Buttons[I]);
+                    // Выходим из цикла
+                    goto A;
+                  end;
+              end;
+            // Ищем этот UIN в Ростере
+            RosterItem := RosterForm.ReqRosterItem(UIN);
+            // Если вкладку не нашли, то создаём её
+            ChatTab := TToolButton.Create(nil);
+            ChatTab.Parent := ChatPageToolBar;
+            ChatTab.Caption := URLDecode(RosterItem.SubItems[0]);
+            ChatTab.HelpKeyword := RosterItem.Caption;
+            ChatTab.ShowHint := True;
+            ChatTab.Hint := URLDecode(RosterItem.SubItems[34]);
+            ChatTab.Style := TbsCheck;
+            ChatTab.AutoSize := True;
+            ChatTab.Grouped := True;
+            ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
+            ChatTab.OnMouseDown := ToolButtonMouseDown;
+            ChatTab.OnMouseUp := ToolButtonMouseUp;
+            ChatTab.OnContextPopup := ToolButtonContextPopup;
+            ChatTab.Down := True;
+            ChatTab.PopupMenu := TabPopupMenu;
+            CreateNewChat(ChatTab);
+          end;
+      end;
+  A :;
+    // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
+    ChatPageToolBar.Realign;
+    // Отображаем окно сообщений
+    XShowForm(ChatForm);
+    // Ставим фокус в поле ввода текста
+    if (InputRichEdit.CanFocus) and (Visible) then
+      InputRichEdit.SetFocus;}
+  end;
+end;
+{$ENDREGION}
 {$REGION 'UpdateFullCL'}
 
 procedure UpdateFullCL;
 label
-  A, Z;
+  A;
 var
   I, G, K, S: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
@@ -123,9 +224,6 @@ begin
                     A: ;
                     // Запоминаем статус этого контакта
                     S := Tri_Node.Properties.IntValue(C_Status);
-                    // Определяем режим КЛ (если отображать только онлайн контакты)
-                    if (MainForm.OnlyOnlineContactsToolButton.Down and (Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL)) and ((S = 23) or (S = 25)) then
-                      Continue;
                     // Сканируем группу контакта в КЛ
                     Group_Yes := False;
                     Contact_Yes := False;
@@ -138,7 +236,7 @@ begin
                         // Начинаем поиск в ней этого контакта
                         for K := 0 to Categories[G].Items.Count - 1 do
                         begin
-                          if Categories[G].Items[K].UIN = Tri_Node.Properties.Value(C_Email) then
+                          if Categories[G].Items[K].UIN = Tri_Node.Properties.Value(C_Login) then
                           begin
                             // Если такой контакт нашли
                             Contact_Yes := True;
@@ -160,7 +258,7 @@ begin
                               end
                               else // Если статус не в сети и скрывать оффлайн контакты
                               begin
-                                if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
+                                if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2) then
                                   Free
                                 else
                                 begin
@@ -180,12 +278,17 @@ begin
                         // Добавляем контакт в эту группу в КЛ
                         if not Contact_Yes then
                         begin
+                          // Если статус не в сети и скрывать оффлайн контакты
+                          if ((S = 23) or (S = 25) or (S = 275)) and (MainForm.OnlyOnlineContactsToolButton.Down) and //
+                            ((Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2)) then
+                            Continue;
+                          // Добавляем контакт
                           with Categories[G].Items.Add do
                           begin
-                            Caption := Trim(URLDecode(Tri_Node.Properties.Value(UpCaseOne(C_Nick))));
+                            Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
                             if Caption = EmptyStr then
-                              Caption := Tri_Node.Properties.Value(C_Email);
-                            UIN := Tri_Node.Properties.Value(C_Email);
+                              Caption := Tri_Node.Properties.Value(C_Login);
+                            UIN := Tri_Node.Properties.Value(C_Login);
                             Status := S;
                             ImageIndex := S;
                             XImageIndex := -1;
@@ -212,13 +315,18 @@ begin
                 end;
               end;
               // Если группы "телефонных контактов" и "вне групп" пустые то удаляем их
+              I := 0;
               for G := 0 to Categories.Count - 1 do
               begin
-                if (Categories[G].GroupId = LeftStr(C_Phone, 4)) or (Categories[G].GroupId = C_AuthNone) then
+                if (Categories[i].GroupId = C_Phone_m2) or (Categories[i].GroupId = C_AuthNone) then
                 begin
-                  if Categories[G].Items.Count = 0 then
-                    Categories[G].Free;
+                  if Categories[i].Items.Count = 0 then
+                    begin
+                      Categories[i].Free;
+                      Dec(I);
+                    end;
                 end;
+                Inc(I);
               end;
             end;
             // --------------------------------------------------------------------------------------------------------------------------
@@ -231,13 +339,16 @@ begin
             if MainForm.HideEmptyGroups.Checked then
             begin
               // Сканируем КЛ и удаляем пустые группы
-              Z: ;
-              for I := 0 to Categories.Count - 1 do
+              I := 0;
+              for G := 0 to Categories.Count - 1 do
+              begin
                 if Categories[I].Items.Count = 0 then
                 begin
                   Categories[I].Free;
-                  goto Z;
+                  Dec(I);
                 end;
+                Inc(I);
+              end;
             end;
             // Вычисляем количесво контактов и количество онлайн-контактов в группах КЛ
             for G := 0 to Categories.Count - 1 do
@@ -245,7 +356,7 @@ begin
               if ((Categories[G].GroupId = '0000') and (Categories[G].GroupType = C_Icq)) //
               or (Categories[G].GroupId = C_NoCL) or (Categories[G].Items.Count = 0) //
               or (MainForm.OnlyOnlineContactsToolButton.Down) //
-              or ((Categories[G].GroupId = LeftStr(C_Phone, 4)) and (Categories[G].GroupType = C_Mra)) then
+              or ((Categories[G].GroupId = C_Phone_m2) and (Categories[G].GroupType = C_Mra)) then
                 Categories[G].Caption := Categories[G].GroupCaption + C_BN + '-' + C_BN + IntToStr(Categories[G].Items.Count)
               else
               begin
@@ -260,27 +371,16 @@ begin
             // Восстанавливаем состояние свёрнутых групп
             if V_CollapseGroupsRestore then
             begin
-              // Инициализируем XML
-              JvXML_Create(JvXML);
-              try
-                with JvXML do
+              // Ищем раздел состояния групп
+              XML_Node := Root.Items.ItemNamed[C_Group + C_SS];
+              if XML_Node <> nil then
+              begin
+                for G := 0 to Categories.Count - 1 do
                 begin
-                  if FileExists(V_ProfilePath + C_GroupsFileName) then
-                  begin
-                    LoadFromFile(V_ProfilePath + C_GroupsFileName);
-                    if Root <> nil then
-                    begin
-                      for G := 0 to Categories.Count - 1 do
-                      begin
-                        XML_Node := Root.Items.ItemNamed[ChangeCP(URLEncode(Categories[G].GroupCaption + Categories[G].GroupType + Categories[G].GroupId))];
-                        if XML_Node <> nil then
-                          Categories[G].Collapsed := XML_Node.Properties.BoolValue(C_CS);
-                      end;
-                    end;
-                  end;
+                  Sub_Node := XML_Node.Items.ItemNamed[ChangeCP(URLEncode(Categories[G].GroupCaption + Categories[G].GroupType + Categories[G].GroupId))];
+                  if Sub_Node <> nil then
+                    Categories[G].Collapsed := Sub_Node.Properties.BoolValue(C_CS);
                 end;
-              finally
-                JvXML.Free;
               end;
               V_CollapseGroupsRestore := False;
             end;
@@ -345,8 +445,9 @@ end;
 
 procedure RosterUpdateContact(KProto, KItem, KValue, UItem, UValue: string);
 var
-  i: Integer;
+  I, P: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Prop: TJvSimpleXMLProp;
 begin
   // Обновляем данные контакта в Ростере
   if KProto <> EmptyStr then
@@ -376,7 +477,16 @@ begin
                     if Tri_Node.Properties.Value(KItem) = KValue then
                     begin
                       // Обновляем параметр этой записи
-                      Tri_Node.Properties.ItemNamed[UItem].Value := UValue;
+                      P := 1;
+                      while Parse(C_LN, UItem, P) <> EmptyStr do
+                      begin
+                        XML_Prop := Tri_Node.Properties.ItemNamed[Parse(C_LN, UItem, P)];
+                        if XML_Prop <> nil then
+                          XML_Prop.Value := Parse(C_LN, UValue, P)
+                        else
+                          Tri_Node.Properties.Add(Parse(C_LN, UItem, P), Parse(C_LN, UValue, P));
+                        Inc(P);
+                      end;
                       Break;
                     end;
                   end;

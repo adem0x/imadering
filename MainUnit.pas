@@ -263,7 +263,6 @@ type
     MRAStatusNA: TMenuItem;
     MRAStatusOccupied: TMenuItem;
     PostInTwitter_Menu: TMenuItem;
-    PostInFF_Menu: TMenuItem;
     LinkCompress_Menu: TMenuItem;
     N1: TMenuItem;
     DumpMRA: TMenuItem;
@@ -504,17 +503,15 @@ uses
 {$REGION 'MyConst'}
 
 const
-  C_MainForm = 'main_form';
-  C_MainFormSounds = 'sounds';
-  C_MainFormOnlyOnline = 'only_online';
-  C_MainFormFirst = 'first_start';
-  C_MainFormProto = 'protos';
-  C_Traffic = 'traffic';
-  C_MainFormHEG = 'empty_group';
-  C_MainFormTP = 'top_panel';
-  C_MainFormBP = 'bottom_panel';
-  С_MainFormTop = 'top_mode';
-  C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
+  C_MainForm = 'Main_form';
+  C_MainFormOnlyOnline = 'Only_online';
+  C_MainFormFirst = 'First_start';
+  C_MainFormProto = 'Protos';
+  C_Traffic = 'Traffic';
+  C_MainFormHEG = 'Empty_group';
+  C_MainFormTP = 'Top_panel';
+  C_MainFormBP = 'Bottom_panel';
+  С_MainFormTop = 'Top_mode';
 
 {$ENDREGION}
 {$REGION 'WMEXITSIZEMOVE'}
@@ -564,7 +561,6 @@ begin
   SearchInCL.Caption := SearchInCL_Menu.Caption;
   TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
   PostInTwitter_Menu.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
-  PostInFF_Menu.Caption := Format(Lang_Vars[61].L_S, [C_FF]);
   LinkCompress_Menu.Caption := Lang_Vars[3].L_S;
   DumpMRA.Caption := Format(Lang_Vars[11].L_S, [C_MRA]);
   DumpICQ.Caption := Format(Lang_Vars[11].L_S, [C_ICQ]);
@@ -1505,17 +1501,16 @@ begin
         ICQ_HTTP_Connect_Phaze := True;
         XLog(C_Icq + Log_Get + Log_Proxy_OK, C_Icq);
       end
+      else if StartsStr('HTTP/1.0 407', Pkt) then
+      begin
+        ProxyErr := 1;
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      end
       else
-        if StartsStr('HTTP/1.0 407', Pkt) then
-        begin
-          ProxyErr := 1;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
-        end
-        else
-        begin
-          ProxyErr := 2;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
-        end;
+      begin
+        ProxyErr := 2;
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      end;
       // Забираем из буфера пакет с данными ICQ
       Pkt := ICQ_myBeautifulSocketBuffer;
       // Очищаем буфер
@@ -1808,24 +1803,22 @@ begin
                               ICQ_SSI_Phaze := False;
                               DAShow(Lang_Vars[17].L_S, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
                             end
-                            else
-                              if ICQ_Add_Group_Phaze then
-                              begin
-                                // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
-                                ICQ_AddEnd;
-                                ICQ_Add_Group_Phaze := False;
-                                ICQ_SSI_Phaze := False;
-                                DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
-                              end
-                              else
-                                if ICQ_Group_Delete_Phaze then
-                                begin
-                                  // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
-                                  ICQ_AddEnd;
-                                  ICQ_Group_Delete_Phaze := False;
-                                  ICQ_SSI_Phaze := False;
-                                  DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
-                                end;
+                            else if ICQ_Add_Group_Phaze then
+                            begin
+                              // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
+                              ICQ_AddEnd;
+                              ICQ_Add_Group_Phaze := False;
+                              ICQ_SSI_Phaze := False;
+                              DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
+                            end
+                            else if ICQ_Group_Delete_Phaze then
+                            begin
+                              // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
+                              ICQ_AddEnd;
+                              ICQ_Group_Delete_Phaze := False;
+                              ICQ_SSI_Phaze := False;
+                              DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
+                            end;
                           end;
                         $0006:
                           begin
@@ -2239,17 +2232,16 @@ begin
         Jabber_HTTP_Connect_Phaze := True;
         XLog(C_Jabber + Log_Get + Log_Proxy_OK, C_Jabber);
       end
+      else if StartsStr('HTTP/1.0 407', Pkt) then
+      begin
+        ProxyErr := 1;
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+      end
       else
-        if StartsStr('HTTP/1.0 407', Pkt) then
-        begin
-          ProxyErr := 1;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
-        end
-        else
-        begin
-          ProxyErr := 2;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
-        end;
+      begin
+        ProxyErr := 2;
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+      end;
       // Забираем из буфера пакет с данными Jabber
       Pkt := Jabber_myBeautifulSocketBuffer;
       // Очищаем буфер
@@ -2622,20 +2614,24 @@ end;
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
 var
   I, T: Integer;
-  YesMsgICQ, YesMsgJabber, YesMsgMRA: Boolean;
+  ICQ_Msg_Yes, Jabber_Msg_Yes, MRA_Msg_Yes: Boolean;
   CLItem: TButtonItem;
   ChatItem: TToolButton;
 begin
-  {// Отображаем иконки мигающих сообщений и события
-  YesMsgICQ := False;
-  YesMsgJabber := False;
-  YesMsgMRA := False;
-  // Сканируем и управляем иконками контактов с флагами сообщений в КЛ
-  if Assigned(RosterForm) then
+  // Отображаем иконки мигающих сообщений и события
+  ICQ_Msg_Yes := False;
+  Jabber_Msg_Yes := False;
+  MRA_Msg_Yes := False;
+  // Сканируем и управляем иконками контактов с флагами сообщений в Ростере
+  if V_Roster <> nil then
   begin
-    with RosterForm.RosterJvListView do
+    with V_Roster do
     begin
-      for I := 0 to Items.Count - 1 do
+      if Root <> nil then
+      begin
+        // Ищем раздел MRA
+
+      {for I := 0 to Items.Count - 1 do
       begin
         // Ищем такую запись в КЛ
         CLItem := RosterForm.ReqCLContact(Items[I].Caption);
@@ -2766,10 +2762,12 @@ begin
               end;
             end;
           end;
+      end;}
       end;
     end;
   end;
-  // Если не активен таймер иконки соединения, то можно мигать иконками сообщений
+
+  {// Если не активен таймер иконки соединения, то можно мигать иконками сообщений
   if not JvTimerList.Events[3].Enabled then
   begin
     // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
@@ -3057,7 +3055,7 @@ begin
         end;
       end
       else
-        {// Сообщаем об ошибках прокси} if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
+        if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
         begin
           ProxyErr := 1;
           DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
@@ -3574,7 +3572,7 @@ begin
     // Меняем иконку кнопки контакта на его статус
     Button.ImageIndex := Button.Status;
     // Открываем чат с этим контактом
-    //RosterForm.OpenChatPage(Button);
+    OpenChatPage(Button);
   end;
   // Запоминаем индекс кнопки
   ButtonInd := Button.index;
@@ -3586,26 +3584,31 @@ end;
 procedure TMainForm.ContactListCategoryCollapase(Sender: TObject; const Category: TButtonCategory);
 var
   I: Integer;
-  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
   if not V_CollapseGroupsRestore then
   begin
     // Запоминаем свёрнутые группы
-    // Инициализируем XML
-    JvXML_Create(JvXML);
-    try
-      with JvXML do
+    if V_Roster <> nil then
+    begin
+      with V_Roster do
       begin
-        with ContactList do
+        if Root <> nil then
         begin
-          for I := 0 to Categories.Count - 1 do
-            Root.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add(C_CS, Categories[I].Collapsed);
+          // Ищем раздел состояния групп
+          XML_Node := Root.Items.ItemNamed[C_Group + C_SS];
+          if XML_Node = nil then
+            XML_Node := Root.Items.Add(C_Group + C_SS);
+          // Очищаем раздел
+          XML_Node.Clear;
+          // Записываем в него состояние групп
+          with ContactList do
+          begin
+            for I := 0 to Categories.Count - 1 do
+              XML_Node.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add(C_CS, Categories[I].Collapsed);
+          end;
         end;
-        // Записываем файл
-        SaveToFile(V_ProfilePath + C_GroupsFileName);
       end;
-    finally
-      JvXML.Free;
     end;
   end;
 end;
@@ -4432,7 +4435,7 @@ begin
             // Определяем не находится ли окно за пределами экрана
             FormSetInWorkArea(Self);
             // Загружаем состояние кнопки звуков
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormSounds];
+            Sub_Node := XML_Node.Items.ItemNamed[C_Sounds];
             if Sub_Node <> nil then
               if Sub_Node.BoolValue then
               begin
@@ -4584,7 +4587,7 @@ begin
         XML_Node.Properties.Add(C_FH, Height);
         XML_Node.Properties.Add(C_FW, Width);
         // Сохраняем звук вкл. выкл.
-        XML_Node.Items.Add(C_MainFormSounds, SoundOnOffToolButton.Down);
+        XML_Node.Items.Add(C_Sounds, SoundOnOffToolButton.Down);
         // Сохраняем отображать только онлайн вкл. выкл.
         XML_Node.Items.Add(C_MainFormOnlyOnline, OnlyOnlineContactsToolButton.Down);
         // Сохраняем режим окна КЛ выше всех окон

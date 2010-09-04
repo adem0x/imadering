@@ -131,7 +131,7 @@ begin
                     Left := XML_Node.Properties.IntValue('l');
                     Height := XML_Node.Properties.IntValue('h');
                     Width := XML_Node.Properties.IntValue('w');
-                    PhoneEdit.Text := XML_Node.Properties.Value(C_Phone1);
+                    //PhoneEdit.Text := XML_Node.Properties.Value(C_Phone1);
                     // Определяем не находится ли окно за пределами экрана
                     FormSetInWorkArea(Self);
                   end;
@@ -185,7 +185,7 @@ begin
             XML_Node.Properties.Add('l', Left);
             XML_Node.Properties.Add('h', Height);
             XML_Node.Properties.Add('w', Width);
-            XML_Node.Properties.Add(C_Phone1, PhoneEdit.Text);
+            //XML_Node.Properties.Add(C_Phone1, PhoneEdit.Text);
           end;
         // Записываем сам файл
         SaveToFile(V_ProfilePath + C_SettingsFileName);

@@ -22,7 +22,6 @@ uses
   ChatUnit,
   MmSystem,
   Forms,
-  ComCtrls,
   Messages,
   Classes,
   IcqContactInfoUnit,
@@ -316,8 +315,10 @@ end;
 procedure MRA_MessageRecv(PktData: string);
 var
   S_Log, M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
-  Len: Integer;
-  RosterItem: TListItem;
+  I, Len: Integer;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Prop: TJvSimpleXMLProp;
+  Contact_Yes: Boolean;
 begin
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
@@ -356,59 +357,115 @@ begin
     CheckMessage_BR(Mess);
     ChatForm.CheckMessage_ClearTag(Mess);
     PopMsg := Mess;
-    // Ищем эту запись в Ростере
-    {RosterItem := RosterForm.ReqRosterItem(M_From);
-    if RosterItem <> nil then
+    // Ищем этот контакт в Ростере
+    Contact_Yes := False;
+    if V_Roster <> nil then
     begin
-      // Выставляем параметры сообщения в этой записи
-      with RosterItem do
+      with V_Roster do
       begin
-        // Ник контакта из Ростера
-        Nick := URLDecode(SubItems[0]);
-        // Дата сообщения
-        MsgD := Nick + ' [' + DateTimeChatMess + ']';
-        // Записываем историю в этот контакт если он уже найден в списке контактов
-        SubItems[15] := URLEncode(PopMsg);
-        SubItems[35] := '0';
+        if Root <> nil then
+        begin
+          // Ищем раздел MRA
+          XML_Node := Root.Items.ItemNamed[C_Mra];
+          if XML_Node <> nil then
+          begin
+            // Ищем раздел контактов
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            if Sub_Node <> nil then
+            begin
+              for I := 0 to Sub_Node.Items.Count - 1 do
+              begin
+                Tri_Node := Sub_Node.Items.Item[i];
+                if Tri_Node <> nil then
+                begin
+                  // Если нашли этот контакт
+                  if Tri_Node.Properties.Value(C_Login) = UrlEncode(M_From) then
+                  begin
+                    Contact_Yes := True;
+                    // Записываем входяшее сообщение
+                    XML_Prop := Tri_Node.Properties.ItemNamed[C_InMess];
+                    if XML_Prop <> nil then
+                      XML_Prop.Value := UrlEncode(Mess)
+                    else
+                      Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+                    // Ник контакта из Ростера
+                    Nick := URLDecode(Tri_Node.Properties.Value(C_Nick));
+                    // Дата сообщения
+                    MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                    // Ставим метку о непрочитанном сообщении
+                    XML_Prop := Tri_Node.Properties.ItemNamed[C_Mess];
+                    if XML_Prop <> nil then
+                      XML_Prop.Value := C_XX
+                    else
+                      Tri_Node.Properties.Add(C_Mess, C_XX);
+                    // Прерываем цикл
+                    Break;
+                  end;
+                end;
+              end;
+            end;
+          end;
+          // Если контакт в Ростере не нашли
+          if not Contact_Yes then
+          begin
+            // Ищем в Ростере группу "Не в списке"
+            XML_Node := Root.Items.ItemNamed[C_NoCL];
+            // Если не нашли в Ростере группу "Не в списке", то создаём её
+            if XML_Node = nil then
+              XML_Node := Root.Items.Add(C_NoCL);
+            // Ищем этот контакт в этой группе
+            for I := 0 to XML_Node.Items.Count - 1 do
+            begin
+              Sub_Node := XML_Node.Items.Item[i];
+              if Sub_Node <> nil then
+              begin
+                // Если нашли этот контакт
+                if Sub_Node.Properties.Value(C_Login) = UrlEncode(M_From) then
+                begin
+                  Contact_Yes := True;
+                  // Записываем входяшее сообщение
+                  XML_Prop := Sub_Node.Properties.ItemNamed[C_InMess];
+                  if XML_Prop <> nil then
+                    XML_Prop.Value := UrlEncode(Mess)
+                  else
+                    Sub_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+                  // Ник контакта из Ростера
+                  Nick := URLDecode(Sub_Node.Properties.Value(C_Nick));
+                  // Дата сообщения
+                  MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                  // Ставим метку о непрочитанном сообщении
+                  XML_Prop := Sub_Node.Properties.ItemNamed[C_Mess];
+                  if XML_Prop <> nil then
+                    XML_Prop.Value := C_XX
+                  else
+                    Sub_Node.Properties.Add(C_Mess, C_XX);
+                  // Прерываем цикл
+                  Break;
+                end;
+              end;
+            end;
+            // Если контакт в группе "Не в списке" не нашли
+            if not Contact_Yes then
+            begin
+              // Ищем его Ник в файле-кэше ников
+              Nick := SearchNickInCash(C_Mra, UrlEncode(M_From));
+              // Дата сообщения
+              MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+              // Добавляем этот контакт в эту группу
+              Sub_Node := XML_Node.Items.Add(C_Contact + C_DD + IntToStr(XML_Node.Items.Count + 1));
+              Sub_Node.Properties.Add(C_Login, URLEncode(M_From));
+              Sub_Node.Properties.Add(C_Nick, URLEncode(Nick));
+              Sub_Node.Properties.Add(C_Status, 312);
+              Sub_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+              Sub_Node.Properties.Add(C_Mess, C_XX);
+              // Запускаем таймер задержку событий Ростера
+              MainForm.JvTimerList.Events[11].Enabled := False;
+              MainForm.JvTimerList.Events[11].Enabled := True;
+            end;
+          end;
+        end;
       end;
-    end
-    else // Если такой контакт не найден в Ростере, то добавляем его
-    begin
-      // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-      Nick := SearchNickInCash(C_Mra, M_From);
-      // Дата сообщения
-      MsgD := Nick + ' [' + DateTimeChatMess + ']';
-      // Ищем группу "Не в списке" в Ростере
-      RosterItem := RosterForm.ReqRosterItem(C_NoCL);
-      if RosterItem = nil then // Если группу не нашли
-      begin
-        // Добавляем такую группу в Ростер
-        RosterItem := RosterForm.RosterJvListView.Items.Add;
-        RosterItem.Caption := C_NoCL;
-        // Подготавиливаем все значения
-        RosterForm.RosterItemSetFull(RosterItem);
-        RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
-      end;
-      // Добавляем этот контакт в Ростер
-      RosterItem := RosterForm.RosterJvListView.Items.Add;
-      with RosterItem do
-      begin
-        Caption := M_From;
-        // Подготавиливаем все значения
-        RosterForm.RosterItemSetFull(RosterItem);
-        // Обновляем субстроки
-        SubItems[0] := URLEncode(Nick);
-        SubItems[1] := C_NoCL;
-        SubItems[2] := 'none';
-        SubItems[3] := C_Mra;
-        SubItems[6] := '25';
-        SubItems[15] := URLEncode(PopMsg);
-        SubItems[35] := '0';
-      end;
-      // Запускаем таймер задержку событий Ростера
-      MainForm.JvTimerList.Events[11].Enabled := False;
-      MainForm.JvTimerList.Events[11].Enabled := True;
-    end;}
+    end;
     // Записываем история в файл истории с этим контактов
     HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_HtmExt;
     Mess := Text2XML(Mess);
@@ -416,12 +473,11 @@ begin
     DecorateURL(Mess);
     SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
     // Добавляем сообщение в текущий чат
-    {RosterItem.SubItems[36] := 'X';
-    if ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess) then
+    {if ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess) then
       RosterItem.SubItems[36] := EmptyStr;}
   end;
   // Пишем в лог
-  S_Log := S_Log + 'Id: ' + M_Id + C_LN + 'Flag: ' + M_Flag + C_LN + 'From: ' + M_From + C_LN + 'Text: ' + Mess;
+  S_Log := S_Log + C_Id + C_TN + C_BN + M_Id + C_LN + C_BN + 'Flag' + C_TN + C_BN + M_Flag + C_LN + C_BN + 'From' + C_TN + C_BN + M_From + C_LN + C_BN + 'Text' + C_TN + C_BN + Mess;
   XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
 
@@ -604,9 +660,9 @@ begin
             S_Log := S_Log + C_Group + C_BN + C_PN + C_BN + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Name + C_TN + C_BN + GName + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
           // Добавляем группу для телефонных контактов
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_Phone);
+          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + WideLowerCase(C_Phone));
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[34].L_S));
-          Tri_Node.Properties.Add(C_Id, LeftStr(C_Phone, 4));
+          Tri_Node.Properties.Add(C_Id, C_Phone_m2);
           // Добавляем группу контактов с ошибочным идентификатором группы
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
@@ -675,43 +731,47 @@ begin
             // Записываем в Ростер
             StatusIcons := MRA_StatusCodeToImg(KStatus, KXStatus);
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
-            if KEmail = C_Phone then
+            if KEmail = C_Phone_m1 then
             begin
-              Tri_Node.Properties.Add(C_Email, URLEncode(KEmail + C_TN + KPhone));
-              Tri_Node.Properties.Add(C_Group + C_Id, LeftStr(C_Phone, 4));
+              Tri_Node.Properties.Add(C_Login, URLEncode(KEmail + C_TN + KPhone));
+              Tri_Node.Properties.Add(C_Group + C_Id, C_Phone_m2);
               Tri_Node.Properties.Add(C_Status, 275);
             end
             else
             begin
-              Tri_Node.Properties.Add(C_Email, URLEncode(KEmail));
+              Tri_Node.Properties.Add(C_Login, URLEncode(KEmail));
               Tri_Node.Properties.Add(C_Group + C_Id, IntToHex(Swap32(HexToInt(GId)), 4));
             end;
-            Tri_Node.Properties.Add(UpCaseOne(C_Nick), URLEncode(GName));
-            if KEmail <> C_Phone then
+            // Записываем Ник
+            if GName = EmptyStr then
+              GName := KEmail;
+            Tri_Node.Properties.Add(C_Nick, URLEncode(GName));
+            // Записываем другие параметры
+            if KEmail <> C_Phone_m1 then
             begin
               if KAuth then
               begin
-                Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthBoth);
+                Tri_Node.Properties.Add(C_Auth, C_AuthBoth);
                 Tri_Node.Properties.Add(C_Status, Parse(C_LN, StatusIcons, 1));
                 Tri_Node.Properties.Add(C_Client, MRA_ClientToImg(KClient));
               end
               else
               begin
-                Tri_Node.Properties.Add(UpCaseOne(C_Auth), C_AuthNone);
+                Tri_Node.Properties.Add(C_Auth, C_AuthNone);
                 Tri_Node.Properties.Add(C_Status, 25);
                 Tri_Node.Properties.Add(C_Client, 220);
               end;
             end;
-            Tri_Node.Properties.Add(UpCaseOne(C_Phone), URLEncode(KPhone));
+            Tri_Node.Properties.Add(C_Phone, URLEncode(KPhone));
             Tri_Node.Properties.Add(C_XStatus + C_Name, URLEncode(KXStatus));
             Tri_Node.Properties.Add(C_XStatus, Parse(C_LN, StatusIcons, 2));
             Tri_Node.Properties.Add(C_XText, URLEncode(KXText));
             Tri_Node.Properties.Add(C_Client + C_Name, URLEncode(KClient));
             Tri_Node.Properties.Add(C_Geo, URLEncode(KGeo));
             // Заполняем лог
-            S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Email + C_TN + C_BN + KEmail + C_LN //
-            + C_BN + UpCaseOne(C_Nick) + C_TN + C_BN + GName + C_LN + C_BN + UpCaseOne(C_Auth) + C_TN + C_BN + BoolToStr(KAuth) + C_LN + C_BN + C_Status //
-            + C_TN + C_BN + KStatus + C_LN + C_BN + UpCaseOne(C_Phone) + C_TN + C_BN + KPhone + C_LN + C_BN + C_XStatus + C_TN + C_BN + KXStatus //
+            S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Login + C_TN + C_BN + KEmail + C_LN //
+            + C_BN + C_Nick + C_TN + C_BN + GName + C_LN + C_BN + C_Auth + C_TN + C_BN + BoolToStr(KAuth) + C_LN + C_BN + C_Status //
+            + C_TN + C_BN + KStatus + C_LN + C_BN + C_Phone + C_TN + C_BN + KPhone + C_LN + C_BN + C_XStatus + C_TN + C_BN + KXStatus //
             + C_LN + C_BN + C_XText + C_TN + C_BN + KXText + C_LN + C_BN + C_Client + C_Name + C_TN + C_BN + KClient + C_LN + C_BN //
             + C_Geo + C_TN + C_BN + Text2Hex(GeoPkt) + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
@@ -778,10 +838,11 @@ begin
     begin
       if Root <> nil then
       begin
-        // Очищаем раздел MRA если он есть
+        // Ищем раздел MRA
         XML_Node := Root.Items.ItemNamed[C_Mra];
         if XML_Node <> nil then
         begin
+          // Ищем раздел контактов
           Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
           if Sub_Node <> nil then
           begin
@@ -848,7 +909,7 @@ begin
   S_Log := S_Log + C_Unk + C_TN + C_BN + Unk + C_RN;
   // Получаем Email от кого пришёл статус
   KEmail := GetLastLS;
-  S_Log := S_Log + C_Email + C_TN + C_BN + KEmail + C_RN;
+  S_Log := S_Log + C_Login + C_TN + C_BN + KEmail + C_RN;
   // Получаем неизвестные данные
   Unk := Text2Hex(NextData(PktData, 4));
   S_Log := S_Log + C_Unk + C_TN + C_BN + Unk + C_RN;
@@ -857,12 +918,9 @@ begin
   S_Log := S_Log + C_Client + C_Name + C_TN + C_BN + KClient + C_RN;
   // Обновляем данные статуса пользователя в Ростере
   StatusIcons := MRA_StatusCodeToImg(StatusCode, XStatusCode);
-  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_Status, Parse(C_LN, StatusIcons, 1));
-  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_XStatus + C_Name, XStatusCode);
-  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_XStatus, Parse(C_LN, StatusIcons, 2));
-  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_XText, URLEncode(XStatusText));
-  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_Client + C_Name, URLEncode(KClient));
-  RosterUpdateContact(C_Mra, C_Email, URLEncode(KEmail), C_Client, MRA_ClientToImg(KClient));
+  RosterUpdateContact(C_Mra, C_Login, URLEncode(KEmail), C_Status + C_LN + C_XStatus + C_Name + C_LN + C_XStatus + C_LN //
+    + C_XText + C_LN + C_Client + C_Name + C_LN + C_Client, Parse(C_LN, StatusIcons, 1) + C_LN + XStatusCode + C_LN //
+    + Parse(C_LN, StatusIcons, 2) + C_LN + URLEncode(XStatusText) + C_LN + URLEncode(KClient) + C_LN + MRA_ClientToImg(KClient));
   // Запускаем обработку КЛ
   MainForm.JvTimerList.Events[11].Enabled := True;
   // Пишем в лог данные пакета
