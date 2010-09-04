@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <root>
-  <vars language="English">
+  <Vars Language="English">
     <RestoreFromTray c="Show IMadering"/>
     <HideInTray c="Hide IMadering"/>
     <QuitProgram c="Quit program?"/>
@@ -123,7 +123,7 @@
     <NotInGroups c="Outside groups"/>
     <DumpProto c="Debugging protocol %s"/>
     <HexToText c="Show HEX as %s text"/>
-  </vars>
+  </Vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
     <LangsSpeedButton h="_b_Interface language_d__r_Choose the localization of the program"/>
@@ -284,7 +284,7 @@
     <About c="IMadering is a graphical messaging client which is capable of connecting to ICQ, XMPP, Twitter and MRA all at once. It is written using Delphi 2010. Project with open source._r__r_You may modify and redistribute the program under the terms of the GPL (version 2 or later). A copy of the GPL is contained in the file distributed with IMadering. IMadering is copyrighted by its contributors. We provide no warranty for this program."/>
     <ClientId c="Warning! These settings are for advanced users. If you do not know what it is, please leave everything as is. Change the customer ID may make certain features unavailable or cause unstable operation of the program."/>
     <PassChange c="To change your password, you must enter your current password and new password twice. It is strongly recommended to use the new password a combination of numbers and letters of the alphabet. Your password must be between 6 to 8 characters."/>
-    <Langs c="English._r_Author: Eduard Tolmachev._r__r_Don't see your native language? Please visit the IMadering website and look for it there. If you have translated IMadering into your language and would like to share it with other users, feel free to post the translation in our forum http://imadering.mybb.ru_r_Date: 27.01.2010"/>
+    <Language c="English._r_Author: Eduard Tolmachev._r__r_Don't see your native language? Please visit the IMadering website and look for it there. If you have translated IMadering into your language and would like to share it with other users, feel free to post the translation in our forum http://imadering.mybb.ru_r_Date: 27.01.2010"/>
   </Infos>
   <AboutForm c="About">
     <SiteLabel c="Site program:"/>

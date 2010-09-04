@@ -158,7 +158,6 @@ function ExtractUrlFileName(const AUrl: string): string;
 function Text2XML(Str: string): string;
 function XML2Text(Str: string): string;
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
-function UpCaseOne(Str: string): string;
 function ReverseString(s: string): string;
 
 {$ENDREGION}
@@ -2251,23 +2250,13 @@ end;
 {$REGION 'SearchNickInCash'}
 
 function SearchNickInCash(CType, CId: string): string;
-var
-  I: Integer;
 begin
   Result := CId;
   // Проверяем создан ли список ников
   if Assigned(V_AccountToNick) then
   begin
     // Находим ники в списке ников по учётной записи
-    for I := 0 to V_AccountToNick.Count - 1 do
-    begin
-      if (Ctype + C_BN + Cid) = V_AccountToNick.Strings[I] then
-      begin
-        Result := V_AccountToNick.Strings[I + 1];
-        // Выходим из цикла
-        Break;
-      end;
-    end;
+    Result := V_AccountToNick.Values[Ctype + C_BN + Cid];
   end;
 end;
 
@@ -2579,17 +2568,6 @@ begin
   end;
 end;
 
-{$ENDREGION}
-{$REGION 'UpCaseOne'}
-
-function UpCaseOne(Str: string): string;
-var
-  s1, s2: string;
-begin
-  s1 := Str;
-  s2 := NextData(s1, 1);
-  Result := WideUpperCase(s2) + s1;
-end;
 {$ENDREGION}
 
 end.

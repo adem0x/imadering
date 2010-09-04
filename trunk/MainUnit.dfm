@@ -434,9 +434,6 @@ object MainForm: TMainForm
     object PostInTwitter_Menu: TMenuItem
       ImageIndex = 268
     end
-    object PostInFF_Menu: TMenuItem
-      ImageIndex = 269
-    end
     object LinkCompress_Menu: TMenuItem
       ImageIndex = 193
     end
