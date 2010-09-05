@@ -28,11 +28,9 @@ uses
 {$REGION 'Procedures and Functions'}
 procedure UpdateFullCL;
 procedure ClearContacts(CType: string);
-procedure RosterDeleteContact(KProto, KItem, KValue: string);
-procedure RosterUpdateContact(KProto, KItem, KValue, UItem, UValue: string);
-procedure RosterDeleteGroup(GProto, GItem, GValue: string);
-procedure RosterUpdateGroup(GProto, GItem, GValue, UItem, UValue: string);
-procedure OpenChatPage(CButton: TButtonItem; UIN: string = '');
+procedure OpenChatPage(CButton: TButtonItem; Proto: string = ''; UIN: string = '');
+function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXmlElem;
+procedure RosterUpdateProp(R_Node: TJvSimpleXmlElem; R_Prop, R_Value: string);
 {$ENDREGION}
 
 implementation
@@ -47,100 +45,101 @@ uses
 
 {$REGION 'OpenChatPage'}
 
-procedure OpenChatPage(CButton: TButtonItem; UIN: string = '');
+procedure OpenChatPage(CButton: TButtonItem; Proto: string = ''; UIN: string = '');
 label
   A;
 var
   ChatTab: TToolButton;
   I: Integer;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Если окно чата не создано, то создаём его
   if not Assigned(ChatForm) then
     Application.CreateForm(TChatForm, ChatForm);
   with ChatForm do
   begin
-    // Сохраняем набранный текст для этой вкладки
+    // Сохраняем набранный текст для открытой вкладки в чате
     Save_Input_Text;
-
-    {with ChatPageToolBar do
+    // Открываем вкладку в чате
+    with ChatPageToolBar do
+    begin
+      // Удаляем кнопку с меткой удаления (против глюка в Wine)
+      if (ButtonCount = 1) and (Buttons[0].AutoSize = False) then
+        RemoveChatPageButton(Buttons[0]);
+      // Если это кнопка
+      if (CButton <> nil) and (UIN = EmptyStr) then
       begin
-        // Удаляем кнопку с меткой удаления (против глюка в Wine)
-        if (ButtonCount = 1) and (Buttons[0].AutoSize = False) then
-          RemoveChatPageButton(Buttons[0]);
-        // Если это кнопка
-        if (CButton <> nil) and (UIN = EmptyStr) then
+        // Ищем вкладку в табе
+        for I := 0 to ButtonCount - 1 do
+        begin
+          if Buttons[I].HelpKeyword = CButton.UIN then
           begin
-            // Ищем вкладку в табе
-            for I := 0 to ButtonCount - 1 do
-              begin
-                if Buttons[I].HelpKeyword = CButton.UIN then
-                  begin
-                    Buttons[I].Down := True;
-                    CreateNewChat(Buttons[I]);
-                    // Выходим из цикла
-                    goto A;
-                  end;
-              end;
-            // Если вкладку не нашли, то создаём её
-            ChatTab := TToolButton.Create(nil);
-            ChatTab.Parent := ChatPageToolBar;
-            ChatTab.Caption := CButton.Caption;
-            ChatTab.HelpKeyword := CButton.UIN;
-            ChatTab.ShowHint := True;
-            ChatTab.Hint := CButton.Hint;
-            ChatTab.Style := TbsCheck;
-            ChatTab.AutoSize := True;
-            ChatTab.Grouped := True;
-            ChatTab.ImageIndex := CButton.Status;
-            ChatTab.OnMouseDown := ToolButtonMouseDown;
-            ChatTab.OnMouseUp := ToolButtonMouseUp;
-            ChatTab.OnContextPopup := ToolButtonContextPopup;
-            ChatTab.Down := True;
-            ChatTab.PopupMenu := TabPopupMenu;
-            CreateNewChat(ChatTab);
-          end
-        else if (CButton = nil) and (UIN <> EmptyStr) then
-          begin
-            // Ищем вкладку в табе
-            for I := 0 to ButtonCount - 1 do
-              begin
-                if Buttons[I].HelpKeyword = UIN then
-                  begin
-                    Buttons[I].Down := True;
-                    CreateNewChat(Buttons[I]);
-                    // Выходим из цикла
-                    goto A;
-                  end;
-              end;
-            // Ищем этот UIN в Ростере
-            RosterItem := RosterForm.ReqRosterItem(UIN);
-            // Если вкладку не нашли, то создаём её
-            ChatTab := TToolButton.Create(nil);
-            ChatTab.Parent := ChatPageToolBar;
-            ChatTab.Caption := URLDecode(RosterItem.SubItems[0]);
-            ChatTab.HelpKeyword := RosterItem.Caption;
-            ChatTab.ShowHint := True;
-            ChatTab.Hint := URLDecode(RosterItem.SubItems[34]);
-            ChatTab.Style := TbsCheck;
-            ChatTab.AutoSize := True;
-            ChatTab.Grouped := True;
-            ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
-            ChatTab.OnMouseDown := ToolButtonMouseDown;
-            ChatTab.OnMouseUp := ToolButtonMouseUp;
-            ChatTab.OnContextPopup := ToolButtonContextPopup;
-            ChatTab.Down := True;
-            ChatTab.PopupMenu := TabPopupMenu;
-            CreateNewChat(ChatTab);
+            Buttons[I].Down := True;
+            CreateNewChat(Buttons[I]);
+            // Выходим
+            goto A;
           end;
+        end;
+        // Если вкладку не нашли, то создаём её
+        ChatTab := TToolButton.Create(nil);
+        ChatTab.Parent := ChatPageToolBar;
+        ChatTab.Caption := CButton.Caption;
+        ChatTab.HelpKeyword := CButton.UIN;
+        ChatTab.ShowHint := True;
+        ChatTab.Hint := CButton.Hint;
+        ChatTab.Style := TbsCheck;
+        ChatTab.AutoSize := True;
+        ChatTab.Grouped := True;
+        ChatTab.ImageIndex := CButton.Status;
+        ChatTab.OnMouseDown := ToolButtonMouseDown;
+        ChatTab.OnMouseUp := ToolButtonMouseUp;
+        ChatTab.OnContextPopup := ToolButtonContextPopup;
+        ChatTab.Down := True;
+        ChatTab.PopupMenu := TabPopupMenu;
+        CreateNewChat(ChatTab);
+      end
+      else if (CButton = nil) and (UIN <> EmptyStr) then
+      begin
+        // Ищем вкладку в табе
+        for I := 0 to ButtonCount - 1 do
+        begin
+          if Buttons[I].HelpKeyword = UIN then
+          begin
+            Buttons[I].Down := True;
+            CreateNewChat(Buttons[I]);
+            // Выходим
+            goto A;
+          end;
+        end;
+        // Ищем этот UIN в Ростере
+        //XML_Node := GetRosterItem(Proto, C_Login, UIN);
+        // Если вкладку не нашли, то создаём её
+        {ChatTab := TToolButton.Create(nil);
+        ChatTab.Parent := ChatPageToolBar;
+        ChatTab.Caption := URLDecode(RosterItem.SubItems[0]);
+        ChatTab.HelpKeyword := RosterItem.Caption;
+        ChatTab.ShowHint := True;
+        ChatTab.Hint := URLDecode(RosterItem.SubItems[34]);
+        ChatTab.Style := TbsCheck;
+        ChatTab.AutoSize := True;
+        ChatTab.Grouped := True;
+        ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
+        ChatTab.OnMouseDown := ToolButtonMouseDown;
+        ChatTab.OnMouseUp := ToolButtonMouseUp;
+        ChatTab.OnContextPopup := ToolButtonContextPopup;
+        ChatTab.Down := True;
+        ChatTab.PopupMenu := TabPopupMenu;
+        CreateNewChat(ChatTab);}
       end;
-  A :;
+    end;
+    A: ;
     // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
     ChatPageToolBar.Realign;
     // Отображаем окно сообщений
     XShowForm(ChatForm);
     // Ставим фокус в поле ввода текста
-    if (InputRichEdit.CanFocus) and (Visible) then
-      InputRichEdit.SetFocus;}
+    if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
+      InputRichEdit.SetFocus;
   end;
 end;
 {$ENDREGION}
@@ -280,7 +279,7 @@ begin
                         begin
                           // Если статус не в сети и скрывать оффлайн контакты
                           if ((S = 23) or (S = 25) or (S = 275)) and (MainForm.OnlyOnlineContactsToolButton.Down) and //
-                            ((Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2)) then
+                          ((Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2)) then
                             Continue;
                           // Добавляем контакт
                           with Categories[G].Items.Add do
@@ -314,17 +313,17 @@ begin
                   end;
                 end;
               end;
-              // Если группы "телефонных контактов" и "вне групп" пустые то удаляем их
+              // Если группы "телефонных контактов" и "вне групп" и "не в списке" пустые то удаляем их
               I := 0;
               for G := 0 to Categories.Count - 1 do
               begin
-                if (Categories[i].GroupId = C_Phone_m2) or (Categories[i].GroupId = C_AuthNone) then
+                if (Categories[I].GroupId = C_Phone_m2) or (Categories[I].GroupId = C_AuthNone) or (Categories[I].GroupId = C_NoCL) then
                 begin
-                  if Categories[i].Items.Count = 0 then
-                    begin
-                      Categories[i].Free;
-                      Dec(I);
-                    end;
+                  if Categories[I].Items.Count = 0 then
+                  begin
+                    Categories[I].Free;
+                    Dec(I);
+                  end;
                 end;
                 Inc(I);
               end;
@@ -397,10 +396,8 @@ end;
 {$REGION 'ClearContacts'}
 
 procedure ClearContacts(CType: string);
-label
-  A;
 var
-  I: Integer;
+  I, Z: Integer;
   XML_Node: TJvSimpleXmlElem;
 begin
   // Удаляем контакты из Ростера
@@ -410,47 +407,45 @@ begin
     begin
       if Root <> nil then
       begin
-        // Очищаем раздел MRA если он есть
+        // Очищаем раздел протокола если он есть
         XML_Node := Root.Items.ItemNamed[CType];
-        if XML_Node <> nil then
-          Root.Items.Delete(CType);
+        if XML_Node = nil then
+          XML_Node := Root.Items.Add(CType)
+        else
+          XML_Node.Clear;
+        // Создаём в разделе протокола секцию групп и контактов
+        XML_Node.Items.Add(C_Group + C_SS);
+        XML_Node.Items.Add(C_Contact + C_SS);
       end;
     end;
   end;
   // Удаляем контакты в КЛ
   with MainForm.ContactList do
   begin
-    A: ;
+    Z := 0;
     for I := 0 to Categories.Count - 1 do
     begin
       // Удаляем все группы протокола
-      if Categories[I].GroupType = CType then
+      if Categories[Z].GroupType = CType then
       begin
-        Categories[I].Free;
-        goto A;
+        Categories[Z].Free;
+        Dec(Z);
       end;
+      Inc(Z);
     end;
   end;
 end;
 {$ENDREGION}
-{$REGION 'RosterDeleteContact'}
+{$REGION 'GetRosterItem'}
 
-procedure RosterDeleteContact(KProto, KItem, KValue: string);
-begin
-  //
-
-end;
-{$ENDREGION}
-{$REGION 'RosterUpdateContact'}
-
-procedure RosterUpdateContact(KProto, KItem, KValue, UItem, UValue: string);
+function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXmlElem;
 var
-  I, P: Integer;
+  I: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  XML_Prop: TJvSimpleXMLProp;
 begin
-  // Обновляем данные контакта в Ростере
-  if KProto <> EmptyStr then
+  // Получаем из Ростера искомую ноду
+  Result := nil;
+  if (R_Proto <> EmptyStr) and (R_Section <> EmptyStr) and (R_Item <> EmptyStr) and (R_Value <> EmptyStr) then
   begin
     if V_Roster <> nil then
     begin
@@ -459,36 +454,25 @@ begin
         if Root <> nil then
         begin
           // Ищем раздел нужного нам протокола
-          XML_Node := Root.Items.ItemNamed[KProto];
+          XML_Node := Root.Items.ItemNamed[R_Proto];
           if XML_Node <> nil then
           begin
-            // Ищем раздел контактов в этом протоколе
-            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            // Ищем нужную нам секцию в этом протоколе
+            Sub_Node := XML_Node.Items.ItemNamed[R_Section];
             if Sub_Node <> nil then
             begin
-              if (KItem <> EmptyStr) and (KValue <> EmptyStr) and (UItem <> EmptyStr) then
+              // Ищем параметр этого контакта
+              for I := 0 to Sub_Node.Items.Count - 1 do
               begin
-                // Ищем параметр этого контакта
-                for I := 0 to Sub_Node.Items.Count - 1 do
+                Tri_Node := Sub_Node.Items.Item[I];
+                if Tri_Node <> nil then
                 begin
-                  Tri_Node := Sub_Node.Items.Item[I];
-                  if Tri_Node <> nil then
+                  if Tri_Node.Properties.Value(R_Item) = R_Value then
                   begin
-                    if Tri_Node.Properties.Value(KItem) = KValue then
-                    begin
-                      // Обновляем параметр этой записи
-                      P := 1;
-                      while Parse(C_LN, UItem, P) <> EmptyStr do
-                      begin
-                        XML_Prop := Tri_Node.Properties.ItemNamed[Parse(C_LN, UItem, P)];
-                        if XML_Prop <> nil then
-                          XML_Prop.Value := Parse(C_LN, UValue, P)
-                        else
-                          Tri_Node.Properties.Add(Parse(C_LN, UItem, P), Parse(C_LN, UValue, P));
-                        Inc(P);
-                      end;
-                      Break;
-                    end;
+                    // Получаем искомую ноду
+                    Result := Tri_Node;
+                    // Прерываем цикл
+                    Break;
                   end;
                 end;
               end;
@@ -500,20 +484,18 @@ begin
   end;
 end;
 {$ENDREGION}
-{$REGION 'RosterDeleteGroup'}
+{$REGION 'RosterUpdateProp'}
 
-procedure RosterDeleteGroup(GProto, GItem, GValue: string);
+procedure RosterUpdateProp(R_Node: TJvSimpleXmlElem; R_Prop, R_Value: string);
+var
+  XML_Prop: TJvSimpleXMLProp;
 begin
-  //
-
-end;
-{$ENDREGION}
-{$REGION 'RosterUpdateGroup'}
-
-procedure RosterUpdateGroup(GProto, GItem, GValue, UItem, UValue: string);
-begin
-  //
-
+  // Обновляем или добавляем параметр в ростере
+  XML_Prop := R_Node.Properties.ItemNamed[R_Prop];
+  if XML_Prop <> nil then
+    XML_Prop.Value := R_Value
+  else
+    R_Node.Properties.Add(R_Prop, R_Value);
 end;
 {$ENDREGION}
 

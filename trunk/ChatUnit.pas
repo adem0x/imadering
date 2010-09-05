@@ -926,28 +926,39 @@ begin
   if (Sender is TToolButton) then
     TabMenuToolButton := (Sender as TToolButton);
 end;
+{$ENDREGION}
+{$REGION 'Save_Input_Text'}
 
 procedure TChatForm.Save_Input_Text;
+var
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 begin
   // Сохраняем набранный текст для этой вкладки
   if UIN_Panel.Caption <> EmptyStr then
   begin
-    {if
-
-
-    RosterUpdateContact(User_Proto, C_UIN, URLEncode(UIN_Panel.Caption), C_Status + C_LN + C_XStatus + C_Name + C_LN + C_XStatus + C_LN //
-    + C_XText + C_LN + C_Client + C_Name + C_LN + C_Client, Parse(C_LN, StatusIcons, 1) + C_LN + XStatusCode + C_LN //
-    + Parse(C_LN, StatusIcons, 2) + C_LN + URLEncode(XStatusText) + C_LN + URLEncode(KClient) + C_LN + MRA_ClientToImg(KClient));
-
-
-
-
-    {RosterItem := RosterForm.ReqRosterItem(S_UIN);
-    if RosterItem <> nil then
-      RosterItem.SubItems[14] := URLEncode(InputRichEdit.Text);}
+    // Инициализируем XML
+    JvXML_Create(JvXML);
+    try
+      with JvXML do
+      begin
+        if FileExists(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption) then
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption);
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[C_OutMess];
+          if XML_Node = nil then
+            XML_Node := Root.Items.Add(C_OutMess);
+          XML_Node.Value := URLEncode(InputRichEdit.Text);
+        end;
+        // Записываем файл
+        SaveToFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption);
+      end;
+    finally
+      JvXML.Free;
+    end;
   end;
 end;
-
 {$ENDREGION}
 {$REGION 'ToolButtonMouse Events'}
 

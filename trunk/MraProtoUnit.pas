@@ -667,6 +667,10 @@ begin
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
           Tri_Node.Properties.Add(C_Id, C_AuthNone);
+          // Добавляем группу для контактов не в списке
+          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+          Tri_Node.Properties.Add(C_Id, C_NoCL);
           // Получаем контакты
           Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
           I := -1;
@@ -879,6 +883,7 @@ procedure MRA_ParseStatus(PktData: string);
 var
   S_Log, StatusCode, XStatusCode, XStatusText, KEmail, Unk, KClient, StatusIcons: string;
   Len: Integer;
+  Get_Node: TJvSimpleXmlElem;
 
   function GetLastLS: string;
   var
@@ -918,9 +923,16 @@ begin
   S_Log := S_Log + C_Client + C_Name + C_TN + C_BN + KClient + C_RN;
   // Обновляем данные статуса пользователя в Ростере
   StatusIcons := MRA_StatusCodeToImg(StatusCode, XStatusCode);
-  RosterUpdateContact(C_Mra, C_Login, URLEncode(KEmail), C_Status + C_LN + C_XStatus + C_Name + C_LN + C_XStatus + C_LN //
-    + C_XText + C_LN + C_Client + C_Name + C_LN + C_Client, Parse(C_LN, StatusIcons, 1) + C_LN + XStatusCode + C_LN //
-    + Parse(C_LN, StatusIcons, 2) + C_LN + URLEncode(XStatusText) + C_LN + URLEncode(KClient) + C_LN + MRA_ClientToImg(KClient));
+  Get_Node := RosterGetItem(C_Mra, C_Contact + C_SS, C_Login, URLEncode(KEmail));
+  if Get_Node <> nil then
+  begin
+    RosterUpdateProp(Get_Node, C_Status, Parse(C_LN, StatusIcons, 1));
+    RosterUpdateProp(Get_Node, C_XStatus + C_Name, XStatusCode);
+    RosterUpdateProp(Get_Node, C_XStatus, Parse(C_LN, StatusIcons, 2));
+    RosterUpdateProp(Get_Node, C_XText, URLEncode(XStatusText));
+    RosterUpdateProp(Get_Node, C_Client + C_Name, URLEncode(KClient));
+    RosterUpdateProp(Get_Node, C_Client, MRA_ClientToImg(KClient));
+  end;
   // Запускаем обработку КЛ
   MainForm.JvTimerList.Events[11].Enabled := True;
   // Пишем в лог данные пакета
