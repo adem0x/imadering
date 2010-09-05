@@ -321,7 +321,7 @@ object MainForm: TMainForm
         OnTimer = JvTimerListEvents2Timer
       end
       item
-        Name = ' '
+        Name = 'Sounds Queue'
         Cycled = False
         Enabled = False
       end

@@ -790,7 +790,7 @@ begin
   // Подключаемся к MRA серверу
   if MRA_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + Log_Login + C_TN + C_BN + MRA_LoginUIN + C_RN;
+    S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + MRA_LoginUIN + C_RN;
     // Ставим иконку подключения
     MRAToolButton.ImageIndex := 25;
     // Блокируем контролы логина и пароля MRA
@@ -927,7 +927,7 @@ begin
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Jabber + C_PN + Log_Login + Jabber_JID + C_RN;
+    S_Log := S_Log + C_Jabber + C_PN + C_Login + Jabber_JID + C_RN;
     // Разбираем JID на логин и сервер
     Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
     Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
@@ -1304,7 +1304,7 @@ begin
   // Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Icq + C_PN + Log_Login + ICQ_LoginUIN + C_RN;
+    S_Log := S_Log + C_Icq + C_PN + C_Login + ICQ_LoginUIN + C_RN;
     // Ставим иконки подключения в окне и в трэе
     //ICQTrayIcon.IconIndex := 162;
     ICQToolButton.ImageIndex := 162;

@@ -2205,6 +2205,12 @@ begin
     11 - Контакт отключился }
   if V_SoundON then
   begin
+    // Проверяем таймер очереди воспроизведения звуков
+    if MainForm.JvTimerList.Events[3].Enabled then
+      Exit
+    else
+      MainForm.JvTimerList.Events[3].Enabled := True;
+    // Проигрываем звуки
     case Snd of
       1: if (V_SoundConnect) and (FileExists(V_SoundConnect_Path)) then
           Sndplaysound(PChar(V_SoundConnect_Path), Snd_async);

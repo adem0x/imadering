@@ -84,8 +84,8 @@ const
   // Команды смежного использования
   C_TLV = 'TLV';
   C_Value = ' Value';
-  C_NoCL = 'No_CL_group';
-  C_IgCL = 'Ig_CL_group';
+  C_NoCL = 'nocl';
+  C_IgCL = 'igcl';
   C_Gtrans = 'Gtrans';
   C_MaskPass = '----------------------';
   C_Login = 'Login';
@@ -127,6 +127,7 @@ const
   C_XText = 'XText';
   C_Geo = 'Geo';
   C_InMess = 'InMess';
+  C_OutMess = 'OutMess';
   C_Mess = 'Mess';
   C_Sounds = 'Sounds';
   // Команды для информации
@@ -215,7 +216,6 @@ const
   Log_Set_Status: string = 'Set status';
   Log_Connect: string = 'Connecting to the server';
   Log_HTTP_Proxy_Connect: string = 'Connecting to the proxy';
-  Log_Login: string = 'Username for authentication';
   Log_Proxy_OK: string = 'Connecting to proxy OK.';
   Log_Unk_Data: string = 'Get unknown or unimportant data';
   Log_Gtrans_Req: string = 'The data translation: %s into %s';
