@@ -80,6 +80,7 @@ const
   C_PNG_Ext = '.png';
   C_BMP_Ext = '.bmp';
   C_XML_Ext = '.xml';
+  C_Htm_Ext = '.htm';
 {$ENDREGION}
 {$REGION 'CommandsConst'}
   // Команды протоколов
@@ -113,8 +114,8 @@ const
   C_MailText = 'imadering@mail.ru?subject=%s&body=%s';
   C_CustomServer = 'Custom_server';
   C_SocketProto = 'tcp';
-  C_HtmExt = '.htm';
   C_HistoryIn = '<span class=b>%s</span><br><span class=c>%s</span><br><br>';
+  C_HistoryOut = '<span class=a>%s</span><br><span class=c>%s</span><br><br>';
   C_HistoryInfo = '<span class=d>%s</span><br><br>';
   C_HistoryX = '<IMG NAME=X SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
   C_Group = 'Group';

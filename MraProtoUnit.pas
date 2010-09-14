@@ -419,14 +419,13 @@ begin
       end;
     end;
     // Записываем история в файл истории с этим контактов
-    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_HtmExt;
+    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_Htm_Ext;
     Mess := Text2XML(Mess);
     CheckMessage_BR(Mess);
     DecorateURL(Mess);
     SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
     // Добавляем сообщение в текущий чат
-    {if ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess) then
-      RosterItem.SubItems[36] := EmptyStr;}
+    ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess);
   end;
   // Пишем в лог
   S_Log := S_Log + C_Id + C_TN + C_BN + M_Id + C_LN + C_BN + 'Flag' + C_TN + C_BN + M_Flag + C_LN + C_BN + 'From' + C_TN + C_BN + M_From + C_LN + C_BN + 'Text' + C_TN + C_BN + Mess;

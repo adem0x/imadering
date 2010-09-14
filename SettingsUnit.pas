@@ -135,6 +135,7 @@ type
     ProfilePathLabel: TLabel;
     OpenProfileSpeedButton: TSpeedButton;
     NoTaskBarMainButtonCheckBox: TCheckBox;
+    KeyboardSoundsCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure SettingButtonGroupButtonClicked(Sender: TObject; index: Integer);
     procedure CancelBitBtnClick(Sender: TObject);
@@ -164,7 +165,6 @@ type
     procedure SoundPathListViewChange(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure SoundPackComboBoxChange(Sender: TObject);
     procedure OpenProfileSpeedButtonClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
 
   private
     { Private declarations }
@@ -207,7 +207,6 @@ uses
 {$REGION 'MyConst'}
 
 const
-  C_AppRun = 'Software\Microsoft\Windows\CurrentVersion\Run';
   C_Settings = 'Settings';
   C_Proxy = 'Proxy';
   C_ProxyType = 'Type';
@@ -227,6 +226,8 @@ const
   C_Smile = 'Smiles';
   C_TextSmile = 'Text_smilies';
   C_NoTask = 'No_task';
+  C_Chat = 'Chat';
+  C_KeySounds = 'Key_Sounds';
 
 {$ENDREGION}
 {$REGION 'LangComboBoxChange'}
@@ -424,6 +425,14 @@ begin
                         // Загружаем показ кнопки на панели задач
                         NoTaskBarMainButtonCheckBox.Checked := Sub_Node.Properties.BoolValue(C_NoTask);
                       end;
+                    // ----------------------------------------------------------------------
+                    // Загружаем настройки окна чата
+                    Sub_Node := XML_Node.Items.ItemNamed[C_Chat];
+                    if Sub_Node <> nil then
+                    begin
+                      // Загружаем звуки нажатия клавиш
+                      KeyboardSoundsCheckBox.Checked := Sub_Node.Properties.BoolValue(C_KeySounds);
+                    end;
                     // ----------------------------------------------------------------------
                     // Загружаем и отображаем настройки Подключения
                     // Загружаем пересоединение при разрыве соединения
@@ -787,6 +796,10 @@ begin
             with SoundPathListView do
               for I := 0 to Items.Count - 1 do
                 Sub_Node.Items.Add('s' + IntToStr(I), Items[I].Checked).Properties.Add('p', Items[I].SubItems[0]);
+            // --------------------------------------------------------------------
+            // Сохраняем настройки окна чата
+            Sub_Node := XML_Node.Items.Add(C_Chat);
+            Sub_Node.Properties.Add(C_KeySounds, KeyboardSoundsCheckBox.Checked);
             // --------------------------------------------------------------------
             // Записываем сам файл
             SaveToFile(V_ProfilePath + C_SettingsFileName);
@@ -1187,11 +1200,6 @@ procedure TSettingsForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
-end;
-
-procedure TSettingsForm.FormDestroy(Sender: TObject);
-begin
-  //ShowMessage('Destroy SettingsForm');
 end;
 
 procedure TSettingsForm.TransparentTrackBarChange(Sender: TObject);

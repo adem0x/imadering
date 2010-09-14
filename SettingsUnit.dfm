@@ -18,7 +18,6 @@ object SettingsForm: TSettingsForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDblClick = FormDblClick
-  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -420,6 +419,21 @@ object SettingsForm: TSettingsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
+          object KeyboardSoundsCheckBox: TCheckBox
+            Left = 16
+            Top = 24
+            Width = 393
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            OnClick = ProxyAddressEditChange
+          end
         end
       end
       object EventsPage: TJvStandardPage

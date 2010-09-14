@@ -2131,7 +2131,13 @@ begin
     if MainForm.JvTimerList.Events[3].Enabled then
       Exit
     else
+    begin
+      if (Snd = 8) or (Snd = 9) or (Snd = 10) then
+        MainForm.JvTimerList.Events[3].Interval := 150
+      else
+        MainForm.JvTimerList.Events[3].Interval := 1000;
       MainForm.JvTimerList.Events[3].Enabled := True;
+    end;
     // Проигрываем звуки
     case Snd of
       1: if (V_SoundConnect) and (FileExists(V_SoundConnect_Path)) then
