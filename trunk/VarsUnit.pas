@@ -79,6 +79,7 @@ const
   C_JPEG_Ext = '.jpeg';
   C_PNG_Ext = '.png';
   C_BMP_Ext = '.bmp';
+  C_XML_Ext = '.xml';
 {$ENDREGION}
 {$REGION 'CommandsConst'}
   // Команды протоколов

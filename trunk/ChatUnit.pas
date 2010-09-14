@@ -198,7 +198,6 @@ type
     LastClick: Tdatetime;
     ButtonInd: Integer;
     TabMenuToolButton: TToolButton;
-    // Zundo: string;
     procedure QuickMessClick(Sender: TObject);
 
   public
@@ -261,10 +260,15 @@ const
 procedure TChatForm.CreateNewChat(CButton: TToolButton);
 var
   UIN, HistoryFile, Doc, HistoryText, ImageFile: string;
-  Get_Node: TJvSimpleXmlElem;
+  JvXML: TJvSimpleXml;
+  Get_Node, XML_Node: TJvSimpleXmlElem;
 begin
   // Применяем параметры нового чата
   UIN := CButton.HelpKeyword;
+  // Ставим учётную запись контакта в информационное поле
+  UIN_Panel.Caption := UrlDecode(UIN);
+  // Очищаем поле ввода
+  InputRichEdit.Clear;
   // Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
   Get_Node := RosterGetItem(User_Proto, C_Contact + C_SS, C_Login, UIN);
   if Get_Node <> nil then
@@ -369,43 +373,47 @@ begin
     // Ставим каретку в самый низ текста
     HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
     HTMLChatViewer.CaretPos := Length(Doc);
-
-    // Выставляем параметры перевода для этого контакта
-    {GtransSpeedButton.Down := False;
+    // Выставляем уникальные параметры для этого контакта
+    GtransSpeedButton.Down := False;
     // Инициализируем XML
     JvXML_Create(JvXML);
     try
       with JvXML do
       begin
-        if FileExists(V_ProfilePath + C_AnketaFolder + UserType + C_BN + UIN + '.usr') then
+        if FileExists(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext) then
         begin
-          LoadFromFile(V_ProfilePath + C_AnketaFolder + UserType + C_BN + UIN + '.usr');
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext);
           if Root <> nil then
           begin
-            XML_Node := Root.Items.ItemNamed[C_UniqGT];
+            // Подгружаем параметры перевода для этого контакта
+            {XML_Node := Root.Items.ItemNamed[C_Gtrans];
             if XML_Node <> nil then
+            begin
               GtransSpeedButton.Down := XML_Node.BoolValue;
+            end;}
+
+            // Подгружаем свою аватарку если установлена
+
+            // Вставляем ранее набранный текст в поле набора
+            XML_Node := Root.Items.ItemNamed[C_OutMess];
+            if XML_Node <> nil then
+              InputRichEdit.Text := UrlDecode(XML_Node.Value);
           end;
         end;
       end;
     finally
       JvXML.Free;
-    end;}
-
-    // Подгружаем свою аватарку если установлена
-
-    // Вставляем ранее набранный текст в поле набора
-    InputRichEdit.Text := '';
+    end;
   end;
-  // Ставим учётную запись контакта в информационное поле
-  UIN_Panel.Caption := UrlDecode(UIN);
   if Name_Panel.Caption = EmptyStr then
     Name_Panel.Caption := CButton.Caption;
-  // Ставим курсор в мемо после последнего символа
+  // Ставим курсор в поле ввода после последнего символа
   InputRichEdit.SelStart := InputRichEdit.GetTextLen;
   // Ставим фокус в поле ввода текста
   if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
     InputRichEdit.SetFocus;
+  // Сбрасываем флаг модификации поля ввода
+  InputRichEdit.Modified := False;
 
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
   //RosterForm.DellcIdInMessList(UIN);
@@ -648,29 +656,29 @@ end;
 {$REGION 'CloseTab'}
 
 procedure TChatForm.CloseTabAllOfflineClick(Sender: TObject);
-label
-  X;
 var
-  I: Integer;
+  I, T: Integer;
 begin
   // Если вкладки есть, то закрываем те что со статусом оффлайн
   with ChatPageToolBar do
   begin
-    X: ;
     // Сканируем вкладки
+    T := 0;
     for I := 0 to ButtonCount - 1 do
     begin
-      case Buttons[I].Tag of
+      case Buttons[T].Tag of
         9, 23, 25, 30, 41, 42, 80, 214:
           begin
-            RemoveChatPageButton(Buttons[I]);
+            RemoveChatPageButton(Buttons[T]);
+            Dec(T);
             // Прорисовываем интерфейс
             Update;
-            // Прыгаем на повторение скана
-            goto X;
           end;
       end;
+      Inc(T);
     end;
+    // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
+    Realign;
     // Если вкладки все закрыты, то закрываем окно чата
     if ButtonCount = 0 then
       ChatForm.Hide
@@ -683,24 +691,26 @@ begin
 end;
 
 procedure TChatForm.CloseTabAllNoCurrentClick(Sender: TObject);
-label
-  X;
 var
-  I: Integer;
+  I, T: Integer;
 begin
   // Если вкладки присутствуют, то закрываем все кроме текущей
   with ChatPageToolBar do
   begin
-    X: ;
     if ButtonCount > 1 then
     begin
+      T := 0;
       for I := 0 to ButtonCount - 1 do
-        if not Buttons[I].Down then
+      begin
+        if not Buttons[T].Down then
         begin
-          RemoveChatPageButton(Buttons[I]);
+          RemoveChatPageButton(Buttons[T]);
+          Dec(T);
+          // Прорисовываем интерфейс
           Update;
-          goto X;
         end;
+        Inc(T);
+      end;
     end;
     // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
     Realign;
@@ -933,15 +943,15 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Сохраняем набранный текст для этой вкладки
-  if UIN_Panel.Caption <> EmptyStr then
+  if (UIN_Panel.Caption <> EmptyStr) and (InputRichEdit.Modified) then
   begin
     // Инициализируем XML
     JvXML_Create(JvXML);
     try
       with JvXML do
       begin
-        if FileExists(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption) then
-          LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption);
+        if FileExists(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext) then
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext);
         if Root <> nil then
         begin
           XML_Node := Root.Items.ItemNamed[C_OutMess];
@@ -950,7 +960,7 @@ begin
           XML_Node.Value := URLEncode(InputRichEdit.Text);
         end;
         // Записываем файл
-        SaveToFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption);
+        SaveToFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext);
       end;
     finally
       JvXML.Free;
@@ -1691,29 +1701,6 @@ end;
 {$REGION 'InputRichEditKeyDown'}
 
 procedure TChatForm.InputRichEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-{ var
-  list: TStringList;
-  Selected, YesConvert: boolean;
-  buf, Outbuf, temp: string;
-  HMemo: HWND;
-  i, ii: integer;
-
-  procedure ReplaceText(Str: string);
-  begin
-  SendMessage(HMemo, EM_REPLACESEL, 0, Longint(PChar(Str)));
-  end;
-
-  function GetSelText(var Str: string): boolean;
-  begin
-  result := false;
-  if self.InputMemo.SelText <> EmptyStr then
-  begin
-  result := true;
-  Str := self.InputMemo.SelText;
-  end
-  else
-  Str := self.InputMemo.Text;
-  end; }
 begin
   // Переносим каретку в самый конец текста
   if (GetKeyState(VK_CONTROL) >= 0) and (Key = 13) and (EnterKeyToolButton.Down) then
@@ -1729,79 +1716,6 @@ begin
   // Если зажата клавиша контрл и нажата клавиша "s", то открываем окно смайлов
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 83) then
     SmiliesSpeedButtonClick(Self);
-  //
-  { if (GetKeyState(VK_CONTROL) < 0) and (Key = 82) then
-    begin
-    if not FileExists(MyPath + 'Langs\chars_r.txt') then Exit;
-    HMemo := self.InputMemo.Handle;
-    if HMemo = 0 then Exit;
-    Selected := GetSelText(buf);
-    if Length(buf) = 0 then Exit;
-    Zundo := self.InputMemo.Text;
-    list := TStringList.Create;
-    list.LoadFromFile(MyPath + 'Langs\chars_r.txt');
-    //
-    for i := 1 to Length(buf) do
-    begin
-    YesConvert := false;
-    for ii := 0 to list.Count - 1 do
-    begin
-    temp := Parse('=', list.Strings[ii], 1);
-    if buf[i] = temp then
-    begin
-    Outbuf := Outbuf + Parse('=', list.Strings[ii], 2);
-    YesConvert := true;
-    Break;
-    end;
-    end;
-    if not YesConvert then Outbuf := Outbuf + buf[i];
-    end;
-    //
-    list.Free;
-    if Selected then ReplaceText(Outbuf)
-    else SetWindowText(HMemo, PChar(Outbuf));
-    SendMessage(HMemo, EM_SETSEL, Length(self.InputMemo.Text), Length(self.InputMemo.Text));
-    end;
-    //
-    if (GetKeyState(VK_CONTROL) < 0) and (Key = 84) then
-    begin
-    if not FileExists(MyPath + 'Langs\chars_t.txt') then Exit;
-    HMemo := self.InputMemo.Handle;
-    if HMemo = 0 then Exit;
-    Selected := GetSelText(buf);
-    if Length(buf) = 0 then Exit;
-    Zundo := self.InputMemo.Text;
-    list := TStringList.Create;
-    list.LoadFromFile(MyPath + 'Langs\chars_t.txt');
-    //
-    for i := 1 to Length(buf) do
-    begin
-    YesConvert := false;
-    for ii := 0 to list.Count - 1 do
-    begin
-    temp := Parse('=', list.Strings[ii], 1);
-    if buf[i] = temp then
-    begin
-    Outbuf := Outbuf + Parse('=', list.Strings[ii], 2);
-    YesConvert := true;
-    Break;
-    end;
-    end;
-    if not YesConvert then Outbuf := Outbuf + buf[i];
-    end;
-    //
-    list.Free;
-    if Selected then ReplaceText(Outbuf)
-    else SetWindowText(HMemo, PChar(Outbuf));
-    SendMessage(HMemo, EM_SETSEL, Length(self.InputMemo.Text), Length(self.InputMemo.Text));
-    end;
-    //
-    if (GetKeyState(VK_CONTROL) < 0) and (Key = 90) then
-    begin
-    if Zundo > EmptyStr then self.InputMemo.Text := Zundo;
-    self.InputMemo.SelStart := self.InputMemo.GetTextLen;
-    Zundo := EmptyStr;
-    end; }
 end;
 
 {$ENDREGION}
@@ -1813,7 +1727,7 @@ label
 var
   MsgD, Msg, HMsg, HistoryFile: string;
 begin
-  // Если поле идентификатора пользователя пустое, то выходим от сюда (в будущем сделать чтобы закрывалось окно)
+  // Если поле идентификатора пользователя пустое, то выходим от сюда
   if UIN_Panel.Caption = EmptyStr then
     Exit;
   // Если нажата клавиша не интер, то если включен режим звуковой клавиатуры, то воспроизводим звуки

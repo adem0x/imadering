@@ -213,7 +213,6 @@ begin
                               ImageIndex := S;
                               XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                              // Hint := URLDecode(Items[I].SubItems[34]);
                               // Если статус в сети
                               if (S <> 23) and (S <> 25) and (S <> 275) then
                               begin
@@ -237,6 +236,7 @@ begin
                                     NickColor := 0;
                                 end;
                               end;
+                              // Hint := URLDecode(Items[I].SubItems[34]);
                             end;
                             Break;
                           end;
@@ -259,12 +259,23 @@ begin
                             ImageIndex := S;
                             XImageIndex := -1;
                             CImageIndex := Tri_Node.Properties.IntValue(C_Client);
+                            // Если статус в сети
+                            if (S <> 23) and (S <> 25) and (S <> 275) then
+                            begin
+                              // Поднимаем этот контакт вверх группы
+                              index := 0;
+                              // Назначаем ему синий цвет
+                              NickColor := 2;
+                            end
+                            else
+                            begin
+                              if Categories[G].GroupId <> C_NoCL then
+                                NickColor := 1
+                              else
+                                NickColor := 0;
+                            end;
                             ContactType := C_Mra;
                             // Hint := URLDecode(Items[I].SubItems[34]);
-                            if Categories[G].GroupId <> C_NoCL then
-                              NickColor := 1
-                            else
-                              NickColor := 0;
                           end;
                         end;
                         Break;
