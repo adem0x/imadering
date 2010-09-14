@@ -3572,7 +3572,7 @@ begin
     // Меняем иконку кнопки контакта на его статус
     Button.ImageIndex := Button.Status;
     // Открываем чат с этим контактом
-    OpenChatPage(Button);
+    OpenChatPage(Button, Button.ContactType);
   end;
   // Запоминаем индекс кнопки
   ButtonInd := Button.index;

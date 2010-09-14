@@ -28,7 +28,7 @@ uses
 {$REGION 'Procedures and Functions'}
 procedure UpdateFullCL;
 procedure ClearContacts(CType: string);
-procedure OpenChatPage(CButton: TButtonItem; Proto: string = ''; UIN: string = '');
+procedure OpenChatPage(CButton: TButtonItem; Proto: string);
 function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXmlElem;
 procedure RosterUpdateProp(R_Node: TJvSimpleXmlElem; R_Prop, R_Value: string);
 {$ENDREGION}
@@ -45,30 +45,29 @@ uses
 
 {$REGION 'OpenChatPage'}
 
-procedure OpenChatPage(CButton: TButtonItem; Proto: string = ''; UIN: string = '');
+procedure OpenChatPage(CButton: TButtonItem; Proto: string);
 label
   A;
 var
   ChatTab: TToolButton;
   I: Integer;
-  XML_Node: TJvSimpleXmlElem;
+  Get_Node: TJvSimpleXmlElem;
 begin
-  // Если окно чата не создано, то создаём его
-  if not Assigned(ChatForm) then
-    Application.CreateForm(TChatForm, ChatForm);
-  with ChatForm do
+  if (CButton <> nil) and (Proto <> EmptyStr) then
   begin
-    // Сохраняем набранный текст для открытой вкладки в чате
-    Save_Input_Text;
-    // Открываем вкладку в чате
-    with ChatPageToolBar do
+    // Если окно чата не создано, то создаём его
+    if not Assigned(ChatForm) then
+      Application.CreateForm(TChatForm, ChatForm);
+    with ChatForm do
     begin
-      // Удаляем кнопку с меткой удаления (против глюка в Wine)
-      if (ButtonCount = 1) and (Buttons[0].AutoSize = False) then
-        RemoveChatPageButton(Buttons[0]);
-      // Если это кнопка
-      if (CButton <> nil) and (UIN = EmptyStr) then
+      // Сохраняем набранный текст для открытой вкладки в чате
+      Save_Input_Text;
+      // Открываем вкладку в чате
+      with ChatPageToolBar do
       begin
+        // Удаляем кнопку с меткой удаления (против глюка в Wine)
+        if (ButtonCount = 1) and (Buttons[0].AutoSize = False) then
+          RemoveChatPageButton(Buttons[0]);
         // Ищем вкладку в табе
         for I := 0 to ButtonCount - 1 do
         begin
@@ -96,50 +95,18 @@ begin
         ChatTab.OnContextPopup := ToolButtonContextPopup;
         ChatTab.Down := True;
         ChatTab.PopupMenu := TabPopupMenu;
+        User_Proto := Proto;
         CreateNewChat(ChatTab);
-      end
-      else if (CButton = nil) and (UIN <> EmptyStr) then
-      begin
-        // Ищем вкладку в табе
-        for I := 0 to ButtonCount - 1 do
-        begin
-          if Buttons[I].HelpKeyword = UIN then
-          begin
-            Buttons[I].Down := True;
-            CreateNewChat(Buttons[I]);
-            // Выходим
-            goto A;
-          end;
-        end;
-        // Ищем этот UIN в Ростере
-        //XML_Node := GetRosterItem(Proto, C_Login, UIN);
-        // Если вкладку не нашли, то создаём её
-        {ChatTab := TToolButton.Create(nil);
-        ChatTab.Parent := ChatPageToolBar;
-        ChatTab.Caption := URLDecode(RosterItem.SubItems[0]);
-        ChatTab.HelpKeyword := RosterItem.Caption;
-        ChatTab.ShowHint := True;
-        ChatTab.Hint := URLDecode(RosterItem.SubItems[34]);
-        ChatTab.Style := TbsCheck;
-        ChatTab.AutoSize := True;
-        ChatTab.Grouped := True;
-        ChatTab.ImageIndex := StrToInt(RosterItem.SubItems[6]);
-        ChatTab.OnMouseDown := ToolButtonMouseDown;
-        ChatTab.OnMouseUp := ToolButtonMouseUp;
-        ChatTab.OnContextPopup := ToolButtonContextPopup;
-        ChatTab.Down := True;
-        ChatTab.PopupMenu := TabPopupMenu;
-        CreateNewChat(ChatTab);}
       end;
+      A: ;
+      // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
+      ChatPageToolBar.Realign;
+      // Отображаем окно сообщений
+      XShowForm(ChatForm);
+      // Ставим фокус в поле ввода текста
+      if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
+        InputRichEdit.SetFocus;
     end;
-    A: ;
-    // Испраляем глюк тулбара закладок чата (те кто писал ComCtrls.pas - пиздюки)
-    ChatPageToolBar.Realign;
-    // Отображаем окно сообщений
-    XShowForm(ChatForm);
-    // Ставим фокус в поле ввода текста
-    if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
-      InputRichEdit.SetFocus;
   end;
 end;
 {$ENDREGION}
@@ -313,20 +280,6 @@ begin
                   end;
                 end;
               end;
-              // Если группы "телефонных контактов" и "вне групп" и "не в списке" пустые то удаляем их
-              I := 0;
-              for G := 0 to Categories.Count - 1 do
-              begin
-                if (Categories[I].GroupId = C_Phone_m2) or (Categories[I].GroupId = C_AuthNone) or (Categories[I].GroupId = C_NoCL) then
-                begin
-                  if Categories[I].Items.Count = 0 then
-                  begin
-                    Categories[I].Free;
-                    Dec(I);
-                  end;
-                end;
-                Inc(I);
-              end;
             end;
             // --------------------------------------------------------------------------------------------------------------------------
             // Добавляем ICQ контакты в КЛ
@@ -334,6 +287,21 @@ begin
             // --------------------------------------------------------------------------------------------------------------------------
             // Добавляем Jabber контакты в КЛ
 
+            // Если группы "телефонных контактов" и "вне групп" и "не в списке" и "игнорируемые" пустые то удаляем их
+            I := 0;
+            for G := 0 to Categories.Count - 1 do
+            begin
+              if (Categories[I].GroupId = C_Phone_m2) or (Categories[I].GroupId = C_AuthNone) or //
+                (Categories[I].GroupId = C_NoCL) or (Categories[I].GroupId = C_IgCL) then
+              begin
+                if Categories[I].Items.Count = 0 then
+                begin
+                  Categories[I].Free;
+                  Dec(I);
+                end;
+              end;
+              Inc(I);
+            end;
             // Если активен режим "Скрывать пустые группы"
             if MainForm.HideEmptyGroups.Checked then
             begin
@@ -398,7 +366,7 @@ end;
 procedure ClearContacts(CType: string);
 var
   I, Z: Integer;
-  XML_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
   // Удаляем контакты из Ростера
   if V_Roster <> nil then
@@ -413,8 +381,13 @@ begin
           XML_Node := Root.Items.Add(CType)
         else
           XML_Node.Clear;
-        // Создаём в разделе протокола секцию групп и контактов
-        XML_Node.Items.Add(C_Group + C_SS);
+        // Создаём в разделе протокола секцию групп
+        Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+        // Добавляем группу для контактов "не в списке"
+        Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+        Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+        Tri_Node.Properties.Add(C_Id, C_NoCL);
+        // Создаём в разделе протокола секцию контактов
         XML_Node.Items.Add(C_Contact + C_SS);
       end;
     end;
