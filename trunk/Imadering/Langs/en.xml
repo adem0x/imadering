@@ -278,6 +278,7 @@
     <ProfilePathLabel c="Profile path:"/>
     <OpenProfileSpeedButton h="_b_Profile folder_d__r_Open the profile folder"/>
     <NoTaskBarMainButtonCheckBox c="Do not show contacts list window on the taskbar."/>
+    <KeyboardSoundsCheckBox c="Play the key sounds."/>
   </SettingsForm>
   <Infos>
     <SendDump c="Warning this feature is designed for very experienced users. Use it only if you know exactly what you are doing. The consequences could be unpredictable."/>

@@ -280,11 +280,11 @@ begin
     User_Avatar_Hash := Hex2Text('');
     // Загружаем файл истории сообщений
     if User_Proto = C_Icq then
-      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + ICQ_LoginUIN + C_BN + UrlDecode(UIN) + C_HtmExt
+      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + ICQ_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext
     else if User_Proto = C_Jabber then
-      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + Jabber_LoginUIN + C_BN + UrlDecode(UIN) + C_HtmExt
+      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + Jabber_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext
     else if User_Proto = C_Mra then
-      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + MRA_LoginUIN + C_BN + UrlDecode(UIN) + C_HtmExt;
+      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + MRA_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext;
     if FileExists(HistoryFile) then
     begin
       // Проверяем создавать или нет архив истории
@@ -479,8 +479,8 @@ begin
     end;
   end;
   // Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-  if V_InMessList.IndexOf(CId) = -1 then
-    V_InMessList.Add(CId);
+  {if V_InMessList.IndexOf(CId) = -1 then
+    V_InMessList.Add(CId);}
   // Играем звук входящего сообщения
   ImPlaySnd(2);
   // Показываем всплывашку с сообщением
@@ -1294,6 +1294,8 @@ begin
   finally
     JvXML.Free;
   end;
+  // Сохраняем набранный текст для открытой вкладки в чате
+  Save_Input_Text;
 end;
 
 {$ENDREGION}
@@ -1733,14 +1735,15 @@ begin
   // Если нажата клавиша не интер, то если включен режим звуковой клавиатуры, то воспроизводим звуки
   if Key <> #13 then
   begin
-    // Если нажата кнопка звука нажатия клавиш, то играем звуки
-    {if KeySoundToolButton.Down then
+    // Если включён режим звука нажатия клавиш, то играем звуки
+    if Assigned(SettingsForm) then
+      if SettingsForm.KeyboardSoundsCheckBox.Checked then
       begin
         if (Key = #8) and (InputRichEdit.Text <> EmptyStr) then
-          ImPlaySnd(10)
+          ImPlaySnd(9)
         else if Key <> #8 then
-          ImPlaySnd(9);
-      end;}
+          ImPlaySnd(8);
+      end;
     // Если нажата кнопка отправки оповещения о печати текста
     if TypingTextToolButton.Down then
     begin
@@ -1767,14 +1770,22 @@ begin
       Key := #0;
       // Если поле ввода пустое, то выходим
       if InputRichEdit.GetTextLen = 0 then
+      begin
+        // Очищаем поле ввода от перевода каретки
+        InputRichEdit.Clear;
+        // Закрываем текущую вкладку
+        CloseTabBitBtnClick(nil);
+        // Выходим от сюда
         Exit;
+      end;
       // Если нажата кнопка звука нажатия клавиш, то играем звуки
-      {if KeySoundToolButton.Down then
-        ImPlaySnd(11);}
+      if Assigned(SettingsForm) then
+        if SettingsForm.KeyboardSoundsCheckBox.Checked then
+          ImPlaySnd(10);
       // Копируем текст сообщения
-      Msg := Trim(InputRichEdit.Text);
+      Msg := TrimRight(InputRichEdit.Text);
       // Переводим сообщение если активна функция Gtrans
-      if GtransSpeedButton.Down then
+      {if GtransSpeedButton.Down then
       begin
         // Если форма перевода не создана, то создаём её
         if not Assigned(GTransForm) then
@@ -1793,25 +1804,25 @@ begin
         InputRichEditChange(Self);
         // Выходим и предоставляем заверщить отправку сообщения технологии Gtans
         Exit;
-      end;
+      end;}
       HMsg := Text2XML(Msg);
       // Добавляем сообщение в файл истории и в чат
-      MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
+      MsgD := V_YouAt + C_BN + C_QN + DateTimeChatMess + C_EN;
       // Форматируем сообщение под html формат
       CheckMessage_BR(HMsg);
       CheckMessage_ClearTag(HMsg);
       // Если тип контакта ICQ, то отправляем сообщение по ICQ протоколу
-      if User_Proto = C_Icq then
+      if User_Proto = C_ICQ then
       begin
         // Если нет подключения к серверу ICQ, то выходим
-        if NotProtoOnline(C_Icq) then
+        if NotProtoOnline(C_ICQ) then
           Exit;
         // Заканчиваем оповещение о наборе текста
         // if MainForm.ICQTypeTextTimer.Enabled then MainForm.ICQTypeTextTimerTimer(self);
         // Отправляем сообщение в юникод формате
         ICQ_SendMessage_0406(UIN_Panel.Caption, Msg, True);
         // Формируем файл с историей
-        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + ICQ_LoginUIN + C_BN + UIN_Panel.Caption + '.htm';
+        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + ICQ_LoginUIN + C_BN + UIN_Panel.Caption + C_Htm_Ext;
       end
       else if User_Proto = C_Jabber then
       begin
@@ -1821,7 +1832,7 @@ begin
         // Отправляем сообщение
         Jab_SendMessage(UIN_Panel.Caption, Msg);
         // Формируем файл с историей
-        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + Jabber_LoginUIN + C_BN + UIN_Panel.Caption + '.htm';
+        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + Jabber_LoginUIN + C_BN + UIN_Panel.Caption + C_Htm_Ext;
       end
       else if User_Proto = C_Mra then
       begin
@@ -1831,7 +1842,7 @@ begin
         // Отправляем сообщение
         MRA_SendMessage(UIN_Panel.Caption, Msg);
         // Формируем файл с историей
-        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + MRA_LoginUIN + C_BN + UIN_Panel.Caption + '.htm';
+        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + MRA_LoginUIN + C_BN + UIN_Panel.Caption + C_Htm_Ext;
       end
       else
         Exit;
@@ -1839,7 +1850,7 @@ begin
       HMsg := Text2XML(HMsg);
       CheckMessage_BR(HMsg);
       DecorateURL(HMsg);
-      SaveTextInHistory('<span class=a>' + MsgD + '</span><br><span class=c>' + HMsg + '</span><br><br>', HistoryFile);
+      SaveTextInHistory(Format(C_HistoryOut, [MsgD, HMsg]), HistoryFile);
       // Если включены графические смайлики, то форматируем сообщение под смайлы
       if not V_TextSmilies then
         CheckMessage_Smilies(HMsg);
@@ -1851,7 +1862,7 @@ begin
       HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
       // Очищаем поле ввода теста
       InputRichEdit.Clear;
-      InputRichEditChange(Self);
+      InputRichEditChange(nil);
       // Выходим
       Exit;
     end;
