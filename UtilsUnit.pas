@@ -100,7 +100,6 @@ function Icq_BodySize(Pkt: string): Integer;
 function Mra_BodySize(Pkt: string): Integer;
 function IsNotNull(StringsArr: array of string): Boolean;
 procedure DecorateURL(var Text: string);
-function NameAndLast(CId, CProto: string): string;
 procedure PopUp_Top(Compon: TComponent; Pm: TPopupMenu);
 procedure PopUp_Down(Compon: TComponent; Pm: TPopupMenu);
 function InitBuildInfo: string;
@@ -941,83 +940,6 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'NameAndLast'}
-
-function NameAndLast(CId, CProto: string): string;
-const
-  NoVal = '---';
-var
-  AFile, Ln, Lf, La: string;
-  JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
-begin
-  Result := EmptyStr;
-  V_GetCityPanel := NoVal;
-  V_GetAgePanel := NoVal;
-  V_GetFlagImage := EmptyStr;
-  V_GetGenderImage := EmptyStr;
-  // Ищем файл с анкетой этого контакта
-  AFile := V_ProfilePath + C_AnketaFolder + CProto + C_BN + CId + '.xml';
-  if FileExists(AFile) then
-  begin
-    // Инициализируем XML
-    JvXML_Create(JvXML);
-    try
-      with JvXML do
-      begin
-        LoadFromFile(AFile);
-        if Root <> nil then
-        begin
-          // Загружаем Имя и Фамилию
-          XML_Node := Root.Items.ItemNamed[C_NameInfo];
-          if XML_Node <> nil then
-          begin
-            Ln := URLDecode(XML_Node.Properties.Value(C_First));
-            Lf := URLDecode(XML_Node.Properties.Value(C_Last));
-          end;
-          // Загружаем Город и Страну для флага
-          XML_Node := Root.Items.ItemNamed[C_HomeInfo];
-          if XML_Node <> nil then
-          begin
-            V_GetCityPanel := URLDecode(XML_Node.Properties.Value(C_City));
-            V_GetFlagImage := XML_Node.Properties.Value(C_Country);
-          end;
-          if V_GetCityPanel = EmptyStr then
-            V_GetCityPanel := NoVal;
-          // Загружаем Возраст
-          XML_Node := Root.Items.ItemNamed[C_AgeInfo];
-          if XML_Node <> nil then
-          begin
-            La := XML_Node.Properties.Value(C_Age);
-            if La <> '0' then
-              V_GetAgePanel := Infoagel + C_BN + La;
-          end;
-          // Загружаем иконку пола
-          XML_Node := Root.Items.ItemNamed[C_PerInfo];
-          if XML_Node <> nil then
-          begin
-            V_GetGenderImage := XML_Node.Properties.Value(C_Gender);
-            case V_GetGenderImage[1] of
-              '1': V_GetGenderImage := 'girl';
-              '2': V_GetGenderImage := 'boy';
-            end;
-          end;
-        end;
-      end;
-    finally
-      JvXML.Free;
-    end;
-    // Формируем строку
-    if Ln > EmptyStr then
-      Result := Result + Ln;
-    if (Ln > EmptyStr) and (Lf > EmptyStr) then
-      Result := Result + C_BN + Lf
-    else if (Ln = EmptyStr) and (Lf > EmptyStr) then
-      Result := Result + Lf;
-  end;
-end;
-
-{$ENDREGION}
 {$REGION 'DecorateURL'}
 
 procedure DecorateURL(var Text: string);
@@ -1368,7 +1290,7 @@ begin
   begin
     try
       Visible := False;
-      Parent := LogForm;
+      Parent := MainForm;
       Text := Value;
       SelectAll;
       CopyToClipboard;

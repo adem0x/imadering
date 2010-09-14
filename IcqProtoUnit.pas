@@ -792,7 +792,7 @@ begin
       Result := Result + '<br><b>' + URLDecode(RosterItem.SubItems[0]) + '</b>';
     Result := Result + '<br>';
     // Имя и Фамилия
-    LnLf := NameAndLast(RosterItem.Caption, RosterItem.SubItems[3]);
+    //LnLf := NameAndLast(RosterItem.Caption, RosterItem.SubItems[3]);
     if LnLf <> EmptyStr then
       Result := Result + '<b>' + LnLf + '</b><br>';
     // Если стасут оффлайн или неизвестный, то пишем "Не в сети"

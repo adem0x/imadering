@@ -35,6 +35,7 @@ const
   C_RN = #13#10;
   C_MN = '%0D%0A';
   C_BR = '<br>';
+  C_HR = '<HR>';
   C_BN = ' ';
   C_PN = '|';
   C_LN = ';';
@@ -73,6 +74,11 @@ const
   C_NoAvatarFileName = '\noavatar.gif';
   C_ImaderingOld = 'Imadering.old';
   C_XML_Files = '*.xml';
+  C_GIF_Ext = '.gif';
+  C_JPG_Ext = '.jpg';
+  C_JPEG_Ext = '.jpeg';
+  C_PNG_Ext = '.png';
+  C_BMP_Ext = '.bmp';
 {$ENDREGION}
 {$REGION 'CommandsConst'}
   // Команды протоколов
@@ -108,6 +114,8 @@ const
   C_SocketProto = 'tcp';
   C_HtmExt = '.htm';
   C_HistoryIn = '<span class=b>%s</span><br><span class=c>%s</span><br><br>';
+  C_HistoryInfo = '<span class=d>%s</span><br><br>';
+  C_HistoryX = '<IMG NAME=X SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
   C_Group = 'Group';
   C_Contact = 'Contact';
   C_Count = 'count';
@@ -390,10 +398,6 @@ var
   V_TextSmilies: Boolean = False;
   V_YouAt: string = 'I';
   V_ChatFontSize: string = '9';
-  V_GetCityPanel: string;
-  V_GetAgePanel: string;
-  V_GetFlagImage: string;
-  V_GetGenderImage: string;
 
 {$ENDREGION}
 {$REGION 'LangVars'}

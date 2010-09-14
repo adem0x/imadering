@@ -3027,8 +3027,8 @@ begin
 
           if not Handled then
             HintStr := '<b>' + CurrentCat.GroupCaption + '</b>';
-          if CurrentCat.GroupType > EmptyStr then
-            HintStr := HintStr + '<BR>' + CurrentCat.GroupType;
+          {if CurrentCat.GroupType > EmptyStr then
+            HintStr := HintStr + '<BR>' + CurrentCat.GroupType;}
 
           // Конец изменений
 
