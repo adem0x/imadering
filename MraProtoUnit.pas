@@ -409,9 +409,6 @@ begin
                 Sub_Node.Properties.Add(C_Status, 312);
                 Sub_Node.Properties.Add(C_InMess, UrlEncode(Mess));
                 Sub_Node.Properties.Add(C_Mess, C_XX);
-                // Запускаем таймер задержку событий Ростера
-                MainForm.JvTimerList.Events[11].Enabled := False;
-                MainForm.JvTimerList.Events[11].Enabled := True;
               end;
             end;
           end;
@@ -425,7 +422,8 @@ begin
     DecorateURL(Mess);
     SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
     // Добавляем сообщение в текущий чат
-    ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess);
+    if not ChatForm.AddMessInActiveChat(Nick, PopMsg, M_From, MsgD, Mess) then
+      UpdateFullCL;;
   end;
   // Пишем в лог
   S_Log := S_Log + C_Id + C_TN + C_BN + M_Id + C_LN + C_BN + 'Flag' + C_TN + C_BN + M_Flag + C_LN + C_BN + 'From' + C_TN + C_BN + M_From + C_LN + C_BN + 'Text' + C_TN + C_BN + Mess;
