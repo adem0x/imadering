@@ -210,7 +210,10 @@ begin
                             with Categories[G].Items[K] do
                             begin
                               Status := S;
-                              ImageIndex := S;
+                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                                ImageIndex := 165
+                              else
+                                ImageIndex := S;
                               XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               // Если статус в сети
@@ -256,7 +259,10 @@ begin
                               Caption := Tri_Node.Properties.Value(C_Login);
                             UIN := Tri_Node.Properties.Value(C_Login);
                             Status := S;
-                            ImageIndex := S;
+                            if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              ImageIndex := 165
+                            else
+                              ImageIndex := S;
                             XImageIndex := -1;
                             CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                             // Если статус в сети

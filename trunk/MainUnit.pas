@@ -2613,17 +2613,92 @@ end;
 
 procedure TMainForm.JvTimerListEvents1Timer(Sender: TObject);
 var
-  I, T: Integer;
-  ICQ_Msg_Yes, Jabber_Msg_Yes, MRA_Msg_Yes: Boolean;
-  CLItem: TButtonItem;
-  ChatItem: TToolButton;
+  G, K: Integer;
+  Msg_Yes, Group_Msg_yes: Boolean;
 begin
   // Отображаем иконки мигающих сообщений и события
-  ICQ_Msg_Yes := False;
-  Jabber_Msg_Yes := False;
-  MRA_Msg_Yes := False;
-  // Сканируем и управляем иконками контактов с флагами сообщений в Ростере
-  if V_Roster <> nil then
+  Msg_Yes := False;
+  // Сканируем и управляем иконками контактов в КЛ
+  with ContactList do
+  begin
+    for G := 0 to Categories.Count - 1 do
+    begin
+      Group_Msg_yes := False;
+      for K := 0 to Categories[G].Items.Count - 1 do
+      begin
+        // Если у контакта иконка сообщения то моргаем ей
+        case Categories[G].Items[K].ImageIndex of
+          165:
+            begin
+              Group_Msg_yes := True;
+              Msg_Yes := True;
+              Categories[G].Items[K].ImageIndex := 150;
+            end;
+          150:
+            begin
+              Group_Msg_yes := True;
+              Msg_Yes := True;
+              Categories[G].Items[K].ImageIndex := 165;
+            end;
+        end;
+      end;
+      if (Group_Msg_yes) and (Categories[G].Collapsed) then
+      begin
+        case Categories[G].TextColor of
+          clBlack: Categories[G].TextColor := clRed;
+          clRed: Categories[G].TextColor := clBlack;
+        end;
+      end
+      else
+        Categories[G].TextColor := clBlack;
+    end;
+  end;
+  // Сканируем и управляем иконками контактов в окне чата
+  if Assigned(ChatForm) then
+  begin
+    with ChatForm.ChatPageToolBar do
+    begin
+      Group_Msg_yes := False;
+      for K := 0 to ButtonCount - 1 do
+      begin
+        case Buttons[K].ImageIndex of
+          165:
+            begin
+              Group_Msg_yes := True;
+              Buttons[K].ImageIndex := 150;
+            end;
+          150:
+            begin
+              Group_Msg_yes := True;
+              Buttons[K].ImageIndex := 165;
+            end;
+        end;
+      end;
+      if (Group_Msg_yes) and (not ChatForm.Active) then
+        FormFlash(ChatForm.Handle);
+    end;
+  end;
+  // Если есть непрочитанные сообщения, то мигаем иконкой в трэе
+  if Msg_Yes then
+  begin
+    // Мигаем иконкой
+    if TrayIcon.IconIndex = 165 then
+      TrayIcon.IconIndex := 0
+    else
+      TrayIcon.IconIndex := 165;
+    // Ставим флаг для трэя что есть сообщения в очереди
+    TrayIcon.Tag := 1;
+  end
+  else // Сбрасываем иконку в трэе
+  begin
+    TrayIcon.IconIndex := 0;
+    TrayIcon.Tag := 0;
+  end;
+
+
+
+
+  {if V_Roster <> nil then
   begin
     with V_Roster do
     begin
@@ -2631,7 +2706,7 @@ begin
       begin
         // Ищем раздел MRA
 
-      {for I := 0 to Items.Count - 1 do
+      for I := 0 to Items.Count - 1 do
       begin
         // Ищем такую запись в КЛ
         CLItem := RosterForm.ReqCLContact(Items[I].Caption);
@@ -2762,10 +2837,10 @@ begin
               end;
             end;
           end;
-      end;}
+      end;
       end;
     end;
-  end;
+  end;}
 
   {// Если не активен таймер иконки соединения, то можно мигать иконками сообщений
   if not JvTimerList.Events[3].Enabled then
