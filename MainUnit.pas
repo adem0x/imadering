@@ -651,6 +651,9 @@ begin
 end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
+var
+  UIN: string;
+  G, K: Integer;
 begin
   // Выводим главное окно на первый план
   if Assigned(ProfileForm) then
@@ -665,8 +668,49 @@ begin
   end;
   Application.BringToFront;
   // Если есть непрочитанные сообщения, то открываем их
-  //if (Sender as TTrayIcon).Tag = 1 then
-
+  if TrayIcon.Tag = 1 then
+  begin
+    // Смотрим кто у нас первый в очереди на прочтение сообщения
+    if V_InMessList <> nil then
+      if V_InMessList.Count > 0 then
+        UIN := V_InMessList.Strings[V_InMessList.Count - 1];
+    // Если в очереди кто-то есть, то ищем его в КЛ
+    with ContactList do
+    begin
+      for G := 0 to Categories.Count - 1 do
+      begin
+        for K := 0 to Categories[G].Items.Count - 1 do
+        begin
+          if UIN <> EmptyStr then
+          begin
+            // Если нашли нужный контакт
+            if Categories[G].Items[K].UIN = UIN then
+            begin
+              // Меняем иконку кнопки контакта на его статус
+              Categories[G].Items[K].ImageIndex := Categories[G].Items[K].Status;
+              // Открываем чат с этим контактом
+              OpenChatPage(Categories[G].Items[K], Categories[G].Items[K].ContactType);
+              // Выходим из циклов
+              Exit;
+            end;
+          end
+          else
+          begin
+            // Если нашли нужный контакт
+            if (Categories[G].Items[K].ImageIndex = 165) or (Categories[G].Items[K].ImageIndex = 150) then
+            begin
+              // Меняем иконку кнопки контакта на его статус
+              Categories[G].Items[K].ImageIndex := Categories[G].Items[K].Status;
+              // Открываем чат с этим контактом
+              OpenChatPage(Categories[G].Items[K], Categories[G].Items[K].ContactType);
+              // Выходим из циклов
+              Exit;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
 end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject);
@@ -784,7 +828,7 @@ begin
   S_Log := S_Log + C_RN + C_Mra + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   MRA_CurrentStatus_bac := MRA_CurrentStatus;
-  // Ставим иконки статусов в окне и в трэе
+  // Ставим иконку статуса в окне КЛ
   if not MRA_Offline_Phaze then
     MRAToolButton.ImageIndex := MRA_CurrentStatus;
   // Подключаемся к MRA серверу
@@ -1268,7 +1312,7 @@ begin
   if (ICQ_LoginUIN = EmptyStr) or (ICQ_LoginPassword = EmptyStr) then
   begin
     // Показываем сообщение об этой ошибке
-    DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [UpperCase(C_Icq)]), EmptyStr, 133, 3, 0);
+    DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Icq]), EmptyStr, 133, 3, 0);
     // Открываем настройки ICQ
     ICQSettingsClick(Self);
     // Ставим фокусы в поле ввода логина или пароля
@@ -1286,15 +1330,12 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_Icq + C_PN + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
+  S_Log := S_Log + C_RN + C_Icq + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
-  // Ставим иконки статусов в окне и в трэе
+  // Ставим иконку статуса в окне КЛ
   if not ICQ_Offline_Phaze then
-  begin
-    //ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
     ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-  end;
   // Отключаем статус Нестабильный если он включен
   if JvTimerList.Events[4].Enabled then
   begin
@@ -1304,9 +1345,8 @@ begin
   // Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Icq + C_PN + C_Login + ICQ_LoginUIN + C_RN;
-    // Ставим иконки подключения в окне и в трэе
-    //ICQTrayIcon.IconIndex := 162;
+    S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + ICQ_LoginUIN + C_RN;
+    // Ставим иконку подключения
     ICQToolButton.ImageIndex := 162;
     // Блокируем контролы логина и пароля ICQ
     if Assigned(IcqOptionsForm) then
@@ -1325,22 +1365,20 @@ begin
     ICQ_BosConnect_Phaze := False;
     ICQ_Work_Phaze := False;
     ICQ_Offline_Phaze := False;
-    // Запускаем показ иконки коннекта ICQ
-    JvTimerList.Events[3].Enabled := True;
     // Устанавливаем параметры сокета
-    ICQWSocket.Proto := 'tcp';
+    ICQWSocket.Proto := C_SocketProto;
     // Устанавливаем настройки прокси
     if V_HttpProxy_Enable then
     begin
       ICQWSocket.Addr := V_HttpProxy_Address;
       ICQWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + C_Icq + C_PN + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port + C_RN;
+      S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       ICQWSocket.Addr := ICQ_LoginServerAddr;
       ICQWSocket.Port := ICQ_LoginServerPort;
-      S_Log := S_Log + C_Icq + C_PN + Log_Connect + ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort + C_RN;
+      S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + ICQ_LoginServerAddr + C_TN + ICQ_LoginServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -1351,7 +1389,7 @@ begin
   if ICQ_Work_Phaze then
     ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);
   // Пишем в лог
-  XLog(Trim(S_Log), C_Icq);
+  XLog(S_Log, C_Icq);
 end;
 
 {$ENDREGION}
@@ -2683,7 +2721,7 @@ begin
   begin
     // Мигаем иконкой
     if TrayIcon.IconIndex = 165 then
-      TrayIcon.IconIndex := 0
+      TrayIcon.IconIndex := 0 { TODO 1 -cосновное : потом сделать смену иконки на общий статус }
     else
       TrayIcon.IconIndex := 165;
     // Ставим флаг для трэя что есть сообщения в очереди
@@ -2691,215 +2729,9 @@ begin
   end
   else // Сбрасываем иконку в трэе
   begin
-    TrayIcon.IconIndex := 0;
+    TrayIcon.IconIndex := 0; { TODO 1 -cосновное : потом сделать смену иконки на общий статус }
     TrayIcon.Tag := 0;
   end;
-
-
-
-
-  {if V_Roster <> nil then
-  begin
-    with V_Roster do
-    begin
-      if Root <> nil then
-      begin
-        // Ищем раздел MRA
-
-      for I := 0 to Items.Count - 1 do
-      begin
-        // Ищем такую запись в КЛ
-        CLItem := RosterForm.ReqCLContact(Items[I].Caption);
-        // Ищем такую запись в чате
-        ChatItem := RosterForm.ReqChatPage(Items[I].Caption);
-        // Отображаем мигающие иконки сообщений
-        if Items[I].SubItems[36] <> EmptyStr then
-        begin
-          // Сбрасываем переменные событий
-          Items[I].SubItems[18] := '0';
-          Items[I].SubItems[19] := '0';
-          Items[I].SubItems[35] := '0';
-          // Отображаем иконку сообщения в КЛ
-          if CLItem <> nil then
-          begin
-            // Если иконка сообщения уже отображается, то меняем её на статус,
-            // если наоборот, то на иконку сообщения
-            if CLItem.ImageIndex = 165 then
-              CLItem.ImageIndex := CLItem.Status
-            else
-              CLItem.ImageIndex := 165;
-            // Если группа этого контакта свёрнута, то мигаем заголовком группы
-            if CLItem.Category.Collapsed then
-            begin
-              if CLItem.Category.TextColor = ClBlack then
-                CLItem.Category.TextColor := ClRed
-              else
-                CLItem.Category.TextColor := ClBlack;
-            end
-            else
-              CLItem.Category.TextColor := ClBlack;
-          end;
-          // Отображаем иконку сообщения в чате
-          if ChatItem <> nil then
-          begin
-            if ChatItem.ImageIndex = 165 then
-              ChatItem.ImageIndex := ChatItem.Tag
-            else
-              ChatItem.ImageIndex := 165;
-            // Если окно чата не активно, то мигаем его кнопкой на панели задач
-            if not ChatForm.Active then
-              FormFlash(ChatForm.Handle);
-          end;
-          // Ставим флажки непрочитанных сообщений по протоколам
-          if Items[I].SubItems[3] = C_Icq then
-            YesMsgICQ := True;
-          if Items[I].SubItems[3] = C_Jabber then
-            YesMsgJabber := True;
-          if Items[I].SubItems[3] = C_Mra then
-            YesMsgMRA := True;
-        end
-        else
-          // Если таймер задержки Ростера активен, то игнорируем события статусов
-          if not JvTimerList.Events[11].Enabled then
-          begin
-            // Если контакт вышел в онлайн, то отображаем это иконкой двери
-            if Items[I].SubItems[18] <> '0' then
-            begin
-              T := StrToInt(Items[I].SubItems[18]);
-              Dec(T);
-              Items[I].SubItems[18] := IntToStr(T);
-              // Отображаем иконку двери в КЛ
-              if CLItem <> nil then
-                CLItem.ImageIndex := 228;
-              // Отображаем иконку двери в чате
-              if ChatItem <> nil then
-                ChatItem.ImageIndex := 228;
-            end
-              // Если контакт вышел в оффлайн, то отображаем это иконкой двери
-            else if Items[I].SubItems[19] <> '0' then
-            begin
-              T := StrToInt(Items[I].SubItems[19]);
-              Dec(T);
-              Items[I].SubItems[19] := IntToStr(T);
-              // Отображаем иконку двери в КЛ
-              if CLItem <> nil then
-                CLItem.ImageIndex := 229;
-              // Отображаем иконку двери в чате
-              if ChatItem <> nil then
-                ChatItem.ImageIndex := 229;
-            end
-              // Если контакт печатает нам сообщение и время печати меньше отбоя печати
-            else if Items[I].SubItems[35] <> '0' then
-            begin
-              // Уменьшаем значение индикации времени набора сообщения
-              T := StrToInt(Items[I].SubItems[35]);
-              Dec(T);
-              Items[I].SubItems[35] := IntToStr(T);
-              // Отображаем иконку печати сообщения в КЛ
-              if CLItem <> nil then
-                CLItem.ImageIndex := 161;
-              // Отображаем иконку печати сообщения в чате
-              if ChatItem <> nil then
-              begin
-                // Если активная вкладка совпадает с UIN
-                with ChatForm do
-                begin
-                  if ChatItem.HelpKeyword = InfoPanel2.Caption then
-                  begin
-                    ChatItem.ImageIndex := StrToInt(Items[I].SubItems[6]);
-                    // Ставим сообщение о наборе текста
-                    NotifyPanel.Font.Color := ClBlue;
-                    NotifyPanel.Caption := Lang_Vars[46].L_S;
-                  end
-                  else
-                  begin
-                    ChatItem.ImageIndex := 161;
-                    // Убираем сообщение о наборе текста
-                    NotifyPanel.Font.Color := ClWindowText;
-                    NotifyPanel.Caption := '...';
-                  end;
-                end;
-              end;
-            end
-            else
-            begin
-              // Отображаем иконку статуса в КЛ
-              if CLItem <> nil then
-              begin
-                CLItem.Status := StrToInt(Items[I].SubItems[6]);
-                CLItem.ImageIndex := CLItem.Status;
-              end;
-              // Отображаем иконку статуса в чате
-              if ChatItem <> nil then
-              begin
-                ChatItem.Tag := StrToInt(Items[I].SubItems[6]);
-                ChatItem.ImageIndex := ChatItem.Tag;
-              end;
-            end;
-          end;
-      end;
-      end;
-    end;
-  end;}
-
-  {// Если не активен таймер иконки соединения, то можно мигать иконками сообщений
-  if not JvTimerList.Events[3].Enabled then
-  begin
-    // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-    if (YesMsgICQ) and (V_InMessList.Count > 0) then
-    begin
-      // Ставим флаг в трэе, что есть сообщения для открытия
-      ICQTrayIcon.Tag := 1;
-      // Если иконка сообщения уже отображается, то меняем её на статус,
-      // если наоборот, то на иконку сообщения
-      if ICQTrayIcon.IconIndex = 165 then
-        ICQTrayIcon.IconIndex := ICQ_CurrentStatus
-      else
-        ICQTrayIcon.IconIndex := 165;
-    end
-    else
-    begin
-      // Сбрасываем отображение иконки сообщений в трэе для ICQ
-      ICQTrayIcon.Tag := 0;
-      ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
-    end;
-    // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-    if (YesMsgJabber) and (V_InMessList.Count > 0) then
-    begin
-      // Ставим флаг в трэе, что есть сообщения для открытия
-      JabberTrayIcon.Tag := 1;
-      // Если иконка сообщения уже отображается, то меняем её на статус,
-      // если наоборот, то на иконку сообщения
-      if JabberTrayIcon.IconIndex = 165 then
-        JabberTrayIcon.IconIndex := Jabber_CurrentStatus
-      else
-        JabberTrayIcon.IconIndex := 165;
-    end
-    else
-    begin
-      // Сбрасываем отображение иконки сообщений в трэе для ICQ
-      JabberTrayIcon.Tag := 0;
-      JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
-    end;
-    // Если есть непрочитанные сообщения в КЛ и в списке очереди входящих сообщений
-    if (YesMsgMRA) and (V_InMessList.Count > 0) then
-    begin
-      // Ставим флаг в трэе, что есть сообщения для открытия
-      MraTrayIcon.Tag := 1;
-      // Если иконка сообщения уже отображается, то меняем её на статус,
-      // если наоборот, то на иконку сообщения
-      if MraTrayIcon.IconIndex = 165 then
-        MraTrayIcon.IconIndex := Mra_CurrentStatus
-      else
-        MraTrayIcon.IconIndex := 165;
-    end
-    else
-    begin
-      // Сбрасываем отображение иконки сообщений в трэе для ICQ
-      MraTrayIcon.Tag := 0;
-      MraTrayIcon.IconIndex := Mra_CurrentStatus;
-    end;
-  end;}
 end;
 
 {$ENDREGION}
@@ -3129,17 +2961,16 @@ begin
           Exit;
         end;
       end
+      else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
+      begin
+        ProxyErr := 1;
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+      end
       else
-        if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
-        begin
-          ProxyErr := 1;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
-        end
-        else
-        begin
-          ProxyErr := 2;
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
-        end;
+      begin
+        ProxyErr := 2;
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+      end;
       // Забираем из буфера пакет с данными MRA
       Pkt := MRA_myBeautifulSocketBuffer;
       // Очищаем буфер
