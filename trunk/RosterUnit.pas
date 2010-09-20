@@ -31,6 +31,8 @@ procedure ClearContacts(CType: string);
 procedure OpenChatPage(CButton: TButtonItem; Proto: string);
 function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXmlElem;
 procedure RosterUpdateProp(R_Node: TJvSimpleXmlElem; R_Prop, R_Value: string);
+procedure DellcIdInMessList(CId: string);
+function ReqChatPage(CId: string): TToolButton;
 {$ENDREGION}
 
 implementation
@@ -309,7 +311,7 @@ begin
             for G := 0 to Categories.Count - 1 do
             begin
               if (Categories[I].GroupId = C_Phone_m2) or (Categories[I].GroupId = C_AuthNone) or //
-                (Categories[I].GroupId = C_NoCL) or (Categories[I].GroupId = C_IgCL) then
+              (Categories[I].GroupId = C_NoCL) or (Categories[I].GroupId = C_IgCL) then
               begin
                 if Categories[I].Items.Count = 0 then
                 begin
@@ -486,6 +488,54 @@ begin
     XML_Prop.Value := R_Value
   else
     R_Node.Properties.Add(R_Prop, R_Value);
+end;
+{$ENDREGION}
+{$REGION 'DellcIdInMessList'}
+
+procedure DellcIdInMessList(CId: string);
+var
+  I: Integer;
+begin
+  // Удаляем отметку о сообщении из списка очереди входящих сообщений
+  if Assigned(V_InMessList) then
+  begin
+    with V_InMessList do
+    begin
+      for I := 0 to Count - 1 do
+      begin
+        if Strings[I] = CId then
+        begin
+          Delete(I);
+          Break;
+        end;
+      end;
+    end;
+  end;
+end;
+{$ENDREGION}
+{$REGION 'ReqChatPage'}
+
+function ReqChatPage(CId: string): TToolButton;
+var
+  I: Integer;
+begin
+  Result := nil;
+  // Ищем вкладку в окне чата
+  if Assigned(ChatForm) then
+  begin
+    with ChatForm.ChatPageToolBar do
+    begin
+      for I := 0 to ButtonCount - 1 do
+      begin
+        if Buttons[I].HelpKeyword = CId then
+        begin
+          Result := Buttons[I];
+          // Выходим из цикла
+          Break;
+        end;
+      end;
+    end;
+  end;
 end;
 {$ENDREGION}
 

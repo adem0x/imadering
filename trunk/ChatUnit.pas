@@ -414,9 +414,12 @@ begin
     InputRichEdit.SetFocus;
   // Сбрасываем флаг модификации поля ввода
   InputRichEdit.Modified := False;
-
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
-  //RosterForm.DellcIdInMessList(UIN);
+  DellcIdInMessList(UIN);
+  // Сбрасываем иконку сообщения в этой закладке
+  CButton.ImageIndex := CButton.Tag;
+  // Обновляем КЛ
+  UpdateFullCL;
 
   // Загружаем аватар
   { if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
@@ -456,12 +459,14 @@ end;
 {$REGION 'AddMessInActiveChat'}
 
 function TChatForm.AddMessInActiveChat(CNick, CPopMsg, CId, CMsgD, CMess: string): Boolean;
+var
+  ChatTab: TToolButton;
 begin
   Result := False;
   if Visible then
   begin
     // Если открыт текущий чат с этим контактом
-    if UIN_Panel.Caption = CId then
+    if UIN_Panel.Caption = UrlDecode(CId) then
     begin
       // Если не включены текстовые смайлы, то форматируем сообщение под смайлы
       if not V_TextSmilies then
@@ -479,12 +484,16 @@ begin
     end;
   end;
   // Если в списке очереди входящих сообщений нет этого контакта, то добавляем его туда
-  {if V_InMessList.IndexOf(CId) = -1 then
-    V_InMessList.Add(CId);}
+  if V_InMessList.IndexOf(CId) = -1 then
+    V_InMessList.Add(CId);
   // Играем звук входящего сообщения
   ImPlaySnd(2);
   // Показываем всплывашку с сообщением
   DAShow(CNick, CPopMsg, CId, 165, 1, 0);
+  // Ставим иконку с сообщением на закладке в чате
+  ChatTab := ReqChatPage(CId);
+  if ChatTab <> nil then
+    ChatTab.ImageIndex := 165;
 end;
 
 {$ENDREGION}
@@ -1093,20 +1102,20 @@ end;
 
 procedure TChatForm.FormActivate(Sender: TObject);
 var
-  RosterItem: TListItem;
-  ChatTabB: TToolButton;
+  I: Integer;
 begin
-  {// Сбрасываем иконку в активной вкладке в окне чата
-  ChatTabB := RosterForm.ReqChatPage(InfoPanel2.Caption);
-  if ChatTabB = nil then
-    Exit;
-  ChatTabB.ImageIndex := ChatTabB.Tag;
-  // Сбрасываем иконку сообщения в Ростере
-  RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
-  if RosterItem <> nil then
-    RosterItem.SubItems[36] := EmptyStr;
-  // Удаляем отметку о сообщении из списка очереди входящих сообщений
-  RosterForm.DellcIdInMessList(InfoPanel2.Caption);}
+  // Активируем чат с активной закладкой в чате
+  with ChatPageToolBar do
+  begin
+    for I := 0 to ButtonCount - 1 do
+    begin
+      if Buttons[I].Down then
+      begin
+        CreateNewChat(Buttons[I]);
+        Break;
+      end;
+    end;
+  end;
 end;
 
 {$ENDREGION}
