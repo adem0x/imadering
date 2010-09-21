@@ -28,7 +28,8 @@ uses
   VarsUnit,
   Graphics,
   CategoryButtons,
-  JvSimpleXml;
+  JvSimpleXml,
+  StrUtils;
 {$ENDREGION}
 {$REGION 'Const'}
 const
@@ -895,9 +896,33 @@ end;
 {$REGION 'MRA_ParseOfflineMess'}
 
 procedure MRA_ParseOfflineMess(PktData: string);
+var
+  M_id, Pkt, M_Body: string;
+  Len: Integer;
 begin
-  //
+  // Получаем идентификатор оффлайн сообщения
+  M_id := Text2Hex(NextData(PktData, 8));
+  // Получаем тело сообщения
+  Len := HexToInt(Text2Hex(NextData(PktData, 4)));
+  Len := Swap32(Len);
+  M_Body := NextData(PktData, Len);
+  M_Body := ReplaceStr(M_Body, #$0A, C_RN);
+  // Пишем в лог данные пакета
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[17].Pkt_Name + C_RN + M_Body, C_Mra);
+  // Парсим данные из тела сообщения
+  if M_Body <> EmptyStr then
+  begin
 
+  end;
+  // Инициируем событие получения онлайн сообщения
+
+  // Если идентификатор не пустой, то отправляем пакет удаления этого оффлайн сообщения с сервера
+  if M_id <> EmptyStr then
+  begin
+    Pkt := MRA_Empty + M_Id;
+    // Отправляем пакет
+    Mra_SendPkt('1E100000', Pkt, False);
+  end;
 end;
 
 {$ENDREGION}

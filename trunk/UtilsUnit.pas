@@ -485,7 +485,6 @@ var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 begin
-  //Xlog(Xform.name, EmptyStr);
   List := Tstringlist.Create;
   try
     // Инициализируем XML
