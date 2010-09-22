@@ -2670,9 +2670,9 @@ begin
             begin
               Group_Msg_yes := True;
               Msg_Yes := True;
-              Categories[G].Items[K].ImageIndex := 150;
+              Categories[G].Items[K].ImageIndex := 164;
             end;
-          150:
+          164:
             begin
               Group_Msg_yes := True;
               Msg_Yes := True;
@@ -2703,9 +2703,9 @@ begin
           165:
             begin
               Group_Msg_yes := True;
-              Buttons[K].ImageIndex := 150;
+              Buttons[K].ImageIndex := 164;
             end;
-          150:
+          164:
             begin
               Group_Msg_yes := True;
               Buttons[K].ImageIndex := 165;
@@ -3121,6 +3121,7 @@ begin
             $1037: MRA_ParseCL(NextData(HexPkt, Len));
             $100F: MRA_ParseStatus(NextData(HexPkt, Len));
             $101D: MRA_ParseOfflineMess(NextData(HexPkt, Len));
+            $1040: MRA_ParseSMS_ACK(NextData(HexPkt, Len));
           else
             // Если канал пакета вообще другой, то проверяем в буфере другой пакет
             goto Z;

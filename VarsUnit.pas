@@ -501,7 +501,7 @@ var
     (L_N: 'FileTransfer_4'; L_S: ''), // 91
     (L_N: 'FileTransfer_5'; L_S: ''), // 92
     (L_N: 'FileTransfer_6'; L_S: ''), // 93
-    (L_N: '---'; L_S: ''), // 94
+    (L_N: 'SMS_ACK'; L_S: ''), // 94
     (L_N: 'JabberNullGroup'; L_S: ''), // 95
     (L_N: 'AddNewGroup'; L_S: ''), // 96
     (L_N: 'AddGroupErr_1'; L_S: ''), // 97

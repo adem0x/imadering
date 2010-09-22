@@ -123,6 +123,7 @@
     <NotInGroups c="Вне групп"/>
     <DumpProto c="Отладка протокола %s"/>
     <HexToText c="Показать HEX как %s текст"/>
+    <SMS_ACK c="SMS сообщение отправлено."/>
   </Vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>

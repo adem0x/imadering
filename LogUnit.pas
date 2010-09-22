@@ -215,17 +215,6 @@ begin
   HexToLEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-LE']);
   HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-BE']);
 end;
-
-procedure TLogForm.WriteLogSpeedButtonClick(Sender: TObject);
-begin
-  // Меняем иконки на кнопке паузы записи в лог
-  WriteLogSpeedButton.Glyph.Assign(nil);
-  if WriteLogSpeedButton.Down then
-    MainForm.AllImageList.GetBitmap(224, WriteLogSpeedButton.Glyph)
-  else
-    MainForm.AllImageList.GetBitmap(223, WriteLogSpeedButton.Glyph);
-end;
-
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
@@ -263,6 +252,16 @@ begin
 end;
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TLogForm.WriteLogSpeedButtonClick(Sender: TObject);
+begin
+  // Меняем иконки на кнопке паузы записи в лог
+  WriteLogSpeedButton.Glyph.Assign(nil);
+  if WriteLogSpeedButton.Down then
+    MainForm.AllImageList.GetBitmap(224, WriteLogSpeedButton.Glyph)
+  else
+    MainForm.AllImageList.GetBitmap(223, WriteLogSpeedButton.Glyph);
+end;
 
 procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);
 begin

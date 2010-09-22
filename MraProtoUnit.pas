@@ -29,7 +29,8 @@ uses
   Graphics,
   CategoryButtons,
   JvSimpleXml,
-  StrUtils;
+  StrUtils,
+  OverbyteIcsMimeUtils;
 {$ENDREGION}
 {$REGION 'Const'}
 const
@@ -135,7 +136,7 @@ const
 
   // Расшифровка пакетов для лога
   MRA_Pkt_Names:
-    packed array[0..30] of record
+    packed array[0..32] of record
     Pkt_Code: Integer;
     Pkt_Name: string;
   end = ((Pkt_Code: $1001; Pkt_Name: 'HELLO'), // 0
@@ -168,7 +169,9 @@ const
     (Pkt_Code: $1028; Pkt_Name: 'ANKETA_INFO'), // 27
     (Pkt_Code: $1033; Pkt_Name: 'MAILBOX_STATUS'), // 28
     (Pkt_Code: $1037; Pkt_Name: 'CONTACT_LIST2'), // 29
-    (Pkt_Code: $1038; Pkt_Name: 'LOGIN2')); // 30
+    (Pkt_Code: $1038; Pkt_Name: 'LOGIN2'), // 30
+    (Pkt_Code: $1039; Pkt_Name: 'SEND_SMS'), // 31
+    (Pkt_Code: $1040; Pkt_Name: 'SMS_ACK')); // 32
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -211,7 +214,7 @@ procedure MRA_AlivePkt;
 procedure MRA_ParseUserInfo(PktData: string);
 procedure MRA_ParseCL(PktData: string);
 procedure MRA_SendMessage(ToEmail, Msg: string);
-procedure MRA_MessageRecv(PktData: string);
+procedure MRA_MessageRecv(PktData: string; K_Email: string = ''; K_Mess: string = '');
 procedure MRA_SendMessageACK(ToEmail, M_Id: string);
 procedure MRA_ParseStatus(PktData: string);
 procedure MRA_ParseOfflineMess(PktData: string);
@@ -219,6 +222,7 @@ procedure MRA_SendSMS(ToPhone, Mess: string);
 procedure MRA_GoOffline;
 function MRA_StatusCodeToImg(KStatusCode, KXStatusCode: string): string;
 function MRA_ClientToImg(KClient: string): string;
+procedure MRA_ParseSMS_ACK(PktData: string);
 {$ENDREGION}
 
 implementation
@@ -313,7 +317,9 @@ end;
 {$ENDREGION}
 {$REGION 'MRA_MessageRecv'}
 
-procedure MRA_MessageRecv(PktData: string);
+procedure MRA_MessageRecv(PktData: string; K_Email: string = ''; K_Mess: string = '');
+label
+  A;
 var
   S_Log, M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   I, Len: Integer;
@@ -324,6 +330,13 @@ begin
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     Application.CreateForm(TChatForm, ChatForm);
+  // Обрабатываем уже готовые сообщения
+  if (K_Email <> EmptyStr) and (K_Mess <> EmptyStr) then
+  begin
+    M_From := K_Email;
+    Mess := Text2XML(K_Mess);
+    goto A;
+  end;
   // Получаем Id сообщения
   M_Id := Text2Hex(NextData(PktData, 4));
   // Получаем флаг сообщения
@@ -335,6 +348,7 @@ begin
     #define MESSAGE_FLAG_CONTACT		0200
     #define MESSAGE_FLAG_NOTIFY		  0400
     #define MESSAGE_FLAG_MULTICAST	1000
+    #define MESSAGE_FLAG_PHONE    	2000
     #define MESSAGE_FLAG_NOTIFY		  3000 }
   M_Flag := RightStr(Text2Hex(NextData(PktData, 4)), 4);
   // Получаем отправителя сообщения
@@ -342,11 +356,14 @@ begin
   Len := Swap32(Len);
   M_From := NextData(PktData, Len);
   // Получаем текст сообщения
-  if (M_Flag = '0001') or (M_Flag = '0004') or (M_Flag = '0040') or (M_Flag = '0080') or (M_Flag = '1000') then
+  if (M_Flag = '0001') or (M_Flag = '0004') or (M_Flag = '0040') or (M_Flag = '0080') or (M_Flag = '1000') or (M_Flag = '2000') then
   begin
     Len := HexToInt(Text2Hex(NextData(PktData, 4)));
     Len := Swap32(Len);
-    Mess := Text2XML(UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len))));
+    if M_Flag = '2000' then
+      Mess := Text2XML(NextData(PktData, Len))
+    else
+      Mess := Text2XML(UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len))));
   end;
   // Обрабатываем сообщение и отображаем
   if (M_From <> EmptyStr) and (Mess <> EmptyStr) then
@@ -355,6 +372,7 @@ begin
     if (M_Flag <> '0004') and (M_Flag <> '0400') and (M_Flag <> '3000') then
       MRA_SendMessageACK(M_From, M_Id);
     // Форматируем сообщение
+    A: ;
     CheckMessage_BR(Mess);
     ChatForm.CheckMessage_ClearTag(Mess);
     PopMsg := Mess;
@@ -404,12 +422,12 @@ begin
                 // Дата сообщения
                 MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
                 // Добавляем этот контакт в эту группу
-                Sub_Node := XML_Node.Items.Add(C_Contact + C_DD + IntToStr(XML_Node.Items.Count + 1));
-                Sub_Node.Properties.Add(C_Login, URLEncode(M_From));
-                Sub_Node.Properties.Add(C_Nick, URLEncode(Nick));
-                Sub_Node.Properties.Add(C_Status, 312);
-                Sub_Node.Properties.Add(C_InMess, UrlEncode(Mess));
-                Sub_Node.Properties.Add(C_Mess, C_XX);
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(M_From));
+                Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
+                Tri_Node.Properties.Add(C_Status, 312);
+                Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+                Tri_Node.Properties.Add(C_Mess, C_XX);
               end;
             end;
           end;
@@ -427,6 +445,8 @@ begin
       UpdateFullCL;
   end;
   // Пишем в лог
+  if (K_Email <> EmptyStr) and (K_Mess <> EmptyStr) then
+    Exit;
   S_Log := S_Log + C_Id + C_TN + C_BN + M_Id + C_LN + C_BN + 'Flag' + C_TN + C_BN + M_Flag + C_LN + C_BN + 'From' + C_TN + C_BN + M_From + C_LN + C_BN + 'Text' + C_TN + C_BN + Mess;
   XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
 end;
@@ -896,8 +916,11 @@ end;
 {$REGION 'MRA_ParseOfflineMess'}
 
 procedure MRA_ParseOfflineMess(PktData: string);
+const
+  Content_Text_ULE = 'text/plain; charset=UTF-16LE';
+  Content_Encoding_B64 = 'base64';
 var
-  M_id, Pkt, M_Body: string;
+  M_id, Pkt, M_Body, M_From, M_Mess, M_Flag, M_Type, M_Cod, S_Log: string;
   Len: Integer;
 begin
   // Получаем идентификатор оффлайн сообщения
@@ -908,14 +931,35 @@ begin
   M_Body := NextData(PktData, Len);
   M_Body := ReplaceStr(M_Body, #$0A, C_RN);
   // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[17].Pkt_Name + C_RN + M_Body, C_Mra);
+  S_Log := M_Body;
   // Парсим данные из тела сообщения
   if M_Body <> EmptyStr then
   begin
-
+    // Получаем от кого пришло сообщение
+    M_From := IsolateTextString(M_Body, 'From: ', #$0D);
+    // Получаем тип сообщения
+    M_Type := IsolateTextString(M_Body, 'Type: ', #$0D);
+    // Получаем флаг сообщения
+    M_Flag := IsolateTextString(M_Body, 'Flags: ', #$0D);
+    // Получаем алгоритм шифрования сообщения
+    M_Cod := IsolateTextString(M_Body, 'Encoding: ', #$0D);
+    // Получаем сообщение
+    if (M_Type = Content_Text_ULE) and (M_Flag = '00100000') and (M_Cod = Content_Encoding_B64) then
+    begin
+      NextData(M_Body, Pos('base64', M_Body) + 5);
+      M_Mess := Trim(M_Body);
+      if M_Mess <> EmptyStr then
+      begin
+        M_Mess := Base64Decode(M_Mess);
+        M_Mess := UnicodeLEHex2Text(Text2Hex(M_Mess));
+        // Инициируем событие получения онлайн сообщения
+        MRA_MessageRecv(EmptyStr, M_From, M_Mess);
+        S_Log := S_Log + C_RN + 'Decode' + C_TN + C_BN + M_Mess;
+      end;
+    end;
   end;
-  // Инициируем событие получения онлайн сообщения
-
+  // Пишем в лог
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[17].Pkt_Name + C_RN + S_Log, C_Mra);
   // Если идентификатор не пустой, то отправляем пакет удаления этого оффлайн сообщения с сервера
   if M_id <> EmptyStr then
   begin
@@ -925,6 +969,18 @@ begin
   end;
 end;
 
+{$ENDREGION}
+{$REGION 'MRA_ParseSMS_ACK'}
+
+procedure MRA_ParseSMS_ACK(PktData: string);
+var
+  Flag: string;
+begin
+  // Получаем подтверждение отсылки SMS
+  Flag := Text2Hex(PktData);
+  if Flag = '01000000' then
+    DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[94].L_S, [C_Mra]), EmptyStr, 133, 3, 0);
+end;
 {$ENDREGION}
 
 end.
