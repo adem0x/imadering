@@ -65,6 +65,7 @@
     <TempGroupCaption c="Temporary"/>
     <NoCLGroupCaption c="Not in list"/>
     <PhoneGroupCaption c="Telephones"/>
+    <IgCLGroupCaption c="Ignored"/>
     <ConnectTime c="Connected"/>
     <RegDate c="Registered"/>
     <ProtoVersion c="Protocol version"/>
@@ -1195,13 +1196,13 @@
     <ResetButton c="Reset"/>
   </GamesForm>
   <SoundsNames>
-    <0 c="Connection established"/>
-    <1 c="Incoming message"/>
-    <2 c="Message sent"/>
-    <3 c="Contact online alert"/>
-    <4 c="Service alert"/>
-    <5 c="File transfer complete"/>
-    <6 c="Error message"/>
-    <7 c="Contact disconnected"/>
+    <S0 c="Connection established"/>
+    <S1 c="Incoming message"/>
+    <S2 c="Message sent"/>
+    <S3 c="Contact online alert"/>
+    <S4 c="Service alert"/>
+    <S5 c="File transfer complete"/>
+    <S6 c="Error message"/>
+    <S7 c="Contact disconnected"/>
   </SoundsNames>
 </root>

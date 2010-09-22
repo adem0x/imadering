@@ -4919,11 +4919,6 @@ begin
   if not Assigned(GamesForm) then
     Application.CreateForm(TGamesForm, GamesForm);
   XShowForm(GamesForm);
-
-  if not Assigned(ChatForm) then
-    Application.CreateForm(TChatForm, ChatForm);
-  XShowForm(ChatForm);
-
 end;
 
 procedure TMainForm.OpenGroupsCLClick(Sender: TObject);

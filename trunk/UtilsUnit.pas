@@ -2190,6 +2190,8 @@ begin
   begin
     // Находим ники в списке ников по учётной записи
     Result := V_AccountToNick.Values[Ctype + C_BN + Cid];
+    if Result = EmptyStr then
+      Result := CId;
   end;
 end;
 

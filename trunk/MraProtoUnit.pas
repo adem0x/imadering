@@ -424,8 +424,9 @@ begin
                 // Добавляем этот контакт в эту группу
                 Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
                 Tri_Node.Properties.Add(C_Login, URLEncode(M_From));
-                Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
+                Tri_Node.Properties.Add(C_Group + C_Id, C_NoCL);
                 Tri_Node.Properties.Add(C_Status, 312);
+                Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
                 Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
                 Tri_Node.Properties.Add(C_Mess, C_XX);
               end;
@@ -643,7 +644,7 @@ begin
           Tri_Node.Properties.Add(C_Id, C_NoCL);
           // Добавляем группу для игнорируемых контактов
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_IgCL);
-          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[1].L_S));
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[49].L_S));
           Tri_Node.Properties.Add(C_Id, C_IgCL);
           // Получаем контакты
           Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
@@ -711,7 +712,7 @@ begin
             Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
             if KEmail = C_Phone_m1 then
             begin
-              Tri_Node.Properties.Add(C_Login, URLEncode(KEmail + C_TN + KPhone));
+              Tri_Node.Properties.Add(C_Login, URLEncode(KPhone));
               Tri_Node.Properties.Add(C_Group + C_Id, C_Phone_m2);
               Tri_Node.Properties.Add(C_Status, 275);
             end
@@ -829,7 +830,7 @@ begin
               Tri_Node := Sub_Node.Items.Item[i];
               if Tri_Node <> nil then
               begin
-                if Tri_Node.Properties.IntValue(C_Status) <> 275 then
+                if (Tri_Node.Properties.IntValue(C_Status) <> 275) and (Tri_Node.Properties.IntValue(C_Status) <> 312) then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '23');
                   RosterUpdateProp(Tri_Node, C_XStatus, '-1');

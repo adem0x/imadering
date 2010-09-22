@@ -456,7 +456,7 @@ var
     (L_N: 'UserTyping'; L_S: ''), // 46
     (L_N: 'UserStatus'; L_S: ''), // 47
     (L_N: 'HexToText'; L_S: ''), // 48
-    (L_N: '---'; L_S: ''), // 49
+    (L_N: 'IgCLGroupCaption'; L_S: ''), // 49
     (L_N: '---'; L_S: ''), // 50
     (L_N: '---'; L_S: ''), // 51
     (L_N: '---'; L_S: ''), // 52
