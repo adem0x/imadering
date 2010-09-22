@@ -204,6 +204,7 @@ begin
     Caption := V_Profile;
     TrayIcon.Hint := V_Profile;
   end;
+  V_YouAt := V_Profile;
   // Инициализируем папку с профилем
   PR := V_ProfilePath;
   V_ProfilePath := V_ProfilePath + V_Profile + C_SN;

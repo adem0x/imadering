@@ -123,6 +123,7 @@
     <NotInGroups c="Outside groups"/>
     <DumpProto c="Debugging protocol %s"/>
     <HexToText c="Show HEX as %s text"/>
+    <SMS_ACK c="SMS message sent."/>
   </Vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
