@@ -175,7 +175,7 @@ end;
 procedure TGamesForm.FormCreate(Sender: TObject);
 begin
   // Присваиваем иконку окну и кнопкам
-  MainForm.AllImageList.GetIcon(286, Icon);
+  MainForm.AllImageList.GetIcon(60, Icon);
   MainForm.AllImageList.GetBitmap(6, LoadCatalogBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(225, LoadGameBitBtn.Glyph);
   // Переводим форму на другие языки
