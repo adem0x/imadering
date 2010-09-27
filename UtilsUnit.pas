@@ -1548,7 +1548,7 @@ begin
           S_Name := ICQ_Pkt_Names[I].Pkt_Name;
         Break;
       end;
-    XLog(C_Icq + Log_Send + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
+    XLog(C_Icq + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
   end;
   // Отсылаем данные по сокету
   MainForm.IcqWSocket.SendStr(Str);

@@ -35,7 +35,8 @@ uses
   GtransUnit,
   JvSimpleXml,
   OverbyteIcsUtils,
-  LogUnit;
+  LogUnit,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'Const Capabilities'}
@@ -3947,14 +3948,17 @@ end;
 {$REGION 'ICQ_Parse_1306'}
 
 function ICQ_Parse_1306(PktData: string): Boolean;
+const
+  C_ChangeTime = 'ChangeTime';
 var
   Len, Count, I: Integer;
   CLTimeStamp: DWord;
-  SubData, QSN, QGroupId, QID, QType, Rsu, QNick, TLV, S_Log: string;
+  SubData, QSN, QGroupId, QID, QType, QNick, TLV, Rsu, S_Log: string;
   QPhone, QNote, QEmail, QTimeId: string;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Prop: TJvSimpleXMLProp;
   Dt: TDateTime;
   Hour, Min, Sec, MSec: Word;
-  ListItemD: TListItem;
 begin
   // Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
   Result := False;
@@ -3962,333 +3966,312 @@ begin
   NextData(PktData, 1);
   // Получаем количесво записей в нашем КЛ
   Count := HexToInt(Text2Hex(NextData(PktData, 2)));
-  S_Log := S_Log + 'ItemsCount' + C_TN + IntToStr(Count) + C_RN;
+  S_Log := S_Log + C_Item + C_SS + C_BN + C_Count + C_TN + C_BN + IntToStr(Count) + C_RN;
   // Разбираем записи
   // Начинаем добаление записей контактов в Ростер
-  {RosterForm.RosterJvListView.Items.BeginUpdate;
-  try
-    for I := 0 to Count - 1 do
+  if V_Roster <> nil then
+  begin
+    with V_Roster do
     begin
-      // Длинна записи
-      Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-      // Получаем имя записи
-      QSN := Utf8ToString(NextData(PktData, Len));
-      S_Log := S_Log + 'Buddy' + C_TN + QSN + C_LN;
-      // Получаем идентификатор группы
-      QGroupId := Text2Hex(NextData(PktData, 2));
-      S_Log := S_Log + 'GroupId' + C_TN + QGroupId + C_LN;
-      // Идентификатор записи
-      QID := Text2Hex(NextData(PktData, 2));
-      S_Log := S_Log + 'Id' + C_TN + QID + C_LN;
-      // Тип записи
-      QType := Text2Hex(NextData(PktData, 2));
-      S_Log := S_Log + 'Type' + C_TN + QType + C_LN;
-      // Длинна TLV записи
-      Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-      // Получаем субпакет записи
-      SubData := NextData(PktData, Len);
-      // Определяем действие по типу записи
-      case HexToInt(QType) of
-        BUDDY_NORMAL: // Нормальный контакт
-          begin
-            // Добавляем контакт в Ростер
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
-            begin
-              Caption := QSN;
-              // Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              // Обновляем субстроки
-              SubItems[0] := QSN;
-              SubItems[1] := QGroupId;
-              SubItems[2] := 'both';
-              SubItems[3] := C_Icq;
-              SubItems[4] := QID;
-              SubItems[5] := QType;
-              SubItems[6] := '9';
-              // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
-              while Length(SubData) > 0 do
+      if Root <> nil then
+      begin
+        // Открываем раздел ICQ в ростере
+        XML_Node := Root.Items.ItemNamed[C_Icq];
+        // В цикле перебираем все пункты
+        for I := 0 to Count - 1 do
+        begin
+          // Длинна записи
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          // Получаем имя записи
+          QSN := Utf8ToString(NextData(PktData, Len));
+          S_Log := S_Log + C_Item + C_BN + C_PN + C_BN + C_Name + C_TN + C_BN + QSN + C_LN + C_BN;
+          // Получаем идентификатор группы
+          QGroupId := Text2Hex(NextData(PktData, 2));
+          S_Log := S_Log + C_Group + C_Id + C_TN + C_BN + QGroupId + C_LN + C_BN;
+          // Идентификатор записи
+          QID := Text2Hex(NextData(PktData, 2));
+          S_Log := S_Log + C_Id + C_TN + C_BN + QID + C_LN + C_BN;
+          // Тип записи
+          QType := Text2Hex(NextData(PktData, 2));
+          S_Log := S_Log + 'Type' + C_TN + C_BN + QType + C_LN + C_BN;
+          // Длинна TLV записи
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          // Получаем субпакет записи
+          SubData := NextData(PktData, Len);
+          // Определяем действие по типу записи
+          case HexToInt(QType) of
+            BUDDY_NORMAL: // Нормальный контакт
               begin
-                TLV := Text2Hex(SubData[1] + SubData[2]);
-                case HexToInt(Text2Hex(NextData(SubData, 2))) of
-                  $0131: // Ник контакта
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      QNick := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Nick' + C_BN + C_TLV + TLV + C_Value + QNick + C_LN;
-                      if QNick <> EmptyStr then
-                        SubItems[0] := URLEncode(QNick);
-                    end;
-                  $013A: // Номер сотового телефона
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      QPhone := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Phone' + C_BN + C_TLV + TLV + C_Value + QPhone + C_LN;
-                      SubItems[9] := URLEncode(QPhone);
-                    end;
-                  $0066: // Авторизован ли контакт для нашего КЛ
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      S_Log := S_Log + 'Auth' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
-                      // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
-                      SubItems.Strings[2] := 'none';
-                      SubItems.Strings[6] := '80';
-                      SubItems.Strings[8] := '220';
-                    end;
-                  $013C: // Заметка о контакте
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      QNote := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Note' + C_BN + C_TLV + TLV + C_Value + QNote + C_LN;
-                      SubItems[10] := URLEncode(QNote);
-                    end;
-                  $0137: // Email контакта
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      QEmail := Utf8ToString(NextData(SubData, Len));
-                      S_Log := S_Log + 'Email' + C_BN + C_TLV + TLV + C_Value + QEmail + C_LN;
-                      SubItems[11] := URLEncode(QEmail);
-                    end;
-                  $006D: // TimeId
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      QTimeId := Text2Hex(NextData(SubData, Len));
-                      S_Log := S_Log + 'TimeId' + C_BN + C_TLV + TLV + C_Value + QTimeId + C_LN;
-                      SubItems[12] := QTimeId;
-                    end
-                else
-                  begin
-                    // Если пакет содержит другие TLV, то пропускаем их
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
-                  end;
-                end;
-              end;
-            end;
-          end;
-        BUDDY_GROUP: // Группа
-          begin
-            // Нулевая группа для временных контактов в серверном КЛ
-            if QGroupId = '0000' then
-            begin
-              // Добавляем группу в Ростер
-              ListItemD := RosterForm.RosterJvListView.Items.Add;
-              with ListItemD do
-              begin
-                Caption := QGroupId;
-                // Подготавиливаем все значения
-                RosterForm.RosterItemSetFull(ListItemD);
-                // Обновляем субстроки
-                SubItems[1] := URLEncode(Lang_Vars[32].L_S);
-                SubItems[3] := C_Icq;
-                SubItems[4] := QGroupId;
-              end;
-            end
-              // Стандартная група
-            else if QGroupId <> '0000' then
-            begin
-              // Если есть хоть одна группа, то отключаем режим "нового" КЛ
-              NewKL := False;
-              // Добавляем группу в Ростер
-              ListItemD := RosterForm.RosterJvListView.Items.Add;
-              with ListItemD do
-              begin
-                Caption := QGroupId;
-                // Подготавиливаем все значения
-                RosterForm.RosterItemSetFull(ListItemD);
-                // Обновляем субстроки
-                SubItems[1] := URLEncode(QSN);
-                SubItems[3] := C_Icq;
-                SubItems[4] := QGroupId;
-              end;
-            end;
-          end;
-        BUDDY_UPGROUP: // Код для приватных групп
-          begin
-            ICQ_UpdatePrivateGroup_Code := QID;
-            S_Log := S_Log + 'PrivateGroupId' + C_TN + QID + C_LN;
-          end;
-        BUDDY_IGNORE: // Игнорируемые контакты
-          begin
-            // Добавляем контакт в Ростер
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
-            begin
-              Caption := '*' + QSN + '*';
-              // Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              // Обновляем субстроки
-              SubItems[0] := QSN;
-              SubItems[1] := QGroupId;
-              SubItems[2] := EmptyStr;
-              SubItems[3] := C_Icq;
-              SubItems[4] := QID;
-              SubItems[5] := QType;
-              SubItems[6] := '9';
-            end;
-          end;
-        BUDDY_INVISIBLE: // Невидящие контакты
-          begin
-            // Добавляем контакт в Ростер
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
-            begin
-              Caption := '*' + QSN + '*';
-              // Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              // Обновляем субстроки
-              SubItems[0] := QSN;
-              SubItems[1] := QGroupId;
-              SubItems[2] := EmptyStr;
-              SubItems[3] := C_Icq;
-              SubItems[4] := QID;
-              SubItems[5] := QType;
-              SubItems[6] := '9';
-            end;
-          end;
-        BUDDY_VISIBLE: // Видящие контакты
-          begin
-            // Добавляем контакт в Ростер
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
-            begin
-              Caption := '*' + QSN + '*';
-              // Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              // Обновляем субстроки
-              SubItems[0] := QSN;
-              SubItems[1] := QGroupId;
-              SubItems[2] := EmptyStr;
-              SubItems[3] := C_Icq;
-              SubItems[4] := QID;
-              SubItems[5] := QType;
-              SubItems[6] := '9';
-            end;
-          end;
-        BUDDY_DELETE, BUDDY_AUTORIZ: // Временные контакты из нулевой группы
-          begin
-            ListItemD := RosterForm.RosterJvListView.Items.Add;
-            with ListItemD do
-            begin
-              Caption := QSN;
-              // Подготавиливаем все значения
-              RosterForm.RosterItemSetFull(ListItemD);
-              // Обновляем субстроки
-              // Делаем поиск ника в кэше ников
-              if ICQ_Show_HideContacts then
-                SubItems[0] := URLEncode(SearchNickInCash(C_Icq, QSN))
-              else
-                SubItems[0] := QSN;
-              SubItems[1] := QGroupId;
-              SubItems[2] := 'none';
-              SubItems[3] := C_Icq;
-              SubItems[4] := QID;
-              SubItems[5] := QType;
-              // Назначаем такому контакту серый неизвестный статус и иконку
-              SubItems[6] := '214';
-              // Сканируем пакет на нужные нам TLV
-              while Length(SubData) > 0 do
-              begin
-                TLV := Text2Hex(NextData(SubData, 2));
-                case HexToInt(TLV) of
-                  $006D: // TimeId
-                    begin
-                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      QTimeId := Text2Hex(NextData(SubData, Len));
-                      S_Log := S_Log + 'TimeId' + C_BN + C_TLV + TLV + C_Value + QTimeId + C_LN;
-                      SubItems[12] := QTimeId;
-                    end
-                else
-                  begin
-                    // Если пакет содержит другие TLV, то пропускаем их
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
-                  end;
-                end;
-              end;
-            end;
-          end;
-        BUDDY_VANITY: // Информация о нашей деятельности на этом UIN
-          begin
-            // Сканируем пакет на нужные нам TLV
-            while Length(SubData) > 0 do
-            begin
-              TLV := Text2Hex(NextData(SubData, 2));
-              case HexToInt(TLV) of
-                $0067: // Начало сбора статистики
-                  begin
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                    S_Log := S_Log + 'CollSince' + C_BN + C_TLV + TLV + C_Value + ICQ_CollSince + C_LN;
-                  end;
-                $0150: // Всего отправлено сообщений
-                  begin
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                    S_Log := S_Log + 'SendMess' + C_BN + C_TLV + TLV + C_Value + ICQ_SendMess + C_LN;
-                  end;
-                $0151: // Дней проведено в сети
-                  begin
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    Dt := HexToInt(Text2Hex(NextData(SubData, Len))) / 86400;
-                    if Trunc(Dt) > 0 then
-                    begin
-                      Rsu := IntToStr(Trunc(Dt)) + ' day';
-                      if Trunc(Dt) > 1 then
-                        Rsu := Rsu + 's';
-                      Rsu := Rsu + ', ';
-                    end;
-                    DecodeTime(Dt, Hour, Min, Sec, MSec);
-                    if Hour > 0 then
-                      Rsu := Rsu + Format('%d h, ', [Hour]);
-                    if Min > 0 then
-                      Rsu := Rsu + Format('%d m, ', [Min]);
-                    if Sec > 0 then
-                      Rsu := Rsu + Format('%d s, ', [Sec]);
-                    Delete(Rsu, Length(Rsu) - 1, 2);
-                    ICQ_OnlineDays := Rsu;
-                    S_Log := S_Log + 'OnlineDays' + C_BN + C_TLV + TLV + C_Value + ICQ_OnlineDays + C_LN;
-                  end;
-                $0152: // Всего отправлено Away сообщений
-                  begin
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                    S_Log := S_Log + 'AwayMess' + C_BN + C_TLV + TLV + C_Value + ICQ_AwayMess + C_LN;
-                  end;
-                $0153: // Всего получено сообщений
-                  begin
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                    S_Log := S_Log + 'RecMess' + C_BN + C_TLV + TLV + C_Value + ICQ_RecMess + C_LN;
-                  end;
-                $0160: // Активность
-                  begin
-                    Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                    ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                    S_Log := S_Log + 'LastActive' + C_BN + C_TLV + TLV + C_Value + ICQ_LastActive + C_LN;
-                  end
-              else
+                // Открываем раздел контактов
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                if Sub_Node = nil then
+                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                // Добавляем контакт в Ростер
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
+                Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
+                Tri_Node.Properties.Add(C_Status, 9);
+                Tri_Node.Properties.Add(C_Id, QID);
+                Tri_Node.Properties.Add(C_Auth, C_AuthBoth);
+                Tri_Node.Properties.Add(C_Type, QType);
+                // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
+                while Length(SubData) > 0 do
                 begin
-                  // Если пакет содержит другие TLV, то пропускаем их
-                  Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                  S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(SubData, Len)) + C_LN;
+                  TLV := Text2Hex(SubData[1] + SubData[2]);
+                  case HexToInt(Text2Hex(NextData(SubData, 2))) of
+                    $0131: // Ник контакта
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QNick := Utf8ToString(NextData(SubData, Len));
+                        S_Log := S_Log + C_Nick + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QNick + C_LN + C_BN;
+                        if QNick <> EmptyStr then
+                          Tri_Node.Properties.Add(C_Nick, URLEncode(QNick));
+                      end;
+                    $013A: // Номер сотового телефона
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QPhone := Utf8ToString(NextData(SubData, Len));
+                        S_Log := S_Log + C_Phone + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QPhone + C_LN + C_BN;
+                        Tri_Node.Properties.Add(C_Phone, URLEncode(QPhone));
+                      end;
+                    $0066: // Не авторизованый контакт
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        S_Log := S_Log + C_Auth + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + C_AuthNone + C_LN + C_BN;
+                        // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
+                        XML_Prop := Tri_Node.Properties.ItemNamed[C_Auth];
+                        if XML_Prop <> nil then
+                          XML_Prop.Value := C_AuthNone;
+                        XML_Prop := Tri_Node.Properties.ItemNamed[C_Status];
+                        if XML_Prop <> nil then
+                          XML_Prop.Value := '80';
+                        XML_Prop := Tri_Node.Properties.ItemNamed[C_Client];
+                        if XML_Prop <> nil then
+                          XML_Prop.Value := '220';
+                      end;
+                    $013C: // Заметка о контакте
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QNote := Utf8ToString(NextData(SubData, Len));
+                        S_Log := S_Log + C_Note + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QNote + C_LN + C_BN;
+                        Tri_Node.Properties.Add(C_Note, URLEncode(QNote));
+                      end;
+                    $0137: // Email контакта
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QEmail := Utf8ToString(NextData(SubData, Len));
+                        S_Log := S_Log + C_Email + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QEmail + C_LN + C_BN;
+                        Tri_Node.Properties.Add(C_Email, URLEncode(QEmail));
+                      end;
+                    $006D: // TimeId
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QTimeId := Text2Hex(NextData(SubData, Len));
+                        S_Log := S_Log + C_Time + C_Id + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QTimeId + C_LN + C_BN;
+                        Tri_Node.Properties.Add(C_Time + C_Id, QTimeId);
+                      end
+                  else
+                    begin
+                      // Если пакет содержит другие TLV, то пропускаем их
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      S_Log := S_Log + C_Unk + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubData, Len)) + C_LN + C_BN;
+                    end;
+                  end;
                 end;
               end;
-            end;
-            // Отображаем эти переменные в окне настроек ICQ
-            if Assigned(IcqOptionsForm) then
-              IcqOptionsForm.SetOnlineVars;
+            BUDDY_GROUP: // Группа
+              begin
+                // Открываем раздел групп
+                Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                if Sub_Node = nil then
+                  Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+                // Нулевая группа для временных контактов в серверном КЛ
+                if QGroupId = '0000' then
+                begin
+                  Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                  Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[32].L_S));
+                  Tri_Node.Properties.Add(C_Id, QGroupId);
+                end
+                else
+                begin
+                  // Стандартная група
+                  if QGroupId <> '0000' then
+                  begin
+                    // Если есть хоть одна группа, то отключаем режим "нового" КЛ
+                    NewKL := False;
+                    // Записываем группу
+                    Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                    Tri_Node.Properties.Add(C_Name, URLEncode(QSN));
+                    Tri_Node.Properties.Add(C_Id, QGroupId);
+                  end;
+                end;
+              end;
+            BUDDY_UPGROUP: // Код для приватных групп
+              begin
+                ICQ_UpdatePrivateGroup_Code := QID;
+                S_Log := S_Log + 'PrivateGroupId' + C_TN + C_BN + QID + C_LN;
+              end;
+            BUDDY_IGNORE: // Игнорируемые контакты
+              begin
+                {// Открываем раздел контактов
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                if Sub_Node = nil then
+                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                // Добавляем контакт в Ростер
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
+                Tri_Node.Properties.Add(C_Group + C_Id, C_IgCL);
+                Tri_Node.Properties.Add(C_Status, 9);
+                Tri_Node.Properties.Add(C_Id, QID);
+                Tri_Node.Properties.Add(C_Type, QType);}
+              end;
+            BUDDY_INVISIBLE: // Невидящие контакты
+              begin
+                {// Открываем раздел контактов
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                if Sub_Node = nil then
+                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                // Добавляем контакт в Ростер
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
+                Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
+                Tri_Node.Properties.Add(C_Status, 9);
+                Tri_Node.Properties.Add(C_Id, QID);
+                Tri_Node.Properties.Add(C_Type, QType);}
+              end;
+            BUDDY_VISIBLE: // Видящие контакты
+              begin
+                {// Открываем раздел контактов
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                if Sub_Node = nil then
+                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                // Добавляем контакт в Ростер
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
+                Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
+                Tri_Node.Properties.Add(C_Status, 9);
+                Tri_Node.Properties.Add(C_Id, QID);
+                Tri_Node.Properties.Add(C_Type, QType);}
+              end;
+            BUDDY_DELETE, BUDDY_AUTORIZ: // Временные контакты из нулевой группы
+              begin
+                // Открываем раздел контактов
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                if Sub_Node = nil then
+                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                // Добавляем контакт в Ростер
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
+                Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
+                Tri_Node.Properties.Add(C_Status, 214);
+                Tri_Node.Properties.Add(C_Id, QID);
+                Tri_Node.Properties.Add(C_Type, QType);
+                // Делаем поиск ника в кэше ников
+                if ICQ_Show_HideContacts then
+                  Tri_Node.Properties.Add(C_Nick, SearchNickInCash(C_Icq, UrlEncode(QSN)));
+                // Сканируем пакет на нужные нам TLV
+                while Length(SubData) > 0 do
+                begin
+                  TLV := Text2Hex(NextData(SubData, 2));
+                  case HexToInt(TLV) of
+                    $006D: // TimeId
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QTimeId := Text2Hex(NextData(SubData, Len));
+                        S_Log := S_Log + C_Time + C_Id + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QTimeId + C_LN + C_BN;
+                        Tri_Node.Properties.Add(C_Time + C_Id, QTimeId);
+                      end
+                  else
+                    begin
+                      // Если пакет содержит другие TLV, то пропускаем их
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      S_Log := S_Log + C_Unk + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubData, Len)) + C_LN + C_BN;
+                    end;
+                  end;
+                end;
+              end;
+            BUDDY_VANITY: // Информация о нашей деятельности на этом UIN
+              begin
+                // Сканируем пакет на нужные нам TLV
+                while Length(SubData) > 0 do
+                begin
+                  TLV := Text2Hex(NextData(SubData, 2));
+                  case HexToInt(TLV) of
+                    $0067: // Начало сбора статистики
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
+                        S_Log := S_Log + 'CollSince' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_CollSince + C_LN + C_BN;
+                      end;
+                    $0150: // Всего отправлено сообщений
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                        S_Log := S_Log + C_OutMess + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_SendMess + C_LN + C_BN;
+                      end;
+                    $0151: // Дней проведено в сети
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        Dt := HexToInt(Text2Hex(NextData(SubData, Len))) / 86400;
+                        ICQ_OnlineDays := IntToStr(Trunc(Dt));
+                        S_Log := S_Log + 'OnlineDays' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_OnlineDays + C_LN + C_BN;
+                      end;
+                    $0152: // Всего отправлено Away сообщений
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                        S_Log := S_Log + 'AwayMess' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_AwayMess + C_LN + C_BN;
+                      end;
+                    $0153: // Всего получено сообщений
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
+                        S_Log := S_Log + C_InMess + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_RecMess + C_LN + C_BN;
+                      end;
+                    $0160: // Активность
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
+                        S_Log := S_Log + 'LastActive' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_LastActive + C_LN + C_BN;
+                      end
+                  else
+                    begin
+                      // Если пакет содержит другие TLV, то пропускаем их
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      S_Log := S_Log + C_Unk + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubData, Len)) + C_LN + C_BN;
+                    end;
+                  end;
+                end;
+                // Отображаем эти переменные в окне настроек ICQ
+                if Assigned(IcqOptionsForm) then
+                  IcqOptionsForm.SetOnlineVars;
+              end;
           end;
+          S_Log := S_Log + C_RN;
+        end;
+        // Открываем раздел групп
+        Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+        if Sub_Node = nil then
+          Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+        // Добавляем группу для контактов "не в списке"
+        Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+        Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+        Tri_Node.Properties.Add(C_Id, C_NoCL);
+        // Добавляем группу для игнорируемых контактов
+        Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_IgCL);
+        Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[49].L_S));
+        Tri_Node.Properties.Add(C_Id, C_IgCL);
       end;
-      S_Log := S_Log + C_RN;
     end;
-  finally
-    // Заканчиваем добаление записей контактов в Ростер
-    RosterForm.RosterJvListView.Items.EndUpdate;
-  end;}
+  end;
   // Финальное время контакт листа
   CLTimeStamp := HexToInt(Text2Hex(NextData(PktData, 4)));
-  S_Log := S_Log + 'TimeStamp' + C_TN + FloatToStr(CLTimeStamp) + C_RN;
+  if CLTimeStamp <> 0 then
+    S_Log := S_Log + C_ChangeTime + C_TN + C_BN + DateTimeToStr(UnixToDateTime(CLTimeStamp)) + C_RN
+  else
+    S_Log := S_Log + C_ChangeTime + C_TN + C_BN + '0' + C_RN;
+  // Пишем в лог данные пакета
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[27].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
   // Если время больше нуля, то заканчиваем с наполнением КЛ
   if CLTimeStamp <> 0 then
   begin
@@ -4302,16 +4285,14 @@ begin
       ICQ_Add_GroupId := IntToHex(Random($7FFF), 4);
       ICQ_Add_Group_Phaze := True;
       ICQ_SSI_Phaze := True;
-      ICQ_AddGroup('General', ICQ_Add_GroupId);
+      ICQ_AddGroup(ICQ_Add_Nick, ICQ_Add_GroupId);
     end;
     // Объявляем финальный результат разбора всего пакета
     Result := True;
     // Запускаем обработку Ростера
     V_CollapseGroupsRestore := True;
-    //RosterForm.UpdateFullCL;
+    UpdateFullCL;
   end;
-  // Пишем в лог данные пакета
-  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[27].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -4320,14 +4301,14 @@ end;
 procedure ICQ_Parse_010F(PktData: string);
 var
   Len, Count, I: Integer;
-  TLV, S_Log: string;
+  TLV, S_Log, S: string;
 begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
     Exit;
   // Пропускаем наш UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
-  S_Log := S_Log + 'UIN' + C_TN + NextData(PktData, Len) + C_RN;
+  S_Log := S_Log + C_Login + C_TN + C_BN + NextData(PktData, Len) + C_RN;
   // Пропускаем уровень предупреждений (в icq протоколе всегда равен 0)
   NextData(PktData, 2);
   // Получаем количесво вложенных в пакет TLV
@@ -4337,11 +4318,47 @@ begin
     TLV := Text2Hex(NextData(PktData, 2));
     // Сканируем пакет на наличие нужных нам TLV
     case HexToInt(TLV) of
+      $0001:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := Text2Hex(NextData(PktData, Len));
+          S_Log := S_Log + 'UserClass' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
+      $0006:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := Text2Hex(NextData(PktData, Len));
+          S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
+      $000D:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := Text2Hex(NextData(PktData, Len));
+          S_Log := S_Log + 'Caps' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
+      $000C:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := Text2Hex(NextData(PktData, Len));
+          S_Log := S_Log + 'DC Info' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
+      $000F:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := Text2Hex(NextData(PktData, Len));
+          S_Log := S_Log + 'IdleTime' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
+      $0003:
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          S_Log := S_Log + 'SignonTime' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
       $0005: // Дата регистрации нашего UIN
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'RegDate' + C_BN + C_TLV + TLV + C_Value + ICQ_MyUIN_RegTime + C_RN;
+          S_Log := S_Log + 'RegDate' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_MyUIN_RegTime + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
@@ -4350,7 +4367,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'ExtIP' + C_BN + C_TLV + TLV + C_Value + ICQ_Online_IP + C_RN;
+          S_Log := S_Log + 'ExtIP' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Online_IP + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
@@ -4359,12 +4376,12 @@ begin
       begin
         // Если пакет содержит другие TLV, то пропускаем их
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(PktData, Len)) + C_RN;
+        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
       end;
     end;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[21].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[21].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}

@@ -209,7 +209,6 @@ uses
 const
   C_Settings = 'Settings';
   C_Proxy = 'Proxy';
-  C_ProxyType = 'Type';
   C_ProxyVersion = 'Version';
   C_ProxyNTLM = 'NTLM';
   C_StartInTray = 'Start_in_tray';
@@ -382,7 +381,7 @@ begin
                       begin
                         ProxyAddressEdit.Text := Sub_Node.Properties.Value(C_Host);
                         ProxyPortEdit.Text := Sub_Node.Properties.Value(C_Port);
-                        ProxyTypeComboBox.ItemIndex := Sub_Node.Properties.IntValue(C_ProxyType);
+                        ProxyTypeComboBox.ItemIndex := Sub_Node.Properties.IntValue(C_Type);
                         ProxyVersionComboBox.ItemIndex := Sub_Node.Properties.IntValue(C_ProxyVersion);
                         ProxyAuthCheckBox.Checked := Sub_Node.Properties.BoolValue(C_Auth);
                         ProxyLoginEdit.Text := Sub_Node.Properties.Value(C_Login);
@@ -751,7 +750,7 @@ begin
             Sub_Node := XML_Node.Items.Add(C_Proxy);
             Sub_Node.Properties.Add(C_Host, ProxyAddressEdit.Text);
             Sub_Node.Properties.Add(C_Port, ProxyPortEdit.Text);
-            Sub_Node.Properties.Add(C_ProxyType, ProxyTypeComboBox.ItemIndex);
+            Sub_Node.Properties.Add(C_Type, ProxyTypeComboBox.ItemIndex);
             Sub_Node.Properties.Add(C_ProxyVersion, ProxyVersionComboBox.ItemIndex);
             Sub_Node.Properties.Add(C_Auth, ProxyAuthCheckBox.Checked);
             Sub_Node.Properties.Add(C_Login, ProxyLoginEdit.Text);

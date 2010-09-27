@@ -564,7 +564,7 @@ var
 begin
   // Получаем ошибки списка контактов
   UL := Text2Hex(NextData(PktData, 4));
-  S_Log := S_Log + 'UL: ' + UL + C_RN;
+  S_Log := S_Log + 'UL' + C_TN + C_BN + UL + C_RN;
   // Если ошибок в списке контактов нет
   if UL = '00000000' then
   begin

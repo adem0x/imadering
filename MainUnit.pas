@@ -1347,7 +1347,7 @@ begin
   begin
     S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + ICQ_LoginUIN + C_RN;
     // Ставим иконку подключения
-    ICQToolButton.ImageIndex := 162;
+    ICQToolButton.ImageIndex := 80;
     // Блокируем контролы логина и пароля ICQ
     if Assigned(IcqOptionsForm) then
     begin
@@ -1534,20 +1534,20 @@ begin
       ProxyErr := 0;
       // Если ответ положительный и прокси установил соединение,
       // то активируем фазу подключения через http прокси
-      if StartsStr('HTTPS/1.0 200', Pkt) or StartsStr('HTTPS/1.1 200', Pkt) or StartsStr('HTTP/1.0 200', Pkt) or StartsStr('HTTP/1.1 200', Pkt) then
+      if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         ICQ_HTTP_Connect_Phaze := True;
         XLog(C_Icq + Log_Get + Log_Proxy_OK, C_Icq);
       end
-      else if StartsStr('HTTP/1.0 407', Pkt) then
+      else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
         ProxyErr := 1;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
       end;
       // Забираем из буфера пакет с данными ICQ
       Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1574,7 +1574,7 @@ begin
     if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
     begin
       // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
       ICQ_GoOffline;
       Exit;
     end;
@@ -1604,7 +1604,7 @@ begin
               S_Name := ICQ_Pkt_Names[I].Pkt_Name;
               Break;
             end;
-          XLog(C_Icq + Log_Get + S_Name + C_RN + Trim(Dump(HexPkt)), C_Icq);
+          XLog(C_Icq + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Icq);
         end;
         // Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
         if NextData(HexPkt, 1) = #$2A then
@@ -1646,7 +1646,7 @@ begin
                           begin
                             if ICQ_BosConnect_Phaze then
                             begin
-                              // Очищаем группы ICQ в Ростере
+                              // Очищаем контакты ICQ в Ростере
                               ClearContacts(C_Icq);
                               // Пока думаем, что у нас новый (обсолютно чистый) список контактов
                               NewKL := True;
@@ -1692,10 +1692,10 @@ begin
                             begin
                               TLV := Text2Hex(NextData(HexPkt, 2)); // Пропускаем TLV
                               Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                              S_Log := S_Log + 'URL' + C_BN + C_TLV + TLV + C_Value + NextData(HexPkt, Len) + C_RN;
+                              S_Log := S_Log + 'URL' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + NextData(HexPkt, Len) + C_RN;
                             end;
                             // Пишем в лог данные пакета
-                            XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
                           end;
                         $000F:
                           begin
@@ -1958,7 +1958,7 @@ begin
                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                             // Отсылаем логин в формате MD5 шифрования
                             MD5_Key := NextData(HexPkt, Len);
-                            XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[5].Pkt_Name + C_RN + MD5_Key, C_Icq);
+                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[5].Pkt_Name + C_RN + MD5_Key, C_Icq);
                             ICQ_SendPkt('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, MD5_Key));
                           end;
                         $0003:
@@ -1973,11 +1973,17 @@ begin
                             begin
                               TLV := Text2Hex(NextData(HexPkt, 2));
                               case HexToInt(TLV) of
+                                $0001:
+                                  begin
+                                    Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
+                                    S := NextData(HexPkt, Len);
+                                    S_Log := S_Log + C_Login + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+                                  end;
                                 $0008:
                                   begin // TLV с ошибкой авторизации
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     S := Text2Hex(NextData(HexPkt, Len));
-                                    S_Log := S_Log + 'ErrorCode' + C_BN + C_TLV + TLV + C_Value + S + C_RN;
+                                    S_Log := S_Log + 'ErrorCode' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
                                     DAShow(Lang_Vars[17].L_S, ICQ_NotifyAuthCookieError(S), EmptyStr, 134, 2, 0);
                                     ICQ_GoOffline;
                                   end;
@@ -1985,7 +1991,7 @@ begin
                                   begin // TLV с адресом для коннекта к основному серверу
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     ICQ_Bos_Addr := NextData(HexPkt, Len);
-                                    S_Log := S_Log + 'BosServer' + C_BN + C_TLV + TLV + C_Value + ICQ_Bos_Addr + C_RN;
+                                    S_Log := S_Log + Log_BosServer + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Bos_Addr + C_RN;
                                     ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
                                     ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                   end;
@@ -1993,17 +1999,17 @@ begin
                                   begin // TLV с куком для коннекта к основному серверу
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     ICQ_Bos_Cookie := Text2Hex(NextData(HexPkt, Len));
-                                    S_Log := S_Log + 'BosCookie' + C_BN + C_TLV + TLV + C_Value + ICQ_Bos_Cookie + C_RN;
+                                    S_Log := S_Log + 'BosCookie' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Bos_Cookie + C_RN;
                                   end
                               else // Если пакет содержит другие TLV, то пропускаем их
                                 begin
                                   Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                  S_Log := S_Log + 'Unk' + C_BN + C_TLV + TLV + C_Value + Text2Hex(NextData(HexPkt, Len)) + C_RN;
+                                  S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(HexPkt, Len)) + C_RN;
                                 end;
                               end;
                             end;
                             // Пишем в лог данные пакета
-                            XLog(C_Icq + Log_Parsing + ICQ_Pkt_Names[7].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[7].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
                           end;
                       end;
                     end;
@@ -2037,13 +2043,13 @@ begin
                     begin
                       ICQWSocket.Addr := V_HttpProxy_Address;
                       ICQWSocket.Port := V_HttpProxy_Port;
-                      XLog('ICQ | ' + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port, C_Icq);
+                      XLog(C_Icq + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port, C_Icq);
                     end
                     else
                     begin
                       ICQWSocket.Addr := ICQ_Bos_IP;
                       ICQWSocket.Port := ICQ_Bos_Port;
-                      XLog(C_Icq + C_PN + Log_Connect + ICQ_Bos_IP + ':' + ICQ_Bos_Port, C_Icq);
+                      XLog(C_Icq + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + ICQ_Bos_IP + C_TN + ICQ_Bos_Port, C_Icq);
                     end;
                     // Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
@@ -2076,7 +2082,7 @@ begin
         begin
           // Если начальная метка пакета не правильная,
           // то выводим сообщение об ошибке разбора и выходим в оффлайн
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
           ICQ_GoOffline;
           Exit;
         end;
