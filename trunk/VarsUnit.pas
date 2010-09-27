@@ -47,7 +47,7 @@ const
   C_DD = '_';
   C_XX = 'X';
   С_Hour = 3600000 / MSecsPerDay;
-  C_DTseconds = 1 / (SecsPerDay);
+  C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
   C_WM_APPBAR = WM_USER + 1;
 {$ENDREGION}
@@ -91,7 +91,7 @@ const
   C_Twitter = 'Twitter';
   // Команды смежного использования
   C_TLV = 'TLV';
-  C_Value = ' Value';
+  C_Value = 'Value';
   C_NoCL = 'nocl';
   C_IgCL = 'igcl';
   C_Gtrans = 'Gtrans';
@@ -140,6 +140,10 @@ const
   C_OutMess = 'OutMess';
   C_Mess = 'Mess';
   C_Sounds = 'Sounds';
+  C_Item = 'Item';
+  C_Type = 'Type';
+  C_Note = 'Note';
+  C_Time = 'Time';
   // Команды для информации
   C_NameInfo = 'Name_info';
   C_Nick = 'Nick';
