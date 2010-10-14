@@ -54,7 +54,7 @@
     <PostInTwitter c="Publish a message in %s"/>
     <TwitPostOK c="Message has been published in your %s page."/>
     <Account c="Account"/>
-    <LoginError c="Before you connect to the %s server, first enter your account and password!"/>
+    <LoginParams c="Before you connect to the %s server, first enter your account and password!"/>
     <ParsingPktError c="Failed to parse the data received from the server."/>
     <ConnectError c="The connection to %s is not established."/>
     <UnknownError c="Unknown error %s"/>

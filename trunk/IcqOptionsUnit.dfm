@@ -39,7 +39,7 @@ object IcqOptionsForm: TIcqOptionsForm
         ImageIndex = 162
       end
       item
-        ImageIndex = 170
+        ImageIndex = 228
       end
       item
         ImageIndex = 172

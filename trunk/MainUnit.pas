@@ -740,8 +740,7 @@ begin
     if Assigned(IcqOptionsForm) then
       FreeAndNil(IcqOptionsForm);
     // Стираем из Ростера контакты ICQ
-    {if Assigned(RosterForm) then
-      RosterForm.ClearContacts(C_Icq);}
+    ClearContacts(C_Icq);
   end;
 end;
 {$ENDREGION}
@@ -765,8 +764,7 @@ begin
     if Assigned(MraOptionsForm) then
       FreeAndNil(MraOptionsForm);
     // Стираем из Ростера контакты MRA
-    {if Assigned(RosterForm) then
-      RosterForm.ClearContacts(C_Mra);}
+    ClearContacts(C_Mra);
   end;
 end;
 {$ENDREGION}
@@ -902,8 +900,7 @@ begin
     if Assigned(JabberOptionsForm) then
       FreeAndNil(JabberOptionsForm);
     // Стираем из Ростера контакты Jabber
-    {if Assigned(RosterForm) then
-      RosterForm.ClearContacts(C_Jabber);}
+    ClearContacts(C_Jabber);
   end;
 end;
 {$ENDREGION}
@@ -942,7 +939,7 @@ begin
   begin
     // Показываем сообщение об этой ошибке
     DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Jabber]), EmptyStr, 133, 3, 0);
-    // Открываем настройки ICQ
+    // Открываем настройки Jabber
     JabberSettingsClick(Self);
     // Ставим фокусы в поле ввода логина или пароля
     with JabberOptionsForm do
@@ -959,22 +956,19 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   Jabber_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_Jabber + C_PN + Log_Set_Status + TMenuItem(Sender).Caption + C_RN;
+  S_Log := S_Log + C_RN + C_Jabber + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
-  Jabber_CurrentStatus_bac := ICQ_CurrentStatus;
+  Jabber_CurrentStatus_bac := Jabber_CurrentStatus;
   // Ставим иконки статуса в окне и в трэе
   if not Jabber_Offline_Phaze then
-  begin
     JabberToolButton.ImageIndex := Jabber_CurrentStatus;
-    //JabberTrayIcon.IconIndex := Jabber_CurrentStatus;
-  end;
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Jabber + C_PN + C_Login + Jabber_JID + C_RN;
+    S_Log := S_Log + C_Jabber + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + Jabber_JID + C_RN;
     // Разбираем JID на логин и сервер
-    Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
-    Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
+    Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
+    Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
     // Если сервер и порт указаны вручную
     with JabberOptionsForm do
       if CustomServerCheckBox.Checked then
@@ -982,9 +976,8 @@ begin
         Jabber_ServerAddr := CustomServerEdit.Text;
         Jabber_ServerPort := CustomPortEdit.Text;
       end;
-    // Ставим иконки статуса в окне и в трэе
-    JabberToolButton.ImageIndex := 162;
-    //JabberTrayIcon.IconIndex := 162;
+    // Ставим иконку подключения
+    JabberToolButton.ImageIndex := 41;
     // Блокируем контролы логина и пароля Jabber
     if Assigned(JabberOptionsForm) then
     begin
@@ -1004,22 +997,20 @@ begin
     Jabber_HTTP_Connect_Phaze := False;
     Jabber_Work_Phaze := False;
     Jabber_Offline_Phaze := False;
-    // Запускаем показ иконки коннекта Jabber
-    JvTimerList.Events[3].Enabled := True;
     // Устанавливаем параметры сокета
-    JabberWSocket.Proto := 'tcp';
+    JabberWSocket.Proto := C_SocketProto;
     // Устанавливаем настройки прокси
     if V_HttpProxy_Enable then
     begin
       JabberWSocket.Addr := V_HttpProxy_Address;
       JabberWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + C_Jabber + C_PN + Log_HTTP_Proxy_Connect + V_HttpProxy_Address + ':' + V_HttpProxy_Port + C_RN;
+      S_Log := S_Log + C_Jabber + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       JabberWSocket.Addr := Jabber_ServerAddr;
       JabberWSocket.Port := Jabber_ServerPort;
-      S_Log := S_Log + C_Jabber + C_PN + Log_Connect + Jabber_ServerAddr + ':' + Jabber_ServerPort + C_RN;
+      S_Log := S_Log + C_Jabber + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + Jabber_ServerAddr + C_TN + Jabber_ServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -1031,7 +1022,7 @@ begin
   if Jabber_Work_Phaze then
     Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
   // Пишем в лог
-  XLog(Trim(S_Log), C_Jabber);
+  XLog(S_Log, C_Jabber);
 end;
 
 {$ENDREGION}
@@ -1537,7 +1528,7 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         ICQ_HTTP_Connect_Phaze := True;
-        XLog(C_Icq + Log_Get + Log_Proxy_OK, C_Icq);
+        XLog(C_Icq + C_BN + Log_Get + C_BN + Log_Proxy_OK, C_Icq);
       end
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
@@ -1592,20 +1583,21 @@ begin
       begin
         // Пишем в лог данные пакета
         S_Name := EmptyStr;
-        if LogForm.ICQDumpSpeedButton.Down then
-        begin
-          if Length(HexPkt) >= 10 then
-            PktType := HexToInt(Text2Hex(HexPkt[8] + HexPkt[10]))
-          else
-            PktType := 0;
-          for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
-            if ICQ_Pkt_Names[I].Pkt_Code = PktType then
-            begin
-              S_Name := ICQ_Pkt_Names[I].Pkt_Name;
-              Break;
-            end;
-          XLog(C_Icq + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Icq);
-        end;
+        if Assigned(LogForm) then
+          if LogForm.ICQDumpSpeedButton.Down then
+          begin
+            if Length(HexPkt) >= 10 then
+              PktType := HexToInt(Text2Hex(HexPkt[8] + HexPkt[10]))
+            else
+              PktType := 0;
+            for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
+              if ICQ_Pkt_Names[I].Pkt_Code = PktType then
+              begin
+                S_Name := ICQ_Pkt_Names[I].Pkt_Name;
+                Break;
+              end;
+            XLog(C_Icq + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Icq);
+          end;
         // Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
         if NextData(HexPkt, 1) = #$2A then
         begin
@@ -1904,6 +1896,10 @@ begin
                                 JvTimerList.Events[5].Enabled := True;
                               // Запоминаем время подключения
                               MyConnTime := DateTimeToStr(Now);
+                              // Устанавливаем иконку статуса
+                              ICQToolButton.ImageIndex := ICQ_CurrentStatus_bac;
+                              // Воспроизводим звук удачного логина
+                              ImPlaySnd(1);
                             end;
                           end;
                         $000E:
@@ -2271,20 +2267,20 @@ begin
       ProxyErr := 0;
       // Если ответ положительный и прокси установил соединение,
       // то активируем фазу подключения через http прокси
-      if StartsStr('HTTPS/1.0 200', Pkt) or StartsStr('HTTPS/1.1 200', Pkt) or StartsStr('HTTP/1.0 200', Pkt) or StartsStr('HTTP/1.1 200', Pkt) then
+      if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         Jabber_HTTP_Connect_Phaze := True;
-        XLog(C_Jabber + Log_Get + Log_Proxy_OK, C_Jabber);
+        XLog(C_Jabber + C_BN + Log_Get + C_BN + Log_Proxy_OK, C_Jabber);
       end
-      else if StartsStr('HTTP/1.0 407', Pkt) then
+      else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
         ProxyErr := 1;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Jabber + C_BN + C_EN, EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Jabber + C_BN + C_EN, EmptyStr, 134, 2, 0);
       end;
       // Забираем из буфера пакет с данными Jabber
       Pkt := Jabber_myBeautifulSocketBuffer;
@@ -2306,7 +2302,7 @@ begin
     if Assigned(TrafficForm) then
       Traffic_MenuClick(nil);
     // Проверяем пакет окончания сессии
-    if Pkt = ('</' + J_RootTag + '>') then
+    if Pkt = (J_SessionEnd) then
     begin
       Jab_GoOffline;
       Exit;
@@ -2320,7 +2316,7 @@ begin
         if (Pkt[2] <> '?') and (Pkt[2] <> '!') and (Pos(J_RootTag, Pkt) = 0) then
         begin
           // Обрамляем полученные данные для корректной обработки братских узлов парсером
-          Pkt := '<xml>' + Pkt + '</xml>';
+          Pkt := Format(J_RootNode, [Pkt]);
           // Инициализируем XML
           JvXML_Create(JvXML);
           try
@@ -2328,65 +2324,68 @@ begin
             begin
               // Загружаем пакет в объект xml
               JvXML_LoadStr(JvXML, Pkt);
-              // Пишем в лог данные пакета
-              XLog(C_Jabber + Log_Get + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), C_Jabber);
-              // Если это стадия подключения к серверу жаббер
-              if Jabber_Connect_Phaze then
+              // Начинаем разбор данных пакета
+              if Root <> nil then
               begin
-                // Ищем механизм авторизации DIGEST-MD5
-                if Pos('>DIGEST-MD5<', Pkt) > 0 then
-                  Jab_SendPkt(J_MD5Mechanism) // Отсылаем запрос challenge
-                else if Pos('>PLAIN<', Pkt) > 0 then // Если только механизм авторизации PLAIN
-                  Jab_SendPkt(Format(J_PlainMechanism, [Jab_Plain_Auth]))
-                else if Pos('</challenge>', Pkt) > 0 then // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
+                // Пишем в лог данные пакета
+                XLog(C_Jabber + C_BN + Log_Get + C_RN + Trim(Root.SaveToString), C_Jabber);
+                // Если это стадия подключения к серверу жаббер
+                if Jabber_Connect_Phaze then
                 begin
-                  // Получаем чистый challenge из пакета и расшифровываем
-                  Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
-                  // Забираем из challenge ключ nonce
-                  Challenge := IsolateTextString(Challenge, 'nonce="', '"');
-                  // Если challenge пустой, то значит мы уже авторизовались
-                  if Challenge = EmptyStr then
-                    Jab_SendPkt(J_ChallengeOK)
-                  else
-                    // Отсылаем пакет с авторизацией
-                    Jab_SendPkt(Jab_DigestMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
+                  // Ищем механизм авторизации DIGEST-MD5
+                  if Pos('>DIGEST-MD5<', Pkt) > 0 then
+                    Jab_SendPkt(J_MD5Mechanism) // Отсылаем запрос challenge
+                  else if Pos('>PLAIN<', Pkt) > 0 then // Если только механизм авторизации PLAIN
+                    Jab_SendPkt(Format(J_PlainMechanism, [Jab_Plain_Auth]))
+                  else if Pos('</challenge>', Pkt) > 0 then // Если получен пакет challenge, то расшифровываем его и отсылаем авторизацию
+                  begin
+                    // Получаем чистый challenge из пакета и расшифровываем
+                    Challenge := Base64Decode(IsolateTextString(Pkt, '>', '</challenge>'));
+                    // Забираем из challenge ключ nonce
+                    Challenge := IsolateTextString(Challenge, 'nonce="', '"');
+                    // Если challenge пустой, то значит мы уже авторизовались
+                    if Challenge = EmptyStr then
+                      Jab_SendPkt(J_ChallengeOK)
+                    else
+                      // Отсылаем пакет с авторизацией
+                      Jab_SendPkt(Jab_DigestMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
+                  end
+                  else if Pos('<not-authorized', Pkt) > 0 then
+                  begin
+                    // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
+                    DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Jabber]), EmptyStr, 134, 2, 0);
+                    Jab_GoOffline;
+                    Exit;
+                  end
+                  else if Pos('<success', Pkt) > 0 then
+                  begin
+                    // Активируем режим онлайн для Jabber
+                    Jabber_Connect_Phaze := False;
+                    Jabber_HTTP_Connect_Phaze := False;
+                    Jabber_Work_Phaze := True;
+                    Jabber_Offline_Phaze := False;
+                    // Отключаем метку пересоединения ведь мы уже и так онлайн!
+                    Jabber_Reconnect := False;
+                    // Запускаем таймер отсылки пинг пакетов
+                    if Jabber_KeepAlive then
+                      JvTimerList.Events[9].Enabled := True;
+                    // Очищаем группы Jabber в Ростере
+                    ClearContacts(C_Jabber);
+                    // Закрепляем сессию с жаббер сервером
+                    // Если сервер и порт указаны вручную
+                    if JabberOptionsForm.CustomServerCheckBox.Checked then
+                      Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
+                    else
+                      Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
+                    // Устанавливаем иконку статуса
+                    JabberToolButton.ImageIndex := Jabber_CurrentStatus_bac;
+                    // Воспроизводим звук удачного логина
+                    ImPlaySnd(1);
+                    // Выходим
+                    Exit;
+                  end;
                 end
-                else if Pos('<not-authorized', Pkt) > 0 then
-                begin
-                  // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
-                  DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Jabber]), EmptyStr, 134, 2, 0);
-                  Jab_GoOffline;
-                  Exit;
-                end
-                else if Pos('<success', Pkt) > 0 then
-                begin
-                  // Активируем режим онлайн для Jabber
-                  Jabber_Connect_Phaze := False;
-                  Jabber_HTTP_Connect_Phaze := False;
-                  Jabber_Work_Phaze := True;
-                  Jabber_Offline_Phaze := False;
-                  // Отключаем метку пересоединения ведь мы уже и так онлайн!
-                  Jabber_Reconnect := False;
-                  // Запускаем таймер отсылки пинг пакетов
-                  if Jabber_KeepAlive then
-                    JvTimerList.Events[9].Enabled := True;
-                  // Очищаем группы Jabber в Ростере
-                  ClearContacts(C_Jabber);
-                  // Закрепляем сессию с жаббер сервером
-                  // Если сервер и порт указаны вручную
-                  if JabberOptionsForm.CustomServerCheckBox.Checked then
-                    Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
-                  else
-                    Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
-                  // Выходим
-                  Exit;
-                end;
-              end
-                // Разбираем пакеты рабочей фазы jabber
-              else if Jabber_Work_Phaze then
-              begin
-                // Начинаем разбор данных пакета
-                if Root <> nil then
+                else if Jabber_Work_Phaze then // Разбираем пакеты рабочей фазы jabber
                 begin
                   // Начинаем пробег по возможным склеенным пакетам
                   CntPkt := Root.Items.Count;
@@ -2396,13 +2395,13 @@ begin
                     if XML_Node <> nil then
                     begin
                       if XML_Node.FullName = J_Features then
-                        Jab_ParseFeatures(XML_Node.SaveToString)
+                        Jab_ParseFeatures(XML_Node)
                       else if XML_Node.FullName = J_Iq then
-                        Jab_ParseIQ(XML_Node.SaveToString)
+                        Jab_ParseIQ(XML_Node)
                       else if XML_Node.FullName = J_Presence then
-                        Jab_ParsePresence(XML_Node.SaveToString)
+                        Jab_ParsePresence(XML_Node)
                       else if XML_Node.FullName = J_Message then
-                        Jab_ParseMessage(XML_Node.SaveToString);
+                        Jab_ParseMessage(XML_Node);
                     end;
                   end;
                 end;
@@ -2487,7 +2486,7 @@ begin
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
-      Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
+      Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
       Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
@@ -2500,7 +2499,7 @@ begin
   // Отсылаем строку начала сессии с сервером
   // Если сервер и порт указаны вручную
   if JabberOptionsForm.CustomServerCheckBox.Checked then
-    Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
+    Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
   else
     Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
 end;

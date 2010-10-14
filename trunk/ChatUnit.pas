@@ -1142,15 +1142,15 @@ begin
           if XML_Node <> nil then
           begin
             // Загружаем позицию окна
-            Top := XML_Node.Properties.IntValue('t');
-            Left := XML_Node.Properties.IntValue('l');
-            Height := XML_Node.Properties.IntValue('h');
-            Width := XML_Node.Properties.IntValue('w');
+            Top := XML_Node.Properties.IntValue(C_FT);
+            Left := XML_Node.Properties.IntValue(C_FL);
+            Height := XML_Node.Properties.IntValue(C_FH);
+            Width := XML_Node.Properties.IntValue(C_FW);
             f_t := Top;
             f_l := Left;
             f_h := Height;
             f_w := Width;
-            if XML_Node.Properties.BoolValue('max', False) then
+            if XML_Node.Properties.BoolValue(C_FM, False) then
               WindowState := wsMaximized;
             // Определяем не находится ли окно за пределами экрана
             FormSetInWorkArea(Self);
@@ -1169,10 +1169,6 @@ begin
             Sub_Node := XML_Node.Items.ItemNamed[C_ChatFormST];
             if Sub_Node <> nil then
               TypingTextToolButton.Down := Sub_Node.BoolValue;
-            // Загружаем "звук нажатия клавиш"
-            {Sub_Node := XML_Node.Items.ItemNamed[C_ChatFormKS];
-            if Sub_Node <> nil then
-              KeySoundToolButton.Down := Sub_Node.BoolValue;}
             // Загружаем состояние панелей аватар
             Sub_Node := XML_Node.Items.ItemNamed[C_ChatFormAP];
             if Sub_Node <> nil then
@@ -1209,16 +1205,16 @@ begin
   MainForm.AllImageList.GetBitmap(246, GtransSpeedButton.Glyph);
   // Создаём хранитель картинки пустой аватары для быстрого её отображения
   V_NoAvatar := TImage.Create(MainForm);
-  AvatarFile := V_MyPath + 'Icons\' + V_CurrentIcons + '\noavatar.gif';
+  AvatarFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_NoAvatarFileName;
   if FileExists(AvatarFile) then
     V_NoAvatar.Picture.LoadFromFile(AvatarFile);
   // Создаём иконки подтвержения сообщений
   V_OutMessage2 := TMemoryStream.Create;
-  OutMessage2File := V_MyPath + 'Icons\' + V_CurrentIcons + '\outmess2.gif';
+  OutMessage2File := V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + 'outmess2' + C_GIF_Ext;
   if FileExists(OutMessage2File) then
     V_OutMessage2.LoadFromFile(OutMessage2File);
   V_OutMessage3 := TMemoryStream.Create;
-  OutMessage3File := V_MyPath + 'Icons\' + V_CurrentIcons + '\outmess3.gif';
+  OutMessage3File := V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + 'outmess3' + C_GIF_Ext;
   if FileExists(OutMessage3File) then
     V_OutMessage3.LoadFromFile(OutMessage3File);
   // Присваиваем картинку пустой аватары в места для аватар
@@ -1236,7 +1232,7 @@ begin
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
   // Формируем строку html стиля
-  HTMLStyle := '<html><head>' + V_ChatCSS + '<title>Chat</title></head><body>';
+  HTMLStyle := Format(C_HTML_head, [V_ChatCSS, C_IMadering]);
   // Пока скрываем всегда отображение участников конференции
   ChatCategoryButtons.Visible := False;
   GroupSplitter.Visible := False;
@@ -1269,19 +1265,19 @@ begin
       // Сохраняем позицию окна
       if WindowState = wsMaximized then
       begin
-        XML_Node.Properties.Add('max', True);
-        XML_Node.Properties.Add('t', f_t);
-        XML_Node.Properties.Add('l', f_l);
-        XML_Node.Properties.Add('h', f_h);
-        XML_Node.Properties.Add('w', f_w);
+        XML_Node.Properties.Add(C_FM, True);
+        XML_Node.Properties.Add(C_FT, f_t);
+        XML_Node.Properties.Add(C_FL, f_l);
+        XML_Node.Properties.Add(C_FH, f_h);
+        XML_Node.Properties.Add(C_FW, f_w);
       end
       else
       begin
-        XML_Node.Properties.Add('max', False);
-        XML_Node.Properties.Add('t', Top);
-        XML_Node.Properties.Add('l', Left);
-        XML_Node.Properties.Add('h', Height);
-        XML_Node.Properties.Add('w', Width);
+        XML_Node.Properties.Add(C_FM, False);
+        XML_Node.Properties.Add(C_FT, Top);
+        XML_Node.Properties.Add(C_FL, Left);
+        XML_Node.Properties.Add(C_FH, Height);
+        XML_Node.Properties.Add(C_FW, Width);
       end;
       // Сохраняем позицию сплитеров
       Sub_Node := XML_Node.Items.Add(C_ChatFormSP);

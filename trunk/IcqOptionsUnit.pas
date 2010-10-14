@@ -376,10 +376,12 @@ begin
     end;
   // --------------------------------------------------------------------------
   // Отображение временных контактов в КЛ
-  ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
-  // Запускаем обработку Ростера
-  {if Assigned(RosterForm) then
-    RosterForm.UpdateFullCL;}
+  if ICQ_Show_HideContacts <> ShowHideContactsCheckBox.Checked then
+  begin
+    ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
+    // Запускаем обработку Ростера
+    UpdateFullCL;
+  end;
   // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
