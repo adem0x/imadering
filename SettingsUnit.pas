@@ -1035,9 +1035,9 @@ begin
   if ChangeProtoItem <> nil then
     ProtocolsListView.Selected := ChangeProtoItem;
   // Управляем включением и отключением протоколов
-  // ICQ
   with MainForm do
     begin
+      // ICQ
       if (not ProtocolsListView.Items[0].Checked) and (ICQToolButton.Visible) then
         ICQ_Enable(False)
       else if (ProtocolsListView.Items[0].Checked) and (not ICQToolButton.Visible) then

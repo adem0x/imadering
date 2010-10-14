@@ -861,21 +861,26 @@ object MainForm: TMainForm
     end
     object MRAStatusEvil: TMenuItem
       ImageIndex = 290
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusDepres: TMenuItem
       ImageIndex = 291
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusHome: TMenuItem
       ImageIndex = 292
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusWork: TMenuItem
       ImageIndex = 293
+      OnClick = MRAStatusOnlineClick
     end
     object N14: TMenuItem
       Caption = '-'
     end
     object MRAStatusLunch: TMenuItem
       ImageIndex = 294
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusAway: TMenuItem
       ImageIndex = 22
@@ -883,9 +888,11 @@ object MainForm: TMainForm
     end
     object MRAStatusNA: TMenuItem
       ImageIndex = 295
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusOccupied: TMenuItem
       ImageIndex = 296
+      OnClick = MRAStatusOnlineClick
     end
     object MRAStatusDND: TMenuItem
       ImageIndex = 27

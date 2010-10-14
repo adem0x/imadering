@@ -198,7 +198,7 @@
 						<VersionInfo Name="MajorVer">5</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">310</VersionInfo>
+						<VersionInfo Name="Build">318</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -210,14 +210,14 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">IMadering</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">5.0.1.310</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.0.1.318</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName">IMadering</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion"/>
-						<VersionInfoKeys Name="Comments"/>
+						<VersionInfoKeys Name="ProductVersion">5.0.1</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments">I made ring</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages/>
 					<Source>

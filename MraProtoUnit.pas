@@ -43,6 +43,14 @@ const
   // Версия протокола пакетов MRA
   MRA_ProtoVer = '13000100';
 
+  // Коды приватности
+  MRA_Privat_Normal = '00'; // нормальный
+  MRA_Privat_Invisible = '04'; // невидящий
+  MRA_Privat_Visible = '08'; // видящий
+  MRA_Privat_Ignore = '10'; // игнорируемый
+  MRA_Privat_Ignore_Invisible = '14'; // игнорируемый и невидящий
+  MRA_Privat_Ignore_Visible = '18'; // игнорируемый и видящий
+
 {$ENDREGION}
 {$REGION 'MRA_Client_Icons'}
   MRA_Client_Icons:
@@ -418,7 +426,7 @@ begin
               if not Contact_Yes then
               begin
                 // Ищем его Ник в файле-кэше ников
-                Nick := SearchNickInCash(C_Mra, UrlEncode(M_From));
+                Nick := SearchNickInCash(C_Mra, M_From);
                 // Дата сообщения
                 MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
                 // Добавляем этот контакт в эту группу
@@ -577,10 +585,6 @@ begin
         begin
           // Очищаем раздел MRA если он есть
           XML_Node := Root.Items.ItemNamed[C_Mra];
-          if XML_Node <> nil then
-            XML_Node.Clear
-          else
-            XML_Node := Root.Items.Add(C_Mra);
           // Получаем количество групп
           GCount := HexToInt(Text2Hex(NextData(PktData, 4)));
           GCount := Swap32(GCount);
@@ -596,7 +600,7 @@ begin
           KMask := NextData(PktData, Len);
           S_Log := S_Log + C_Contact + C_BN + C_Mask + C_TN + C_BN + KMask + C_RN;
           // В цикле получаем группы
-          Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
           for I := 0 to GCount - 1 do
           begin
             GId := EmptyStr;
@@ -638,16 +642,8 @@ begin
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
           Tri_Node.Properties.Add(C_Id, C_AuthNone);
-          // Добавляем группу для контактов "не в списке"
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
-          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
-          Tri_Node.Properties.Add(C_Id, C_NoCL);
-          // Добавляем группу для игнорируемых контактов
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_IgCL);
-          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[49].L_S));
-          Tri_Node.Properties.Add(C_Id, C_IgCL);
           // Получаем контакты
-          Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
           I := -1;
           while Length(PktData) > 0 do
           begin
@@ -737,7 +733,7 @@ begin
               else
               begin
                 Tri_Node.Properties.Add(C_Auth, C_AuthNone);
-                Tri_Node.Properties.Add(C_Status, 25);
+                Tri_Node.Properties.Add(C_Status, 23);
                 Tri_Node.Properties.Add(C_Client, 220);
               end;
             end;
@@ -909,6 +905,7 @@ begin
     RosterUpdateProp(Get_Node, C_Client, MRA_ClientToImg(KClient));
   end;
   // Запускаем обработку КЛ
+  MainForm.JvTimerList.Events[11].Enabled := False;
   MainForm.JvTimerList.Events[11].Enabled := True;
   // Пишем в лог данные пакета
   XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Mra);

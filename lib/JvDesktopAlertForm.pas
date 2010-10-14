@@ -59,7 +59,9 @@ uses
   JvComponent,
   JvConsts,
   JvExForms,
-  ComCtrls;
+  ComCtrls,
+  JvSimpleXml,
+  OverbyteIcsUrl;
 
 const
   JVDESKTOPALERT_AUTOFREE = WM_USER + 1001;
@@ -240,7 +242,8 @@ uses
   JvResources,
   MainUnit,
   VarsUnit,
-  ChatUnit;
+  ChatUnit,
+  RosterUnit;
 
 { .$R *.dfm } // not needed
 
@@ -598,34 +601,51 @@ end;
 procedure TJvFormDesktopAlert.DoMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  N: integer;
+  I: integer;
   zUIN: string;
-  RosterItem: TListItem;
+  Get_Node: TJvSimpleXmlElem;
 begin
-  //--Копируем юин из хинта, ибо потом он пропадает! O_o
+  // Копируем юин из хинта, ибо потом он пропадает! O_o
   zUIN := Hint;
-  //--Если по окну нажата была правая клавиша мыши, то сбрасываем флаги сообщений для этого контакта
+  // Если по окну нажата была правая клавиша мыши, то сбрасываем флаги сообщений для этого контакта
   if Button = mbRight then
   begin
-    //--Останавливам таймер Мыши
+    // Останавливам таймер Мыши
     MouseTimer.Enabled := False;
-    //--Если учётная запись контакта не пустая
+    // Если учётная запись контакта не пустая
     if zUIN <> EmptyStr then
     begin
-      //--Сбрасываем иконку сообщения в Ростере
-      {RosterItem := RosterForm.ReqRosterItem(zUIN);
-      if RosterItem <> nil then RosterItem.SubItems[36] := EmptyStr;
-      //--Tray Msg list
-      try
-        N := V_InMessList.IndexOf(zUIN);
-        if N > -1 then V_InMessList.Delete(N);
-      except
-      end;}
+      // Сбрасываем иконку сообщения в Ростере
+      Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(zUIN));
+      if Get_Node = nil then
+        Get_Node := RosterGetItem(C_Mra, C_Contact + C_SS, C_Login, URLEncode(zUIN));
+      if Get_Node = nil then
+        Get_Node := RosterGetItem(C_Jabber, C_Contact + C_SS, C_Login, URLEncode(zUIN));
+      if Get_Node <> nil then
+      begin
+        RosterUpdateProp(Get_Node, C_Mess, EmptyStr);
+        UpdateFullCL;
+      end;
+      // Удаляем мигающую иконку сообщения в окне чата
+      if Assigned(ChatForm) then
+      begin
+        with ChatForm.ChatPageToolBar do
+        begin
+          for I := 0 to ButtonCount - 1 do
+          begin
+            if Buttons[I].HelpKeyword = zUIN then
+              Buttons[I].ImageIndex := Buttons[I].Tag;
+          end;
+        end;
+      end;
+      // Удаляем этот контакт из очереди на прочтение сообщений
+      I := V_InMessList.IndexOf(zUIN);
+        if I > -1 then V_InMessList.Delete(I);
     end;
   end
-  //--Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
-  else if Button = mbLeft then if zUIN <> EmptyStr then MainForm.OpenFromTrayMessage(zUIN);
-  //--Закрываем всплывающее окно
+  // Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
+  else if Button = mbLeft then if zUIN <> EmptyStr then MainForm.TrayIconClick(nil);
+  // Закрываем всплывающее окно
   Close;
 end;
 

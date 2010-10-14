@@ -122,7 +122,7 @@ procedure CheckMessage_GAPI(var Msg: string);
 function CheckText_RN(Msg: string): string;
 function NotProtoOnline(Proto: string): Boolean;
 function GetFileDateTime(FileName: string): TDateTime;
-procedure Jab_SendPkt(XmlData: string);
+procedure Jab_SendPkt(SendData: string);
 procedure XLog(XLogData, Proto: string);
 function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; ErrCode: Integer): string;
@@ -777,32 +777,33 @@ end;
 {$ENDREGION}
 {$REGION 'Jab_SendPkt'}
 
-procedure Jab_SendPkt(Xmldata: string);
+procedure Jab_SendPkt(SendData: string);
 var
   JvXML: TJvSimpleXml;
   Pkt, S: string;
 begin
-  S := Copy(Xmldata, 2, 1);
+  S := Copy(SendData, 2, 1);
   if (S <> '?') and (S <> '/') and (S <> #09) then
   begin
     // Форматируем данные пакета
-    Pkt := '<xml>' + Xmldata + '</xml>';
+    Pkt := Format(J_RootNode, [SendData]);
     JvXML_Create(JvXML);
     try
       with JvXML do
       begin
         JvXML_LoadStr(JvXML, Pkt);
         // Пишем в лог данные пакета
-        XLog(C_Jabber + Log_Send + C_RN + Trim(Copy(XMLData, 4, Length(XMLData))), C_Jabber);
+        if Root <> nil then
+          XLog(C_Jabber + C_BN + Log_Send + C_RN + Trim(Root.SaveToString), C_Jabber);
       end;
     finally
       JvXML.Free;
     end;
   end
   else
-    XLog(C_Jabber + Log_Send + C_RN + XMLData, C_Jabber);
+    XLog(C_Jabber + C_BN + Log_Send + C_RN + SendData, C_Jabber);
   // Отправляем данные через сокет
-  Mainform.JabberWSocket.SendStr(Utf8Encode(Xmldata));
+  Mainform.JabberWSocket.SendStr(Utf8Encode(SendData));
 end;
 
 {$ENDREGION}
@@ -1533,23 +1534,24 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(Icq_seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
-  if LogForm.ICQDumpSpeedButton.Down then
-  begin
-    if Length(Str) >= 10 then
-      PktType := HexToInt(Text2Hex(Str[8] + Str[10]))
-    else
-      PktType := 0;
-    for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
-      if ICQ_Pkt_Names[I].Pkt_Code = PktType then
-      begin
-        if (PktType = $0001) or (PktType = 0) then
-          S_Name := ICQ_Pkt_Names[I + 1].Pkt_Name
-        else
-          S_Name := ICQ_Pkt_Names[I].Pkt_Name;
-        Break;
-      end;
-    XLog(C_Icq + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
-  end;
+  if Assigned(LogForm) then
+    if LogForm.ICQDumpSpeedButton.Down then
+    begin
+      if Length(Str) >= 10 then
+        PktType := HexToInt(Text2Hex(Str[8] + Str[10]))
+      else
+        PktType := 0;
+      for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
+        if ICQ_Pkt_Names[I].Pkt_Code = PktType then
+        begin
+          if (PktType = $0001) or (PktType = 0) then
+            S_Name := ICQ_Pkt_Names[I + 1].Pkt_Name
+          else
+            S_Name := ICQ_Pkt_Names[I].Pkt_Name;
+          Break;
+        end;
+      XLog(C_Icq + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
+    end;
   // Отсылаем данные по сокету
   MainForm.IcqWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -2189,7 +2191,7 @@ begin
   if Assigned(V_AccountToNick) then
   begin
     // Находим ники в списке ников по учётной записи
-    Result := V_AccountToNick.Values[Ctype + C_BN + Cid];
+    Result := V_AccountToNick.Values[Ctype + C_BN + UrlEncode(Cid)];
     if Result = EmptyStr then
       Result := CId;
   end;

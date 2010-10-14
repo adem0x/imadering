@@ -118,6 +118,7 @@ const
   C_HistoryOut = '<span class=a>%s</span><br><span class=c>%s</span><br><br>';
   C_HistoryInfo = '<span class=d>%s</span><br><br>';
   C_HistoryX = '<IMG NAME=X SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
+  C_HTML_head = '<html><head>%s<title>%s</title></head><body>';
   C_Group = 'Group';
   C_Contact = 'Contact';
   C_Count = 'count';
@@ -144,6 +145,15 @@ const
   C_Type = 'Type';
   C_Note = 'Note';
   C_Time = 'Time';
+  C_UserClass = 'UserClass';
+  C_RegDate = 'RegDate';
+  C_AvatarHash = 'AvatarHash';
+  C_TimeOnline = 'TimeOnline';
+  C_SignonTime = 'SignonTime';
+  C_ExtIP = 'ExtIP';
+  C_IntIP = 'IntIP';
+  C_MsgCannel = 'MsgCannel';
+  C_Caps = 'Caps';
   // Команды для информации
   C_NameInfo = 'Name_info';
   C_Nick = 'Nick';
@@ -195,6 +205,7 @@ const
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
   C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
   // Другие команды
+  C_FM = 'Max';
   C_FT = 'Top';
   C_FL = 'Left';
   C_FH = 'Height';
@@ -432,7 +443,7 @@ var
     (L_N: 'AlertHead'; L_S: ''), // 18
     (L_N: 'WarningHead'; L_S: ''), // 19
     (L_N: 'Account'; L_S: ''), // 20
-    (L_N: 'LoginError'; L_S: ''), // 21
+    (L_N: 'LoginParams'; L_S: ''), // 21
     (L_N: 'ParsingPktError'; L_S: ''), // 22
     (L_N: 'ConnectError'; L_S: ''), // 23
     (L_N: 'UnknownError'; L_S: ''), // 24

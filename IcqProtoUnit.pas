@@ -35,142 +35,201 @@ uses
   GtransUnit,
   JvSimpleXml,
   OverbyteIcsUtils,
-  LogUnit,
-  RosterUnit;
+  LogUnit;
 
 {$ENDREGION}
 {$REGION 'Const Capabilities'}
 
 const
-  // Capabilities
-  CAP_AIM_INTEROPERATE = '0946134D4C7F11D18222444553540000';
-  CAP_AIM2 = '094600004C7F11D18222444553540000';
-  CAP_AIM_ISICQ = '094613444C7F11D18222444553540000';
-  CAP_AIM_SERVERRELAY = '094613494C7F11D18222444553540000';
-  CAP_UTF8 = '0946134E4C7F11D18222444553540000';
-  CAP_TYPING_NOTIFICATION = '563FC8090B6F41BD9F79422609DFA2F3';
-  CAP_IMADERING = '494D61646572696E6720436C69656E74';
-  CAP_AIM_VOICE = '094613414C7F11D18222444553540000';
-  CAP_AIM_SENDFILE = '094613434C7F11D18222444553540000';
-  CAP_AIM_IMIMAGE = '094613454C7F11D18222444553540000';
-  CAP_AIM_BUDDYICON = '094613464C7F11D18222444553540000';
-  CAP_AIM_STOCKS = '094613474C7F11D18222444553540000';
-  CAP_AIM_GETFILE = '094613484C7F11D18222444553540000';
-  CAP_AIM_GAMES = '0946134A4C7F11D18222444553540000';
-  CAP_AIM_SBUD = '0946134B4C7F11D18222444553540000';
-  CAP_RTFMSGS = '97B12751243C4334AD22D6ABF73F1492';
-  CAP_STR_2001 = 'A0E93F374C7F11D18222444553540000';
-  CAP_STR_2002 = '10CF40D14C7F11D18222444553540000';
-  CAP_IS_2001 = '2E7A6475FADF4DC8886FEA3595FDB6DF';
-  CAP_IS_WEB = '563FC8090B6F41BD9F79422609DFA2F3';
-  CAP_LICQ = '094913494C7F11D18222444553540000';
-  CAP_AIM_CHAT = '748F2420628711D18222444553540000';
-  CAP_TRILL_CRYPT = 'F2E7C7F4FEAD4DFBB23536798BDF0000';
-  CAP_TRILL_UNK = '97B12751243C4334AD22D6ABF73F1409';
-  CAP_MACICQ = 'DD16F20284E611D490DB00104B9B4B7D';
-  CAP_KXICQ = '094913444C7F11D18222444553540000';
-  CAP_ICQ_XTRAZ_SUPPORT = '1A093C6CD7FD4EC59D51A6474E34F5A0';
-  CAP_RAMBLER_RU = '7E11B778A3534926A80244735208C42A';
-  CAP_MIRANDA = '4D6972616E64614D0006000B80030802';
-  CAP_QIP = '563FC8090B6F41514950203230303561';
-  CAP_QIP_PROTECTMSG = 'D3D453198B32403BACC7D1A9E2B5813E';
-  CAP_ICQDEVILS = '0946134C4C7F11D18222444553540000';
-  CAP_ANDRQ = '265251696E7369646510040900000000';
-  CAP_PUSH2TALK = 'E362C1E9121A4B94A6267A74DE24270D';
-  CAP_VOICE_CHAT = 'B99708B53A924202B069F1E757BB2E17';
-  CAP_ICQLITE = '178C2D9BDAA545BB8DDBF3BDBD53A10A';
-  CAP_MULTI_USER = '67361515612D4C078F3DBDE6408EA041';
-  CAP_LICQ2 = '4C69637120636C69656E740000000020';
-  CAP_JIMM = '4A696D6D20302E362E31000000000000';
-  CAP_IMPLUS = '8ECD90E74F1828F802ECD618A4E9DE68';
-  CAP_NETVIGATOR = '4C6B90A33D2D480E89D62E4B2C10D99F';
-  CAP_KOPETE = '4B6F70657465204943512020000A0300';
-  CAP_MCHAT = '6D436861742069637120000000000000';
-  CAP_SIM = '53494D20636C69656E74202000090540';
-  CAP_QIP_INFIUM = '7C737502C3BE4F3EA69F015313431E1A';
-  CAP_RNQ = 'D6687F4F3DC34BDB8A8C4C1A572763CD';
+  // Capabilities servises
+  ICQ_Servises_Caps:
+    packed array[0..43] of record Cap_HEX: string;
+    Cap_Name: string;
+  end
+  = ((Cap_HEX: '0138CA7B769A491588F213FC00979EA8'; Cap_Name: 'HTML Messages'), // 0
+    (Cap_HEX: '094600004C7F11D18222444553540000'; Cap_Name: 'Short Caps'), // 1
+    (Cap_HEX: '094601014C7F11D18222444553540000'; Cap_Name: 'Live Video'), // 2
+    (Cap_HEX: '094601024C7F11D18222444553540000'; Cap_Name: 'Camera'), // 3
+    (Cap_HEX: '094601044C7F11D18222444553540000'; Cap_Name: 'Live Audio'), // 4
+    (Cap_HEX: '094601054C7F11D18222444553540000'; Cap_Name: 'Available For Call'), // 5
+    (Cap_HEX: '094601074C7F11D18222444553540000'; Cap_Name: 'Multi Audio'), // 6
+    (Cap_HEX: '0946010A4C7F11D18222444553540000'; Cap_Name: 'Status Text Aware'), // 7
+    (Cap_HEX: '0946010B4C7F11D18222444553540000'; Cap_Name: 'RtIm'), // 8
+    (Cap_HEX: '0946010C4C7F11D18222444553540000'; Cap_Name: 'Unk 010C'), // 9
+    (Cap_HEX: '0946010D4C7F11D18222444553540000'; Cap_Name: 'Unk 010D'), // 10
+    (Cap_HEX: '094601FF4C7F11D18222444553540000'; Cap_Name: 'Smart Caps'), // 11
+    (Cap_HEX: '094613414C7F11D18222444553540000'; Cap_Name: 'Aim Voice Chat'), // 12
+    (Cap_HEX: '094613434C7F11D18222444553540000'; Cap_Name: 'File Transfer'), // 13
+    (Cap_HEX: '094613444C7F11D18222444553540000'; Cap_Name: 'ICQ DirectConnect'), // 14
+    (Cap_HEX: '094613454C7F11D18222444553540000'; Cap_Name: 'DirectIM'), // 15
+    (Cap_HEX: '094613464C7F11D18222444553540000'; Cap_Name: 'BuddyIcon'), // 16
+    (Cap_HEX: '094613474C7F11D18222444553540000'; Cap_Name: 'Aim Addins'), // 17
+    (Cap_HEX: '094613484C7F11D18222444553540000'; Cap_Name: 'File Sharing'), // 18
+    (Cap_HEX: '094613494C7F11D18222444553540000'; Cap_Name: 'ICQ ServerRelay'), // 19
+    (Cap_HEX: '0946134B4C7F11D18222444553540000'; Cap_Name: 'Send BuddyList'), // 20
+    (Cap_HEX: '0946134C4C7F11D18222444553540000'; Cap_Name: 'ICQ Avatars'), // 21
+    (Cap_HEX: '0946134D4C7F11D18222444553540000'; Cap_Name: 'Aim ICQ support'), // 22
+    (Cap_HEX: '0946134E4C7F11D18222444553540000'; Cap_Name: 'UTF8 Messages'), // 23
+    (Cap_HEX: '094913494C7F11D18222444553540000'; Cap_Name: 'Messages Type 2 support'), // 24
+    (Cap_HEX: '0946E0014C7F11D18222444553540000'; Cap_Name: 'Unk E001'), // 25
+    (Cap_HEX: '0946E0024C7F11D18222444553540000'; Cap_Name: 'Unk E002'), // 26
+    (Cap_HEX: '0946134A4C7F11D18222444553540000'; Cap_Name: 'Games'), // 27
+    (Cap_HEX: '1A093C6CD7FD4EC59D51A6474E34F5A0'; Cap_Name: 'ICQ Xtraz Support'), // 28
+    (Cap_HEX: '563FC8090B6F41BD9F79422609DFA2F3'; Cap_Name: 'Typing Notifications'), // 29
+    (Cap_HEX: '67361515612D4C078F3DBDE6408EA041'; Cap_Name: 'XMultiUser Chat'), // 30
+    (Cap_HEX: '748F2420628711D18222444553540000'; Cap_Name: 'Chat Support'), // 31
+    (Cap_HEX: '97B12751243C4334AD22D6ABF73F1492'; Cap_Name: 'RTF Messages'), // 32
+    (Cap_HEX: 'B2EC8F167C6F451BBD79DC58497888B9'; Cap_Name: 'ICQ-XtZers'), // 33
+    (Cap_HEX: 'B99708B53A924202B069F1E757BB2E17'; Cap_Name: 'Voice Chat'), // 34
+    (Cap_HEX: '00000000000000000000000000000000'; Cap_Name: 'Zero Cap'), // 35
+    (Cap_HEX: 'E362C1E9121A4B94A6267A74DE24270D'; Cap_Name: 'Push2Talk'), // 36
+    (Cap_HEX: '0946F0054C7F11D18222444553540000'; Cap_Name: 'Talkonaut GTalk2VoIP'), // 37
+    (Cap_HEX: '7C533FFA68004F21BCFBC7D2439AAD31'; Cap_Name: 'QIP Plugins'), // 38
+    (Cap_HEX: '8C543DFC69024D25BFFAC0D3419CAF30'; Cap_Name: 'QIP Services'), // 39
+    (Cap_HEX: 'D3D453198B32403BACC7D1A9E2B5813E'; Cap_Name: 'QIP-ProtectMsg'), // 40
+    (Cap_HEX: 'D6687F4F3DC34BDB8A8C4C1A572763CD'; Cap_Name: 'RnQ Protect Msg'), // 41
+    (Cap_HEX: '494D7365637572654370687200000601'; Cap_Name: 'ZoneLabs IMsecure'), // 42
+    (Cap_HEX: 'F2E7C7F4FEAD4DFBB23536798BDF0000'; Cap_Name: 'SecureIM Trillian')); // 43
+
+  // Capabilities clients
+  ICQ_Clients_Caps:
+    packed array[0..76] of record Cap_HEX: string;
+    Client_Name: string;
+    Client_Icon:
+    Integer;
+  end
+  = ((Cap_HEX: '094913444C7F11D18222444553540000'; Client_Name: 'KXicq2'; Client_Icon: 189), // 2
+    (Cap_HEX: '265251696E73696465'; Client_Name: '&RQ'; Client_Icon: 167), // 3
+    (Cap_HEX: '00E7E0DFA9D04FE19162C8909A132A1B'; Client_Name: 'ABV ICQ'; Client_Icon: 100), // 4
+    (Cap_HEX: '4167656E74574D'; Client_Name: 'Mail.Ru Agent (WM)'; Client_Icon: 311), // 5
+    (Cap_HEX: '434F5245205061676572000000000000'; Client_Name: 'CORE Pager'; Client_Icon: 190), // 6
+    (Cap_HEX: '445B695D4368617420'; Client_Name: 'D[i]Chat'; Client_Icon: 191), // 7
+    (Cap_HEX: '44E5BFCEB096E547BD65EFD6A37E3602'; Client_Name: 'Anastasia'; Client_Icon: 192), // 8
+    (Cap_HEX: '476C49435100'; Client_Name: 'GLICQ'; Client_Icon: 197), // 9
+    (Cap_HEX: '494D204761746577617920'; Client_Name: 'IM Gateway'; Client_Icon: 194), // 10
+    (Cap_HEX: '494D61646572696E6720436C69656E74'; Client_Name: 'IMadering Client'; Client_Icon: 0), // 11
+    (Cap_HEX: '4A324D45206D406167656E74'; Client_Name: 'Mail.Ru Agent (Java)'; Client_Icon: 105), // 12
+    (Cap_HEX: '4A494351'; Client_Name: 'JICQ'; Client_Icon: 195), // 13
+    (Cap_HEX: '4A4954'; Client_Name: 'JIT (Jabber ICQ Transport)'; Client_Icon: 43), // 14
+    (Cap_HEX: '4A696D6D'; Client_Name: 'Jimm'; Client_Icon: 102), // 15
+    (Cap_HEX: '4B6F70657465204943512020'; Client_Name: 'Kopete'; Client_Icon: 181), // 16
+    (Cap_HEX: '4C69637120636C69656E74'; Client_Name: 'Licq'; Client_Icon: 187), // 17
+    (Cap_HEX: '4C6B90A33D2D480E89D62E4B2C10D99F'; Client_Name: 'Netvigator ICQ'; Client_Icon: 100), // 18
+    (Cap_HEX: '4C6F634944'; Client_Name: 'LocID'; Client_Icon: 197), // 19
+    (Cap_HEX: '4D494D2F'; Client_Name: 'Miranda IM Custom Pack'; Client_Icon: 98), // 20
+    (Cap_HEX: '4D4950'; Client_Name: 'MIP Client'; Client_Icon: 196), // 21
+    (Cap_HEX: '4D6972616E646141'; Client_Name: 'AIM Oscar (Miranda)'; Client_Icon: 98), // 22
+    (Cap_HEX: '4D6972616E64614D'; Client_Name: 'Miranda IM'; Client_Icon: 98), // 23
+    (Cap_HEX: '4D6972616E64614D6F62696C65'; Client_Name: 'Miranda IM Mobile (port by Nullbie)'; Client_Icon: 98), // 24
+    (Cap_HEX: '4E6174494351'; Client_Name: 'NatICQ'; Client_Icon: 197), // 25
+    (Cap_HEX: '504850436F726520'; Client_Name: 'PHPCore'; Client_Icon: 198), // 26
+    (Cap_HEX: '504947454F4E21'; Client_Name: 'PIGEON'; Client_Icon: 188), // 27
+    (Cap_HEX: '51ADD1907204473DA1A149F4A397A41F'; Client_Name: 'QIP PDA (Symbian)'; Client_Icon: 99), // 28
+    (Cap_HEX: '522651696E73696465'; Client_Name: 'R&Q'; Client_Icon: 170), // 29
+    (Cap_HEX: '53494D20636C69656E742020'; Client_Name: 'SIM'; Client_Icon: 199), // 30
+    (Cap_HEX: '53494D5053494D5053494D5053494D50'; Client_Name: 'Simp Lite'; Client_Icon: - 1), // 31
+    (Cap_HEX: '53494D505F50524F53494D505F50524F'; Client_Name: 'Simp Pro'; Client_Icon: - 1), // 32
+    (Cap_HEX: '536D6170657220'; Client_Name: 'Smaper'; Client_Icon: 200), // 33
+    (Cap_HEX: '563FC8090B6F41514950202020202021'; Client_Name: 'QIP PDA (Windows)'; Client_Icon: 99), // 34
+    (Cap_HEX: '563FC8090B6F41514950202020202022'; Client_Name: 'QIP Mobile (Java)'; Client_Icon: 99), // 35
+    (Cap_HEX: '563FC8090B6F41514950203230303561'; Client_Name: 'QIP 2005'; Client_Icon: 103), // 36
+    (Cap_HEX: '566D49435120'; Client_Name: 'VmICQ'; Client_Icon: 197), // 37
+    (Cap_HEX: '59617070'; Client_Name: 'Yapp'; Client_Icon: 201), // 38
+    (Cap_HEX: '626179616E494351'; Client_Name: 'BayanICQ'; Client_Icon: 202), // 39
+    (Cap_HEX: '636C696D6DA920522E4B2E20'; Client_Name: 'Climm'; Client_Icon: 203), // 40
+    (Cap_HEX: '646967736279'; Client_Name: 'Digsby'; Client_Icon: - 1), // 41
+    (Cap_HEX: '6963716A'; Client_Name: 'Miranda ICQJ S7&SSS'; Client_Icon: 98), // 42
+    (Cap_HEX: '6963716A2053656375726520494D2020'; Client_Name: 'Miranda ICQJ S7&SSS + SecureIM'; Client_Icon: 98), // 43
+    (Cap_HEX: '69637170'; Client_Name: 'Miranda ICQJ Plus'; Client_Icon: 98), // 44
+    (Cap_HEX: '6A617070'; Client_Name: 'Japp'; Client_Icon: 190), // 45
+    (Cap_HEX: '6D4368617420696371'; Client_Name: 'mChat'; Client_Icon: 200), // 46
+    (Cap_HEX: '6D49435120A920522E4B2E20'; Client_Name: 'mIcq'; Client_Icon: 203), // 47
+    (Cap_HEX: '717574696D'; Client_Name: 'qutIM'; Client_Icon: 104), // 48
+    (Cap_HEX: '73696E6A'; Client_Name: 'Miranda ICQJ S!N'; Client_Icon: 98), // 49
+    (Cap_HEX: '74EDC33644DF485B8B1C671A1F86099F'; Client_Name: 'IM2'; Client_Icon: 204), // 50
+    (Cap_HEX: '7C737502C3BE4F3EA69F015313431E1A'; Client_Name: 'QIP Infium'; Client_Icon: 103), // 51
+    (Cap_HEX: '7E11B778A3534926A80244735208C42A'; Client_Name: 'Rambler ICQ'; Client_Icon: 100), // 52
+    (Cap_HEX: '8ECD90E74F1828F802ECD618A4E9DE68'; Client_Name: 'IM+'; Client_Icon: 205), // 53
+    (Cap_HEX: '97B12751243C4334AD22D6ABF73F1400'; Client_Name: 'SIM (old)'; Client_Icon: 199), // 54
+    (Cap_HEX: '97B12751243C4334AD22D6ABF73F1409'; Client_Name: 'Trillian'; Client_Icon: 206), // 55
+    (Cap_HEX: 'A7E40A96B3A0479AB845C9E467C56B1F'; Client_Name: 'Inlux Messenger'; Client_Icon: 197), // 58
+    (Cap_HEX: 'DD16F20284E611D490DB00104B9B4B7D'; Client_Name: 'ICQ for Mac'; Client_Icon: 207), // 59
+    (Cap_HEX: 'FFFFFFFF6E61696D'; Client_Name: 'Naim'; Client_Icon: 203), // 60
+    (Cap_HEX: '53696D706C65494D'; Client_Name: 'SimpleIM'; Client_Icon: 197), // 61
+    (Cap_HEX: '7A7B7C7D7E7F0A030B04015313431E1A'; Client_Name: 'QIP 2010'; Client_Icon: 103), // 62
+    (Cap_HEX: '774A696D6D'; Client_Name: 'wJimm'; Client_Icon: 102), // 63
+    (Cap_HEX: '494243545320'; Client_Name: 'ICQBot.org'; Client_Icon: - 1), // 64
+    (Cap_HEX: '7665723A'; Client_Name: 'PIGEON'; Client_Icon: 188), // 65
+    (Cap_HEX: '6D6D6F436E75636961746F72'; Client_Name: 'PlayIT'; Client_Icon: 210), // 66
+    (Cap_HEX: '656E716A'; Client_Name: 'Miranda eternity'; Client_Icon: 98), // 67
+    (Cap_HEX: '094600004C7F11D1822244455354134B'; Client_Name: 'Miranda IM Custom Pack'; Client_Icon: 98), // 68
+    (Cap_HEX: '445B696D5D20762E'; Client_Name: 'D[im]'; Client_Icon: 191), // 69
+    (Cap_HEX: '57656249637150726F'; Client_Name: 'WebIcqPro'; Client_Icon: 208), // 70
+    (Cap_HEX: '09460F084C7F11D18222444553540000'; Client_Name: 'Nimbuzz'; Client_Icon: 209), // 72
+    (Cap_HEX: '09460F074C7F11D18222444553540000'; Client_Name: 'Nimbuzz'; Client_Icon: 209), // 73
+    (Cap_HEX: '45535400000946'; Client_Name: 'iChat'; Client_Icon: 207), // 74
+    (Cap_HEX: '178C2D9BDAA545BB8DDBF3BDBD53A10A'; Client_Name: 'ICQ Lite'; Client_Icon: 100), // 75
+    (Cap_HEX: 'C8953A9F21F14FAAB0B26DE663ABF5B7'; Client_Name: 'ICQ Lite (New)'; Client_Icon: 100), // 76
+    // Конченые капы
+    (Cap_HEX: '2E7A6475FADF4DC8886FEA3595FDB6DF'; Client_Name: 'ICQ 2001'; Client_Icon: 100), // 0
+    (Cap_HEX: '10CF40D14C7F11D18222444553540000'; Client_Name: 'ICQ 2002'; Client_Icon: 100), // 1
+    (Cap_HEX: '0946E0004C7F11D18222444553540000'; Client_Name: 'ICQ 2002'; Client_Icon: 100), // 71
+    (Cap_HEX: 'A0E93F374C7F11D18222444553540000'; Client_Name: 'StrICQ 1'; Client_Icon: - 1), // 56
+    (Cap_HEX: 'A0E93F374FE9D311BCD20004AC96DD96'; Client_Name: 'StrICQ 2'; Client_Icon: - 1)); // 57
 
 {$ENDREGION}
 {$REGION 'Const XStatuses'}
 
-  // XStatuses
-  XS1 = '01D8D7EEAC3B492AA58DD3D877E66B92'; // (Angry)
-  XS2 = '5A581EA1E580430CA06F612298B7E4C7'; // (Duck)
-  XS3 = '83C9B78E77E74378B2C5FB6CFCC35BEC'; // (Tired)
-  XS4 = 'E601E41C33734BD1BC06811D6C323D81'; // (Party)
-  XS5 = '8C50DBAE81ED4786ACCA16CC3213C7B7'; // (Beer)
-  XS6 = '3FB0BD36AF3B4A609EEFCF190F6A5A7F'; // (Thinking)
-  XS7 = 'F8E8D7B282C4414290F810C6CE0A89A6'; // (Eating)
-  XS8 = '80537DE2A4674A76B3546DFD075F5EC6'; // (TV)
-  XS9 = 'F18AB52EDC57491D99DC6444502457AF'; // (Friends)
-  XS10 = '1B78AE31FA0B4D3893D1997EEEAFB218'; // (Coffee)
-  XS11 = '61BEE0DD8BDD475D8DEE5F4BAACF19A7'; // (Music)
-  XS12 = '488E14898ACA4A0882AA77CE7A165208'; // (Business)
-  XS13 = '107A9A1812324DA4B6CD0879DB780F09'; // (Camera)
-  XS14 = '6F4930984F7C4AFFA27634A03BCEAEA7'; // (Funny)
-  XS15 = '1292E5501B644F66B206B29AF378E48D'; // (Phone)
-  XS16 = 'D4A611D08F014EC09223C5B6BEC6CCF0'; // (Games)
-  XS17 = '609D52F8A29A49A6B2A02524C5E9D260'; // (College)
-  XS18 = '63627337A03F49FF80E5F709CDE0A4EE'; // (Shopping)
-  XS19 = '1F7A4071BF3B4E60BC324C5787B04CF1'; // (Sick)
-  XS20 = '785E8C4840D34C65886F04CF3F3F43DF'; // (Sleeping)
-  XS21 = 'A6ED557E6BF744D4A5D4D2E7D95CE81F'; // (Surfing)
-  XS22 = '12D07E3EF885489E8E97A72A6551E58D'; // (@)
-  XS23 = 'BA74DB3E9E24434B87B62F6B8DFEE50F'; // (Engineering)
-  XS24 = '634F6BD8ADD24AA1AAB9115BC26D05A1'; // (Typing)
-  XS25 = '2CE0E4E57C6443709C3A7A1CE878A7DC'; // (China1)
-  XS26 = '101117C9A3B040F981AC49E159FBD5D4'; // (China2)
-  XS27 = '160C60BBDD4443F39140050F00E6C009'; // (China3)
-  XS28 = '6443C6AF22604517B58CD7DF8E290352'; // (China4)
-  XS29 = '16F5B76FA9D240358CC5C084703C98FA'; // (China5)
-  XS30 = '631436FF3F8A40D0A5CB7B66E051B364'; // (De1)
-  XS31 = 'B70867F538254327A1FFCF4CC1939797'; // (De2)
-  XS32 = 'DDCF0EA971954048A9C6413206D6F280'; // (De3)
-  XS33 = 'D4E2B0BA334E4FA598D0117DBF4D3CC8'; // (RuSearch)
-  XS34 = 'CD5643A2C94C4724B52CDC0124A1D0CD'; // (RuLove)
-  XS35 = '0072D9084AD143DD91996F026966026F'; // (RuJournal)
-  // Custom + XStatuses
-  XS36 = '3FB0BD36AF3B4A609EEFCF190F6A5A7E'; // (Smoke)
-  XS37 = 'E601E41C33734BD1BC06811D6C323D82'; // (Sex)
-
-  // XStatuses Codes
-  XSC1 = 'icqmood23';
-  XSC2 = 'icqmood1';
-  XSC3 = 'icqmood2';
-  XSC4 = 'icqmood3';
-  XSC5 = 'icqmood4';
-  XSC6 = 'icqmood5';
-  XSC7 = 'icqmood6';
-  XSC8 = 'icqmood7';
-  XSC9 = 'icqmood8';
-  XSC10 = 'icqmood9';
-  XSC11 = 'icqmood10';
-  XSC12 = 'icqmood11';
-  XSC13 = 'icqmood12';
-  XSC14 = 'icqmood13';
-  XSC15 = 'icqmood14';
-  XSC16 = 'icqmood15';
-  XSC17 = 'icqmood16';
-  XSC18 = 'icqmood0';
-  XSC19 = 'icqmood17';
-  XSC20 = 'icqmood18';
-  XSC21 = 'icqmood19';
-  XSC22 = 'icqmood20';
-  XSC23 = 'icqmood21';
-  XSC24 = 'icqmood22';
-  XSC25 = 'icqmood24';
-  XSC26 = 'icqmood25';
-  XSC27 = 'icqmood26';
-  XSC28 = 'icqmood27';
-  XSC29 = 'icqmood28';
-  XSC30 = 'icqmood29';
-  XSC31 = 'icqmood30';
-  XSC32 = 'icqmood31';
-  XSC33 = 'icqmood32';
-  XSC34 = 'icqmood33';
-  XSC35 = 'icqmood34';
-  XSC36 = 'icqmood35';
-  XSC37 = 'icqmood36';
+  // XStatus
+  ICQ_XStatus_Codes:
+    packed array[0..42] of record XStatus_Caps: string;
+    XStatus_Code: string;
+    XStatus_Icon:
+    Integer;
+  end
+  = ((XStatus_Caps: '01D8D7EEAC3B492AA58DD3D877E66B92'; XStatus_Code: 'icqmood23'; XStatus_Icon: 1), // 0 (Angry)
+    (XStatus_Caps: '5A581EA1E580430CA06F612298B7E4C7'; XStatus_Code: 'icqmood1'; XStatus_Icon: 2), // 1 (Duck)
+    (XStatus_Caps: '83C9B78E77E74378B2C5FB6CFCC35BEC'; XStatus_Code: 'icqmood2'; XStatus_Icon: 3), // 2 (Tired)
+    (XStatus_Caps: 'E601E41C33734BD1BC06811D6C323D81'; XStatus_Code: 'icqmood3'; XStatus_Icon: 4), // 3 (Party)
+    (XStatus_Caps: '8C50DBAE81ED4786ACCA16CC3213C7B7'; XStatus_Code: 'icqmood4'; XStatus_Icon: 5), // 4 (Beer)
+    (XStatus_Caps: '3FB0BD36AF3B4A609EEFCF190F6A5A7F'; XStatus_Code: 'icqmood5'; XStatus_Icon: 6), // 5 (Thinking)
+    (XStatus_Caps: 'F8E8D7B282C4414290F810C6CE0A89A6'; XStatus_Code: 'icqmood6'; XStatus_Icon: 7), // 6 (Eating)
+    (XStatus_Caps: '80537DE2A4674A76B3546DFD075F5EC6'; XStatus_Code: 'icqmood7'; XStatus_Icon: 8), // 7 (TV)
+    (XStatus_Caps: 'F18AB52EDC57491D99DC6444502457AF'; XStatus_Code: 'icqmood8'; XStatus_Icon: 9), // 8 (Friends)
+    (XStatus_Caps: '1B78AE31FA0B4D3893D1997EEEAFB218'; XStatus_Code: 'icqmood9'; XStatus_Icon: 10), // 9 (Coffee)
+    (XStatus_Caps: '61BEE0DD8BDD475D8DEE5F4BAACF19A7'; XStatus_Code: 'icqmood10'; XStatus_Icon: 11), // 10 (Music)
+    (XStatus_Caps: '488E14898ACA4A0882AA77CE7A165208'; XStatus_Code: 'icqmood11'; XStatus_Icon: 12), // 11 (Business)
+    (XStatus_Caps: '107A9A1812324DA4B6CD0879DB780F09'; XStatus_Code: 'icqmood12'; XStatus_Icon: 13), // 12 (Camera)
+    (XStatus_Caps: '6F4930984F7C4AFFA27634A03BCEAEA7'; XStatus_Code: 'icqmood13'; XStatus_Icon: 14), // 13 (Funny)
+    (XStatus_Caps: '1292E5501B644F66B206B29AF378E48D'; XStatus_Code: 'icqmood14'; XStatus_Icon: 15), // 14 (Phone)
+    (XStatus_Caps: 'D4A611D08F014EC09223C5B6BEC6CCF0'; XStatus_Code: 'icqmood15'; XStatus_Icon: 16), // 15 (Games)
+    (XStatus_Caps: '609D52F8A29A49A6B2A02524C5E9D260'; XStatus_Code: 'icqmood16'; XStatus_Icon: 17), // 16 (College)
+    (XStatus_Caps: '63627337A03F49FF80E5F709CDE0A4EE'; XStatus_Code: 'icqmood0'; XStatus_Icon: 18), // 17 (Shopping)
+    (XStatus_Caps: '1F7A4071BF3B4E60BC324C5787B04CF1'; XStatus_Code: 'icqmood17'; XStatus_Icon: 19), // 18 (Sick)
+    (XStatus_Caps: '785E8C4840D34C65886F04CF3F3F43DF'; XStatus_Code: 'icqmood18'; XStatus_Icon: 20), // 19 (Sleeping)
+    (XStatus_Caps: 'A6ED557E6BF744D4A5D4D2E7D95CE81F'; XStatus_Code: 'icqmood19'; XStatus_Icon: 21), // 20 (Surfing)
+    (XStatus_Caps: '12D07E3EF885489E8E97A72A6551E58D'; XStatus_Code: 'icqmood20'; XStatus_Icon: 22), // 21 (Email)
+    (XStatus_Caps: 'BA74DB3E9E24434B87B62F6B8DFEE50F'; XStatus_Code: 'icqmood21'; XStatus_Icon: 23), // 22 (Engineering)
+    (XStatus_Caps: '634F6BD8ADD24AA1AAB9115BC26D05A1'; XStatus_Code: 'icqmood22'; XStatus_Icon: 24), // 23 (Typing)
+    (XStatus_Caps: '2CE0E4E57C6443709C3A7A1CE878A7DC'; XStatus_Code: 'icqmood24'; XStatus_Icon: 25), // 24 (China1)
+    (XStatus_Caps: '101117C9A3B040F981AC49E159FBD5D4'; XStatus_Code: 'icqmood25'; XStatus_Icon: 26), // 25 (China2)
+    (XStatus_Caps: '160C60BBDD4443F39140050F00E6C009'; XStatus_Code: 'icqmood26'; XStatus_Icon: 27), // 26 (China3)
+    (XStatus_Caps: '6443C6AF22604517B58CD7DF8E290352'; XStatus_Code: 'icqmood27'; XStatus_Icon: 28), // 27 (China4)
+    (XStatus_Caps: '16F5B76FA9D240358CC5C084703C98FA'; XStatus_Code: 'icqmood28'; XStatus_Icon: 29), // 28 (China5)
+    (XStatus_Caps: '631436FF3F8A40D0A5CB7B66E051B364'; XStatus_Code: 'icqmood29'; XStatus_Icon: 30), // 29 (De1)
+    (XStatus_Caps: 'B70867F538254327A1FFCF4CC1939797'; XStatus_Code: 'icqmood30'; XStatus_Icon: 31), // 30 (De2)
+    (XStatus_Caps: 'DDCF0EA971954048A9C6413206D6F280'; XStatus_Code: 'icqmood31'; XStatus_Icon: 32), // 31 (De3)
+    (XStatus_Caps: 'D4E2B0BA334E4FA598D0117DBF4D3CC8'; XStatus_Code: 'icqmood32'; XStatus_Icon: 33), // 32 (RuSearch)
+    (XStatus_Caps: 'CD5643A2C94C4724B52CDC0124A1D0CD'; XStatus_Code: 'icqmood33'; XStatus_Icon: 34), // 33 (RuLove)
+    (XStatus_Caps: '0072D9084AD143DD91996F026966026F'; XStatus_Code: 'icqmood34'; XStatus_Icon: 35), // 34 (RuJournal)
+    (XStatus_Caps: '3FB0BD36AF3B4A609EEFCF190F6A5A7E'; XStatus_Code: 'icqmood35'; XStatus_Icon: 57), // 35 (Smoke)
+    (XStatus_Caps: 'E601E41C33734BD1BC06811D6C323D82'; XStatus_Code: 'icqmood36'; XStatus_Icon: - 1), // 36 (Sex)
+    (XStatus_Caps: 'B7074378F50C777797775778502D0570'; XStatus_Code: 'icqmood37'; XStatus_Icon: - 45), // 37 (StDepression)
+    (XStatus_Caps: 'B7074378F50C777797775778502D0575'; XStatus_Code: 'icqmood38'; XStatus_Icon: - 45), // 38 (StFFC)
+    (XStatus_Caps: 'B7074378F50C777797775778502D0576'; XStatus_Code: 'icqmood39'; XStatus_Icon: - 45), // 39 (StAtHome)
+    (XStatus_Caps: 'B7074378F50C777797775778502D0577'; XStatus_Code: 'icqmood40'; XStatus_Icon: - 45), // 40 (StAtWork)
+    (XStatus_Caps: 'B7074378F50C777797775778502D0578'; XStatus_Code: 'icqmood41'; XStatus_Icon: - 45), // 41 (StLunch)
+    (XStatus_Caps: 'B7074378F50C777797775778502D0579'; XStatus_Code: 'icqmood42'; XStatus_Icon: - 45)); // 42 (StEvil)
 
 {$ENDREGION}
 {$REGION 'Const BART_ID'}
@@ -274,7 +333,7 @@ const
 
   // Расшифровка пакетов для лога
   ICQ_Pkt_Names:
-    packed array[0..35] of record Pkt_Code: Integer;
+    packed array[0..49] of record Pkt_Code: Integer;
     Pkt_Name:
     string;
   end
@@ -313,7 +372,21 @@ const
     (Pkt_Code: $0102; Pkt_Name: 'CLI_SET_READY'), // 32
     (Pkt_Code: $1502; Pkt_Name: 'CLI_ICQ_REQUEST'), // 33
     (Pkt_Code: $0410; Pkt_Name: 'CLI_AIM_MESSAGING'), // 34
-    (Pkt_Code: $1304; Pkt_Name: 'CLI_CONTACTS_LIST_REQ')); // 35
+    (Pkt_Code: $1304; Pkt_Name: 'CLI_CONTACTS_LIST_REQ'), // 35
+    (Pkt_Code: $0407; Pkt_Name: 'SRV_MESSAGE_REQ'), // 36
+    (Pkt_Code: $030B; Pkt_Name: 'SRV_CONTACT_ONLINE'), // 37
+    (Pkt_Code: $030C; Pkt_Name: 'SRV_CONTACT_OFFLINE'), // 38
+    (Pkt_Code: $030A; Pkt_Name: 'SRV_CONTACT_UNK_STATUS'), // 39
+    (Pkt_Code: $0406; Pkt_Name: 'CLI_SEND_MESSAGE'), // 40
+    (Pkt_Code: $010A; Pkt_Name: 'SRV_RATE_LIMIT_WARN'), // 41
+    (Pkt_Code: $040C; Pkt_Name: 'SRV_MESSAGE_ACK'), // 42
+    (Pkt_Code: $1311; Pkt_Name: 'SSI_EDIT_BEGIN'), // 43
+    (Pkt_Code: $1309; Pkt_Name: 'SSI_UPDATE'), // 44
+    (Pkt_Code: $1312; Pkt_Name: 'SSI_EDIT_END'), // 45
+    (Pkt_Code: $1308; Pkt_Name: 'SSI_ADD'), // 46
+    (Pkt_Code: $0414; Pkt_Name: 'TYPING_NOTIFICATION'), // 47
+    (Pkt_Code: $1314; Pkt_Name: 'SSI_AUTH_GRANT'), // 48
+    (Pkt_Code: $003C; Pkt_Name: 'CLI_PING')); // 49
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -451,7 +524,8 @@ implementation
 
 uses
   UtilsUnit,
-  OverbyteIcsMD5;
+  OverbyteIcsMD5,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'ICQ_PassChange'}
@@ -684,7 +758,7 @@ end;
 function ICQ_ClientCap2String(ClientCap: string): string;
 begin
   Result := 'Unknown ICQ';
-  // Определяем клиент по капабилитисам
+  {// Определяем клиент по капабилитисам
   if Pos(CAP_IMADERING, ClientCap) > 0 then
     Result := 'IMadering'
   else if Pos(CAP_QIP, ClientCap) > 0 then
@@ -724,7 +798,7 @@ begin
   else if Pos(CAP_TRILL_CRYPT, ClientCap) > 0 then
     Result := 'Trillian'
   else if Pos(CAP_QIP_INFIUM, ClientCap) > 0 then
-    Result := 'QIP Infium';
+    Result := 'QIP Infium';}
 end;
 
 {$ENDREGION}
@@ -1371,7 +1445,7 @@ begin
   Rand3 := IntToHex(Random($AAAA), 4);
   // Формируем пакет
   Pkt := '00040006000000000006' + '0000' + Rand1 + Rand2 + '00000002' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + '0005005E00000000' + Rand1 + Rand2 +
-    '0000094613494C7F11D18222444553540000000A00020001000F0000271100361B000A00000' + '0000000000000000000000000000000000300000000' + Rand3 + '0E00' + Rand3 +
+    '0000' + ICQ_Servises_Caps[19].Cap_HEX + '000A00020001000F0000271100361B000A00000' + '0000000000000000000000000000000000300000000' + Rand3 + '0E00' + Rand3 +
     '0000000000000000000000000C000000040001000000030000';
   // Отсылаем пакет
   ICQ_SendPkt('2', Pkt);
@@ -2762,7 +2836,6 @@ end;
 
 procedure ICQ_SendMessage_0406(SUIN, SMsg: string; InUnicode: Boolean);
 const
-  Cap = '094613494c7f11d18222444553540000';
   Cap1 = '{0946134E-4C7F-11D1-8222-444553540000}';
 var
   Len1, Len2: Integer;
@@ -2797,7 +2870,7 @@ begin
       Pkt2 := '1b000a000000000000000000000000000000000000000300000000' + CoocId1 + '0e00' + CoocId1 + '00000000000000000000000001000000' + '0400' + IntToHex(Swap16((Length(Utf8Mess) + 1)), 4)
         + Text2Hex(Utf8Mess) + '0000000000ffffff0026000000' + Text2Hex(Cap1);
       Len2 := Length(Hex2Text(Pkt2));
-      Pkt1 := '0000' + CoocId + Cap + '000a00020001' + '000f0000' + '2711' + IntToHex(Len2, 4) + Pkt2;
+      Pkt1 := '0000' + CoocId + ICQ_Servises_Caps[19].Cap_HEX + '000a00020001' + '000f0000' + '2711' + IntToHex(Len2, 4) + Pkt2;
       Len1 := Length(Hex2Text(Pkt1));
       Pkt := '00040006000000000006' + CoocId + '0002' + IntToHex(Length(SUIN), 2) + Text2Hex(SUIN) + '0005' + IntToHex(Len1, 4) + Pkt1 + '00030000';
     end;
@@ -2814,10 +2887,12 @@ label
   X;
 var
   Nick, Mess, MsgD, PopMsg, HistoryFile: string;
-  RosterItem: TListItem;
   GtransMsg: Boolean;
   JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Prop: TJvSimpleXMLProp;
+  Contact_Yes: Boolean;
+  I: Integer;
 begin
   GtransMsg := False;
   // Если сообщение пустое, то выходим
@@ -2825,7 +2900,7 @@ begin
     Exit;
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(MainForm);
+    Application.CreateForm(TChatForm, ChatForm);
   // Обрабатываем сообщение на наличие формата HTML
   if Copy(Msg, 1, 6) = '<HTML>' then
     ChatForm.CheckMessage_ClearTag(Msg);
@@ -2837,14 +2912,13 @@ begin
   if GTrans then
     goto X;
   // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
-  // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
     begin
-      if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.usr') then
+      if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext) then
       begin
-        LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.usr');
+        LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext);
         if Root <> nil then
         begin
           XML_Node := Root.Items.ItemNamed[C_Gtrans];
@@ -2859,7 +2933,7 @@ begin
   if GtransMsg then
   begin
     if not Assigned(GTransForm) then
-      GTransForm := TGTransForm.Create(MainForm);
+      Application.CreateForm(TGTransForm, GTransForm);
     with GTransForm.GtransListView.Items.Add do
     begin
       // Изменяем направление перевода для исходящих и входящих сообщений
@@ -2874,73 +2948,78 @@ begin
   // Обрабатываем сообщение
   X: ;
   PopMsg := Mess;
-  // Ищем эту запись в Ростере
-  {RosterItem := RosterForm.ReqRosterItem(UIN);
-  if RosterItem <> nil then
+  // Ищем этот контакт в Ростере
+  Contact_Yes := False;
+  if V_Roster <> nil then
   begin
-    // Выставляем параметры сообщения в этой записи
-    with RosterItem do
+    with V_Roster do
     begin
-      // Ник контакта из Ростера
-      Nick := URLDecode(SubItems[0]);
-      // Дата сообщения
-      MsgD := Nick + ' [' + DateTimeChatMess + ']';
-      // Записываем сообщение в этот контакт если он уже найден в списке контактов
-      SubItems[15] := URLEncode(PopMsg);
-      SubItems[35] := '0';
+      if Root <> nil then
+      begin
+        // Ищем раздел MRA
+        XML_Node := Root.Items.ItemNamed[C_Icq];
+        if XML_Node <> nil then
+        begin
+          // Ищем раздел контактов
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          if Sub_Node <> nil then
+          begin
+            for I := 0 to Sub_Node.Items.Count - 1 do
+            begin
+              Tri_Node := Sub_Node.Items.Item[i];
+              if Tri_Node <> nil then
+              begin
+                // Если нашли этот контакт
+                if Tri_Node.Properties.Value(C_Login) = UrlEncode(UIN) then
+                begin
+                  Contact_Yes := True;
+                  // Записываем входяшее сообщение
+                  RosterUpdateProp(Tri_Node, C_InMess, UrlEncode(Mess));
+                  // Ник контакта из Ростера
+                  Nick := URLDecode(Tri_Node.Properties.Value(C_Nick));
+                  // Дата сообщения
+                  MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                  // Ставим метку о непрочитанном сообщении
+                  RosterUpdateProp(Tri_Node, C_Mess, C_XX);
+                  // Прерываем цикл
+                  Break;
+                end;
+              end;
+            end;
+            // Если контакт в Ростере не нашли
+            if not Contact_Yes then
+            begin
+              // Ищем его Ник в файле-кэше ников
+              Nick := SearchNickInCash(C_Icq, UIN);
+              // Дата сообщения
+              MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+              // Добавляем этот контакт в эту группу
+              Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+              Tri_Node.Properties.Add(C_Login, URLEncode(UIN));
+              Tri_Node.Properties.Add(C_Group + C_Id, C_NoCL);
+              Tri_Node.Properties.Add(C_Status, 214);
+              Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
+              Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+              Tri_Node.Properties.Add(C_Mess, C_XX);
+              // Запрашиваем анкету неопознанных контактов
+              if Nick = UIN then
+                if ICQ_Work_Phaze then
+                  ICQ_ReqInfo_New_Pkt(UIN);
+            end;
+          end;
+        end;
+      end;
     end;
-  end
-  else // Если такой контакт не найден в Ростере, то добавляем его
-  begin
-    // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-    Nick := SearchNickInCash(C_Icq, UIN);
-    // Дата сообщения
-    MsgD := Nick + ' [' + DateTimeChatMess + ']';
-    // Ищем группу "Не в списке" в Ростере
-    RosterItem := RosterForm.ReqRosterItem(C_NoCL);
-    if RosterItem = nil then // Если группу не нашли
-    begin
-      // Добавляем такую группу в Ростер
-      RosterItem := RosterForm.RosterJvListView.Items.Add;
-      RosterItem.Caption := C_NoCL;
-      // Подготавиливаем все значения
-      RosterForm.RosterItemSetFull(RosterItem);
-      RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
-    end;
-    // Добавляем этот контакт в Ростер
-    RosterItem := RosterForm.RosterJvListView.Items.Add;
-    with RosterItem do
-    begin
-      Caption := UIN;
-      // Подготавиливаем все значения
-      RosterForm.RosterItemSetFull(RosterItem);
-      // Обновляем субстроки
-      SubItems[0] := URLEncode(Nick);
-      SubItems[1] := C_NoCL;
-      SubItems[2] := 'none';
-      SubItems[3] := C_Icq;
-      SubItems[6] := '214';
-      SubItems[15] := URLEncode(PopMsg);
-      SubItems[35] := '0';
-      // Запрашиваем анкету неопознанных контактов
-      if Nick = UIN then
-        if ICQ_Work_Phaze then
-          ICQ_ReqInfo_New_Pkt(UIN);
-    end;
-    // Запускаем таймер задержку событий Ростера
-    MainForm.JvTimerList.Events[11].Enabled := False;
-    MainForm.JvTimerList.Events[11].Enabled := True;
-  end;}
+  end;
   // Записываем история в файл истории с этим контактов
-  HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + '.htm';
+  HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + C_Htm_Ext;
   Mess := Text2XML(Mess);
   CheckMessage_BR(Mess);
   DecorateURL(Mess);
-  SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
+  SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
   // Добавляем сообщение в текущий чат
-  RosterItem.SubItems[36] := 'X';
-  if ChatForm.AddMessInActiveChat(Nick, PopMsg, UIN, MsgD, Mess) then
-    RosterItem.SubItems[36] := EmptyStr;
+  if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(UIN), MsgD, Mess) then
+    UpdateFullCL;
 end;
 
 {$ENDREGION}
@@ -2970,8 +3049,8 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        //S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
-        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
+        S_Log := S_Log + C_MsgCannel + C_TN + C_BN + TLV + C_RN;
+        S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -2984,42 +3063,42 @@ begin
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
+                S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
               end;
             $0006: // Статус
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
+                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
               end;
             $0005: // Дата регистраций UIN
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_Icq + Log_Parsing + TimeReg + C_RN;
+                S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
               end;
             $001D: // Аватар хэш и другие доп. статусы
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
+                S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
               end;
             $000F: // Время в сети
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
+                S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
               end;
             $0003: // Время подключения
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_Icq + Log_Parsing + ConnTime + C_RN;
+                S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))) + C_RN;
+              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
             end;
           end;
         end;
@@ -3055,13 +3134,13 @@ begin
                       Msg := UnicodeBEHex2Text(Text2Hex(Msg));
                   end;
                 end;
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
+                S_Log := S_Log + C_InMess + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Msg + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))) + C_RN;
+              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
             end;
           end;
         end;
@@ -3070,8 +3149,8 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        //S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
-        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
+        S_Log := S_Log + C_MsgCannel + C_TN + C_BN + TLV + C_RN;
+        S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3084,42 +3163,42 @@ begin
               begin // Класс контакта (вдруг админ постучит)
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
+                S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
               end;
             $0006:
               begin // Статус
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
+                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
               end;
             $0005:
               begin // Дата регистраций UIN
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_Icq + Log_Parsing + TimeReg + C_RN;
+                S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
               end;
             $001D:
               begin // Аватар хэш и другие доп. статусы
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
+                S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
               end;
             $000F:
               begin // Время в сети
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
+                S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
               end;
             $0003:
               begin // Время подключения
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_Icq + Log_Parsing + ConnTime + C_RN;
+                S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))) + C_RN;
+              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
             end;
           end;
         end;
@@ -3149,12 +3228,12 @@ begin
                       begin // Внешний IP
                         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                         ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                        S_Log := S_Log + C_Icq + Log_Parsing + ExtIP + C_RN;
+                        S_Log := S_Log + C_ExtIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ExtIP + C_RN;
                       end;
                     $0005:
                       begin // Внутренний порт
                         IntPort := IntToStr(HexToInt(Text2Hex(NextData(PktData, 4))));
-                        S_Log := S_Log + C_Icq + Log_Parsing + IntIP + ':' + IntPort + C_RN;
+                        S_Log := S_Log + C_IntIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntIP + C_TN + IntPort + C_RN;
                       end;
                     $2711:
                       begin // Сообщение
@@ -3166,7 +3245,7 @@ begin
                           goto E;
                         NextData(SubData, 26 + 6 + 12); // 1B - 1 Len + FFSeq + Unknown
                         MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
-                        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Type + IntToHex(MsgType, 1) + C_RN;
+                        S_Log := S_Log + C_Mess + C_Type + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToHex(MsgType, 1) + C_RN;
                         NextData(SubData, 1 + 2 + 2); // MsgFlag + status code + priority code
                         if MsgType = M_FILE then // File request
                         begin
@@ -3188,7 +3267,7 @@ begin
                           Msg := NextData(SubData, MsgLen);
                           if IsUtf8Valid(Msg) then // Изза ошибок в кодировке QIP 2005
                             Msg := UTF8ToString(Msg);
-                          //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
+                          S_Log := S_Log + C_InMess + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Msg + C_RN;
                           if Msg <> EmptyStr then
                           begin
                             if MsgType = M_URL then
@@ -3204,7 +3283,7 @@ begin
                     begin
                       // Если есть другие TLV, то пропускаем их
                       Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                      S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))) + C_RN;
+                      S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
                     end;
                   end;
                 end;
@@ -3213,7 +3292,7 @@ begin
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(NextData(PktData, Len))) + C_RN;
+              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
             end;
           end;
         end;
@@ -3222,8 +3301,8 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        //S_Log := S_Log + C_Icq + Log_Get + Log_ReqMessage + UIN + C_RN;
-        //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Chanel + TLV + C_RN;
+        S_Log := S_Log + C_MsgCannel + C_TN + C_BN + TLV + C_RN;
+        S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3236,42 +3315,42 @@ begin
               begin // Класс контакта (вдруг админ постучит)
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_UserClass + UserClass + C_RN;
+                S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
               end;
             $0006:
               begin // Статус
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Status + Status + C_RN;
+                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
               end;
             $0005:
               begin // Дата регистраций UIN
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_Icq + Log_Parsing + TimeReg + C_RN;
+                S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
               end;
             $001D:
               begin // Аватар хэш и другие доп. статусы
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash) + C_RN;
+                S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
               end;
             $000F:
               begin // Время в сети
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                //S_Log := S_Log + C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)) + C_RN;
+                S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
               end;
             $0003:
               begin // Время подключения
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_Icq + Log_Parsing + ConnTime + C_RN;
+                S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))) + C_RN;
+              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
             end;
           end;
         end;
@@ -3281,12 +3360,14 @@ begin
           NextData(PktData, 2);
           NextData(PktData, 4); // UIN
           MsgType := HexToInt(Text2Hex(NextData(PktData, 1)));
-          //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Type + IntToHex(MsgType, 1) + C_RN;
+          S_Log := S_Log + C_Mess + C_Type + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToHex(MsgType, 1) + C_RN;
           NextData(PktData, 1); // MsgFlag
           MsgLen := Swap16(HexToInt(Text2Hex(NextData(PktData, 2))));
           Dec(MsgLen);
-          Msg := Utf8ToString(NextData(PktData, MsgLen));
-          //S_Log := S_Log + C_Icq + Log_Parsing + Log_Msg_Text + C_RN + Msg + C_RN;
+          Msg := NextData(PktData, MsgLen);
+          if IsUtf8Valid(Msg) then // Изза ошибок в кодировке QIP 2005
+            Msg := UTF8ToString(Msg);
+          S_Log := S_Log + C_InMess + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Msg + C_RN;
           if Msg <> EmptyStr then
           begin
             if MsgType = M_URL then
@@ -3304,14 +3385,15 @@ begin
       end
   else
     begin
-      S_Log := S_Log + C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(PktData)) + C_RN;
+      S_Log := S_Log + Log_Unk_Data + C_RN + Trim(Dump(PktData)) + C_RN;
       goto E;
     end;
   end;
   // Передаём полученные данные для события входящего сообщения
   ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime);
   E: ;
-  XLog(Trim(S_Log), C_Icq);
+  // Пишем данные пакета в лог
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[36].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3319,11 +3401,11 @@ end;
 
 procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash, ConnTime: string);
 var
-  StatusIcoInd, IXStat, IClient: Integer;
+  I, StatusIcoInd, IXStat, IClient: Integer;
   BartID, BartLength, BartSubLen: Integer;
   Utf8Sup: Boolean;
-  IHash, IXText, PClient, IXStatNew: string;
-  RosterItem: TListItem;
+  IHash, IXText, PClient, IXStatNew, S_Log: string;
+  Get_Node: TJvSimpleXmlElem;
 begin
   // Получаем номер иконки из статуса
   StatusIcoInd := ICQ_StatusCode2ImgId(Status);
@@ -3346,271 +3428,80 @@ begin
     if BartLength <> 0 then
     begin
       case BartID of
-        BUDDY_ICON: // Хэш-аватара
-          IHash := NextData(IconHash, BartLength);
+        BUDDY_ICON: IHash := NextData(IconHash, BartLength); // Хэш-аватара
         STATUS_MOOD: // Название x-статуса (картинка)
           begin
             IXStatNew := NextData(IconHash, BartLength);
+            S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + IXStatNew + C_RN;
             // Преобразуем новый тип доп. статуса в номер иконки
-            NextData(IXStatNew, 7);
-            IXStat := StrToInt(IXStatNew);
+            for I := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
+            begin
+              if ICQ_XStatus_Codes[I].XStatus_Code = IXStatNew then
+              begin
+                IXStat := ICQ_XStatus_Codes[I].XStatus_Icon + 44;
+                S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + ICQ_XStatus_Codes[I].XStatus_Code + C_RN;
+                Break;
+              end;
+            end;
           end;
         STATUS_STR: // Текст x-статуса
           begin
             BartSubLen := HexToInt(Text2Hex(NextData(IconHash, 2)));
             IXText := Utf8ToString(NextData(IconHash, BartSubLen));
+            S_Log := S_Log + C_XX + C_Mess + C_TN + C_BN + IXText + C_RN;
             if BartLength - BartSubLen > 0 then
               NextData(IconHash, BartLength - BartSubLen); // Тупые байты
           end;
       else
-        begin
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(NextData(IconHash, BartLength))), C_Icq);
-        end;
+        S_Log := S_Log + 'Bart' + C_Unk + C_TN + C_BN + Text2Hex(NextData(IconHash, BartLength)) + C_RN;
       end;
     end;
   end;
   // Ищем доп. статус в капабилитисах (старый способ передачи доп. статусов)
-  if Pos(XS1, Caps) > 0 then
-    IXStat := 1
-  else if Pos(XS2, Caps) > 0 then
-    IXStat := 2
-  else if Pos(XS3, Caps) > 0 then
-    IXStat := 3
-  else if Pos(XS4, Caps) > 0 then
-    IXStat := 4
-  else if Pos(XS5, Caps) > 0 then
-    IXStat := 5
-  else if Pos(XS6, Caps) > 0 then
-    IXStat := 6
-  else if Pos(XS7, Caps) > 0 then
-    IXStat := 7
-  else if Pos(XS8, Caps) > 0 then
-    IXStat := 8
-  else if Pos(XS9, Caps) > 0 then
-    IXStat := 9
-  else if Pos(XS10, Caps) > 0 then
-    IXStat := 10
-  else if Pos(XS11, Caps) > 0 then
-    IXStat := 11
-  else if Pos(XS12, Caps) > 0 then
-    IXStat := 12
-  else if Pos(XS13, Caps) > 0 then
-    IXStat := 13
-  else if Pos(XS14, Caps) > 0 then
-    IXStat := 14
-  else if Pos(XS15, Caps) > 0 then
-    IXStat := 15
-  else if Pos(XS16, Caps) > 0 then
-    IXStat := 16
-  else if Pos(XS17, Caps) > 0 then
-    IXStat := 17
-  else if Pos(XS18, Caps) > 0 then
-    IXStat := 18
-  else if Pos(XS19, Caps) > 0 then
-    IXStat := 19
-  else if Pos(XS20, Caps) > 0 then
-    IXStat := 20
-  else if Pos(XS21, Caps) > 0 then
-    IXStat := 21
-  else if Pos(XS22, Caps) > 0 then
-    IXStat := 22
-  else if Pos(XS23, Caps) > 0 then
-    IXStat := 23
-  else if Pos(XS24, Caps) > 0 then
-    IXStat := 24
-  else if Pos(XS25, Caps) > 0 then
-    IXStat := 25
-  else if Pos(XS26, Caps) > 0 then
-    IXStat := 26
-  else if Pos(XS27, Caps) > 0 then
-    IXStat := 27
-  else if Pos(XS28, Caps) > 0 then
-    IXStat := 28
-  else if Pos(XS29, Caps) > 0 then
-    IXStat := 29
-  else if Pos(XS30, Caps) > 0 then
-    IXStat := 30
-  else if Pos(XS31, Caps) > 0 then
-    IXStat := 31
-  else if Pos(XS32, Caps) > 0 then
-    IXStat := 32
-  else if Pos(XS33, Caps) > 0 then
-    IXStat := 33
-  else if Pos(XS34, Caps) > 0 then
-    IXStat := 34
-  else if Pos(XS35, Caps) > 0 then
-    IXStat := 35
-  else if Pos(XS36, Caps) > 0 then
-    IXStat := 179
-  else if Pos(XS37, Caps) > 0 then
-    IXStat := 180;
+  if IXStat = -1 then
+  begin
+    for I := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
+    begin
+      if Pos(ICQ_XStatus_Codes[I].XStatus_Caps, Caps) > 0 then
+      begin
+        IXStat := ICQ_XStatus_Codes[I].XStatus_Icon + 44;
+        S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + ICQ_XStatus_Codes[I].XStatus_Code + C_RN;
+        Break;
+      end;
+    end;
+  end;
   // Ищем идентификаторы клиентов в капабилитисах
   PClient := EmptyStr;
-  if Pos(CAP_IMADERING, Caps) > 0 then
+  for I := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
   begin
-    IClient := 1;
-    PClient := 'IMadering';
-  end
-  else if Pos(CAP_QIP, Caps) > 0 then
-  begin
-    IClient := 2;
-    PClient := 'QIP';
-  end
-  else if Pos('Smaper', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 8;
-    PClient := 'Smaper';
-  end
-  else if Pos('MirandaM', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 3;
-    PClient := 'Miranda';
-  end
-  else if Pos('&RQinside', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 4;
-    PClient := '&RQ';
-  end
-  else if Pos(CAP_RNQ, Caps) > 0 then
-  begin
-    IClient := 5;
-    PClient := 'R&Q';
-  end
-  else if Pos(CAP_MACICQ, Caps) > 0 then
-  begin
-    IClient := 10;
-    PClient := 'MacICQ';
-  end
-  else if Pos(CAP_KXICQ, Caps) > 0 then
-  begin
-    IClient := 12;
-    PClient := 'KXICQ';
-  end
-  else if Pos(CAP_PUSH2TALK, Caps) > 0 then
-  begin
-    IClient := 14;
-    PClient := 'ICQ Lite';
-  end
-  else if Pos(CAP_ICQLITE, Caps) > 0 then
-  begin
-    IClient := 15;
-    PClient := 'ICQ Lite';
-  end
-  else if Pos(CAP_NETVIGATOR, Caps) > 0 then
-  begin
-    IClient := 16;
-    PClient := 'ICQ Net';
-  end
-  else if Pos(CAP_IMPLUS, Caps) > 0 then
-  begin
-    IClient := 18;
-    PClient := 'IM plus';
-  end
-  else if Pos('Jimm', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 19;
-    PClient := 'Jimm';
-  end
-  else if Pos('Kopete', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 20;
-    PClient := 'Kopete';
-  end
-  else if Pos('Licq client', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 21;
-    PClient := 'Licq';
-  end
-  else if Pos('mChat icq', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 22;
-    PClient := 'mChat';
-  end
-  else if Pos(CAP_RAMBLER_RU, Caps) > 0 then
-  begin
-    IClient := 23;
-    PClient := 'Rambler ICQ';
-  end
-  else if Pos('SIM client', Hex2Text(Caps)) > 0 then
-  begin
-    IClient := 24;
-    PClient := 'SIM';
-  end
-  else if Pos(CAP_TRILL_CRYPT, Caps) > 0 then
-  begin
-    IClient := 25;
-    PClient := 'Trillian';
-  end
-  else if Pos(CAP_QIP_INFIUM, Caps) > 0 then
-  begin
-    IClient := 26;
-    PClient := 'QIP Infium';
+    if Pos(ICQ_Clients_Caps[I].Cap_HEX, Caps) > 0 then
+    begin
+      PClient := ICQ_Clients_Caps[I].Client_Name;
+      IClient := ICQ_Clients_Caps[I].Client_Icon;
+      S_Log := S_Log + C_Client + C_TN + C_BN + ICQ_Clients_Caps[I].Client_Name + C_RN;
+      Break;
+    end;
   end;
   // Ищем поддержку UTF-8 сообщений
-  if (Pos(CAP_UTF8, Caps) > 0) or (Pos('134E', CapsId) > 0) then
+  if ((Pos(ICQ_Servises_Caps[23].Cap_HEX, Caps) > 0) or (Pos('134E', CapsId) > 0)) and (ProtoVer <> '0') then
     Utf8Sup := True;
   // Обновляем отображение контакта в Ростере
-  {RosterItem := RosterForm.ReqRosterItem(UIN);
-  if RosterItem <> nil then
+  Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(UIN));
+  if Get_Node <> nil then
   begin
-    with RosterItem do
-    begin
-      // Если контакт не требует авторизации, то назначаем иконку статуса
-      if SubItems[2] = 'both' then
-        SubItems[6] := IntToStr(StatusIcoInd)
-      else
-      begin
-        // Если контакт не авторизован, но пришел его статус, то считаем что он уже авторизован
-        // и назначаем ему иконку статуса
-        if (SubItems[2] = 'none') and (StatusIcoInd <> 9) then
-        begin
-          SubItems[6] := IntToStr(StatusIcoInd);
-          // Снимаем флаг о необходимости авторизации и иконку предупреждения об этом
-          SubItems[2] := 'both';
-          SubItems[8] := '-1';
-        end;
-      end;
-      // Ставим иконки доп. статуса
-      if IXStat > -1 then
-        SubItems[7] := IntToStr(IXStat + 44)
-      else
-        SubItems[7] := '-1';
-      // Ставим иконку клиента
-      if IClient > -1 then
-        SubItems[8] := IntToStr(IClient + 186)
-      else
-      begin
-        if (StatusIcoInd <> 9) and (StatusIcoInd <> 80) and (StatusIcoInd <> 214) then
-          SubItems[8] := IntToStr(23 + 186)
-        else
-          SubItems[8] := '-1';
-      end;
-      // Присваиваем онлайн переменные контакту
-      SubItems[20] := UserClass;
-      SubItems[21] := IntIP;
-      SubItems[22] := IntPort;
-      SubItems[23] := ExtIP;
-      SubItems[24] := ConnFlag;
-      SubItems[25] := ProtoVer;
-      // Если протокол версия ноль, то отправляем сообщения в старом формате
-      if ProtoVer = '0' then
-        Utf8Sup := False;
-      SubItems[26] := TimeReg;
-      SubItems[27] := CapsId;
-      SubItems[28] := Caps;
-      SubItems[29] := Text2Hex(IHash);
-      SubItems[30] := ConnTime;
-      SubItems[31] := URLEncode(IXText);
-      SubItems[32] := PClient;
-      if Utf8Sup then
-        SubItems[33] := 'X'
-      else
-        SubItems[33] := EmptyStr;
-    end;
+    RosterUpdateProp(Get_Node, C_Status, IntToStr(StatusIcoInd));
+    RosterUpdateProp(Get_Node, C_XStatus + C_Name, URLEncode(IXStatNew));
+    RosterUpdateProp(Get_Node, C_XStatus, IntToStr(IXStat));
+    RosterUpdateProp(Get_Node, C_XText, URLEncode(IXText));
+    RosterUpdateProp(Get_Node, C_Client + C_Name, PClient);
+    RosterUpdateProp(Get_Node, C_Client, IntToStr(IClient));
   end;
   // Запускаем таймер задержку событий Ростера
   MainForm.JvTimerList.Events[11].Enabled := False;
-  MainForm.JvTimerList.Events[11].Enabled := True;}
+  MainForm.JvTimerList.Events[11].Enabled := True;
+  // Пишем в лог
+  if S_Log <> EmptyStr then
+    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3636,10 +3527,10 @@ label
   X;
 var
   UIN, IconHash, UserClass, TimeReg, ConnTime, Status: string;
-  CapsId, Caps, IntPort, ProtoVer, IntIP, ExtIP, ConnFlag: string;
-  Count, I: Word;
+  Cap, CapsId, Caps, IntPort, ProtoVer, IntIP, ExtIP, ConnFlag: string;
+  Count, I, V: Word;
   Len: Integer;
-  TLV, DCInfo, Temp1, Temp2: string;
+  TLV, DCInfo, S, S_Log: string;
 begin
   // Назначаем по умолчанию дефолтный статус
   Status := 'FFFFFFFF';
@@ -3647,7 +3538,7 @@ begin
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   // Получаем UIN чей статус нам прислал сервак
   UIN := NextData(PktData, Len);
-  //XLog(C_Icq + Log_Get + Log_User_Online_Event + UIN, C_Icq);
+  S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
   // Пропускаем варнинглэвел (в icq всегда равен нулю)
   NextData(PktData, 2);
   // Получаем количество вложенных в пакет TLV
@@ -3664,7 +3555,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           UserClass := Text2Hex(NextData(PktData, Len));
-          //XLog(C_Icq + Log_Parsing + Log_UserClass + UserClass, C_Icq);
+          S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
         end;
       $000C: // DC информация
         begin
@@ -3674,83 +3565,139 @@ begin
           // Внутрений IP адрес и порт
           IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(DCInfo, 4)))));
           IntPort := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 4))));
-          XLog(C_Icq + Log_Parsing + IntIP + ':' + IntPort, C_Icq);
+          S_Log := S_Log + C_IntIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntIP + C_TN + IntPort + C_RN;
           // Флаг подключения и версия протокола
           ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
-          //XLog(C_Icq + Log_Parsing + Log_ConnFlag + ConnFlag, C_Icq);
+          S_Log := S_Log + 'ConnFlag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnFlag + C_RN;
           ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
-          //XLog(C_Icq + Log_Parsing + Log_ProtoVer + ProtoVer, C_Icq);
+          S_Log := S_Log + 'ProtoVer' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ProtoVer + C_RN;
           // Дополнительные поля для как правило для нужд программистов
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))), C_Icq);
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 8))), C_Icq);
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))), C_Icq);
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 4))), C_Icq);
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: 000C Value: ' + Trim(Dump(NextData(DCInfo, 6))), C_Icq);
+          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
+          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 8)) + C_RN;
+          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
+          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
+          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 6)) + C_RN;
         end;
       $000A: // Внешний IP адрес
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          XLog(C_Icq + Log_Parsing + ExtIP, C_Icq);
+          S_Log := S_Log + C_ExtIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ExtIP + C_RN;
         end;
       $0006: // Статус
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           Status := Text2Hex(NextData(PktData, Len));
-          //XLog(C_Icq + Log_Parsing + Log_Status + Status, C_Icq);
+          S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
         end;
       $0005: // Дата регистраций UIN
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          XLog(C_Icq + Log_Parsing + TimeReg, C_Icq);
+          S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
         end;
       $0019: // Укороченные капабилитисы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           CapsId := Text2Hex(NextData(PktData, Len));
-          Temp1 := CapsId;
-          Temp2 := EmptyStr;
-          while Length(Temp1) > 0 do
-            Temp2 := Temp2 + NextData(Temp1, 4) + C_RN;
-          XLog(C_Icq + Log_Parsing + 'CapsId:' + C_RN + Temp2, C_Icq);
+          S := EmptyStr;
+          while Length(CapsId) > 0 do
+          begin
+            Cap := NextData(CapsId, 4);
+            if Assigned(LogForm) then
+            begin
+              if LogForm.ICQDumpSpeedButton.Down then
+              begin
+                // Ищем названия капов характеристик
+                for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
+                begin
+                  if (ICQ_Servises_Caps[V].Cap_HEX[5] + ICQ_Servises_Caps[V].Cap_HEX[6] + ICQ_Servises_Caps[V].Cap_HEX[7] + ICQ_Servises_Caps[V].Cap_HEX[8]) = Cap then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_Servises_Caps[V].Cap_Name + C_EN;
+                    Break;
+                  end;
+                end;
+              end;
+            end;
+            S := S + Cap + C_BN + C_PN + C_BN;
+          end;
+          CapsId := S;
+          S_Log := S_Log + C_Caps + C_Id + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + CapsId + C_RN;
         end;
       $000D: // Полные капабилитисы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           Caps := Text2Hex(NextData(PktData, Len));
-          Temp1 := Caps;
-          Temp2 := EmptyStr;
-          while Length(Temp1) > 0 do
-            Temp2 := Temp2 + NextData(Temp1, 32) + C_RN;
-          XLog(C_Icq + Log_Parsing + 'Caps:' + C_RN + Temp2, C_Icq);
+          S := EmptyStr;
+          while Length(Caps) > 0 do
+          begin
+            Cap := NextData(Caps, 32);
+            if Assigned(LogForm) then
+            begin
+              if LogForm.ICQDumpSpeedButton.Down then
+              begin
+                // Ищем названия капов характеристик
+                for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
+                begin
+                  if ICQ_Servises_Caps[V].Cap_HEX = Cap then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_Servises_Caps[V].Cap_Name + C_EN;
+                    Break;
+                  end;
+                end;
+                // Ищем названия капов Xстатусов
+                for V := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
+                begin
+                  if ICQ_XStatus_Codes[V].XStatus_Caps = Cap then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_XStatus_Codes[V].XStatus_Code + C_EN;
+                    Break;
+                  end;
+                end;
+                // Ищем названия капов клиентов
+                for V := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
+                begin
+                  if Pos(ICQ_Clients_Caps[V].Cap_HEX, Cap) > 0 then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_Clients_Caps[V].Client_Name + C_EN;
+                    Break;
+                  end;
+                end;
+              end;
+            end;
+            S := S + Cap + C_BN + C_PN + C_BN;
+          end;
+          Caps := S;
+          S_Log := S_Log + C_Caps + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Caps + C_RN;
         end;
       $001D: // Аватар хэш и другие доп. статусы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           IconHash := NextData(PktData, Len);
-          //XLog(C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + Dump(IconHash), C_Icq);
+          S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
         end;
       $000F: // Время в сети
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-          //XLog(C_Icq + Log_Parsing + Log_TimeInOnline + Text2Hex(NextData(PktData, Len)), C_Icq);
+          S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
         end;
       $0003: // Время подключения
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          XLog(C_Icq + Log_Parsing + ConnTime, C_Icq);
+          S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
         end
     else
       begin
         // Если есть другие TLV, то пропускаем их
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, Len))), C_Icq);
+        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
       end;
     end;
   end;
   X: ;
+  // Пишем данные пакета в лог
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
   // Если это была проверка статуса то выводим сообщение
   if CheckStatus then
   begin
@@ -4038,16 +3985,9 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         S_Log := S_Log + C_Auth + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + C_AuthNone + C_LN + C_BN;
-                        // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку и жёлтый статус
-                        XML_Prop := Tri_Node.Properties.ItemNamed[C_Auth];
-                        if XML_Prop <> nil then
-                          XML_Prop.Value := C_AuthNone;
-                        XML_Prop := Tri_Node.Properties.ItemNamed[C_Status];
-                        if XML_Prop <> nil then
-                          XML_Prop.Value := '80';
-                        XML_Prop := Tri_Node.Properties.ItemNamed[C_Client];
-                        if XML_Prop <> nil then
-                          XML_Prop.Value := '220';
+                        // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку
+                        RosterUpdateProp(Tri_Node, C_Auth, C_AuthNone);
+                        RosterUpdateProp(Tri_Node, C_Client, '220');
                       end;
                     $013C: // Заметка о контакте
                       begin
@@ -4254,13 +4194,21 @@ begin
         if Sub_Node = nil then
           Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
         // Добавляем группу для контактов "не в списке"
-        Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
-        Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
-        Tri_Node.Properties.Add(C_Id, C_NoCL);
+        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+        if Tri_Node = nil then
+        begin
+          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+          Tri_Node.Properties.Add(C_Id, C_NoCL);
+        end;
         // Добавляем группу для игнорируемых контактов
-        Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_IgCL);
-        Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[49].L_S));
-        Tri_Node.Properties.Add(C_Id, C_IgCL);
+        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_IgCL];
+        if Tri_Node = nil then
+        begin
+          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_IgCL);
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[49].L_S));
+          Tri_Node.Properties.Add(C_Id, C_IgCL);
+        end;
       end;
     end;
   end;
@@ -4300,8 +4248,8 @@ end;
 
 procedure ICQ_Parse_010F(PktData: string);
 var
-  Len, Count, I: Integer;
-  TLV, S_Log, S: string;
+  Len, Count, I, V: Integer;
+  TLV, S_Log, S, Temp1, Cap, Caps: string;
 begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
@@ -4322,7 +4270,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + 'UserClass' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+          S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
       $0006:
         begin
@@ -4333,8 +4281,48 @@ begin
       $000D:
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-          S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + 'Caps' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+          Caps := Text2Hex(NextData(PktData, Len));
+          S := EmptyStr;
+          while Length(Caps) > 0 do
+          begin
+            Cap := NextData(Caps, 32);
+            if Assigned(LogForm) then
+            begin
+              if LogForm.ICQDumpSpeedButton.Down then
+              begin
+                // Ищем названия капов характеристик
+                for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
+                begin
+                  if ICQ_Servises_Caps[V].Cap_HEX = Cap then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_Servises_Caps[V].Cap_Name + C_EN;
+                    Break;
+                  end;
+                end;
+                // Ищем названия капов Xстатусов
+                for V := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
+                begin
+                  if ICQ_XStatus_Codes[V].XStatus_Caps = Cap then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_XStatus_Codes[V].XStatus_Code + C_EN;
+                    Break;
+                  end;
+                end;
+                // Ищем названия капов клиентов
+                for V := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
+                begin
+                  if Pos(ICQ_Clients_Caps[V].Cap_HEX, Cap) > 0 then
+                  begin
+                    Cap := Cap + C_BN + C_QN + ICQ_Clients_Caps[V].Client_Name + C_EN;
+                    Break;
+                  end;
+                end;
+              end;
+            end;
+            S := S + Cap + C_BN + C_PN + C_BN;
+          end;
+          Caps := S;
+          S_Log := S_Log + C_Caps + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Caps + C_RN;
         end;
       $000C:
         begin
@@ -4352,13 +4340,19 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'SignonTime' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+          S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
+        end;
+      $001D: // Аватар хэш и другие доп. статусы
+        begin
+          Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+          S := Text2Hex(NextData(PktData, Len));
+          S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
       $0005: // Дата регистрации нашего UIN
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'RegDate' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_MyUIN_RegTime + C_RN;
+          S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_MyUIN_RegTime + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
@@ -4367,7 +4361,7 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + 'ExtIP' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Online_IP + C_RN;
+          S_Log := S_Log + C_ExtIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Online_IP + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
@@ -4569,6 +4563,7 @@ end;
 procedure ICQ_GoOffline;
 var
   I: Integer;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
   // Отключаем таймер факстатуса, пингов
   MainForm.UnstableICQStatus.Checked := False;
@@ -4628,33 +4623,44 @@ begin
   // Обнуляем счётчики пакетов
   ICQ_Seq := $1000;
   ICQ_Avatar_Seq := $2000;
-  // Обнуляем события и переменные в Ростере
-  {with RosterForm.RosterJvListView do
+  // Обнуляем статусы в Ростере
+  if V_Roster <> nil then
   begin
-    for I := 0 to Items.Count - 1 do
+    with V_Roster do
     begin
-      if Items[I].SubItems[3] = C_Icq then
+      if Root <> nil then
       begin
-        if Items[I].SubItems[6] <> '214' then
-          Items[I].SubItems[6] := '9';
-        Items[I].SubItems[7] := '-1';
-        Items[I].SubItems[8] := '-1';
-        Items[I].SubItems[15] := '';
-        Items[I].SubItems[16] := '';
-        Items[I].SubItems[18] := '0';
-        Items[I].SubItems[19] := '0';
-        Items[I].SubItems[20] := '';
-        Items[I].SubItems[24] := '';
-        Items[I].SubItems[25] := '';
-        Items[I].SubItems[30] := '';
-        Items[I].SubItems[31] := '';
-        Items[I].SubItems[32] := '';
-        Items[I].SubItems[35] := '0';
+        // Ищем раздел ICQ
+        XML_Node := Root.Items.ItemNamed[C_Icq];
+        if XML_Node <> nil then
+        begin
+          // Ищем раздел контактов
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          if Sub_Node <> nil then
+          begin
+            for I := 0 to Sub_Node.Items.Count - 1 do
+            begin
+              Tri_Node := Sub_Node.Items.Item[i];
+              if Tri_Node <> nil then
+              begin
+                if Tri_Node.Properties.IntValue(C_Status) <> 214 then
+                begin
+                  RosterUpdateProp(Tri_Node, C_Status, '9');
+                  RosterUpdateProp(Tri_Node, C_XStatus, '-1');
+                  RosterUpdateProp(Tri_Node, C_XStatus + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_XText, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_Client, '-1');
+                  RosterUpdateProp(Tri_Node, C_Client + C_Name, EmptyStr);
+                end;
+              end;
+            end;
+          end;
+        end;
       end;
     end;
   end;
   // Запускаем обработку Ростера
-  RosterForm.UpdateFullCL;}
+  UpdateFullCL;
 end;
 
 {$ENDREGION}
@@ -4662,111 +4668,8 @@ end;
 
 function ICQ_GenerateClientCaps(ClientName, CVer: string): string;
 begin
-  Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-  if ClientName = 'IMadering' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_IMADERING;
-  end
-  else if ClientName = 'QIP 2005' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_QIP + CAP_ICQDEVILS + CAP_QIP_PROTECTMSG + CAP_ICQ_XTRAZ_SUPPORT;
-  end
-  else if ClientName = 'Miranda' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_MIRANDA;
-  end
-  else if ClientName = '&RQ' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_ANDRQ;
-  end
-  else if ClientName = 'R&Q' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_RNQ;
-  end
-  else if ClientName = 'AIM' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-  end
-  else if ClientName = 'Compad' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION;
-  end
-  else if ClientName = 'QIP mobile' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-  end
-  else if ClientName = 'ICQ 6.0' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-  end
-  else if ClientName = 'MacICQ' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_MACICQ;
-  end
-  else if ClientName = 'Pidgin' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-  end
-  else if ClientName = 'ICQKX' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_KXICQ;
-  end
-  else if ClientName = 'ICQ 2001' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY;
-  end
-  else if ClientName = 'ICQ 5.1' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_PUSH2TALK + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
-  end
-  else if ClientName = 'ICQ lite' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_ICQLITE;
-  end
-  else if ClientName = 'ICQnet' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_PUSH2TALK + CAP_MULTI_USER + CAP_ICQ_XTRAZ_SUPPORT + CAP_NETVIGATOR;
-  end
-  else if ClientName = 'icq2go' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION;
-  end
-  else if ClientName = 'ImPlus' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_IS_WEB + CAP_IMPLUS;
-  end
-  else if ClientName = 'jimm' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_JIMM + CAP_TYPING_NOTIFICATION;
-  end
-  else if ClientName = 'Kopete' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_ICQ_XTRAZ_SUPPORT + CAP_KOPETE;
-  end
-  else if ClientName = 'Licq' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_LICQ2;
-  end
-  else if ClientName = 'mChat' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_MCHAT;
-  end
-  else if ClientName = 'Rambler ICQ' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_TYPING_NOTIFICATION + CAP_RAMBLER_RU + CAP_ICQDEVILS + CAP_ICQ_XTRAZ_SUPPORT;
-  end
-  else if ClientName = 'SIM' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_UTF8 + CAP_SIM;
-  end
-  else if ClientName = 'Trillian' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_TRILL_UNK + CAP_TRILL_CRYPT;
-  end
-  else if ClientName = 'QIP infium' then
-  begin
-    Result := CAP_AIM_INTEROPERATE + CAP_AIM2 + CAP_AIM_ISICQ + CAP_AIM_SERVERRELAY + CAP_QIP_INFIUM;
-  end;
+  Result := '0946134D4C7F11D18222444553540000' + '094600004C7F11D18222444553540000' + '094613444C7F11D18222444553540000' //
+  + '094613494C7F11D18222444553540000' + '0946134E4C7F11D18222444553540000' + '563FC8090B6F41BD9F79422609DFA2F3' + '494D61646572696E6720436C69656E74';
 end;
 
 {$ENDREGION}

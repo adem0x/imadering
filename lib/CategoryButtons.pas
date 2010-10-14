@@ -89,280 +89,281 @@ type
 {$IF DEFINED(CLR)}
 
   strict private
-    class var FCursorHandle: TSafeCursorHandle;
-    class constructor Create;
+  class var
+      FCursorHandle: TSafeCursorHandle;
+class constructor Create;
 
 {$IFEND}
 
-  strict private
-    FButtonFlow: TCatButtonFlow;
-    FCollapsedHeight: Integer;
-    FDownButton: TButtonItem;
-    // FDragButton: TButtonItem;
-    FHotButton: TButtonItem;
-    // FDragCategory: TButtonCategory;
-    // FDragStartPos: TPoint;
-    // FDragStarted: Boolean;
-    // FDragImageList: TDragImageList;
-    FGradientDirection: TGradientDirection;
-    FBackGradientDirection: TGradientDirection;
-    FGutterSize: Integer;
-    FScrollSize: Integer;
-    FSideBufferSize: Integer;
-    FImageChangeLink: TChangeLink;
-    FImages: TCustomImageList;
-    FInsertLeft, FInsertTop, FInsertRight, FInsertBottom: TBaseItem;
-    FIgnoreUpdate: Boolean;
-    FScrollBarMax: Integer;
-    FScrollBarPos: Integer;
-    FPageAmount: Integer;
-    FButtonCategories: TButtonCategories;
-    FButtonOptions: TCatButtonOptions;
-    FButtonWidth, FButtonHeight: Integer;
-    FBorderStyle: TBorderStyle;
-    FSelectedItem: TBaseItem;
-    FFocusedItem: TBaseItem;
-    FMouseInControl: Boolean;
-    FScrollBarShown: Boolean;
-    FBackgroundGradientColor: TColor;
-    FHotButtonColor: TColor;
-    FSelectedButtonColor: TColor;
-    FRegularButtonColor: TColor;
-    FInplaceEdit: TCustomEdit;
-    FPanPoint: TPoint;
+strict private
+  FButtonFlow: TCatButtonFlow;
+FCollapsedHeight: Integer;
+FDownButton: TButtonItem;
+// FDragButton: TButtonItem;
+FHotButton: TButtonItem;
+// FDragCategory: TButtonCategory;
+// FDragStartPos: TPoint;
+// FDragStarted: Boolean;
+// FDragImageList: TDragImageList;
+FGradientDirection: TGradientDirection;
+FBackGradientDirection: TGradientDirection;
+FGutterSize: Integer;
+FScrollSize: Integer;
+FSideBufferSize: Integer;
+FImageChangeLink: TChangeLink;
+FImages: TCustomImageList;
+FInsertLeft, FInsertTop, FInsertRight, FInsertBottom: TBaseItem;
+FIgnoreUpdate: Boolean;
+FScrollBarMax: Integer;
+FScrollBarPos: Integer;
+FPageAmount: Integer;
+FButtonCategories: TButtonCategories;
+FButtonOptions: TCatButtonOptions;
+FButtonWidth, FButtonHeight: Integer;
+FBorderStyle: TBorderStyle;
+FSelectedItem: TBaseItem;
+FFocusedItem: TBaseItem;
+FMouseInControl: Boolean;
+FScrollBarShown: Boolean;
+FBackgroundGradientColor: TColor;
+FHotButtonColor: TColor;
+FSelectedButtonColor: TColor;
+FRegularButtonColor: TColor;
+FInplaceEdit: TCustomEdit;
+FPanPoint: TPoint;
 
-    FOnButtonClicked: TCatButtonEvent;
-    FOnCategoryClicked: TCatButtonCategoryEvent;
-    FOnCopyButton: TCatButtonCopyEvent;
-    FOnSelectedButtonChange: TCatButtonEvent;
-    FOnSelectedCategoryChange: TCatButtonCategoryEvent;
-    FOnHotButton: TCatButtonEvent;
-    FOnGetHint: TCatButtonGetHint;
-    FOnDrawIcon: TCatButtonDrawIconEvent;
-    FOnDrawText: TCatButtonDrawEvent;
-    FOnDrawButton: TCatButtonDrawEvent;
-    FOnBeforeDrawButton: TCatButtonDrawEvent;
-    FOnAfterDrawButton: TCatButtonDrawEvent;
-    FOnReorderButton: TCatButtonReorderEvent;
-    FOnEditing: TCatButtonEditingEvent;
-    FOnEdited: TCatButtonEditedEvent;
-    FOnCancelEdit: TCatButtonCancelEditEvent;
-    FOnReorderCategory: TCategoryReorderEvent;
-    FOnCategoryCollapase: TCategoryCollapseEvent;
+FOnButtonClicked: TCatButtonEvent;
+FOnCategoryClicked: TCatButtonCategoryEvent;
+FOnCopyButton: TCatButtonCopyEvent;
+FOnSelectedButtonChange: TCatButtonEvent;
+FOnSelectedCategoryChange: TCatButtonCategoryEvent;
+FOnHotButton: TCatButtonEvent;
+FOnGetHint: TCatButtonGetHint;
+FOnDrawIcon: TCatButtonDrawIconEvent;
+FOnDrawText: TCatButtonDrawEvent;
+FOnDrawButton: TCatButtonDrawEvent;
+FOnBeforeDrawButton: TCatButtonDrawEvent;
+FOnAfterDrawButton: TCatButtonDrawEvent;
+FOnReorderButton: TCatButtonReorderEvent;
+FOnEditing: TCatButtonEditingEvent;
+FOnEdited: TCatButtonEditedEvent;
+FOnCancelEdit: TCatButtonCancelEditEvent;
+FOnReorderCategory: TCategoryReorderEvent;
+FOnCategoryCollapase: TCategoryCollapseEvent;
 
-    procedure AdjustCategoryBounds(const Category: TButtonCategory; var CategoryBounds: TRect; IgnoreButtonFlow: Boolean = False);
-    // procedure AutoScroll(ScrollCode: TScrollCode);
-    function CalcButtonsPerRow: Integer;
-    function CalcButtonsPerCol: Integer;
-    procedure CalcBufferSizes;
-    function CalcCategoryHeight(const Category: TButtonCategory; const ButtonsPerRow: Integer): Integer;
-    function CalcCategoryWidth(const Category: TButtonCategory; const ButtonsPerCol: Integer): Integer;
-    procedure DrawCategory(const Category: TButtonCategory; const Canvas: TCanvas; StartingPos: Integer);
-    procedure GetCategoryBounds(const Category: TButtonCategory; const StartingPos: Integer; var CategoryBounds, ButtonBounds: TRect);
-    function GetChevronBounds(const CategoryBounds: TRect): TRect;
-    function GetIndexOfFirstCategory: Integer;
-    function GetNextButtonInGroup(const StartingItem: TBaseItem; GoForward: Boolean): TBaseItem;
-    function GetNextButton(const StartingItem: TBaseItem; GoForward: Boolean): TBaseItem;
-    function GetScrollOffset: Integer;
-    // function GetScrollBuffer: Integer;
-    procedure ImageListChange(Sender: TObject);
-    procedure ScrollPosChanged(ScrollCode: TScrollCode; ScrollPos: Integer);
-    procedure SetOnDrawButton(const Value: TCatButtonDrawEvent);
-    procedure SetOnDrawIcon(const Value: TCatButtonDrawIconEvent);
-    procedure SetBackgroundGradientColor(const Value: TColor);
-    procedure SetBackGradientDirection(const Value: TGradientDirection);
-    procedure SetBorderStyle(const Value: TBorderStyle);
-    procedure SetButtonCategories(const Value: TButtonCategories);
-    procedure SetButtonFlow(const Value: TCatButtonFlow);
-    procedure SetButtonHeight(const Value: Integer);
-    procedure SetButtonWidth(const Value: Integer);
-    procedure SetCatButtonOptions(const Value: TCatButtonOptions);
-    // procedure SetDragButton(const Value: TButtonItem);
-    procedure SetFocusedItem(const Value: TBaseItem);
-    procedure SetGradientDirection(const Value: TGradientDirection);
-    procedure SetHotButtonColor(const Value: TColor);
-    procedure SetImages(const Value: TCustomImageList);
-    procedure SetRegularButtonColor(const Value: TColor);
-    procedure SetSelectedItem(const Value: TBaseItem);
-    procedure SetSelectedButtonColor(const Value: TColor);
-    // function ShouldScrollDown(out Delay: DWORD): Boolean;
-    // function ShouldScrollUp(out Delay: DWORD): Boolean;
-    procedure ShowScrollBar(const Visible: Boolean);
-    procedure CMFontchanged(var message: TMessage); message CM_FONTCHANGED;
-    procedure CMHintShow(var message: TCMHintShow); message CM_HINTSHOW;
-    procedure CNKeydown(var message: TWMKeyDown); message CN_KEYDOWN;
+procedure AdjustCategoryBounds(const Category: TButtonCategory; var CategoryBounds: TRect; IgnoreButtonFlow: Boolean = False);
+// procedure AutoScroll(ScrollCode: TScrollCode);
+function CalcButtonsPerRow: Integer;
+function CalcButtonsPerCol: Integer;
+procedure CalcBufferSizes;
+function CalcCategoryHeight(const Category: TButtonCategory; const ButtonsPerRow: Integer): Integer;
+function CalcCategoryWidth(const Category: TButtonCategory; const ButtonsPerCol: Integer): Integer;
+procedure DrawCategory(const Category: TButtonCategory; const Canvas: TCanvas; StartingPos: Integer);
+procedure GetCategoryBounds(const Category: TButtonCategory; const StartingPos: Integer; var CategoryBounds, ButtonBounds: TRect);
+function GetChevronBounds(const CategoryBounds: TRect): TRect;
+function GetIndexOfFirstCategory: Integer;
+function GetNextButtonInGroup(const StartingItem: TBaseItem; GoForward: Boolean): TBaseItem;
+function GetNextButton(const StartingItem: TBaseItem; GoForward: Boolean): TBaseItem;
+function GetScrollOffset: Integer;
+// function GetScrollBuffer: Integer;
+procedure ImageListChange(Sender: TObject);
+procedure ScrollPosChanged(ScrollCode: TScrollCode; ScrollPos: Integer);
+procedure SetOnDrawButton(const Value: TCatButtonDrawEvent);
+procedure SetOnDrawIcon(const Value: TCatButtonDrawIconEvent);
+procedure SetBackgroundGradientColor(const Value: TColor);
+procedure SetBackGradientDirection(const Value: TGradientDirection);
+procedure SetBorderStyle(const Value: TBorderStyle);
+procedure SetButtonCategories(const Value: TButtonCategories);
+procedure SetButtonFlow(const Value: TCatButtonFlow);
+procedure SetButtonHeight(const Value: Integer);
+procedure SetButtonWidth(const Value: Integer);
+procedure SetCatButtonOptions(const Value: TCatButtonOptions);
+// procedure SetDragButton(const Value: TButtonItem);
+procedure SetFocusedItem(const Value: TBaseItem);
+procedure SetGradientDirection(const Value: TGradientDirection);
+procedure SetHotButtonColor(const Value: TColor);
+procedure SetImages(const Value: TCustomImageList);
+procedure SetRegularButtonColor(const Value: TColor);
+procedure SetSelectedItem(const Value: TBaseItem);
+procedure SetSelectedButtonColor(const Value: TColor);
+// function ShouldScrollDown(out Delay: DWORD): Boolean;
+// function ShouldScrollUp(out Delay: DWORD): Boolean;
+procedure ShowScrollBar(const Visible: Boolean);
+procedure CMFontchanged(var message: TMessage); message CM_FONTCHANGED;
+procedure CMHintShow(var message: TCMHintShow); message CM_HINTSHOW;
+procedure CNKeydown(var message: TWMKeyDown); message CN_KEYDOWN;
 
 {$HINTS OFF}
 
-    procedure WMEraseBkgnd(var message: TWMEraseBkgnd);
+procedure WMEraseBkgnd(var message: TWMEraseBkgnd);
 
 {$HINTS ON}
 
-    procedure WMMouseLeave(var message: TMessage); message WM_MOUSELEAVE;
-    procedure WMVScroll(var message: TWMVScroll); message WM_VSCROLL;
-    procedure WMHScroll(var message: TWMVScroll); message WM_HSCROLL;
-    procedure WMSetFocus(var message: TWMSetFocus); message WM_SETFOCUS;
-    procedure WMKillFocus(var message: TWMKillFocus); message WM_KILLFOCUS;
+procedure WMMouseLeave(var message: TMessage); message WM_MOUSELEAVE;
+procedure WMVScroll(var message: TWMVScroll); message WM_VSCROLL;
+procedure WMHScroll(var message: TWMVScroll); message WM_HSCROLL;
+procedure WMSetFocus(var message: TWMSetFocus); message WM_SETFOCUS;
+procedure WMKillFocus(var message: TWMKillFocus); message WM_KILLFOCUS;
 
-  protected
-    // procedure BeginAutoDrag; override;
-    function CanEdit(Item: TBaseItem): Boolean; dynamic;
-    procedure CreateHandle; override;
-    procedure CreateParams(var Params: TCreateParams); override;
-    // procedure DoBeginDrag(Immediate: Boolean; Threshold: Integer); virtual;
-    procedure DoCopyButton(const Button: TButtonItem; const TargetCategory: TButtonCategory; const TargetButton: TButtonItem); dynamic;
-    // procedure DoEndDrag(Target: TObject; X: Integer; Y: Integer); override;
-    procedure DoGesture(const EventInfo: TGestureEventInfo; var Handled: Boolean); override;
-    procedure DoHotButton; dynamic;
-    { procedure DoReorderButton(const Button: TButtonItem;
-      const TargetCategory: TButtonCategory; const TargetButton: TButtonItem); dynamic;
-      procedure DoReorderCategory(const SourceCategory,
-      TargetCategory: TButtonCategory); dynamic;
-      procedure DoStartDrag(var DragObject: TDragObject); override; }
-    procedure DoItemClicked(const Item: TBaseItem); dynamic;
-    procedure DoItemNotify(Item: TCollectionItem; Action: TCollectionNotification);
-    procedure DoItemUpdate(Item: TCollectionItem);
-    function DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
-    function DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
-    procedure DoSelectedItemChanged(const Item: TBaseItem); dynamic;
-    { procedure DragOver(Source: TObject; X: Integer; Y: Integer;
-      State: TDragState; var Accept: Boolean); override; }
-    procedure DrawButton(const Button: TButtonItem; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState); virtual;
-    function Edit(const Item: TBaseItem): Boolean; virtual;
-    procedure EndEdit(Cancel: Boolean);
-    function GetAllowReorder: Boolean; dynamic;
-    function GetCurrentCategory: TButtonCategory; virtual;
-    function GetButtonCategoriesClass: TButtonCategoriesClass; virtual;
-    function GetButtonCategoryClass: TButtonCategoryClass; virtual;
-    function GetButtonItemClass: TButtonItemClass; virtual;
-    function GetInplaceEditBounds(const Item: TBaseItem): TRect;
-    function GetScrollPos: Integer;
-    function HasVerticalCaption(const Category: TButtonCategory): Boolean;
-    function IsTouchPropertyStored(AProperty: TTouchProperty): Boolean; override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
-    procedure MouseMove(Shift: TShiftState; X: Integer; Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure Paint; override;
-    procedure Resize; override;
-    procedure ScrollRectIntoView(const Rect: TRect; PlaceOnTop: Boolean = False);
-    procedure SetScrollPos(const Value: Integer);
-    procedure WndProc(var message: TMessage); override;
+protected
+  // procedure BeginAutoDrag; override;
+function CanEdit(Item: TBaseItem): Boolean; dynamic;
+procedure CreateHandle; override;
+procedure CreateParams(var Params: TCreateParams); override;
+// procedure DoBeginDrag(Immediate: Boolean; Threshold: Integer); virtual;
+procedure DoCopyButton(const Button: TButtonItem; const TargetCategory: TButtonCategory; const TargetButton: TButtonItem); dynamic;
+// procedure DoEndDrag(Target: TObject; X: Integer; Y: Integer); override;
+procedure DoGesture(const EventInfo: TGestureEventInfo; var Handled: Boolean); override;
+procedure DoHotButton; dynamic;
+{ procedure DoReorderButton(const Button: TButtonItem;
+  const TargetCategory: TButtonCategory; const TargetButton: TButtonItem); dynamic;
+  procedure DoReorderCategory(const SourceCategory,
+  TargetCategory: TButtonCategory); dynamic;
+  procedure DoStartDrag(var DragObject: TDragObject); override; }
+procedure DoItemClicked(const Item: TBaseItem); dynamic;
+procedure DoItemNotify(Item: TCollectionItem; Action: TCollectionNotification);
+procedure DoItemUpdate(Item: TCollectionItem);
+function DoMouseWheelUp(Shift: TShiftState; MousePos: TPoint): Boolean; override;
+function DoMouseWheelDown(Shift: TShiftState; MousePos: TPoint): Boolean; override;
+procedure DoSelectedItemChanged(const Item: TBaseItem); dynamic;
+{ procedure DragOver(Source: TObject; X: Integer; Y: Integer;
+  State: TDragState; var Accept: Boolean); override; }
+procedure DrawButton(const Button: TButtonItem; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState); virtual;
+function Edit(const Item: TBaseItem): Boolean; virtual;
+procedure EndEdit(Cancel: Boolean);
+function GetAllowReorder: Boolean; dynamic;
+function GetCurrentCategory: TButtonCategory; virtual;
+function GetButtonCategoriesClass: TButtonCategoriesClass; virtual;
+function GetButtonCategoryClass: TButtonCategoryClass; virtual;
+function GetButtonItemClass: TButtonItemClass; virtual;
+function GetInplaceEditBounds(const Item: TBaseItem): TRect;
+function GetScrollPos: Integer;
+function HasVerticalCaption(const Category: TButtonCategory): Boolean;
+function IsTouchPropertyStored(AProperty: TTouchProperty): Boolean; override;
+procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
+procedure MouseMove(Shift: TShiftState; X: Integer; Y: Integer); override;
+procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
+procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+procedure Paint; override;
+procedure Resize; override;
+procedure ScrollRectIntoView(const Rect: TRect; PlaceOnTop: Boolean = False);
+procedure SetScrollPos(const Value: Integer);
+procedure WndProc(var message: TMessage); override;
 
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure Assign(Source: TPersistent); override;
-    // procedure DragDrop(Source: TObject; X: Integer; Y: Integer); override;
-    // procedure GenerateDragImage;
-    function GetButtonAt(X, Y: Integer; Category: TButtonCategory = nil): TButtonItem;
-    function GetButtonRect(const Item: TBaseItem): TRect;
-    function GetCategoryAt(X, Y: Integer): TButtonCategory;
-    function GetCategoryRect(const Category: TButtonCategory; ButtonOnly: Boolean = False): TRect;
-    // function GetDragImages: TDragImageList; override;
-    { procedure GetTargetAt(X, Y: Integer; var TargetButton: TButtonItem;
-      var TargetCategory: TButtonCategory); }
-    function IsEditing: Boolean;
-    // procedure RemoveInsertionPoints;
-    procedure ScrollIntoView(const Item: TBaseItem);
-    { procedure SetInsertionButton(InsertionButton: TButtonItem;
-      InsertionCategory: TButtonCategory); }
-    procedure UpdateAllButtons;
-    procedure UpdateButton(const Item: TBaseItem);
-    property CurrentCategory: TButtonCategory read GetCurrentCategory;
-    // property DragButton: TButtonItem read FDragButton write SetDragButton;
-    // property DragCategory: TButtonCategory read FDragCategory write FDragCategory;
-    // property DragImageList: TDragImageList read FDragImageList;
-    property SelectedItem: TBaseItem read FSelectedItem write SetSelectedItem;
-    property FocusedItem: TBaseItem read FFocusedItem write SetFocusedItem;
+public
+  constructor Create(AOwner: TComponent); override;
+destructor Destroy; override;
+procedure Assign(Source: TPersistent); override;
+// procedure DragDrop(Source: TObject; X: Integer; Y: Integer); override;
+// procedure GenerateDragImage;
+function GetButtonAt(X, Y: Integer; Category: TButtonCategory = nil): TButtonItem;
+function GetButtonRect(const Item: TBaseItem): TRect;
+function GetCategoryAt(X, Y: Integer): TButtonCategory;
+function GetCategoryRect(const Category: TButtonCategory; ButtonOnly: Boolean = False): TRect;
+// function GetDragImages: TDragImageList; override;
+{ procedure GetTargetAt(X, Y: Integer; var TargetButton: TButtonItem;
+  var TargetCategory: TButtonCategory); }
+function IsEditing: Boolean;
+// procedure RemoveInsertionPoints;
+procedure ScrollIntoView(const Item: TBaseItem);
+{ procedure SetInsertionButton(InsertionButton: TButtonItem;
+  InsertionCategory: TButtonCategory); }
+procedure UpdateAllButtons;
+procedure UpdateButton(const Item: TBaseItem);
+property CurrentCategory: TButtonCategory read GetCurrentCategory;
+// property DragButton: TButtonItem read FDragButton write SetDragButton;
+// property DragCategory: TButtonCategory read FDragCategory write FDragCategory;
+// property DragImageList: TDragImageList read FDragImageList;
+property SelectedItem: TBaseItem read FSelectedItem write SetSelectedItem;
+property FocusedItem: TBaseItem read FFocusedItem write SetFocusedItem;
 
-  published
-    property Align;
-    property Anchors;
-    property BackgroundGradientColor: TColor read FBackgroundGradientColor write SetBackgroundGradientColor default ClNone;
-    property BackgroundGradientDirection: TGradientDirection read FBackGradientDirection write SetBackGradientDirection default GdHorizontal;
-    property BevelEdges;
-    property BevelInner;
-    property BevelOuter;
-    property BevelKind;
-    property BevelWidth;
-    property BorderWidth;
-    property BorderStyle: TBorderStyle read FBorderStyle write SetBorderStyle default BsSingle;
-    property ButtonFlow: TCatButtonFlow read FButtonFlow write SetButtonFlow;
-    property ButtonHeight: Integer read FButtonHeight write SetButtonHeight default 24;
-    property ButtonWidth: Integer read FButtonWidth write SetButtonWidth default 24;
-    property ButtonOptions: TCatButtonOptions read FButtonOptions write SetCatButtonOptions default[BoGradientFill, BoShowCaptions, BoVerticalCategoryCaptions];
-    property Categories: TButtonCategories read FButtonCategories write SetButtonCategories;
-    property Color default ClWindow;
-    property Cursor;
-    property DockSite;
-    property DoubleBuffered;
-    // property DragCursor;
-    // property DragKind;
-    // property DragMode;
-    property Enabled;
-    property Font;
-    property GradientDirection: TGradientDirection read FGradientDirection write SetGradientDirection default GdHorizontal;
-    property Height default 100;
-    property HotButtonColor: TColor read FHotButtonColor write SetHotButtonColor default $00EFD3C6;
-    property Images: TCustomImageList read FImages write SetImages;
-    property ParentDoubleBuffered;
-    property PopupMenu;
-    property RegularButtonColor: TColor read FRegularButtonColor write SetRegularButtonColor nodefault;
-    property SelectedButtonColor: TColor read FSelectedButtonColor write SetSelectedButtonColor nodefault;
-    property ShowHint;
-    property TabOrder;
-    property TabStop default True;
-    property Touch;
-    property Visible;
-    property Width default 100;
+published
+  property Align;
+property Anchors;
+property BackgroundGradientColor: TColor read FBackgroundGradientColor write SetBackgroundGradientColor default ClNone;
+property BackgroundGradientDirection: TGradientDirection read FBackGradientDirection write SetBackGradientDirection default GdHorizontal;
+property BevelEdges;
+property BevelInner;
+property BevelOuter;
+property BevelKind;
+property BevelWidth;
+property BorderWidth;
+property BorderStyle: TBorderStyle read FBorderStyle write SetBorderStyle default BsSingle;
+property ButtonFlow: TCatButtonFlow read FButtonFlow write SetButtonFlow;
+property ButtonHeight: Integer read FButtonHeight write SetButtonHeight default 24;
+property ButtonWidth: Integer read FButtonWidth write SetButtonWidth default 24;
+property ButtonOptions: TCatButtonOptions read FButtonOptions write SetCatButtonOptions default [BoGradientFill, BoShowCaptions, BoVerticalCategoryCaptions];
+property Categories: TButtonCategories read FButtonCategories write SetButtonCategories;
+property Color default ClWindow;
+property Cursor;
+property DockSite;
+property DoubleBuffered;
+// property DragCursor;
+// property DragKind;
+// property DragMode;
+property Enabled;
+property Font;
+property GradientDirection: TGradientDirection read FGradientDirection write SetGradientDirection default GdHorizontal;
+property Height default 100;
+property HotButtonColor: TColor read FHotButtonColor write SetHotButtonColor default $00EFD3C6;
+property Images: TCustomImageList read FImages write SetImages;
+property ParentDoubleBuffered;
+property PopupMenu;
+property RegularButtonColor: TColor read FRegularButtonColor write SetRegularButtonColor nodefault;
+property SelectedButtonColor: TColor read FSelectedButtonColor write SetSelectedButtonColor nodefault;
+property ShowHint;
+property TabOrder;
+property TabStop default True;
+property Touch;
+property Visible;
+property Width default 100;
 
-    property OnAlignInsertBefore;
-    property OnAlignPosition;
-    property OnAfterDrawButton: TCatButtonDrawEvent read FOnAfterDrawButton write FOnAfterDrawButton;
-    property OnBeforeDrawButton: TCatButtonDrawEvent read FOnBeforeDrawButton write FOnBeforeDrawButton;
-    property OnButtonClicked: TCatButtonEvent read FOnButtonClicked write FOnButtonClicked;
-    property OnCancelEdit: TCatButtonCancelEditEvent read FOnCancelEdit write FOnCancelEdit;
-    property OnCategoryCollapase: TCategoryCollapseEvent read FOnCategoryCollapase write FOnCategoryCollapase;
-    property OnCategoryClicked: TCatButtonCategoryEvent read FOnCategoryClicked write FOnCategoryClicked;
-    property OnClick;
-    property OnContextPopup;
-    property OnCopyButton: TCatButtonCopyEvent read FOnCopyButton write FOnCopyButton;
-    property OnDockDrop;
-    property OnDockOver;
-    // property OnDragDrop;
-    // property OnDragOver;
-    property OnDrawButton: TCatButtonDrawEvent read FOnDrawButton write SetOnDrawButton;
-    property OnDrawIcon: TCatButtonDrawIconEvent read FOnDrawIcon write SetOnDrawIcon;
-    property OnDrawText: TCatButtonDrawEvent read FOnDrawText write FOnDrawText;
-    property OnEditing: TCatButtonEditingEvent read FOnEditing write FOnEditing;
-    property OnEdited: TCatButtonEditedEvent read FOnEdited write FOnEdited;
-    property OnEndDock;
-    // property OnEndDrag;
-    property OnEnter;
-    property OnExit;
-    property OnGesture;
-    property OnGetHint: TCatButtonGetHint read FOnGetHint write FOnGetHint;
-    property OnHotButton: TCatButtonEvent read FOnHotButton write FOnHotButton;
-    property OnKeyDown;
-    property OnKeyPress;
-    property OnKeyUp;
-    property OnMouseActivate;
-    property OnMouseDown;
-    property OnMouseEnter;
-    property OnMouseLeave;
-    property OnMouseMove;
-    property OnMouseUp;
-    property OnMouseWheel;
-    property OnMouseWheelDown;
-    property OnMouseWheelUp;
-    property OnReorderButton: TCatButtonReorderEvent read FOnReorderButton write FOnReorderButton;
-    property OnReorderCategory: TCategoryReorderEvent read FOnReorderCategory write FOnReorderCategory;
-    property OnSelectedItemChange: TCatButtonEvent read FOnSelectedButtonChange write FOnSelectedButtonChange; // This is really OnSelectedButtonChange
-    property OnSelectedCategoryChange: TCatButtonCategoryEvent read FOnSelectedCategoryChange write FOnSelectedCategoryChange;
-    property OnStartDock;
-    // property OnStartDrag;
-  end;
+property OnAlignInsertBefore;
+property OnAlignPosition;
+property OnAfterDrawButton: TCatButtonDrawEvent read FOnAfterDrawButton write FOnAfterDrawButton;
+property OnBeforeDrawButton: TCatButtonDrawEvent read FOnBeforeDrawButton write FOnBeforeDrawButton;
+property OnButtonClicked: TCatButtonEvent read FOnButtonClicked write FOnButtonClicked;
+property OnCancelEdit: TCatButtonCancelEditEvent read FOnCancelEdit write FOnCancelEdit;
+property OnCategoryCollapase: TCategoryCollapseEvent read FOnCategoryCollapase write FOnCategoryCollapase;
+property OnCategoryClicked: TCatButtonCategoryEvent read FOnCategoryClicked write FOnCategoryClicked;
+property OnClick;
+property OnContextPopup;
+property OnCopyButton: TCatButtonCopyEvent read FOnCopyButton write FOnCopyButton;
+property OnDockDrop;
+property OnDockOver;
+// property OnDragDrop;
+// property OnDragOver;
+property OnDrawButton: TCatButtonDrawEvent read FOnDrawButton write SetOnDrawButton;
+property OnDrawIcon: TCatButtonDrawIconEvent read FOnDrawIcon write SetOnDrawIcon;
+property OnDrawText: TCatButtonDrawEvent read FOnDrawText write FOnDrawText;
+property OnEditing: TCatButtonEditingEvent read FOnEditing write FOnEditing;
+property OnEdited: TCatButtonEditedEvent read FOnEdited write FOnEdited;
+property OnEndDock;
+// property OnEndDrag;
+property OnEnter;
+property OnExit;
+property OnGesture;
+property OnGetHint: TCatButtonGetHint read FOnGetHint write FOnGetHint;
+property OnHotButton: TCatButtonEvent read FOnHotButton write FOnHotButton;
+property OnKeyDown;
+property OnKeyPress;
+property OnKeyUp;
+property OnMouseActivate;
+property OnMouseDown;
+property OnMouseEnter;
+property OnMouseLeave;
+property OnMouseMove;
+property OnMouseUp;
+property OnMouseWheel;
+property OnMouseWheelDown;
+property OnMouseWheelUp;
+property OnReorderButton: TCatButtonReorderEvent read FOnReorderButton write FOnReorderButton;
+property OnReorderCategory: TCategoryReorderEvent read FOnReorderCategory write FOnReorderCategory;
+property OnSelectedItemChange: TCatButtonEvent read FOnSelectedButtonChange write FOnSelectedButtonChange; // This is really OnSelectedButtonChange
+property OnSelectedCategoryChange: TCatButtonCategoryEvent read FOnSelectedCategoryChange write FOnSelectedCategoryChange;
+property OnStartDock;
+// property OnStartDrag;
+    end;
 
   { TBaseItem }
 
@@ -405,6 +406,7 @@ type
     FStatus: Integer;
     FXImageIndex: TImageIndex;
     FCImageIndex: TImageIndex;
+    FPImageIndex: TImageIndex;
     FContactType: string;
     FNickColor: Integer;
     FNickBold: Boolean;
@@ -427,6 +429,7 @@ type
     // Добавляем отображение доп. иконок
     procedure SetXImageIndex(const Value: TImageIndex);
     procedure SetCImageIndex(const Value: TImageIndex);
+    procedure SetPImageIndex(const Value: TImageIndex);
 
     // Конец добавления
   public
@@ -447,6 +450,7 @@ type
     property Status: Integer read FStatus write FStatus default 0;
     property XImageIndex: TImageIndex read FXImageIndex write SetXImageIndex stored IsImageIndexStored;
     property CImageIndex: TImageIndex read FCImageIndex write SetCImageIndex stored IsImageIndexStored;
+    property PImageIndex: TImageIndex read FPImageIndex write SetPImageIndex stored IsImageIndexStored;
     property ContactType: string read FContactType write FContactType;
     property NickColor: Integer read FNickColor write FNickColor default 0;
     property NickBold: Boolean read FNickBold write FNickBold default False;
@@ -736,12 +740,14 @@ end;
 procedure TInplaceEdit.WndProc(var message: TMessage);
 begin
   case message.Msg of
-    WM_SETFOCUS: begin
+    WM_SETFOCUS:
+      begin
         if (GetParentForm(Self) = nil) or GetParentForm(Self).SetFocusedControl(CategoryButtons) then
           Dispatch(message);
         Exit;
       end;
-    WM_KILLFOCUS, WM_MOUSEWHEEL, WM_CANCELMODE: begin
+    WM_KILLFOCUS, WM_MOUSEWHEEL, WM_CANCELMODE:
+      begin
         CategoryButtons.WndProc(message);
         Exit;
       end;
@@ -780,7 +786,7 @@ begin
   Width := 100;
   Height := 100;
   ControlStyle := [CsDoubleClicks, CsCaptureMouse,
-  { csDisplayDragImage, } CsClickEvents, CsPannable];
+    { csDisplayDragImage, }CsClickEvents, CsPannable];
   FButtonCategories := GetButtonCategoriesClass.Create(Self);
   FBorderStyle := BsSingle;
   FButtonWidth := 24;
@@ -807,10 +813,10 @@ procedure TCategoryButtons.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
   if (FBorderStyle = BsSingle) then
-    begin
-      Params.Style := Params.Style and not WS_BORDER;
-      Params.ExStyle := Params.ExStyle or WS_EX_CLIENTEDGE;
-    end;
+  begin
+    Params.Style := Params.Style and not WS_BORDER;
+    Params.ExStyle := Params.ExStyle or WS_EX_CLIENTEDGE;
+  end;
 end;
 
 destructor TCategoryButtons.Destroy;
@@ -840,34 +846,34 @@ var
   CategoryBounds, ButtonBounds: TRect;
 begin
   if Item is TButtonItem then
+  begin
+    { Translate the current virtual position to the actual position }
+    Button := Item as TButtonItem;
+    StartingPos := Button.Category.StartOffset - GetScrollOffset;
+    ButtonBounds := Rect(0, 0, 0, 0);
+    GetCategoryBounds(Button.Category, StartingPos, CategoryBounds, ButtonBounds);
+    if not IsRectEmpty(ButtonBounds) then
     begin
-      { Translate the current virtual position to the actual position }
-      Button := Item as TButtonItem;
-      StartingPos := Button.Category.StartOffset - GetScrollOffset;
-      ButtonBounds := Rect(0, 0, 0, 0);
-      GetCategoryBounds(Button.Category, StartingPos, CategoryBounds, ButtonBounds);
-      if not IsRectEmpty(ButtonBounds) then
-        begin
-          if FButtonFlow = CbfVertical then
-            ButtonsPerRow := CalcButtonsPerRow
-          else
-            ButtonsPerRow := (ButtonBounds.Right - ButtonBounds.Left) div FButtonWidth;
-          Row := Button.index div ButtonsPerRow;
-          Result.Top := ButtonBounds.Top + Row * FButtonHeight;
-          if (FButtonFlow = CbfVertical) and (BoFullSize in FButtonOptions) then
-            begin
-              Result.Left := ButtonBounds.Left;
-              Result.Right := ButtonBounds.Right;
-            end
-          else
-            begin
-              Col := Button.index mod ButtonsPerRow;
-              Result.Left := ButtonBounds.Left + Col * FButtonWidth;
-              Result.Right := Result.Left + FButtonWidth;
-            end;
-          Result.Bottom := Result.Top + FButtonHeight;
-        end;
-    end
+      if FButtonFlow = CbfVertical then
+        ButtonsPerRow := CalcButtonsPerRow
+      else
+        ButtonsPerRow := (ButtonBounds.Right - ButtonBounds.Left) div FButtonWidth;
+      Row := Button.index div ButtonsPerRow;
+      Result.Top := ButtonBounds.Top + Row * FButtonHeight;
+      if (FButtonFlow = CbfVertical) and (BoFullSize in FButtonOptions) then
+      begin
+        Result.Left := ButtonBounds.Left;
+        Result.Right := ButtonBounds.Right;
+      end
+      else
+      begin
+        Col := Button.index mod ButtonsPerRow;
+        Result.Left := ButtonBounds.Left + Col * FButtonWidth;
+        Result.Right := Result.Left + FButtonWidth;
+      end;
+      Result.Bottom := Result.Top + FButtonHeight;
+    end;
+  end
   else
     Result := Item.Bounds;
 end;
@@ -883,15 +889,15 @@ var
 begin
   inherited;
   if (Operation = OpRemove) then
-    begin
-      if AComponent = Images then
-        Images := nil
-      else if AComponent is TBasicAction then
-        for I := 0 to FButtonCategories.Count - 1 do
-          for J := 0 to FButtonCategories[I].Items.Count - 1 do
-            if AComponent = FButtonCategories[I].Items[J].Action then
-              FButtonCategories[I].Items[J].Action := nil;
-    end;
+  begin
+    if AComponent = Images then
+      Images := nil
+    else if AComponent is TBasicAction then
+      for I := 0 to FButtonCategories.Count - 1 do
+        for J := 0 to FButtonCategories[I].Items.Count - 1 do
+          if AComponent = FButtonCategories[I].Items[J].Action then
+            FButtonCategories[I].Items[J].Action := nil;
+  end;
 end;
 
 const
@@ -904,15 +910,15 @@ begin
   if Category.Collapsed or (Category.Items = nil) or (Category.Items.Count = 0) then
     Result := FCollapsedHeight + CBorderBuffer
   else
-    begin
-      RowCount := Category.Items.Count div ButtonsPerRow;
-      if Category.Items.Count mod ButtonsPerRow <> 0 then
-        Inc(RowCount);
+  begin
+    RowCount := Category.Items.Count div ButtonsPerRow;
+    if Category.Items.Count mod ButtonsPerRow <> 0 then
+      Inc(RowCount);
 
-      Result := RowCount * FButtonHeight + CBorderBuffer;
-      if not(BoVerticalCategoryCaptions in ButtonOptions) then
-        Result := Result + FGutterSize;
-    end;
+    Result := RowCount * FButtonHeight + CBorderBuffer;
+    if not (BoVerticalCategoryCaptions in ButtonOptions) then
+      Result := Result + FGutterSize;
+  end;
 end;
 
 function TCategoryButtons.CalcCategoryWidth(const Category: TButtonCategory; const ButtonsPerCol: Integer): Integer;
@@ -922,120 +928,120 @@ begin
   if Category.Collapsed or (Category.Items = nil) or (Category.Items.Count = 0) then
     Result := FCollapsedHeight + CBorderBuffer
   else
-    begin
-      ColCount := Category.Items.Count div ButtonsPerCol;
-      if Category.Items.Count mod ButtonsPerCol <> 0 then
-        Inc(ColCount);
+  begin
+    ColCount := Category.Items.Count div ButtonsPerCol;
+    if Category.Items.Count mod ButtonsPerCol <> 0 then
+      Inc(ColCount);
 
-      Result := ColCount * FButtonWidth + CBorderBuffer;
-      if BoVerticalCategoryCaptions in ButtonOptions then
-        Result := Result + FGutterSize;
-    end;
+    Result := ColCount * FButtonWidth + CBorderBuffer;
+    if BoVerticalCategoryCaptions in ButtonOptions then
+      Result := Result + FGutterSize;
+  end;
 end;
 
 procedure TCategoryButtons.AdjustCategoryBounds(const Category: TButtonCategory; var CategoryBounds: TRect; IgnoreButtonFlow: Boolean = False);
 begin
   // Adjust a the category bounds to collapsed dimensions (even if not collapsed)
   if (IgnoreButtonFlow or (FButtonFlow = CbfVertical)) and not Category.Collapsed and (Category.Items.Count > 0) then
+  begin
+    if (BoVerticalCategoryCaptions in ButtonOptions) then
     begin
-      if (BoVerticalCategoryCaptions in ButtonOptions) then
-        begin
-          CategoryBounds.Right := CategoryBounds.Left + FCollapsedHeight + CBorderBuffer;
-          CategoryBounds.Bottom := CategoryBounds.Bottom - 3;
-        end
-      else
-        CategoryBounds.Bottom := CategoryBounds.Top + FCollapsedHeight + CBorderBuffer - 2
-    end;
+      CategoryBounds.Right := CategoryBounds.Left + FCollapsedHeight + CBorderBuffer;
+      CategoryBounds.Bottom := CategoryBounds.Bottom - 3;
+    end
+    else
+      CategoryBounds.Bottom := CategoryBounds.Top + FCollapsedHeight + CBorderBuffer - 2
+  end;
 end;
 
 procedure TCategoryButtons.GetCategoryBounds(const Category: TButtonCategory; const StartingPos: Integer; var CategoryBounds, ButtonBounds: TRect);
 var
-  CatHeight { , CatWidth } : Integer;
-  ButtonsPerRow { , ButtonsPerCol } : Integer;
-  XStart { , YStart } : Integer;
-  XEnd { , YEnd } : Integer;
+  CatHeight { , CatWidth }: Integer;
+  ButtonsPerRow { , ButtonsPerCol }: Integer;
+  XStart { , YStart }: Integer;
+  XEnd { , YEnd }: Integer;
 begin
   if FButtonFlow = CbfVertical then
+  begin
+    { 2 Pixel buffer on each side }
+    XStart := 2;
+    XEnd := ClientWidth - 2;
+
+    ButtonsPerRow := CalcButtonsPerRow;
+    CatHeight := CalcCategoryHeight(Category, ButtonsPerRow);
+
+    // Внёс изменения
+
+    with CategoryBounds do
     begin
-      { 2 Pixel buffer on each side }
-      XStart := 2;
-      XEnd := ClientWidth - 2;
+      Left := XStart;
+      Top := StartingPos + 1;
+      Right := XEnd;
+      Bottom := StartingPos + CatHeight - 1;
+    end;
 
-      ButtonsPerRow := CalcButtonsPerRow;
-      CatHeight := CalcCategoryHeight(Category, ButtonsPerRow);
-
-      // Внёс изменения
-
-      with CategoryBounds do
-        begin
-          Left := XStart;
-          Top := StartingPos + 1;
-          Right := XEnd;
-          Bottom := StartingPos + CatHeight - 1;
-        end;
-
-      if not Category.Collapsed then
-        begin
-         { if BoCaptionOnlyBorder in ButtonOptions then
-            with CategoryBounds do
-              Inc(Bottom, 3); }
-
-          with ButtonBounds do
-            begin
-              Top := StartingPos + 2;
-              if BoVerticalCategoryCaptions in ButtonOptions then
-                Left := XStart + FGutterSize + 1
-              else
-                begin
-                  Left := XStart;
-                  Top := Top + FGutterSize;
-                end;
-              Right := XEnd;
-              Bottom := Top + (Category.Items.Count div ButtonsPerRow) * FButtonHeight;
-              if Category.Items.Count mod ButtonsPerRow <> 0 then
-                Inc(Bottom, FButtonHeight);
-              Inc(Top, 3);
-            end;
-        end;
-
-      // Конец внесения изменений
-
-    end
-  else
+    if not Category.Collapsed then
     begin
-      { 2 Pixel buffer on each side }
-      { YStart := 2;
-        YEnd := ClientHeight - 3;
+      { if BoCaptionOnlyBorder in ButtonOptions then
+         with CategoryBounds do
+           Inc(Bottom, 3); }
 
-        ButtonsPerCol := CalcButtonsPerCol;
-        CatWidth := CalcCategoryWidth(Category, ButtonsPerCol);
-
-        with CategoryBounds do
-        begin
-        Left := StartingPos + 1;
-        Top := YStart;
-        Right := StartingPos + CatWidth - 1;
-        Bottom := YEnd;
-        end;
-
-        if not Category.Collapsed then
-        with ButtonBounds do
-        begin
-        Left := StartingPos + 3;
-        if not (boVerticalCategoryCaptions in ButtonOptions) then
-        Top := YStart + FGutterSize + 1
+      with ButtonBounds do
+      begin
+        Top := StartingPos + 2;
+        if BoVerticalCategoryCaptions in ButtonOptions then
+          Left := XStart + FGutterSize + 1
         else
         begin
-        Top := YStart + 2;
-        Left := Left + FGutterSize;
+          Left := XStart;
+          Top := Top + FGutterSize;
         end;
-
-        Bottom := YEnd - 1;
-        Right := Left + (Category.Items.Count div ButtonsPerCol) * FButtonWidth;
-        if Category.Items.Count mod ButtonsPerCol <> 0 then
-        Inc(Right, FButtonWidth);
-        end; }
+        Right := XEnd;
+        Bottom := Top + (Category.Items.Count div ButtonsPerRow) * FButtonHeight;
+        if Category.Items.Count mod ButtonsPerRow <> 0 then
+          Inc(Bottom, FButtonHeight);
+        Inc(Top, 3);
+      end;
     end;
+
+    // Конец внесения изменений
+
+  end
+  else
+  begin
+    { 2 Pixel buffer on each side }
+    { YStart := 2;
+      YEnd := ClientHeight - 3;
+
+      ButtonsPerCol := CalcButtonsPerCol;
+      CatWidth := CalcCategoryWidth(Category, ButtonsPerCol);
+
+      with CategoryBounds do
+      begin
+      Left := StartingPos + 1;
+      Top := YStart;
+      Right := StartingPos + CatWidth - 1;
+      Bottom := YEnd;
+      end;
+
+      if not Category.Collapsed then
+      with ButtonBounds do
+      begin
+      Left := StartingPos + 3;
+      if not (boVerticalCategoryCaptions in ButtonOptions) then
+      Top := YStart + FGutterSize + 1
+      else
+      begin
+      Top := YStart + 2;
+      Left := Left + FGutterSize;
+      end;
+
+      Bottom := YEnd - 1;
+      Right := Left + (Category.Items.Count div ButtonsPerCol) * FButtonWidth;
+      if Category.Items.Count mod ButtonsPerCol <> 0 then
+      Inc(Right, FButtonWidth);
+      end; }
+  end;
 end;
 
 const
@@ -1053,74 +1059,74 @@ function TCategoryButtons.GetCurrentCategory: TButtonCategory;
 begin
   Result := nil;
   if FSelectedItem <> nil then
-    begin
-      if FSelectedItem.InheritsFrom(TButtonCategory) then
-        Result := FSelectedItem as TButtonCategory
-      else if FSelectedItem.InheritsFrom(TButtonItem) then
-        Result := (FSelectedItem as TButtonItem).Category;
-    end;
+  begin
+    if FSelectedItem.InheritsFrom(TButtonCategory) then
+      Result := FSelectedItem as TButtonCategory
+    else if FSelectedItem.InheritsFrom(TButtonItem) then
+      Result := (FSelectedItem as TButtonItem).Category;
+  end;
 end;
 
 procedure TCategoryButtons.DrawCategory(const Category: TButtonCategory; const Canvas: TCanvas; StartingPos: Integer);
 
-procedure DrawDropDownButton(X, Y: Integer; Collapsed: Boolean);
-{ const
-  ChevronDirection: array[Boolean] of TScrollDirection = (sdDown, sdRight);
-  ChevronXPosAdjust: array[Boolean] of Integer = (2, 0);
-  ChevronYPosAdjust: array[Boolean] of Integer = (1, 3);
-  var
-  Middle: Integer; }
+  procedure DrawDropDownButton(X, Y: Integer; Collapsed: Boolean);
+    { const
+      ChevronDirection: array[Boolean] of TScrollDirection = (sdDown, sdRight);
+      ChevronXPosAdjust: array[Boolean] of Integer = (2, 0);
+      ChevronYPosAdjust: array[Boolean] of Integer = (1, 3);
+      var
+      Middle: Integer; }
 
-procedure DrawPlusMinus;
-var
-  Width, Height: Integer;
-  Details: TThemedElementDetails;
-begin
-  Width := 9;
-  Height := Width;
-  Inc(X, 2);
-  Inc(Y, 2);
-
-  if ThemeServices.ThemesEnabled then
+    procedure DrawPlusMinus;
+    var
+      Width, Height: Integer;
+      Details: TThemedElementDetails;
     begin
-      if Collapsed then
-        Details := ThemeServices.GetElementDetails(TtGlyphClosed)
+      Width := 9;
+      Height := Width;
+      Inc(X, 2);
+      Inc(Y, 2);
+
+      if ThemeServices.ThemesEnabled then
+      begin
+        if Collapsed then
+          Details := ThemeServices.GetElementDetails(TtGlyphClosed)
+        else
+          Details := ThemeServices.GetElementDetails(TtGlyphOpened);
+        ThemeServices.DrawElement(Canvas.Handle, Details, Rect(X, Y, X + Width, Y + Width));
+      end
       else
-        Details := ThemeServices.GetElementDetails(TtGlyphOpened);
-      ThemeServices.DrawElement(Canvas.Handle, Details, Rect(X, Y, X + Width, Y + Width));
-    end
-  else
-    begin
-      Canvas.Pen.Color := ClBtnShadow;
-      Canvas.Brush.Color := ClWindow;
-      Canvas.Rectangle(X, Y, X + Width, Y + Height);
-      Canvas.Pen.Color := ClWindowText;
+      begin
+        Canvas.Pen.Color := ClBtnShadow;
+        Canvas.Brush.Color := ClWindow;
+        Canvas.Rectangle(X, Y, X + Width, Y + Height);
+        Canvas.Pen.Color := ClWindowText;
 
-      Canvas.MoveTo(X + 2, Y + Width div 2);
-      Canvas.LineTo(X + Width - 2, Y + Width div 2);
+        Canvas.MoveTo(X + 2, Y + Width div 2);
+        Canvas.LineTo(X + Width - 2, Y + Width div 2);
 
-      if Collapsed then
+        if Collapsed then
         begin
           Canvas.MoveTo(X + Width div 2, Y + 2);
           Canvas.LineTo(X + Width div 2, Y + Width - 2);
         end;
+      end;
     end;
-end;
 
-begin
-  { if boUsePlusMinus in ButtonOptions then
-    begin }
-  DrawPlusMinus;
-  { end
-    else
-    begin
-    Middle := cDropDownSize div 2;
-    Canvas.Pen.Color := clBtnShadow;
-    DrawChevron(Canvas, ChevronDirection[Collapsed],
-    Point(X + Middle - ChevronXPosAdjust[Collapsed],
-    Y + Middle - ChevronYPosAdjust[Collapsed]), 3);
-    end; }
-end;
+  begin
+    { if boUsePlusMinus in ButtonOptions then
+      begin }
+    DrawPlusMinus;
+    { end
+      else
+      begin
+      Middle := cDropDownSize div 2;
+      Canvas.Pen.Color := clBtnShadow;
+      DrawChevron(Canvas, ChevronDirection[Collapsed],
+      Point(X + Middle - ChevronXPosAdjust[Collapsed],
+      Y + Middle - ChevronYPosAdjust[Collapsed]), 3);
+      end; }
+  end;
 
 var
   I: Integer;
@@ -1158,56 +1164,56 @@ begin
     CategoryRealBounds := CategoryBounds;
 
   if (FSelectedItem <> Category) and (BoGradientFill in FButtonOptions) then
-    begin
-      if Category.GradientColor <> ClNone then
-        GradientColor := Category.GradientColor
-      else
-        GradientColor := Self.Color;
+  begin
+    if Category.GradientColor <> ClNone then
+      GradientColor := Category.GradientColor
+    else
+      GradientColor := Self.Color;
 
-      GradientFillCanvas(Canvas, SourceColor, GradientColor, CategoryRealBounds, FGradientDirection);
-    end
+    GradientFillCanvas(Canvas, SourceColor, GradientColor, CategoryRealBounds, FGradientDirection);
+  end
   else
-    begin
-      Canvas.Brush.Color := SourceColor;
-      Canvas.FillRect(CategoryRealBounds)
-    end;
+  begin
+    Canvas.Brush.Color := SourceColor;
+    Canvas.FillRect(CategoryRealBounds)
+  end;
 
   with CategoryRealBounds do
-    begin
-      Right := Right - 1;
-      Bottom := Bottom - 1; // Внёс изменения
-      // take care of the top left few pixels..
-      TempColor := Self.Color;
-      Canvas.Pixels[Left, Top] := TempColor;
-      Canvas.Pixels[Left + 1, Top] := TempColor;
-      Canvas.Pixels[Left, Top + 1] := TempColor;
+  begin
+    Right := Right - 1;
+    Bottom := Bottom - 1; // Внёс изменения
+    // take care of the top left few pixels..
+    TempColor := Self.Color;
+    Canvas.Pixels[Left, Top] := TempColor;
+    Canvas.Pixels[Left + 1, Top] := TempColor;
+    Canvas.Pixels[Left, Top + 1] := TempColor;
 
-      Canvas.Pixels[Left, Bottom] := TempColor;
-      Canvas.Pixels[Left + 1, Bottom] := TempColor;
-      Canvas.Pixels[Left, Bottom - 1] := TempColor;
+    Canvas.Pixels[Left, Bottom] := TempColor;
+    Canvas.Pixels[Left + 1, Bottom] := TempColor;
+    Canvas.Pixels[Left, Bottom - 1] := TempColor;
 
-      if BackgroundGradientColor <> ClNone then
-        TempColor := BackgroundGradientColor;
+    if BackgroundGradientColor <> ClNone then
+      TempColor := BackgroundGradientColor;
 
-      Canvas.Pixels[Right, Top] := TempColor;
-      Canvas.Pixels[Right - 1, Top] := TempColor;
-      Canvas.Pixels[Right, Top + 1] := TempColor;
+    Canvas.Pixels[Right, Top] := TempColor;
+    Canvas.Pixels[Right - 1, Top] := TempColor;
+    Canvas.Pixels[Right, Top + 1] := TempColor;
 
-      Canvas.Pixels[Right, Bottom] := TempColor;
-      Canvas.Pixels[Right - 1, Bottom] := TempColor;
-      Canvas.Pixels[Right, Bottom - 1] := TempColor;
+    Canvas.Pixels[Right, Bottom] := TempColor;
+    Canvas.Pixels[Right - 1, Bottom] := TempColor;
+    Canvas.Pixels[Right, Bottom - 1] := TempColor;
 
-      { Now draw an outline }
-      Canvas.Pen.Color := GetShadowColor(SourceColor, -10);
-      Canvas.Polyline([Point(Left + 2, Top), Point(Right - 2, Top), { Top line }
-        Point(Right, Top + 2), { Top right curve }
+    { Now draw an outline }
+    Canvas.Pen.Color := GetShadowColor(SourceColor, -10);
+    Canvas.Polyline([Point(Left + 2, Top), Point(Right - 2, Top), { Top line }
+      Point(Right, Top + 2), { Top right curve }
         Point(Right, Bottom - 2), { Right side line }
         Point(Right - 2, Bottom), { Bottom right curve }
         Point(Left + 2, Bottom), { Bottom line }
         Point(Left, Bottom - 2), { Bottom left curve }
         Point(Left, Top + 2), { Left side line }
         Point(Left + 2, Top)]); { Top left curve }
-    end;
+  end;
 
   { if ((Category.Collapsed) and (FSelectedItem <> nil) and
     (CurrentCategory = Category)) or (FSelectedItem = Category) then
@@ -1219,8 +1225,8 @@ begin
 
   ChevronBounds := GetChevronBounds(CategoryRealBounds);
 
-  if Category.Items.Count > 0 then
-    DrawDropDownButton(ChevronBounds.Left, ChevronBounds.Top, Category.Collapsed);
+  //if Category.Items.Count > 0 then
+  DrawDropDownButton(ChevronBounds.Left, ChevronBounds.Top, Category.Collapsed);
 
   VerticalCaption := HasVerticalCaption(Category);
 
@@ -1243,18 +1249,18 @@ begin
   Canvas.Brush.Style := BsClear;
   Canvas.Font.Color := Category.TextColor;
   if not VerticalCaption then
-    begin
-      CaptionRect.Left := CategoryBounds.Left + 4 + CDropDownSize;
-      CaptionRect.Top := CategoryBounds.Top + 1; // Внёс изменения
-    end
+  begin
+    CaptionRect.Left := CategoryBounds.Left + 4 + CDropDownSize;
+    CaptionRect.Top := CategoryBounds.Top + 1; // Внёс изменения
+  end
   else
-    begin
-      CaptionRect.Left := CategoryBounds.Left + 1;
-      CaptionRect.Top := CategoryBounds.Bottom - CapLeft;
-      Canvas.Font.Orientation := 900;
-    end;
+  begin
+    CaptionRect.Left := CategoryBounds.Left + 1;
+    CaptionRect.Top := CategoryBounds.Bottom - CapLeft;
+    Canvas.Font.Orientation := 900;
+  end;
 
-  CaptionRect.Right := CaptionRect.Left + CatHeight;
+  CaptionRect.Right := CaptionRect.Left + CatHeight - 5; // Внёс изменения
   CaptionRect.Bottom := CaptionRect.Top + Canvas.TextHeight(Caption);
   Canvas.TextRect(CaptionRect, Caption, [TfNoClip, TfEndEllipsis]);
 
@@ -1265,84 +1271,84 @@ begin
   Canvas.Font.Orientation := 0;
 
   if not Category.Collapsed then
+  begin
+    { Draw the buttons }
+    if (FButtonFlow = CbfVertical) and (BoFullSize in ButtonOptions) then
+      ActualWidth := ClientWidth - FSideBufferSize
+    else
+      ActualWidth := FButtonWidth;
+
+    ButtonStart := ButtonBounds.Left;
+    ButtonTop := ButtonBounds.Top;
+    ButtonLeft := ButtonStart;
+    for I := 0 to Category.Items.Count - 1 do
     begin
-      { Draw the buttons }
-      if (FButtonFlow = CbfVertical) and (BoFullSize in ButtonOptions) then
-        ActualWidth := ClientWidth - FSideBufferSize
-      else
-        ActualWidth := FButtonWidth;
+      { Don't waste time painting clipped things }
+      if (FButtonFlow = CbfVertical) and (ButtonTop > ClientHeight) then
+        Break; { Done drawing }
 
-      ButtonStart := ButtonBounds.Left;
-      ButtonTop := ButtonBounds.Top;
-      ButtonLeft := ButtonStart;
-      for I := 0 to Category.Items.Count - 1 do
-        begin
-          { Don't waste time painting clipped things }
-          if (FButtonFlow = CbfVertical) and (ButtonTop > ClientHeight) then
-            Break; { Done drawing }
+      { Don't waste time drawing what is offscreen }
+      ButtonBottom := ButtonTop + FButtonHeight;
+      ButtonRight := ButtonLeft + ActualWidth + 4;
+      // Make buttons narrower to leave room to draw the category border
+      // around the right side.
+      if VerticalCaption and not (BoCaptionOnlyBorder in ButtonOptions) then
+        Dec(ButtonRight, 3);
+      if (ButtonBottom >= 0) and (ButtonRight >= 0) then
+      begin
+        ButtonRect := Rect(ButtonLeft, ButtonTop, ButtonRight, ButtonBottom);
 
-          { Don't waste time drawing what is offscreen }
-          ButtonBottom := ButtonTop + FButtonHeight;
-          ButtonRight := ButtonLeft + ActualWidth + 4;
-          // Make buttons narrower to leave room to draw the category border
-          // around the right side.
-          if VerticalCaption and not(BoCaptionOnlyBorder in ButtonOptions) then
-            Dec(ButtonRight, 3);
-          if (ButtonBottom >= 0) and (ButtonRight >= 0) then
-            begin
-              ButtonRect := Rect(ButtonLeft, ButtonTop, ButtonRight, ButtonBottom);
+        Button := Category.Items[I];
+        DrawState := [];
 
-              Button := Category.Items[I];
-              DrawState := [];
+        // Внёс изменения
 
-              // Внёс изменения
+        { if Button = FHotButton then
+          begin
+          Include(DrawState, bdsHot);
+          if Button = FDownButton then
+          Include(DrawState, bdsDown);
+          end;
+          if Button = FSelectedItem then
+          Include(DrawState, bdsSelected)
+          else if (Button = FFocusedItem) and Focused and (FDownButton = nil) then
+          Include(DrawState, bdsFocused); }
 
-              { if Button = FHotButton then
-                begin
-                Include(DrawState, bdsHot);
-                if Button = FDownButton then
-                Include(DrawState, bdsDown);
-                end;
-                if Button = FSelectedItem then
-                Include(DrawState, bdsSelected)
-                else if (Button = FFocusedItem) and Focused and (FDownButton = nil) then
-                Include(DrawState, bdsFocused); }
+        if Button = FSelectedItem then
+          Include(DrawState, BdsHot);
 
-              if Button = FSelectedItem then
-                Include(DrawState, BdsHot);
+        // Конец внесения изменений
 
-              // Конец внесения изменений
+        if Button = FInsertTop then
+          Include(DrawState, BdsInsertTop)
+        else if Button = FInsertBottom then
+          Include(DrawState, BdsInsertBottom)
+        else if Button = FInsertRight then
+          Include(DrawState, BdsInsertRight)
+        else if Button = FInsertLeft then
+          Include(DrawState, BdsInsertLeft);
 
-              if Button = FInsertTop then
-                Include(DrawState, BdsInsertTop)
-              else if Button = FInsertBottom then
-                Include(DrawState, BdsInsertBottom)
-              else if Button = FInsertRight then
-                Include(DrawState, BdsInsertRight)
-              else if Button = FInsertLeft then
-                Include(DrawState, BdsInsertLeft);
+        DrawButton(Button, Canvas, ButtonRect, DrawState);
+      end;
+      Inc(ButtonLeft, ActualWidth);
 
-              DrawButton(Button, Canvas, ButtonRect, DrawState);
-            end;
-          Inc(ButtonLeft, ActualWidth);
-
-          if (ButtonLeft + ActualWidth) > ButtonBounds.Right then
-            begin
-              ButtonLeft := ButtonStart;
-              Inc(ButtonTop, FButtonHeight);
-            end;
-        end;
+      if (ButtonLeft + ActualWidth) > ButtonBounds.Right then
+      begin
+        ButtonLeft := ButtonStart;
+        Inc(ButtonTop, FButtonHeight);
+      end;
     end;
+  end;
 
-    // Внёс изменения
-    if (FImages <> nil) and (Category.GroupImage > -1) and (Category.GroupImage < FImages.Count) then
-    begin
-      ImgTop := CaptionRect.Top + ((CaptionRect.Bottom - CaptionRect.Top) - FImages.Height) div 2;
-      if ImgTop < CaptionRect.Top then
-        ImgTop := CaptionRect.Top;
-      FImages.Draw(Canvas, 18, ImgTop, Category.GroupImage);
-    end;
-    // Конец внесения изменений
+  // Внёс изменения
+  if (FImages <> nil) and (Category.GroupImage > -1) and (Category.GroupImage < FImages.Count) then
+  begin
+    ImgTop := CaptionRect.Top + ((CaptionRect.Bottom - CaptionRect.Top) - FImages.Height) div 2;
+    if ImgTop < CaptionRect.Top then
+      ImgTop := CaptionRect.Top;
+    FImages.Draw(Canvas, 18, ImgTop, Category.GroupImage);
+  end;
+  // Конец внесения изменений
 
 end;
 
@@ -1357,31 +1363,31 @@ begin
   TopCategory := GetIndexOfFirstCategory;
 
   if BackgroundGradientColor = ClNone then
-    begin
-      Canvas.Brush.Color := Color;
-      Canvas.FillRect(ClientRect);
-    end
+  begin
+    Canvas.Brush.Color := Color;
+    Canvas.FillRect(ClientRect);
+  end
   else
     GradientFillCanvas(Canvas, Color, BackgroundGradientColor, ClientRect, BackgroundGradientDirection);
 
   if (TopCategory > -1) and (TopCategory < FButtonCategories.Count) then
+  begin
+    { Calculate the virtual position and ending position }
+    StartingPos := FButtonCategories[TopCategory].StartOffset - GetScrollOffset;
+    if FButtonFlow = CbfVertical then
+      EndingPos := ClientHeight
+    else
+      EndingPos := ClientWidth;
+    for CatIndex := TopCategory to FButtonCategories.Count - 1 do
     begin
-      { Calculate the virtual position and ending position }
-      StartingPos := FButtonCategories[TopCategory].StartOffset - GetScrollOffset;
-      if FButtonFlow = CbfVertical then
-        EndingPos := ClientHeight
-      else
-        EndingPos := ClientWidth;
-      for CatIndex := TopCategory to FButtonCategories.Count - 1 do
-        begin
-          Category := FButtonCategories[CatIndex];
-          DrawCategory(Category, Canvas, StartingPos);
-          StartingPos := StartingPos + Category.EndOffset - Category.StartOffset;
-          { Stop drawing early, if we can }
-          if StartingPos > EndingPos then
-            Break;
-        end;
+      Category := FButtonCategories[CatIndex];
+      DrawCategory(Category, Canvas, StartingPos);
+      StartingPos := StartingPos + Category.EndOffset - Category.StartOffset;
+      { Stop drawing early, if we can }
+      if StartingPos > EndingPos then
+        Break;
     end;
+  end;
 end;
 
 function TCategoryButtons.CalcButtonsPerRow: Integer;
@@ -1389,11 +1395,11 @@ begin
   if BoFullSize in ButtonOptions then
     Result := 1
   else
-    begin
-      Result := (ClientWidth - FSideBufferSize) div FButtonWidth;
-      if Result = 0 then
-        Result := 1;
-    end;
+  begin
+    Result := (ClientWidth - FSideBufferSize) div FButtonWidth;
+    if Result = 0 then
+      Result := 1;
+  end;
 end;
 
 function TCategoryButtons.CalcButtonsPerCol: Integer;
@@ -1405,47 +1411,47 @@ begin
 end;
 
 const
-  CScrollBarKind: array [TCatButtonFlow] of Integer = (SB_VERT, SB_HORZ);
+  CScrollBarKind: array[TCatButtonFlow] of Integer = (SB_VERT, SB_HORZ);
 
 procedure TCategoryButtons.Resize;
 
-function CalcCategoryHeights: Integer;
-var
-  I: Integer;
-  Category: TButtonCategory;
-  Y: Integer;
-  ButtonsPerRow: Integer;
-begin
-  ButtonsPerRow := CalcButtonsPerRow;
-  Y := 0;
-  for I := 0 to FButtonCategories.Count - 1 do
+  function CalcCategoryHeights: Integer;
+  var
+    I: Integer;
+    Category: TButtonCategory;
+    Y: Integer;
+    ButtonsPerRow: Integer;
+  begin
+    ButtonsPerRow := CalcButtonsPerRow;
+    Y := 0;
+    for I := 0 to FButtonCategories.Count - 1 do
     begin
       Category := FButtonCategories[I];
       Category.StartOffset := Y;
       Category.EndOffset := Y + CalcCategoryHeight(Category, ButtonsPerRow);
       Y := Category.EndOffset;
     end;
-  Result := Y;
-end;
+    Result := Y;
+  end;
 
-function CalcCategoryWidths: Integer;
-var
-  I: Integer;
-  Category: TButtonCategory;
-  X: Integer;
-  ButtonsPerCol: Integer;
-begin
-  ButtonsPerCol := CalcButtonsPerCol;
-  X := 0;
-  for I := 0 to FButtonCategories.Count - 1 do
+  function CalcCategoryWidths: Integer;
+  var
+    I: Integer;
+    Category: TButtonCategory;
+    X: Integer;
+    ButtonsPerCol: Integer;
+  begin
+    ButtonsPerCol := CalcButtonsPerCol;
+    X := 0;
+    for I := 0 to FButtonCategories.Count - 1 do
     begin
       Category := FButtonCategories[I];
       Category.StartOffset := X;
       Category.EndOffset := X + CalcCategoryWidth(Category, ButtonsPerCol);
       X := Category.EndOffset;
     end;
-  Result := X;
-end;
+    Result := X;
+  end;
 
 var
   ScrollInfo: TScrollInfo;
@@ -1457,79 +1463,79 @@ begin
     Exit;
 
   if FButtonFlow = CbfVertical then
-    begin
-      TotalAmount := CalcCategoryHeights;
-      AmountSeen := ClientHeight;
-    end
+  begin
+    TotalAmount := CalcCategoryHeights;
+    AmountSeen := ClientHeight;
+  end
   else
-    begin
-      TotalAmount := CalcCategoryWidths;
-      AmountSeen := ClientWidth;
-    end;
+  begin
+    TotalAmount := CalcCategoryWidths;
+    AmountSeen := ClientWidth;
+  end;
 
   { Do we have to take the scrollbar into consideration? }
   if (TotalAmount > AmountSeen) then
-    begin
-      { The max size is the number of "rows of buttons" that are hidden }
-      FScrollBarMax := (TotalAmount div FScrollSize);
-      ScrollInfo.NMax := FScrollBarMax;
+  begin
+    { The max size is the number of "rows of buttons" that are hidden }
+    FScrollBarMax := (TotalAmount div FScrollSize);
+    ScrollInfo.NMax := FScrollBarMax;
 
-      AmountSeen := AmountSeen div FScrollSize;
-      if FScrollBarMax > AmountSeen then
-        FPageAmount := AmountSeen
-      else
-        FPageAmount := FScrollBarMax;
+    AmountSeen := AmountSeen div FScrollSize;
+    if FScrollBarMax > AmountSeen then
+      FPageAmount := AmountSeen
+    else
+      FPageAmount := FScrollBarMax;
 
-      { Adjust the max to NOT contain the page amount }
-      FScrollBarMax := FScrollBarMax - FPageAmount + 1;
+    { Adjust the max to NOT contain the page amount }
+    FScrollBarMax := FScrollBarMax - FPageAmount + 1;
 
-      if FScrollBarPos > FScrollBarMax then
-        FScrollBarPos := FScrollBarMax;
+    if FScrollBarPos > FScrollBarMax then
+      FScrollBarPos := FScrollBarMax;
 
 {$IF DEFINED(CLR)}
 
-      ScrollInfo.CbSize := Marshal.SizeOf(TypeOf(TScrollInfo));
+    ScrollInfo.CbSize := Marshal.SizeOf(TypeOf(TScrollInfo));
 
 {$ELSE}
 
-      ScrollInfo.CbSize := SizeOf(TScrollInfo);
+    ScrollInfo.CbSize := SizeOf(TScrollInfo);
 
 {$IFEND}
 
-      ScrollInfo.FMask := SIF_RANGE or SIF_POS or SIF_PAGE;
-      ScrollInfo.NMin := 0;
-      ScrollInfo.NPos := FScrollBarPos;
-      ScrollInfo.NPage := FPageAmount;
+    ScrollInfo.FMask := SIF_RANGE or SIF_POS or SIF_PAGE;
+    ScrollInfo.NMin := 0;
+    ScrollInfo.NPos := FScrollBarPos;
+    ScrollInfo.NPage := FPageAmount;
 
-      SetScrollInfo(Handle, CScrollBarKind[FButtonFlow], ScrollInfo, True);
-      ShowScrollBar(True);
-    end
+    SetScrollInfo(Handle, CScrollBarKind[FButtonFlow], ScrollInfo, True);
+    ShowScrollBar(True);
+  end
   else
-    begin
-      FScrollBarPos := 0;
-      FScrollBarMax := 0;
-      ShowScrollBar(False);
-    end;
+  begin
+    FScrollBarPos := 0;
+    FScrollBarMax := 0;
+    ShowScrollBar(False);
+  end;
 end;
 
 procedure TCategoryButtons.SetBorderStyle(const Value: TBorderStyle);
 begin
   if FBorderStyle <> Value then
-    begin
-      FBorderStyle := Value;
-      RecreateWnd;
-    end;
+  begin
+    FBorderStyle := Value;
+    RecreateWnd;
+  end;
 end;
 
 procedure TCategoryButtons.SetButtonHeight(const Value: Integer);
 begin
   if (FButtonHeight <> Value) and (Value > 0) then
-    begin
-      FButtonHeight := Value;
-      FScrollSize := FButtonHeight;
-      Resize;
-      UpdateAllButtons;
-    end;
+  begin
+    FButtonHeight := Value;
+    FScrollSize := FButtonHeight;
+    Resize;
+    UpdateAllButtons;
+  end;
 end;
 
 procedure TCategoryButtons.SetButtonCategories(const Value: TButtonCategories);
@@ -1540,31 +1546,31 @@ end;
 procedure TCategoryButtons.SetCatButtonOptions(const Value: TCatButtonOptions);
 begin
   if FButtonOptions <> Value then
-    begin
-      FButtonOptions := Value;
-      CalcBufferSizes;
-      Resize;
-      UpdateAllButtons;
-    end;
+  begin
+    FButtonOptions := Value;
+    CalcBufferSizes;
+    Resize;
+    UpdateAllButtons;
+  end;
 end;
 
 procedure TCategoryButtons.SetButtonWidth(const Value: Integer);
 begin
   if (FButtonWidth <> Value) and (Value > 0) then
-    begin
-      FButtonWidth := Value;
-      Resize;
-      UpdateAllButtons;
-    end;
+  begin
+    FButtonWidth := Value;
+    Resize;
+    UpdateAllButtons;
+  end;
 end;
 
 procedure TCategoryButtons.ShowScrollBar(const Visible: Boolean);
 begin
   if Visible <> FScrollBarShown then
-    begin
-      FScrollBarShown := Visible;
-      Windows.ShowScrollBar(Handle, CScrollBarKind[ButtonFlow], Visible);
-    end;
+  begin
+    FScrollBarShown := Visible;
+    Windows.ShowScrollBar(Handle, CScrollBarKind[ButtonFlow], Visible);
+  end;
 end;
 
 procedure TCategoryButtons.UpdateAllButtons;
@@ -1578,14 +1584,14 @@ var
 begin
   { Just invalidate one button's rect }
   if (Item <> nil) and (HandleAllocated) then
-    begin
-      if (Item is TButtonCategory) and (BoCaptionOnlyBorder in ButtonOptions) then
-        R := GetCategoryRect(TButtonCategory(Item), True)
-      else
-        R := GetButtonRect(Item);
-      if not IsRectEmpty(R) then
-        InvalidateRect(Handle, R, False);
-    end;
+  begin
+    if (Item is TButtonCategory) and (BoCaptionOnlyBorder in ButtonOptions) then
+      R := GetCategoryRect(TButtonCategory(Item), True)
+    else
+      R := GetButtonRect(Item);
+    if not IsRectEmpty(R) then
+      InvalidateRect(Handle, R, False);
+  end;
 end;
 
 procedure TCategoryButtons.WMVScroll(var message: TWMVScroll);
@@ -1616,17 +1622,17 @@ begin
   else if (ScrollCode = ScLineDown) and (FScrollBarPos < FScrollBarMax) then
     Inc(FScrollBarPos)
   else if (ScrollCode = ScPageUp) then
-    begin
-      Dec(FScrollBarPos, FPageAmount);
-      if FScrollBarPos < 0 then
-        FScrollBarPos := 0;
-    end
+  begin
+    Dec(FScrollBarPos, FPageAmount);
+    if FScrollBarPos < 0 then
+      FScrollBarPos := 0;
+  end
   else if ScrollCode = ScPageDown then
-    begin
-      Inc(FScrollBarPos, FPageAmount);
-      if FScrollBarPos > FScrollBarMax then
-        FScrollBarPos := FScrollBarMax;
-    end
+  begin
+    Inc(FScrollBarPos, FPageAmount);
+    if FScrollBarPos > FScrollBarMax then
+      FScrollBarPos := FScrollBarMax;
+  end
   else if ScrollCode in [ScPosition, ScTrack] then
     FScrollBarPos := ScrollPos
   else if ScrollCode = ScTop then
@@ -1634,26 +1640,26 @@ begin
   else if ScrollCode = ScBottom then
     FScrollBarPos := FScrollBarMax;
   if OldPos <> FScrollBarPos then
-    begin
-      Windows.SetScrollPos(Handle, CScrollBarKind[FButtonFlow], FScrollBarPos, True);
-      Invalidate;
-    end;
+  begin
+    Windows.SetScrollPos(Handle, CScrollBarKind[FButtonFlow], FScrollBarPos, True);
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.SetImages(const Value: TCustomImageList);
 begin
   if Images <> Value then
+  begin
+    if Images <> nil then
+      Images.UnRegisterChanges(FImageChangeLink);
+    FImages := Value;
+    if Images <> nil then
     begin
-      if Images <> nil then
-        Images.UnRegisterChanges(FImageChangeLink);
-      FImages := Value;
-      if Images <> nil then
-        begin
-          Images.RegisterChanges(FImageChangeLink);
-          Images.FreeNotification(Self);
-        end;
-      UpdateAllButtons;
+      Images.RegisterChanges(FImageChangeLink);
+      Images.FreeNotification(Self);
     end;
+    UpdateAllButtons;
+  end;
 end;
 
 procedure TCategoryButtons.DrawButton(const Button: TButtonItem; Canvas: TCanvas; Rect: TRect; State: TButtonDrawState);
@@ -1669,175 +1675,201 @@ var
   OrgRect: TRect;
   Caption: string;
 begin
-  if Assigned(FOnDrawButton) and (not(CsDesigning in ComponentState)) then
+  if Assigned(FOnDrawButton) and (not (CsDesigning in ComponentState)) then
     FOnDrawButton(Self, Button, Canvas, Rect, State)
   else
+  begin
+    OrgRect := Rect;
+    if Assigned(FOnBeforeDrawButton) then
+      FOnBeforeDrawButton(Self, Button, Canvas, Rect, State);
+    InflateRect(Rect, -1, -1);
+
+    // Начало вноса изменений
+
+    if Button.NickColor = 0 then
+      Canvas.Font.Color := clBlack // Стандартный
+    else if Button.NickColor = 1 then
+      Canvas.Font.Color := clMaroon // Не в сети
+    else if Button.NickColor = 2 then
+      Canvas.Font.Color := clNavy // В сети
+    else if Button.NickColor = 3 then
+      Canvas.Font.Color := $00005000 // Видимый
+    else if Button.NickColor = 4 then
+      Canvas.Font.Color := clRed; // Невидимый
+
+    if Button.NickBold then
+      Canvas.Font.Style := [fsBold]
+    else
+      Canvas.Font.Style := [];
+
+    // Конец вноса изменений
+
+    if BdsHot in State then
     begin
-      OrgRect := Rect;
-      if Assigned(FOnBeforeDrawButton) then
-        FOnBeforeDrawButton(Self, Button, Canvas, Rect, State);
-      InflateRect(Rect, -1, -1);
-
-      // Начало вноса изменений
-
-      if Button.NickColor = 0 then
-        Canvas.Font.Color := clBlack // Стандартный
-      else if Button.NickColor = 1 then
-        Canvas.Font.Color := clMaroon // Не в сети
-      else if Button.NickColor = 2 then
-        Canvas.Font.Color := clNavy // В сети
-      else if Button.NickColor = 3 then
-        Canvas.Font.Color := $00005000 // Видимый
-      else if Button.NickColor = 4 then
-        Canvas.Font.Color := clRed; // Невидимый
-
-      if Button.NickBold then
-        Canvas.Font.Style := [fsBold]
+      FillColor := FHotButtonColor;
+      if BdsSelected in State then
+        FillColor := GetShadowColor(FillColor, -10);
+      EdgeColor := GetShadowColor(FillColor);
+    end
+    else if BdsSelected in State then
+    begin
+      FillColor := FSelectedButtonColor;
+      EdgeColor := GetShadowColor(FillColor);
+    end
+    else
+    begin
+      FillColor := FRegularButtonColor;
+      if (BdsFocused in State) then
+        EdgeColor := GetShadowColor(FSelectedButtonColor)
       else
-        Canvas.Font.Style := [];
-
-
-      // Конец вноса изменений
-
-      if BdsHot in State then
-        begin
-          FillColor := FHotButtonColor;
-          if BdsSelected in State then
-            FillColor := GetShadowColor(FillColor, -10);
-          EdgeColor := GetShadowColor(FillColor);
-        end
-      else if BdsSelected in State then
-        begin
-          FillColor := FSelectedButtonColor;
-          EdgeColor := GetShadowColor(FillColor);
-        end
-      else
-        begin
-          FillColor := FRegularButtonColor;
-          if (BdsFocused in State) then
-            EdgeColor := GetShadowColor(FSelectedButtonColor)
-          else
-            EdgeColor := ClWhite; // Внёс изменения
-        end;
-
-      Canvas.Brush.Color := FillColor;
-      if FillColor <> ClNone then
-        begin
-          Canvas.FillRect(Rect);
-          { Draw the edge outline }
-          Canvas.Brush.Color := EdgeColor;
-          Canvas.FrameRect(Rect);
-        end;
-
-      if BdsFocused in State then
-        begin
-          InflateRect(Rect, -1, -1);
-          Canvas.FrameRect(Rect);
-        end;
-
-      Canvas.Brush.Color := FillColor;
-
-      { Compute the text location }
-      TextLeft := Rect.Left + 1; // Внёс изменения
-      RectHeight := Rect.Bottom - Rect.Top;
-      TextTop := Rect.Top + (RectHeight - Canvas.TextHeight('Wg')) div 2;
-
-      if BoFullSize in ButtonOptions then
-        Inc(TextLeft, 4); // indent, slightly
-
-      if TextTop < Rect.Top then
-        TextTop := Rect.Top;
-      if BdsDown in State then
-        begin
-          Inc(TextTop);
-          Inc(TextLeft);
-        end;
-
-      { Draw the icon - prefer the event }
-      TextOffset := 0;
-      if Assigned(FOnDrawIcon) then
-        FOnDrawIcon(Self, Button, Canvas, OrgRect, State, TextOffset)
-      else if (FImages <> nil) and (Button.ImageIndex > -1) and (Button.ImageIndex < FImages.Count) then
-        begin
-          ImgTop := Rect.Top + (RectHeight - FImages.Height) div 2;
-          if ImgTop < Rect.Top then
-            ImgTop := Rect.Top;
-          if BdsDown in State then
-            Inc(ImgTop);
-
-          // Добавил отображения доп. иконок
-
-          if (FImages <> nil) and (Button.CImageIndex > -1) and (Button.CImageIndex < FImages.Count) then
-            begin
-              FImages.Draw(Canvas, TextLeft + Rect.Right - 27, ImgTop, Button.CImageIndex);
-            end;
-          if (FImages <> nil) and (Button.XImageIndex > -1) and (Button.XImageIndex < FImages.Count) then
-            begin
-              TextLeft := TextLeft + 17;
-              FImages.Draw(Canvas, TextLeft - 18, ImgTop, Button.ImageIndex);
-              FImages.Draw(Canvas, TextLeft, ImgTop, Button.XImageIndex);
-            end
-          else
-            FImages.Draw(Canvas, TextLeft - 1, ImgTop, Button.ImageIndex);
-          TextOffset := FImages.Width + 3;
-
-          // Конец изменений
-
-        end;
-
-      { Show insert indications }
-      if [BdsInsertLeft, BdsInsertTop, BdsInsertRight, BdsInsertBottom] * State <> [] then
-        begin
-          Canvas.Brush.Color := GetShadowColor(EdgeColor);
-          InsertIndication := Rect;
-          if BdsInsertLeft in State then
-            begin
-              Dec(InsertIndication.Left, 2);
-              InsertIndication.Right := InsertIndication.Left + 2;
-            end
-          else if BdsInsertTop in State then
-            begin
-              Dec(InsertIndication.Top);
-              InsertIndication.Bottom := InsertIndication.Top + 2;
-            end
-          else if BdsInsertRight in State then
-            begin
-              Inc(InsertIndication.Right, 2);
-              InsertIndication.Left := InsertIndication.Right - 2;
-            end
-          else if BdsInsertBottom in State then
-            begin
-              Inc(InsertIndication.Bottom);
-              InsertIndication.Top := InsertIndication.Bottom - 2;
-            end;
-          Canvas.FillRect(InsertIndication);
-          Canvas.Brush.Color := FillColor;
-        end;
-
-      if BoShowCaptions in FButtonOptions then
-        begin
-          if FillColor = ClNone then
-            Canvas.Brush.Style := BsClear;
-
-          { Avoid clipping the image }
-          Inc(TextLeft, TextOffset);
-          TextRect.Left := TextLeft;
-          TextRect.Right := Rect.Right - 20; // Внёс изменения
-          TextRect.Top := TextTop;
-          TextRect.Bottom := Rect.Bottom - 1; // Внёс изменения
-
-          if Assigned(FOnDrawText) then
-            FOnDrawText(Self, Button, Canvas, TextRect, State)
-          else
-            begin
-              Caption := Button.Caption;
-              Canvas.TextRect(TextRect, Caption, [TfEndEllipsis, TfVerticalCenter]);
-            end;
-        end;
-
-      if Assigned(FOnAfterDrawButton) then
-        FOnAfterDrawButton(Self, Button, Canvas, OrgRect, State);
+        EdgeColor := ClWhite; // Внёс изменения
     end;
+
+    Canvas.Brush.Color := FillColor;
+    if FillColor <> ClNone then
+    begin
+      Canvas.FillRect(Rect);
+      { Draw the edge outline }
+      Canvas.Brush.Color := EdgeColor;
+      Canvas.FrameRect(Rect);
+    end;
+
+    if BdsFocused in State then
+    begin
+      InflateRect(Rect, -1, -1);
+      Canvas.FrameRect(Rect);
+    end;
+
+    Canvas.Brush.Color := FillColor;
+
+    { Compute the text location }
+    TextLeft := Rect.Left + 1; // Внёс изменения
+    RectHeight := Rect.Bottom - Rect.Top;
+    TextTop := Rect.Top + (RectHeight - Canvas.TextHeight('Wg')) div 2;
+
+    if BoFullSize in ButtonOptions then
+      Inc(TextLeft, 4); // indent, slightly
+
+    if TextTop < Rect.Top then
+      TextTop := Rect.Top;
+    if BdsDown in State then
+    begin
+      Inc(TextTop);
+      Inc(TextLeft);
+    end;
+
+    { Draw the icon - prefer the event }
+    TextOffset := 0;
+    if Assigned(FOnDrawIcon) then
+      FOnDrawIcon(Self, Button, Canvas, OrgRect, State, TextOffset)
+    else if (FImages <> nil) and (Button.ImageIndex > -1) and (Button.ImageIndex < FImages.Count) then
+    begin
+      ImgTop := Rect.Top + (RectHeight - FImages.Height) div 2;
+      if ImgTop < Rect.Top then
+        ImgTop := Rect.Top;
+      if BdsDown in State then
+        Inc(ImgTop);
+
+      // Добавил отображения доп. иконок
+
+      if (FImages <> nil) then
+      begin
+        if ((Button.CImageIndex > -1) and (Button.CImageIndex < FImages.Count)) and ((Button.PImageIndex > -1) and (Button.PImageIndex < FImages.Count)) then
+        begin
+          FImages.Draw(Canvas, TextLeft + Rect.Right - 27, ImgTop, Button.CImageIndex);
+          FImages.Draw(Canvas, TextLeft + Rect.Right - 43, ImgTop, Button.PImageIndex);
+        end
+        else if (Button.CImageIndex > -1) and (Button.CImageIndex < FImages.Count) then
+        begin
+          FImages.Draw(Canvas, TextLeft + Rect.Right - 27, ImgTop, Button.CImageIndex);
+        end
+        else if (Button.PImageIndex > -1) and (Button.PImageIndex < FImages.Count) then
+        begin
+          FImages.Draw(Canvas, TextLeft + Rect.Right - 27, ImgTop, Button.PImageIndex);
+        end;
+      end;
+
+      if (FImages <> nil) and (Button.XImageIndex > -1) and (Button.XImageIndex < FImages.Count) then
+      begin
+        TextLeft := TextLeft + 17;
+        FImages.Draw(Canvas, TextLeft - 18, ImgTop, Button.ImageIndex);
+        FImages.Draw(Canvas, TextLeft, ImgTop, Button.XImageIndex);
+      end
+      else
+        FImages.Draw(Canvas, TextLeft - 1, ImgTop, Button.ImageIndex);
+      TextOffset := FImages.Width + 3;
+
+      // Конец изменений
+
+    end;
+
+    { Show insert indications }
+    if [BdsInsertLeft, BdsInsertTop, BdsInsertRight, BdsInsertBottom] * State <> [] then
+    begin
+      Canvas.Brush.Color := GetShadowColor(EdgeColor);
+      InsertIndication := Rect;
+      if BdsInsertLeft in State then
+      begin
+        Dec(InsertIndication.Left, 2);
+        InsertIndication.Right := InsertIndication.Left + 2;
+      end
+      else if BdsInsertTop in State then
+      begin
+        Dec(InsertIndication.Top);
+        InsertIndication.Bottom := InsertIndication.Top + 2;
+      end
+      else if BdsInsertRight in State then
+      begin
+        Inc(InsertIndication.Right, 2);
+        InsertIndication.Left := InsertIndication.Right - 2;
+      end
+      else if BdsInsertBottom in State then
+      begin
+        Inc(InsertIndication.Bottom);
+        InsertIndication.Top := InsertIndication.Bottom - 2;
+      end;
+      Canvas.FillRect(InsertIndication);
+      Canvas.Brush.Color := FillColor;
+    end;
+
+    if BoShowCaptions in FButtonOptions then
+    begin
+      if FillColor = ClNone then
+        Canvas.Brush.Style := BsClear;
+
+      { Avoid clipping the image }
+      Inc(TextLeft, TextOffset);
+      TextRect.Left := TextLeft;
+
+      // Внёс изменения
+      if (FImages <> nil) then
+      begin
+        if ((Button.CImageIndex > -1) and (Button.CImageIndex < FImages.Count)) and ((Button.PImageIndex > -1) and (Button.PImageIndex < FImages.Count)) then
+          TextRect.Right := Rect.Right - 35
+        else if (Button.CImageIndex > -1) and (Button.CImageIndex < FImages.Count) then
+          TextRect.Right := Rect.Right - 20
+        else if (Button.PImageIndex > -1) and (Button.PImageIndex < FImages.Count) then
+          TextRect.Right := Rect.Right - 20
+        else
+          TextRect.Right := Rect.Right;
+      end;
+      // Конец изменений
+
+      TextRect.Top := TextTop;
+      TextRect.Bottom := Rect.Bottom - 1; // Внёс изменения
+
+      if Assigned(FOnDrawText) then
+        FOnDrawText(Self, Button, Canvas, TextRect, State)
+      else
+      begin
+        Caption := Button.Caption;
+        Canvas.TextRect(TextRect, Caption, [TfEndEllipsis, TfVerticalCenter]);
+      end;
+    end;
+
+    if Assigned(FOnAfterDrawButton) then
+      FOnAfterDrawButton(Self, Button, Canvas, OrgRect, State);
+  end;
   Canvas.Brush.Color := Color; { Restore the original color }
 end;
 
@@ -1858,18 +1890,18 @@ var
   VertInOpt: Boolean;
 begin
   if HandleAllocated then
-    begin
-      Canvas.Font := Font;
-      FCollapsedHeight := Canvas.TextHeight('Wg'); { Do not localize }
-      FGutterSize := FCollapsedHeight + 1 { Border around the text } ;
-      FScrollSize := FButtonHeight;
+  begin
+    Canvas.Font := Font;
+    FCollapsedHeight := Canvas.TextHeight('Wg'); { Do not localize }
+    FGutterSize := FCollapsedHeight + 1 { Border around the text };
+    FScrollSize := FButtonHeight;
 
-      VertInOpt := BoVerticalCategoryCaptions in ButtonOptions;
-      if ((FButtonFlow = CbfVertical) and VertInOpt) or ((FButtonFlow = CbfHorizontal) and not VertInOpt) then
-        FSideBufferSize := FGutterSize + 8
-      else
-        FSideBufferSize := 8;
-    end;
+    VertInOpt := BoVerticalCategoryCaptions in ButtonOptions;
+    if ((FButtonFlow = CbfVertical) and VertInOpt) or ((FButtonFlow = CbfHorizontal) and not VertInOpt) then
+      FSideBufferSize := FGutterSize + 8
+    else
+      FSideBufferSize := 8;
+  end;
 end;
 
 {$IFDEF CLR}
@@ -1889,11 +1921,11 @@ procedure TCategoryButtons.WMMouseLeave(var message: TMessage);
 begin
   FMouseInControl := False;
   if FHotButton <> nil then
-    begin
-      UpdateButton(FHotButton);
-      FHotButton := nil;
-      DoHotButton;
-    end;
+  begin
+    UpdateButton(FHotButton);
+    FHotButton := nil;
+    DoHotButton;
+  end;
   { if FDragImageList.Dragging then
     begin
     FDragImageList.HideDragImage;
@@ -1911,64 +1943,64 @@ var
 begin
   inherited;
   if Button = MbLeft then
+  begin
+    // FDragStarted := False;
+    DownCategory := GetCategoryAt(X, Y);
+    FDownButton := GetButtonAt(X, Y, DownCategory);
+
+    { Focus ourselves, when clicked, like a button would, but
+      after setting the FDownButton }
+    if (not Focused) and CanFocus then
+      Windows.SetFocus(Handle);
+
+    if FDownButton <> nil then
     begin
-      // FDragStarted := False;
-      DownCategory := GetCategoryAt(X, Y);
-      FDownButton := GetButtonAt(X, Y, DownCategory);
-
-      { Focus ourselves, when clicked, like a button would, but
-        after setting the FDownButton }
-      if (not Focused) and CanFocus then
-        Windows.SetFocus(Handle);
-
-      if FDownButton <> nil then
+      SetSelectedItem(FDownButton);
+      // FDragButton := FDownButton;
+      // FDragStartPos := Point(X, Y);
+      UpdateButton(FDownButton);
+    end
+    else if DownCategory <> nil then
+    begin
+      SetSelectedItem(DownCategory);
+      { if GetAllowReorder then
         begin
-          SetSelectedItem(FDownButton);
-          // FDragButton := FDownButton;
-          // FDragStartPos := Point(X, Y);
-          UpdateButton(FDownButton);
-        end
-      else if DownCategory <> nil then
-        begin
-          SetSelectedItem(DownCategory);
-          { if GetAllowReorder then
-            begin
-            FDragCategory := DownCategory;
-            FDragStartPos := Point(X, Y);
-            end; }
-        end;
-
-      // Перенёс событие MouseUp сюда для более правильного выбора пунктов
-
-      if Button = MbLeft then
-        begin
-          LastDown := FDownButton;
-          FDownButton := nil;
-          // FDragButton := nil;
-          // FDragCategory := nil;
-          if LastDown <> nil then
-            UpdateButton(LastDown);
-          if (LastDown <> nil) and (GetButtonAt(X, Y) = LastDown) then
-            begin
-              SelectedItem := LastDown;
-              DoItemClicked(FSelectedItem);
-            end
-          else
-            begin
-              DownCategory := GetCategoryAt(X, Y);
-              if ((DownCategory <> nil) and (DownCategory.Items.Count > 0)) then
-                begin
-                  R := GetCategoryRect(DownCategory, True);
-                  if PtInRect(R, Point(X, Y)) then
-                    DownCategory.Collapsed := not DownCategory.Collapsed;
-                end;
-            end;
-          Click;
-        end;
-
-      // Конец события MouseUp
-
+        FDragCategory := DownCategory;
+        FDragStartPos := Point(X, Y);
+        end; }
     end;
+
+    // Перенёс событие MouseUp сюда для более правильного выбора пунктов
+
+    if Button = MbLeft then
+    begin
+      LastDown := FDownButton;
+      FDownButton := nil;
+      // FDragButton := nil;
+      // FDragCategory := nil;
+      if LastDown <> nil then
+        UpdateButton(LastDown);
+      if (LastDown <> nil) and (GetButtonAt(X, Y) = LastDown) then
+      begin
+        SelectedItem := LastDown;
+        DoItemClicked(FSelectedItem);
+      end
+      else
+      begin
+        DownCategory := GetCategoryAt(X, Y);
+        if ((DownCategory <> nil) and (DownCategory.Items.Count > 0)) then
+        begin
+          R := GetCategoryRect(DownCategory, True);
+          if PtInRect(R, Point(X, Y)) then
+            DownCategory.Collapsed := not DownCategory.Collapsed;
+        end;
+      end;
+      Click;
+    end;
+
+    // Конец события MouseUp
+
+  end;
 end;
 
 (* procedure TCategoryButtons.BeginAutoDrag;
@@ -2020,32 +2052,32 @@ begin
 
   NewHotButton := GetButtonAt(X, Y);
   if NewHotButton <> FHotButton then
-    begin
-      OldHotButton := FHotButton;
-      FHotButton := NewHotButton;
-      UpdateButton(OldHotButton);
-      UpdateButton(FHotButton);
-      DoHotButton;
-    end;
+  begin
+    OldHotButton := FHotButton;
+    FHotButton := NewHotButton;
+    UpdateButton(OldHotButton);
+    UpdateButton(FHotButton);
+    DoHotButton;
+  end;
   if not FMouseInControl then
-    begin
-      FMouseInControl := True;
+  begin
+    FMouseInControl := True;
 
 {$IF DEFINED(CLR)}
 
-      EventTrack.CbSize := Marshal.SizeOf(TypeOf(TTrackMouseEvent));
+    EventTrack.CbSize := Marshal.SizeOf(TypeOf(TTrackMouseEvent));
 
 {$ELSE}
 
-      EventTrack.CbSize := SizeOf(TTrackMouseEvent);
+    EventTrack.CbSize := SizeOf(TTrackMouseEvent);
 
 {$IFEND}
 
-      EventTrack.DwFlags := TME_LEAVE;
-      EventTrack.HwndTrack := Handle;
-      EventTrack.DwHoverTime := 0;
-      TrackMouseEvent(EventTrack);
-    end;
+    EventTrack.DwFlags := TME_LEAVE;
+    EventTrack.HwndTrack := Handle;
+    EventTrack.DwHoverTime := 0;
+    TrackMouseEvent(EventTrack);
+  end;
 end;
 
 procedure TCategoryButtons.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -2094,35 +2126,35 @@ begin
   if Category = nil then
     Category := GetCategoryAt(X, Y);
   if Category <> nil then
+  begin
+    { Translate the X or Y position to our virtual system }
+    if FButtonFlow = CbfVertical then
+      Y := Y + GetScrollOffset { Amount hidden }
+    else
+      X := X + GetScrollOffset;
+    GetCategoryBounds(Category, Category.StartOffset, CategoryBounds, ButtonBounds);
+    if (X >= ButtonBounds.Left) and (X <= ButtonBounds.Right) and (Y >= ButtonBounds.Top) and (Y <= ButtonBounds.Bottom) then
     begin
-      { Translate the X or Y position to our virtual system }
-      if FButtonFlow = CbfVertical then
-        Y := Y + GetScrollOffset { Amount hidden }
+      { Find out which button it is. }
+      Row := (Y - ButtonBounds.Top) div FButtonHeight;
+      if (FButtonFlow = CbfVertical) and (BoFullSize in FButtonOptions) then
+        Col := 0
       else
-        X := X + GetScrollOffset;
-      GetCategoryBounds(Category, Category.StartOffset, CategoryBounds, ButtonBounds);
-      if (X >= ButtonBounds.Left) and (X <= ButtonBounds.Right) and (Y >= ButtonBounds.Top) and (Y <= ButtonBounds.Bottom) then
-        begin
-          { Find out which button it is. }
-          Row := (Y - ButtonBounds.Top) div FButtonHeight;
-          if (FButtonFlow = CbfVertical) and (BoFullSize in FButtonOptions) then
-            Col := 0
-          else
-            begin
-              Col := (X - ButtonBounds.Left) div FButtonWidth;
-              if ButtonBounds.Left + (Col + 1) * FButtonWidth > ButtonBounds.Right then
-                Exit; { Not within the bounds }
-            end;
+      begin
+        Col := (X - ButtonBounds.Left) div FButtonWidth;
+        if ButtonBounds.Left + (Col + 1) * FButtonWidth > ButtonBounds.Right then
+          Exit; { Not within the bounds }
+      end;
 
-          if FButtonFlow = CbfVertical then
-            ButtonsPerRow := CalcButtonsPerRow
-          else
-            ButtonsPerRow := (ButtonBounds.Right - ButtonBounds.Left) div FButtonWidth;
-          ResIndex := Row * ButtonsPerRow + Col;
-          if ResIndex < Category.Items.Count then
-            Result := Category.Items[ResIndex];
-        end;
+      if FButtonFlow = CbfVertical then
+        ButtonsPerRow := CalcButtonsPerRow
+      else
+        ButtonsPerRow := (ButtonBounds.Right - ButtonBounds.Left) div FButtonWidth;
+      ResIndex := Row * ButtonsPerRow + Col;
+      if ResIndex < Category.Items.Count then
+        Result := Category.Items[ResIndex];
     end;
+  end;
 end;
 
 procedure TCategoryButtons.DoItemClicked(const Item: TBaseItem);
@@ -2131,51 +2163,51 @@ var
   LOnClick: TNotifyEvent;
 begin
   if Item is TButtonItem then
-    begin
-      Button := Item as TButtonItem;
-      LOnClick := Button.OnClick;
-      if Assigned(LOnClick) and (Button.Action <> nil) and not DelegatesEqual(@LOnClick, @Button.Action.OnExecute) then
-        LOnClick(Self)
-      else if not(CsDesigning in ComponentState) and (Button.ActionLink <> nil) then
-        Button.ActionLink.Execute(Self)
-      else if Assigned(LOnClick) then
-        LOnClick(Self)
-      else if Assigned(FOnButtonClicked) then
-        FOnButtonClicked(Self, Button);
-    end
+  begin
+    Button := Item as TButtonItem;
+    LOnClick := Button.OnClick;
+    if Assigned(LOnClick) and (Button.Action <> nil) and not DelegatesEqual(@LOnClick, @Button.Action.OnExecute) then
+      LOnClick(Self)
+    else if not (CsDesigning in ComponentState) and (Button.ActionLink <> nil) then
+      Button.ActionLink.Execute(Self)
+    else if Assigned(LOnClick) then
+      LOnClick(Self)
+    else if Assigned(FOnButtonClicked) then
+      FOnButtonClicked(Self, Button);
+  end
   else if (Item is TButtonCategory) and Assigned(FOnCategoryClicked) then
     FOnCategoryClicked(Self, TButtonCategory(Item));
 end;
 
 procedure TCategoryButtons.DoItemNotify(Item: TCollectionItem; Action: TCollectionNotification);
 begin
-  if not(CsDestroying in ComponentState) and (Action in [CnDeleting, CnExtracting]) then
-    begin
-      if Item = SelectedItem then
-        SelectedItem := nil;
-      if Item = FocusedItem then
-        FocusedItem := nil;
-      if Item = FDownButton then
-        FDownButton := nil;
-      { if Item = FDragButton then
-        FDragButton := nil; }
-      if Item = FHotButton then
-        FHotButton := nil;
-    end;
+  if not (CsDestroying in ComponentState) and (Action in [CnDeleting, CnExtracting]) then
+  begin
+    if Item = SelectedItem then
+      SelectedItem := nil;
+    if Item = FocusedItem then
+      FocusedItem := nil;
+    if Item = FDownButton then
+      FDownButton := nil;
+    { if Item = FDragButton then
+      FDragButton := nil; }
+    if Item = FHotButton then
+      FHotButton := nil;
+  end;
 end;
 
 procedure TCategoryButtons.DoItemUpdate(Item: TCollectionItem);
 begin
   if not FIgnoreUpdate then
+  begin
+    if Item <> nil then
+      UpdateButton(Item as TButtonItem)
+    else
     begin
-      if Item <> nil then
-        UpdateButton(Item as TButtonItem)
-      else
-        begin
-          Resize;
-          UpdateAllButtons;
-        end;
+      Resize;
+      UpdateAllButtons;
     end;
+  end;
 
 end;
 
@@ -2525,16 +2557,16 @@ var
 begin
   Result := nil;
   if StartingItem <> nil then
-    begin
-      Category := (StartingItem as TButtonItem).Category;
-      if GoForward then
-        NextIndex := StartingItem.index + 1
-      else
-        NextIndex := StartingItem.index - 1;
+  begin
+    Category := (StartingItem as TButtonItem).Category;
+    if GoForward then
+      NextIndex := StartingItem.index + 1
+    else
+      NextIndex := StartingItem.index - 1;
 
-      if (NextIndex > -1) and (NextIndex < Category.Items.Count) then
-        Result := Category.Items[NextIndex]; { Same category, next button in it. }
-    end;
+    if (NextIndex > -1) and (NextIndex < Category.Items.Count) then
+      Result := Category.Items[NextIndex]; { Same category, next button in it. }
+  end;
 end;
 
 { GetTargetAt: Gives you the target insertion point in the given group.
@@ -2584,11 +2616,11 @@ function TCategoryButtons.HasVerticalCaption(const Category: TButtonCategory): B
 begin
   Result := True;
   if FButtonFlow = CbfVertical then
-    begin
-      if not(BoVerticalCategoryCaptions in ButtonOptions) or Category.Collapsed or (Category.Items = nil) or (Category.Items.Count = 0) then
-        Result := False
-    end
-  else if not(BoVerticalCategoryCaptions in ButtonOptions) and not(Category.Collapsed or (Category.Items = nil) or (Category.Items.Count = 0)) then
+  begin
+    if not (BoVerticalCategoryCaptions in ButtonOptions) or Category.Collapsed or (Category.Items = nil) or (Category.Items.Count = 0) then
+      Result := False
+  end
+  else if not (BoVerticalCategoryCaptions in ButtonOptions) and not (Category.Collapsed or (Category.Items = nil) or (Category.Items.Count = 0)) then
     Result := False;
 end;
 
@@ -2599,21 +2631,21 @@ var
 begin
   Result := GetButtonRect(Item);
   if Item is TButtonItem then
-    begin
-      Button := TButtonItem(Item);
-      InflateRect(Result, -3, -3);
-      Inc(Result.Left, 2);
-      if (FImages <> nil) and (Button.ImageIndex > -1) and (Button.ImageIndex < FImages.Count) then
-        Inc(Result.Left, FImages.Width + 1);
-    end
+  begin
+    Button := TButtonItem(Item);
+    InflateRect(Result, -3, -3);
+    Inc(Result.Left, 2);
+    if (FImages <> nil) and (Button.ImageIndex > -1) and (Button.ImageIndex < FImages.Count) then
+      Inc(Result.Left, FImages.Width + 1);
+  end
   else if Item is TButtonCategory then
-    begin
-      Category := TButtonCategory(Item);
-      AdjustCategoryBounds(Category, Result, True);
-      InflateRect(Result, -3, -1);
-      Inc(Result.Top, 1);
-      Inc(Result.Left, 14);
-    end;
+  begin
+    Category := TButtonCategory(Item);
+    AdjustCategoryBounds(Category, Result, True);
+    InflateRect(Result, -3, -1);
+    Inc(Result.Top, 1);
+    Inc(Result.Left, 14);
+  end;
 end;
 
 procedure TCategoryButtons.CNKeydown(var message: TWMKeyDown);
@@ -2621,208 +2653,208 @@ var
   IncAmount: Integer;
   CurrentItem: TBaseItem;
 
-procedure FixIncAmount(const StartValue: Integer);
-begin
-  { Keep it within the bounds }
-  if StartValue + IncAmount >= FButtonCategories.Count then
-    IncAmount := FButtonCategories.Count - StartValue - 1
-  else if StartValue + IncAmount < 0 then
-    IncAmount := 0 - StartValue;
-end;
+  procedure FixIncAmount(const StartValue: Integer);
+  begin
+    { Keep it within the bounds }
+    if StartValue + IncAmount >= FButtonCategories.Count then
+      IncAmount := FButtonCategories.Count - StartValue - 1
+    else if StartValue + IncAmount < 0 then
+      IncAmount := 0 - StartValue;
+  end;
 
-function CalcRowsSeen: Integer;
-begin
-  Result := ClientHeight div FButtonHeight;
-end;
+  function CalcRowsSeen: Integer;
+  begin
+    Result := ClientHeight div FButtonHeight;
+  end;
 
-function GetNextItem(const StartIndex: Integer; SuggestedIndex: Integer): TButtonItem;
-var
-  CatCount: Integer;
-  I: Integer;
-begin
-  Result := nil;
-  for I := StartIndex to FButtonCategories.Count - 1 do
+  function GetNextItem(const StartIndex: Integer; SuggestedIndex: Integer): TButtonItem;
+  var
+    CatCount: Integer;
+    I: Integer;
+  begin
+    Result := nil;
+    for I := StartIndex to FButtonCategories.Count - 1 do
     begin
       CatCount := FButtonCategories[I].Items.Count;
       if CatCount > 0 then
-        begin
-          if SuggestedIndex >= CatCount then
-            SuggestedIndex := CatCount - 1;
-          Result := FButtonCategories[I].Items[SuggestedIndex];
-          Break;
-        end;
+      begin
+        if SuggestedIndex >= CatCount then
+          SuggestedIndex := CatCount - 1;
+        Result := FButtonCategories[I].Items[SuggestedIndex];
+        Break;
+      end;
     end;
-end;
+  end;
 
-function GetPriorItem(const StartIndex: Integer; Col: Integer): TBaseItem;
-var
-  I: Integer;
-  CatCount: Integer;
-  Category: TButtonCategory;
-  LastRow: Integer;
-  ButtonsPerRow: Integer;
-begin
-  Result := nil;
-  ButtonsPerRow := CalcButtonsPerRow;
-  for I := StartIndex downto 0 do
+  function GetPriorItem(const StartIndex: Integer; Col: Integer): TBaseItem;
+  var
+    I: Integer;
+    CatCount: Integer;
+    Category: TButtonCategory;
+    LastRow: Integer;
+    ButtonsPerRow: Integer;
+  begin
+    Result := nil;
+    ButtonsPerRow := CalcButtonsPerRow;
+    for I := StartIndex downto 0 do
     begin
       Category := FButtonCategories[I];
       CatCount := Category.Items.Count;
       if CatCount > 0 then
-        begin
-          LastRow := CatCount div ButtonsPerRow - 1;
-          if CatCount mod ButtonsPerRow <> 0 then
-            Inc(LastRow);
+      begin
+        LastRow := CatCount div ButtonsPerRow - 1;
+        if CatCount mod ButtonsPerRow <> 0 then
+          Inc(LastRow);
 
-          Col := Col + LastRow * ButtonsPerRow;
+        Col := Col + LastRow * ButtonsPerRow;
 
-          if Col >= CatCount then
-            Col := CatCount - 1;
-          Result := Category.Items[Col];
-          Break;
-        end;
+        if Col >= CatCount then
+          Col := CatCount - 1;
+        Result := Category.Items[Col];
+        Break;
+      end;
     end;
-end;
+  end;
 
-function CalcActualButtonsPerRow(Category: TButtonCategory): Integer;
-var
-  CatBounds: TRect;
-begin
-  if FButtonFlow = CbfVertical then
-    Result := CalcButtonsPerRow
-  else
+  function CalcActualButtonsPerRow(Category: TButtonCategory): Integer;
+  var
+    CatBounds: TRect;
+  begin
+    if FButtonFlow = CbfVertical then
+      Result := CalcButtonsPerRow
+    else
     begin
       CatBounds := Category.Bounds;
       Result := (CatBounds.Right - CatBounds.Left) div FButtonWidth;
       if Result = 0 then
         Result := 1;
     end;
-end;
+  end;
 
-function GetNext(GoForward: Boolean; Distance: Integer = 0): TBaseItem;
-var
-  ButtonsPerRow: Integer;
-  Category: TButtonCategory;
-begin
-  Result := nil;
+  function GetNext(GoForward: Boolean; Distance: Integer = 0): TBaseItem;
+  var
+    ButtonsPerRow: Integer;
+    Category: TButtonCategory;
+  begin
+    Result := nil;
 
-  if (CurrentItem = nil) then
+    if (CurrentItem = nil) then
     begin
       if (Categories.Count > 0) then
         Result := Categories.Items[0];
       Exit;
     end;
 
-  if CurrentItem is TButtonItem then
-    Category := TButtonItem(CurrentItem).Category
-  else
-    Category := CurrentItem as TButtonCategory;
+    if CurrentItem is TButtonItem then
+      Category := TButtonItem(CurrentItem).Category
+    else
+      Category := CurrentItem as TButtonCategory;
 
-  ButtonsPerRow := CalcActualButtonsPerRow(Category);
+    ButtonsPerRow := CalcActualButtonsPerRow(Category);
 
-  if Distance <= 0 then
-    Distance := ButtonsPerRow;
+    if Distance <= 0 then
+      Distance := ButtonsPerRow;
 
-  if CurrentItem is TButtonItem then
+    if CurrentItem is TButtonItem then
     begin
       if not Category.Collapsed then
-        begin
-          // Look for next or previous button first
-          if GoForward then
-            Result := CurrentItem.GetNextSibling(Distance)
-          else
-            Result := CurrentItem.GetPrevSibling(Distance);
-        end;
+      begin
+        // Look for next or previous button first
+        if GoForward then
+          Result := CurrentItem.GetNextSibling(Distance)
+        else
+          Result := CurrentItem.GetPrevSibling(Distance);
+      end;
 
       if (Result = nil) or Category.Collapsed then
-        begin
-          // If no button was found, try a category
-          if GoForward then
-            Result := Category.GetNextSibling
-          else
-            Result := Category;
-        end
+      begin
+        // If no button was found, try a category
+        if GoForward then
+          Result := Category.GetNextSibling
+        else
+          Result := Category;
+      end
     end
-  else if CurrentItem is TButtonCategory then
+    else if CurrentItem is TButtonCategory then
     begin
       if GoForward then
-        begin
-          if not Category.Collapsed and (Category.Items.Count > 0) then
-            Result := Category.Items[0] as TBaseItem
-          else
-            Result := CurrentItem.GetNextSibling;
-        end
+      begin
+        if not Category.Collapsed and (Category.Items.Count > 0) then
+          Result := Category.Items[0] as TBaseItem
+        else
+          Result := CurrentItem.GetNextSibling;
+      end
       else
-        begin
-          Result := CurrentItem.GetPrevSibling;
-          Category := Result as TButtonCategory;
-          // Return the last button in the previous category if it isn't collapsed
-          if (Result <> nil) and not Category.Collapsed and (Category.Items.Count > 0) then
-            Result := Category.Items[Category.Items.Count - 1] as TBaseItem;
-        end;
+      begin
+        Result := CurrentItem.GetPrevSibling;
+        Category := Result as TButtonCategory;
+        // Return the last button in the previous category if it isn't collapsed
+        if (Result <> nil) and not Category.Collapsed and (Category.Items.Count > 0) then
+          Result := Category.Items[Category.Items.Count - 1] as TBaseItem;
+      end;
     end;
-end;
+  end;
 
-function CtrlIsDown: Boolean;
-begin
-  Result := SsCtrl in KeyboardStateToShiftState;
-end;
+  function CtrlIsDown: Boolean;
+  begin
+    Result := SsCtrl in KeyboardStateToShiftState;
+  end;
 
-function ChangePage(GoForward: Boolean): TBaseItem;
-var
-  NewTop: Integer;
-  NewCat: TButtonCategory;
-  I: Integer;
-  TempBounds, ButtonBounds: TRect;
-  YInCat: Integer;
-begin
-  NewTop := ClientHeight;
-  if not GoForward then
-    NewTop := NewTop * -1;
+  function ChangePage(GoForward: Boolean): TBaseItem;
+  var
+    NewTop: Integer;
+    NewCat: TButtonCategory;
+    I: Integer;
+    TempBounds, ButtonBounds: TRect;
+    YInCat: Integer;
+  begin
+    NewTop := ClientHeight;
+    if not GoForward then
+      NewTop := NewTop * -1;
 
-  if CurrentItem <> nil then
-    NewTop := GetButtonRect(CurrentItem).Top + FScrollSize * FScrollBarPos + NewTop;
+    if CurrentItem <> nil then
+      NewTop := GetButtonRect(CurrentItem).Top + FScrollSize * FScrollBarPos + NewTop;
 
-  if NewTop < 0 then
-    NewTop := 0
-  else if NewTop > FButtonCategories[FButtonCategories.Count - 1].EndOffset then
-    NewTop := FButtonCategories[FButtonCategories.Count - 1].EndOffset - 1;
+    if NewTop < 0 then
+      NewTop := 0
+    else if NewTop > FButtonCategories[FButtonCategories.Count - 1].EndOffset then
+      NewTop := FButtonCategories[FButtonCategories.Count - 1].EndOffset - 1;
 
-  { Find where this is at }
-  NewCat := nil;
-  for I := 0 to FButtonCategories.Count - 1 do
+    { Find where this is at }
+    NewCat := nil;
+    for I := 0 to FButtonCategories.Count - 1 do
     begin
       if (FButtonCategories[I].Items.Count > 0) and (NewTop < FButtonCategories[I].EndOffset) then
-        begin
-          NewCat := FButtonCategories[I];
-          Break;
-        end;
+      begin
+        NewCat := FButtonCategories[I];
+        Break;
+      end;
     end;
 
-  if NewCat <> nil then
+    if NewCat <> nil then
     begin
       GetCategoryBounds(NewCat, NewCat.StartOffset, TempBounds, ButtonBounds);
       if NewCat.Collapsed or (NewTop < ButtonBounds.Top) then
         Result := NewCat
       else
-        begin
-          { Find which button we would be on }
-          YInCat := NewTop - ButtonBounds.Top + 1;
-          if YInCat < 0 then
-            YInCat := 0;
-          I := (YInCat div FButtonHeight) * CalcButtonsPerRow;
-          if YInCat mod FButtonHeight <> 0 then
-            Inc(I);
-          if I < 0 then
-            I := 0
-          else if I >= NewCat.Items.Count then
-            I := NewCat.Items.Count - 1;
-          Result := NewCat.Items[I];
-        end;
+      begin
+        { Find which button we would be on }
+        YInCat := NewTop - ButtonBounds.Top + 1;
+        if YInCat < 0 then
+          YInCat := 0;
+        I := (YInCat div FButtonHeight) * CalcButtonsPerRow;
+        if YInCat mod FButtonHeight <> 0 then
+          Inc(I);
+        if I < 0 then
+          I := 0
+        else if I >= NewCat.Items.Count then
+          I := NewCat.Items.Count - 1;
+        Result := NewCat.Items[I];
+      end;
     end
-  else
-    Result := nil;
-end;
+    else
+      Result := nil;
+  end;
 
 var
   I: Integer;
@@ -2843,78 +2875,81 @@ begin
         Categories[I].Collapsed := False;
     VK_DOWN: NewItem := GetNext(True);
     VK_UP: NewItem := GetNext(False);
-    VK_LEFT: begin
+    VK_LEFT:
+      begin
         if CurrentItem is TButtonItem then
-          begin
-            Button := CurrentItem as TButtonItem;
-            if CtrlIsDown and not Button.Category.Collapsed then
-              Button.Category.Collapsed := True
-            else if CalcActualButtonsPerRow(Button.Category) = 1 then
-              NewItem := Button.Category
-            else
-              NewItem := GetNext(False, 1);
-          end
+        begin
+          Button := CurrentItem as TButtonItem;
+          if CtrlIsDown and not Button.Category.Collapsed then
+            Button.Category.Collapsed := True
+          else if CalcActualButtonsPerRow(Button.Category) = 1 then
+            NewItem := Button.Category
+          else
+            NewItem := GetNext(False, 1);
+        end
         else if CurrentItem is TButtonCategory then
+        begin
+          Category := CurrentItem as TButtonCategory;
+          if not Category.Collapsed then
           begin
-            Category := CurrentItem as TButtonCategory;
-            if not Category.Collapsed then
-              begin
-                Category.Collapsed := True;
-                NewItem := CurrentItem;
-              end
-            else
-              NewItem := GetNext(False, 1);
-          end;
+            Category.Collapsed := True;
+            NewItem := CurrentItem;
+          end
+          else
+            NewItem := GetNext(False, 1);
+        end;
       end;
-    VK_RIGHT: begin
+    VK_RIGHT:
+      begin
         if CurrentItem is TButtonItem then
-          begin
-            Button := CurrentItem as TButtonItem;
-            if CtrlIsDown and Button.Category.Collapsed then
-              Button.Category.Collapsed := False
-            else
-              NewItem := GetNext(True, 1)
-          end
+        begin
+          Button := CurrentItem as TButtonItem;
+          if CtrlIsDown and Button.Category.Collapsed then
+            Button.Category.Collapsed := False
+          else
+            NewItem := GetNext(True, 1)
+        end
         else if CurrentItem is TButtonCategory then
-          begin
-            Category := CurrentItem as TButtonCategory;
-            if Category.Collapsed then
-              Category.Collapsed := False
-            else
-              NewItem := GetNext(True, 1);
-          end;
+        begin
+          Category := CurrentItem as TButtonCategory;
+          if Category.Collapsed then
+            Category.Collapsed := False
+          else
+            NewItem := GetNext(True, 1);
+        end;
       end;
     VK_NEXT: NewItem := ChangePage(True);
     VK_PRIOR: NewItem := ChangePage(False);
     VK_RETURN: if IsEditing then
         EndEdit(False)
       else if (CurrentItem is TButtonItem) then
-        begin
-          Button := CurrentItem as TButtonItem;
-          if Button.Category.Collapsed then
-            Button.Category.Collapsed := False;
-          SelectedItem := CurrentItem;
-          DoItemClicked(CurrentItem)
-        end;
+      begin
+        Button := CurrentItem as TButtonItem;
+        if Button.Category.Collapsed then
+          Button.Category.Collapsed := False;
+        SelectedItem := CurrentItem;
+        DoItemClicked(CurrentItem)
+      end;
     VK_HOME: if Categories.Count > 0 then
         NewItem := Categories[0];
     VK_END: if Categories.Count > 0 then
-        begin
-          NewItem := Categories[Categories.Count - 1];
-          Category := NewItem as TButtonCategory;
-          if not Category.Collapsed and (Category.Items.Count > 0) then
-            NewItem := Category.Items[Category.Items.Count - 1];
-        end;
+      begin
+        NewItem := Categories[Categories.Count - 1];
+        Category := NewItem as TButtonCategory;
+        if not Category.Collapsed and (Category.Items.Count > 0) then
+          NewItem := Category.Items[Category.Items.Count - 1];
+      end;
     VK_ESCAPE: if IsEditing then
         EndEdit(True);
-  else inherited;
+  else
+    inherited;
   end;
   if NewItem <> nil then
-    begin
-      UpdateButton(FHotButton);
-      FHotButton := nil;
-      SelectedItem := NewItem;
-    end;
+  begin
+    UpdateButton(FHotButton);
+    FHotButton := nil;
+    SelectedItem := NewItem;
+  end;
 end;
 
 procedure TCategoryButtons.WndProc(var message: TMessage);
@@ -2932,25 +2967,25 @@ begin
     WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN:
       // Clicking anywhere outside the inplace edit control ends editing
       if IsEditing then
-        begin
+      begin
 
 {$IF DEFINED(CLR)}
 
-          MouseMsg := TWMMouse.Create(message);
-          P := ClientToScreen(Point(MouseMsg.XPos, MouseMsg.YPos));
+        MouseMsg := TWMMouse.Create(message);
+        P := ClientToScreen(Point(MouseMsg.XPos, MouseMsg.YPos));
 
 {$ELSE}
 
-          P := ClientToScreen(Point(TWMMouse(message).XPos, TWMMouse(message).YPos));
+        P := ClientToScreen(Point(TWMMouse(message).XPos, TWMMouse(message).YPos));
 
 {$IFEND}
 
-          if not PtInRect(FInplaceEdit.ClientRect, P) then
-            EndEdit(False);
-        end;
+        if not PtInRect(FInplaceEdit.ClientRect, P) then
+          EndEdit(False);
+      end;
     WM_NCLBUTTONDOWN, WM_NCRBUTTONDOWN, WM_NCMBUTTONDOWN, WM_DESTROY, WM_MOUSEWHEEL, WM_CANCELMODE, WM_SIZE: if IsEditing then
         EndEdit(False);
-    WM_KILLFOCUS: if IsEditing and not((THandle(message.WParam) = FInplaceEdit.Handle) or (THandle(message.WParam) = Handle)) then
+    WM_KILLFOCUS: if IsEditing and not ((THandle(message.WParam) = FInplaceEdit.Handle) or (THandle(message.WParam) = Handle)) then
         // FInplaceEdit passes this to us
         EndEdit(False);
   end;
@@ -2962,13 +2997,13 @@ var
   Button: TButtonItem;
 begin
   if Item is TButtonItem then
-    begin
-      Button := Item as TButtonItem;
-      if Button.Category.Collapsed then
-        ScrollIntoView(Button.Category)
-      else
-        ScrollRectIntoView(Item.Bounds, True);
-    end
+  begin
+    Button := Item as TButtonItem;
+    if Button.Category.Collapsed then
+      ScrollIntoView(Button.Category)
+    else
+      ScrollRectIntoView(Item.Bounds, True);
+  end
   else if Item is TButtonCategory then
     ScrollRectIntoView(GetCategoryRect(TButtonCategory(Item)), True);
 end;
@@ -2994,75 +3029,75 @@ var
 begin
   message.Result := 1; { Don't show the hint }
   if message.HintInfo.HintControl = Self then
+  begin
+    with message.HintInfo.CursorPos do
     begin
-      with message.HintInfo.CursorPos do
-        begin
-          CurrentCat := GetCategoryAt(X, Y);
-          CurrentItem := GetButtonAt(X, Y, CurrentCat);
-        end;
+      CurrentCat := GetCategoryAt(X, Y);
+      CurrentItem := GetButtonAt(X, Y, CurrentCat);
+    end;
 
-      Handled := False;
-      HintStr := '';
-      if Assigned(FOnGetHint) then
-        FOnGetHint(Self, CurrentItem, CurrentCat, HintStr, Handled);
-      LHintInfo := message.HintInfo;
-      if (CurrentItem <> nil) then
-        begin
-          if not Handled then
-            begin
-              if CurrentItem.Hint <> '' then
-                HintStr := CurrentItem.Hint
-              else
-                HintStr := CurrentItem.Caption;
-              if (CurrentItem.ActionLink <> nil) then
-                CurrentItem.ActionLink.DoShowHint(HintStr);
-            end;
-          LHintInfo.CursorRect := GetButtonRect(CurrentItem);
-          Handled := True;
-        end
-      else if (CurrentCat <> nil) then
-        begin
+    Handled := False;
+    HintStr := '';
+    if Assigned(FOnGetHint) then
+      FOnGetHint(Self, CurrentItem, CurrentCat, HintStr, Handled);
+    LHintInfo := message.HintInfo;
+    if (CurrentItem <> nil) then
+    begin
+      if not Handled then
+      begin
+        if CurrentItem.Hint <> '' then
+          HintStr := CurrentItem.Hint
+        else
+          HintStr := CurrentItem.Caption;
+        if (CurrentItem.ActionLink <> nil) then
+          CurrentItem.ActionLink.DoShowHint(HintStr);
+      end;
+      LHintInfo.CursorRect := GetButtonRect(CurrentItem);
+      Handled := True;
+    end
+    else if (CurrentCat <> nil) then
+    begin
 
-          // Изменения
+      // Изменения
 
-          if not Handled then
-            HintStr := '<b>' + CurrentCat.GroupCaption + '</b>';
-          {if CurrentCat.GroupType > EmptyStr then
-            HintStr := HintStr + '<BR>' + CurrentCat.GroupType;}
+      if not Handled then
+        HintStr := '<b>' + CurrentCat.GroupCaption + '</b>';
+      {if CurrentCat.GroupType > EmptyStr then
+        HintStr := HintStr + '<BR>' + CurrentCat.GroupType;}
 
-          // Конец изменений
+      // Конец изменений
 
-          CatRect := GetCategoryRect(CurrentCat);
-          if not CurrentCat.Collapsed then { exclude the button area on the right }
-            CatRect.Right := CatRect.Left + FGutterSize;
-          LHintInfo.CursorRect := CatRect;
+      CatRect := GetCategoryRect(CurrentCat);
+      if not CurrentCat.Collapsed then { exclude the button area on the right }
+        CatRect.Right := CatRect.Left + FGutterSize;
+      LHintInfo.CursorRect := CatRect;
 
-          Handled := True;
-        end;
-      if Handled then
-        begin
-          LHintInfo.HintStr := HintStr;
-          message.Result := 0; { Show the hint }
-        end;
+      Handled := True;
+    end;
+    if Handled then
+    begin
+      LHintInfo.HintStr := HintStr;
+      message.Result := 0; { Show the hint }
+    end;
 
 {$IF DEFINED(CLR)}
 
-      message.HintInfo := LHintInfo;
+    message.HintInfo := LHintInfo;
 
 {$IFEND}
 
-    end;
+  end;
 end;
 
 procedure TCategoryButtons.Assign(Source: TPersistent);
 begin
   if Source is TCategoryButtons then
-    begin
-      Categories := TCategoryButtons(Source).Categories;
-      ButtonHeight := TCategoryButtons(Source).ButtonHeight;
-      ButtonWidth := TCategoryButtons(Source).ButtonWidth;
-      ButtonOptions := TCategoryButtons(Source).ButtonOptions;
-    end
+  begin
+    Categories := TCategoryButtons(Source).Categories;
+    ButtonHeight := TCategoryButtons(Source).ButtonHeight;
+    ButtonWidth := TCategoryButtons(Source).ButtonWidth;
+    ButtonOptions := TCategoryButtons(Source).ButtonOptions;
+  end
   else
     inherited;
 end;
@@ -3153,74 +3188,74 @@ end;
 procedure TCategoryButtons.DoGesture(const EventInfo: TGestureEventInfo; var Handled: Boolean);
 begin
   if EventInfo.GestureID = IgiPan then
+  begin
+    Handled := True;
+    if GfBegin in EventInfo.Flags then
+      FPanPoint := EventInfo.Location
+    else if not (GfEnd in EventInfo.Flags) then
     begin
-      Handled := True;
-      if GfBegin in EventInfo.Flags then
-        FPanPoint := EventInfo.Location
-      else if not(GfEnd in EventInfo.Flags) then
-        begin
-          if (EventInfo.Location.Y - FPanPoint.Y) > 0 then
-            ScrollPosChanged(ScLineUp, (EventInfo.Location.Y - FPanPoint.Y))
-          else
-            ScrollPosChanged(ScLineDown, (EventInfo.Location.Y - FPanPoint.Y));
-          FPanPoint := EventInfo.Location
+      if (EventInfo.Location.Y - FPanPoint.Y) > 0 then
+        ScrollPosChanged(ScLineUp, (EventInfo.Location.Y - FPanPoint.Y))
+      else
+        ScrollPosChanged(ScLineDown, (EventInfo.Location.Y - FPanPoint.Y));
+      FPanPoint := EventInfo.Location
 
-        end;
     end;
+  end;
 end;
 
 procedure TCategoryButtons.SetSelectedItem(const Value: TBaseItem);
 
-procedure UpdateCategory(const Category: TButtonCategory);
-var
-  R: TRect;
-begin
-  if HandleAllocated then
+  procedure UpdateCategory(const Category: TButtonCategory);
+  var
+    R: TRect;
+  begin
+    if HandleAllocated then
     begin
       R := GetCategoryRect(Category);
       InvalidateRect(Handle, R, False);
     end;
-end;
+  end;
 
 var
   ButtonRect: TRect;
   Button: TButtonItem;
 begin
   if FSelectedItem <> Value then
-    begin
-      if FFocusedItem <> Value then
-        UpdateButton(FFocusedItem);
+  begin
+    if FFocusedItem <> Value then
+      UpdateButton(FFocusedItem);
 
-      if (FSelectedItem is TButtonItem) then
-        begin
-          UpdateButton(FSelectedItem);
-          Button := FSelectedItem as TButtonItem;
-          if Button.Category.Collapsed then
-            UpdateCategory(Button.Category)
-        end;
-      if Value <> nil then
-        begin
-          ButtonRect := Value.Bounds;
-          if (Value is TButtonCategory) then
-            AdjustCategoryBounds(TButtonCategory(Value), ButtonRect);
-          ScrollRectIntoView(ButtonRect, False);
-        end;
-      FSelectedItem := Value;
-      if Value <> nil then
-        FFocusedItem := Value;
-      if FSelectedItem <> nil then
-        begin
-          UpdateButton(FSelectedItem);
-          if (FSelectedItem is TButtonItem) then
-            begin
-              Button := FSelectedItem as TButtonItem;
-              if Button.Category.Collapsed then
-                UpdateCategory(Button.Category);
-            end;
-        end;
-      if not(CsDestroying in ComponentState) then
-        DoSelectedItemChanged(FSelectedItem);
+    if (FSelectedItem is TButtonItem) then
+    begin
+      UpdateButton(FSelectedItem);
+      Button := FSelectedItem as TButtonItem;
+      if Button.Category.Collapsed then
+        UpdateCategory(Button.Category)
     end;
+    if Value <> nil then
+    begin
+      ButtonRect := Value.Bounds;
+      if (Value is TButtonCategory) then
+        AdjustCategoryBounds(TButtonCategory(Value), ButtonRect);
+      ScrollRectIntoView(ButtonRect, False);
+    end;
+    FSelectedItem := Value;
+    if Value <> nil then
+      FFocusedItem := Value;
+    if FSelectedItem <> nil then
+    begin
+      UpdateButton(FSelectedItem);
+      if (FSelectedItem is TButtonItem) then
+      begin
+        Button := FSelectedItem as TButtonItem;
+        if Button.Category.Collapsed then
+          UpdateCategory(Button.Category);
+      end;
+    end;
+    if not (CsDestroying in ComponentState) then
+      DoSelectedItemChanged(FSelectedItem);
+  end;
 end;
 
 function TCategoryButtons.GetIndexOfFirstCategory: Integer;
@@ -3232,13 +3267,13 @@ begin
   TopPos := GetScrollOffset;
   { Avoid drawing hidden categories }
   for CatIndex := 0 to FButtonCategories.Count - 1 do
+  begin
+    if FButtonCategories[CatIndex].EndOffset >= TopPos then
     begin
-      if FButtonCategories[CatIndex].EndOffset >= TopPos then
-        begin
-          Result := CatIndex;
-          Exit;
-        end;
+      Result := CatIndex;
+      Exit;
     end;
+  end;
 end;
 
 function TCategoryButtons.GetCategoryAt(X, Y: Integer): TButtonCategory;
@@ -3249,73 +3284,73 @@ begin
   Result := nil;
   { Is it within our X and Y bounds first? }
   if (X >= 0) and (X < Width) and (Y >= 0) and (Y < Height) then
+  begin
+    { It is, so translate the X or Y position to our virtual system }
+    if FButtonFlow = CbfVertical then
+      CurrentPos := Y + GetScrollOffset
+    else
+      CurrentPos := X + GetScrollOffset;
+    { Find out which category this X or Y position would lie in }
+    for I := 0 to FButtonCategories.Count - 1 do
     begin
-      { It is, so translate the X or Y position to our virtual system }
-      if FButtonFlow = CbfVertical then
-        CurrentPos := Y + GetScrollOffset
-      else
-        CurrentPos := X + GetScrollOffset;
-      { Find out which category this X or Y position would lie in }
-      for I := 0 to FButtonCategories.Count - 1 do
-        begin
-          if CurrentPos <= FButtonCategories[I].EndOffset then
-            begin
-              Result := FButtonCategories[I];
-              Break;
-            end;
-        end;
+      if CurrentPos <= FButtonCategories[I].EndOffset then
+      begin
+        Result := FButtonCategories[I];
+        Break;
+      end;
     end;
+  end;
 end;
 
 procedure TCategoryButtons.ScrollRectIntoView(const Rect: TRect; PlaceOnTop: Boolean = False);
 var
   Amount: Integer;
 
-procedure CalcAmount(const ScrollPixels: Integer; AdjustForPartial: Boolean = True);
-begin
-  Amount := ScrollPixels div FScrollSize;
-  if AdjustForPartial and (Abs(ScrollPixels mod FScrollSize) > 3) then
-    Inc(Amount);
-end;
+  procedure CalcAmount(const ScrollPixels: Integer; AdjustForPartial: Boolean = True);
+  begin
+    Amount := ScrollPixels div FScrollSize;
+    if AdjustForPartial and (Abs(ScrollPixels mod FScrollSize) > 3) then
+      Inc(Amount);
+  end;
 
 var
   RectStart, RectEnd, MaxSize: Integer;
 begin
   if FButtonFlow = CbfVertical then
-    begin
-      RectStart := Rect.Top;
-      RectEnd := Rect.Bottom;
-      MaxSize := ClientHeight;
-    end
+  begin
+    RectStart := Rect.Top;
+    RectEnd := Rect.Bottom;
+    MaxSize := ClientHeight;
+  end
   else
-    begin
-      RectStart := Rect.Left;
-      RectEnd := Rect.Right;
-      MaxSize := ClientWidth;
-    end;
+  begin
+    RectStart := Rect.Left;
+    RectEnd := Rect.Right;
+    MaxSize := ClientWidth;
+  end;
 
   if RectStart < 0 then
-    begin
-      // Scrolling down into view
-      CalcAmount(-1 * RectStart);
-      if FScrollBarPos - Amount < 0 then
-        Amount := FScrollBarPos;
-      ScrollPosChanged(ScPosition, FScrollBarPos - Amount);
-    end
+  begin
+    // Scrolling down into view
+    CalcAmount(-1 * RectStart);
+    if FScrollBarPos - Amount < 0 then
+      Amount := FScrollBarPos;
+    ScrollPosChanged(ScPosition, FScrollBarPos - Amount);
+  end
   else if (RectStart > MaxSize) or (RectEnd > MaxSize) then
-    begin
-      // Scrolling up into view
-      if (RectEnd - RectStart > MaxSize) or PlaceOnTop then
-        CalcAmount(RectStart, False) { Put the start into view at the top }
-      else
-        CalcAmount(RectEnd - MaxSize);
-      { Put the whole thing into view at the bottom }
+  begin
+    // Scrolling up into view
+    if (RectEnd - RectStart > MaxSize) or PlaceOnTop then
+      CalcAmount(RectStart, False) { Put the start into view at the top }
+    else
+      CalcAmount(RectEnd - MaxSize);
+    { Put the whole thing into view at the bottom }
 
-      if FScrollBarPos + Amount > FScrollBarMax then
-        ScrollPosChanged(ScPosition, FScrollBarMax)
-      else
-        ScrollPosChanged(ScPosition, FScrollBarPos + Amount);
-    end;
+    if FScrollBarPos + Amount > FScrollBarMax then
+      ScrollPosChanged(ScPosition, FScrollBarMax)
+    else
+      ScrollPosChanged(ScPosition, FScrollBarPos + Amount);
+  end;
 end;
 
 function TCategoryButtons.GetCategoryRect(const Category: TButtonCategory; ButtonOnly: Boolean = False): TRect;
@@ -3336,64 +3371,64 @@ var
 begin
   Result := inherited DoMouseWheelUp(Shift, MousePos);
   if not Result then
+  begin
+    UpdateButton(FHotButton);
+    FHotButton := nil;
+    Result := True;
+    if (FScrollBarMax > 0) and (Shift = []) then
+      ScrollPosChanged(ScLineUp, 0)
+    else if (FScrollBarMax > 0) and (SsCtrl in Shift) then
+      ScrollPosChanged(ScPageUp, 0)
+    else if SsShift in Shift then
     begin
-      UpdateButton(FHotButton);
-      FHotButton := nil;
-      Result := True;
-      if (FScrollBarMax > 0) and (Shift = []) then
-        ScrollPosChanged(ScLineUp, 0)
-      else if (FScrollBarMax > 0) and (SsCtrl in Shift) then
-        ScrollPosChanged(ScPageUp, 0)
-      else if SsShift in Shift then
-        begin
-          NextButton := GetNextButton(SelectedItem, False);
-          if NextButton <> nil then
-            SelectedItem := NextButton;
-        end;
+      NextButton := GetNextButton(SelectedItem, False);
+      if NextButton <> nil then
+        SelectedItem := NextButton;
     end;
+  end;
 end;
 
 function TCategoryButtons.GetNextButton(const StartingItem: TBaseItem; GoForward: Boolean): TBaseItem;
 
-function ProcessCategory(const Category: TButtonCategory): TButtonItem;
-begin
-  if (not Category.Collapsed) and (Category.Items.Count > 0) then
-    if GoForward then
-      Result := Category.Items[0]
-    else
-      Result := Category.Items[Category.Items.Count - 1]
+  function ProcessCategory(const Category: TButtonCategory): TButtonItem;
+  begin
+    if (not Category.Collapsed) and (Category.Items.Count > 0) then
+      if GoForward then
+        Result := Category.Items[0]
+      else
+        Result := Category.Items[Category.Items.Count - 1]
     else
       Result := nil;
-end;
+  end;
 
 var
   I: Integer;
 begin
   if StartingItem <> nil then
+  begin
+    Result := GetNextButtonInGroup(StartingItem, GoForward);
+    if Result = nil then
     begin
-      Result := GetNextButtonInGroup(StartingItem, GoForward);
-      if Result = nil then
+      if GoForward then
+      begin
+        for I := (StartingItem as TButtonItem).Category.index + 1 to FButtonCategories.Count - 1 do
         begin
-          if GoForward then
-            begin
-              for I := (StartingItem as TButtonItem).Category.index + 1 to FButtonCategories.Count - 1 do
-                begin
-                  Result := ProcessCategory(FButtonCategories[I]);
-                  if Result <> nil then
-                    Break;
-                end
-            end
-          else
-            begin
-              for I := (StartingItem as TButtonItem).Category.index - 1 downto 0 do
-                begin
-                  Result := ProcessCategory(FButtonCategories[I]);
-                  if Result <> nil then
-                    Break;
-                end
-            end;
-        end;
-    end
+          Result := ProcessCategory(FButtonCategories[I]);
+          if Result <> nil then
+            Break;
+        end
+      end
+      else
+      begin
+        for I := (StartingItem as TButtonItem).Category.index - 1 downto 0 do
+        begin
+          Result := ProcessCategory(FButtonCategories[I]);
+          if Result <> nil then
+            Break;
+        end
+      end;
+    end;
+  end
   else
     Result := nil;
 end;
@@ -3404,21 +3439,21 @@ var
 begin
   Result := inherited DoMouseWheelDown(Shift, MousePos);
   if not Result then
+  begin
+    UpdateButton(FHotButton);
+    FHotButton := nil;
+    Result := True;
+    if (FScrollBarMax > 0) and (Shift = []) then
+      ScrollPosChanged(ScLineDown, 0)
+    else if (FScrollBarMax > 0) and (SsCtrl in Shift) then
+      ScrollPosChanged(ScPageDown, 0)
+    else if SsShift in Shift then
     begin
-      UpdateButton(FHotButton);
-      FHotButton := nil;
-      Result := True;
-      if (FScrollBarMax > 0) and (Shift = []) then
-        ScrollPosChanged(ScLineDown, 0)
-      else if (FScrollBarMax > 0) and (SsCtrl in Shift) then
-        ScrollPosChanged(ScPageDown, 0)
-      else if SsShift in Shift then
-        begin
-          NextButton := GetNextButton(SelectedItem, True);
-          if NextButton <> nil then
-            SelectedItem := NextButton;
-        end;
+      NextButton := GetNextButton(SelectedItem, True);
+      if NextButton <> nil then
+        SelectedItem := NextButton;
     end;
+  end;
 end;
 
 { procedure TCategoryButtons.DoReorderCategory(const SourceCategory,
@@ -3440,19 +3475,19 @@ end;
 procedure TCategoryButtons.SetFocusedItem(const Value: TBaseItem);
 begin
   if FFocusedItem <> Value then
-    begin
-      FFocusedItem := Value;
-      Invalidate;
-    end;
+  begin
+    FFocusedItem := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.DoSelectedItemChanged(const Item: TBaseItem);
 begin
   if (Item = nil) or (Item is TButtonItem) then
-    begin
-      if Assigned(FOnSelectedButtonChange) then
-        FOnSelectedButtonChange(Self, TButtonItem(Item))
-    end
+  begin
+    if Assigned(FOnSelectedButtonChange) then
+      FOnSelectedButtonChange(Self, TButtonItem(Item))
+  end
   else if Item is TButtonCategory and Assigned(FOnSelectedCategoryChange) then
     FOnSelectedCategoryChange(Self, TButtonCategory(Item))
 end;
@@ -3473,28 +3508,28 @@ end;
 procedure TCategoryButtons.SetHotButtonColor(const Value: TColor);
 begin
   if FHotButtonColor <> Value then
-    begin
-      FHotButtonColor := Value;
-      Invalidate;
-    end;
+  begin
+    FHotButtonColor := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.SetRegularButtonColor(const Value: TColor);
 begin
   if FRegularButtonColor <> Value then
-    begin
-      FRegularButtonColor := Value;
-      Invalidate;
-    end;
+  begin
+    FRegularButtonColor := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.SetSelectedButtonColor(const Value: TColor);
 begin
   if FSelectedButtonColor <> Value then
-    begin
-      FSelectedButtonColor := Value;
-      Invalidate;
-    end;
+  begin
+    FSelectedButtonColor := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.SetButtonFlow(const Value: TCatButtonFlow);
@@ -3502,39 +3537,39 @@ var
   OldFlow: TCatButtonFlow;
 begin
   if FButtonFlow <> Value then
+  begin
+    OldFlow := FButtonFlow;
+    FButtonFlow := Value; { Set the flow }
+    CalcBufferSizes;
+    FScrollBarPos := 0; { Nothing scrolled }
+    { Hide the previous scroll bar, if shown, which will cause a resize }
+    if FScrollBarShown then
     begin
-      OldFlow := FButtonFlow;
-      FButtonFlow := Value; { Set the flow }
-      CalcBufferSizes;
-      FScrollBarPos := 0; { Nothing scrolled }
-      { Hide the previous scroll bar, if shown, which will cause a resize }
-      if FScrollBarShown then
-        begin
-          FScrollBarShown := False;
-          Windows.ShowScrollBar(Handle, CScrollBarKind[OldFlow], False);
-        end
-      else
-        begin
-          { We have to resize }
-          Resize;
-          Invalidate;
-        end;
+      FScrollBarShown := False;
+      Windows.ShowScrollBar(Handle, CScrollBarKind[OldFlow], False);
+    end
+    else
+    begin
+      { We have to resize }
+      Resize;
+      Invalidate;
     end;
+  end;
 end;
 
 procedure TCategoryButtons.SetGradientDirection(const Value: TGradientDirection);
 begin
   if FGradientDirection <> Value then
-    begin
-      FGradientDirection := Value;
-      Invalidate;
-    end;
+  begin
+    FGradientDirection := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.WMKillFocus(var message: TWMKillFocus);
 begin
   inherited;
-  if not(CsDestroying in ComponentState) then
+  if not (CsDestroying in ComponentState) then
     UpdateButton(FFocusedItem);
 end;
 
@@ -3589,19 +3624,19 @@ end;
 procedure TCategoryButtons.SetBackgroundGradientColor(const Value: TColor);
 begin
   if FBackgroundGradientColor <> Value then
-    begin
-      FBackgroundGradientColor := Value;
-      Invalidate;
-    end;
+  begin
+    FBackgroundGradientColor := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TCategoryButtons.SetBackGradientDirection(const Value: TGradientDirection);
 begin
   if FBackGradientDirection <> Value then
-    begin
-      FBackGradientDirection := Value;
-      Invalidate;
-    end;
+  begin
+    FBackGradientDirection := Value;
+    Invalidate;
+  end;
 end;
 
 function TCategoryButtons.GetScrollPos: Integer;
@@ -3612,11 +3647,11 @@ end;
 procedure TCategoryButtons.SetScrollPos(const Value: Integer);
 begin
   if FScrollBarPos <> Value then
-    begin
-      FScrollBarPos := Value;
-      if Categories.UpdateCount = 0 then
-        Resize;
-    end;
+  begin
+    FScrollBarPos := Value;
+    if Categories.UpdateCount = 0 then
+      Resize;
+  end;
 end;
 
 { TBaseItem }
@@ -3670,10 +3705,10 @@ end;
 procedure TBaseItem.SetCaption(const Value: string);
 begin
   if FCaption <> Value then
-    begin
-      FCaption := Value;
-      Changed(False);
-    end;
+  begin
+    FCaption := Value;
+    Changed(False);
+  end;
 end;
 
 function TCategoryButtons.IsEditing: Boolean;
@@ -3694,36 +3729,36 @@ function TCategoryButtons.CanEdit(Item: TBaseItem): Boolean;
 begin
   Result := (Item <> nil);
   if Result then
-    begin
-      SetFocus;
-      Result := Focused;
-    end;
+  begin
+    SetFocus;
+    Result := Focused;
+  end;
   if Result then
-    begin
-      // Buttons need to have visible captions and enough size to do editing
-      if Item is TButtonItem then
-        Result := ([BoFullSize, BoShowCaptions] * ButtonOptions) = [BoFullSize, BoShowCaptions]
+  begin
+    // Buttons need to have visible captions and enough size to do editing
+    if Item is TButtonItem then
+      Result := ([BoFullSize, BoShowCaptions] * ButtonOptions) = [BoFullSize, BoShowCaptions]
         // Categories must be displayed horizontally
-      else if Item is TButtonCategory then
-        Result := not HasVerticalCaption(TButtonCategory(Item));
-      if Result and Assigned(FOnEditing) then
-        FOnEditing(Self, Item, Result);
-    end;
+    else if Item is TButtonCategory then
+      Result := not HasVerticalCaption(TButtonCategory(Item));
+    if Result and Assigned(FOnEditing) then
+      FOnEditing(Self, Item, Result);
+  end;
 end;
 
 function TCategoryButtons.Edit(const Item: TBaseItem): Boolean;
 begin
   Result := IsEditing;
   if not IsEditing and CanEdit(Item) then
-    begin
-      SelectedItem := Item;
-      if not Assigned(FInplaceEdit) then
-        FInplaceEdit := TInplaceEdit.Create(Self)
-      else
-        FInplaceEdit.Show;
-      TInplaceEdit(FInplaceEdit).Initialize(Item, GetInplaceEditBounds(Item), FSelectedButtonColor, Item.Caption);
-      Result := True;
-    end;
+  begin
+    SelectedItem := Item;
+    if not Assigned(FInplaceEdit) then
+      FInplaceEdit := TInplaceEdit.Create(Self)
+    else
+      FInplaceEdit.Show;
+    TInplaceEdit(FInplaceEdit).Initialize(Item, GetInplaceEditBounds(Item), FSelectedButtonColor, Item.Caption);
+    Result := True;
+  end;
 end;
 
 procedure TCategoryButtons.EndEdit(Cancel: Boolean);
@@ -3732,19 +3767,19 @@ var
   NewCaption: string;
 begin
   if IsEditing then
+  begin
+    NewCaption := FInplaceEdit.Text;
+    Item := TInplaceEdit(FInplaceEdit).Item;
+    TInplaceEdit(FInplaceEdit).DeActivate;
+    if not Cancel then
     begin
-      NewCaption := FInplaceEdit.Text;
-      Item := TInplaceEdit(FInplaceEdit).Item;
-      TInplaceEdit(FInplaceEdit).DeActivate;
-      if not Cancel then
-        begin
-          if Assigned(FOnEdited) then
-            FOnEdited(Self, Item, NewCaption);
-          Item.Caption := NewCaption;
-        end
-      else if Assigned(FOnCancelEdit) then
-        FOnCancelEdit(Self, Item);
-    end;
+      if Assigned(FOnEdited) then
+        FOnEdited(Self, Item, NewCaption);
+      Item.Caption := NewCaption;
+    end
+    else if Assigned(FOnCancelEdit) then
+      FOnCancelEdit(Self, Item);
+  end;
 end;
 
 { TBaseButtonItem }
@@ -3766,27 +3801,27 @@ procedure TBaseButtonItem.ActionChange(Sender: TObject; CheckDefaults: Boolean);
 begin
   if Sender is TCustomAction then
     with TCustomAction(Sender) do
-      begin
-        if not CheckDefaults or (Self.Caption = '') then
-          Self.Caption := Caption;
-        if not CheckDefaults or (Self.Hint = '') then
-          Self.Hint := Hint;
-        if not CheckDefaults or (Self.ImageIndex = -1) then
-          Self.ImageIndex := ImageIndex;
-        if not CheckDefaults or not Assigned(Self.OnClick) then
-          Self.OnClick := OnExecute;
-      end;
+    begin
+      if not CheckDefaults or (Self.Caption = '') then
+        Self.Caption := Caption;
+      if not CheckDefaults or (Self.Hint = '') then
+        Self.Hint := Hint;
+      if not CheckDefaults or (Self.ImageIndex = -1) then
+        Self.ImageIndex := ImageIndex;
+      if not CheckDefaults or not Assigned(Self.OnClick) then
+        Self.OnClick := OnExecute;
+    end;
 end;
 
 procedure TBaseButtonItem.Assign(Source: TPersistent);
 begin
   if Source is TBaseButtonItem then
-    begin
-      Caption := TBaseButtonItem(Source).Caption;
-      ImageIndex := TBaseButtonItem(Source).ImageIndex;
-      Hint := TBaseButtonItem(Source).Hint;
-      Data := TBaseButtonItem(Source).Data;
-    end
+  begin
+    Caption := TBaseButtonItem(Source).Caption;
+    ImageIndex := TBaseButtonItem(Source).ImageIndex;
+    Hint := TBaseButtonItem(Source).Hint;
+    Data := TBaseButtonItem(Source).Data;
+  end
   else
     inherited Assign(Source);
 end;
@@ -3845,46 +3880,55 @@ end;
 procedure TBaseButtonItem.SetAction(const Value: TBasicAction);
 begin
   if Value = nil then
-    begin
-      ActionLink.Free;
-      ActionLink := nil;
-    end
+  begin
+    ActionLink.Free;
+    ActionLink := nil;
+  end
   else
-    begin
-      if ActionLink = nil then
-        ActionLink := GetActionLinkClass.Create(Self);
-      ActionLink.Action := Value;
-      ActionLink.OnChange := DoActionChange;
-      ActionChange(Value, CsLoading in Value.ComponentState);
-      Value.FreeNotification(GetNotifyTarget);
-    end;
+  begin
+    if ActionLink = nil then
+      ActionLink := GetActionLinkClass.Create(Self);
+    ActionLink.Action := Value;
+    ActionLink.OnChange := DoActionChange;
+    ActionChange(Value, CsLoading in Value.ComponentState);
+    Value.FreeNotification(GetNotifyTarget);
+  end;
 end;
 
 procedure TBaseButtonItem.SetImageIndex(const Value: TImageIndex);
 begin
   if FImageIndex <> Value then
-    begin
-      FImageIndex := Value;
-      Changed(False);
-    end;
+  begin
+    FImageIndex := Value;
+    Changed(False);
+  end;
 end;
 
 procedure TBaseButtonItem.SetXImageIndex(const Value: TImageIndex);
 begin
   if FXImageIndex <> Value then
-    begin
-      FXImageIndex := Value;
-      Changed(False);
-    end;
+  begin
+    FXImageIndex := Value;
+    Changed(False);
+  end;
 end;
 
 procedure TBaseButtonItem.SetCImageIndex(const Value: TImageIndex);
 begin
   if FCImageIndex <> Value then
-    begin
-      FCImageIndex := Value;
-      Changed(False);
-    end;
+  begin
+    FCImageIndex := Value;
+    Changed(False);
+  end;
+end;
+
+procedure TBaseButtonItem.SetPImageIndex(const Value: TImageIndex);
+begin
+  if FPImageIndex <> Value then
+  begin
+    FPImageIndex := Value;
+    Changed(False);
+  end;
 end;
 
 { TButtonItem }
@@ -3892,10 +3936,10 @@ end;
 procedure TButtonItem.Assign(Source: TPersistent);
 begin
   if Source is TButtonItem then
-    begin
-      inherited Assign(Source);
-      InterfaceData := (Source as TButtonItem).InterfaceData;
-    end
+  begin
+    inherited Assign(Source);
+    InterfaceData := (Source as TButtonItem).InterfaceData;
+  end
   else
     inherited Assign(Source);
 end;
@@ -3956,7 +4000,7 @@ end;
 
 function TButtonCollection.Add: TButtonItem;
 begin
-  Result := ( inherited Add as TButtonItem);
+  Result := (inherited Add as TButtonItem);
 end;
 
 function TButtonCollection.AddItem(Item: TButtonItem; index: Integer): TButtonItem;
@@ -3966,12 +4010,12 @@ begin
   else
     Result := Item;
   if Assigned(Result) then
-    begin
-      Result.Collection := Self;
-      if index < 0 then
-        index := Count - 1;
-      Result.index := index;
-    end;
+  begin
+    Result.Collection := Self;
+    if index < 0 then
+      index := Count - 1;
+    Result.index := index;
+  end;
 end;
 
 function TButtonCollection.GetItem(index: Integer): TButtonItem;
@@ -4045,16 +4089,16 @@ var
   Category: TButtonCategory;
 begin
   if Source is TButtonCategory then
-    begin
-      Category := Source as TButtonCategory;
-      Caption := Category.Caption;
-      Color := Category.Color;
-      GradientColor := Category.GradientColor;
-      TextColor := Category.TextColor;
-      Collapsed := Category.Collapsed;
-      Data := Category.Data;
-      InterfaceData := Category.InterfaceData;
-    end
+  begin
+    Category := Source as TButtonCategory;
+    Caption := Category.Caption;
+    Color := Category.Color;
+    GradientColor := Category.GradientColor;
+    TextColor := Category.TextColor;
+    Collapsed := Category.Collapsed;
+    Data := Category.Data;
+    InterfaceData := Category.InterfaceData;
+  end
   else
     inherited Assign(Source);
 end;
@@ -4089,22 +4133,22 @@ begin
   Result := -1;
   // First attempt a case sensitive match
   for I := 0 to Items.Count - 1 do
+  begin
+    if AnsiSameStr(Items[I].Caption, Caption) then
     begin
-      if AnsiSameStr(Items[I].Caption, Caption) then
-        begin
-          Result := I;
-          Exit;
-        end;
+      Result := I;
+      Exit;
     end;
+  end;
   // Then fallback to case insensitive
   for I := 0 to Items.Count - 1 do
+  begin
+    if AnsiSameText(Items[I].Caption, Caption) then
     begin
-      if AnsiSameText(Items[I].Caption, Caption) then
-        begin
-          Result := I;
-          Exit;
-        end;
+      Result := I;
+      Exit;
     end;
+  end;
 end;
 
 procedure TButtonCategory.ScrollIntoView;
@@ -4115,32 +4159,32 @@ end;
 procedure TButtonCategory.SetCollapsed(const Value: Boolean);
 begin
   if FCollapsed <> Value then
-    begin
-      FCollapsed := Value;
-      Changed(True);
-      if not FCollapsed then
-        ScrollIntoView;
-      if Assigned(Categories.CategoryButtons.OnCategoryCollapase) then
-        Categories.CategoryButtons.OnCategoryCollapase(Categories.CategoryButtons, Self);
-    end;
+  begin
+    FCollapsed := Value;
+    Changed(True);
+    if not FCollapsed then
+      ScrollIntoView;
+    if Assigned(Categories.CategoryButtons.OnCategoryCollapase) then
+      Categories.CategoryButtons.OnCategoryCollapase(Categories.CategoryButtons, Self);
+  end;
 end;
 
 procedure TButtonCategory.SetColor(const Value: TColor);
 begin
   if FColor <> Value then
-    begin
-      FColor := Value;
-      Changed(False);
-    end;
+  begin
+    FColor := Value;
+    Changed(False);
+  end;
 end;
 
 procedure TButtonCategory.SetGradientColor(const Value: TColor);
 begin
   if FGradientColor <> Value then
-    begin
-      FGradientColor := Value;
-      Changed(False);
-    end;
+  begin
+    FGradientColor := Value;
+    Changed(False);
+  end;
 end;
 
 procedure TButtonCategory.SetIndex(Value: Integer);
@@ -4148,16 +4192,16 @@ var
   TargetCategory: TButtonCategory;
 begin
   if Value <> index then
-    begin
-      if index < Categories.Count then
-        TargetCategory := Categories[Value]
-      else
-        TargetCategory := nil;
-      inherited;
-      ScrollIntoView;
-      if Assigned(Categories.CategoryButtons.OnReorderCategory) then
-        Categories.CategoryButtons.OnReorderCategory(Categories.CategoryButtons, Self, TargetCategory);
-    end;
+  begin
+    if index < Categories.Count then
+      TargetCategory := Categories[Value]
+    else
+      TargetCategory := nil;
+    inherited;
+    ScrollIntoView;
+    if Assigned(Categories.CategoryButtons.OnReorderCategory) then
+      Categories.CategoryButtons.OnReorderCategory(Categories.CategoryButtons, Self, TargetCategory);
+  end;
 end;
 
 procedure TButtonCategory.SetItems(const Value: TButtonCollection);
@@ -4168,10 +4212,10 @@ end;
 procedure TButtonCategory.SetTextColor(const Value: TColor);
 begin
   if FTextColor <> Value then
-    begin
-      FTextColor := Value;
-      Changed(False);
-    end;
+  begin
+    FTextColor := Value;
+    Changed(False);
+  end;
 end;
 
 { TButtonCategories }
@@ -4194,12 +4238,12 @@ begin
   else
     Result := Item;
   if Assigned(Result) then
-    begin
-      Result.Collection := Self;
-      if index < 0 then
-        index := Count - 1;
-      Result.index := index;
-    end;
+  begin
+    Result.Collection := Self;
+    if index < 0 then
+      index := Count - 1;
+    Result.index := index;
+  end;
 end;
 
 procedure TButtonCategories.BeginUpdate;
@@ -4228,11 +4272,11 @@ var
 begin
   Result := 0;
   for I := 0 to Count - 1 do
-    begin
-      Inc(Result);
-      if not Items[I].Collapsed then
-        Inc(Result, Items[I].Items.Count);
-    end;
+  begin
+    Inc(Result);
+    if not Items[I].Collapsed then
+      Inc(Result, Items[I].Items.Count);
+  end;
 end;
 
 function TButtonCategories.IndexOf(const Caption: string): Integer;
@@ -4242,22 +4286,22 @@ begin
   Result := -1;
   // First attempt a case sensitive match
   for I := 0 to Count - 1 do
+  begin
+    if AnsiSameStr(Items[I].Caption, Caption) then
     begin
-      if AnsiSameStr(Items[I].Caption, Caption) then
-        begin
-          Result := I;
-          Exit;
-        end;
+      Result := I;
+      Exit;
     end;
+  end;
   // Then fallback to case insensitive
   for I := 0 to Count - 1 do
+  begin
+    if AnsiSameText(Items[I].Caption, Caption) then
     begin
-      if AnsiSameText(Items[I].Caption, Caption) then
-        begin
-          Result := I;
-          Exit;
-        end;
+      Result := I;
+      Exit;
     end;
+  end;
 end;
 
 function TButtonCategories.Insert(index: Integer): TButtonCategory;
@@ -4273,23 +4317,23 @@ begin
   Result := nil;
   ItemCount := -1;
   for I := 0 to Count - 1 do
+  begin
+    Inc(ItemCount);
+    if ItemCount = index then
     begin
-      Inc(ItemCount);
-      if ItemCount = index then
-        begin
-          Result := Items[I];
-          Break;
-        end;
-      if Items[I].Collapsed then
-        Continue
-      else
-        Inc(ItemCount, Items[I].Items.Count);
-      if index <= ItemCount then
-        begin
-          Result := Items[I].Items[index - (ItemCount - Items[I].Items.Count + 1)];
-          Break;
-        end;
+      Result := Items[I];
+      Break;
     end;
+    if Items[I].Collapsed then
+      Continue
+    else
+      Inc(ItemCount, Items[I].Items.Count);
+    if index <= ItemCount then
+    begin
+      Result := Items[I].Items[index - (ItemCount - Items[I].Items.Count + 1)];
+      Break;
+    end;
+  end;
 end;
 
 function TButtonCategories.ItemIndex(const Caption: string): Integer;
@@ -4300,42 +4344,42 @@ begin
   Result := -1;
   // Always look for an item first in the currently selected category
   if CategoryButtons.CurrentCategory <> nil then
+  begin
+    CatBasedIndex := CategoryButtons.CurrentCategory.IndexOf(Caption);
+    if CatBasedIndex <> -1 then
     begin
-      CatBasedIndex := CategoryButtons.CurrentCategory.IndexOf(Caption);
-      if CatBasedIndex <> -1 then
+      Item := CategoryButtons.CurrentCategory.Items[CatBasedIndex];
+      // Need to convert from category based index to absolute index
+      for I := 0 to VisibleCount - 1 do
+      begin
+        if ItemAt(I) = Item then
         begin
-          Item := CategoryButtons.CurrentCategory.Items[CatBasedIndex];
-          // Need to convert from category based index to absolute index
-          for I := 0 to VisibleCount - 1 do
-            begin
-              if ItemAt(I) = Item then
-                begin
-                  Result := I;
-                  Exit;
-                end;
-            end;
+          Result := I;
+          Exit;
         end;
+      end;
     end;
+  end;
   // Next attempt a case sensitive match scanning through all visible items
   for I := 0 to VisibleCount - 1 do
+  begin
+    Item := ItemAt(I);
+    if AnsiSameStr(Item.Caption, Caption) then
     begin
-      Item := ItemAt(I);
-      if AnsiSameStr(Item.Caption, Caption) then
-        begin
-          Result := I;
-          Exit;
-        end;
+      Result := I;
+      Exit;
     end;
+  end;
   // Then fallback to case insensitive
   for I := 0 to VisibleCount - 1 do
+  begin
+    Item := ItemAt(I);
+    if AnsiSameText(Item.Caption, Caption) then
     begin
-      Item := ItemAt(I);
-      if AnsiSameText(Item.Caption, Caption) then
-        begin
-          Result := I;
-          Exit;
-        end;
+      Result := I;
+      Exit;
     end;
+  end;
 end;
 
 procedure TButtonCategories.SetItem(index: Integer; const Value: TButtonCategory);
@@ -4386,7 +4430,7 @@ end;
 function TButtonItemActionLink.IsOnExecuteLinked: Boolean;
 begin
   Result := inherited IsOnExecuteLinked and (((not Assigned(FClient.OnClick)) and (not Assigned(Action.OnExecute))) or (Assigned(FClient.OnClick) and DelegatesEqual(@FClient.OnClick,
-        @Action.OnExecute)));
+    @Action.OnExecute)));
 end;
 
 procedure TButtonItemActionLink.SetCaption(const Value: string);
@@ -4412,6 +4456,8 @@ begin
     FClient.XImageIndex := Value;
   if IsImageIndexLinked then
     FClient.CImageIndex := Value;
+  if IsImageIndexLinked then
+    FClient.PImageIndex := Value;
 end;
 
 procedure TButtonItemActionLink.SetOnExecute(Value: TNotifyEvent);
@@ -4432,3 +4478,4 @@ end;
 {$IFEND}
 
 end.
+
