@@ -132,7 +132,7 @@ const
     (Cap_HEX: '536D6170657220'; Client_Name: 'Smaper'; Client_Icon: 200), // 33
     (Cap_HEX: '563FC8090B6F41514950202020202021'; Client_Name: 'QIP PDA (Windows)'; Client_Icon: 99), // 34
     (Cap_HEX: '563FC8090B6F41514950202020202022'; Client_Name: 'QIP Mobile (Java)'; Client_Icon: 99), // 35
-    (Cap_HEX: '563FC8090B6F41514950203230303561'; Client_Name: 'QIP 2005'; Client_Icon: 103), // 36
+    (Cap_HEX: '563FC8090B6F41514950203230303561'; Client_Name: 'QIP 2005'; Client_Icon: 211), // 36
     (Cap_HEX: '566D49435120'; Client_Name: 'VmICQ'; Client_Icon: 197), // 37
     (Cap_HEX: '59617070'; Client_Name: 'Yapp'; Client_Icon: 201), // 38
     (Cap_HEX: '626179616E494351'; Client_Name: 'BayanICQ'; Client_Icon: 202), // 39
@@ -333,7 +333,7 @@ const
 
   // Расшифровка пакетов для лога
   ICQ_Pkt_Names:
-    packed array[0..49] of record Pkt_Code: Integer;
+    packed array[0..54] of record Pkt_Code: Integer;
     Pkt_Name:
     string;
   end
@@ -386,7 +386,12 @@ const
     (Pkt_Code: $1308; Pkt_Name: 'SSI_ADD'), // 46
     (Pkt_Code: $0414; Pkt_Name: 'TYPING_NOTIFICATION'), // 47
     (Pkt_Code: $1314; Pkt_Name: 'SSI_AUTH_GRANT'), // 48
-    (Pkt_Code: $003C; Pkt_Name: 'CLI_PING')); // 49
+    (Pkt_Code: $003C; Pkt_Name: 'CLI_PING'), // 49
+    (Pkt_Code: $0121; Pkt_Name: 'SRV_EXT_STATUS'), // 50
+    (Pkt_Code: $0B02; Pkt_Name: 'SRV_SET_REPORT_INTERVAL'), // 51
+    (Pkt_Code: $0417; Pkt_Name: 'SRV_AIM_MESSAGING'), // 52
+    (Pkt_Code: $130E; Pkt_Name: 'SRV_SSI_MOD_ACK'), // 53
+    (Pkt_Code: $1503; Pkt_Name: 'SRV_META_REPLY')); // 54
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -505,7 +510,6 @@ procedure ICQ_UserSentTyping_0414(PktData: string);
 procedure ICQ_SRV_MSGACK_ADVANCED(PktData: string; ClientOk: Boolean);
 // procedure ICQ_Send_SMS(CNumber, Smstext: string);
 function ICQ_StatusCode2String(StatusCode: string): string;
-function ICQ_ClientCap2String(ClientCap: string): string;
 procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language, PageIndex: Integer; OnlineOnly: Boolean);
 procedure ICQ_GetAvatarBosServer;
 procedure ICQ_Parse_0105(PktData: string);
@@ -750,55 +754,6 @@ begin
   // Отправляем пакет
   ICQ_ReqInfo_UIN := EmptyStr;
   ICQ_SendPkt('2', Pkt);
-end;
-
-{$ENDREGION}
-{$REGION 'ICQ_ClientCap2String'}
-
-function ICQ_ClientCap2String(ClientCap: string): string;
-begin
-  Result := 'Unknown ICQ';
-  {// Определяем клиент по капабилитисам
-  if Pos(CAP_IMADERING, ClientCap) > 0 then
-    Result := 'IMadering'
-  else if Pos(CAP_QIP, ClientCap) > 0 then
-    Result := 'QIP 2005'
-  else if Pos('MirandaM', Hex2Text(ClientCap)) > 0 then
-    Result := 'Miranda'
-  else if Pos('&RQinside', Hex2Text(ClientCap)) > 0 then
-    Result := '&RQ'
-  else if Pos('Smaper', Hex2Text(ClientCap)) > 0 then
-    Result := 'Smaper'
-  else if Pos(CAP_RNQ, ClientCap) > 0 then
-    Result := 'R&Q'
-  else if Pos(CAP_MACICQ, ClientCap) > 0 then
-    Result := 'MacICQ'
-  else if Pos(CAP_KXICQ, ClientCap) > 0 then
-    Result := 'KXICQ'
-  else if Pos(CAP_PUSH2TALK, ClientCap) > 0 then
-    Result := 'ICQ 5.1'
-  else if Pos(CAP_ICQLITE, ClientCap) > 0 then
-    Result := 'ICQ Lite'
-  else if Pos(CAP_NETVIGATOR, ClientCap) > 0 then
-    Result := 'Netvigator'
-  else if Pos(CAP_IMPLUS, ClientCap) > 0 then
-    Result := 'IM +'
-  else if Pos('Jimm', Hex2Text(ClientCap)) > 0 then
-    Result := 'Jimm'
-  else if Pos('Kopete', Hex2Text(ClientCap)) > 0 then
-    Result := 'Kopete'
-  else if Pos('Licq client', Hex2Text(ClientCap)) > 0 then
-    Result := 'LICQ'
-  else if Pos('mChat icq', Hex2Text(ClientCap)) > 0 then
-    Result := 'mChat'
-  else if Pos(CAP_RAMBLER_RU, ClientCap) > 0 then
-    Result := 'Rambler ICQ'
-  else if Pos('SIM client', Hex2Text(ClientCap)) > 0 then
-    Result := 'SIM'
-  else if Pos(CAP_TRILL_CRYPT, ClientCap) > 0 then
-    Result := 'Trillian'
-  else if Pos(CAP_QIP_INFIUM, ClientCap) > 0 then
-    Result := 'QIP Infium';}
 end;
 
 {$ENDREGION}
@@ -2038,15 +1993,16 @@ var
   Auth, EndSearch, WebAware: Boolean;
   Date64: Int64;
   SDate64: TDateTime absolute Date64;
-  TLV, SubPkt, LastUpdateInfo, ACountry: string;
-  RosterItem: TListItem;
+  TLV, SubPkt, LastUpdateInfo, ACountry, S_Log, PTLV: string;
   CLContact: TButtonItem;
   ChatPage: TToolButton;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
+  Get_Node: TJvSimpleXmlElem;
 begin
   // Сканируем тело пакета на нужные нам TLV
-  case HexToInt(Text2Hex(NextData(PktData, 2))) of
+  PTLV := Text2Hex(NextData(PktData, 2));
+  case HexToInt(PTLV) of
     $AA00: // Пароль на учётную запись успешно изменён
       begin
         if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
@@ -2086,11 +2042,10 @@ begin
           ICQ_NotifyAddSearchResults(EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, 0, 0, False, EndSearch);
           Exit;
         end;
-        //XLog(C_Icq + Log_Get + Log_Contact_Info, C_Icq);
         // Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := Pos(#$00#$32#$00, PktData);
         if BMRes > 0 then
-          XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(NextData(PktData, BMRes - 1))), C_Icq)
+          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, BMRes - 1)) + C_RN
         else
           Exit;
         // Сбрасываем все переменные
@@ -2128,36 +2083,43 @@ begin
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UIN := NextData(PktData, MsgLen);
+                S_Log := S_Log + C_Login + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UIN + C_RN;
               end;
             $0050: // Получаем Email
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Email := Trim(Utf8ToString(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Email + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email + C_RN;
               end;
             $0064: // Получаем Имя
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 First := Trim(Utf8ToString(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_First + C_Name + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + First + C_RN;
               end;
             $006E: // Получаем Фамилию
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Last := Trim(Utf8ToString(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Last + C_Name + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Last + C_RN;
               end;
             $0078: // Получаем Ник
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Nick := Trim(Utf8ToString(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Nick + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Nick + C_RN;
               end;
             $0082: // Получаем Пол
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Gender := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Gender + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Gender) + C_RN;
               end;
             $0190: // Получаем Статус
               begin
                 NextData(PktData, 3);
                 SStatus := HexToInt(Text2Hex(NextData(PktData, 1)));
+                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(SStatus) + C_RN;
               end;
             $01A4: // Получаем Дату рождения в 64 битном формате
               begin
@@ -2171,6 +2133,7 @@ begin
                   // Разбираем дату на день - месяц - год
                   DecodeDate(SDate64, IYear, IMonth, IDay);
                 end;
+                S_Log := S_Log + C_Age + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Age) + C_RN;
               end;
             $0096: // Получаем суб TLV с инфой о месте жительства
               begin
@@ -2180,6 +2143,7 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
+                  S_Log := S_Log + C_MaskPass + C_BN + C_HomeInfo + C_BN + C_MaskPass + C_RN;
                   // Пропускаем данные
                   NextData(SubPkt, 4);
                   // Сканируем на нужные нам TLV
@@ -2191,89 +2155,104 @@ begin
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Country := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Country + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Country) + C_RN;
                         end;
                       $0078: // Получаем Штат
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           State := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_State + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + State + C_RN;
                         end;
                       $006E: // Получаем Город
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           City := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_City + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + City + C_RN;
                         end;
                       $0064: // Получаем Адрес
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Address := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Address + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Address + C_RN;
                         end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                        XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen))), C_Icq);
+                        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, MsgLen)) + C_RN;
                       end;
                     end;
                   end;
+                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
-                  // Пропускаем пустые данные
-                else
+                else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
               end;
             $00AA: // Получаем Язык 1
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Lang1 := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Lang + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Lang1) + C_RN;
               end;
             $00B4: // Получаем Язык 2
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Lang2 := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Lang + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Lang2) + C_RN;
               end;
             $00BE: // Получаем Язык 3
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Lang3 := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Lang + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Lang3) + C_RN;
               end;
             $012C: // Получаем статус Брака (холост, женат и т.д.)
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Marital := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Marital + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Marital) + C_RN;
               end;
             $0140: // Получаем количество Детей
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Children := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Children + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Children) + C_RN;
               end;
             $014A: // Получаем Религию
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Relig := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Relig + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Relig) + C_RN;
               end;
             $0154: // Получаем Сексуальную ориентацию
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Sexual := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Sexual + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Sexual) + C_RN;
               end;
             $015E: // Получаем Курительный статус
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Smok := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Smok + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Smok) + C_RN;
               end;
             $0168: // Получаем Рост
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Height := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Height + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Height) + C_RN;
               end;
             $0172: // Получаем Цвет волос
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Hair := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_Hair + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Hair) + C_RN;
               end;
             $0186: // Получаем "О себе..."
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 About := Trim(Utf8ToString(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_AboutInfo + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + About + C_RN;
               end;
             $00A0: // Получаем суб TLV о месте рождения
               begin
@@ -2282,6 +2261,7 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
+                  S_Log := S_Log + C_MaskPass + C_BN + C_OHomeInfo + C_BN + C_MaskPass + C_RN;
                   // Пропускаем данные
                   NextData(SubPkt, 4);
                   // Сканируем на нужные TLV
@@ -2293,28 +2273,31 @@ begin
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           OCountry := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Country + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(OCountry) + C_RN;
                         end;
                       $0078: // Получаем Штат
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           OState := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_State + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + OState + C_RN;
                         end;
                       $006E: // Получаем Город
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           OCity := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_City + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + OCity + C_RN;
                         end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                        XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen))), C_Icq);
+                        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, MsgLen)) + C_RN;
                       end;
                     end;
                   end;
+                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
-                  // Пропускаем пустые данные
-                else
+                else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
               end;
             $0118: // Получаем суб TLV о месте работы
@@ -2324,6 +2307,7 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
+                  S_Log := S_Log + C_MaskPass + C_BN + C_WorkInfo + C_BN + C_MaskPass + C_RN;
                   // Пропускаем данные
                   NextData(SubPkt, 4);
                   // Сканируем на нужные TLV
@@ -2335,63 +2319,73 @@ begin
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WCountry := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Country + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(WCountry) + C_RN;
                         end;
                       $00C8: // Получаем Зип
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WZip := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Zip + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WZip + C_RN;
                         end;
                       $00BE: // Получаем Штат
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WState := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_State + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WState + C_RN;
                         end;
                       $00B4: // Получаем Город
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WCity := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_City + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WCity + C_RN;
                         end;
                       $00AA: // Получаем Адрес
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WAddress := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Address + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WAddress + C_RN;
                         end;
                       $0082: // Получаем Профессию
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Occupation := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Occup + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Occupation) + C_RN;
                         end;
                       $0078: // Получаем Сайт
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WSite := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Site + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WSite + C_RN;
                         end;
                       $007D: // Получаем Отдел
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Department := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Dep + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Department + C_RN;
                         end;
                       $006E: // Получаем Компанию
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Company := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Corp + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Company + C_RN;
                         end;
                       $0064: // Получаем Позицию
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Position := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Prof + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Position + C_RN;
                         end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                        XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(SubPkt, MsgLen))), C_Icq);
+                        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, MsgLen)) + C_RN;
                       end;
                     end;
                   end;
+                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
-                  // Пропускаем пустые данные
-                else
+                else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
               end;
             $008C: // Получаем суб TLV с Email ящиками
@@ -2401,23 +2395,35 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
+                  S_Log := S_Log + C_MaskPass + C_BN + C_EmailsInfo + C_SS + C_BN + C_MaskPass + C_RN;
                   // В цикле смотрим сколько ящиков указано
                   for I := 1 to HexToInt(Text2Hex(NextData(SubPkt, 2))) do
                   begin
                     NextData(SubPkt, 4); // Пропускаем данные
                     MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                    if I = 1 then
-                      Email1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                    if I = 2 then
-                      Email2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                    if I = 3 then
-                      Email3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                    case I of
+                      1:
+                        begin
+                          Email1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Email + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email1 + C_RN;
+                        end;
+                      2:
+                        begin
+                          Email2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Email + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email2 + C_RN;
+                        end;
+                      3:
+                        begin
+                          Email3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Email + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email3 + C_RN;
+                        end;
+                    end;
                     // Пропускаем какие-то данные
-                    XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(NextData(SubPkt, 12))), C_Icq);
+                    S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, 12)) + C_RN;
                   end;
+                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
-                  // Пропускаем пустые данные
-                else
+                else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
               end;
             $0122: // Получаем суб TLV c Интересами
@@ -2427,39 +2433,46 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
+                  S_Log := S_Log + C_MaskPass + C_BN + C_IntInfo + C_BN + C_MaskPass + C_RN;
                   // Смотрим в цикле сколько указано интересов
                   for I := 1 to HexToInt(Text2Hex(NextData(SubPkt, 2))) do
                   begin
                     NextData(SubPkt, 4);
                     MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                    if I = 1 then
-                    begin
-                      Int1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                      NextData(SubPkt, 4);
-                      I1 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                    end;
-                    if I = 2 then
-                    begin
-                      Int2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                      NextData(SubPkt, 4);
-                      I2 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                    end;
-                    if I = 3 then
-                    begin
-                      Int3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                      NextData(SubPkt, 4);
-                      I3 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                    end;
-                    if I = 4 then
-                    begin
-                      Int4 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                      NextData(SubPkt, 4);
-                      I4 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
+                    case I of
+                      1:
+                        begin
+                          Int1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          NextData(SubPkt, 4);
+                          I1 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
+                          S_Log := S_Log + C_IntInfo + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int1 + C_BN + C_QN + IntToStr(I1) + C_EN + C_RN;
+                        end;
+                      2:
+                        begin
+                          Int2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          NextData(SubPkt, 4);
+                          I2 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
+                          S_Log := S_Log + C_IntInfo + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int2 + C_BN + C_QN + IntToStr(I2) + C_EN + C_RN;
+                        end;
+                      3:
+                        begin
+                          Int3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          NextData(SubPkt, 4);
+                          I3 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
+                          S_Log := S_Log + C_IntInfo + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int3 + C_BN + C_QN + IntToStr(I3) + C_EN + C_RN;
+                        end;
+                      4:
+                        begin
+                          Int4 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          NextData(SubPkt, 4);
+                          I4 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
+                          S_Log := S_Log + C_IntInfo + '4' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int4 + C_BN + C_QN + IntToStr(I4) + C_EN + C_RN;
+                        end;
                     end;
                   end;
+                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
-                  // Пропускаем пустые данные
-                else
+                else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
               end;
             $00C8: // Получаем суб TLV с телефонами
@@ -2469,45 +2482,171 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
+                  S_Log := S_Log + C_MaskPass + C_BN + C_PhoneInfo + C_BN + C_MaskPass + C_RN;
                   // В цикле смотрим сколько указано телефонов
                   for I := 1 to HexToInt(Text2Hex(NextData(SubPkt, 2))) do
                   begin
                     NextData(SubPkt, 4);
                     MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                    if I = 1 then
-                      Phone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                    if I = 2 then
-                      Fax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                    if I = 3 then
-                      Cellular := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                    if I = 4 then
-                      WPhone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                    if I = 5 then
-                      WFax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                    case I of
+                      1:
+                        begin
+                          Phone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Phone + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Phone + C_RN;
+                        end;
+                      2:
+                        begin
+                          Fax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Phone + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Fax + C_RN;
+                        end;
+                      3:
+                        begin
+                          Cellular := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Phone + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Cellular + C_RN;
+                        end;
+                      4:
+                        begin
+                          WPhone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Phone + '4' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WPhone + C_RN;
+                        end;
+                      5:
+                        begin
+                          WFax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                          S_Log := S_Log + C_Phone + '5' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WFax + C_RN;
+                        end;
+                    end;
                     // Пропускаем какие-то данные
-                    XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + Trim(Dump(NextData(SubPkt, 6))), C_Icq);
+                    S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, 6)) + C_RN;
                   end;
+                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
-                  // Пропускаем пустые данные
-                else
+                else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
               end;
             $00FA: // Получаем Домашнюю страничку
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 HomePage := Trim(Utf8ToString(NextData(PktData, MsgLen)));
+                S_Log := S_Log + C_HomePage + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + HomePage + C_RN;
+              end;
+            $0046:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Registered' + C_BN + C_Name + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
+              end;
+            $0055:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Pending' + C_BN + C_Email + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
+              end;
+            $003C:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Private Key' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $024E:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Validated' + C_BN + 'Mobile' + C_BN + C_Phone + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
+              end;
+            $0226:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'MyLine' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
+              end;
+            $021C:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'BetaFlag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01FE:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Looking For' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01F9:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Privacy Level' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01F4:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Exposure Level' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01EA:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Allow Promotion' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01E0:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Service Flag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01D6:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Account Type' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01C2:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Local Language' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(HexToInt(Text2Hex(NextData(PktData, MsgLen)))) + C_RN;
+              end;
+            $01B8:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'HasPhoto' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $01AE:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'PartnerIDs' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
+              end;
+            $017C:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'TimeZone' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $0136:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Anniversary' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $0124:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Interests Background' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $0123:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Interests Group' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $010E:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Studies' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              end;
+            $0104:
+              begin
+                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                S_Log := S_Log + 'Education Level' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
               end;
             $0212: // Получаем ВебАваре флаг
               begin
                 NextData(PktData, 2);
                 if HexToInt(Text2Hex(NextData(PktData, 1))) = $01 then
                   WebAware := True;
+                S_Log := S_Log + C_WebAware + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + BoolToStr(WebAware) + C_RN;
               end;
             $019A: // Получаем флаг авторизации
               begin
                 NextData(PktData, 3);
                 if HexToInt(Text2Hex(NextData(PktData, 1))) = $00 then
                   Auth := True;
+                S_Log := S_Log + C_Auth + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + BoolToStr(Auth) + C_RN;
               end;
             $01CC: // Получаем Время последнего изменения инфы
               begin
@@ -2517,13 +2656,14 @@ begin
                 begin
                   SDate64 := SDate64 + (48 * С_Hour);
                   LastUpdateInfo := DateTimeToStr(SDate64);
+                  S_Log := S_Log + C_LastChange + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + LastUpdateInfo + C_RN;
                 end;
               end
           else
             begin
               // Если пакет содержит другие TLV, то пропускаем их
               MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-              XLog(C_Icq + Log_Parsing + Log_Unk_Data + C_RN + 'TLV: ' + TLV + ' Value: ' + Trim(Dump(NextData(PktData, MsgLen))), C_Icq);
+              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
             end;
           end;
         end;
@@ -2539,10 +2679,9 @@ begin
             if (Nick > EmptyStr) and (Nick <> UIN) then
             begin
               // Если такого контакта ещё нет в списке ников, то добавляем его ник
-              if V_AccountToNick.IndexOf(C_Icq + C_BN + UIN) = -1 then
+              if SearchNickInCash(C_Icq, UIN) = UIN then
               begin
-                V_AccountToNick.Add(C_Icq + C_BN + UIN);
-                V_AccountToNick.Add(Nick);
+                V_AccountToNick.Add(C_Icq + C_BN + UrlEncode(UIN) + C_LN + UrlEncode(Nick));
                 V_AccountToNick.SaveToFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
               end;
             end;
@@ -2573,7 +2712,7 @@ begin
           end;
           // Сохраняем полученные данные в локальный файл инфы о контакте
           // Инициализируем XML
-          JvXML_Create(JvXML);
+          (*JvXML_Create(JvXML);
           try
             with JvXML do
             begin
@@ -2669,7 +2808,7 @@ begin
             end;
           finally
             JvXML.Free;
-          end;
+          end;*)
           // Отображаем в окне информации о контакте полученные данные
           if Assigned(IcqContactInfoForm) then
           begin
@@ -2712,7 +2851,12 @@ begin
           ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), StrArrayToStr([Email, Email1, Email2, Email3]), ACountry, City, Gender, SStatus, Auth, True);
         end;
       end;
+  else
+    S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + PTLV;
   end;
+  // Пишем в лог данные пакета
+  if S_Log <> EmptyStr then
+    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[54].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3701,10 +3845,10 @@ begin
   // Если это была проверка статуса то выводим сообщение
   if CheckStatus then
   begin
-    if Status <> 'FFFFFFFF' then
+    {if Status <> 'FFFFFFFF' then
       ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), ICQ_ClientCap2String(Caps), 0)
     else
-      ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), EmptyStr, 2);
+      ICQ_NotifyUserStatus(UIN, ICQ_StatusCode2String(Status), EmptyStr, 2);}
   end
   else
   begin

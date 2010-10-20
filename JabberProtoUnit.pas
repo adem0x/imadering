@@ -35,7 +35,6 @@ uses
 
 {$ENDREGION}
 {$REGION 'Const'}
-
 const
   J_RootNode = '<root>%s</root>';
   Iq_TypeSet = '<iq type=''set'' id=''imadering_%d''>';
@@ -55,6 +54,63 @@ const
   J_PlainMechanism = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''PLAIN''>%s</auth>';
   J_MD5Mechanism = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>';
   J_ChallengeOK = '<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>';
+
+{$ENDREGION}
+{$REGION 'Jabber_Client_Icons'}
+  J_Client_Icons:
+    packed array[0..48] of record
+    Client_Caps: string;
+    Client_Name: string;
+    Client_Img: string;
+  end = ((Client_Caps: 'http://qip.ru/caps'; Client_Name: 'QIP'; Client_Img: '103'), // 0
+    (Client_Caps: 'http://pda.qip.ru/caps'; Client_Name: 'QIP PDA'; Client_Img: '99'), // 1
+    (Client_Caps: 'http://miranda-im.org/caps'; Client_Name: 'Miranda'; Client_Img: '98'), // 2
+    (Client_Caps: 'http://gajim.org'; Client_Name: 'Gajim'; Client_Img: '-1'), // 3
+    (Client_Caps: 'http://tkabber.jabber.ru/'; Client_Name: 'Tkabber'; Client_Img: '-1'), // 4
+    (Client_Caps: 'http://psi-im.org/caps'; Client_Name: 'Psi'; Client_Img: '-1'), // 5
+    (Client_Caps: 'http://psi-dev.googlecode.com/caps'; Client_Name: 'Psi Dev'; Client_Img: '-1'), // 6
+    (Client_Caps: 'http://pidgin.im/caps'; Client_Name: 'Pidgin'; Client_Img: '-1'), // 7
+    (Client_Caps: 'http://pidgin.im/caps'; Client_Name: 'Adium'; Client_Img: '-1'), // 8
+    (Client_Caps: 'http://pidgin.im/'; Client_Name: 'Pidgin'; Client_Img: '-1'), // 9
+    (Client_Caps: 'http://www.google.com/xmpp/client/caps'; Client_Name: 'Talkonaut'; Client_Img: '90'), // 10
+    (Client_Caps: 'http://online.yandex.ru/caps'; Client_Name: 'Я Онлайн'; Client_Img: '-1'), // 11
+    (Client_Caps: 'http://qutim.org'; Client_Name: 'qutIM'; Client_Img: '104'), // 12
+    (Client_Caps: 'http://www.barobin.com/caps'; Client_Name: 'BayanICQ'; Client_Img: '202'), // 13
+    (Client_Caps: 'http://bombusmod.net.ru/caps'; Client_Name: 'Bombus'; Client_Img: '212'), // 14
+    (Client_Caps: 'http://bombus-im.org/java'; Client_Name: 'Bombus'; Client_Img: '212'), // 15
+    (Client_Caps: 'http://bombus-im.org/ng'; Client_Name: 'Bombus'; Client_Img: '212'), // 16
+    (Client_Caps: 'http://voffk.org.ru/bombus'; Client_Name: 'Bombus'; Client_Img: '212'), // 17
+    (Client_Caps: 'http://bombusmod-qd.wen.ru/caps'; Client_Name: 'Bombus'; Client_Img: '212'), // 18
+    (Client_Caps: 'http://bombus.pl/caps'; Client_Name: 'Bombus'; Client_Img: '212'), // 19
+    (Client_Caps: 'http://exodus.jabberstudio.org/caps'; Client_Name: 'Exodus'; Client_Img: '-1'), // 20
+    (Client_Caps: 'http://gaim.sf.net/caps'; Client_Name: 'Gaim'; Client_Img: '-1'), // 21
+    (Client_Caps: 'http://www.google.com/xmpp/client/caps'; Client_Name: 'GTalk'; Client_Img: '-1'), // 22
+    (Client_Caps: 'http://mail.google.com/xmpp/client/caps'; Client_Name: 'GMail'; Client_Img: '-1'), // 23
+    (Client_Caps: 'http://talk.google.com/xmpp/bot/caps'; Client_Name: 'GMail'; Client_Img: '-1'), // 24
+    (Client_Caps: 'http://www.apple.com/ichat/caps'; Client_Name: 'iChat'; Client_Img: '-1'), // 25
+    (Client_Caps: 'http://dev.jabbim.cz/jabbim/caps'; Client_Name: 'JabbIM'; Client_Img: '-1'), // 26
+    (Client_Caps: 'http://jajc.jrudevels.org/caps'; Client_Name: 'JAJC'; Client_Img: '-1'), // 27
+    (Client_Caps: 'http://kopete.kde.org/jabber/caps'; Client_Name: 'Kopete'; Client_Img: '-1'), // 28
+    (Client_Caps: 'http://mcabber.lilotux.net/caps'; Client_Name: 'Mcabber'; Client_Img: '-1'), // 29
+    (Client_Caps: 'http://mcabber.com/caps'; Client_Name: 'Mcabber'; Client_Img: '-1'), // 30
+    (Client_Caps: 'http://coccinella.sourceforge.net/protocol/caps'; Client_Name: 'Coccinella'; Client_Img: '-1'), // 31
+    (Client_Caps: 'http://mchat.mgslab.com/'; Client_Name: 'mChat'; Client_Img: '200'), // 32
+    (Client_Caps: 'nimbuzz:caps'; Client_Name: 'Nimbuzz'; Client_Img: '209'), // 33
+    (Client_Caps: 'http://palringo.com/caps'; Client_Name: 'Palringo'; Client_Img: '-1'), // 34
+    (Client_Caps: 'http://bitlbee.org/xmpp/caps'; Client_Name: 'Bitlbee'; Client_Img: '-1'), // 35
+    (Client_Caps: 'Digsby'; Client_Name: 'Digsby'; Client_Img: '-1'), // 36
+    (Client_Caps: 'http://trillian.im/caps'; Client_Name: 'Trillian'; Client_Img: '206'), // 37
+    (Client_Caps: 'MobileAgent'; Client_Name: 'Mail.ru Agent'; Client_Img: '105'), // 38
+    (Client_Caps: 'Slick'; Client_Name: 'Slick'; Client_Img: '-1'), // 39
+    (Client_Caps: 'Siemens Native Jabber Client'; Client_Name: 'Siemens Jabber Client'; Client_Img: '-1'), // 40
+    (Client_Caps: 'http://jimm.net.ru/caps'; Client_Name: 'Jimm'; Client_Img: '102'), // 41
+    (Client_Caps: 'YandexMail'; Client_Name: 'Я Онлайн'; Client_Img: '-1'), // 42
+    (Client_Caps: 'http://pandion.im/'; Client_Name: 'Pandion'; Client_Img: '-1'), // 43
+    (Client_Caps: 'Virtus'; Client_Name: 'Virtus'; Client_Img: '-1'), // 44
+    (Client_Caps: 'Mblogi.qip.ru'; Client_Name: 'Blogi QIP'; Client_Img: '-1'), // 45
+    (Client_Caps: 'http://juick.com/caps'; Client_Name: 'Juick'; Client_Img: '-1'), // 46
+    (Client_Caps: 'http://dev.jabbim.cz/jdisk/'; Client_Name: 'Jdisk'; Client_Img: '-1'), // 47
+    (Client_Caps: 'http://vacuum-im.googlecode.com'; Client_Name: 'Vacuum IM'; Client_Img: '-1')); // 48
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -496,62 +552,57 @@ end;
 
 procedure Jab_ParsePresence(PktData: TJvSimpleXmlElem);
 var
-  PJID: string;
-  RosterItem: TListItem;
-  JvXML: TJvSimpleXml;
+  V: Integer;
+  PJID, KStatus, KClient_Icon, KClient_Name, KLogin, KResurs: string;
+  XML_Node, Get_Node: TJvSimpleXmlElem;
 begin
-  (*// Инициализируем XML
-  JvXML_Create(JvXML);
-  try
-    // Загружаем xml данные
-    JvXML_LoadStr(JvXML, PktData);
-    with JvXML do
+  PJID := WideLowerCase(PktData.Properties.Value('from'));
+  if PJID <> EmptyStr then
+  begin
+    // Отделяем ресурс
+    if Pos(C_FS, PJID) > 0 then
     begin
-      if Root <> nil then
+      KLogin := Parse(C_FS, PJID, 1);
+      KResurs := Parse(C_FS, PJID, 2);
+    end
+    else
+      KLogin := PJID;
+    // Оффлайн статус или нет
+    KStatus := '28';
+    if WideLowerCase(PktData.Properties.Value(C_Type)) = 'unavailable' then
+      KStatus := '30';
+    // Определяем клиент
+    KClient_Name := EmptyStr;
+    KClient_Icon := '-1';
+    XML_Node := PktData.Items.ItemNamed[C_CS];
+    if XML_Node <> nil then
+    begin
+      KClient_Name := XML_Node.Properties.Value('node');
+      for V := Low(J_Client_Icons) to High(J_Client_Icons) do
       begin
-        PJID := Root.Properties.Value('from');
-        if PJID <> EmptyStr then
+        if Pos(J_Client_Icons[V].Client_Caps, KClient_Name) > 0 then
         begin
-          // Отделяем ресурс
-          if Pos('/', PJID) > 0 then
-            PJID := Parse('/', PJID, 1);
-          // Ищем эту запись в Ростере
-          {RosterItem := RosterForm.ReqRosterItem(PJID);
-          if RosterItem <> nil then
-            begin
-              // Выставляем параметры этой записи
-              with RosterItem do
-                begin
-                  if Root.Properties.Value('type') = 'unavailable' then
-                    begin
-                      SubItems[18] := '0';
-                      if (SubItems[6] <> '30') and (SubItems[6] <> '41') and (SubItems[6] <> '42') then
-                        SubItems[19] := '20'
-                      else
-                        SubItems[19] := '0';
-                      SubItems[6] := '30';
-                    end
-                  else
-                    begin
-                      if SubItems[6] = '30' then
-                        SubItems[18] := '20'
-                      else
-                        SubItems[18] := '0';
-                      SubItems[19] := '0';
-                      SubItems[6] := '28';
-                    end;
-                  // Запускаем таймер задержку событий Ростера
-                  MainForm.JvTimerList.Events[11].Enabled := False;
-                  MainForm.JvTimerList.Events[11].Enabled := True;
-                end;
-            end;}
+          KClient_Name := J_Client_Icons[V].Client_Name;
+          KClient_Icon := J_Client_Icons[V].Client_Img;
+          Break;
         end;
-
       end;
     end;
-  finally
-    JvXML.Free;
-  end;*)
+    // Обновляем параметры этого контакта в Ростере
+    Get_Node := RosterGetItem(C_Jabber, C_Contact + C_SS, C_Login, URLEncode(KLogin));
+    if Get_Node <> nil then
+    begin
+      RosterUpdateProp(Get_Node, C_Status, KStatus);
+      //RosterUpdateProp(Get_Node, C_XStatus + C_Name, XStatusCode);
+      //RosterUpdateProp(Get_Node, C_XStatus, KXStatus);
+      //RosterUpdateProp(Get_Node, C_XText, URLEncode(XStatusText));
+      RosterUpdateProp(Get_Node, C_Client + C_Name, URLEncode(KClient_Name));
+      RosterUpdateProp(Get_Node, C_Client, KClient_Icon);
+    end;
+    // Запускаем обработку КЛ
+    MainForm.JvTimerList.Events[11].Enabled := False;
+    MainForm.JvTimerList.Events[11].Enabled := True;
+  end;
 end;
 
 {$ENDREGION}
@@ -559,106 +610,100 @@ end;
 
 procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem);
 var
-  PJID, InMsg, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
-  RosterItem: TListItem;
-  JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
+  PJID, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
+  I: Integer;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Prop: TJvSimpleXMLProp;
+  Contact_Yes: Boolean;
 begin
-  (*// Если окно сообщений не было создано, то создаём его
+  // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
-    ChatForm := TChatForm.Create(MainForm);
-  // Инициализируем XML
-  JvXML_Create(JvXML);
-  try
-    // Загружаем xml данные
-    JvXML_LoadStr(JvXML, PktData);
-    with JvXML do
+    Application.CreateForm(TChatForm, ChatForm);
+  // Получаем логин от кого пришло сообщение
+  PJID := WideLowerCase(PktData.Properties.Value('from'));
+  // Получаем текст сообщения
+  XML_Node := PktData.Items.ItemNamed['body'];
+  if XML_Node <> nil then
+    Mess := UTF8ToString(XML_Node.Value);
+  // Обрабатываем сообщение и отображаем
+  if (PJID <> EmptyStr) and (Mess <> EmptyStr) then
+  begin
+    // Отделяем ресурс
+    if Pos(C_FS, PJID) > 0 then
+      PJID := Parse(C_FS, PJID, 1);
+    // Форматируем сообщение
+    CheckMessage_BR(Mess);
+    ChatForm.CheckMessage_ClearTag(Mess);
+    PopMsg := Mess;
+    // Ищем этот контакт в Ростере
+    Contact_Yes := False;
+    if V_Roster <> nil then
     begin
-      if Root <> nil then
+      with V_Roster do
       begin
-        PJID := Root.Properties.Value('from');
-        XML_Node := Root.Items.ItemNamed['body'];
-        if XML_Node <> nil then
-          InMsg := UTF8ToString(XML_Node.Value);
-        if (PJID <> EmptyStr) and (InMsg <> EmptyStr) then
+        if Root <> nil then
         begin
-          // Отделяем ресурс
-          if Pos('/', PJID) > 0 then
-            PJID := Parse('/', PJID, 1);
-          // Обрабатываем сообщение
-          Mess := InMsg;
-          CheckMessage_BR(Mess);
-          ChatForm.CheckMessage_ClearTag(Mess);
-          PopMsg := Mess;
-          // Ищем эту запись в Ростере
-          {RosterItem := RosterForm.ReqRosterItem(PJID);
-          if RosterItem <> nil then
+          // Ищем раздел Jabber
+          XML_Node := Root.Items.ItemNamed[C_Jabber];
+          if XML_Node <> nil then
+          begin
+            // Ищем раздел контактов
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            if Sub_Node <> nil then
             begin
-              // Выставляем параметры сообщения в этой записи
-              with RosterItem do
+              for I := 0 to Sub_Node.Items.Count - 1 do
+              begin
+                Tri_Node := Sub_Node.Items.Item[i];
+                if Tri_Node <> nil then
                 begin
-                  // Ник контакта из Ростера
-                  Nick := URLDecode(SubItems[0]);
-                  // Дата сообщения
-                  MsgD := Nick + ' [' + DateTimeChatMess + ']';
-                  // Записываем сообщение в этот контакт если он уже найден в списке контактов
-                  SubItems[15] := URLEncode(PopMsg);
-                  SubItems[35] := '0';
+                  // Если нашли этот контакт
+                  if Tri_Node.Properties.Value(C_Login) = UrlEncode(PJID) then
+                  begin
+                    Contact_Yes := True;
+                    // Записываем входяшее сообщение
+                    RosterUpdateProp(Tri_Node, C_InMess, UrlEncode(Mess));
+                    // Ник контакта из Ростера
+                    Nick := URLDecode(Tri_Node.Properties.Value(C_Nick));
+                    // Дата сообщения
+                    MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                    // Ставим метку о непрочитанном сообщении
+                    RosterUpdateProp(Tri_Node, C_Mess, C_XX);
+                    // Прерываем цикл
+                    Break;
+                  end;
                 end;
-            end
-          else // Если такой контакт не найден в Ростере, то добавляем его
-            begin
-              // Если ник не нашли в Ростере, то ищем его в файле-кэше ников
-              Nick := SearchNickInCash(C_Jabber, PJID);
-              // Дата сообщения
-              MsgD := Nick + ' [' + DateTimeChatMess + ']';
-              // Ищем группу "Не в списке" в Ростере
-              RosterItem := RosterForm.ReqRosterItem(C_NoCL);
-              if RosterItem = nil then // Если группу не нашли
-                begin
-                  // Добавляем такую группу в Ростер
-                  RosterItem := RosterForm.RosterJvListView.Items.Add;
-                  RosterItem.Caption := C_NoCL;
-                  // Подготавиливаем все значения
-                  RosterForm.RosterItemSetFull(RosterItem);
-                  RosterItem.SubItems[1] := URLEncode(Lang_Vars[33].L_S);
-                end;
-              // Добавляем этот контакт в Ростер
-              RosterItem := RosterForm.RosterJvListView.Items.Add;
-              with RosterItem do
-                begin
-                  Caption := PJID;
-                  // Подготавиливаем все значения
-                  RosterForm.RosterItemSetFull(RosterItem);
-                  // Обновляем субстроки
-                  SubItems[0] := URLEncode(Nick);
-                  SubItems[1] := C_NoCL;
-                  SubItems[2] := 'none';
-                  SubItems[3] := C_Jabber;
-                  SubItems[6] := '42';
-                  SubItems[15] := URLEncode(PopMsg);
-                  SubItems[35] := '0';
-                end;
-              // Запускаем таймер задержку событий Ростера
-              MainForm.JvTimerList.Events[11].Enabled := False;
-              MainForm.JvTimerList.Events[11].Enabled := True;
-            end;}
-          // Записываем история в файл истории с этим контактов
-          HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + '.htm';
-          Mess := Text2XML(Mess);
-          CheckMessage_BR(Mess);
-          DecorateURL(Mess);
-          SaveTextInHistory('<span class=b>' + MsgD + '</span><br><span class=c>' + Mess + '</span><br><br>', HistoryFile);
-          // Добавляем сообщение в текущий чат
-          RosterItem.SubItems[36] := 'X';
-          if ChatForm.AddMessInActiveChat(Nick, PopMsg, PJID, MsgD, Mess) then
-            RosterItem.SubItems[36] := EmptyStr;
+              end;
+              // Если контакт в Ростере не нашли
+              if not Contact_Yes then
+              begin
+                // Ищем его Ник в файле-кэше ников
+                Nick := SearchNickInCash(C_Jabber, PJID);
+                // Дата сообщения
+                MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                // Добавляем этот контакт в эту группу
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Login, URLEncode(PJID));
+                Tri_Node.Properties.Add(C_Group + C_Id, C_NoCL);
+                Tri_Node.Properties.Add(C_Status, 42);
+                Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
+                Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+                Tri_Node.Properties.Add(C_Mess, C_XX);
+              end;
+            end;
+          end;
         end;
       end;
     end;
-  finally
-    JvXML.Free;
-  end;*)
+    // Записываем история в файл истории с этим контактов
+    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + C_Htm_Ext;
+    Mess := Text2XML(Mess);
+    CheckMessage_BR(Mess);
+    DecorateURL(Mess);
+    SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
+    // Добавляем сообщение в текущий чат
+    if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(PJID), MsgD, Mess) then
+      UpdateFullCL;
+  end;
 end;
 
 {$ENDREGION}

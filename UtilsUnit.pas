@@ -2191,7 +2191,7 @@ begin
   if Assigned(V_AccountToNick) then
   begin
     // Находим ники в списке ников по учётной записи
-    Result := V_AccountToNick.Values[Ctype + C_BN + UrlEncode(Cid)];
+    Result := UrlDecode(V_AccountToNick.Values[Ctype + C_BN + UrlEncode(Cid)]);
     if Result = EmptyStr then
       Result := CId;
   end;

@@ -41,6 +41,7 @@ const
   C_LN = ';';
   C_TN = ':';
   C_SN = '\';
+  C_FS = '/';
   C_QN = '[';
   C_EN = ']';
   C_EE = '@';
