@@ -242,21 +242,6 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 1
-          object ShowHideContactsCheckBox: TCheckBox
-            Left = 14
-            Top = 21
-            Width = 392
-            Height = 17
-            TabStop = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-            OnClick = ICQUINEditChange
-          end
         end
       end
       object ConnectPage: TJvStandardPage

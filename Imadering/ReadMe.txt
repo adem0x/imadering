@@ -1,12 +1,9 @@
 ﻿Sites
 ------------------------------------------------------
 Site: http://imadering.com
-Site: http://imadering.ru
 Forum: http://imadering.mybb.ru
 Blog: http://twitter.com/IMadering
 Blog: http://juick.com/IMadering
-Blog: http://friendfeed.com/imadering
-Blog: http://imadering.blogspot.com
 SVN: http://code.google.com/p/imadering
 
 Contacts

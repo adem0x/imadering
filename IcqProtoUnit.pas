@@ -426,7 +426,6 @@ var
   ICQ_Bos_Cookie: string;
   ICQ_Online_IP: string;
   ICQ_MyUIN_RegTime: string;
-  ICQ_Show_HideContacts: Boolean = False;
   ICQ_CollSince, ICQ_SendMess, ICQ_OnlineDays, ICQ_AwayMess, ICQ_RecMess, ICQ_LastActive: string; // Vanity info
   ICQ_MyIcon_Hash: string;
   ICQ_KeepAlive: Boolean = True;
@@ -2690,125 +2689,131 @@ begin
           if (Nick > EmptyStr) and (Nick <> UIN) then
           begin
             // Присваиваем этот ник записи в Ростере
-            {RosterItem := RosterForm.ReqRosterItem(UIN);
-            if RosterItem <> nil then
+            Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(UIN));
+            if Get_Node <> nil then
             begin
-              if RosterItem.SubItems[0] = UIN then
-                RosterItem.SubItems[0] := URLEncode(Nick);
-              // Присваиваем этот ник контакту не из нашего КЛ
-              CLContact := RosterForm.ReqCLContact(UIN);
-              if CLContact <> nil then
-                if CLContact.Caption = UIN then
-                  CLContact.Caption := Nick;
-              // Ищем вкладку в окне чата и ей присваиваем Ник
-              if Assigned(ChatForm) then
+              if Get_Node.Properties.Value(C_Nick) = URLEncode(UIN) then
               begin
-                ChatPage := RosterForm.ReqChatPage(UIN);
-                if ChatPage <> nil then
-                  if ChatPage.Caption = UIN then
+                RosterUpdateProp(Get_Node, C_Nick, URLEncode(Nick));
+                // Ищем вкладку в окне чата и ей присваиваем Ник
+                if Assigned(ChatForm) then
+                begin
+                  ChatPage := ReqChatPage(UrlEncode(UIN));
+                  if ChatPage <> nil then
                     ChatPage.Caption := Nick;
+                end;
+                // Ищем этот контакт в КЛ и присваиваем ей ник
+                CLContact := ReqCLContact(C_Icq, UrlEncode(UIN));
+                if CLContact <> nil then
+                  CLContact.Caption := Nick;
               end;
-            end;}
+            end;
           end;
           // Сохраняем полученные данные в локальный файл инфы о контакте
           // Инициализируем XML
-          (*JvXML_Create(JvXML);
+          JvXML_Create(JvXML);
           try
             with JvXML do
             begin
               if Root <> nil then
               begin
-                XML_Node := Root.Items.Add(C_NameInfo);
-                XML_Node.Properties.Add(C_Nick, URLEncode(Nick));
-                XML_Node.Properties.Add(C_First, URLEncode(First));
-                XML_Node.Properties.Add(C_Last, URLEncode(Last));
-                //
-                XML_Node := Root.Items.Add(C_PerInfo);
-                XML_Node.Properties.Add(C_Gender, Gender);
-                XML_Node.Properties.Add(C_Auth, Auth);
-                XML_Node.Properties.Add(C_WebAware, WebAware);
-                XML_Node.Properties.Add(C_HomePage, URLEncode(HomePage));
-                XML_Node.Properties.Add(C_LastChange, LastUpdateInfo);
-                //
-                XML_Node := Root.Items.Add(C_HomeInfo);
-                XML_Node.Properties.Add(C_Address, URLEncode(Address));
-                XML_Node.Properties.Add(C_City, URLEncode(City));
-                XML_Node.Properties.Add(C_State, URLEncode(State));
-                XML_Node.Properties.Add(C_Zip, URLEncode(Zip));
-                XML_Node.Properties.Add(C_Country, Country);
-                //
-                XML_Node := Root.Items.Add(C_OHomeInfo);
-                XML_Node.Properties.Add(C_Country, OCountry);
-                XML_Node.Properties.Add(C_City, URLEncode(OCity));
-                XML_Node.Properties.Add(C_State, URLEncode(OState));
-                //
-                XML_Node := Root.Items.Add(C_LangInfo);
-                {XML_Node.Properties.Add(C_Lang1, Lang1);
-                XML_Node.Properties.Add(C_Lang2, Lang2);
-                XML_Node.Properties.Add(C_Lang3, Lang3);}
-                //
-                XML_Node := Root.Items.Add(C_PhoneInfo);
-                {XML_Node.Properties.Add(C_Phone1, URLEncode(Phone));
-                XML_Node.Properties.Add(C_Phone2, URLEncode(Fax));
-                XML_Node.Properties.Add(C_Phone3, URLEncode(Cellular));
-                XML_Node.Properties.Add(C_Phone4, URLEncode(WPhone));
-                XML_Node.Properties.Add(C_Phone5, URLEncode(WFax));}
-                //
-                XML_Node := Root.Items.Add(C_WorkInfo);
-                XML_Node.Properties.Add(C_City, URLEncode(WCity));
-                XML_Node.Properties.Add(C_State, URLEncode(WState));
-                XML_Node.Properties.Add(C_Zip, URLEncode(WZip));
-                XML_Node.Properties.Add(C_Address, URLEncode(WAddress));
-                XML_Node.Properties.Add(C_Corp, URLEncode(Company));
-                XML_Node.Properties.Add(C_Dep, URLEncode(Department));
-                XML_Node.Properties.Add(C_Prof, URLEncode(Position));
-                XML_Node.Properties.Add(C_Site, URLEncode(WSite));
-                XML_Node.Properties.Add(C_Country, WCountry);
-                XML_Node.Properties.Add(C_Occup, Occupation);
-                //
-                XML_Node := Root.Items.Add(C_IntInfo);
-                {XML_Node.Properties.Add(C_Int1, URLEncode(Int1));
-                XML_Node.Properties.Add(C_Int2, URLEncode(Int2));
-                XML_Node.Properties.Add(C_Int3, URLEncode(Int3));
-                XML_Node.Properties.Add(C_Int4, URLEncode(Int4));}
-                //
-                Root.Items.Add(C_AboutInfo, URLEncode(About));
-                //
-                XML_Node := Root.Items.Add(C_AgeInfo);
-                XML_Node.Properties.Add(C_Age, Age);
-                XML_Node.Properties.Add(C_Day, IDay);
-                XML_Node.Properties.Add(C_Month, IMonth);
-                XML_Node.Properties.Add(C_Year, IYear);
-                //
-                XML_Node := Root.Items.Add(C_EmailsInfo);
-                {XML_Node.Properties.Add(C_Email0, URLEncode(Email));
-                XML_Node.Properties.Add(C_Email1, URLEncode(Email1));
-                XML_Node.Properties.Add(C_Email2, URLEncode(Email2));
-                XML_Node.Properties.Add(C_Email3, URLEncode(Email3));}
-                //
-                XML_Node := Root.Items.Add(C_IntIdInfo);
-                {XML_Node.Properties.Add(C_IntId1, I1);
-                XML_Node.Properties.Add(C_IntId2, I2);
-                XML_Node.Properties.Add(C_IntId3, I3);
-                XML_Node.Properties.Add(C_IntId4, I4);}
-                //
-                XML_Node := Root.Items.Add(C_PersInfo);
-                XML_Node.Properties.Add(C_Marital, Marital);
-                XML_Node.Properties.Add(C_Sexual, Sexual);
-                XML_Node.Properties.Add(C_Height, Height);
-                XML_Node.Properties.Add(C_Relig, Relig);
-                XML_Node.Properties.Add(C_Smok, Smok);
-                XML_Node.Properties.Add(C_Hair, Hair);
-                XML_Node.Properties.Add(C_Children, Children);
+                // Очищаем раздел инфы контакта
+                XML_Node := Root.Items.ItemNamed[C_Infos];
+                if XML_Node = nil then
+                  XML_Node := Root.Items.Add(C_Infos);
+                XML_Node.Clear;
+                // Записываем имена
+                Sub_Node := XML_Node.Items.Add(C_NameInfo);
+                Sub_Node.Properties.Add(C_Nick, URLEncode(Nick));
+                Sub_Node.Properties.Add(C_First, URLEncode(First));
+                Sub_Node.Properties.Add(C_Last, URLEncode(Last));
+                // Записываем персональную информацию
+                Sub_Node := XML_Node.Items.Add(C_PerInfo);
+                Sub_Node.Properties.Add(C_Gender, Gender);
+                Sub_Node.Properties.Add(C_Auth, Auth);
+                Sub_Node.Properties.Add(C_WebAware, WebAware);
+                Sub_Node.Properties.Add(C_HomePage, URLEncode(HomePage));
+                Sub_Node.Properties.Add(C_LastChange, LastUpdateInfo);
+                // Записываем место проживания
+                Sub_Node := XML_Node.Items.Add(C_HomeInfo);
+                Sub_Node.Properties.Add(C_Address, URLEncode(Address));
+                Sub_Node.Properties.Add(C_City, URLEncode(City));
+                Sub_Node.Properties.Add(C_State, URLEncode(State));
+                Sub_Node.Properties.Add(C_Zip, URLEncode(Zip));
+                Sub_Node.Properties.Add(C_Country, Country);
+                // Записываем место рождения
+                Sub_Node := XML_Node.Items.Add(C_OHomeInfo);
+                Sub_Node.Properties.Add(C_Country, OCountry);
+                Sub_Node.Properties.Add(C_City, URLEncode(OCity));
+                Sub_Node.Properties.Add(C_State, URLEncode(OState));
+                // Записываем языки
+                Sub_Node := XML_Node.Items.Add(C_LangInfo);
+                Sub_Node.Properties.Add(C_Lang + '1', Lang1);
+                Sub_Node.Properties.Add(C_Lang + '2', Lang2);
+                Sub_Node.Properties.Add(C_Lang + '3', Lang3);
+                // Записываем телефоны
+                Sub_Node := XML_Node.Items.Add(C_PhoneInfo);
+                Sub_Node.Properties.Add(C_Phone + '1', URLEncode(Phone));
+                Sub_Node.Properties.Add(C_Phone + '2', URLEncode(Fax));
+                Sub_Node.Properties.Add(C_Phone + '3', URLEncode(Cellular));
+                Sub_Node.Properties.Add(C_Phone + '4', URLEncode(WPhone));
+                Sub_Node.Properties.Add(C_Phone + '5', URLEncode(WFax));
+                // Записываем инфу о работе
+                Sub_Node := XML_Node.Items.Add(C_WorkInfo);
+                Sub_Node.Properties.Add(C_City, URLEncode(WCity));
+                Sub_Node.Properties.Add(C_State, URLEncode(WState));
+                Sub_Node.Properties.Add(C_Zip, URLEncode(WZip));
+                Sub_Node.Properties.Add(C_Address, URLEncode(WAddress));
+                Sub_Node.Properties.Add(C_Corp, URLEncode(Company));
+                Sub_Node.Properties.Add(C_Dep, URLEncode(Department));
+                Sub_Node.Properties.Add(C_Prof, URLEncode(Position));
+                Sub_Node.Properties.Add(C_Site, URLEncode(WSite));
+                Sub_Node.Properties.Add(C_Country, WCountry);
+                Sub_Node.Properties.Add(C_Occup, Occupation);
+                // Записываем идентификаторы интересов
+                Sub_Node := XML_Node.Items.Add(C_IntIdInfo);
+                Sub_Node.Properties.Add(C_Id + '1', I1);
+                Sub_Node.Properties.Add(C_Id + '2', I2);
+                Sub_Node.Properties.Add(C_Id + '3', I3);
+                Sub_Node.Properties.Add(C_Id + '4', I4);
+                // Записываем интересы
+                Sub_Node := XML_Node.Items.Add(C_IntInfo);
+                Sub_Node.Properties.Add(C_CS + '1', URLEncode(Int1));
+                Sub_Node.Properties.Add(C_CS + '2', URLEncode(Int2));
+                Sub_Node.Properties.Add(C_CS + '3', URLEncode(Int3));
+                Sub_Node.Properties.Add(C_CS + '4', URLEncode(Int4));
+                // Записываем "О себе"
+                XML_Node.Items.Add(C_AboutInfo, URLEncode(About));
+                // Записываем дату рождения
+                Sub_Node := XML_Node.Items.Add(C_AgeInfo);
+                Sub_Node.Properties.Add(C_Age, Age);
+                Sub_Node.Properties.Add(C_Day, IDay);
+                Sub_Node.Properties.Add(C_Month, IMonth);
+                Sub_Node.Properties.Add(C_Year, IYear);
+                // Записываем Email адреса
+                Sub_Node := XML_Node.Items.Add(C_EmailsInfo);
+                Sub_Node.Properties.Add(C_Email + '0', URLEncode(Email));
+                Sub_Node.Properties.Add(C_Email + '1', URLEncode(Email1));
+                Sub_Node.Properties.Add(C_Email + '2', URLEncode(Email2));
+                Sub_Node.Properties.Add(C_Email + '3', URLEncode(Email3));
+                // Записываем доп. параметры
+                Sub_Node := XML_Node.Items.Add(C_PersInfo);
+                Sub_Node.Properties.Add(C_Marital, Marital);
+                Sub_Node.Properties.Add(C_Sexual, Sexual);
+                Sub_Node.Properties.Add(C_Height, Height);
+                Sub_Node.Properties.Add(C_Relig, Relig);
+                Sub_Node.Properties.Add(C_Smok, Smok);
+                Sub_Node.Properties.Add(C_Hair, Hair);
+                Sub_Node.Properties.Add(C_Children, Children);
               end;
               // Создаём необходимые папки
               ForceDirectories(V_ProfilePath + C_AnketaFolder);
               // Записываем сам файл
-              SaveToFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + '.xml');
+              SaveToFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext);
             end;
           finally
             JvXML.Free;
-          end;*)
+          end;
           // Отображаем в окне информации о контакте полученные данные
           if Assigned(IcqContactInfoForm) then
           begin
@@ -2846,7 +2851,7 @@ begin
         begin
           // Получаем текст страны из кода
           if Assigned(IcqOptionsForm) then
-            ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + IntToStr(Country) + ']'];
+            ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + IntToStr(Country) + C_EN];
           // Обрабатываем результаты поиска
           ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), StrArrayToStr([Email, Email1, Email2, Email3]), ACountry, City, Gender, SStatus, Auth, True);
         end;
@@ -4251,8 +4256,7 @@ begin
                 Tri_Node.Properties.Add(C_Id, QID);
                 Tri_Node.Properties.Add(C_Type, QType);
                 // Делаем поиск ника в кэше ников
-                if ICQ_Show_HideContacts then
-                  Tri_Node.Properties.Add(C_Nick, SearchNickInCash(C_Icq, UrlEncode(QSN)));
+                Tri_Node.Properties.Add(C_Nick, SearchNickInCash(C_Icq, UrlEncode(QSN)));
                 // Сканируем пакет на нужные нам TLV
                 while Length(SubData) > 0 do
                 begin

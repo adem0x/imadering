@@ -33,6 +33,7 @@ function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXm
 procedure RosterUpdateProp(R_Node: TJvSimpleXmlElem; R_Prop, R_Value: string);
 procedure DellcIdInMessList(CId: string);
 function ReqChatPage(CId: string): TToolButton;
+function ReqCLContact(CProto, CId: string): TButtonItem;
 {$ENDREGION}
 
 implementation
@@ -683,15 +684,6 @@ begin
               end;
               Inc(I);
             end;
-            // Если нужно, то скрываем группу временных контактов ICQ
-            for G := 0 to Categories.Count - 1 do
-            begin
-              if (not ICQ_Show_HideContacts) and (Categories[G].GroupId = '0000') and (Categories[G].GroupType = C_Icq) then
-              begin
-                Categories[G].Free;
-                Break;
-              end;
-            end;
             // Вычисляем количесво контактов и количество онлайн-контактов в группах КЛ
             for G := 0 to Categories.Count - 1 do
             begin
@@ -894,6 +886,30 @@ begin
   end;
 end;
 {$ENDREGION}
+{$REGION 'ReqCLContact'}
 
+function ReqCLContact(CProto, CId: string): TButtonItem;
+var
+  G, K: Integer;
+begin
+  Result := nil;
+  // Ищем контакт в КЛ
+  with MainForm.ContactList do
+  begin
+    for G := 0 to Categories.Count - 1 do
+    begin
+      for K := 0 to Categories[G].Items.Count - 1 do
+      begin
+        if (Categories[G].Items[K].ContactType = CProto) and (Categories[G].Items[K].UIN = CId) then
+        begin
+          Result := Categories[G].Items[K];
+          // Выходим из циклов
+          Exit;
+        end;
+      end;
+    end;
+  end;
+end;
+{$ENDREGION}
 end.
 
