@@ -120,6 +120,7 @@ const
   C_HistoryInfo = '<span class=d>%s</span><br><br>';
   C_HistoryX = '<IMG NAME=X SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
   C_HTML_head = '<html><head>%s<title>%s</title></head><body>';
+  C_cbold = 'cbold';
   C_Group = 'Group';
   C_Contact = 'Contact';
   C_Count = 'count';

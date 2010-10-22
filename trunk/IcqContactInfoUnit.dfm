@@ -47,6 +47,13 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Height = 3
     Shape = bsBottomLine
   end
+  object Bevel2: TBevel
+    Left = 8
+    Top = 78
+    Width = 545
+    Height = 3
+    Shape = bsBottomLine
+  end
   object ReqInfoBitBtn: TBitBtn
     Left = 8
     Top = 385
@@ -72,9 +79,9 @@ object IcqContactInfoForm: TIcqContactInfoForm
   end
   object BottomHTMLViewer: THTMLViewer
     Left = 8
-    Top = 78
+    Top = 87
     Width = 545
-    Height = 293
+    Height = 284
     Cursor = crDefault
     TabOrder = 2
     PopupMenu = BottomPopupMenu

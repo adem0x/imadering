@@ -219,7 +219,6 @@ type
     SendCustomICQPacketRichEdit: TRichEdit;
     ParamInfoRichEdit: TRichEdit;
     AccountGroupBox2: TGroupBox;
-    ShowHideContactsCheckBox: TCheckBox;
     RegNewUINLabel: TLabel;
     ConnectPage: TJvStandardPage;
     DumpInfoRichEdit: TRichEdit;
@@ -285,7 +284,6 @@ uses
 {$REGION 'MyConst'}
 
 const
-  C_IcqSHC = 'show_hide_contacts';
   C_ClientId = 'ClientId';
   C_PassChange = 'PassChange';
   C_SendDump = 'SendDump';
@@ -338,9 +336,7 @@ begin
                     PassEdit.OnChange := PassEditChange;
                     // --------------------------------------------------------------------------
                     // Загружаем остальные настройки
-                    Sub_Node := XML_Node.Items.ItemNamed[C_IcqSHC];
-                    if Sub_Node <> nil then
-                      ShowHideContactsCheckBox.Checked := Sub_Node.BoolValue;
+
                     // --------------------------------------------------------------------------
                   end;
               end;
@@ -375,13 +371,8 @@ begin
       ICQ_LoginPassword := PassEdit.Hint;
     end;
   // --------------------------------------------------------------------------
-  // Отображение временных контактов в КЛ
-  if ICQ_Show_HideContacts <> ShowHideContactsCheckBox.Checked then
-  begin
-    ICQ_Show_HideContacts := ShowHideContactsCheckBox.Checked;
-    // Запускаем обработку Ростера
-    UpdateFullCL;
-  end;
+  //
+
   // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
@@ -427,7 +418,7 @@ begin
               PassEdit.Text := C_MaskPass;
             // --------------------------------------------------------------------------
             // Сохраняем другие настройки
-            XML_Node.Items.Add(C_IcqSHC, ShowHideContactsCheckBox.Checked);
+
             // --------------------------------------------------------------------------
             // Сохраняем файл
             SaveToFile(V_ProfilePath + C_SettingsFileName);

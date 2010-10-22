@@ -1,4 +1,7 @@
-﻿program Imadering;
+﻿// JCL_DEBUG_EXPERT_INSERTJDBG ON
+// JCL_DEBUG_EXPERT_DELETEMAPFILE ON
+
+program Imadering;
 
 uses
   ShareMem,
