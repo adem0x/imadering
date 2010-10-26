@@ -853,8 +853,8 @@ begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
   Msg := ReplaceStr(Msg, C_RN, C_BR);
   Msg := ReplaceStr(Msg, #10, C_BR);
-  Msg := ReplaceStr(Msg, C_BR + C_BN, C_BR + '&nbsp;');
-  Msg := ReplaceStr(Msg, C_BN + C_BN, '&nbsp;&nbsp;');
+  Msg := ReplaceStr(Msg, C_BR + C_BN, C_BR + C_nbsp);
+  Msg := ReplaceStr(Msg, C_BN + C_BN, C_nbsp + C_nbsp);
 end;
 
 {$ENDREGION}

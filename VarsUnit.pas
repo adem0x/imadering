@@ -126,6 +126,7 @@ const
   C_HTML_Email = '<a href="mailto:%s">%s</a>';
   C_cbold = 'cbold';
   C_cdef = 'cdef';
+  C_nbsp = '&nbsp;';
   C_Group = 'Group';
   C_Contact = 'Contact';
   C_Count = 'count';
