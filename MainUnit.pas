@@ -2207,9 +2207,9 @@ begin
   XShowForm(LogForm);
   with LogForm do
   begin
-    LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + C_BN + Log_Exception1);
+    LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + C_BN + Lang_Vars[52].L_S);
     JclLastExceptStackListToStrings(LogMemo.Lines, False, False, False, False);
-    LogMemo.Lines.Add(Log_Exception2);
+    LogMemo.Lines.Add(Lang_Vars[53].L_S);
     LogMemo.Lines.Add(C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
   end;
 end;

@@ -83,6 +83,7 @@ object IcqContactInfoForm: TIcqContactInfoForm
     Width = 545
     Height = 284
     Cursor = crDefault
+    OnHotSpotClick = BottomHTMLViewerHotSpotClick
     TabOrder = 2
     PopupMenu = BottomPopupMenu
     BorderStyle = HtNone
