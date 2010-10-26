@@ -125,6 +125,43 @@
     <DumpProto c="Debugging protocol %s"/>
     <HexToText c="Show HEX as %s text"/>
     <SMS_ACK c="SMS message sent."/>
+    <GMale c="Male"/>
+    <GFemale c="Female"/>
+    <LogException1 c="An error happened in the program"/>
+    <LogException2 c="You can copy information about this error and lay out for developers on the forum of project IMadering with description of actions which this error was at. Or to advise about an error in any other way."/>
+    <LNick c="Nick"/>
+    <LName c="Name"/>
+    <LGender c="Gender"/>
+    <LAge c="Age"/>
+    <LHome c="Home"/>
+    <LBirDate c="Birth date"/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
+    <L c=""/>
   </Vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
@@ -524,7 +561,6 @@
     <ShowPassCheckBox c="Show password"/>
     <SavePassCheckBox c="Save password"/>
     <AccountGroupBox2 c="Options"/>
-    <ShowHideContactsCheckBox c="Show temporary contacts"/>
     <ShowAwayTimeCheckBox c="Allow others to see how long I've been idle"/>
     <AutoReqAuthCheckBox c="Automatically send authorization request on adding contact"/>
     <AuthAndWebStatusGroupBox c="Authorization / Web aware"/>
@@ -1093,11 +1129,6 @@
     <c9 c="[50] Open relationship"/>
     <c10 c="[255] Other"/>
   </icq_marital>
-  <icq_gender>
-    <c1 c=""/>
-    <c2 c="[1] Female"/>
-    <c3 c="[2] Male"/>
-  </icq_gender>
   <IcqContactInfoForm c="">
     <ReqInfoBitBtn c="Request"/>
     <TopCopyHTML c="Copy"/>

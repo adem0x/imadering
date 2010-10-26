@@ -119,8 +119,13 @@ const
   C_HistoryOut = '<span class=a>%s</span><br><span class=c>%s</span><br><br>';
   C_HistoryInfo = '<span class=d>%s</span><br><br>';
   C_HistoryX = '<IMG NAME=X SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
+  C_HTML_Flags = '<IMG NAME=I SRC="./Flags/%s" ALIGN=ABSMIDDLE BORDER=0>';
+  C_HTML_Male = '<IMG NAME=I SRC="./Icons/%s/male.gif" ALIGN=ABSMIDDLE BORDER=0>';
+  C_HTML_Female = '<IMG NAME=I SRC="./Icons/%s/female.gif" ALIGN=ABSMIDDLE BORDER=0>';
   C_HTML_head = '<html><head>%s<title>%s</title></head><body>';
+  C_HTML_Email = '<a href="mailto:%s">%s</a>';
   C_cbold = 'cbold';
+  C_cdef = 'cdef';
   C_Group = 'Group';
   C_Contact = 'Contact';
   C_Count = 'count';
@@ -422,7 +427,7 @@ var
 {$REGION 'LangVars'}
 
   // Переменные для языка | Lang_Vars[127].L_S
-  Lang_Vars: packed array[0..127] of record
+  Lang_Vars: packed array[0..160] of record
     L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
@@ -474,10 +479,10 @@ var
     (L_N: 'UserStatus'; L_S: ''), // 47
     (L_N: 'HexToText'; L_S: ''), // 48
     (L_N: 'IgCLGroupCaption'; L_S: ''), // 49
-    (L_N: '---'; L_S: ''), // 50
-    (L_N: '---'; L_S: ''), // 51
-    (L_N: '---'; L_S: ''), // 52
-    (L_N: '---'; L_S: ''), // 53
+    (L_N: 'GMale'; L_S: ''), // 50
+    (L_N: 'GFemale'; L_S: ''), // 51
+    (L_N: 'LogException1'; L_S: ''), // 52
+    (L_N: 'LogException2'; L_S: ''), // 53
     (L_N: 'InfoSaveOK'; L_S: ''), // 54
     (L_N: 'UserInfoOK'; L_S: ''), // 55
     (L_N: 'UserInfoReq'; L_S: ''), // 56
@@ -551,35 +556,48 @@ var
     (L_N: 'SearchAuth'; L_S: ''), // 124
     (L_N: 'SearchAuthNo'; L_S: ''), // 125
     (L_N: 'SearchNextPage'; L_S: ''), // 126
-    (L_N: 'DellProfile'; L_S: '')); // 127
+    (L_N: 'DellProfile'; L_S: ''), // 127
+    (L_N: 'LNick'; L_S: ''), // 128
+    (L_N: 'LName'; L_S: ''), // 129
+    (L_N: 'LGender'; L_S: ''), // 130
+    (L_N: 'LAge'; L_S: ''), // 131
+    (L_N: 'LHome'; L_S: ''), // 132
+    (L_N: 'LBirDate'; L_S: ''), // 133
 
-  Log_Exception1: string = 'В программе произошла ошибка' + C_RN;
+    (L_N: 'L'; L_S: ''), // 134
+    (L_N: 'L'; L_S: ''), // 135
+    (L_N: 'L'; L_S: ''), // 136
+    (L_N: 'L'; L_S: ''), // 137
+    (L_N: 'L'; L_S: ''), // 138
+    (L_N: 'L'; L_S: ''), // 139
+    (L_N: 'L'; L_S: ''), // 140
+    (L_N: 'L'; L_S: ''), // 141
+    (L_N: 'L'; L_S: ''), // 142
+    (L_N: 'L'; L_S: ''), // 143
+    (L_N: 'L'; L_S: ''), // 144
+    (L_N: 'L'; L_S: ''), // 145
+    (L_N: 'L'; L_S: ''), // 146
+    (L_N: 'L'; L_S: ''), // 147
+    (L_N: 'L'; L_S: ''), // 148
+    (L_N: 'L'; L_S: ''), // 149
+    (L_N: 'L'; L_S: ''), // 150
+    (L_N: 'L'; L_S: ''), // 151
+    (L_N: 'L'; L_S: ''), // 152
+    (L_N: 'L'; L_S: ''), // 153
+    (L_N: 'L'; L_S: ''), // 154
+    (L_N: 'L'; L_S: ''), // 155
+    (L_N: 'L'; L_S: ''), // 156
+    (L_N: 'L'; L_S: ''), // 157
+    (L_N: 'L'; L_S: ''), // 158
+    (L_N: 'L'; L_S: ''), // 159
+    (L_N: 'L'; L_S: '')); // 160
 
-  Log_Exception2: string = C_RN + 'Вы можете скопировать её от сюда и выложить для разработчиков на форуме проекта IMadering ' +
-    'c описанием действий в следствии которых возникла данная ошибка. Или уведомить об ошибке любым другим способом.';
-
-  InfoNickL:
-    string = 'Ник:';
-  InfoNameL:
-    string = 'Имя:';
-  InfoHomeL:
-    string = 'Дом:';
   InfoAdressL:
     string = 'Адрес:';
   InfoStateL:
     string = 'Штат:';
   InfoZipL:
     string = 'Индекс:';
-  InfoGenderL:
-    string = 'Пол:';
-  InfoGender1L:
-    string = 'Женский';
-  InfoGender2L:
-    string = 'Мужской';
-  InfoAgeL:
-    string = 'Возраст:';
-  InfoBirDate:
-    string = 'Дата рождения:';
   InfoOHomeL:
     string = 'Место рождения:';
   InfoWorkL:

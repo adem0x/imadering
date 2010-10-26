@@ -1004,7 +1004,7 @@ var
   I: Integer;
 begin
   Result := True;
-  for I := low(StringsArr) to high(StringsArr) do
+  for I := Low(StringsArr) to High(StringsArr) do
   begin
     if Trim(StringsArr[I]) <> EmptyStr then
       Exit;

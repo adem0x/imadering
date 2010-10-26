@@ -223,8 +223,8 @@ end;
 {$REGION 'OpenChatResult'}
 
 procedure TIcqSearchForm.OpenChatResult;
-var
-  RosterItem: TListItem;
+{var
+  RosterItem: TListItem;}
 begin
   {// Ищем эту запись в Ростере
   RosterItem := RosterForm.ReqRosterItem(SearchResultJvListView.Selected.SubItems[1]);
