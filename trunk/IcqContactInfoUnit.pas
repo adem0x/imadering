@@ -428,17 +428,17 @@ begin
       begin
         if Trim(Address) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoAdressL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[134].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Address, C_cdef, True);
         end;
         if Trim(State) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoStateL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, State, C_cdef, True);
         end;
         if Trim(Zip) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoZipL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[136].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Zip, C_cdef, True);
         end;
       end;
@@ -515,7 +515,7 @@ begin
       OState := URLDecode(XML_Node.Properties.Value(C_State));
       if IsNotNull([OCountry, OCity]) then
       begin
-        AddHTML(BottomHTMLViewer, InfoOHomeL + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[137].L_S + C_TN + C_BN, C_cbold);
         if OCountry <> EmptyStr then
           AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr)]) + StrArrayToStr([OCountry, OCity]),
             C_cdef, True)
@@ -524,7 +524,7 @@ begin
       end;
       if Trim(OState) <> EmptyStr then
       begin
-        AddHTML(BottomHTMLViewer, InfoStateL + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + C_TN + C_BN, C_cbold);
         AddHTML(BottomHTMLViewer, OState, C_cdef, True);
       end;
       // Вставляем разделитель
@@ -564,7 +564,7 @@ begin
         Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Values[C_QN + Occupation + C_EN];
       if IsNotNull([WCountry, WCity]) then
       begin
-        AddHTML(BottomHTMLViewer, InfoWorkL + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[138].L_S + C_TN + C_BN, C_cbold);
         if WCountry <> EmptyStr then
           AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr)]) + StrArrayToStr([WCountry, WCity]),
             C_cdef, True)
@@ -575,17 +575,17 @@ begin
       begin
         if Trim(WAddress) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoAdressL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[134].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WAddress, C_cdef, True);
         end;
         if Trim(WState) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoStateL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WState, C_cdef, True);
         end;
         if Trim(WZip) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoZipL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[136].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WZip, C_cdef, True);
         end;
       end;
@@ -593,27 +593,27 @@ begin
       begin
         if Trim(Company) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoCompanyL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[139].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Company, C_cdef, True);
         end;
         if Trim(Department) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoDeportL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[140].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Department, C_cdef, True);
         end;
         if Trim(Position) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoPositionL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[141].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Position, C_cdef, True);
         end;
         if Trim(Occupation) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoOccupationL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[142].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Occupation, C_cdef, True);
         end;
         if Trim(WSite) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoWebSiteL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[143].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WSite, C_cdef, True);
         end;
       end;
@@ -634,27 +634,27 @@ begin
       begin
         if Trim(Phone) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoPhoneL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[144].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Phone, C_cdef, True);
         end;
         if Trim(Fax) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoFaxL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[145].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Fax, C_cdef, True);
         end;
         if Trim(Cellular) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoCellularL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[146].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Cellular, C_cdef, True);
         end;
         if Trim(WPhone) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfowPhoneL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[147].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WPhone, C_cdef, True);
         end;
         if Trim(WFax) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfowFaxL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[148].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WFax, C_cdef, True);
         end;
         // Вставляем разделитель
@@ -691,7 +691,7 @@ begin
       // Формируем отображение интересов
       if IsNotNull([I1, I2, I3, I4, Int1, Int2, Int3, Int4]) then
       begin
-        AddHTML(BottomHTMLViewer, InfoInterestsL + C_BN, C_cbold, True);
+        AddHTML(BottomHTMLViewer, Lang_Vars[149].L_S + C_TN + C_BN, C_cbold, True);
         if (Trim(I1) <> EmptyStr) or (Trim(Int1) <> EmptyStr) then
         begin
           AddHTML(BottomHTMLViewer, C_nbsp + C_nbsp);
@@ -750,37 +750,37 @@ begin
       begin
         if Trim(Marital) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoMaritalL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[153].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Marital, C_cdef, True);
         end;
         if Trim(Sexual) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoSexualL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[154].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Sexual, C_cdef, True);
         end;
         if Trim(XHeight) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoHeightL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[155].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, XHeight, C_cdef, True);
         end;
         if Trim(Relig) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoReligL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[156].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Relig, C_cdef, True);
         end;
         if Trim(Smok) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoSmokL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[157].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Smok, C_cdef, True);
         end;
         if Trim(Hair) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoHairL + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[158].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Hair, C_cdef, True);
         end;
         if Trim(Children) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, InfoChildrenL1 + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[159].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, Children, C_cdef, True);
         end;
         // Вставляем разделитель
@@ -808,7 +808,7 @@ begin
       // Формируем отображение языков
       if IsNotNull([Lang1, Lang2, Lang3]) then
       begin
-        AddHTML(BottomHTMLViewer, InfoLangL + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[152].L_S + C_TN + C_BN, C_cbold);
         AddHTML(BottomHTMLViewer, StrArrayToStr([Lang1, Lang2, Lang3]), C_cdef, True);
         // Вставляем разделитель
         AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
@@ -821,7 +821,7 @@ begin
       About := URLDecode(XML_Node.Value);
       if Trim(About) <> EmptyStr then
       begin
-        AddHTML(BottomHTMLViewer, InfoAboutL + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[150].L_S + C_TN + C_BN, C_cbold);
         AddHTML(BottomHTMLViewer, About, C_cdef, True);
         // Вставляем разделитель
         AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
@@ -830,7 +830,7 @@ begin
     // Домашняя страница
     if Trim(HomePage) <> EmptyStr then
     begin
-      AddHTML(BottomHTMLViewer, InfoHomePageL + C_BN, C_cbold);
+      AddHTML(BottomHTMLViewer, Lang_Vars[151].L_S + C_TN + C_BN, C_cbold);
       AddHTML(BottomHTMLViewer, HomePage, C_cdef, True);
       // Вставляем разделитель
       AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
@@ -838,7 +838,7 @@ begin
     // Дата последнего обновления, дополнительно
     if Trim(LastUpdateInfo) <> EmptyStr then
     begin
-      AddHTML(BottomHTMLViewer, InfoLastUpDateL + C_BN, C_cbold);
+      AddHTML(BottomHTMLViewer, Lang_Vars[160].L_S + C_TN + C_BN, C_cbold);
       AddHTML(BottomHTMLViewer, LastUpdateInfo, C_cdef, True);
     end;
     // Вычисляем знак гороскопа

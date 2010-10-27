@@ -2542,24 +2542,25 @@ end;
 {$REGION 'JabberWSocketSslVerifyPeer'}
 
 procedure TMainForm.JabberWSocketSslVerifyPeer(Sender: TObject; var Ok: Integer; Cert: TX509Base);
-{ var
-  FrmShowCert: TShowCertForm; }
+var
+  FrmShowCert: TShowCertForm;
 begin
-  { // Показываем форму принятия сертификата
-    FrmShowCert := TShowCertForm.Create(Cert);
-    try
+  // Показываем форму принятия сертификата
+  FrmShowCert := TShowCertForm.Create(Application);
+  try
     // Вдруг, уже принимали этот сертификат
-    if not FrmShowCert.CheckAccepted(EncodeString(Cert.Sha1Hash)) then
+    if not FrmShowCert.CheckAccepted(Text2Hex(Cert.Sha1Hash)) then
     begin
-    // Показываем диалог
-    FrmShowCert.ShowModal;
-    Ok := Integer(FrmShowCert.CertAccepted);
+      // Показываем форму сертификата модально
+      FrmShowCert.ShowCert(Cert);
+      FrmShowCert.ShowModal;
+      Ok := Integer(FrmShowCert.CertAccepted);
     end
     else
-    Ok := Integer(True);
-    finally
+      Ok := Integer(True);
+  finally
     FreeAndNil(FrmShowCert);
-    end; }
+  end;
 end;
 
 {$ENDREGION}

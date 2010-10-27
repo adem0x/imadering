@@ -564,89 +564,33 @@ var
     (L_N: 'LAge'; L_S: ''), // 131
     (L_N: 'LHome'; L_S: ''), // 132
     (L_N: 'LBirDate'; L_S: ''), // 133
-
-    (L_N: 'L'; L_S: ''), // 134
-    (L_N: 'L'; L_S: ''), // 135
-    (L_N: 'L'; L_S: ''), // 136
-    (L_N: 'L'; L_S: ''), // 137
-    (L_N: 'L'; L_S: ''), // 138
-    (L_N: 'L'; L_S: ''), // 139
-    (L_N: 'L'; L_S: ''), // 140
-    (L_N: 'L'; L_S: ''), // 141
-    (L_N: 'L'; L_S: ''), // 142
-    (L_N: 'L'; L_S: ''), // 143
-    (L_N: 'L'; L_S: ''), // 144
-    (L_N: 'L'; L_S: ''), // 145
-    (L_N: 'L'; L_S: ''), // 146
-    (L_N: 'L'; L_S: ''), // 147
-    (L_N: 'L'; L_S: ''), // 148
-    (L_N: 'L'; L_S: ''), // 149
-    (L_N: 'L'; L_S: ''), // 150
-    (L_N: 'L'; L_S: ''), // 151
-    (L_N: 'L'; L_S: ''), // 152
-    (L_N: 'L'; L_S: ''), // 153
-    (L_N: 'L'; L_S: ''), // 154
-    (L_N: 'L'; L_S: ''), // 155
-    (L_N: 'L'; L_S: ''), // 156
-    (L_N: 'L'; L_S: ''), // 157
-    (L_N: 'L'; L_S: ''), // 158
-    (L_N: 'L'; L_S: ''), // 159
-    (L_N: 'L'; L_S: '')); // 160
-
-  InfoAdressL:
-    string = 'Адрес:';
-  InfoStateL:
-    string = 'Штат:';
-  InfoZipL:
-    string = 'Индекс:';
-  InfoOHomeL:
-    string = 'Место рождения:';
-  InfoWorkL:
-    string = 'Работа:';
-  InfoCompanyL:
-    string = 'Компания:';
-  InfoDeportL:
-    string = 'Отдел:';
-  InfoPositionL:
-    string = 'Должность:';
-  InfoOccupationL:
-    string = 'Профессия:';
-  InfoWebSiteL:
-    string = 'Сайт:';
-  InfoPhoneL:
-    string = 'Телефон:';
-  InfoFaxL:
-    string = 'Факс:';
-  InfoCellularL:
-    string = 'Сотовый:';
-  InfowPhoneL:
-    string = 'Рабочий телефон:';
-  InfowFaxL:
-    string = 'Рабочий факс:';
-  InfoInterestsL:
-    string = 'Интересы:';
-  InfoAboutL:
-    string = 'О себе:';
-  InfoHomePageL:
-    string = 'Домашняя страничка:';
-  InfoLastUpDateL:
-    string = 'Дата последнего обновления данных:';
-  InfoLangL:
-    string = 'Владение языками:';
-  InfoMaritalL:
-    string = 'Брак:';
-  InfoSexualL:
-    string = 'Сексуальная ориентация:';
-  InfoHeightL:
-    string = 'Рост:';
-  InfoReligL:
-    string = 'Религия:';
-  InfoSmokL:
-    string = 'Курение:';
-  InfoHairL:
-    string = 'Цвет волос:';
-  InfoChildrenL1:
-    string = 'Детей:';
+    (L_N: 'LAddress'; L_S: ''), // 134
+    (L_N: 'LState'; L_S: ''), // 135
+    (L_N: 'LZip'; L_S: ''), // 136
+    (L_N: 'LOHome'; L_S: ''), // 137
+    (L_N: 'LWork'; L_S: ''), // 138
+    (L_N: 'LCompany'; L_S: ''), // 139
+    (L_N: 'LDepart'; L_S: ''), // 140
+    (L_N: 'LPosit'; L_S: ''), // 141
+    (L_N: 'LOccup'; L_S: ''), // 142
+    (L_N: 'LWebSite'; L_S: ''), // 143
+    (L_N: 'LPhone'; L_S: ''), // 144
+    (L_N: 'LFax'; L_S: ''), // 145
+    (L_N: 'LCell'; L_S: ''), // 146
+    (L_N: 'LWPhone'; L_S: ''), // 147
+    (L_N: 'LWFax'; L_S: ''), // 148
+    (L_N: 'LInterests'; L_S: ''), // 149
+    (L_N: 'LAbout'; L_S: ''), // 150
+    (L_N: 'LHomePage'; L_S: ''), // 151
+    (L_N: 'LLangs'; L_S: ''), // 152
+    (L_N: 'LMarital'; L_S: ''), // 153
+    (L_N: 'LSexual'; L_S: ''), // 154
+    (L_N: 'LHeight'; L_S: ''), // 155
+    (L_N: 'LRelig'; L_S: ''), // 156
+    (L_N: 'LSmok'; L_S: ''), // 157
+    (L_N: 'LHair'; L_S: ''), // 158
+    (L_N: 'LChildren'; L_S: ''), // 159
+    (L_N: 'LastUpDate'; L_S: '')); // 160
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}

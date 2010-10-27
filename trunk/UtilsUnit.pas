@@ -625,73 +625,73 @@ end;
 {$ENDREGION}
 {$REGION 'CreateLang'}
 
-{ procedure CreateLang(Xform: Tform);
-  var
+{procedure CreateLang(Xform: Tform);
+var
   I, MI: Integer;
   PropInfo: PPropInfo;
   TK: TTypeKind;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
-  begin
+begin
   // Создаём необходимые папки
-  ForceDirectories(MyPath + 'Langs\Forms\');
+  ForceDirectories(V_ProfilePath + 'Langs\Forms\');
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
-  with JvXML do
-  begin
-  // Записываем заголовок формы
-  XML_Node := Root.Items.Add(Xform.name);
-  XML_Node.Properties.Add('c', Xform.Caption);
-  // Просматриваем все контролы на форме
-  for I := 0 to Xform.ComponentCount - 1 do
-  begin
-  // Пишем в файл всплывающие меню
-  if (Xform.Components[I] is TPopupMenu) then
-  begin
-  for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
-  XML_Node.Items.Add((Xform.Components[I] as TPopupMenu).Items[MI].name).Properties.Add('c', (Xform.Components[I] as TPopupMenu).Items[MI].Caption);
-  Continue;
-  end;
-  // Пишем в файл ЛистВиев
-  if (Xform.Components[I] is TJvListView) then
-  begin
-  for MI := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
-  XML_Node.Items.Add(Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[MI].index)).Properties.Add('c',
-  (Xform.Components[I] as TJvListView).Columns[MI].Caption);
-  Continue;
-  end;
-  if (Xform.Components[I] is TListView) then
-  begin
-  for MI := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
-  XML_Node.Items.Add(Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[MI].index)).Properties.Add('c',
-  (Xform.Components[I] as TListView).Columns[MI].Caption);
-  Continue;
-  end;
-  // Пишем в файл Категории кнопок
-  if (Xform.Components[I] is TButtonGroup) then
-  begin
-  for MI := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
-  XML_Node.Items.Add(Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TButtonGroup).Items[MI].index)).Properties.Add('c',
-  (Xform.Components[I] as TButtonGroup).Items[MI].Caption);
-  Continue;
-  end;
-  // Пишем в файл все компоненты которые имеют Caption
-  PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
-  if PropInfo <> nil then
-  begin
-  TK := PropInfo^.PropType^.Kind;
-  if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-  XML_Node.Items.Add(Xform.Components[I].name).Properties.Add('c', GetStrProp(Xform.Components[I], PropInfo));
-  end;
-  end;
-  // Записываем сам файл
-  SaveToFile(MyPath + 'Langs\Forms\' + Xform.name + '.xml');
-  end;
+    with JvXML do
+    begin
+      // Записываем заголовок формы
+      XML_Node := Root.Items.Add(Xform.name);
+      XML_Node.Properties.Add(C_CS, Xform.Caption);
+      // Просматриваем все контролы на форме
+      for I := 0 to Xform.ComponentCount - 1 do
+      begin
+        // Пишем в файл всплывающие меню
+        if (Xform.Components[I] is TPopupMenu) then
+        begin
+          for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
+            XML_Node.Items.Add((Xform.Components[I] as TPopupMenu).Items[MI].name).Properties.Add(C_CS, (Xform.Components[I] as TPopupMenu).Items[MI].Caption);
+          Continue;
+        end;
+        // Пишем в файл ЛистВиев
+        if (Xform.Components[I] is TJvListView) then
+        begin
+          for MI := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
+            XML_Node.Items.Add(Xform.Components[I].name + C_DD + IntToStr((Xform.Components[I] as TJvListView).Columns[MI].index)).Properties.Add(C_CS,
+              (Xform.Components[I] as TJvListView).Columns[MI].Caption);
+          Continue;
+        end;
+        if (Xform.Components[I] is TListView) then
+        begin
+          for MI := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
+            XML_Node.Items.Add(Xform.Components[I].name + C_DD + IntToStr((Xform.Components[I] as TListView).Columns[MI].index)).Properties.Add(C_CS,
+              (Xform.Components[I] as TListView).Columns[MI].Caption);
+          Continue;
+        end;
+        // Пишем в файл Категории кнопок
+        if (Xform.Components[I] is TButtonGroup) then
+        begin
+          for MI := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
+            XML_Node.Items.Add(Xform.Components[I].name + C_DD + IntToStr((Xform.Components[I] as TButtonGroup).Items[MI].index)).Properties.Add(C_CS,
+              (Xform.Components[I] as TButtonGroup).Items[MI].Caption);
+          Continue;
+        end;
+        // Пишем в файл все компоненты которые имеют Caption
+        PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
+        if PropInfo <> nil then
+        begin
+          TK := PropInfo^.PropType^.Kind;
+          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+            XML_Node.Items.Add(Xform.Components[I].name).Properties.Add(C_CS, GetStrProp(Xform.Components[I], PropInfo));
+        end;
+      end;
+      // Записываем сам файл
+      SaveToFile(V_ProfilePath + 'Langs\Forms\' + Xform.name + C_XML_Ext);
+    end;
   finally
-  JvXML.Free;
+    JvXML.Free;
   end;
-  end; }
+end;}
 
 {$ENDREGION}
 {$REGION 'SaveTextInHistory'}
