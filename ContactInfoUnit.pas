@@ -6,7 +6,7 @@
   E-mail: imadering@mail.ru
   ******************************************************************************* }
 
-unit IcqContactInfoUnit;
+unit ContactInfoUnit;
 
 interface
 
@@ -30,10 +30,11 @@ uses
   StrUtils,
   VarsUnit,
   Menus,
-  JvSimpleXml;
+  JvSimpleXml,
+  GIFImg;
 
 type
-  TIcqContactInfoForm = class(TForm)
+  TContactInfoForm = class(TForm)
     ReqInfoBitBtn: TBitBtn;
     OKBitBtn: TBitBtn;
     BottomHTMLViewer: THTMLViewer;
@@ -83,7 +84,7 @@ type
 {$ENDREGION}
 
 var
-  IcqContactInfoForm: TIcqContactInfoForm;
+  ContactInfoForm: TContactInfoForm;
 
 implementation
 
@@ -108,20 +109,20 @@ const
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqContactInfoForm.TopAllCopyHTMLClick(Sender: TObject);
+procedure TContactInfoForm.TopAllCopyHTMLClick(Sender: TObject);
 begin
   // Выделяем всё и копируем в буфер обмена
   TopHTMLViewer.SelectAll;
   TopHTMLViewer.CopyToClipboard;
 end;
 
-procedure TIcqContactInfoForm.TopCopyHTMLClick(Sender: TObject);
+procedure TContactInfoForm.TopCopyHTMLClick(Sender: TObject);
 begin
   // Копируем выделенный текст в буфер обмена
   TopHTMLViewer.CopyToClipboard;
 end;
 
-procedure TIcqContactInfoForm.TopHTMLViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TContactInfoForm.TopHTMLViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   // При нажатии комбинации клавиш Ctrl + C в истории чата
   // копируем выделенный текст в буфер обмена
@@ -129,14 +130,14 @@ begin
     TopHTMLViewer.CopyToClipboard;
 end;
 
-procedure TIcqContactInfoForm.TopHTMLViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TContactInfoForm.TopHTMLViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Сбрасываем выделение текста в чате по клику левой клавишей мыши
   if Button = MbLeft then
     TopHTMLViewer.SelLength := 0;
 end;
 
-procedure TIcqContactInfoForm.TopPopupMenuPopup(Sender: TObject);
+procedure TContactInfoForm.TopPopupMenuPopup(Sender: TObject);
 begin
   // Проверяем есть ли выделенный текст в истории чата
   if TopHTMLViewer.SelLength = 0 then
@@ -148,7 +149,7 @@ end;
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
-procedure TIcqContactInfoForm.TranslateForm;
+procedure TContactInfoForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
@@ -162,7 +163,7 @@ end;
 {$ENDREGION}
 {$REGION 'AddHTML'}
 
-procedure TIcqContactInfoForm.AddHTML(const ToWhere: THTMLViewer; Text: string; TextClass: string = 'cdef'; InsertBR: Boolean = False; StupidInsert: Boolean = False; ClearIt: Boolean = False);
+procedure TContactInfoForm.AddHTML(const ToWhere: THTMLViewer; Text: string; TextClass: string = 'cdef'; InsertBR: Boolean = False; StupidInsert: Boolean = False; ClearIt: Boolean = False);
 var
   Doc: string;
 begin
@@ -181,41 +182,11 @@ end;
 {$ENDREGION}
 {$REGION 'LoadUserUnfo'}
 
-procedure TIcqContactInfoForm.LoadUserUnfo;
+procedure TContactInfoForm.LoadUserUnfo;
 var
   AvatarFile: string;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
-
-  procedure GetInfo;
-  begin
-    InfoLabel.Caption := EmptyStr;
-    if ReqProto = C_Icq then
-    begin
-      if ICQ_Work_Phaze then
-      begin
-        InfoLabel.Caption := Lang_Vars[56].L_S;
-        ICQ_ReqInfo_New_Pkt(ReqUIN);
-      end;
-    end
-    else if ReqProto = C_Jabber then
-    begin
-      if Jabber_Work_Phaze then
-      begin
-        InfoLabel.Caption := Lang_Vars[56].L_S;
-
-      end;
-    end
-    else if ReqProto = C_Mra then
-    begin
-      if MRA_Work_Phaze then
-      begin
-        InfoLabel.Caption := Lang_Vars[56].L_S;
-
-      end;
-    end;
-  end;
-
 begin
   // Устанавливаем заголовок окна
   Caption := Lang_Vars[57].L_S;
@@ -230,6 +201,7 @@ begin
   // Очищаем картинку гороскопа
   HoroImage.Picture.Assign(nil);
   // Загружаем аватар
+  AvatarImage.Picture.Assign(nil);
   AvatarFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_NoAvatarFileName;
   if FileExists(AvatarFile) then
     AvatarImage.Picture.LoadFromFile(AvatarFile);
@@ -255,7 +227,7 @@ begin
             CreateSummery(XML_Node);
           end
           else
-            GetInfo;
+            ReqInfoBitBtnClick(nil);
         end;
       end;
     finally
@@ -263,26 +235,26 @@ begin
     end;
   end
   else // Если файл с инфой не нашли, то запрашиваем её и ожидаем получения
-    GetInfo;
+    ReqInfoBitBtnClick(nil);
 end;
 
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqContactInfoForm.BottomAllCopyHTMLClick(Sender: TObject);
+procedure TContactInfoForm.BottomAllCopyHTMLClick(Sender: TObject);
 begin
   // Выделяем всё и копируем в буфер обмена
   BottomHTMLViewer.SelectAll;
   BottomHTMLViewer.CopyToClipboard;
 end;
 
-procedure TIcqContactInfoForm.BottomCopyHTMLClick(Sender: TObject);
+procedure TContactInfoForm.BottomCopyHTMLClick(Sender: TObject);
 begin
   // Копируем выделенный текст в буфер обмена
   BottomHTMLViewer.CopyToClipboard;
 end;
 
-procedure TIcqContactInfoForm.BottomHTMLViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
+procedure TContactInfoForm.BottomHTMLViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
 begin
   // Отключаем реакции
   Handled := True;
@@ -290,7 +262,7 @@ begin
   OpenURL(SRC);
 end;
 
-procedure TIcqContactInfoForm.BottomHTMLViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TContactInfoForm.BottomHTMLViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   // При нажатии комбинации клавиш Ctrl + C в истории чата
   // копируем выделенный текст в буфер обмена
@@ -298,14 +270,14 @@ begin
     BottomHTMLViewer.CopyToClipboard;
 end;
 
-procedure TIcqContactInfoForm.BottomHTMLViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TContactInfoForm.BottomHTMLViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   // Сбрасываем выделение текста в чате по клику левой клавишей мыши
   if Button = MbLeft then
     BottomHTMLViewer.SelLength := 0;
 end;
 
-procedure TIcqContactInfoForm.BottomPopupMenuPopup(Sender: TObject);
+procedure TContactInfoForm.BottomPopupMenuPopup(Sender: TObject);
 begin
   // Проверяем есть ли выделенный текст в истории чата
   if BottomHTMLViewer.SelLength = 0 then
@@ -317,20 +289,23 @@ end;
 {$ENDREGION}
 {$REGION 'CreateSummery'}
 
-procedure TIcqContactInfoForm.CreateSummery(Info_Node: TJvSimpleXmlElem);
+procedure TContactInfoForm.CreateSummery(Info_Node: TJvSimpleXmlElem);
 const
   C_cmargin = 'cmargin';
 var
-  Nick, First, Last, Age, IDay, IMonth, IYear: string;
+  Nick, First, Last, Age, IDay, IMonth, IYear, FullName: string;
   Email0, Email1, Email2, Email3, OCity, OState, Gender: string;
-  Address, City, State, Zip, Country, OCountry: string;
+  Address, City, State, Zip, Country, OCountry, CountryFlag: string;
   // WebAware, Auth: boolean;
   WCity, WState, WZip, WAddress, Company, Department, Position, WSite, WCountry, Occupation: string;
   Phone, Fax, Cellular, WPhone, WFax, HomePage, LastUpdateInfo: string;
-  Int1, Int2, Int3, Int4, I1, I2, I3, I4, About: string;
+  Int1, Int2, Int3, Int4, I1, I2, I3, I4, About, HoroImg: string;
   Lang1, Lang2, Lang3, Marital, Sexual, XHeight, Relig, Smok, Hair, Children: string;
   XML_Node: TJvSimpleXmlElem;
 begin
+  IDay := '00';
+  IMonth := '00';
+  Gender := '0';
   // Добавляем стили для нижнего уровня
   AddHTML(BottomHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
   // Загружаем информацию из распакованного xml файла с инфой
@@ -343,7 +318,8 @@ begin
       Nick := URLDecode(XML_Node.Properties.Value(C_Nick));
       First := URLDecode(XML_Node.Properties.Value(C_First));
       Last := URLDecode(XML_Node.Properties.Value(C_Last));
-      if IsNotNull([Nick, First, Last]) then
+      FullName := URLDecode(XML_Node.Properties.Value(C_Name));
+      if IsNotNull([Nick, First, Last, FullName]) then
       begin
         // Вставляем разделитель
         AddHTML(TopHTMLViewer, C_HR, EmptyStr, False, True);
@@ -353,10 +329,18 @@ begin
           AddHTML(TopHTMLViewer, Lang_Vars[128].L_S + C_TN + C_BN, C_cbold);
           AddHTML(TopHTMLViewer, Nick, C_cdef, True);
         end;
-        AddHTML(TopHTMLViewer, Lang_Vars[129].L_S + C_TN + C_BN, C_cbold);
-        if Trim(First) <> EmptyStr then
-          AddHTML(TopHTMLViewer, First + C_BN);
-        AddHTML(TopHTMLViewer, Last, C_cdef, True);
+        if (First <> EmptyStr) or (Last <> EmptyStr) or (FullName <> EmptyStr) then
+        begin
+          AddHTML(TopHTMLViewer, Lang_Vars[129].L_S + C_TN + C_BN, C_cbold);
+          if Trim(FullName) <> EmptyStr then
+            AddHTML(TopHTMLViewer, FullName, C_cdef)
+          else
+          begin
+            if Trim(First) <> EmptyStr then
+              AddHTML(TopHTMLViewer, First + C_BN);
+            AddHTML(TopHTMLViewer, Last, C_cdef);
+          end;
+        end;
       end;
     end;
     // Email адреса
@@ -397,16 +381,18 @@ begin
     XML_Node := Info_Node.Items.ItemNamed[C_HomeInfo];
     if XML_Node <> nil then
     begin
+      CountryFlag := EmptyStr;
       Address := URLDecode(XML_Node.Properties.Value(C_Address));
       City := URLDecode(XML_Node.Properties.Value(C_City));
       State := URLDecode(XML_Node.Properties.Value(C_State));
       Zip := URLDecode(XML_Node.Properties.Value(C_Zip));
-      Country := XML_Node.Properties.Value(C_Country);
+      Country := URLDecode(XML_Node.Properties.Value(C_Country));
       // Получаем текст страны из кода
       if ReqProto = C_Icq then
       begin
         if Assigned(IcqOptionsForm) then
           Country := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + Country + C_EN];
+        CountryFlag := GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr);
       end
       else if ReqProto = C_Jabber then
       begin
@@ -419,8 +405,8 @@ begin
       if IsNotNull([Country, City]) then
       begin
         AddHTML(BottomHTMLViewer, Lang_Vars[132].L_S + C_TN + C_BN, C_cbold);
-        if Country <> EmptyStr then
-          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr)]) + StrArrayToStr([Country, City]), C_cdef, True)
+        if (Country <> EmptyStr) and (CountryFlag <> EmptyStr) then
+          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [CountryFlag]) + StrArrayToStr([Country, City]), C_cdef, True)
         else
           AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), C_cdef, True);
       end;
@@ -478,7 +464,7 @@ begin
       if Length(IMonth) = 1 then
         IMonth := '0' + IMonth;
       IYear := XML_Node.Properties.Value(C_Year);
-      if Age <> '0' then
+      if (Age <> '0') and (Age <> EmptyStr) then
       begin
         AddHTML(BottomHTMLViewer, Lang_Vars[131].L_S + C_TN + C_BN, C_cbold);
         AddHTML(BottomHTMLViewer, Age, C_cdef, True);
@@ -496,12 +482,14 @@ begin
     XML_Node := Info_Node.Items.ItemNamed[C_OHomeInfo];
     if XML_Node <> nil then
     begin
+      CountryFlag := EmptyStr;
       OCountry := XML_Node.Properties.Value(C_Country);
       // Получаем текст страны из кода
       if ReqProto = C_Icq then
       begin
         if Assigned(IcqOptionsForm) then
           OCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + OCountry + C_EN];
+        CountryFlag := GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr);
       end
       else if ReqProto = C_Jabber then
       begin
@@ -516,9 +504,8 @@ begin
       if IsNotNull([OCountry, OCity]) then
       begin
         AddHTML(BottomHTMLViewer, Lang_Vars[137].L_S + C_TN + C_BN, C_cbold);
-        if OCountry <> EmptyStr then
-          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr)]) + StrArrayToStr([OCountry, OCity]),
-            C_cdef, True)
+        if (OCountry <> EmptyStr) and (CountryFlag <> EmptyStr) then
+          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [CountryFlag]) + StrArrayToStr([OCountry, OCity]), C_cdef, True)
         else
           AddHTML(BottomHTMLViewer, StrArrayToStr([OCountry, OCity]), C_cdef, True);
       end;
@@ -535,6 +522,7 @@ begin
     XML_Node := Info_Node.Items.ItemNamed[C_WorkInfo];
     if XML_Node <> nil then
     begin
+      CountryFlag := EmptyStr;
       WCity := URLDecode(XML_Node.Properties.Value(C_City));
       WState := URLDecode(XML_Node.Properties.Value(C_State));
       WZip := URLDecode(XML_Node.Properties.Value(C_Zip));
@@ -543,13 +531,14 @@ begin
       Department := URLDecode(XML_Node.Properties.Value(C_Dep));
       Position := URLDecode(XML_Node.Properties.Value(C_Prof));
       WSite := URLDecode(XML_Node.Properties.Value(C_Site));
-      WCountry := XML_Node.Properties.Value(C_Country);
-      Occupation := XML_Node.Properties.Value(C_Occup);
+      WCountry := URLDecode(XML_Node.Properties.Value(C_Country));
+      Occupation := URLDecode(XML_Node.Properties.Value(C_Occup));
       // Получаем текст страны из кода
       if ReqProto = C_Icq then
       begin
         if Assigned(IcqOptionsForm) then
           WCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + WCountry + C_EN];
+        CountryFlag := GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr);
       end
       else if ReqProto = C_Jabber then
       begin
@@ -565,9 +554,8 @@ begin
       if IsNotNull([WCountry, WCity]) then
       begin
         AddHTML(BottomHTMLViewer, Lang_Vars[138].L_S + C_TN + C_BN, C_cbold);
-        if WCountry <> EmptyStr then
-          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr)]) + StrArrayToStr([WCountry, WCity]),
-            C_cdef, True)
+        if (WCountry <> EmptyStr) and (CountryFlag <> EmptyStr) then
+          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [CountryFlag]) + StrArrayToStr([WCountry, WCity]), C_cdef, True)
         else
           AddHTML(BottomHTMLViewer, StrArrayToStr([WCountry, WCity]), C_cdef, True);
       end;
@@ -830,41 +818,46 @@ begin
     // Домашняя страница
     if Trim(HomePage) <> EmptyStr then
     begin
+      DecorateURL(HomePage);
       AddHTML(BottomHTMLViewer, Lang_Vars[151].L_S + C_TN + C_BN, C_cbold);
-      AddHTML(BottomHTMLViewer, HomePage, C_cdef, True);
+      AddHTML(BottomHTMLViewer, HomePage, C_cmargin, True);
       // Вставляем разделитель
       AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
     end;
-    // Дата последнего обновления, дополнительно
+    // Дата последнего обновления, дополнительные данные
     if Trim(LastUpdateInfo) <> EmptyStr then
     begin
       AddHTML(BottomHTMLViewer, Lang_Vars[160].L_S + C_TN + C_BN, C_cbold);
       AddHTML(BottomHTMLViewer, LastUpdateInfo, C_cdef, True);
     end;
     // Вычисляем знак гороскопа
-    if (IDay <> '00') and (IMonth <> '00') then
+    if ((IDay <> '00') and (IMonth <> '00')) and ((IDay <> '0') and (IMonth <> '0')) and ((IDay <> EmptyStr) and (IMonth <> EmptyStr)) then
     begin
       // Загружаем картинку гороскопа
-      HoroImage.Picture.LoadFromFile(V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + 'horoscope1' + C_BMP_Ext);
+      HoroImg := V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + 'horoscope1' + C_BMP_Ext;
+      if FileExists(HoroImg) then
+        HoroImage.Picture.LoadFromFile(HoroImg);
       // Прокручиваем на картинку этого знака
       HoroImage.Canvas.CopyRect(Rect(0, 0, 32, 32), HoroImage.Canvas, Bounds(Horospope(StrToInt(IDay), StrToInt(IMonth)), 0, 32, 32));
-    end
-    else
-      HoroImage.Picture.Assign(nil);
+    end;
   end;
   // Загружаем аватар
-  { if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
-    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
-    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
-    begin
-    if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg') then
-    ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')
-    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif') then
-    ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')
-    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp') then
-    ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp');
-    end
-    else
+  try
+    // JPG
+    if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_JPG_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_JPG_Ext)
+        // GIF
+    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_GIF_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_GIF_Ext)
+        // BMP
+    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_BMP_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_BMP_Ext)
+        // PNG
+    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_PNG_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_PNG_Ext);
+  except
+  end;
+  {else
     begin
     if (Length(UserAvatarHash) = 32) and (ICQ_Avatar_Work_Phaze) then
     begin
@@ -880,19 +873,16 @@ begin
     ICQ_GetAvatarBosServer;
     end;
     //SearchAvatarTimer.Enabled := true;
-    ContactImage.Picture.Assign(nil);
-    ContactImage.Picture.Assign(NoAvatar.Picture);
-    end; }
-  // Удаляем распакованный файл с информацией
-  // if FileExists(ProfilePath + 'Profile\Contacts\Icq_Info.xml') then DeleteFile(ProfilePath + 'Profile\Contacts\Icq_Info.xml');
+    end;}
 end;
 
 {$ENDREGION}
-{$REGION 'Other'}
+{$REGION 'ReqInfoBitBtnClick'}
 
-procedure TIcqContactInfoForm.ReqInfoBitBtnClick(Sender: TObject);
+procedure TContactInfoForm.ReqInfoBitBtnClick(Sender: TObject);
 begin
   // Запрашиваем информацию о контакте
+  InfoLabel.Caption := EmptyStr;
   if ReqProto = C_Icq then
   begin
     if (ReqUIN > EmptyStr) and (ICQ_Work_Phaze) then
@@ -903,7 +893,11 @@ begin
   end
   else if ReqProto = C_Jabber then
   begin
-
+    if (ReqUIN > EmptyStr) and (Jabber_Work_Phaze) then
+    begin
+      InfoLabel.Caption := Lang_Vars[56].L_S;
+      Jab_GetUserInfo(ReqUIN);
+    end;
   end
   else if ReqProto = C_Mra then
   begin
@@ -911,13 +905,16 @@ begin
   end;
 end;
 
-procedure TIcqContactInfoForm.OKBitBtnClick(Sender: TObject);
+{$ENDREGION}
+{$REGION 'Other'}
+
+procedure TContactInfoForm.OKBitBtnClick(Sender: TObject);
 begin
   // Закрываем окно
   Close;
 end;
 
-procedure TIcqContactInfoForm.FormDblClick(Sender: TObject);
+procedure TContactInfoForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
@@ -926,7 +923,7 @@ end;
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
-procedure TIcqContactInfoForm.FormCreate(Sender: TObject);
+procedure TContactInfoForm.FormCreate(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
@@ -970,7 +967,7 @@ end;
 {$ENDREGION}
 {$REGION 'FormDestroy'}
 
-procedure TIcqContactInfoForm.FormDestroy(Sender: TObject);
+procedure TContactInfoForm.FormDestroy(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;

@@ -123,7 +123,7 @@
     <LinkCompress c="Укоротить ссылку URL"/>
     <NotInGroups c="Вне групп"/>
     <DumpProto c="Отладка протокола %s"/>
-    <HexToText c="Показать HEX как %s текст"/>
+    <HexToText c="Показать%s как %s текст"/>
     <SMS_ACK c="SMS сообщение отправлено."/>
     <GMale c="Мужской"/>
     <GFemale c="Женский"/>
@@ -136,7 +136,7 @@
     <LHome c="Дом"/>
     <LBirDate c="Дата рождения"/>
     <LAddress c="Адрес"/>
-    <LState c="Штат"/>
+    <LState c="Регион"/>
     <LZip c="Индекс"/>
     <LOHome c="Место рождения"/>
     <LWork c="Работа"/>
@@ -373,7 +373,7 @@
     <CopyHistorySelText c="Копировать"/>
     <CopyAllHistoryText c="Копировать всё"/>
   </HistoryForm>
-  <IcqSearchForm c="Поиск новых контактов ICQ">
+  <SearchForm c="Поиск новых контактов ICQ">
     <NotPreviousClearCheckBox c="Не очищать предыдущие результаты"/>
     <OnlyOnlineCheckBox c="Только в сети"/>
     <SearchBitBtn c="Искать"/>
@@ -411,7 +411,7 @@
     <AddContactInCLSM c="Добавить контакт в список"/>
     <SaveSM c="Сохранить список в файл"/>
     <LoadSM c="Загрузить список из файла"/>
-  </IcqSearchForm>
+  </SearchForm>
   <ChatForm c="Окно сообщений">
     <ChatFontToolButton h="_b_Шрифт и стили_d__r_Настройки шрифта и цвета текста"/>
     <UniqToolButton h="_b_Уникальные настройки_d__r_Редактировать настройки для этого контакта"/>
@@ -523,22 +523,22 @@
     <c51 c="[et] Эстонский"/>
     <c52 c="[ja] Японский"/>
   </GTranslateCode>
-  <IcqAddContactForm c="Добавить контакт">
+  <AddContactForm c="Добавить контакт">
     <AccountLabel c="Учётная запись:"/>
     <NameLabel c="Имя контакта:"/>
     <GroupLabel c="Группа:"/>
     <AddContactButton c="Добавить"/>
-  </IcqAddContactForm>
-  <IcqEditContactForm c="Редактировать контакт">
+  </AddContactForm>
+  <EditContactForm c="Редактировать контакт">
     <NickLabel c="Ник:"/>
     <PhoneLabel c="Телефон:"/>
     <EmailLabel c="Email:"/>
     <NoteLabel c="Заметка:"/>
     <OKButton c="Сохранить"/>
-  </IcqEditContactForm>
-  <IcqGroupManagerForm>
+  </EditContactForm>
+  <GroupManagerForm>
     <GNameLabel c="Название группы:"/>
-  </IcqGroupManagerForm>
+  </GroupManagerForm>
   <IcqOptionsForm c="Опции: ICQ">
     <ICQOptionButtonGroup_0 c="Учётная запись"/>
     <ICQOptionButtonGroup_1 c="Подключение"/>
@@ -634,6 +634,7 @@
     <CustomICQPacketGroupBox c="Отсылка произвольного пакета данных"/>
     <SendCustomICQPacketButton c="Отправить"/>
     <SendCustomICQPaketTimerCheckBox c="Повторять отправку в цикле (секунды):"/>
+    <ClientLoginIDLabel c="Логин ID:"/>
   </IcqOptionsForm>
   <icq_countries>
     <c1 c=""/>
@@ -1129,18 +1130,18 @@
     <c9 c="[50] Открытый брак"/>
     <c10 c="[255] Другое"/>
   </icq_marital>
-  <IcqContactInfoForm c="">
+  <ContactInfoForm c="">
     <ReqInfoBitBtn c="Запросить"/>
     <TopCopyHTML c="Копировать"/>
     <TopAllCopyHTML c="Копировать всё"/>
-  </IcqContactInfoForm>
-  <IcqReqAuthForm c="">
+  </ContactInfoForm>
+  <MemoForm c="">
     <YesBitBtn c="Да"/>
     <NoBitBtn c="Нет"/>
-  </IcqReqAuthForm>
-  <IcqXStatusForm c=" Дополнительный ICQ статус">
+  </MemoForm>
+  <XStatusForm c=" Дополнительный ICQ статус">
     <BirthDayCheckBox c="Показывать шарик дня рождения"/>
-  </IcqXStatusForm>
+  </XStatusForm>
   <UpdateForm c="Обновление версии IMadering">
     <StartBitBtn c="Возобновить"/>
     <AbortBitBtn c="Прервать"/>

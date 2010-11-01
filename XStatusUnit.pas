@@ -6,7 +6,7 @@
   E-mail: imadering@mail.ru
   ******************************************************************************* }
 
-unit IcqXStatusUnit;
+unit XStatusUnit;
 
 interface
 
@@ -28,7 +28,7 @@ uses
   JvSimpleXml;
 
 type
-  TIcqXStatusForm = class(TForm)
+  TXStatusForm = class(TForm)
     XButtonGroup: TButtonGroup;
     XtextMemo: TMemo;
     BirthDayCheckBox: TCheckBox;
@@ -54,7 +54,7 @@ type
 {$ENDREGION}
 
 var
-  IcqXStatusForm: TIcqXStatusForm;
+  XStatusForm: TXStatusForm;
 
 implementation
 
@@ -77,7 +77,7 @@ const
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
-procedure TIcqXStatusForm.FormCreate(Sender: TObject);
+procedure TXStatusForm.FormCreate(Sender: TObject);
 begin
   // Перевод формы на языки
   TranslateForm;
@@ -91,7 +91,7 @@ end;
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
-procedure TIcqXStatusForm.TranslateForm;
+procedure TXStatusForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
@@ -104,7 +104,7 @@ end;
 {$ENDREGION}
 {$REGION 'XButtonGroupButtonClicked'}
 
-procedure TIcqXStatusForm.XButtonGroupButtonClicked(Sender: TObject; index: Integer);
+procedure TXStatusForm.XButtonGroupButtonClicked(Sender: TObject; index: Integer);
 var
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
@@ -140,7 +140,7 @@ end;
 {$ENDREGION}
 {$REGION 'OKButtonClick'}
 
-procedure TIcqXStatusForm.OKButtonClick(Sender: TObject);
+procedure TXStatusForm.OKButtonClick(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
@@ -197,31 +197,31 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqXStatusForm.FormDblClick(Sender: TObject);
+procedure TXStatusForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
 end;
 
-procedure TIcqXStatusForm.FormDeactivate(Sender: TObject);
+procedure TXStatusForm.FormDeactivate(Sender: TObject);
 begin
   // Закрываем окно
   Close;
 end;
 
-procedure TIcqXStatusForm.CancelButtonClick(Sender: TObject);
+procedure TXStatusForm.CancelButtonClick(Sender: TObject);
 begin
   // Закрываем это окно
   Close;
 end;
 
-procedure TIcqXStatusForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TXStatusForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Выводим главное окно на передний план
   SetForeGroundWindow(Application.MainForm.Handle);
   // Уничтожаем эту форму
   Action := CaFree;
-  IcqXStatusForm := nil;
+  XStatusForm := nil;
 end;
 
 {$ENDREGION}

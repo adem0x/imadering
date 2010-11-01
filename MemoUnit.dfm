@@ -1,4 +1,4 @@
-object IcqReqAuthForm: TIcqReqAuthForm
+object MemoForm: TMemoForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]

@@ -99,7 +99,12 @@ begin
         ChatTab.OnContextPopup := ToolButtonContextPopup;
         ChatTab.Down := True;
         ChatTab.PopupMenu := TabPopupMenu;
-        User_Proto := Proto;
+        if Proto = C_Icq then
+          ChatTab.Margins.Left := 1
+        else if Proto = C_Jabber then
+          ChatTab.Margins.Left := 2
+        else if Proto = C_Mra then
+          ChatTab.Margins.Left := 3;
         CreateNewChat(ChatTab);
       end;
       A: ;

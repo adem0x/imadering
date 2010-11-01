@@ -229,6 +229,8 @@ type
     PassChangeInfoRichEdit: TRichEdit;
     PersonalBirthDayInfoLabel: TLabel;
     Label1: TLabel;
+    ClientLoginIdEdit: TEdit;
+    ClientLoginIDLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -287,6 +289,7 @@ const
   C_ClientId = 'ClientId';
   C_PassChange = 'PassChange';
   C_SendDump = 'SendDump';
+  C_ClientLoginID = 'ClientLoginID';
   C_IcqCountries = 'icq_countries';
   C_IcqLangs = 'icq_languages';
   C_IcqInteres = 'icq_interests';
@@ -336,7 +339,13 @@ begin
                     PassEdit.OnChange := PassEditChange;
                     // --------------------------------------------------------------------------
                     // Загружаем остальные настройки
-
+                    ClientLoginIdEdit.Text := ICQ_ClientLoginID;
+                    Sub_Node := XML_Node.Items.ItemNamed[C_ClientLoginID];
+                    if Sub_Node <> nil then
+                    begin
+                      if Sub_Node.Value <> EmptyStr then
+                        ClientLoginIdEdit.Text := Sub_Node.Value;
+                    end;
                     // --------------------------------------------------------------------------
                   end;
               end;
@@ -372,7 +381,7 @@ begin
     end;
   // --------------------------------------------------------------------------
   //
-
+  ICQ_ClientLoginID := ClientLoginIdEdit.Text;
   // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
@@ -384,7 +393,7 @@ end;
 procedure TIcqOptionsForm.SaveSettings;
 var
   JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Записываем настройки ICQ протокола в файл
   // Инициализируем XML
@@ -418,7 +427,8 @@ begin
               PassEdit.Text := C_MaskPass;
             // --------------------------------------------------------------------------
             // Сохраняем другие настройки
-
+            Sub_Node := XML_Node.Items.Add(C_ClientLoginID);
+            Sub_Node.Value := ClientLoginIdEdit.Text;
             // --------------------------------------------------------------------------
             // Сохраняем файл
             SaveToFile(V_ProfilePath + C_SettingsFileName);

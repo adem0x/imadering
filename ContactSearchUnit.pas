@@ -6,7 +6,7 @@
   E-mail: imadering@mail.ru
   ******************************************************************************* }
 
-unit IcqSearchUnit;
+unit ContactSearchUnit;
 
 interface
 
@@ -33,7 +33,7 @@ uses
   ExtDlgs;
 
 type
-  TIcqSearchForm = class(TForm)
+  TContactSearchForm = class(TForm)
     CenterPanel: TPanel;
     BottomPanel: TPanel;
     NotPreviousClearCheckBox: TCheckBox;
@@ -138,7 +138,7 @@ type
 {$ENDREGION}
 
 var
-  IcqSearchForm: TIcqSearchForm;
+  ContactSearchForm: TContactSearchForm;
 
 implementation
 
@@ -149,8 +149,8 @@ uses
   MainUnit,
   IcqProtoUnit,
   UtilsUnit,
-  IcqAddContactUnit,
-  IcqContactInfoUnit,
+  AddContactUnit,
+  ContactInfoUnit,
   IcqOptionsUnit,
   JvSimpleXml,
   OverbyteIcsUrl;
@@ -164,7 +164,7 @@ const
 {$ENDREGION}
 {$REGION 'GlobalSearch'}
 
-procedure TIcqSearchForm.GlobalSearch;
+procedure TContactSearchForm.GlobalSearch;
 var
   CountryInd, LangInd, MaritalInd: Integer;
 begin
@@ -206,23 +206,23 @@ end;
 {$ENDREGION}
 {$REGION 'OpenAnketa'}
 
-procedure TIcqSearchForm.OpenAnketa;
+procedure TContactSearchForm.OpenAnketa;
 begin
-  if not Assigned(IcqContactInfoForm) then
-    IcqContactInfoForm := TIcqContactInfoForm.Create(Self);
+  if not Assigned(ContactInfoForm) then
+    ContactInfoForm := TContactInfoForm.Create(Self);
   // Присваиваем UIN инфу которого хотим смотреть
-  IcqContactInfoForm.ReqUIN := SearchResultJvListView.Selected.SubItems[1];
-  IcqContactInfoForm.ReqProto := C_Icq;
+  ContactInfoForm.ReqUIN := SearchResultJvListView.Selected.SubItems[1];
+  ContactInfoForm.ReqProto := C_Icq;
   // Загружаем информацию о нем
-  IcqContactInfoForm.LoadUserUnfo;
+  ContactInfoForm.LoadUserUnfo;
   // Отображаем окно
-  XShowForm(IcqContactInfoForm);
+  XShowForm(ContactInfoForm);
 end;
 
 {$ENDREGION}
 {$REGION 'OpenChatResult'}
 
-procedure TIcqSearchForm.OpenChatResult;
+procedure TContactSearchForm.OpenChatResult;
 {var
   RosterItem: TListItem;}
 begin
@@ -269,7 +269,7 @@ end;
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
-procedure TIcqSearchForm.TranslateForm;
+procedure TContactSearchForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
@@ -301,7 +301,7 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqSearchForm.UINSearchCheckBoxClick(Sender: TObject);
+procedure TContactSearchForm.UINSearchCheckBoxClick(Sender: TObject);
 begin
   // Активируем поиск по UIN
   if UINSearchCheckBox.Checked then
@@ -312,7 +312,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.UINSearchEditChange(Sender: TObject);
+procedure TContactSearchForm.UINSearchEditChange(Sender: TObject);
 begin
   // Активируем поиск по UIN
   if not UINSearchCheckBox.Checked then
@@ -324,7 +324,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.SaveSMClick(Sender: TObject);
+procedure TContactSearchForm.SaveSMClick(Sender: TObject);
 begin
   // Сохраняем результаты поиска в файл
   with MainForm do
@@ -338,7 +338,7 @@ end;
 {$ENDREGION}
 {$REGION 'SearchBitBtnClick'}
 
-procedure TIcqSearchForm.SearchBitBtnClick(Sender: TObject);
+procedure TContactSearchForm.SearchBitBtnClick(Sender: TObject);
 var
   I: Integer;
 begin
@@ -403,14 +403,14 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqSearchForm.SearchNextPageBitBtnClick(Sender: TObject);
+procedure TContactSearchForm.SearchNextPageBitBtnClick(Sender: TObject);
 begin
   // Начинаем листать страницы
   SPageInc := True;
   GlobalSearch;
 end;
 
-procedure TIcqSearchForm.EmailSearchCheckBoxClick(Sender: TObject);
+procedure TContactSearchForm.EmailSearchCheckBoxClick(Sender: TObject);
 begin
   // Активируем поиск по Email
   if EmailSearchCheckBox.Checked then
@@ -421,7 +421,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.EmailSearchEditChange(Sender: TObject);
+procedure TContactSearchForm.EmailSearchEditChange(Sender: TObject);
 begin
   // Активируем поиск по Email
   if not EmailSearchCheckBox.Checked then
@@ -433,7 +433,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.QMessageEditEnter(Sender: TObject);
+procedure TContactSearchForm.QMessageEditEnter(Sender: TObject);
 var
   FOptions: TFontStyles;
 begin
@@ -450,7 +450,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.QMessageEditExit(Sender: TObject);
+procedure TContactSearchForm.QMessageEditExit(Sender: TObject);
 var
   FOptions: TFontStyles;
 begin
@@ -471,20 +471,20 @@ end;
 {$ENDREGION}
 {$REGION 'FormClose'}
 
-procedure TIcqSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TContactSearchForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Выводим окно списка контактов на передний план
   BringWindowToTop(MainForm.Handle);
   // Уничтожаем окно
   SearchResultJvListView.HeaderImages := nil;
   Action := CaFree;
-  IcqSearchForm := nil;
+  ContactSearchForm := nil;
 end;
 
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
-procedure TIcqSearchForm.FormCreate(Sender: TObject);
+procedure TContactSearchForm.FormCreate(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
@@ -535,7 +535,7 @@ end;
 {$ENDREGION}
 {$REGION 'FormDestroy'}
 
-procedure TIcqSearchForm.FormDestroy(Sender: TObject);
+procedure TContactSearchForm.FormDestroy(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
@@ -575,13 +575,13 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqSearchForm.FormDblClick(Sender: TObject);
+procedure TContactSearchForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
 end;
 
-procedure TIcqSearchForm.GlobalSearchCheckBoxClick(Sender: TObject);
+procedure TContactSearchForm.GlobalSearchCheckBoxClick(Sender: TObject);
 begin
   // Активируем глобальный поиск
   if GlobalSearchCheckBox.Checked then
@@ -592,14 +592,14 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.ICQStatusCheckSMClick(Sender: TObject);
+procedure TContactSearchForm.ICQStatusCheckSMClick(Sender: TObject);
 begin
   // Проверяем статус
   if SearchResultJvListView.Selected <> nil then
     ICQ_ReqStatus0215(SearchResultJvListView.Selected.SubItems[1]);
 end;
 
-procedure TIcqSearchForm.KeyWordSearchCheckBoxClick(Sender: TObject);
+procedure TContactSearchForm.KeyWordSearchCheckBoxClick(Sender: TObject);
 begin
   // Активируем поиск по ключ. словам
   if KeyWordSearchCheckBox.Checked then
@@ -610,7 +610,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.KeyWordSearchEditChange(Sender: TObject);
+procedure TContactSearchForm.KeyWordSearchEditChange(Sender: TObject);
 begin
   // Активируем поиск по ключ. словам
   if not KeyWordSearchCheckBox.Checked then
@@ -622,7 +622,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.LoadSMClick(Sender: TObject);
+procedure TContactSearchForm.LoadSMClick(Sender: TObject);
 begin
   // Загружаем результаты поиска из файла
   SearchResultJvListView.Clear;
@@ -630,7 +630,7 @@ begin
     SearchResultJvListView.LoadFromCSV(LoadSearchResultFileDialog.FileName);
 end;
 
-procedure TIcqSearchForm.NickEditChange(Sender: TObject);
+procedure TContactSearchForm.NickEditChange(Sender: TObject);
 begin
   // Активируем глобальный поиск
   if not GlobalSearchCheckBox.Checked then
@@ -642,21 +642,21 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.AccountNameCopySMClick(Sender: TObject);
+procedure TContactSearchForm.AccountNameCopySMClick(Sender: TObject);
 begin
   // Копируем имя учётной записи в буфер обмена
   if SearchResultJvListView.Selected <> nil then
     SetClipboardText(SearchResultJvListView.Selected.SubItems[1]);
 end;
 
-procedure TIcqSearchForm.SendMessageSMClick(Sender: TObject);
+procedure TContactSearchForm.SendMessageSMClick(Sender: TObject);
 begin
   // Открываем чат с выбранным контактом
   if SearchResultJvListView.Selected <> nil then
     OpenChatResult;
 end;
 
-procedure TIcqSearchForm.ContactInfoSMClick(Sender: TObject);
+procedure TContactSearchForm.ContactInfoSMClick(Sender: TObject);
 begin
   // Открываем анкету
   if SearchResultJvListView.Selected <> nil then
@@ -666,7 +666,7 @@ end;
 {$ENDREGION}
 {$REGION 'AddContactInCLSMClick'}
 
-procedure TIcqSearchForm.AddContactInCLSMClick(Sender: TObject);
+procedure TContactSearchForm.AddContactInCLSMClick(Sender: TObject);
 { var
   FrmAddCnt: TIcqAddContactForm; }
 begin
@@ -699,7 +699,7 @@ end;
 {$ENDREGION}
 {$REGION 'SearchResultJvListViewColumnClick'}
 
-procedure TIcqSearchForm.SearchResultJvListViewColumnClick(Sender: TObject; Column: TListColumn);
+procedure TContactSearchForm.SearchResultJvListViewColumnClick(Sender: TObject; Column: TListColumn);
 var
   I: Integer;
 begin
@@ -724,25 +724,25 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqSearchForm.SearchResultJvListViewChanging(Sender: TObject; Item: TListItem; Change: TItemChange; var AllowChange: Boolean);
+procedure TContactSearchForm.SearchResultJvListViewChanging(Sender: TObject; Item: TListItem; Change: TItemChange; var AllowChange: Boolean);
 begin
   // Заносим количество найденных в панель
   ResultPanel.Caption := IntToStr(SearchResultJvListView.Items.Count);
 end;
 
-procedure TIcqSearchForm.SearchResultJvListViewDblClick(Sender: TObject);
+procedure TContactSearchForm.SearchResultJvListViewDblClick(Sender: TObject);
 begin
   // Выводим диалог добавления контакта в список контактов
   AddContactInCLSMClick(Self);
 end;
 
-procedure TIcqSearchForm.SearchResultJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
+procedure TContactSearchForm.SearchResultJvListViewGetImageIndex(Sender: TObject; Item: TListItem);
 begin
   // Ставим иконку просмотра анкеты о контакте
   Item.ImageIndex := 237;
 end;
 
-procedure TIcqSearchForm.SearchResultJvListViewGetSubItemImage(Sender: TObject; Item: TListItem; SubItem: Integer; var ImageIndex: Integer);
+procedure TContactSearchForm.SearchResultJvListViewGetSubItemImage(Sender: TObject; Item: TListItem; SubItem: Integer; var ImageIndex: Integer);
 begin
   // Ставим иконку открытия чата с этим контактом
   if SubItem = 0 then
@@ -760,7 +760,7 @@ begin
     end;
 end;
 
-procedure TIcqSearchForm.ResultClearSpeedButtonClick(Sender: TObject);
+procedure TContactSearchForm.ResultClearSpeedButtonClick(Sender: TObject);
 begin
   // Очищаем список от результатов
   SearchResultJvListView.Clear;
@@ -770,7 +770,7 @@ end;
 {$ENDREGION}
 {$REGION 'GetColimnAtX'}
 
-function TIcqSearchForm.GetColimnAtX(X: Integer): Integer;
+function TContactSearchForm.GetColimnAtX(X: Integer): Integer;
 var
   I, RelativeX, ColStartX: Integer;
 begin
@@ -797,7 +797,7 @@ end;
 {$ENDREGION}
 {$REGION 'SearchResultJvListViewMouseDown'}
 
-procedure TIcqSearchForm.SearchResultJvListViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TContactSearchForm.SearchResultJvListViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Button = MbLeft then
     begin
@@ -818,7 +818,7 @@ end;
 {$ENDREGION}
 {$REGION 'SearchResultPopupMenuPopup'}
 
-procedure TIcqSearchForm.SearchResultPopupMenuPopup(Sender: TObject);
+procedure TContactSearchForm.SearchResultPopupMenuPopup(Sender: TObject);
 begin
   // Блокируем нужные пункты меню
   if SearchResultJvListView.Selected <> nil then
@@ -846,7 +846,7 @@ end;
 {$ENDREGION}
 {$REGION 'SendQMessageSpeedButtonClick'}
 
-procedure TIcqSearchForm.SendQMessageSpeedButtonClick(Sender: TObject);
+procedure TContactSearchForm.SendQMessageSpeedButtonClick(Sender: TObject);
 begin
   with SearchResultJvListView do
     begin

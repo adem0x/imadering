@@ -69,7 +69,7 @@ uses
 {$ENDREGION}
 
 const
-  AcceptedCertsFile = 'AcceptedCerts.txt';
+  AcceptedCertsFile = 'Certificates.txt';
 
 {$REGION 'TranslateForm'}
 

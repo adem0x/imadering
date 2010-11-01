@@ -1,4 +1,4 @@
-object IcqXStatusForm: TIcqXStatusForm
+object XStatusForm: TXStatusForm
   Left = 0
   Top = 0
   BorderStyle = bsDialog
