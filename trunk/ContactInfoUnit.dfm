@@ -1,4 +1,4 @@
-object IcqContactInfoForm: TIcqContactInfoForm
+object ContactInfoForm: TContactInfoForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]

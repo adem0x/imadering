@@ -23,11 +23,11 @@ uses
   ChatUnit,
   MmSystem,
   Forms,
-  IcqSearchUnit,
+  ContactSearchUnit,
   ComCtrls,
   Messages,
   Classes,
-  IcqContactInfoUnit,
+  ContactInfoUnit,
   VarsUnit,
   Graphics,
   CategoryButtons,
@@ -333,7 +333,7 @@ const
 
   // Расшифровка пакетов для лога
   ICQ_Pkt_Names:
-    packed array[0..54] of record Pkt_Code: Integer;
+    packed array[0..55] of record Pkt_Code: Integer;
     Pkt_Name:
     string;
   end
@@ -391,7 +391,8 @@ const
     (Pkt_Code: $0B02; Pkt_Name: 'SRV_SET_REPORT_INTERVAL'), // 51
     (Pkt_Code: $0417; Pkt_Name: 'SRV_AIM_MESSAGING'), // 52
     (Pkt_Code: $130E; Pkt_Name: 'SRV_SSI_MOD_ACK'), // 53
-    (Pkt_Code: $1503; Pkt_Name: 'SRV_META_REPLY')); // 54
+    (Pkt_Code: $1503; Pkt_Name: 'SRV_META_REPLY'), // 54
+    (Pkt_Code: $1319; Pkt_Name: 'SRV_SSI_AUTH_REQ')); // 55
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -448,6 +449,7 @@ var
   MyConnTime: string;
   NewKL: Boolean;
   ICQ_Bos_Addr: string = '';
+  ICQ_ClientLoginID: string = 'TestBuddy AOL Instant Messenger (SM)';
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -1907,9 +1909,9 @@ var
   Gend: string;
   I: Integer;
 begin
-  if Assigned(IcqSearchForm) then
+  if Assigned(ContactSearchForm) then
   begin
-    with IcqSearchForm do
+    with ContactSearchForm do
     begin
       // Если UIN пустой и конец поиска, то сообщаем, что не найден
       if (AUIN = EmptyStr) and (AEndSearch) then
@@ -2715,6 +2717,9 @@ begin
           try
             with JvXML do
             begin
+              // Загружаем файл и инфой о контакте
+              if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext) then
+                LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext);
               if Root <> nil then
               begin
                 // Очищаем раздел инфы контакта
@@ -2815,10 +2820,10 @@ begin
             JvXML.Free;
           end;
           // Отображаем в окне информации о контакте полученные данные
-          if Assigned(IcqContactInfoForm) then
+          if Assigned(ContactInfoForm) then
           begin
-            if IcqContactInfoForm.ReqUIN = UIN then
-              IcqContactInfoForm.LoadUserUnfo;
+            if ContactInfoForm.ReqUIN = UIN then
+              ContactInfoForm.LoadUserUnfo;
           end;
           // Отображаем параметры настройки Авторизации и Вебаваре статуса в настройках ICQ
           if Assigned(IcqOptionsForm) then
@@ -4549,21 +4554,20 @@ end;
 {$REGION 'ICQ_CliCookiePkt'}
 
 function ICQ_CliCookiePkt(Cookie: string): string;
-const
-  ClientId = 'ICQ Client';
 begin
   Result := '00000001' // Proto Ver
   + '0006' + IntToHex(Length(Hex2Text(Cookie)), 4) + Cookie // Auth Cookie
-  + '0003' + IntToHex(Length(ClientId), 4) + Text2Hex(ClientId) // Client Id string
-  + '001700020006' // Client Major Ver
-  + '001800020005' // Client Minor Ver
+  + '0003' + IntToHex(Length(ICQ_ClientLoginID), 4) + Text2Hex(ICQ_ClientLoginID) // Client Id string
+  + '001700020007' // Client Major Ver
+  + '001800020002' // Client Minor Ver
   + '001900020000' // Client Lesser Ver
-  + '001A000207E8' // Client Build Number
+  + '001A00020C57' // Client Build Number
   + '00160002010A' // Client Id Number
-  + '0014000400007537' // Client Distribution Number
+  + '0014000400007539' // Client Distribution Number
   + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Lang
   + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Country
   + '0094000100' // Unk
+  + '004A000101' // Use SSL
   + '8003000400100000'; // Unk
 end;
 
@@ -4571,8 +4575,6 @@ end;
 {$REGION 'ICQ_MD5CliLoginPkt'}
 
 function ICQ_MD5CliLoginPkt(CPass, CKey: RawByteString): string;
-const
-  ClientId = 'ICQ Client';
 var
   CLIENT_MD5_STRING: RawByteString;
   MD5hash: string;
@@ -4598,16 +4600,17 @@ begin
   + '0001' + IntToHex(Length(ICQ_LoginUIN), 4) + Text2Hex(ICQ_LoginUIN) // Screen Name
   + '00250010' + MD5hash // Password Hash (MD5)
   + '004C0000' // Unk
-  + '0003' + IntToHex(Length(ClientId), 4) + Text2Hex(ClientId) // Client Id string
-  + '001700020006' // Client Major Ver
-  + '001800020005' // Client Minor Ver
+  + '0003' + IntToHex(Length(ICQ_ClientLoginID), 4) + Text2Hex(ICQ_ClientLoginID) // Client Id string
+  + '001700020007' // Client Major Ver
+  + '001800020002' // Client Minor Ver
   + '001900020000' // Client Lesser Ver
-  + '001A000207E8' // Client Build Number
+  + '001A00020C57' // Client Build Number
   + '00160002010A' // Client Id Number
-  + '0014000400007537' // Client Distribution Number
+  + '0014000400007539' // Client Distribution Number
   + '000F' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Lang
   + '000E' + IntToHex(Length(V_CurrentLang), 4) + Text2Hex(V_CurrentLang) // Client Country
-  + '0094000100'; // Unk
+  + '0094000100' // Unk
+  + '004A000101'; // Use SSL
 end;
 
 {$ENDREGION}

@@ -274,6 +274,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 22
             Width = 403
             Height = 17
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -288,6 +289,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 45
             Width = 403
             Height = 17
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -344,6 +346,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 72
             Width = 403
             Height = 17
+            TabStop = False
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -388,7 +391,7 @@ object IcqOptionsForm: TIcqOptionsForm
           ParentFont = False
           TabOrder = 0
           object ClientIDLabel: TLabel
-            Left = 15
+            Left = 14
             Top = 116
             Width = 3
             Height = 13
@@ -400,7 +403,7 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object ClientProtoVerLabel: TLabel
-            Left = 15
+            Left = 287
             Top = 171
             Width = 3
             Height = 13
@@ -412,7 +415,7 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object ClientCapsLabel: TLabel
-            Left = 15
+            Left = 14
             Top = 238
             Width = 3
             Height = 13
@@ -424,8 +427,20 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
           end
           object ClientVersionLabel: TLabel
-            Left = 240
+            Left = 287
             Top = 116
+            Width = 3
+            Height = 13
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object ClientLoginIDLabel: TLabel
+            Left = 14
+            Top = 171
             Width = 3
             Height = 13
             Font.Charset = DEFAULT_CHARSET
@@ -438,7 +453,7 @@ object IcqOptionsForm: TIcqOptionsForm
           object ClientIDComboBox: TComboBox
             Left = 13
             Top = 135
-            Width = 210
+            Width = 250
             Height = 21
             AutoDropDown = True
             Style = csDropDownList
@@ -451,15 +466,17 @@ object IcqOptionsForm: TIcqOptionsForm
             ItemIndex = 0
             ParentFont = False
             TabOrder = 0
+            TabStop = False
             Text = 'IMadering'
             Items.Strings = (
               'IMadering')
           end
           object ClientProtoVerEdit: TEdit
-            Left = 14
+            Left = 286
             Top = 190
-            Width = 209
+            Width = 130
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
@@ -476,6 +493,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 256
             Width = 403
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -489,6 +507,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 289
             Width = 403
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -502,6 +521,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 322
             Width = 403
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -511,10 +531,11 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 4
           end
           object ClientVersionEdit: TEdit
-            Left = 239
+            Left = 286
             Top = 135
-            Width = 177
+            Width = 130
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -542,6 +563,21 @@ object IcqOptionsForm: TIcqOptionsForm
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 6
+          end
+          object ClientLoginIdEdit: TEdit
+            Left = 13
+            Top = 190
+            Width = 250
+            Height = 21
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 7
+            OnChange = ICQUINEditChange
           end
         end
       end
@@ -627,6 +663,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            TabStop = False
             OnClick = ChangePassButtonClick
           end
           object ShowPassChangeCheckBox: TCheckBox
@@ -634,6 +671,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 287
             Width = 296
             Height = 17
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -656,7 +694,7 @@ object IcqOptionsForm: TIcqOptionsForm
             MaxLength = 8
             ParentFont = False
             PasswordChar = '*'
-            TabOrder = 2
+            TabOrder = 4
           end
           object NewPassChangeEdit: TEdit
             Left = 112
@@ -685,7 +723,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             PasswordChar = '*'
-            TabOrder = 4
+            TabOrder = 2
           end
           object PassChangeInfoRichEdit: TRichEdit
             Left = 13
@@ -780,6 +818,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 37
             Width = 192
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -794,6 +833,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 88
             Width = 192
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -808,6 +848,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 37
             Width = 192
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -822,6 +863,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 88
             Width = 192
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -967,6 +1009,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 38
             Width = 192
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -981,6 +1024,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 90
             Width = 192
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -995,6 +1039,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 140
             Width = 192
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1009,6 +1054,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 38
             Width = 192
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1024,6 +1070,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 89
             Width = 192
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1039,6 +1086,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 140
             Width = 192
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1054,6 +1102,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 190
             Width = 192
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1069,6 +1118,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 190
             Width = 192
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1149,12 +1199,14 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            TabStop = False
           end
           object OCityInfoEdit: TEdit
             Left = 14
             Top = 88
             Width = 215
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1169,6 +1221,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 39
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1292,6 +1345,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 87
             Width = 215
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1306,6 +1360,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 137
             Width = 113
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1320,6 +1375,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 137
             Width = 86
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1334,6 +1390,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 188
             Width = 401
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1348,6 +1405,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 38
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1362,6 +1420,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 87
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1376,6 +1435,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 137
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1399,6 +1459,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 7
+            TabStop = False
           end
         end
       end
@@ -1509,6 +1570,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 87
             Width = 215
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1523,6 +1585,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 137
             Width = 113
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1537,6 +1600,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 137
             Width = 86
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1551,6 +1615,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 38
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1565,6 +1630,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 87
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1579,6 +1645,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 137
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1602,6 +1669,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 6
+            TabStop = False
           end
         end
         object CompanyInfoGroupBox: TGroupBox
@@ -1681,6 +1749,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 39
             Width = 215
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1695,6 +1764,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 88
             Width = 215
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1718,12 +1788,14 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 2
+            TabStop = False
           end
           object CompanyMasteInfoEdit: TEdit
             Left = 244
             Top = 88
             Width = 171
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1738,6 +1810,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 138
             Width = 401
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1971,6 +2044,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            TabStop = False
           end
           object PersonalMaritalInfoComboBox: TComboBox
             Left = 145
@@ -1986,12 +2060,14 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
+            TabStop = False
           end
           object PersonalHomePageInfoEdit: TEdit
             Left = 145
             Top = 91
             Width = 272
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2006,6 +2082,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 147
             Width = 49
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2020,6 +2097,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 217
             Width = 117
             Height = 21
+            TabStop = False
             Color = clBtnFace
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2044,6 +2122,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 5
+            TabStop = False
           end
           object PersonalReligionInfoComboBox: TComboBox
             Left = 145
@@ -2059,6 +2138,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 6
+            TabStop = False
           end
           object PersonalDayInfoComboBox: TComboBox
             Left = 73
@@ -2074,6 +2154,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 7
+            TabStop = False
             Items.Strings = (
               ''
               '1'
@@ -2122,6 +2203,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 8
+            TabStop = False
             Items.Strings = (
               ''
               '1'
@@ -2151,6 +2233,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 9
+            TabStop = False
           end
           object PersonalSmokInfoComboBox: TComboBox
             Left = 145
@@ -2166,6 +2249,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 10
+            TabStop = False
           end
           object PersonalSexInfoComboBox: TComboBox
             Left = 145
@@ -2181,6 +2265,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 11
+            TabStop = False
           end
           object PersonalHairColourInfoComboBox: TComboBox
             Left = 12
@@ -2196,6 +2281,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 12
+            TabStop = False
           end
         end
       end
@@ -2231,6 +2317,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            TabStop = False
           end
           object Lang2InfoComboBox: TComboBox
             Left = 148
@@ -2246,6 +2333,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
+            TabStop = False
           end
           object Lang3InfoComboBox: TComboBox
             Left = 286
@@ -2261,6 +2349,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 2
+            TabStop = False
           end
         end
         object InterestInfoGroupBox: TGroupBox
@@ -2289,6 +2378,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
+            TabStop = False
           end
           object Interest2InfoComboBox: TComboBox
             Left = 11
@@ -2304,6 +2394,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
+            TabStop = False
           end
           object Interest3InfoComboBox: TComboBox
             Left = 11
@@ -2319,6 +2410,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 2
+            TabStop = False
           end
           object Interest4InfoComboBox: TComboBox
             Left = 11
@@ -2334,12 +2426,14 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 3
+            TabStop = False
           end
           object Interest1InfoEdit: TEdit
             Left = 162
             Top = 19
             Width = 255
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2354,6 +2448,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 46
             Width = 255
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2368,6 +2463,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 73
             Width = 255
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2382,6 +2478,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 100
             Width = 255
             Height = 21
+            TabStop = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2409,6 +2506,7 @@ object IcqOptionsForm: TIcqOptionsForm
             Top = 20
             Width = 406
             Height = 127
+            TabStop = False
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -11

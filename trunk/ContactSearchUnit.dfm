@@ -1,4 +1,4 @@
-object IcqSearchForm: TIcqSearchForm
+object ContactSearchForm: TContactSearchForm
   Left = 0
   Top = 0
   ClientHeight = 526
@@ -488,6 +488,7 @@ object IcqSearchForm: TIcqSearchForm
         Top = 28
         Width = 196
         Height = 21
+        TabStop = False
         TabOrder = 1
         OnChange = UINSearchEditChange
       end

@@ -50,6 +50,7 @@ type
     HexToUtf8Text_Menu: TMenuItem;
     HexToLEText_Menu: TMenuItem;
     HexToBEText_Menu: TMenuItem;
+    ToUtf8Text_Menu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
@@ -67,6 +68,7 @@ type
     procedure HexToLEText_MenuClick(Sender: TObject);
     procedure HexToBEText_MenuClick(Sender: TObject);
     procedure WriteLogSpeedButtonClick(Sender: TObject);
+    procedure ToUtf8Text_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -203,17 +205,32 @@ end;
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
+procedure TLogForm.ToUtf8Text_MenuClick(Sender: TObject);
+var
+  s: string;
+begin
+  // Преобразовываем текст в UTF8 строку текста
+  try
+    s := UTF8ToString(LogMemo.SelText);
+    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
+  except
+  end;
+end;
+
 procedure TLogForm.TranslateForm;
+const
+  h = 'HEX';
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Переводим меню
-  HexToText_Menu.Caption := Format(Lang_Vars[48].L_S, ['ANSI']);
-  HexToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, ['UTF-8']);
-  HexToLEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-LE']);
-  HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, ['U-BE']);
+  HexToText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'ANSI']);
+  ToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, [EmptyStr, 'UTF-8']);
+  HexToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'UTF-8']);
+  HexToLEText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'U-LE']);
+  HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'U-BE']);
 end;
 {$ENDREGION}
 {$REGION 'FormCreate'}
@@ -352,6 +369,7 @@ begin
     CopySelText_Menu.Enabled := False;
     CopyAllText_Menu.Enabled := False;
     HexToText_Menu.Enabled := False;
+    ToUtf8Text_Menu.Enabled := False;
     HexToUtf8Text_Menu.Enabled := False;
     HexToLEText_Menu.Enabled := False;
     HexToBEText_Menu.Enabled := False;
@@ -361,6 +379,7 @@ begin
     CopySelText_Menu.Enabled := True;
     CopyAllText_Menu.Enabled := True;
     HexToText_Menu.Enabled := True;
+    ToUtf8Text_Menu.Enabled := True;
     HexToUtf8Text_Menu.Enabled := True;
     HexToLEText_Menu.Enabled := True;
     HexToBEText_Menu.Enabled := True;

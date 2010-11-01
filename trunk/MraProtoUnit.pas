@@ -24,7 +24,7 @@ uses
   Forms,
   Messages,
   Classes,
-  IcqContactInfoUnit,
+  ContactInfoUnit,
   VarsUnit,
   Graphics,
   CategoryButtons,
@@ -54,7 +54,7 @@ const
 {$ENDREGION}
 {$REGION 'MRA_Client_Icons'}
   MRA_Client_Icons:
-    packed array[0..12] of record
+    packed array[0..13] of record
     Client_Name: string;
     Client_Img: string;
   end = ((Client_Name: 'imadering'; Client_Img: '0'), // 0
@@ -69,7 +69,8 @@ const
     (Client_Name: 'wmagent'; Client_Img: '105'), // 9
     (Client_Name: 'qutim'; Client_Img: '104'), // 10
     (Client_Name: 'magent'; Client_Img: '311'), // 11
-    (Client_Name: 'agent'; Client_Img: '311')); // 12
+    (Client_Name: 'agent'; Client_Img: '311'), // 12
+    (Client_Name: 'bayanicq'; Client_Img: '202')); // 13
 {$ENDREGION}
 {$REGION 'Array Status Codes'}
   // Иконки для статусов

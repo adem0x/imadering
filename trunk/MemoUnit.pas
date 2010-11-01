@@ -6,7 +6,7 @@
   E-mail: imadering@mail.ru
   ******************************************************************************* }
 
-unit IcqReqAuthUnit;
+unit MemoUnit;
 
 interface
 
@@ -27,7 +27,7 @@ uses
   Buttons;
 
 type
-  TIcqReqAuthForm = class(TForm)
+  TMemoForm = class(TForm)
     InfoMemo: TMemo;
     HeadLabel: TLabel;
     YesBitBtn: TBitBtn;
@@ -57,7 +57,7 @@ type
 {$ENDREGION}
 
 var
-  IcqReqAuthForm: TIcqReqAuthForm;
+  MemoForm: TMemoForm;
 
 implementation
 
@@ -77,7 +77,7 @@ uses
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
-procedure TIcqReqAuthForm.TranslateForm;
+procedure TMemoForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
@@ -88,7 +88,7 @@ end;
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
-procedure TIcqReqAuthForm.FormCreate(Sender: TObject);
+procedure TMemoForm.FormCreate(Sender: TObject);
 begin
   TranslateForm;
   // Присваиваем иконку окну и кнопке
@@ -102,7 +102,7 @@ end;
 {$ENDREGION}
 {$REGION 'FormShow'}
 
-procedure TIcqReqAuthForm.FormShow(Sender: TObject);
+procedure TMemoForm.FormShow(Sender: TObject);
 begin
   // Если Твит, то ставим фокус в поле ввода
   if (Twit) and (InfoMemo.CanFocus) then
@@ -115,20 +115,20 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqReqAuthForm.FormDblClick(Sender: TObject);
+procedure TMemoForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
 end;
 
-procedure TIcqReqAuthForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TMemoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // Автоматически уничтожаем форму при закрытии
   Action := CaFree;
-  IcqReqAuthForm := nil;
+  MemoForm := nil;
 end;
 
-procedure TIcqReqAuthForm.NoBitBtnClick(Sender: TObject);
+procedure TMemoForm.NoBitBtnClick(Sender: TObject);
 begin
   // Закрываем окно
   Close;
@@ -137,7 +137,7 @@ end;
 {$ENDREGION}
 {$REGION 'InfoMemoChange'}
 
-procedure TIcqReqAuthForm.InfoMemoChange(Sender: TObject);
+procedure TMemoForm.InfoMemoChange(Sender: TObject);
 var
   S: string;
 begin
@@ -157,7 +157,7 @@ end;
 {$ENDREGION}
 {$REGION 'InfoMemoKeyPress'}
 
-procedure TIcqReqAuthForm.InfoMemoKeyPress(Sender: TObject; var Key: Char);
+procedure TMemoForm.InfoMemoKeyPress(Sender: TObject; var Key: Char);
 begin
   // Если это твит, то ограничиваем количество вводимых символов до 140
   if Twit then
@@ -168,7 +168,7 @@ end;
 {$ENDREGION}
 {$REGION 'UpDateVersion'}
 
-procedure TIcqReqAuthForm.UpDateVersion(M: string);
+procedure TMemoForm.UpDateVersion(M: string);
 begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(6, Icon);
@@ -189,7 +189,7 @@ end;
 {$ENDREGION}
 {$REGION 'PostInTwitter'}
 
-procedure TIcqReqAuthForm.PostInTwitter(M: string);
+procedure TMemoForm.PostInTwitter(M: string);
 begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(272, Icon);
@@ -211,7 +211,7 @@ end;
 {$ENDREGION}
 {$REGION 'YesBitBtnClick'}
 
-procedure TIcqReqAuthForm.YesBitBtnClick(Sender: TObject);
+procedure TMemoForm.YesBitBtnClick(Sender: TObject);
 // label
 // x;
 var

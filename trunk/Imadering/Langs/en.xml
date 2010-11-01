@@ -123,7 +123,7 @@
     <LinkCompress c="Shorten the link URL"/>
     <NotInGroups c="Outside groups"/>
     <DumpProto c="Debugging protocol %s"/>
-    <HexToText c="Show HEX as %s text"/>
+    <HexToText c="Show%s as %s text"/>
     <SMS_ACK c="SMS message sent."/>
     <GMale c="Male"/>
     <GFemale c="Female"/>
@@ -373,7 +373,7 @@
     <CopyHistorySelText c="Copy"/>
     <CopyAllHistoryText c="Copy all"/>
   </HistoryForm>
-  <IcqSearchForm c="Search new ICQ contacts">
+  <SearchForm c="Search new ICQ contacts">
     <NotPreviousClearCheckBox c="Do not clear the previous results"/>
     <OnlyOnlineCheckBox c="Only network"/>
     <SearchBitBtn c="Search"/>
@@ -411,7 +411,7 @@
     <AddContactInCLSM c="Add contact to contact list"/>
     <SaveSM c="Save list in file"/>
     <LoadSM c="Load a list from file"/>
-  </IcqSearchForm>
+  </SearchForm>
   <ChatForm c="Messaging window">
     <ChatFontToolButton h="_b_Font and styles_d__r_Font settings and text colors"/>
     <UniqToolButton h="_b_Unique settings_d__r_Edit settings for this contact"/>
@@ -523,22 +523,22 @@
     <c51 c="[cy] Welsh"/>
     <c52 c="[yi] Yiddish"/>
   </GTranslateCode>
-  <IcqAddContactForm c="Add contact">
+  <AddContactForm c="Add contact">
     <AccountLabel c="Account:"/>
     <NameLabel c="Contact name:"/>
     <GroupLabel c="Group:"/>
     <AddContactButton c="Add"/>
-  </IcqAddContactForm>
-  <IcqEditContactForm c="Edit contact">
+  </AddContactForm>
+  <EditContactForm c="Edit contact">
     <NickLabel c="Nickname:"/>
     <PhoneLabel c="Phone:"/>
     <EmailLabel c="Email:"/>
     <NoteLabel c="Note:"/>
     <OKButton c="Save"/>
-  </IcqEditContactForm>
-  <IcqGroupManagerForm>
+  </EditContactForm>
+  <GroupManagerForm>
     <GNameLabel c="Group name:"/>
-  </IcqGroupManagerForm>
+  </GroupManagerForm>
   <IcqOptionsForm c="Options: ICQ">
     <ICQOptionButtonGroup_0 c="Account"/>
     <ICQOptionButtonGroup_1 c="Connecting"/>
@@ -634,6 +634,7 @@
     <CustomICQPacketGroupBox c="Sending custom data packet"/>
     <SendCustomICQPacketButton c="Submit"/>
     <SendCustomICQPaketTimerCheckBox c="Repeat send in the cycle (seconds):"/>
+    <ClientLoginIDLabel c="Login ID:"/>
   </IcqOptionsForm>
   <icq_countries>
     <c1 c=""/>
@@ -1129,18 +1130,18 @@
     <c9 c="[50] Open relationship"/>
     <c10 c="[255] Other"/>
   </icq_marital>
-  <IcqContactInfoForm c="">
+  <ContactInfoForm c="">
     <ReqInfoBitBtn c="Request"/>
     <TopCopyHTML c="Copy"/>
     <TopAllCopyHTML c="Copy all"/>
-  </IcqContactInfoForm>
-  <IcqReqAuthForm c="">
+  </ContactInfoForm>
+  <MemoForm c="">
     <YesBitBtn c="Yes"/>
     <NoBitBtn c="No"/>
-  </IcqReqAuthForm>
-  <IcqXStatusForm c=" Additional ICQ status">
+  </MemoForm>
+  <XStatusForm c=" Additional ICQ status">
     <BirthDayCheckBox c="Show ball birthday"/>
-  </IcqXStatusForm>
+  </XStatusForm>
   <UpdateForm c="Updating version IMadering">
     <StartBitBtn c="Continue"/>
     <AbortBitBtn c="Abort"/>

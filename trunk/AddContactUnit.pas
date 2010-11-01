@@ -6,7 +6,7 @@
   E-mail: imadering@mail.ru
   ******************************************************************************* }
 
-unit IcqAddContactUnit;
+unit AddContactUnit;
 
 interface
 
@@ -27,7 +27,7 @@ uses
   ComCtrls;
 
 type
-  TIcqAddContactForm = class(TForm)
+  TAddContactForm = class(TForm)
     AccountEdit: TEdit;
     NameEdit: TEdit;
     GroupComboBox: TComboBox;
@@ -53,7 +53,7 @@ type
 {$ENDREGION}
 
 var
-  IcqAddContactForm: TIcqAddContactForm;
+  AddContactForm: TAddContactForm;
 
 implementation
 
@@ -68,7 +68,7 @@ uses
 {$ENDREGION}
 {$REGION 'BuildGroupList'}
 
-procedure TIcqAddContactForm.BuildGroupList(GProto: string);
+procedure TAddContactForm.BuildGroupList(GProto: string);
 var
   I: Integer;
 begin
@@ -109,7 +109,7 @@ end;
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
-procedure TIcqAddContactForm.TranslateForm;
+procedure TAddContactForm.TranslateForm;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
@@ -122,7 +122,7 @@ end;
 {$ENDREGION}
 {$REGION 'AddContactButtonClick'}
 
-procedure TIcqAddContactForm.AddContactButtonClick(Sender: TObject);
+procedure TAddContactForm.AddContactButtonClick(Sender: TObject);
 label
   X,
   Y;
@@ -209,7 +209,7 @@ end;
 {$ENDREGION}
 {$REGION 'FormCreate'}
 
-procedure TIcqAddContactForm.FormCreate(Sender: TObject);
+procedure TAddContactForm.FormCreate(Sender: TObject);
 begin
   // Переводим форму на другие языки
   TranslateForm;
@@ -223,13 +223,13 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TIcqAddContactForm.FormDblClick(Sender: TObject);
+procedure TAddContactForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
 end;
 
-procedure TIcqAddContactForm.FormShow(Sender: TObject);
+procedure TAddContactForm.FormShow(Sender: TObject);
 begin
   // Ставим фокус в поле ввода учётной записи если она пустая
   if (AccountEdit.CanFocus) and (AccountEdit.Text = EmptyStr) then

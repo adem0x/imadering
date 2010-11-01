@@ -24,14 +24,16 @@ uses
   ComCtrls,
   Messages,
   Classes,
-  IcqContactInfoUnit,
+  ContactInfoUnit,
   VarsUnit,
   Graphics,
   CategoryButtons,
   OverbyteIcsMimeUtils,
   JabberOptionsUnit,
   JvSimpleXml,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  OverbyteIcsUtils,
+  StrUtils;
 
 {$ENDREGION}
 {$REGION 'Const'}
@@ -41,6 +43,7 @@ const
   Iq_TypeGet = '<iq type=''get'' id=''imadering_%d''>';
   Iq_Roster = 'jabber:iq:roster';
   J_MessHead = '<message type=''chat'' to=''%s'' id=''%d''>';
+  J_GetInfoHead = '<iq type=''get'' to=''%s'' id=''%d''><vCard xmlns=''vcard-temp'' prodid=''-//HandGen//NONSGML vGen v1.0//EN'' version=''2.0''/></iq>';
   J_RootTag = 'stream:stream';
   J_SessionEnd = '</stream:stream>';
   J_Features = 'stream:features';
@@ -54,6 +57,41 @@ const
   J_PlainMechanism = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''PLAIN''>%s</auth>';
   J_MD5Mechanism = '<auth xmlns=''urn:ietf:params:xml:ns:xmpp-sasl'' mechanism=''DIGEST-MD5''/>';
   J_ChallengeOK = '<response xmlns=''urn:ietf:params:xml:ns:xmpp-sasl''/>';
+  J_From = 'from';
+
+  // Значение нод для информации о контакте
+  Node_FN = 'FN';
+  Node_N = 'N';
+  Node_GIVEN = 'GIVEN';
+  Node_FAMILY = 'FAMILY';
+  Node_NICKNAME = 'NICKNAME';
+  Node_BDAY = 'BDAY';
+  Node_GENDER = 'GENDER';
+  Node_EMAIL = 'EMAIL';
+  Node_USERID = 'USERID';
+  Node_ADR = 'ADR';
+  Node_HOME = 'HOME';
+  Node_STREET = 'STREET';
+  Node_EXTADR = 'EXTADR';
+  Node_EXTADD = 'EXTADD';
+  Node_LOCALITY = 'LOCALITY';
+  Node_REGION = 'REGION';
+  Node_PCODE = 'PCODE';
+  Node_CTRY = 'CTRY';
+  Node_COUNTRY = 'COUNTRY';
+  Node_WORK = 'WORK';
+  Node_ORG = 'ORG';
+  Node_ORGNAME = 'ORGNAME';
+  Node_ORGUNIT = 'ORGUNIT';
+  Node_TITLE = 'TITLE';
+  Node_ROLE = 'ROLE';
+  Node_URL = 'URL';
+  Node_DESC = 'DESC';
+  Node_TEL = 'TEL';
+  Node_NUMBER = 'NUMBER';
+  Node_PHOTO = 'PHOTO';
+  Node_TYPE = 'TYPE';
+  Node_BINVAL = 'BINVAL';
 
 {$ENDREGION}
 {$REGION 'Jabber_Client_Icons'}
@@ -155,6 +193,8 @@ procedure Jab_ParseIQ(PktData: TJvSimpleXmlElem);
 procedure Jab_ParsePresence(PktData: TJvSimpleXmlElem);
 procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem);
 procedure Jab_SendMessage(MJID, Msg: string);
+procedure Jab_GetUserInfo(MJID: string);
+procedure Jab_ParseUserInfo(MJID: string; PktData: TJvSimpleXmlElem);
 
 {$ENDREGION}
 
@@ -502,7 +542,7 @@ end;
 procedure Jab_ParseIQ(PktData: TJvSimpleXmlElem);
 var
   XML_Node: TJvSimpleXmlElem;
-  QueryTLV: string;
+  FJID, QueryTLV: string;
 begin
   // Если къюри :)
   XML_Node := PktData.Items.ItemNamed[J_Query];
@@ -512,6 +552,17 @@ begin
     if QueryTLV = Iq_Roster then // Если это список контактов
       Jab_ParseRoster(XML_Node);
   end;
+  // Если это информация о контакте
+  XML_Node := PktData.Items.ItemNamed['vCard'];
+  if XML_Node <> nil then
+  begin
+    FJID := PktData.Properties.Value(J_From);
+    // Отделяем ресурс
+    if Pos(C_FS, FJID) > 0 then
+      FJID := Parse(C_FS, FJID, 1);
+    Jab_ParseUserInfo(FJID, XML_Node);
+    Exit;
+  end;
   // Если сессия открылась
   XML_Node := PktData.Items.ItemNamed[J_Session];
   if XML_Node <> nil then
@@ -520,6 +571,8 @@ begin
     Jab_SendPkt(Jab_GetRoster);
     // Устанавливаем статус
     Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
+    // Запрашиваем свою инфу
+    Jab_GetUserInfo(Jabber_JID);
     // Выходим
     Exit;
   end;
@@ -530,6 +583,8 @@ begin
     Jab_SendPkt(Jab_GetRoster);
     // Устанавливаем статус
     Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
+    // Запрашиваем свою инфу
+    Jab_GetUserInfo(Jabber_JID);
   end;
 end;
 
@@ -556,7 +611,7 @@ var
   PJID, KStatus, KClient_Icon, KClient_Name, KLogin, KResurs: string;
   XML_Node, Get_Node: TJvSimpleXmlElem;
 begin
-  PJID := WideLowerCase(PktData.Properties.Value('from'));
+  PJID := WideLowerCase(PktData.Properties.Value(J_From));
   if PJID <> EmptyStr then
   begin
     // Отделяем ресурс
@@ -620,7 +675,7 @@ begin
   if not Assigned(ChatForm) then
     Application.CreateForm(TChatForm, ChatForm);
   // Получаем логин от кого пришло сообщение
-  PJID := WideLowerCase(PktData.Properties.Value('from'));
+  PJID := WideLowerCase(PktData.Properties.Value(J_From));
   // Получаем текст сообщения
   XML_Node := PktData.Items.ItemNamed['body'];
   if XML_Node <> nil then
@@ -706,6 +761,338 @@ begin
   end;
 end;
 
+{$ENDREGION}
+{$REGION 'Jab_GetUserInfo'}
+
+procedure Jab_GetUserInfo(MJID: string);
+var
+  P: string;
+begin
+  // Запрашиваем информацию о контакте
+  P := Format(J_GetInfoHead, [MJID, Jabber_Seq]);
+  Jab_SendPkt(P);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+
+{$ENDREGION}
+{$REGION 'Jab_ParseUserInfo'}
+
+procedure Jab_ParseUserInfo(MJID: string; PktData: TJvSimpleXmlElem);
+const
+  T1 = '.';
+var
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
+  Nick, First, Last, Gender, HomePage, Address1, Address2, BirgDate: string;
+  City, State, Zip, Country, WCity, WState, WZip, WAddress1, WAddress2: string;
+  Company, Department, Position, WCountry, Occupation, About: string;
+  Email, Email1, Email2, Email3, FullName, ImageType: string;
+  Phone1, Phone2, Phone3, Phone4, Phone5: string;
+  I, Age, IDay, IMonth, IYear: Integer;
+  ImageData: TMemoryStream;
+  Photo: AnsiString;
+begin
+  Gender := '0';
+  // Разбираем и записываем информацию о контакте
+  for I := 0 to PktData.Items.Count - 1 do
+  begin
+    XML_Node := PktData.Items[I];
+    if XML_Node <> nil then
+    begin
+      // <FN>
+      if XML_Node.FullName = Node_FN then
+      begin
+        FullName := Utf8ToString(XML_Node.Value);
+        Continue;
+      end;
+      // <N>
+      if XML_Node.FullName = Node_N then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_GIVEN];
+        if Sub_Node <> nil then
+          First := Utf8ToString(Sub_Node.Value);
+        Sub_Node := XML_Node.Items.ItemNamed[Node_FAMILY];
+        if Sub_Node <> nil then
+          Last := Utf8ToString(Sub_Node.Value);
+        Continue;
+      end;
+      // <NICKNAME>
+      if XML_Node.FullName = Node_NICKNAME then
+      begin
+        Nick := Utf8ToString(XML_Node.Value);
+        Continue;
+      end;
+      // <BDAY>
+      if XML_Node.FullName = Node_BDAY then
+      begin
+        BirgDate := Utf8ToString(XML_Node.Value);
+        BirgDate := ReplaceStr(BirgDate, '-', T1);
+        // Разбираем дату
+        if Pos(T1, BirgDate) > 0 then
+        begin
+          IDay := StrToInt(NormalizeIcqNumber(Parse(T1, BirgDate, 1)));
+          if IDay > 999 then
+          begin
+            IYear := IDay;
+            IMonth := StrToInt(NormalizeIcqNumber(Parse(T1, BirgDate, 2)));
+            IDay := StrToInt(NormalizeIcqNumber(Parse(T1, BirgDate, 3)));
+          end
+          else
+          begin
+            IMonth := StrToInt(NormalizeIcqNumber(Parse(T1, BirgDate, 2)));
+            IYear := StrToInt(NormalizeIcqNumber(Parse(T1, BirgDate, 3)));
+          end;
+        end;
+        // Вычисляем возраст
+        if (IDay <> 0) and (IMonth <> 0) and (IYear <> 0) then
+          Age := CalculateAge(EncodeDate(IYear, IMonth, IDay), Date);
+        Continue;
+      end;
+      // <GENDER>
+      if XML_Node.FullName = Node_GENDER then
+      begin
+        Gender := Utf8ToString(XML_Node.Value);
+        if Gender = 'Female' then
+          Gender := '1'
+        else if Gender = 'Male' then
+          Gender := '2'
+        else
+          Gender := '0';
+        Continue;
+      end;
+      // <EMAIL>
+      if XML_Node.FullName = Node_EMAIL then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_USERID];
+        if Sub_Node <> nil then
+        begin
+          if Email = EmptyStr then
+            Email := Utf8ToString(Sub_Node.Value)
+          else if Email1 = EmptyStr then
+            Email1 := Utf8ToString(Sub_Node.Value)
+          else if Email2 = EmptyStr then
+            Email2 := Utf8ToString(Sub_Node.Value)
+          else if Email3 = EmptyStr then
+            Email3 := Utf8ToString(Sub_Node.Value);
+        end;
+        Continue;
+      end;
+      // <ADR> <HOME/>
+      if XML_Node.FullName = Node_ADR then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_HOME];
+        if Sub_Node <> nil then
+        begin
+          Sub_Node := XML_Node.Items.ItemNamed[Node_STREET];
+          if Sub_Node <> nil then
+            Address1 := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_EXTADR];
+          if Sub_Node <> nil then
+            Address2 := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_LOCALITY];
+          if Sub_Node <> nil then
+            City := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_REGION];
+          if Sub_Node <> nil then
+            State := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_PCODE];
+          if Sub_Node <> nil then
+            Zip := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_COUNTRY];
+          if Sub_Node <> nil then
+            Country := Utf8ToString(Sub_Node.Value);
+          Continue;
+        end;
+      end;
+      // <ADR> <WORK/>
+      if XML_Node.FullName = Node_ADR then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_WORK];
+        if Sub_Node <> nil then
+        begin
+          Sub_Node := XML_Node.Items.ItemNamed[Node_STREET];
+          if Sub_Node <> nil then
+            WAddress1 := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_EXTADR];
+          if Sub_Node <> nil then
+            WAddress2 := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_LOCALITY];
+          if Sub_Node <> nil then
+            WCity := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_REGION];
+          if Sub_Node <> nil then
+            WState := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_PCODE];
+          if Sub_Node <> nil then
+            WZip := Utf8ToString(Sub_Node.Value);
+          Sub_Node := XML_Node.Items.ItemNamed[Node_COUNTRY];
+          if Sub_Node <> nil then
+            WCountry := Utf8ToString(Sub_Node.Value);
+          Continue;
+        end;
+      end;
+      // <ORG>
+      if XML_Node.FullName = Node_ORG then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_ORGNAME];
+        if Sub_Node <> nil then
+          Company := Utf8ToString(Sub_Node.Value);
+        Sub_Node := XML_Node.Items.ItemNamed[Node_ORGUNIT];
+        if Sub_Node <> nil then
+          Department := Utf8ToString(Sub_Node.Value);
+        Continue;
+      end;
+      // <TITLE>
+      if XML_Node.FullName = Node_TITLE then
+      begin
+        Position := Utf8ToString(XML_Node.Value);
+        Continue;
+      end;
+      // <ROLE>
+      if XML_Node.FullName = Node_ROLE then
+      begin
+        Occupation := Utf8ToString(XML_Node.Value);
+        Continue;
+      end;
+      // <URL>
+      if XML_Node.FullName = Node_URL then
+      begin
+        HomePage := Utf8ToString(XML_Node.Value);
+        Continue;
+      end;
+      // <DESC>
+      if XML_Node.FullName = Node_DESC then
+      begin
+        About := Utf8ToString(XML_Node.Value);
+        Continue;
+      end;
+      // <TEL>
+      if XML_Node.FullName = Node_TEL then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_NUMBER];
+        if Sub_Node <> nil then
+        begin
+          if Phone1 = EmptyStr then
+            Phone1 := Utf8ToString(Sub_Node.Value)
+          else if Phone2 = EmptyStr then
+            Phone2 := Utf8ToString(Sub_Node.Value)
+          else if Phone3 = EmptyStr then
+            Phone3 := Utf8ToString(Sub_Node.Value)
+          else if Phone4 = EmptyStr then
+            Phone4 := Utf8ToString(Sub_Node.Value)
+          else if Phone5 = EmptyStr then
+            Phone5 := Utf8ToString(Sub_Node.Value);
+        end;
+        Continue;
+      end;
+      // <PHOTO>
+      if XML_Node.FullName = Node_PHOTO then
+      begin
+        Sub_Node := XML_Node.Items.ItemNamed[Node_BINVAL];
+        if Sub_Node <> nil then
+        begin
+          Photo := Base64Decode(Sub_Node.Value);
+          ImageData := TMemoryStream.Create;
+          try
+            ImageData.Write(Photo[1], Length(Photo));
+            ImageType := Text2Hex(LeftStr(Photo, 2));
+            if ImageType = 'FFD8' then
+              ImageData.SaveToFile(V_ProfilePath + C_AvatarFolder + C_Jabber + C_BN + MJID + C_JPG_Ext)
+            else if ImageType = '4749' then
+              ImageData.SaveToFile(V_ProfilePath + C_AvatarFolder + C_Jabber + C_BN + MJID + C_GIF_Ext)
+            else if ImageType = '424D' then
+              ImageData.SaveToFile(V_ProfilePath + C_AvatarFolder + C_Jabber + C_BN + MJID + C_BMP_Ext)
+            else if ImageType = '8950' then
+              ImageData.SaveToFile(V_ProfilePath + C_AvatarFolder + C_Jabber + C_BN + MJID + C_PNG_Ext);
+          finally
+            ImageData.Free;
+          end;
+        end;
+        Continue;
+      end;
+    end;
+  end;
+  // Инициализируем XML
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
+    begin
+      // Загружаем файл и инфой о контакте
+      if FileExists(V_ProfilePath + C_AnketaFolder + C_Jabber + C_BN + MJID + C_XML_Ext) then
+        LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Jabber + C_BN + MJID + C_XML_Ext);
+      if Root <> nil then
+      begin
+        // Очищаем раздел инфы контакта
+        XML_Node := Root.Items.ItemNamed[C_Infos];
+        if XML_Node = nil then
+          XML_Node := Root.Items.Add(C_Infos);
+        XML_Node.Clear;
+        // Записываем имена ----------------------------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_NameInfo);
+        Sub_Node.Properties.Add(C_Nick, URLEncode(Nick));
+        Sub_Node.Properties.Add(C_Name, URLEncode(FullName));
+        Sub_Node.Properties.Add(C_First, URLEncode(First));
+        Sub_Node.Properties.Add(C_Last, URLEncode(Last));
+        // Записываем персональную информацию ----------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_PerInfo);
+        Sub_Node.Properties.Add(C_HomePage, URLEncode(HomePage));
+        Sub_Node.Properties.Add(C_Gender, Gender);
+        // Записываем место проживания ----------------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_HomeInfo);
+        Sub_Node.Properties.Add(C_Address, URLEncode(Address1 + C_BN + Address2));
+        Sub_Node.Properties.Add(C_City, URLEncode(City));
+        Sub_Node.Properties.Add(C_State, URLEncode(State));
+        Sub_Node.Properties.Add(C_Zip, URLEncode(Zip));
+        Sub_Node.Properties.Add(C_Country, URLEncode(Country));
+        // Записываем телефоны -------------------------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_PhoneInfo);
+        Sub_Node.Properties.Add(C_Phone + '1', URLEncode(Phone1));
+        Sub_Node.Properties.Add(C_Phone + '2', URLEncode(Phone2));
+        Sub_Node.Properties.Add(C_Phone + '3', URLEncode(Phone3));
+        Sub_Node.Properties.Add(C_Phone + '4', URLEncode(Phone4));
+        Sub_Node.Properties.Add(C_Phone + '5', URLEncode(Phone5));
+        // Записываем инфу о работе --------------------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_WorkInfo);
+        Sub_Node.Properties.Add(C_City, URLEncode(WCity));
+        Sub_Node.Properties.Add(C_State, URLEncode(WState));
+        Sub_Node.Properties.Add(C_Zip, URLEncode(WZip));
+        Sub_Node.Properties.Add(C_Address, URLEncode(WAddress1 + C_BN + WAddress2));
+        Sub_Node.Properties.Add(C_Corp, URLEncode(Company));
+        Sub_Node.Properties.Add(C_Dep, URLEncode(Department));
+        Sub_Node.Properties.Add(C_Prof, URLEncode(Position));
+        Sub_Node.Properties.Add(C_Country, URLEncode(WCountry));
+        Sub_Node.Properties.Add(C_Occup, URLEncode(Occupation));
+        // Записываем "О себе" -------------------------------------------------------------
+        XML_Node.Items.Add(C_AboutInfo, URLEncode(About));
+        // Записываем дату рождения --------------------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_AgeInfo);
+        Sub_Node.Properties.Add(C_Age, Age);
+        Sub_Node.Properties.Add(C_Day, IDay);
+        Sub_Node.Properties.Add(C_Month, IMonth);
+        Sub_Node.Properties.Add(C_Year, IYear);
+        // Записываем Email адреса ---------------------------------------------------------
+        Sub_Node := XML_Node.Items.Add(C_EmailsInfo);
+        Sub_Node.Properties.Add(C_Email + '0', URLEncode(Email));
+        Sub_Node.Properties.Add(C_Email + '1', URLEncode(Email1));
+        Sub_Node.Properties.Add(C_Email + '2', URLEncode(Email2));
+        Sub_Node.Properties.Add(C_Email + '3', URLEncode(Email3));
+      end;
+      // Создаём необходимые папки
+      ForceDirectories(V_ProfilePath + C_AnketaFolder);
+      // Записываем сам файл
+      SaveToFile(V_ProfilePath + C_AnketaFolder + C_Jabber + C_BN + MJID + C_XML_Ext);
+    end;
+  finally
+    JvXML.Free;
+  end;
+  // Отображаем в окне информации о контакте полученные данные
+  if Assigned(ContactInfoForm) then
+  begin
+    if ContactInfoForm.ReqUIN = MJID then
+      ContactInfoForm.LoadUserUnfo;
+  end;
+end;
 {$ENDREGION}
 
 end.

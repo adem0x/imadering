@@ -468,23 +468,22 @@ uses
   AboutUnit,
   UtilsUnit,
   IcqOptionsUnit,
-  IcqXStatusUnit,
+  XStatusUnit,
   IcqProtoUnit,
-  IcqContactInfoUnit,
+  ContactInfoUnit,
   MraOptionsUnit,
   JabberOptionsUnit,
   ChatUnit,
   SmilesUnit,
-  IcqReqAuthUnit,
+  MemoUnit,
   HistoryUnit,
   CLSearchUnit,
   TrafficUnit,
   UpdateUnit,
-  IcqAddContactUnit,
+  AddContactUnit,
   JabberProtoUnit,
   MraProtoUnit,
-  IcqSearchUnit,
-  IcqGroupManagerUnit,
+  ContactSearchUnit,
   ShowCertUnit,
   FileTransferUnit,
   LogUnit,
@@ -494,7 +493,6 @@ uses
   GTransUnit,
   OverbyteIcsUrl,
   ShellApi,
-  IcqEditContactUnit,
   SMSUnit,
   GamesUnit,
   RosterUnit;
@@ -1116,12 +1114,12 @@ var
   procedure ShowUpdateNote;
   begin
     // Если форма не существует, то создаём её
-    if not Assigned(IcqReqAuthForm) then
-      IcqReqAuthForm := TIcqReqAuthForm.Create(Self);
+    if not Assigned(MemoForm) then
+      MemoForm := TMemoForm.Create(Self);
     // Делаем запрос в форме на обновление программы
-    IcqReqAuthForm.UpDateVersion(Mess);
+    MemoForm.UpDateVersion(Mess);
     // Отображаем окно
-    XShowForm(IcqReqAuthForm);
+    XShowForm(MemoForm);
   end;
 
 begin
@@ -1269,10 +1267,10 @@ end;
 procedure TMainForm.ICQSearchNewContactClick(Sender: TObject);
 begin
   // Открываем окно поиска новых контактов
-  if not Assigned(IcqSearchForm) then
-    IcqSearchForm := TIcqSearchForm.Create(Self);
+  if not Assigned(ContactSearchForm) then
+    ContactSearchForm := TContactSearchForm.Create(Self);
   // Открываем окно
-  XShowForm(IcqSearchForm);
+  XShowForm(ContactSearchForm);
 end;
 
 procedure TMainForm.ICQSettingsClick(Sender: TObject);
@@ -2193,10 +2191,10 @@ end;
 procedure TMainForm.ICQXStatusClick(Sender: TObject);
 begin
   // Открываем окно выбора дополнительного статуса
-  if not Assigned(IcqXStatusForm) then
-    IcqXStatusForm := TIcqXStatusForm.Create(Self);
+  if not Assigned(XStatusForm) then
+    XStatusForm := TXStatusForm.Create(Self);
   // Отображаем окнов рабочей области
-  FormShowInWorkArea(IcqXStatusForm);
+  FormShowInWorkArea(XStatusForm);
 end;
 
 procedure TMainForm.IMaderingEventsException(Sender: TObject; E: Exception);
@@ -2532,10 +2530,10 @@ end;
 procedure TMainForm.JabberXStatusClick(Sender: TObject);
 begin
   // Открываем окно выбора дополнительного статуса
-  if not Assigned(IcqXStatusForm) then
-    IcqXStatusForm := TIcqXStatusForm.Create(Self);
+  if not Assigned(XStatusForm) then
+    XStatusForm := TXStatusForm.Create(Self);
   // Отображаем окнов рабочей области
-  FormShowInWorkArea(IcqXStatusForm);
+  FormShowInWorkArea(XStatusForm);
 end;
 
 {$ENDREGION}
@@ -3165,10 +3163,10 @@ end;
 
 procedure TMainForm.AddNewContactClick(Sender: TObject);
 var
-  FrmAddCnt: TIcqAddContactForm;
+  FrmAddCnt: TAddContactForm;
 begin
   // Создаём окно добавления контакта в КЛ
-  FrmAddCnt := TIcqAddContactForm.Create(Self);
+  FrmAddCnt := TAddContactForm.Create(Self);
   try
     { //--Составляем список групп из Ростера
       frmAddCnt.BuildGroupList(S_Icq);
@@ -3379,12 +3377,12 @@ end;
 {$REGION 'RenemeGroupCLClick'}
 
 procedure TMainForm.RenemeGroupCLClick(Sender: TObject);
-var
-  FrmAddGroup: TIcqGroupManagerForm;
-  I: Integer;
+{var
+  FrmAddGroup: TGroupManagerForm;
+  I: Integer;}
 begin
-  // Выводим форму добавления новой группы
-  FrmAddGroup := TIcqGroupManagerForm.Create(Self);
+  {// Выводим форму добавления новой группы
+  FrmAddGroup := TGroupManagerForm.Create(Self);
   try
     with FrmAddGroup do
     begin
@@ -3409,7 +3407,7 @@ begin
     end;
   finally
     FreeAndNil(FrmAddGroup);
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -3989,10 +3987,10 @@ end;
 
 procedure TMainForm.AddNewContactICQClick(Sender: TObject);
 var
-  FrmAddContact: TIcqAddContactForm;
+  FrmAddContact: TAddContactForm;
 begin
   // Выводим форму добавления новой группы
-  FrmAddContact := TIcqAddContactForm.Create(Self);
+  FrmAddContact := TAddContactForm.Create(Self);
   try
     with FrmAddContact do
     begin
@@ -4016,11 +4014,11 @@ end;
 {$REGION 'AddNewGroupICQClick'}
 
 procedure TMainForm.AddNewGroupICQClick(Sender: TObject);
-var
-  FrmAddGroup: TIcqGroupManagerForm;
+{var
+  FrmAddGroup: TGroupManagerForm;}
 begin
-  // Выводим форму добавления новой группы
-  FrmAddGroup := TIcqGroupManagerForm.Create(Self);
+  {// Выводим форму добавления новой группы
+  FrmAddGroup := TGroupManagerForm.Create(Self);
   try
     with FrmAddGroup do
     begin
@@ -4040,7 +4038,7 @@ begin
     end;
   finally
     FreeAndNil(FrmAddGroup);
-  end;
+  end;}
 end;
 {$ENDREGION}
 {$REGION 'AnketaContactClick'}
@@ -4050,15 +4048,15 @@ begin
   // Отображаем информацию о контакте
   if ContactList.SelectedItem <> nil then
   begin
-    if not Assigned(IcqContactInfoForm) then
-      IcqContactInfoForm := TIcqContactInfoForm.Create(Self);
+    if not Assigned(ContactInfoForm) then
+      Application.CreateForm(TContactInfoForm, ContactInfoForm);
     // Присваиваем UIN инфу которого хотим смотреть
-    IcqContactInfoForm.ReqUIN := (ContactList.SelectedItem as TButtonItem).UIN;
-    IcqContactInfoForm.ReqProto := (ContactList.SelectedItem as TButtonItem).ContactType;
+    ContactInfoForm.ReqUIN := UrlDecode((ContactList.SelectedItem as TButtonItem).UIN);
+    ContactInfoForm.ReqProto := (ContactList.SelectedItem as TButtonItem).ContactType;
     // Загружаем информацию о нем
-    IcqContactInfoForm.LoadUserUnfo;
+    ContactInfoForm.LoadUserUnfo;
     // Отображаем окно
-    XShowForm(IcqContactInfoForm);
+    XShowForm(ContactInfoForm);
   end;
 end;
 

@@ -232,7 +232,7 @@ uses
   SettingsUnit,
   IcqProtoUnit,
   HistoryUnit,
-  IcqContactInfoUnit,
+  ContactInfoUnit,
   UtilsUnit,
   JabberProtoUnit,
   FileTransferUnit,
@@ -240,7 +240,7 @@ uses
   MraProtoUnit,
   UniqUnit,
   OverbyteIcsUrl,
-  IcqReqAuthUnit,
+  MemoUnit,
   RosterUnit;
 
 {$ENDREGION}
@@ -259,12 +259,18 @@ const
 
 procedure TChatForm.CreateNewChat(CButton: TToolButton);
 var
-  UIN, HistoryFile, Doc, HistoryText, ImageFile: string;
+  UIN, HistoryFile, Doc, HistoryText, ImageFile, MyAvatarUIN: string;
   JvXML: TJvSimpleXml;
   Get_Node, XML_Node: TJvSimpleXmlElem;
 begin
   // Применяем параметры нового чата
   UIN := CButton.HelpKeyword;
+  if CButton.Margins.Left = 1 then
+    User_Proto := C_Icq
+  else if CButton.Margins.Left = 2 then
+    User_Proto := C_Jabber
+  else if CButton.Margins.Left = 3 then
+    User_Proto := C_Mra;
   // Ставим учётную запись контакта в информационное поле
   UIN_Panel.Caption := UrlDecode(UIN);
   // Очищаем поле ввода
@@ -420,20 +426,59 @@ begin
   CButton.ImageIndex := CButton.Tag;
   // Обновляем КЛ
   UpdateFullCL;
-
-  // Загружаем аватар
-  { if (Length(UserAvatarHash) = 32) and ((FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')) or
-    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')) or
-    (FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp'))) then
-    begin
-    if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg') then
-    ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.jpg')
-    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif') then
-    ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.gif')
-    else if FileExists(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp') then
-    ContactImage.Picture.LoadFromFile(ProfilePath + 'Profile\Avatars\' + UserAvatarHash + '.bmp');
-    end
+  // Загружаем аватар собеседника
+  try
+    // JPG
+    if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_JPG_Ext) then
+      ContactAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_JPG_Ext)
+        // GIF
+    else if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_GIF_Ext) then
+      ContactAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_GIF_Ext)
+        // BMP
+    else if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_BMP_Ext) then
+      ContactAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_BMP_Ext)
+        // PNG
+    else if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_PNG_Ext) then
+      ContactAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + UIN_Panel.Caption + C_PNG_Ext)
     else
+    begin
+      ContactAvatarImage.Picture.Assign(nil);
+      ContactAvatarImage.Picture.Assign(V_NoAvatar.Picture);
+    end;
+  except
+    ContactAvatarImage.Picture.Assign(nil);
+    ContactAvatarImage.Picture.Assign(V_NoAvatar.Picture);
+  end;
+  try
+    // Подгружаем мои аватар
+    if User_Proto = C_Icq then
+      MyAvatarUIN := ICQ_LoginUIN
+    else if User_Proto = C_Jabber then
+      MyAvatarUIN := Jabber_JID
+    else if User_Proto = C_Mra then
+      MyAvatarUIN := MRA_LoginUIN;
+    // JPG
+    if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_JPG_Ext) then
+      MyAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_JPG_Ext)
+        // GIF
+    else if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_GIF_Ext) then
+      MyAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_GIF_Ext)
+        // BMP
+    else if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_BMP_Ext) then
+      MyAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_BMP_Ext)
+        // PNG
+    else if FileExists(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_PNG_Ext) then
+      MyAvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + User_Proto + C_BN + MyAvatarUIN + C_PNG_Ext)
+    else
+    begin
+      MyAvatarImage.Picture.Assign(nil);
+      MyAvatarImage.Picture.Assign(V_NoAvatar.Picture);
+    end;
+  except
+    ContactAvatarImage.Picture.Assign(nil);
+    ContactAvatarImage.Picture.Assign(V_NoAvatar.Picture);
+  end;
+  {else
     begin
     if (Length(UserAvatarHash) = 32) and (ICQ_Avatar_Work_Phaze) then
     begin
@@ -451,7 +496,7 @@ begin
     //SearchAvatarTimer.Enabled := true;
     ContactImage.Picture.Assign(nil);
     ContactImage.Picture.Assign(NoAvatar.Picture);
-    end; }
+    end;}
 
 end;
 
@@ -785,12 +830,12 @@ begin
   // Ограничиваем длинну текста до 140 символов
   SetLength(S, 140);
   // Если форма не существует, то создаём её
-  if not Assigned(IcqReqAuthForm) then
-    IcqReqAuthForm := TIcqReqAuthForm.Create(Self);
+  if not Assigned(MemoForm) then
+    MemoForm := TMemoForm.Create(Self);
   // Делаем запрос в форме на обновление программы
-  IcqReqAuthForm.PostInTwitter(S);
+  MemoForm.PostInTwitter(S);
   // Отображаем окно
-  XShowForm(IcqReqAuthForm);
+  XShowForm(MemoForm);
 end;
 
 {$ENDREGION}
@@ -877,15 +922,15 @@ end;
 procedure TChatForm.InfoContactSpeedButtonClick(Sender: TObject);
 begin
   // Открываем окно информации о контакте
-  if not Assigned(IcqContactInfoForm) then
-    IcqContactInfoForm := TIcqContactInfoForm.Create(MainForm);
+  if not Assigned(ContactInfoForm) then
+    Application.CreateForm(TContactInfoForm, ContactInfoForm);
   // Присваиваем UIN инфу которого хотим смотреть
-  IcqContactInfoForm.ReqUIN := UIN_Panel.Caption;
-  IcqContactInfoForm.ReqProto := User_Proto;
+  ContactInfoForm.ReqUIN := UIN_Panel.Caption;
+  ContactInfoForm.ReqProto := User_Proto;
   // Загружаем информацию о нем
-  IcqContactInfoForm.LoadUserUnfo;
+  ContactInfoForm.LoadUserUnfo;
   // Отображаем окно на передний план
-  XShowForm(IcqContactInfoForm);
+  XShowForm(ContactInfoForm);
 end;
 
 procedure TChatForm.Name_PanelClick(Sender: TObject);

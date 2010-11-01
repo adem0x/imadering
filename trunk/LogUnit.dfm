@@ -26,10 +26,12 @@ object LogForm: TLogForm
     Width = 586
     Height = 371
     Align = alClient
+    DoubleBuffered = True
     HideSelection = False
+    ParentDoubleBuffered = False
     PopupMenu = LogPopupMenu
     ReadOnly = True
-    ScrollBars = ssBoth
+    ScrollBars = ssVertical
     TabOrder = 0
     WordWrap = False
   end
@@ -187,6 +189,10 @@ object LogForm: TLogForm
     object HexToText_Menu: TMenuItem
       ImageIndex = 289
       OnClick = HexToText_MenuClick
+    end
+    object ToUtf8Text_Menu: TMenuItem
+      ImageIndex = 289
+      OnClick = ToUtf8Text_MenuClick
     end
     object HexToUtf8Text_Menu: TMenuItem
       ImageIndex = 289
