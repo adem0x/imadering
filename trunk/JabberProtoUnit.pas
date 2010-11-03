@@ -668,7 +668,6 @@ var
   PJID, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   I: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  XML_Prop: TJvSimpleXMLProp;
   Contact_Yes: Boolean;
 begin
   // Если окно сообщений не было создано, то создаём его
@@ -794,6 +793,10 @@ var
   Photo: AnsiString;
 begin
   Gender := '0';
+  IDay := 0;
+  IMonth := 0;
+  IYear := 0;
+  Age := 0;
   // Разбираем и записываем информацию о контакте
   for I := 0 to PktData.Items.Count - 1 do
   begin

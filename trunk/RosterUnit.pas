@@ -55,7 +55,6 @@ label
 var
   ChatTab: TToolButton;
   I: Integer;
-  Get_Node: TJvSimpleXmlElem;
 begin
   if (CButton <> nil) and (Proto <> EmptyStr) then
   begin
@@ -368,14 +367,12 @@ begin
                     // Запоминаем статус этого контакта
                     S := Tri_Node.Properties.IntValue(C_Status);
                     // Сканируем группу контакта в КЛ
-                    Group_Yes := False;
                     Contact_Yes := False;
                     for G := 0 to Categories.Count - 1 do
                     begin
                       // Если такую группу нашли
                       if (Categories[G].GroupId = Tri_Node.Properties.Value(C_Group + C_Id)) and (Categories[G].GroupType = C_Icq) then
                       begin
-                        Group_Yes := True;
                         // Начинаем поиск в ней этого контакта
                         for K := 0 to Categories[G].Items.Count - 1 do
                         begin

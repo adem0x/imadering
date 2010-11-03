@@ -97,7 +97,7 @@ type
   end;
 
 type
-  TBitWidth = 1 .. 32;
+  TBitWidth = 1..32;
 
   TSWFRect = packed record
     Xmin: Integer; // in twips
@@ -107,7 +107,7 @@ type
   end;
 
   TSWFHeader = packed record
-    Signature: array [0 .. 2] of AnsiChar;
+    Signature: array[0..2] of AnsiChar;
     Version: Byte;
     FileLength: Cardinal;
     FrameSize: TSWFRect;
@@ -136,14 +136,14 @@ uses
 {$ENDREGION}
 {$REGION 'MyConsts'}
 
-  const
-    C_Signature = 'Signature: ';
-    C_Version = 'Flash version: ';
-    C_FileSize = 'File size: ';
-    C_Height = 'Height: ';
-    C_Width = 'Width: ';
-    C_FrameRate = 'Framerate: ';
-    C_FrameCount = 'Frame count: ';
+const
+  C_Signature = 'Signature: ';
+  C_Version = 'Flash version: ';
+  C_FileSize = 'File size: ';
+  C_Height = 'Height: ';
+  C_Width = 'Width: ';
+  C_FrameRate = 'Framerate: ';
+  C_FrameCount = 'Frame count: ';
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
@@ -205,11 +205,11 @@ begin
   Result := 0;
   B := 1 shl (Count - 1);
   for I := Position to Position + Count - 1 do
-    begin
-      if (PByteArray(@Buffer)^[I div 8] and (128 shr (I mod 8))) <> 0 then
-        Result := Result or B;
-      B := B shr 1;
-    end;
+  begin
+    if (PByteArray(@Buffer)^[I div 8] and (128 shr (I mod 8))) <> 0 then
+      Result := Result or B;
+    B := B shr 1;
+  end;
 end;
 
 {$ENDREGION}
@@ -233,58 +233,58 @@ begin
   try
     FileStream.Position := 0;
     if FileStream.Size > 22 then
-      begin
-        GetMem(Buffer, BuffSize);
-        try
-          FileStream.read(Header, 8);
-          if (Header.Signature = 'CWS') and (Header.Version >= 6) then
-            begin
-              Result := TRUE;
-              MemStream := TMemoryStream.Create;
-              try
-                MemStream.CopyFrom(FileStream, FileStream.Size - 8);
-                MemStream.Position := 0;
-                ZStream := TDecompressionStream.Create(MemStream);
-                try
-                  ZStream.read(Buffer^, BuffSize);
-                finally
-                  ZStream.Free;
-                end;
-              finally
-                MemStream.Free;
-              end;
-            end
-          else
-            begin
-              FileStream.read(Buffer^, BuffSize);
-              Result := Header.Signature = 'FWS';
+    begin
+      GetMem(Buffer, BuffSize);
+      try
+        FileStream.read(Header, 8);
+        if (Header.Signature = 'CWS') and (Header.Version >= 6) then
+        begin
+          Result := TRUE;
+          MemStream := TMemoryStream.Create;
+          try
+            MemStream.CopyFrom(FileStream, FileStream.Size - 8);
+            MemStream.Position := 0;
+            ZStream := TDecompressionStream.Create(MemStream);
+            try
+              ZStream.read(Buffer^, BuffSize);
+            finally
+              ZStream.Free;
             end;
-          if Result then
-            with Header do
-              begin
-                Poz := 0;
-                NBitsField := TBitWidth(ReadNBits(Buffer^, Poz, 5));
-                Inc(Poz, 5);
-                FrameSize.Xmin := Integer(ReadNBits(Buffer^, Poz, NBitsField));
-                Inc(Poz, NBitsField);
-                FrameSize.Xmax := Integer(ReadNBits(Buffer^, Poz, NBitsField));
-                Inc(Poz, NBitsField);
-                FrameSize.Ymin := Integer(ReadNBits(Buffer^, Poz, NBitsField));
-                Inc(Poz, NBitsField);
-                FrameSize.Ymax := Integer(ReadNBits(Buffer^, Poz, NBitsField));
-                Inc(Poz, NBitsField);
-                NBitsField := Poz mod 8;
-                Poz := Poz div 8;
-                if (NBitsField > 0) then
-                  Inc(Poz);
-                FrameRateRemainder := Buffer^[Poz]; // 8.[8]
-                FrameRate := Buffer^[Poz + 1];
-                FrameCount := Buffer^[Poz + 2] or (Buffer^[Poz + 3] shl 8);
-              end;
-        finally
-          FreeMem(Buffer);
+          finally
+            MemStream.Free;
+          end;
+        end
+        else
+        begin
+          FileStream.read(Buffer^, BuffSize);
+          Result := Header.Signature = 'FWS';
         end;
+        if Result then
+          with Header do
+          begin
+            Poz := 0;
+            NBitsField := TBitWidth(ReadNBits(Buffer^, Poz, 5));
+            Inc(Poz, 5);
+            FrameSize.Xmin := Integer(ReadNBits(Buffer^, Poz, NBitsField));
+            Inc(Poz, NBitsField);
+            FrameSize.Xmax := Integer(ReadNBits(Buffer^, Poz, NBitsField));
+            Inc(Poz, NBitsField);
+            FrameSize.Ymin := Integer(ReadNBits(Buffer^, Poz, NBitsField));
+            Inc(Poz, NBitsField);
+            FrameSize.Ymax := Integer(ReadNBits(Buffer^, Poz, NBitsField));
+            Inc(Poz, NBitsField);
+            NBitsField := Poz mod 8;
+            Poz := Poz div 8;
+            if (NBitsField > 0) then
+              Inc(Poz);
+            FrameRateRemainder := Buffer^[Poz]; // 8.[8]
+            FrameRate := Buffer^[Poz + 1];
+            FrameCount := Buffer^[Poz + 2] or (Buffer^[Poz + 3] shl 8);
+          end;
+      finally
+        FreeMem(Buffer);
       end;
+    end;
   finally
     FileStream.Free;
   end;
@@ -336,17 +336,17 @@ begin
   // Открываем информационную панель
   GetCursorPos(FCursor);
   if InfoPanelSpeedButton.NumGlyphs = 4 then
-    begin
-      SettingsPanel.Width := FlashPanel.Width div 2;
-      InfoPanelSpeedButton.NumGlyphs := 1;
-      SetCursorPos(FCursor.X - SettingsPanel.Width, FCursor.Y);
-    end
+  begin
+    SettingsPanel.Width := FlashPanel.Width div 2;
+    InfoPanelSpeedButton.NumGlyphs := 1;
+    SetCursorPos(FCursor.X - SettingsPanel.Width, FCursor.Y);
+  end
   else
-    begin
-      SetCursorPos(FCursor.X + SettingsPanel.Width, FCursor.Y);
-      InfoPanelSpeedButton.NumGlyphs := 4;
-      SettingsPanel.Width := 0;
-    end;
+  begin
+    SetCursorPos(FCursor.X + SettingsPanel.Width, FCursor.Y);
+    InfoPanelSpeedButton.NumGlyphs := 4;
+    SettingsPanel.Width := 0;
+  end;
 end;
 
 {$ENDREGION}
@@ -356,19 +356,19 @@ procedure TGamesForm.GameLoadHttpClientDocData(Sender: TObject; Buffer: Pointer;
 begin
   // Отображаем процесс получения данных
   if GameLoadHttpClient.ContentLength > -1 then
-    begin
-      LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(GameLoadHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
-      LoadGameProgressBar.Max := GameLoadHttpClient.ContentLength;
-      LoadGameProgressBar.Position := GameLoadHttpClient.RcvdCount;
-    end;
+  begin
+    LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(GameLoadHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
+    LoadGameProgressBar.Max := GameLoadHttpClient.ContentLength;
+    LoadGameProgressBar.Position := GameLoadHttpClient.RcvdCount;
+  end;
   // Обновляем форму и контролы чтобы видеть изменения
   Update;
   // Если был активирован аборт сессии, то выходим и отключаем сокет
   if GameLoadHttpClient.Tag = 2 then
-    begin
-      GameLoadHttpClient.CloseAsync;
-      GameLoadHttpClient.Abort;
-    end;
+  begin
+    GameLoadHttpClient.CloseAsync;
+    GameLoadHttpClient.Abort;
+  end;
 end;
 
 {$ENDREGION}
@@ -384,63 +384,65 @@ begin
   try
     // Читаем полученные http данные из блока памяти
     if GameLoadHttpClient.RcvdStream <> nil then
-      begin
-        try
-          // Увеличиваем статистику входящего трафика
-          V_TrafRecev := V_TrafRecev + GameLoadHttpClient.RcvdCount;
-          V_AllTrafRecev := V_AllTrafRecev + GameLoadHttpClient.RcvdCount;
-          if Assigned(TrafficForm) then
-            MainForm.Traffic_MenuClick(nil);
-          // Обнуляем позицию начала чтения в блоке памяти
-          GameLoadHttpClient.RcvdStream.Position := 0;
-          ForceDirectories(V_ProfilePath + C_GamesFolder);
-          case GameLoadHttpClient.Tag of // Определяем выполнение задания для данных по флагу
-            0: begin
-                // Создаём временный лист
-                List := TStringList.Create;
-                try
-                  // Читаем данные в лист
-                  List.LoadFromStream(GameLoadHttpClient.RcvdStream);
-                  // Разбираем данные в листе
-                  if List.Text > EmptyStr then
-                    begin
-                      // Сохраняем каталог в файл
-                      List.SaveToFile(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName);
-                      // Обновляем список игр
-                      CreateGamesList;
-                      InfoLabel.Caption := '#Список игр успешно получен и обновлён!';
-                    end;
-                finally
-                  List.Free;
+    begin
+      try
+        // Увеличиваем статистику входящего трафика
+        V_TrafRecev := V_TrafRecev + GameLoadHttpClient.RcvdCount;
+        V_AllTrafRecev := V_AllTrafRecev + GameLoadHttpClient.RcvdCount;
+        if Assigned(TrafficForm) then
+          MainForm.Traffic_MenuClick(nil);
+        // Обнуляем позицию начала чтения в блоке памяти
+        GameLoadHttpClient.RcvdStream.Position := 0;
+        ForceDirectories(V_ProfilePath + C_GamesFolder);
+        case GameLoadHttpClient.Tag of // Определяем выполнение задания для данных по флагу
+          0:
+            begin
+              // Создаём временный лист
+              List := TStringList.Create;
+              try
+                // Читаем данные в лист
+                List.LoadFromStream(GameLoadHttpClient.RcvdStream);
+                // Разбираем данные в листе
+                if List.Text > EmptyStr then
+                begin
+                  // Сохраняем каталог в файл
+                  List.SaveToFile(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName);
+                  // Обновляем список игр
+                  CreateGamesList;
+                  InfoLabel.Caption := '#Список игр успешно получен и обновлён!';
                 end;
+              finally
+                List.Free;
               end;
-            1: begin
-                // Создаём блок в памяти для приёма файла игры
-                GFile := TMemoryStream.Create;
-                try
-                  // Читаем данные в память
-                  GFile.LoadFromStream(GameLoadHttpClient.RcvdStream);
-                  // Сохраняем файл с игрой
-                  GFile.SaveToFile(V_ProfilePath + C_GamesFolder + GFileName);
-                  // Деактивируем кнопку Прервать
-                  LoadAbortButton.Enabled := False;
-                  // Прячем панель загрузки
-                  LoadPanel.Visible := False;
-                  // Запускаем игру
-                  CatalogButtonGroupButtonClicked(CatalogButtonGroup, CatalogButtonGroup.ItemIndex);
-                finally
-                  // Уничтожаем блок памяти
-                  FreeAndNil(GFile);
-                end;
+            end;
+          1:
+            begin
+              // Создаём блок в памяти для приёма файла игры
+              GFile := TMemoryStream.Create;
+              try
+                // Читаем данные в память
+                GFile.LoadFromStream(GameLoadHttpClient.RcvdStream);
+                // Сохраняем файл с игрой
+                GFile.SaveToFile(V_ProfilePath + C_GamesFolder + GFileName);
+                // Деактивируем кнопку Прервать
+                LoadAbortButton.Enabled := False;
+                // Прячем панель загрузки
+                LoadPanel.Visible := False;
+                // Запускаем игру
+                CatalogButtonGroupButtonClicked(CatalogButtonGroup, CatalogButtonGroup.ItemIndex);
+              finally
+                // Уничтожаем блок памяти
+                FreeAndNil(GFile);
               end;
-          end;
-        X :;
-        finally
-          // Высвобождаем блок памяти
-          GameLoadHttpClient.RcvdStream.Free;
-          GameLoadHttpClient.RcvdStream := nil;
+            end;
         end;
+        X: ;
+      finally
+        // Высвобождаем блок памяти
+        GameLoadHttpClient.RcvdStream.Free;
+        GameLoadHttpClient.RcvdStream := nil;
       end;
+    end;
   except
     on E: Exception do
       MainForm.IMaderingEventsException(Self, E);
@@ -464,26 +466,26 @@ begin
   // Если игра найдена, то запускаем игру
   Gfile := ExtractUrlFileName(CatalogButtonGroup.Items[index].Hint);
   if FileExists(V_ProfilePath + C_GamesFolder + Gfile) then
+  begin
+    // Прячем контролы
+    InfoLabel.Visible := False;
+    LoadGameBitBtn.Visible := False;
+    InfoPanelSpeedButton.NumGlyphs := 4;
+    SettingsPanel.Width := 0;
+    WindowState := wsNormal;
+    // Получаем информацию из флэш файла
+    if GetSwfFileHeader(V_ProfilePath + C_GamesFolder + Gfile, FlashInfo) then
     begin
-      // Прячем контролы
-      InfoLabel.Visible := False;
-      LoadGameBitBtn.Visible := False;
-      InfoPanelSpeedButton.NumGlyphs := 4;
-      SettingsPanel.Width := 0;
-      WindowState := wsNormal;
-      // Получаем информацию из флэш файла
-      if GetSwfFileHeader(V_ProfilePath + C_GamesFolder + Gfile, FlashInfo) then
-        begin
-          SignatureLabel.Caption := C_Signature + FlashInfo.Signature;
-          VersionLabel.Caption := C_Version + IntToStr(FlashInfo.Version);
-          FileLengthLabel.Caption := C_FileSize + FloatToStrF(FlashInfo.FileLength / 1000000, FfFixed, 7, 1) + ' MB';
-          HeightLabel.Caption := C_Height + IntToStr(FlashInfo.FrameSize.Ymax div 20);
-          WidthLabel.Caption := C_Width + IntToStr(FlashInfo.FrameSize.Xmax div 20);
-          FrameRateLabel.Caption := C_FrameRate + IntToStr(FlashInfo.FrameRate);
-          FrameCountLabel.Caption := C_FrameCount + IntToStr(FlashInfo.FrameCount);
-        end;
-      // Загружаем новый флэш объект
-      try
+      SignatureLabel.Caption := C_Signature + FlashInfo.Signature;
+      VersionLabel.Caption := C_Version + IntToStr(FlashInfo.Version);
+      FileLengthLabel.Caption := C_FileSize + FloatToStrF(FlashInfo.FileLength / 1000000, FfFixed, 7, 1) + ' MB';
+      HeightLabel.Caption := C_Height + IntToStr(FlashInfo.FrameSize.Ymax div 20);
+      WidthLabel.Caption := C_Width + IntToStr(FlashInfo.FrameSize.Xmax div 20);
+      FrameRateLabel.Caption := C_FrameRate + IntToStr(FlashInfo.FrameRate);
+      FrameCountLabel.Caption := C_FrameCount + IntToStr(FlashInfo.FrameCount);
+    end;
+    // Загружаем новый флэш объект
+    try
       Flash := TShockwaveFlash.Create(FlashPanel);
       // Подгоняем размеры окна к размерам игры
       Height := (FlashInfo.FrameSize.Ymax div 20) + 34;
@@ -502,22 +504,22 @@ begin
       else
         Flash.AllowNetworking := 'none';
       Flash.AllowScriptAccess := 'never';
-      except
-        if Flash <> nil then
-          FreeAndNil(Flash);
-        InfoLabel.Caption := '#Вероятно у вас не установлен компонент Flash Player!';
-        InfoLabel.Visible := true;
-        FlashPlayerURLLabel.Visible := true;
-      end;
-    end
-  else
-    begin
-      // Отображаем сообщение и контролы для загрузки игры
-      InfoLabel.Caption := '#Загрузите игру c сервера ...';
-      InfoLabel.Visible := True;
-      LoadGameBitBtn.Enabled := True;
-      LoadGameBitBtn.Visible := True;
+    except
+      if Flash <> nil then
+        FreeAndNil(Flash);
+      InfoLabel.Caption := '#Вероятно у вас не установлен компонент Flash Player!';
+      InfoLabel.Visible := true;
+      FlashPlayerURLLabel.Visible := true;
     end;
+  end
+  else
+  begin
+    // Отображаем сообщение и контролы для загрузки игры
+    InfoLabel.Caption := '#Загрузите игру c сервера ...';
+    InfoLabel.Visible := True;
+    LoadGameBitBtn.Enabled := True;
+    LoadGameBitBtn.Visible := True;
+  end;
   // В заголовке отображаем название игры
   Caption := Format(Lang_Vars[58].L_S, ['- ' + CatalogButtonGroup.Items.Items[index].Caption]);
 end;
@@ -537,14 +539,14 @@ begin
     if FileExists(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName) then
       List.LoadFromFile(V_ProfilePath + C_GamesFolder + C_GamesCatalogFileName);
     for I := 0 to List.Count - 1 do
+    begin
+      with CatalogButtonGroup.Items.Add do
       begin
-        with CatalogButtonGroup.Items.Add do
-          begin
-            Caption := Parse(';', List.Strings[I], 1);
-            Hint := Parse(';', List.Strings[I], 2);
-            ImageIndex := 60;
-          end;
+        Caption := Parse(';', List.Strings[I], 1);
+        Hint := Parse(';', List.Strings[I], 2);
+        ImageIndex := 60;
       end;
+    end;
   finally
     List.Free;
   end;
@@ -626,35 +628,36 @@ begin
 end;
 
 procedure TGamesForm.GameLoadHttpClientSessionClosed(Sender: TObject);
+var
+  S: string;
 begin
   // Обрабатываем возможные ошибки в работе http сокета
-  with GameLoadHttpClient do
-    begin
-      if (StatusCode = 0) or (StatusCode >= 400) then
-        begin
-          FlashPanel.Caption := Format(ErrorHttpClient(StatusCode), [C_BN]);
-        end;
-    end;
+  if (GameLoadHttpClient.StatusCode = 0) or (GameLoadHttpClient.StatusCode >= 400) then
+  begin
+    S := Format(ErrorHttpClient(GameLoadHttpClient.StatusCode), [(Sender as THttpCli).Name, C_BN]);
+    FlashPanel.Caption := S;
+  end;
 end;
 
 procedure TGamesForm.GameLoadHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
 begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
-    begin
-      DAShow(Lang_Vars[17].L_S, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
-    end;
+  begin
+    DAShow(Lang_Vars[17].L_S, NotifyConnectError((Sender as THttpCli).name, ErrCode), EmptyStr, 134, 2, 0);
+  end;
 end;
 
 procedure TGamesForm.GameLoadHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
 begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
-    begin
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
-    end;
+  begin
+    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134, 2, 0);
+  end;
 end;
 
 {$ENDREGION}
 
 end.
+

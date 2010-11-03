@@ -930,7 +930,6 @@ var
   UIN, Doc: string;
   Typing, CloseW: Boolean;
   Len: Integer;
-  RosterItem: TListItem;
 begin
   Typing := False;
   CloseW := False;
@@ -950,14 +949,7 @@ begin
     end;
   end;
   // Ставим метку о печати сообщения в Ростере
-  {RosterItem := RosterForm.ReqRosterItem(UIN);
-  if RosterItem <> nil then
-  begin
-    if Typing then
-      RosterItem.SubItems[35] := '30'
-    else
-      RosterItem.SubItems[35] := '0';
-  end;}
+
   // Отображаем событие о печати сообщения в окне чата
   if Assigned(ChatForm) then
   begin
@@ -983,20 +975,12 @@ begin
         else // Сбрасываем сообщение о наборе текста
         begin
           NotifyPanel.Font.Color := ClWindowText;
-          if RosterItem <> nil then
-          begin
-            if RosterItem.SubItems[32] <> EmptyStr then
-              NotifyPanel.Caption := RosterItem.SubItems[32]
-            else
-              NotifyPanel.Caption := '...';
-          end
-          else
-            NotifyPanel.Caption := '...';
+          NotifyPanel.Caption := '...';
         end;
       end;
     end;
   end;
-  // --Выводим нотификации о печати и закрытии окна чата всплывающими сообщениями
+  // Выводим нотификации о печати и закрытии окна чата всплывающими сообщениями
 
 end;
 
@@ -1544,11 +1528,11 @@ end;
 {$REGION 'ICQ_Parse_130E_UpdateAck'}
 
 procedure ICQ_Parse_130E_UpdateAck(PktData: string);
-var
+{var
   I: Integer;
   CliDL: TStringList;
   GrCap: string;
-  ListItemD: TListItem;
+  ListItemD: TListItem;}
 begin
   {// Если это не фаза работы с серверным КЛ, то выходим
   if not ICQ_SSI_Phaze then
@@ -3044,7 +3028,6 @@ var
   GtransMsg: Boolean;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  XML_Prop: TJvSimpleXMLProp;
   Contact_Yes: Boolean;
   I: Integer;
 begin
@@ -3557,14 +3540,12 @@ procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, Co
 var
   I, StatusIcoInd, IXStat, IClient: Integer;
   BartID, BartLength, BartSubLen: Integer;
-  Utf8Sup: Boolean;
+  //Utf8Sup: Boolean;
   IHash, IXText, PClient, IXStatNew, S_Log: string;
   Get_Node: TJvSimpleXmlElem;
 begin
   // Получаем номер иконки из статуса
   StatusIcoInd := ICQ_StatusCode2ImgId(Status);
-  // По умолчанию нет поддержки UTF-8 сообщений
-  Utf8Sup := False;
   // Доп. статус и клиент по умолчанию
   IXStat := -1;
   IClient := -1;
@@ -3637,8 +3618,10 @@ begin
     end;
   end;
   // Ищем поддержку UTF-8 сообщений
-  if ((Pos(ICQ_Servises_Caps[23].Cap_HEX, Caps) > 0) or (Pos('134E', CapsId) > 0)) and (ProtoVer <> '0') then
-    Utf8Sup := True;
+  {if ((Pos(ICQ_Servises_Caps[23].Cap_HEX, Caps) > 0) or (Pos('134E', CapsId) > 0)) and (ProtoVer <> '0') then
+    Utf8Sup := True
+  else
+    Utf8Sup := False;}
   // Обновляем отображение контакта в Ростере
   Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(UIN));
   if Get_Node <> nil then
@@ -4054,12 +4037,10 @@ const
 var
   Len, Count, I: Integer;
   CLTimeStamp: DWord;
-  SubData, QSN, QGroupId, QID, QType, QNick, TLV, Rsu, S_Log: string;
+  SubData, QSN, QGroupId, QID, QType, QNick, TLV, S_Log: string;
   QPhone, QNote, QEmail, QTimeId: string;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  XML_Prop: TJvSimpleXMLProp;
   Dt: TDateTime;
-  Hour, Min, Sec, MSec: Word;
 begin
   // Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
   Result := False;
@@ -4138,6 +4119,7 @@ begin
                     $0066: // Не авторизованый контакт
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        NextData(SubData, Len);
                         S_Log := S_Log + C_Auth + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + C_AuthNone + C_LN + C_BN;
                         // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку
                         RosterUpdateProp(Tri_Node, C_Auth, C_AuthNone);
@@ -4402,7 +4384,7 @@ end;
 procedure ICQ_Parse_010F(PktData: string);
 var
   Len, Count, I, V: Integer;
-  TLV, S_Log, S, Temp1, Cap, Caps: string;
+  TLV, S_Log, S, Cap, Caps: string;
 begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
@@ -4617,9 +4599,8 @@ end;
 {$REGION 'ICQ_NotifyUserStatus'}
 
 procedure ICQ_NotifyUserStatus(UIN, IStatus, IClient: string; IColor: Integer);
-var
-  Client, Nick: string;
-  RosterItem: TListItem;
+{var
+  Client, Nick: string;}
 begin
   // Ищем ник этой учётной записи в КЛ
   {RosterItem := RosterForm.ReqRosterItem(UIN);
@@ -4630,7 +4611,7 @@ begin
   if IClient > EmptyStr then
     Client := Lang_Vars[38].L_S + C_TN + IClient;}
   // Отображаем всплывающим сообщением статус контакта
-  DAShow(Lang_Vars[16].L_S, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + Lang_Vars[47].L_S + C_TN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
+  //DAShow(Lang_Vars[16].L_S, Nick + C_RN + 'ICQ#: ' + UIN + C_RN + Lang_Vars[47].L_S + C_TN + IStatus + C_RN + Client, EmptyStr, 133, IColor, 0);
 end;
 
 {$ENDREGION}

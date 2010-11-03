@@ -215,8 +215,8 @@ procedure TMemoForm.YesBitBtnClick(Sender: TObject);
 // label
 // x;
 var
-  S, PostData: string;
-  FrmLogin: TLoginForm;
+  S{, PostData}: string;
+  //FrmLogin: TLoginForm;
 begin
   // Автообновление
   if UpDate then
