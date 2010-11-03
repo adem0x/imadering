@@ -69,8 +69,8 @@ uses
 {$REGION 'BuildGroupList'}
 
 procedure TAddContactForm.BuildGroupList(GProto: string);
-var
-  I: Integer;
+{var
+  I: Integer;}
 begin
   {// Составляем список групп из Ростера
   with RosterForm.RosterJvListView do
@@ -123,13 +123,12 @@ end;
 {$REGION 'AddContactButtonClick'}
 
 procedure TAddContactForm.AddContactButtonClick(Sender: TObject);
-label
+{label
   X,
   Y;
 var
-  RosterItem: TListItem;
   NewId, IGpId: string;
-  I: Integer;
+  I: Integer;}
 begin
   {// Добавляем контакты по протоколу ICQ
   if ContactType = C_Icq then

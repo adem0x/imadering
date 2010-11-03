@@ -3252,9 +3252,9 @@ end;
 {$REGION 'FloatContactMenuClick'}
 
 procedure TMainForm.FloatContactMenuClick(Sender: TObject);
-var
+{var
   I, FloatHandle: Integer;
-  RosterItem: TListItem;
+  RosterItem: TListItem;}
 begin
   {// Ищем этот контакт в Ростере
   if ContactList.SelectedItem <> nil then
@@ -3495,7 +3495,7 @@ end;
 procedure TMainForm.ContactListCategoryCollapase(Sender: TObject; const Category: TButtonCategory);
 var
   I: Integer;
-  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Node: TJvSimpleXmlElem;
 begin
   if not V_CollapseGroupsRestore then
   begin
@@ -3760,12 +3760,12 @@ end;
 {$REGION 'DeleteGroupCLClick'}
 
 procedure TMainForm.DeleteGroupCLClick(Sender: TObject);
-label
+{label
   X;
 var
   GroupProto, GroupId, GroupName: string;
   I: Integer;
-  TCL: TStringList;
+  TCL: TStringList;}
 begin
   {// Блокируем всё окно со списком контактов
   MainForm.Enabled := False;
@@ -3917,8 +3917,6 @@ end;
 {$REGION 'FormCloseQuery'}
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-var
-  I: Integer;
 begin
   // Делаем окно не закрывающим программу, а сворачиваем его в трэй
   if not V_ProgramCloseCommand then
@@ -4319,7 +4317,6 @@ end;
 
 procedure TMainForm.LoadMainFormSettings;
 var
-  i: Integer;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
@@ -4880,11 +4877,14 @@ end;
 {$REGION 'Other'}
 
 procedure TMainForm.TwitterHttpClientSessionClosed(Sender: TObject);
+var
+  S: string;
 begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (TwitterHttpClient.StatusCode = 0) or (TwitterHttpClient.StatusCode >= 400) then
   begin
-    DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(TwitterHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
+    S := Format(ErrorHttpClient(TwitterHttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
+    DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
   end;
 end;
 {$ENDREGION}
@@ -4962,7 +4962,7 @@ begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (UpdateHttpClient.StatusCode = 0) or (UpdateHttpClient.StatusCode >= 400) then
   begin
-    S := Format(ErrorHttpClient(UpdateHttpClient.StatusCode), [C_RN]);
+    S := Format(ErrorHttpClient(UpdateHttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
     DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
     if Assigned(UpdateForm) then
       UpdateForm.InfoMemo.Lines.Add(C_RN + S);

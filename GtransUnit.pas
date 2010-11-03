@@ -354,6 +354,8 @@ begin
 end;
 
 procedure TGTransForm.GtransHttpClientSessionClosed(Sender: TObject);
+var
+  S: string;
 begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (GtransHttpClient.StatusCode = 0) or (GtransHttpClient.StatusCode >= 400) then
@@ -361,7 +363,8 @@ begin
       GTranslation := False;
       if ChatForm.UIN_Panel.Caption = GUIN then
         ChatForm.NotifyPanel.Caption := Format(Lang_Vars[85].L_S, [IntToStr(GtransHttpClient.StatusCode)]);
-      DAShow(Lang_Vars[17].L_S, Format(ErrorHttpClient(GtransHttpClient.StatusCode), [C_RN]), EmptyStr, 134, 2, 0);
+      S := Format(ErrorHttpClient(GtransHttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
+      DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
     end;
 end;
 

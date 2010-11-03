@@ -333,7 +333,6 @@ var
   S_Log, M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   I, Len: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  XML_Prop: TJvSimpleXMLProp;
   Contact_Yes: Boolean;
 begin
   // Если окно сообщений не было создано, то создаём его
@@ -508,7 +507,6 @@ end;
 procedure MRA_ParseUserInfo(PktData: string);
 var
   S_Log, S: string;
-  Len: Integer;
 
   function GetLastLS: string;
   var
@@ -854,7 +852,6 @@ end;
 procedure MRA_ParseStatus(PktData: string);
 var
   S_Log, StatusCode, XStatusCode, XStatusText, KEmail, Unk, KClient, StatusIcons: string;
-  Len: Integer;
   Get_Node: TJvSimpleXmlElem;
 
   function GetLastLS: string;

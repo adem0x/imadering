@@ -141,8 +141,8 @@ begin
 end;
 
 procedure TCLSearchForm.CLSearchJvListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
-var
-  CLItem: TButtonItem;
+{var
+  CLItem: TButtonItem;}
 begin
   // Если выделили контакт, то выделяем его и в КЛ
   if Selected then

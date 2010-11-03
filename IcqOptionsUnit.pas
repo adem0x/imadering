@@ -339,7 +339,6 @@ begin
                     PassEdit.OnChange := PassEditChange;
                     // --------------------------------------------------------------------------
                     // Загружаем остальные настройки
-                    ClientLoginIdEdit.Text := ICQ_ClientLoginID;
                     Sub_Node := XML_Node.Items.ItemNamed[C_ClientLoginID];
                     if Sub_Node <> nil then
                     begin
@@ -860,6 +859,8 @@ begin
   PersonalSexInfoComboBox.Items.NameValueSeparator := C_BN;
   PersonalMaritalInfoComboBox.Items.NameValueSeparator := C_BN;
   PersonalGenderInfoComboBox.Items.NameValueSeparator := C_BN;
+  // Логин ID
+  ClientLoginIdEdit.Text := ICQ_ClientLoginID;
   // Загружаем настройки
   LoadSettings;
   // Переводим форму на другие языки

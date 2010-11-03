@@ -558,8 +558,6 @@ begin
 end;
 
 procedure TChatForm.QSpeedButtonClick(Sender: TObject);
-var
-  RosterItem: TListItem;
 begin
   {// Достаём из Ростера последнее сообщение от этого контакта
   RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
@@ -1652,9 +1650,8 @@ end;
 {$REGION 'ShowAllHistoryClick'}
 
 procedure TChatForm.ShowAllHistoryClick(Sender: TObject);
-var
-  Doc: string;
-  RosterItem: TListItem;
+{var
+  Doc: string;}
 begin
   {// Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
   RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
