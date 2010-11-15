@@ -238,7 +238,7 @@ begin
   // Формируем URL HTTP запроса
   // Вариант с возвращаемыми значениями (http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q=hello%20world&langpair=en%7Cit&callback=foo&context=bar)
   GtransHttpClient.URL := Format('http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q=%s&langpair=%s|%s', [URLEncode(GText), GtransYouLangCode, GtransToLangCode]);
-  Xlog(C_GT + Format(Log_Gtrans_URL, [GtransYouLangCode, GtransToLangCode]) + C_RN + GtransHttpClient.URL, EmptyStr);
+  Xlog(C_HTTP + C_BN + Log_Get, C_GT + Format(Log_Gtrans_URL, [GtransYouLangCode, GtransToLangCode]) + C_RN + GtransHttpClient.URL, EmptyStr);
   GtransHttpClient.GetASync;
 end;
 
@@ -436,7 +436,7 @@ begin
           if List.Text > EmptyStr then
             begin
               GMsg := Utf8ToString(List.Text);
-              Xlog(C_GT + Format(Log_Gtrans_Req, [GtransYouLangCode, GtransToLangCode]) + C_RN + GMsg, EmptyStr);
+              //Xlog(C_GT + Format(Log_Gtrans_Req, [GtransYouLangCode, GtransToLangCode]) + C_RN + GMsg, EmptyStr);
               // Проверяем статус перевода (200 означает успешный перевод)
               GStatus := IsoLateTextString(GMsg, '"responseStatus": ', '}');
               if GStatus = '200' then

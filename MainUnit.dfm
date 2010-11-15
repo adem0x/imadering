@@ -433,9 +433,11 @@ object MainForm: TMainForm
     end
     object PostInTwitter_Menu: TMenuItem
       ImageIndex = 268
+      OnClick = PostInTwitter_MenuClick
     end
     object LinkCompress_Menu: TMenuItem
       ImageIndex = 193
+      OnClick = LinkCompress_MenuClick
     end
     object N1: TMenuItem
       Caption = '-'
@@ -639,7 +641,7 @@ object MainForm: TMainForm
     Left = 48
     Top = 32
   end
-  object UpdateHttpClient: THttpCli
+  object HttpClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
     Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
@@ -649,20 +651,21 @@ object MainForm: TMainForm
     MultiThreaded = False
     RequestVer = '1.0'
     FollowRelocation = True
-    LocationChangeMaxCount = 5
+    LocationChangeMaxCount = 0
     ServerAuth = httpAuthNone
     ProxyAuth = httpAuthNone
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnSessionClosed = UpdateHttpClientSessionClosed
-    OnDocBegin = UpdateHttpClientDocBegin
-    OnDocData = UpdateHttpClientDocData
-    OnSendEnd = UpdateHttpClientSendEnd
-    OnRequestDone = UpdateHttpClientRequestDone
+    OnSessionClosed = HttpClientSessionClosed
+    OnDocBegin = HttpClientDocBegin
+    OnDocData = HttpClientDocData
+    OnDocEnd = HttpClientDocEnd
+    OnSendEnd = HttpClientSendEnd
+    OnRequestDone = HttpClientRequestDone
     SocksAuthentication = socksNoAuthentication
-    OnSocksConnected = UpdateHttpClientSocksConnected
-    OnSocksError = UpdateHttpClientSocksError
+    OnSocksConnected = HttpClientSocksConnected
+    OnSocksError = HttpClientSocksError
     Left = 16
     Top = 128
   end
@@ -1398,12 +1401,12 @@ object MainForm: TMainForm
     BandwidthSampling = 1000
     Options = []
     OnSessionClosed = TwitterHttpClientSessionClosed
-    OnDocBegin = UpdateHttpClientDocBegin
-    OnSendEnd = UpdateHttpClientSendEnd
+    OnDocBegin = HttpClientDocBegin
+    OnSendEnd = HttpClientSendEnd
     OnRequestDone = TwitterHttpClientRequestDone
     SocksAuthentication = socksNoAuthentication
-    OnSocksConnected = UpdateHttpClientSocksConnected
-    OnSocksError = UpdateHttpClientSocksError
+    OnSocksConnected = HttpClientSocksConnected
+    OnSocksError = HttpClientSocksError
     Left = 48
     Top = 128
   end

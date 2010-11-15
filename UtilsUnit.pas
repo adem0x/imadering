@@ -51,7 +51,10 @@ uses
   ButtonGroup,
   UpdateUnit,
   DateUtils,
-  Htmlview;
+  Htmlview,
+  OverbyteIcsMD5,
+  OverbyteIcsSha1,
+  OverbyteIcsMimeUtils;
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -77,6 +80,7 @@ procedure ICQ_SendPkt(Channel, Data: string);
 procedure ICQA_SendPkt(Channel, Data: string);
 function NumToIp(Addr: LongWord): string;
 function UnixToDateTime(const Avalue: Int64): TDateTime;
+function DateTimeToUnix(ConvDate: TDateTime): Longint;
 function GetTimeZone: Integer;
 function TailLineTail(Ahistory: string; AlinesCount: Integer): string;
 procedure FormFlash(Hnd: Hwnd);
@@ -123,7 +127,7 @@ function CheckText_RN(Msg: string): string;
 function NotProtoOnline(Proto: string): Boolean;
 function GetFileDateTime(FileName: string): TDateTime;
 procedure Jab_SendPkt(SendData: string);
-procedure XLog(XLogData, Proto: string);
+procedure XLog(XLogHead, XLogData, Proto: string; InData: boolean = true);
 function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; ErrCode: Integer): string;
 function CreateHistoryArhive(HFile: string): Boolean;
@@ -158,6 +162,10 @@ function Text2XML(Str: string): string;
 function XML2Text(Str: string): string;
 function GetFlagFile(Path, CountryCode, CountryName: string): string;
 function ReverseString(s: string): string;
+function Twitter_Generate_Nonce: string;
+function Twitter_Encrypt_HMAC_SHA1(Input, AKey: string): string;
+function EncodeRFC3986(s: string): string;
+function Twitter_HMAC_SHA1_Signature(xURL, RequestMethod: string; Params: TStringList): string;
 
 {$ENDREGION}
 
@@ -747,7 +755,7 @@ end;
 {$ENDREGION}
 {$REGION 'XLog'}
 
-procedure XLog(XLogData, Proto: string);
+procedure XLog(XLogHead, XLogData, Proto: string; InData: boolean = true);
 begin
   // Если окно лога не создано, то выходим
   if not Assigned(LogForm) then
@@ -762,15 +770,8 @@ begin
     or ((Proto = C_Jabber) and JabberDumpSpeedButton.Down) //
     or ((Proto = C_Mra) and MRADumpSpeedButton.Down) //
     or ((Proto = C_Twitter) and TwitDumpSpeedButton.Down) //
-    or (Proto = EmptyStr) then
-    begin
-      // Если количество строк в логе слишком большое, то очищаем его
-      if LogMemo.Lines.Count > 5000 then
-        LogMemo.Clear;
-      // Добавляем в лог новое сообщение
-      LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + C_BN + XLogData);
-      LogMemo.Lines.Add(C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
-    end;
+    or (Proto = EmptyStr) then // Добавляем в лог новое сообщение
+      AddLogText(XLogHead, XLogData, InData);
   end;
 end;
 
@@ -782,26 +783,35 @@ var
   JvXML: TJvSimpleXml;
   Pkt, S: string;
 begin
-  S := Copy(SendData, 2, 1);
-  if (S <> '?') and (S <> '/') and (S <> #09) then
-  begin
-    // Форматируем данные пакета
-    Pkt := Format(J_RootNode, [SendData]);
-    JvXML_Create(JvXML);
-    try
-      with JvXML do
+  if Assigned(LogForm) then
+    if LogForm.JabberDumpSpeedButton.Down then
+    begin
+      S := Copy(SendData, 2, 1);
+      if (S <> '?') and (S <> '/') and (S <> #09) then
       begin
-        JvXML_LoadStr(JvXML, Pkt);
-        // Пишем в лог данные пакета
-        if Root <> nil then
-          XLog(C_Jabber + C_BN + Log_Send + C_RN + Trim(Root.SaveToString), C_Jabber);
+        // Форматируем данные пакета
+        Pkt := Format(J_RootNode, [SendData]);
+        JvXML_Create(JvXML);
+        try
+          with JvXML do
+          begin
+            JvXML_LoadStr(JvXML, Pkt);
+            // Пишем в лог данные пакета
+            if Root <> nil then
+              XLog(C_Jabber + C_BN + Log_Send, Trim(Root.SaveToString), C_Jabber, false);
+          end;
+        finally
+          JvXML.Free;
+        end;
+      end
+      else
+      begin
+        if S = #09 then
+          XLog(C_Jabber + C_BN + Log_Send, 'Ping', C_Jabber, false)
+        else
+          XLog(C_Jabber + C_BN + Log_Send, SendData, C_Jabber, false);
       end;
-    finally
-      JvXML.Free;
     end;
-  end
-  else
-    XLog(C_Jabber + C_BN + Log_Send + C_RN + SendData, C_Jabber);
   // Отправляем данные через сокет
   Mainform.JabberWSocket.SendStr(Utf8Encode(SendData));
 end;
@@ -1183,7 +1193,7 @@ begin
         // Воспроизводим звук ошибки
         ImPlaySnd(7);
         // Пишем в окно лога
-        Xlog(DaHead + C_RN + DaText, EmptyStr);
+        Xlog(DaHead, DaText, EmptyStr);
       end;
     3: // Зелёный
       begin
@@ -1456,6 +1466,21 @@ begin
 end;
 
 {$ENDREGION}
+{$REGION 'DateTimeToUnix'}
+
+function DateTimeToUnix(ConvDate: TDateTime): Longint;
+const
+  UnixStartDate: TDateTime = 25569;
+var
+  x: double;
+  lTimeZone: TTimeZoneInformation;
+begin
+  GetTimeZoneInformation(lTimeZone);
+  ConvDate := ConvDate + (lTimeZone.Bias / 1440);
+  x := (ConvDate - UnixStartDate) * 86400;
+  Result := Trunc(x);
+end;
+{$ENDREGION}
 {$REGION 'NumToIp'}
 
 function NumToIp(Addr: Longword): string;
@@ -1550,7 +1575,7 @@ begin
             S_Name := ICQ_Pkt_Names[I].Pkt_Name;
           Break;
         end;
-      XLog(C_Icq + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Icq);
+      XLog(C_Icq + C_BN + Log_Send + C_BN + S_Name, Trim(Dump(Str)), C_Icq, false);
     end;
   // Отсылаем данные по сокету
   MainForm.IcqWSocket.SendStr(Str);
@@ -1571,7 +1596,7 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(ICQ_Avatar_Seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
-  XLog(C_Icq + 'A' + Log_Send + C_RN + Trim(Dump(Str)), C_Icq);
+  XLog(C_Icq + 'A' + Log_Send, Trim(Dump(Str)), C_Icq, false);
   // Отсылаем данные по сокету
   Mainform.IcqAvatarWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1605,7 +1630,7 @@ begin
           S_Name := MRA_Pkt_Names[I].Pkt_Name;
           Break;
         end;
-      XLog(C_Mra + C_BN + Log_Send + C_BN + S_Name + C_RN + Trim(Dump(Str)), C_Mra);
+      XLog(C_Mra + C_BN + Log_Send + C_BN + S_Name, Trim(Dump(Str)), C_Mra, false);
     end;
   // Отсылаем данные по сокету
   Mainform.MraWSocket.SendStr(Str);
@@ -2505,6 +2530,52 @@ begin
   end;
 end;
 
+{$ENDREGION}
+{$REGION 'EncodeRFC3986'}
+
+function EncodeRFC3986(s: string): string;
+var
+  i: integer;
+begin
+  Result := EmptyStr;
+  for i := 1 to length(s) do
+    case Ord(s[i]) of
+      45, 46, 48..57, 65..90, 95, 97..122, 126: Result := Result + s[i];
+    else
+      Result := Result + '%' + IntToHex(Ord(s[i]), 2);
+    end;
+end;
+{$ENDREGION}
+{$REGION 'Twitter_Generate_Nonce'}
+
+function Twitter_Generate_Nonce: string;
+begin
+  // Генерим nonce для запросов в twitter
+  Result := StrMD5(IntToStr(DateTimeToUnix(Now)));
+end;
+{$ENDREGION}
+{$REGION 'Twitter_Encrypt_HMAC_SHA1'}
+
+function Twitter_Encrypt_HMAC_SHA1(Input, AKey: string): string;
+begin
+  Result := HMAC_SHA1_EX(Input, AKey);
+end;
+{$ENDREGION}
+{$REGION 'Twitter_HMAC_SHA1_Signature'}
+
+function Twitter_HMAC_SHA1_Signature(xURL, RequestMethod: string; Params: TStringList): string;
+var
+  strBase, strParams, strKey: string;
+  I: integer;
+begin
+  // Создаём сигнатуру для запросов twitter
+  for I := 0 to Params.Count - 1 do
+    strParams := strParams + C_AN + Params[i];
+  Delete(strParams, 1, 1);
+  strBase := RequestMethod + C_AN + EncodeRFC3986(xURL + '/') + C_AN + EncodeRFC3986(strParams);
+  strKey := {X_Twitter_OAuth_Consumer_Secret} 'QXromX9owFx7Gx0ma8LK0fApX0kVqYf1CXWuGRyuP4' + C_AN;
+  Result := EncodeRFC3986(Base64Encode(Twitter_Encrypt_HMAC_SHA1(strBase, strKey)));
+end;
 {$ENDREGION}
 
 end.

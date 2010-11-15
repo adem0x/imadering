@@ -536,10 +536,10 @@ begin
   with MainForm do
     begin
       // HTTP сокет для обновлений программы
-      if UpdateHttpClient.State <> HttpConnected then
+      if HttpClient.State <> HttpConnected then
         begin
-          UpdateHttpClient.Abort;
-          ApplyProxyHttpClient(UpdateHttpClient);
+          HttpClient.Abort;
+          ApplyProxyHttpClient(HttpClient);
         end;
       // HTTP сокет для Twitter протокола
       if TwitterHttpClient.State <> HttpConnected then

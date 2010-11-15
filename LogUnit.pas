@@ -25,11 +25,11 @@ uses
   StdCtrls,
   ExtCtrls,
   Buttons,
-  StrUtils, Menus;
+  StrUtils,
+  Menus, Htmlview;
 
 type
   TLogForm = class(TForm)
-    LogMemo: TMemo;
     BottomPanel: TPanel;
     ClearLogSpeedButton: TSpeedButton;
     Bevel: TBevel;
@@ -51,6 +51,7 @@ type
     HexToLEText_Menu: TMenuItem;
     HexToBEText_Menu: TMenuItem;
     ToUtf8Text_Menu: TMenuItem;
+    HTMLLogViewer: THTMLViewer;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
@@ -69,13 +70,16 @@ type
     procedure HexToBEText_MenuClick(Sender: TObject);
     procedure WriteLogSpeedButtonClick(Sender: TObject);
     procedure ToUtf8Text_MenuClick(Sender: TObject);
+    procedure HTMLLogViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
+    HTMLStyle: string;
   public
     { Public declarations }
     procedure TranslateForm;
     procedure LoadStartLog;
+    procedure AddLogText(Pkt_Head, Pkt_Text: string; PktIn: Boolean);
   end;
 
 {$ENDREGION}
@@ -96,126 +100,10 @@ uses
   OverbyteIcsUtils;
 
 const
-  C_log = ' log';
-
-{$ENDREGION}
-{$REGION 'FindInMemo'}
-
-function FindInMemo(Memo: TMemo; const FindText: string; FindDown, MatchCase: Boolean): Boolean;
-
-  function PosR2L(const FindStr, SrcStr: string): Integer;
-  var
-    Ps, L: Integer;
-
-    function InvertSt(const S: string): string;
-    var
-      I: Integer;
-    begin
-      L := Length(S);
-      SetLength(Result, L);
-      for I := 1 to L do
-        Result[I] := S[L - I + 1];
-    end;
-
-  begin
-    Ps := Pos(InvertSt(FindStr), InvertSt(SrcStr));
-    if Ps <> 0 then
-      Result := Length(SrcStr) - Length(FindStr) - Ps + 2
-    else
-      Result := 0;
-  end;
-
-  function MCase(const S: string): string;
-  var
-    I: Integer;
-  begin
-    Result := S;
-    for I := 1 to Length(S) do
-    begin
-      case S[I] of
-        'A'..'Z', 'А'..'Я': Result[I] := Chr(Ord(S[I]) + 32);
-        'Ё': Result[I] := 'ё';
-        'Ѓ': Result[I] := 'ѓ';
-        'Ґ': Result[I] := 'ґ';
-        'Є': Result[I] := 'є';
-        'Ї': Result[I] := 'ї';
-        'І': Result[I] := 'і';
-        'Ѕ': Result[I] := 'ѕ';
-      end;
-    end;
-  end;
-
-var
-  Y, X, SkipChars: Integer;
-  FindS, SrcS: string;
-  P: TPoint;
-begin
-  Result := False;
-  if MatchCase then
-    FindS := FindText
-  else
-    FindS := MCase(FindText);
-  P := Memo.CaretPos;
-  if FindDown then
-    for Y := P.Y to Memo.Lines.Count do
-    begin
-      if Y <> P.Y then
-        SrcS := Memo.Lines[Y]
-      else
-        SrcS := Copy(Memo.Lines[Y], P.X + 1, Length(Memo.Lines[Y]) - P.X + 1);
-      if not MatchCase then
-        SrcS := MCase(SrcS);
-      X := Pos(FindS, SrcS);
-      if X <> 0 then
-      begin
-        if Y = P.Y then
-          Inc(X, P.X);
-        P := Point(X, Y);
-        Result := True;
-        Break;
-      end
-    end
-  else
-    for Y := P.Y downto 0 do
-    begin
-      if Y <> P.Y then
-        SrcS := Memo.Lines[Y]
-      else
-        SrcS := Copy(Memo.Lines[Y], 1, P.X - Memo.SelLength);
-      if not MatchCase then
-        SrcS := MCase(SrcS);
-      X := PosR2L(FindS, SrcS);
-      if X <> 0 then
-      begin
-        P := Point(X, Y);
-        Result := True;
-        Break;
-      end
-    end;
-  if Result then
-  begin
-    SkipChars := 0;
-    for Y := 0 to P.Y - 1 do
-      Inc(SkipChars, Length(Memo.Lines[Y]));
-    Memo.SelStart := SkipChars + (P.Y * 2) + P.X - 1;
-    Memo.SelLength := Length(FindText);
-  end;
-end;
+  C_log = 'log';
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
-
-procedure TLogForm.ToUtf8Text_MenuClick(Sender: TObject);
-var
-  s: string;
-begin
-  // Преобразовываем текст в UTF8 строку текста
-  try
-    s := UTF8ToString(LogMemo.SelText);
-    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
-  except
-  end;
-end;
 
 procedure TLogForm.TranslateForm;
 const
@@ -226,21 +114,34 @@ begin
   // Применяем язык
   SetLang(Self);
   // Переводим меню
-  HexToText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'ANSI']);
+  HexToText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h, 'ANSI']);
   ToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, [EmptyStr, 'UTF-8']);
-  HexToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'UTF-8']);
-  HexToLEText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'U-LE']);
-  HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h,'U-BE']);
+  HexToUtf8Text_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h, 'UTF-8']);
+  HexToLEText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h, 'U-LE']);
+  HexToBEText_Menu.Caption := Format(Lang_Vars[48].L_S, [C_BN + h, 'U-BE']);
+end;
+{$ENDREGION}
+{$REGION 'AddLogText'}
+
+procedure TLogForm.AddLogText(Pkt_Head, Pkt_Text: string; PktIn: Boolean);
+var
+  Doc: string;
+begin
+  Doc := UTF8ToString(HTMLLogViewer.DocumentSource);
+  Pkt_Head := C_QN + DateTimeToStr(Now) + C_EN + C_BN + Pkt_Head;
+  if PktIn then
+    Doc := Doc + '<IMG NAME="I" SRC="./Icons/' + V_CurrentIcons + '/inpkt.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=b> ' + Pkt_Head + '</span><br>'
+  else
+    Doc := Doc + '<IMG NAME="I" SRC="./Icons/' + V_CurrentIcons + '/outpkt.gif" ALIGN="ABSMIDDLE" BORDER="0"><span class=a> ' + Pkt_Head + '</span><br>';
+  Pkt_Text := Text2XML(Pkt_Text);
+  CheckMessage_BR(Pkt_Text);
+  Doc := Doc + '<span class=c>' + Pkt_Text + '</span><br><br>';
+  LoadHTMLStrings(HTMLLogViewer, Doc);
+  // Ставим каретку в самый низ текста
+  HTMLLogViewer.VScrollBarPosition := HTMLLogViewer.VScrollBar.Max;
 end;
 {$ENDREGION}
 {$REGION 'FormCreate'}
-
-procedure TLogForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  // Высвобождаем окно при закрытии
-  Action := caFree;
-  LogForm := nil;
-end;
 
 procedure TLogForm.FormCreate(Sender: TObject);
 begin
@@ -265,10 +166,20 @@ begin
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Подгружаем стартовый лог
+  HTMLLogViewer.DoubleBuffered := True;
+  HTMLStyle := Format(C_HTML_head, [V_ChatCSS, C_IMadering]);
+  LoadHTMLStrings(HTMLLogViewer, HTMLStyle);
   LoadStartLog;
 end;
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TLogForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  // Высвобождаем окно при закрытии
+  Action := caFree;
+  LogForm := nil;
+end;
 
 procedure TLogForm.WriteLogSpeedButtonClick(Sender: TObject);
 begin
@@ -280,10 +191,23 @@ begin
     MainForm.AllImageList.GetBitmap(223, WriteLogSpeedButton.Glyph);
 end;
 
+procedure TLogForm.ToUtf8Text_MenuClick(Sender: TObject);
+var
+  s: string;
+begin
+  // Преобразовываем текст в UTF8 строку текста
+  try
+    s := UTF8ToString(HTMLLogViewer.SelText);
+    MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
+  except
+  end;
+end;
+
 procedure TLogForm.ClearLogSpeedButtonClick(Sender: TObject);
 begin
   // Очищаем лог
-  LogMemo.Clear;
+  HTMLLogViewer.Clear;
+  LoadHTMLStrings(HTMLLogViewer, HTMLStyle);
 end;
 
 procedure TLogForm.FormDblClick(Sender: TObject);
@@ -295,14 +219,14 @@ end;
 procedure TLogForm.CopySelText_MenuClick(Sender: TObject);
 begin
   // Копируем выделенный текст в буфер обмена
-  LogMemo.CopyToClipboard;
+  HTMLLogViewer.CopyToClipboard;
 end;
 
 procedure TLogForm.CopyAllText_MenuClick(Sender: TObject);
 begin
   // Копируем весь текст в буфер обмена
-  LogMemo.SelectAll;
-  LogMemo.CopyToClipboard;
+  HTMLLogViewer.SelectAll;
+  HTMLLogViewer.CopyToClipboard;
 end;
 
 procedure TLogForm.HexToBEText_MenuClick(Sender: TObject);
@@ -311,7 +235,7 @@ var
 begin
   // Преобразовываем HEX в BE строку текста
   try
-    s := UnicodeBEHex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    s := UnicodeBEHex2Text(Trim(DeleteSpaces(HTMLLogViewer.SelText)));
     MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
   except
   end;
@@ -323,7 +247,7 @@ var
 begin
   // Преобразовываем HEX в LE строку текста
   try
-    s := UnicodeLEHex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    s := UnicodeLEHex2Text(Trim(DeleteSpaces(HTMLLogViewer.SelText)));
     MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
   except
   end;
@@ -335,7 +259,7 @@ var
 begin
   // Преобразовываем HEX в ANSI строку текста
   try
-    s := Hex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    s := Hex2Text(Trim(DeleteSpaces(HTMLLogViewer.SelText)));
     MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
   except
   end;
@@ -347,24 +271,36 @@ var
 begin
   // Преобразовываем HEX в UTF8 строку текста
   try
-    s := Hex2Text(Trim(DeleteSpaces(LogMemo.SelText)));
+    s := Hex2Text(Trim(DeleteSpaces(HTMLLogViewer.SelText)));
     s := UTF8ToString(s);
     MessageBox(Handle, PChar(s), PChar(Application.Title), MB_OK);
   except
   end;
 end;
 
-procedure TLogForm.LogFindDialogFind(Sender: TObject);
+procedure TLogForm.HTMLLogViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
+  // При нажатии комбинации клавиш Ctrl + C в истории чата копируем выделенный текст в буфер обмена
+  if (GetKeyState(VK_CONTROL) < 0) and (Key = 67) then
+    HTMLLogViewer.CopyToClipboard;
+end;
+
+procedure TLogForm.LogFindDialogFind(Sender: TObject);
+var
+  SDown: Boolean;
+begin
+  // Снимаем предыдущее выделение текста
+  HTMLLogViewer.SelLength := 0;
   // Ищем текст в логе
-  if not FindInMemo(LogMemo, LogFindDialog.FindText, FrDown in LogFindDialog.Options, FrMatchCase in LogFindDialog.Options) then
+  SDown := FrDown in LogFindDialog.Options;
+  if not HTMLLogViewer.FindEx(LogFindDialog.FindText, FrMatchCase in LogFindDialog.Options, not SDown) then
     MessageBox(Handle, PChar(Lang_Vars[26].L_S), PChar(Application.Title), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TLogForm.LogPopupMenuPopup(Sender: TObject);
 begin
   // Управляем активностью пунктов меню
-  if LogMemo.SelText = EmptyStr then
+  if HTMLLogViewer.SelLength = 0 then
   begin
     CopySelText_Menu.Enabled := False;
     CopyAllText_Menu.Enabled := False;
@@ -402,14 +338,35 @@ begin
 end;
 
 procedure TLogForm.SaveLogSpeedButtonClick(Sender: TObject);
+var
+  S: string;
+  SL: TStringList;
 begin
   // Сохраняем данные лога в файл
   with MainForm do
   begin
-    SaveTextAsFileDialog.FileName := C_IMadering + C_log;
+    SaveTextAsFileDialog.FileName := C_IMadering + C_BN + C_log;
     SaveTextAsFileDialog.FilterIndex := 1;
     if SaveTextAsFileDialog.Execute then
-      LogMemo.Lines.SaveToFile(SaveTextAsFileDialog.FileName, TEncoding.Unicode);
+    begin
+      // Получаем текст лога
+      if HTMLLogViewer.SelLength = 0 then
+      begin
+        HTMLLogViewer.SelectAll;
+        S := HTMLLogViewer.SelText;
+        HTMLLogViewer.SelLength := 0;
+      end
+      else
+        S := HTMLLogViewer.SelText;
+      // Создаём лист строк
+      SL := TStringList.Create;
+      try
+        SL.Text := Trim(S);
+        SL.SaveToFile(SaveTextAsFileDialog.FileName, TEncoding.UTF8);
+      finally
+        SL.Free;
+      end;
+    end;
   end;
 end;
 
@@ -421,22 +378,27 @@ end;
 
 procedure TLogForm.SendEmailSpeedButtonClick(Sender: TObject);
 var
-  s, v: string;
+  S, V: string;
 begin
   // Открываем форму отправки письма с логом для разработчиков
-  if LogMemo.SelLength = 0 then
-    s := LogMemo.Text
+  if HTMLLogViewer.SelLength = 0 then
+  begin
+    HTMLLogViewer.SelectAll;
+    S := HTMLLogViewer.SelText;
+    HTMLLogViewer.SelLength := 0;
+  end
   else
-    s := LogMemo.SelText;
-  v := WideLowerCase(Format(Lang_Vars[4].L_S, [V_FullVersion]));
-  OpenURL(C_MailTo + Format(C_MailText, [C_IMadering + C_log, C_IMadering + C_BN + v + ReplaceStr(C_RN + C_RN + s, C_RN, C_MN)]));
+    S := HTMLLogViewer.SelText;
+  V := WideLowerCase(Format(Lang_Vars[4].L_S, [V_FullVersion]));
+  OpenURL(C_MailTo + Format(C_MailText, [C_IMadering + C_BN + C_log, C_IMadering + C_BN + V + ReplaceStr(C_RN + C_RN + Trim(S), C_RN, C_MN)]));
 end;
 
 procedure TLogForm.LoadStartLog;
 begin
   // Подгружаем стартовый лог
-  LogMemo.Clear;
-  LogMemo.Lines.Add(V_StartLog + C_RN + C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
+  HTMLLogViewer.Clear;
+  LoadHTMLStrings(HTMLLogViewer, HTMLStyle);
+  AddLogText(C_IMadering, V_StartLog, True);
 end;
 {$ENDREGION}
 

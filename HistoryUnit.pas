@@ -148,11 +148,10 @@ begin
         CheckMessage_Smilies(Doc);
       // Отображаем историю в компоненте
       SetLength(Doc, Length(Doc) - 6);
-      Doc := Doc + '<HR>';
       LoadHTMLStrings(HTMLHistoryViewer, Doc);
       // Ставим каретку в самый низ текста
       HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
-      HTMLHistoryViewer.CaretPos := Length(Doc);
+      HTMLHistoryViewer.CaretPos := Length(HTMLHistoryViewer.DocumentSource);
     end
   else
     begin
@@ -365,6 +364,7 @@ begin
   // Переводим окно на другие языки
   TranslateForm;
   // Формируем строку стиля
+  HTMLHistoryViewer.DoubleBuffered := True;
   HTMLStyle := '<html><head>' + V_ChatCSS + '<title>Chat</title></head><body>';
   // Назначаем иконки окну и кнопкам
   MainForm.AllImageList.GetIcon(147, Icon);

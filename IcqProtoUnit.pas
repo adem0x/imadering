@@ -327,13 +327,15 @@ const
 
   // Длинна заголовка в ICQ пакетах
   ICQ_FLAP_HEAD_SIZE = 6;
+  // SSL сервер
+  ICQ_SSL_Server = 'slogin.oscar.aol.com';
 
 {$ENDREGION}
 {$REGION 'Array Pkt Names'}
 
   // Расшифровка пакетов для лога
   ICQ_Pkt_Names:
-    packed array[0..55] of record Pkt_Code: Integer;
+    packed array[0..56] of record Pkt_Code: Integer;
     Pkt_Name:
     string;
   end
@@ -392,7 +394,8 @@ const
     (Pkt_Code: $0417; Pkt_Name: 'SRV_AIM_MESSAGING'), // 52
     (Pkt_Code: $130E; Pkt_Name: 'SRV_SSI_MOD_ACK'), // 53
     (Pkt_Code: $1503; Pkt_Name: 'SRV_META_REPLY'), // 54
-    (Pkt_Code: $1319; Pkt_Name: 'SRV_SSI_AUTH_REQ')); // 55
+    (Pkt_Code: $1319; Pkt_Name: 'SRV_SSI_AUTH_REQ'), // 55
+    (Pkt_Code: $0206; Pkt_Name: 'SRV_USER_ONLINE_INFO')); // 56
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -2850,7 +2853,7 @@ begin
   end;
   // Пишем в лог данные пакета
   if S_Log <> EmptyStr then
-    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[54].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[54].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3530,7 +3533,7 @@ begin
   ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime);
   E: ;
   // Пишем данные пакета в лог
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[36].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[36].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3638,7 +3641,7 @@ begin
   MainForm.JvTimerList.Events[11].Enabled := True;
   // Пишем в лог
   if S_Log <> EmptyStr then
-    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3834,7 +3837,7 @@ begin
   end;
   X: ;
   // Пишем данные пакета в лог
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name, Trim(S_Log), C_Icq);
   // Если это была проверка статуса то выводим сообщение
   if CheckStatus then
   begin
@@ -4354,7 +4357,7 @@ begin
   else
     S_Log := S_Log + C_ChangeTime + C_TN + C_BN + '0' + C_RN;
   // Пишем в лог данные пакета
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[27].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[27].Pkt_Name, Trim(S_Log), C_Icq);
   // Если время больше нуля, то заканчиваем с наполнением КЛ
   if CLTimeStamp <> 0 then
   begin
@@ -4510,7 +4513,7 @@ begin
     end;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[21].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[21].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -4685,8 +4688,8 @@ begin
   else if ErrCode = '0022' then
     Result := ConnectErrors_0022
   else
-    Result := Lang_Vars[24].L_S + ' (' + ErrCode + ')';
-  XLog('ICQ | ' + Result, C_Icq);
+    Result := Lang_Vars[24].L_S + C_BN + C_QN + ErrCode + C_EN;
+  XLog(C_Icq, Result, C_Icq);
 end;
 
 {$ENDREGION}

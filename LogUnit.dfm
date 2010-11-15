@@ -20,35 +20,22 @@ object LogForm: TLogForm
   OnDblClick = FormDblClick
   PixelsPerInch = 96
   TextHeight = 13
-  object LogMemo: TMemo
-    Left = 0
-    Top = 0
-    Width = 586
-    Height = 371
-    Align = alClient
-    DoubleBuffered = True
-    HideSelection = False
-    ParentDoubleBuffered = False
-    PopupMenu = LogPopupMenu
-    ReadOnly = True
-    ScrollBars = ssVertical
-    TabOrder = 0
-    WordWrap = False
-  end
   object BottomPanel: TPanel
     Left = 0
     Top = 371
     Width = 586
     Height = 26
     Align = alBottom
+    BevelEdges = [beTop]
+    BevelKind = bkTile
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
     DesignSize = (
       586
-      26)
+      24)
     object ClearLogSpeedButton: TSpeedButton
       Left = 557
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       Anchors = [akTop, akRight]
@@ -59,7 +46,7 @@ object LogForm: TLogForm
     end
     object Bevel: TBevel
       Left = 549
-      Top = 3
+      Top = 2
       Width = 2
       Height = 20
       Anchors = [akTop, akRight]
@@ -67,7 +54,7 @@ object LogForm: TLogForm
     end
     object ICQDumpSpeedButton: TSpeedButton
       Left = 5
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       AllowAllUp = True
@@ -78,7 +65,7 @@ object LogForm: TLogForm
     end
     object JabberDumpSpeedButton: TSpeedButton
       Left = 34
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       AllowAllUp = True
@@ -89,7 +76,7 @@ object LogForm: TLogForm
     end
     object MRADumpSpeedButton: TSpeedButton
       Left = 63
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       AllowAllUp = True
@@ -100,7 +87,7 @@ object LogForm: TLogForm
     end
     object WriteLogSpeedButton: TSpeedButton
       Left = 433
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       AllowAllUp = True
@@ -113,7 +100,7 @@ object LogForm: TLogForm
     end
     object TwitDumpSpeedButton: TSpeedButton
       Left = 92
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       AllowAllUp = True
@@ -124,7 +111,7 @@ object LogForm: TLogForm
     end
     object SaveLogSpeedButton: TSpeedButton
       Left = 491
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       Anchors = [akTop, akRight]
@@ -135,7 +122,7 @@ object LogForm: TLogForm
     end
     object SearchSpeedButton: TSpeedButton
       Left = 462
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       Anchors = [akTop, akRight]
@@ -146,7 +133,7 @@ object LogForm: TLogForm
     end
     object SendEmailSpeedButton: TSpeedButton
       Left = 520
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       Anchors = [akTop, akRight]
@@ -157,7 +144,7 @@ object LogForm: TLogForm
     end
     object RosterSpeedButton: TSpeedButton
       Left = 121
-      Top = 2
+      Top = 1
       Width = 23
       Height = 22
       Flat = True
@@ -165,6 +152,24 @@ object LogForm: TLogForm
       ShowHint = True
       OnClick = RosterSpeedButtonClick
     end
+  end
+  object HTMLLogViewer: THTMLViewer
+    Left = 0
+    Top = 0
+    Width = 586
+    Height = 371
+    Cursor = crDefault
+    TabOrder = 1
+    Align = alClient
+    PopupMenu = LogPopupMenu
+    DefBackground = clWhite
+    BorderStyle = HtNone
+    DefFontName = 'Times New Roman'
+    DefPreFontName = 'Courier New'
+    NoSelect = False
+    CharSet = DEFAULT_CHARSET
+    HtOptions = [HtPrintTableBackground, HtPrintMonochromeBlack, HtShowDummyCaret, HtShowVScroll]
+    OnKeyDown = HTMLLogViewerKeyDown
   end
   object LogFindDialog: TFindDialog
     OnFind = LogFindDialogFind

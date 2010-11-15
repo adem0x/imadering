@@ -250,6 +250,105 @@ object IcqOptionsForm: TIcqOptionsForm
         Width = 428
         Height = 356
         Caption = 'ConnectPage'
+        ExplicitLeft = 1
+        object ConnectionGroupBox: TGroupBox
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 89
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+          object Bevel2: TBevel
+            Left = 10
+            Top = 56
+            Width = 408
+            Height = 3
+            Shape = bsBottomLine
+          end
+          object ServerLabel: TLabel
+            Left = 62
+            Top = 28
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object PortLabel: TLabel
+            Left = 341
+            Top = 28
+            Width = 3
+            Height = 13
+            Alignment = taRightJustify
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object UseSSLCheckBox: TCheckBox
+            Left = 13
+            Top = 65
+            Width = 402
+            Height = 17
+            TabStop = False
+            Enabled = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+          end
+          object PortEdit: TEdit
+            Left = 350
+            Top = 25
+            Width = 65
+            Height = 21
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            NumbersOnly = True
+            ParentFont = False
+            TabOrder = 1
+            OnChange = ICQUINEditChange
+          end
+          object ServerComboBox: TComboBox
+            Left = 71
+            Top = 25
+            Width = 211
+            Height = 21
+            DropDownCount = 15
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            TabStop = False
+            Text = 'login.icq.com'
+            OnChange = ICQUINEditChange
+            Items.Strings = (
+              'login.icq.com'
+              'login.oscar.aol.com'
+              'login.messaging.aol.com')
+          end
+        end
       end
       object PrivatPage: TJvStandardPage
         Left = 0

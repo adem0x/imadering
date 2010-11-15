@@ -39,7 +39,6 @@ type
     procedure NoBitBtnClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure InfoMemoChange(Sender: TObject);
-    procedure InfoMemoKeyPress(Sender: TObject; var Key: Char);
     procedure FormShow(Sender: TObject);
 
   private
@@ -72,7 +71,8 @@ uses
   UpdateUnit,
   OverbyteIcsUrl,
   OverbyteIcsHttpProt,
-  LoginUnit;
+  LoginUnit,
+  ChatUnit;
 
 {$ENDREGION}
 {$REGION 'TranslateForm'}
@@ -138,31 +138,16 @@ end;
 {$REGION 'InfoMemoChange'}
 
 procedure TMemoForm.InfoMemoChange(Sender: TObject);
-var
-  S: string;
 begin
   // Отображаем счётчик символов
   if Twit then
   begin
-    S := InfoMemo.Text;
-    if InfoMemo.GetTextLen > 140 then
-    begin
-      SetLength(S, 140);
-      InfoMemo.Text := S;
-    end;
     CountLabel.Caption := Format(Lang_Vars[62].L_S, [InfoMemo.GetTextLen, 140]);
+    if InfoMemo.GetTextLen > 140 then
+      CountLabel.Font.Color := clRed
+    else
+      CountLabel.Font.Color := clGreen;
   end;
-end;
-
-{$ENDREGION}
-{$REGION 'InfoMemoKeyPress'}
-
-procedure TMemoForm.InfoMemoKeyPress(Sender: TObject; var Key: Char);
-begin
-  // Если это твит, то ограничиваем количество вводимых символов до 140
-  if Twit then
-    if (InfoMemo.GetTextLen >= 140) and (Key <> #8) then
-      Key := #0;
 end;
 
 {$ENDREGION}
@@ -194,15 +179,15 @@ begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(272, Icon);
   // Отображаем информацию и запрос на закачку новой версии
-  Caption := C_Twitter + C_TN + Lang_Vars[61].L_S;
-  HeadLabel.Caption := Lang_Vars[61].L_S;
+  Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
+  HeadLabel.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
   InfoMemo.Text := M;
   // Ставим флаги функции окна
   UpDate := False;
   Invite := False;
   Twit := True;
   // Разблокируем мемо
-  InfoMemo.readonly := False;
+  InfoMemo.ReadOnly := False;
   InfoMemo.Color := ClWindow;
   // Обновляем счётчик
   InfoMemoChange(nil);
@@ -216,14 +201,14 @@ procedure TMemoForm.YesBitBtnClick(Sender: TObject);
 // x;
 var
   S{, PostData}: string;
-  //FrmLogin: TLoginForm;
+  FrmLogin: TLoginForm;
 begin
   // Автообновление
   if UpDate then
   begin
     // Открываем окно автообновления
     if not Assigned(UpdateForm) then
-      UpdateForm := TUpdateForm.Create(MainForm);
+      Application.CreateForm(TUpdateForm, UpdateForm);
     // Отображаем окно на передний план
     XShowForm(UpdateForm);
     // Запускаем процесс получения информации для обновления
@@ -237,38 +222,55 @@ begin
     if S = EmptyStr then
       Exit;
     // Проверяем логин Твита
-    {if (Twit_Login = EmptyStr) or (Twit_Password = EmptyStr) then
+    if (V_Twitter_Username = EmptyStr) or (V_Twitter_Password = EmptyStr) then
     begin
-      FrmLogin := TLoginForm.Create(Self);
+      FrmLogin := TLoginForm.Create(Application);
       try
         MainForm.AllImageList.GetIcon(268, FrmLogin.Icon);
         FrmLogin.Caption := C_Twitter;
         // Модально спрашиваем логин и пароль
         if FrmLogin.ShowModal = MrOk then
         begin
-          Twit_Login := FrmLogin.AccountEdit.Text;
-          Twit_Password := FrmLogin.PasswordEdit.Text;
+          // Сохраняем в настройках логин и пароль для Twitter
+
+          if FrmLogin.SavePassCheckBox.Checked then
+          begin
+
+          end;
+          // Запоминаем логин и пароль твиттера
+          V_Twitter_Username := FrmLogin.AccountEdit.Text;
+          V_Twitter_Password := FrmLogin.PasswordEdit.Text;
         end;
       finally
         FreeAndNil(FrmLogin);
       end;
     end;
-    // Запускаем метод Post
-    if (Twit_Login <> EmptyStr) and (Twit_Password <> EmptyStr) then
+    // Запускаем авторизацию в твиттер
+    if (V_Twitter_Username <> EmptyStr) and (V_Twitter_Password <> EmptyStr) then
     begin
-      with MainForm.TwitterHttpClient do
-      begin
-        Abort;
-        Username := Twit_Login;
-        Password := Twit_Password;
-        URL := Format(C_PostInTwit, [URLEncode(S)]);
-        PostData := EmptyStr;
-        SendStream := TMemoryStream.Create;
-        SendStream.write(PostData[1], Length(PostData));
-        SendStream.Seek(0, 0);
-        PostAsync;
+      // Начинаем заполнение параметров
+      V_Twitter_Params := TStringList.Create;
+      try
+        V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + 'hrL4RlfT8MVOWbDdeY0EQ';//X_Twitter_OAuth_Consumer_Key;
+        V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + '1';//Twitter_Generate_Nonce;
+        V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + '1289564825';//IntToStr(DateTimeToUnix(Now));
+        with V_Twitter_Params do
+        begin
+          Add(V_Twitter_OAuth_Consumer_Key);
+          Add(V_Twitter_OAuth_Nonce);
+          Add(C_Twitter_OAuth_Signature_Method);
+          Add(V_Twitter_OAuth_Timestamp);
+          Add(C_Twitter_OAuth_Version);
+        end;
+        V_Twitter_OAuth_Signature := C_Twitter_OAuth_Signature + Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Request_Token, 'GET', V_Twitter_Params);
+      finally
+        V_Twitter_Params.Free;
       end;
-    end;}
+
+      XLog('', C_Twitter_Host + C_Twitter_Request_Token + '?' + V_Twitter_OAuth_Consumer_Key + C_AN + V_Twitter_OAuth_Nonce + C_AN + C_Twitter_OAuth_Signature_Method //
+       + C_AN + V_Twitter_OAuth_Timestamp + C_AN + C_Twitter_OAuth_Version + C_AN + V_Twitter_OAuth_Signature, '');
+
+    end;
     // Закрываем это окно
     Close;
   end;

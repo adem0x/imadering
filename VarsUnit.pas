@@ -47,10 +47,13 @@ const
   C_EE = '@';
   C_DD = '_';
   C_XX = 'X';
+  C_AN = '&';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
   C_WM_APPBAR = WM_USER + 1;
+  X_Twitter_OAuth_Consumer_Key = 'L2k1KZBCDXAAS79jEBdOJg';
+  X_Twitter_OAuth_Consumer_Secret = 'uKWHm36A2ZpaGnmSNKQh0hT2rD656xRWtPYJ6Kg';
 {$ENDREGION}
 {$REGION 'FilesConst'}
   C_Profiles = 'Profiles\';
@@ -90,6 +93,7 @@ const
   C_Jabber = 'Jabber';
   C_Mra = 'MRA';
   C_Twitter = 'Twitter';
+  C_HTTP = 'HTTP';
   // Команды смежного использования
   C_TLV = 'TLV';
   C_Value = 'Value';
@@ -212,6 +216,24 @@ const
   C_PostInTwit = 'http://twitter.com/statuses/update.xml?source=IMadering&status=%s&in_reply_to_status_id=';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
   C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
+  // Twitter API
+  C_Twitter_Host = 'http://api.twitter.com/';
+  C_Twitter_OAuth_Consumer_Key = 'oauth_consumer_key=';
+  C_Twitter_OAuth_Nonce = 'oauth_nonce=';
+  C_Twitter_OAuth_Timestamp = 'oauth_timestamp=';
+  C_Twitter_OAuth_Signature = 'oauth_signature=';
+  C_Twitter_OAuth_Token = 'oauth_token=';
+  C_Twitter_OAuth_Token_Secret = 'oauth_token_secret=';
+  C_Twitter_Authenticity_Token = 'authenticity_token=';
+  C_Twitter_Username = 'session[username_or_email]=';
+  C_Twitter_Password = 'session[password]=';
+  C_Twitter_OAuth_Verifier = 'oauth_verifier=';
+  C_Twitter_OAuth_Version = 'oauth_version=1.0';
+  C_Twitter_OAuth_Signature_Method = 'oauth_signature_method=HMAC-SHA1';
+  C_Twitter_OAuth_Callback_Confirmed = 'oauth_callback_confirmed=true';
+  C_Twitter_Request_Token = 'oauth/request_token';
+  C_Twitter_Authorize = 'oauth/authorize';
+  C_Twitter_Access_Token = 'oauth/access_token';
   // Другие команды
   C_FM = 'Max';
   C_FT = 'Top';
@@ -287,6 +309,21 @@ var
   V_Roster: TJvSimpleXml;
   V_StartLog: string;
 
+{$ENDREGION}
+{$REGION 'Twitter_Vars'}
+  V_Twitter_Username: string;
+  V_Twitter_Password: string;
+  V_Twitter_OAuth_Username: string;
+  V_Twitter_OAuth_Password: string;
+  V_Twitter_OAuth_Consumer_Key: string;
+  V_Twitter_OAuth_Nonce: string;
+  V_Twitter_OAuth_Timestamp: string;
+  V_Twitter_OAuth_Signature: string;
+  V_Twitter_OAuth_Token: string;
+  V_Twitter_OAuth_Token_Secret: string;
+  V_Twitter_Authenticity_Token: string;
+  V_Twitter_OAuth_Verifier: string;
+  V_Twitter_Params: TStringList;
 {$ENDREGION}
 {$REGION 'CL_Vars'}
 
@@ -428,7 +465,7 @@ var
 {$REGION 'LangVars'}
 
   // Переменные для языка | Lang_Vars[127].L_S
-  Lang_Vars: packed array[0..160] of record
+  Lang_Vars: packed array[0..161] of record
     L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
@@ -590,7 +627,8 @@ var
     (L_N: 'LSmok'; L_S: ''), // 157
     (L_N: 'LHair'; L_S: ''), // 158
     (L_N: 'LChildren'; L_S: ''), // 159
-    (L_N: 'LastUpDate'; L_S: '')); // 160
+    (L_N: 'LastUpDate'; L_S: ''), // 160
+    (L_N: 'ShortURL'; L_S: '')); // 161
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}

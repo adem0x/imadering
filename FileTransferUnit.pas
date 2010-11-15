@@ -135,7 +135,7 @@ begin
         SendFileHttpClient.URL := UpWapRootURL + '/upload/';
         // Выводим информацию о начале процесса
         BottomInfoPanel.Caption := Lang_Vars[89].L_S;
-        Xlog(Lang_Vars[89].L_S + C_BN + SendFileHttpClient.URL, EmptyStr);
+        Xlog(C_HTTP + C_BN + Log_Get, Lang_Vars[89].L_S + C_BN + SendFileHttpClient.URL, EmptyStr);
         // Начинаем запрос данных
         SendFileHttpClient.GetASync;
       end;
@@ -148,13 +148,13 @@ end;
 procedure TFileTransferForm.SendFileHttpClientDocBegin(Sender: TObject);
 begin
   // Создаём блок памяти для приёма http данных
-  Xlog(C_SF + C_DB, EmptyStr);
+  //Xlog(C_SF + C_DB, EmptyStr);
   SendFileHttpClient.RcvdStream := TMemoryStream.Create;
 end;
 
 procedure TFileTransferForm.SendFileHttpClientDocEnd(Sender: TObject);
 begin
-  Xlog(C_SF + C_DE, EmptyStr);
+  //Xlog(C_SF + C_DE, EmptyStr);
 end;
 
 procedure TFileTransferForm.SendFileHttpClientSendData(Sender: TObject; Buffer: Pointer; Len: Integer);
@@ -167,7 +167,7 @@ begin
   // Если прерывание передачи, то останавливаем сокет
   if SendFileHttpClient.Tag = 2 then
     begin
-      Xlog(C_SF + C_SDA, EmptyStr);
+      //Xlog(C_SF + C_SDA, EmptyStr);
       SendFileHttpClient.CloseAsync;
       SendFileHttpClient.Abort;
     end;
@@ -175,7 +175,7 @@ end;
 
 procedure TFileTransferForm.SendFileHttpClientSendEnd(Sender: TObject);
 begin
-  Xlog(C_SF + C_SE, EmptyStr);
+  //Xlog(C_SF + C_SE, EmptyStr);
   // Увеличиваем статистику исходящего трафика
   V_TrafSend := V_TrafSend + SendFileHttpClient.SentCount;
   V_AllTrafSend := V_AllTrafSend + SendFileHttpClient.SentCount;
@@ -191,7 +191,7 @@ begin
       if (StatusCode = 0) or (StatusCode >= 400) then
         begin
           BottomInfoPanel.Caption := Format(ErrorHttpClient(StatusCode), [C_BN]);
-          Xlog(C_SF + C_SesClose + IntToStr(StatusCode), EmptyStr);
+          //Xlog(C_SF + C_SesClose + IntToStr(StatusCode), EmptyStr);
         end;
     end;
 end;
@@ -230,7 +230,7 @@ begin
   if Sender <> nil then
     begin
       BottomInfoPanel.Caption := Lang_Vars[91].L_S;
-      Xlog(C_SF + Lang_Vars[91].L_S, EmptyStr);
+      //Xlog(C_SF + Lang_Vars[91].L_S, EmptyStr);
       SendFileButton.Enabled := True;
     end;
 end;
@@ -304,18 +304,18 @@ var
   Buf, Boundry: Utf8String;
 begin
   try
-    Xlog(C_SF + C_ReqD + IntToStr(ErrCode), EmptyStr);
+    //Xlog(C_SF + C_ReqD + IntToStr(ErrCode), EmptyStr);
     // Высвобождаем память отправки данных
     if SendFileHttpClient.SendStream <> nil then
       begin
         SendFileHttpClient.SendStream.Free;
         SendFileHttpClient.SendStream := nil;
-        Xlog(C_SF + C_SendSF, EmptyStr);
+        //Xlog(C_SF + C_SendSF, EmptyStr);
       end;
     // Читаем полученные http данные из блока памяти
     if SendFileHttpClient.RcvdStream <> nil then
       begin
-        Xlog(C_SF + C_RcvdSE, EmptyStr);
+        //Xlog(C_SF + C_RcvdSE, EmptyStr);
         // Создаём временный лист
         List := TStringList.Create;
         try
@@ -332,7 +332,7 @@ begin
           if List.Text > EmptyStr then
             begin
               Doc := UTF8ToString(List.Text);
-              Xlog(C_SF + C_RN + C_RN + Doc, EmptyStr);
+              //Xlog(C_SF + C_RN + C_RN + Doc, EmptyStr);
               case SendFileHttpClient.Tag of // Определяем выполнение задания для данных по флагу
                 0: begin
                     // Узнаём ключ сессии
@@ -345,7 +345,7 @@ begin
                         SendStream := TMemoryStream.Create;
                         // Ссылка для приёма данных
                         URL := UpWapRootURL + Skey;
-                        Xlog(C_SF + URL, EmptyStr);
+                        //Xlog(C_SF + URL, EmptyStr);
                         // Заполняем переменные для POST
                         Boundry := '------------sZLbqiVRVfOO8NjlMuYJE3';
                         { Specified in Multipart/form-data RFC }
@@ -384,7 +384,7 @@ begin
                         case Tag of
                           1: OKURL := Format(Lang_Vars[92].L_S, [T_FileName, OKURL, 'upwap.ru', FileSizePanel.Caption]);
                         end;
-                        Xlog(C_SF + C_RN + OKURL, EmptyStr);
+                        //Xlog(C_SF + C_RN + OKURL, EmptyStr);
                         MsgD := V_YouAt + ' [' + DateTimeChatMess + ']';
                         CheckMessage_BR(OKURL);
                         DecorateURL(OKURL);
@@ -452,7 +452,7 @@ begin
             end;
         X :;
         finally
-          Xlog(C_SF + C_RcvdSF, EmptyStr);
+          //Xlog(C_SF + C_RcvdSF, EmptyStr);
           // Высвобождаем блок памяти
           List.Free;
           SendFileHttpClient.RcvdStream.Free;

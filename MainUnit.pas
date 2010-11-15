@@ -60,7 +60,7 @@ type
     MRAWSocket: TWSocket;
     JabberWSocket: TSslWSocket;
     ICQAvatarWSocket: TWSocket;
-    UpdateHttpClient: THttpCli;
+    HttpClient: THttpCli;
     MRAToolButton: TToolButton;
     JabberToolButton: TToolButton;
     AboutIMadering_Menu: TMenuItem;
@@ -274,7 +274,7 @@ type
     procedure MainToolButtonClick(Sender: TObject);
     procedure Settings_MenuClick(Sender: TObject);
     procedure AboutIMadering_MenuClick(Sender: TObject);
-    procedure UpdateHttpClientDocBegin(Sender: TObject);
+    procedure HttpClientDocBegin(Sender: TObject);
     procedure JvTimerListEvents2Timer(Sender: TObject);
     procedure ICQSettingsClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -321,9 +321,9 @@ type
     procedure UnstableICQStatusClick(Sender: TObject);
     procedure History_MenuClick(Sender: TObject);
     procedure Traffic_MenuClick(Sender: TObject);
-    procedure UpdateHttpClientSendEnd(Sender: TObject);
+    procedure HttpClientSendEnd(Sender: TObject);
     procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
-    procedure UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
+    procedure HttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
     procedure JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
     procedure JabberWSocketSessionClosed(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSessionConnected(Sender: TObject; ErrCode: Word);
@@ -336,12 +336,12 @@ type
     procedure JabberStatusOnlineClick(Sender: TObject);
     procedure ICQWSocketSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure JabberWSocketSocksError(Sender: TObject; Error: Integer; Msg: string);
-    procedure UpdateHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
-    procedure UpdateHttpClientSessionClosed(Sender: TObject);
+    procedure HttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
+    procedure HttpClientSessionClosed(Sender: TObject);
     procedure ICQWSocketError(Sender: TObject);
     procedure ICQWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure ICQWSocketSocksConnected(Sender: TObject; ErrCode: Word);
-    procedure UpdateHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
+    procedure HttpClientSocksConnected(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketError(Sender: TObject);
     procedure JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
@@ -405,7 +405,7 @@ type
     procedure JvTimerListEvents8Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormDblClick(Sender: TObject);
-    procedure UpdateHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+    procedure HttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
     procedure TopCLSearchONMenuClick(Sender: TObject);
     procedure CLSearchONMenuClick(Sender: TObject);
     procedure TwitterHttpClientSessionClosed(Sender: TObject);
@@ -428,6 +428,9 @@ type
     procedure DumpMRAClick(Sender: TObject);
     procedure DumpICQClick(Sender: TObject);
     procedure DumpJabberClick(Sender: TObject);
+    procedure LinkCompress_MenuClick(Sender: TObject);
+    procedure HttpClientDocEnd(Sender: TObject);
+    procedure PostInTwitter_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -821,7 +824,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   MRA_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_RN + C_Mra + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
+  S_Log := Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   MRA_CurrentStatus_bac := MRA_CurrentStatus;
   // Ставим иконку статуса в окне КЛ
@@ -830,7 +833,7 @@ begin
   // Подключаемся к MRA серверу
   if MRA_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + MRA_LoginUIN + C_RN;
+    S_Log := S_Log + C_Login + C_TN + C_BN + MRA_LoginUIN + C_RN;
     // Ставим иконку подключения
     MRAToolButton.ImageIndex := 25;
     // Блокируем контролы логина и пароля MRA
@@ -858,13 +861,13 @@ begin
     begin
       MRAWSocket.Addr := V_HttpProxy_Address;
       MRAWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
+      S_Log := S_Log + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       MRAWSocket.Addr := MRA_LoginServerAddr;
       MRAWSocket.Port := MRA_LoginServerPort;
-      S_Log := S_Log + C_Mra + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + MRA_LoginServerAddr + C_TN + MRA_LoginServerPort;
+      S_Log := S_Log + Log_Connect + C_TN + C_BN + MRA_LoginServerAddr + C_TN + MRA_LoginServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -874,7 +877,7 @@ begin
   // Отправляем статус
   // if MRA_Work_Phaze then ;
   // Пишем в лог
-  XLog(S_Log, C_Mra);
+  XLog(C_Mra, S_Log, C_Mra);
 end;
 
 {$ENDREGION}
@@ -954,7 +957,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   Jabber_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_RN + C_Jabber + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
+  S_Log := Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   Jabber_CurrentStatus_bac := Jabber_CurrentStatus;
   // Ставим иконки статуса в окне и в трэе
@@ -963,7 +966,7 @@ begin
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Jabber + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + Jabber_JID + C_RN;
+    S_Log := S_Log + C_Login + C_TN + C_BN + Jabber_JID + C_RN;
     // Разбираем JID на логин и сервер
     Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
     Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
@@ -1002,13 +1005,13 @@ begin
     begin
       JabberWSocket.Addr := V_HttpProxy_Address;
       JabberWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + C_Jabber + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
+      S_Log := S_Log + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       JabberWSocket.Addr := Jabber_ServerAddr;
       JabberWSocket.Port := Jabber_ServerPort;
-      S_Log := S_Log + C_Jabber + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + Jabber_ServerAddr + C_TN + Jabber_ServerPort;
+      S_Log := S_Log + Log_Connect + C_TN + C_BN + Jabber_ServerAddr + C_TN + Jabber_ServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -1020,7 +1023,7 @@ begin
   if Jabber_Work_Phaze then
     Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
   // Пишем в лог
-  XLog(S_Log, C_Jabber);
+  XLog(C_Jabber, S_Log, C_Jabber);
 end;
 
 {$ENDREGION}
@@ -1077,35 +1080,61 @@ end;
 {$ENDREGION}
 {$REGION 'UpdateHttpClientDocData'}
 
-procedure TMainForm.UpdateHttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
+procedure TMainForm.HttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
 begin
   // Отображаем процесс получения данных
   if Assigned(UpdateForm) then
   begin
     with UpdateForm do
     begin
-      if UpdateHttpClient.ContentLength > -1 then
+      if HttpClient.ContentLength > -1 then
       begin
-        LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(UpdateHttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
-        DownloadProgressBar.Max := UpdateHttpClient.ContentLength;
-        DownloadProgressBar.Position := UpdateHttpClient.RcvdCount;
+        LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(HttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
+        DownloadProgressBar.Max := HttpClient.ContentLength;
+        DownloadProgressBar.Position := HttpClient.RcvdCount;
       end;
       // Обновляем форму и контролы чтобы видеть изменения
       Update;
     end;
   end;
   // Если был активирован аборт сессии, то выходим и отключаем сокет
-  if UpdateHttpClient.Tag = 2 then
+  if HttpClient.Tag = 2 then
   begin
-    UpdateHttpClient.CloseAsync;
-    UpdateHttpClient.Abort;
+    HttpClient.CloseAsync;
+    HttpClient.Abort;
+  end;
+end;
+{$ENDREGION}
+{$REGION 'HttpClientRequestDone'}
+
+procedure TMainForm.HttpClientDocEnd(Sender: TObject);
+begin
+  // Получаем укороченную ссылку
+  if HttpClient.Tag = 4 then
+  begin
+    if HttpClient.Location <> EmptyStr then
+    begin
+      SetClipBoardText(HttpClient.Location);
+      DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[161].L_S, [HttpClient.Location]), EmptyStr, 133, 3, 60000);
+    end;
+    // Высвобождаем память отправки данных
+    if HttpClient.SendStream <> nil then
+    begin
+      HttpClient.SendStream.Free;
+      HttpClient.SendStream := nil;
+    end;
+    // Читаем полученные http данные из блока памяти
+    if HttpClient.RcvdStream <> nil then
+    begin
+      HttpClient.RcvdStream.Free;
+      HttpClient.RcvdStream := nil;
+    end;
+    HttpClient.CloseAsync;
+    HttpClient.Abort;
   end;
 end;
 
-{$ENDREGION}
-{$REGION 'UpdateHttpClientRequestDone'}
-
-procedure TMainForm.UpdateHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+procedure TMainForm.HttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 var
   List: TStringList;
   S, Ver, Bild, Mess: string;
@@ -1125,30 +1154,30 @@ var
 begin
   try
     // Высвобождаем память отправки данных
-    if UpdateHttpClient.SendStream <> nil then
+    if HttpClient.SendStream <> nil then
     begin
-      UpdateHttpClient.SendStream.Free;
-      UpdateHttpClient.SendStream := nil;
+      HttpClient.SendStream.Free;
+      HttpClient.SendStream := nil;
     end;
     // Читаем полученные http данные из блока памяти
-    if UpdateHttpClient.RcvdStream <> nil then
+    if HttpClient.RcvdStream <> nil then
     begin
       // Создаём временный лист
       List := TStringList.Create;
       try
         // Увеличиваем статистику входящего трафика
-        V_TrafRecev := V_TrafRecev + UpdateHttpClient.RcvdCount;
-        V_AllTrafRecev := V_AllTrafRecev + UpdateHttpClient.RcvdCount;
+        V_TrafRecev := V_TrafRecev + HttpClient.RcvdCount;
+        V_AllTrafRecev := V_AllTrafRecev + HttpClient.RcvdCount;
         if Assigned(TrafficForm) then
           Traffic_MenuClick(nil);
         // Обнуляем позицию начала чтения в блоке памяти
-        UpdateHttpClient.RcvdStream.Position := 0;
+        HttpClient.RcvdStream.Position := 0;
         // Определяем выполнение задания для данных по флагу
-        case UpdateHttpClient.Tag of
-          0:
+        case HttpClient.Tag of
+          0: // Информация об обновлении IMadering
             begin
               // Читаем данные в лист
-              List.LoadFromStream(UpdateHttpClient.RcvdStream, TEncoding.UTF8);
+              List.LoadFromStream(HttpClient.RcvdStream, TEncoding.UTF8);
               // Разбираем данные в листе
               if List.Text > EmptyStr then
               begin
@@ -1159,7 +1188,7 @@ begin
                 Mess := IsolateTextString(List.Text, '<info>', '</info>');
                 // Запоминаем переменную аддэйтпатч для автообновления
                 V_UpdateVersionPath := Format(V_UpdateVersionPath, [Ver, Bild]);
-                Xlog(C_RN + List.Text + C_RN + V_UpdateVersionPath, EmptyStr);
+                Xlog(C_HTTP + C_BN + Log_Get, List.Text + C_RN + V_UpdateVersionPath, EmptyStr);
                 // Отображаем всплывающее окно с информацией о новой версии
                 if (Ver <> EmptyStr) and (Bild <> EmptyStr) then
                 begin
@@ -1176,7 +1205,7 @@ begin
                   DAShow(Lang_Vars[16].L_S, Lang_Vars[15].L_S, EmptyStr, 134, 2, 0);
               end;
             end;
-          1:
+          1: // Получен файл с обновлением IMadering
             begin
               if Assigned(UpdateForm) then
               begin
@@ -1186,7 +1215,7 @@ begin
                   UpdateFile := TMemoryStream.Create;
                   try
                     // Читаем данные в память
-                    UpdateFile.LoadFromStream(UpdateHttpClient.RcvdStream);
+                    UpdateFile.LoadFromStream(HttpClient.RcvdStream);
                     // Информируем о успешной закачке файла обновления
                     InfoMemo.Lines.Add(Lang_Vars[112].L_S);
                     // Сохраняем полученный файл
@@ -1225,20 +1254,21 @@ begin
                 end;
               end;
             end;
-          2:
+          2:  // Ничего не делаем, потому что это сброс задания
             begin
-              // Ничего не делаем, потому что это остановка закачки обновления
             end;
-          3:
+          3:  // Для тестов
             begin
-              // Для тестов
+            end;
+          4:  // Получение укороченной ссылки от сервиса Google
+            begin
             end;
         end;
       finally
         List.Free;
         // Высвобождаем блок памяти
-        UpdateHttpClient.RcvdStream.Free;
-        UpdateHttpClient.RcvdStream := nil;
+        HttpClient.RcvdStream.Free;
+        HttpClient.RcvdStream := nil;
       end;
     end;
   except
@@ -1257,7 +1287,7 @@ begin
   HistoryToolButton.Visible := not HistoryToolButton.Visible;
 end;
 
-procedure TMainForm.UpdateHttpClientDocBegin(Sender: TObject);
+procedure TMainForm.HttpClientDocBegin(Sender: TObject);
 begin
   // Создаём блок памяти для приёма http данных
   (Sender as THttpCli)
@@ -1285,7 +1315,7 @@ end;
 procedure TMainForm.ICQStatusOfflineClick(Sender: TObject);
 begin
   // Уводим ICQ протокол в оффлайн
-  XLog('ICQ | ' + Log_Set_Status + TMenuItem(Sender).Caption, C_Icq);
+  XLog(C_Icq, Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption, C_Icq);
   ICQ_GoOffline;
   ICQ_Reconnect := False;
 end;
@@ -1319,7 +1349,7 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := S_Log + C_RN + C_Icq + C_BN + C_PN + C_BN + Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
+  S_Log := Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
   // Ставим иконку статуса в окне КЛ
@@ -1334,7 +1364,7 @@ begin
   // Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + C_Login + C_TN + C_BN + ICQ_LoginUIN + C_RN;
+    S_Log := S_Log + C_Login + C_TN + C_BN + ICQ_LoginUIN + C_RN;
     // Ставим иконку подключения
     ICQToolButton.ImageIndex := 80;
     // Блокируем контролы логина и пароля ICQ
@@ -1361,13 +1391,13 @@ begin
     begin
       ICQWSocket.Addr := V_HttpProxy_Address;
       ICQWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
+      S_Log := S_Log + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       ICQWSocket.Addr := ICQ_LoginServerAddr;
       ICQWSocket.Port := ICQ_LoginServerPort;
-      S_Log := S_Log + C_Icq + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + ICQ_LoginServerAddr + C_TN + ICQ_LoginServerPort;
+      S_Log := S_Log + Log_Connect + C_TN + C_BN + ICQ_LoginServerAddr + C_TN + ICQ_LoginServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -1378,7 +1408,7 @@ begin
   if ICQ_Work_Phaze then
     ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);
   // Пишем в лог
-  XLog(S_Log, C_Icq);
+  XLog(C_Icq, S_Log, C_Icq);
 end;
 
 {$ENDREGION}
@@ -1526,7 +1556,7 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         ICQ_HTTP_Connect_Phaze := True;
-        XLog(C_Icq + C_BN + Log_Get + C_BN + Log_Proxy_OK, C_Icq);
+        XLog(C_Icq + C_BN + Log_Get, Log_Proxy_OK, C_Icq);
       end
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
@@ -1594,7 +1624,7 @@ begin
                 S_Name := ICQ_Pkt_Names[I].Pkt_Name;
                 Break;
               end;
-            XLog(C_Icq + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Icq);
+            XLog(C_Icq + C_BN + Log_Get + C_BN + S_Name, Trim(Dump(HexPkt)), C_Icq);
           end;
         // Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
         if NextData(HexPkt, 1) = #$2A then
@@ -1685,7 +1715,7 @@ begin
                               S_Log := S_Log + 'URL' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + NextData(HexPkt, Len) + C_RN;
                             end;
                             // Пишем в лог данные пакета
-                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[9].Pkt_Name, Trim(S_Log), C_Icq);
                           end;
                         $000F:
                           begin
@@ -1952,7 +1982,7 @@ begin
                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                             // Отсылаем логин в формате MD5 шифрования
                             MD5_Key := NextData(HexPkt, Len);
-                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[5].Pkt_Name + C_RN + MD5_Key, C_Icq);
+                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[5].Pkt_Name, MD5_Key, C_Icq);
                             ICQ_SendPkt('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, MD5_Key));
                           end;
                         $0003:
@@ -2003,7 +2033,7 @@ begin
                               end;
                             end;
                             // Пишем в лог данные пакета
-                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[7].Pkt_Name + C_RN + Trim(S_Log), C_Icq);
+                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[7].Pkt_Name, Trim(S_Log), C_Icq);
                           end;
                       end;
                     end;
@@ -2037,13 +2067,13 @@ begin
                     begin
                       ICQWSocket.Addr := V_HttpProxy_Address;
                       ICQWSocket.Port := V_HttpProxy_Port;
-                      XLog(C_Icq + C_BN + C_PN + C_BN + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port, C_Icq);
+                      XLog(C_Icq + C_BN + Log_HTTP_Proxy_Connect, V_HttpProxy_Address + C_TN + V_HttpProxy_Port, C_Icq);
                     end
                     else
                     begin
                       ICQWSocket.Addr := ICQ_Bos_IP;
                       ICQWSocket.Port := ICQ_Bos_Port;
-                      XLog(C_Icq + C_BN + C_PN + C_BN + Log_Connect + C_TN + C_BN + ICQ_Bos_IP + C_TN + ICQ_Bos_Port, C_Icq);
+                      XLog(C_Icq + C_BN + Log_Connect, ICQ_Bos_IP + C_TN + ICQ_Bos_Port, C_Icq);
                     end;
                     // Начинаем подключение к основному серверу
                     ICQWSocket.Connect;
@@ -2198,6 +2228,8 @@ begin
 end;
 
 procedure TMainForm.IMaderingEventsException(Sender: TObject; E: Exception);
+var
+  SList: TStringList;
 begin
   // Перехватываем глобально все ошибки в программе и выводим их в лог
   if not Assigned(LogForm) then
@@ -2205,10 +2237,13 @@ begin
   XShowForm(LogForm);
   with LogForm do
   begin
-    LogMemo.Lines.Add(DateTimeToStr(Now) + C_TN + C_BN + Lang_Vars[52].L_S);
-    JclLastExceptStackListToStrings(LogMemo.Lines, False, False, False, False);
-    LogMemo.Lines.Add(Lang_Vars[53].L_S);
-    LogMemo.Lines.Add(C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
+    SList := TStringList.Create;
+    try
+      JclLastExceptStackListToStrings(SList, False, False, False, False);
+      AddLogText(Lang_Vars[52].L_S, SList.Text + C_BR + Lang_Vars[53].L_S, True);
+    finally
+      SList.Free;
+    end;
   end;
 end;
 
@@ -2268,7 +2303,7 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         Jabber_HTTP_Connect_Phaze := True;
-        XLog(C_Jabber + C_BN + Log_Get + C_BN + Log_Proxy_OK, C_Jabber);
+        XLog(C_Jabber + C_BN + Log_Get, Log_Proxy_OK, C_Jabber);
       end
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
@@ -2326,7 +2361,7 @@ begin
               if Root <> nil then
               begin
                 // Пишем в лог данные пакета
-                XLog(C_Jabber + C_BN + Log_Get + C_RN + Trim(Root.SaveToString), C_Jabber);
+                XLog(C_Jabber + C_BN + Log_Get, Trim(Root.SaveToString), C_Jabber);
                 // Если это стадия подключения к серверу жаббер
                 if Jabber_Connect_Phaze then
                 begin
@@ -2749,12 +2784,12 @@ begin
   else
     V_UpdateAuto := True;
   // Сбрасываем сокет если он занят чем то другим или висит
-  UpdateHttpClient.Abort;
+  HttpClient.Abort;
   // Ставим флаг задания
-  UpdateHttpClient.Tag := 0;
+  HttpClient.Tag := 0;
   // Запускаем проверку обновлений программы на сайте
-  UpdateHttpClient.URL := C_UpdateURL;
-  UpdateHttpClient.GetASync;
+  HttpClient.URL := C_UpdateURL;
+  HttpClient.GetASync;
 end;
 
 {$ENDREGION}
@@ -2956,7 +2991,7 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         MRA_HTTP_Connect_Phaze := True;
-        XLog(C_Mra + C_BN + Log_Get + C_BN + Log_Proxy_OK, C_Mra);
+        XLog(C_Mra + C_BN + Log_Get, Log_Proxy_OK, C_Mra);
         // Если уже подключились в Bos серверу
         if MRA_BosConnect_Phaze then
         begin
@@ -3000,7 +3035,7 @@ begin
     if MRA_Connect_Phaze then
     begin
       MRA_Bos_Addr := MRA_BuffPkt;
-      XLog(C_Mra + C_BN + Log_Parsing + C_BN + Log_BosServer + C_TN + C_BN + MRA_Bos_Addr, C_Mra);
+      XLog(C_Mra + C_BN + Log_Parsing + C_BN + Log_BosServer, MRA_Bos_Addr, C_Mra);
       // Получаем адрес Bos сервера для подключения
       MRA_Bos_IP := Parse(C_TN, MRA_Bos_Addr, 1);
       MRA_Bos_Port := Parse(C_TN, MRA_Bos_Addr, 2);
@@ -3064,7 +3099,7 @@ begin
                 S_Name := MRA_Pkt_Names[I].Pkt_Name;
                 Break;
               end;
-            XLog(C_Mra + C_BN + Log_Get + C_BN + S_Name + C_RN + Trim(Dump(HexPkt)), C_Mra);
+            XLog(C_Mra + C_BN + Log_Get + C_BN + S_Name, Trim(Dump(HexPkt)), C_Mra);
           end;
         // Ещё раз делаем проверку на начало пакета MRA протокола по магическому ключу
         if Text2Hex(NextData(HexPkt, 4)) = MRA_MagKey then
@@ -3087,7 +3122,7 @@ begin
                 // Получаем интервал пакетов Ping
                 I := HexToInt(Text2Hex(NextData(HexPkt, Len)));
                 JvTimerList.Events[10].Interval := Swap32(I) * 1000;
-                Xlog(C_Mra + C_BN + Log_Parsing + C_BN + Log_PingInterval + C_TN + C_BN + IntToStr(JvTimerList.Events[10].Interval), C_Mra);
+                Xlog(C_Mra + C_BN + Log_Parsing + C_BN + Log_PingInterval, IntToStr(JvTimerList.Events[10].Interval), C_Mra);
                 // Отправляем пакет авторизации на сервере
                 MRA_Login_2;
                 // Запускаем таймер MRA Alive
@@ -3312,6 +3347,18 @@ begin
   // Отправляем пакет для проверки связи с сервером ICQ
   // if not NotProtoOnline(S_Icq) then
 end;
+
+procedure TMainForm.PostInTwitter_MenuClick(Sender: TObject);
+begin
+  // Открываем окно для ввода сообщения для Twitter
+  if not Assigned(MemoForm) then
+    Application.CreateForm(TMemoForm, MemoForm);
+  // Делаем запрос в форме на обновление программы
+  MemoForm.PostInTwitter(EmptyStr);
+  // Отображаем окно
+  XShowForm(MemoForm);
+end;
+
 {$ENDREGION}
 {$REGION 'ProfileOpenMenuClick'}
 
@@ -3323,7 +3370,7 @@ begin
   // Запускаем второй экземпляр программы для выбора другого профиля
   Spath := V_MyPath + C_ExeName;
   R := ShellExecute(0, 'open', 'Imadering.exe', nil, PChar(V_MyPath), SW_SHOW);
-  XLog(Spath + C_BN + IntToStr(R), EmptyStr);
+  XLog(C_IMadering, Spath + C_BN + IntToStr(R), EmptyStr);
   if R < 32 then
     DAShow(Lang_Vars[17].L_S, Lang_Vars[65].L_S, EmptyStr, 134, 2, 0);
 end;
@@ -3939,7 +3986,7 @@ begin
     if not MRA_Offline_Phaze then
       MRA_GoOffline;
     // Отключаем HTTP сокеты
-    UpdateHttpClient.Abort;
+    HttpClient.Abort;
     MRAAvatarHttpClient.Abort;
     TwitterHttpClient.Abort;
     if Assigned(FileTransferForm) then
@@ -4180,7 +4227,7 @@ begin
   V_StartLog := Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]) + C_RN;
   // Пишем в лог код локального языка системы
   VerLanguageName(Lang, Language, 100);
-  V_StartLog := V_StartLog + Log_Lang_Code + C_TN + C_BN + C_BN + string(Language) + C_BN + C_QN + IntToStr(Lang) + C_EN + C_RN;
+  V_StartLog := V_StartLog + Log_Lang_Code + C_TN + C_BN + string(Language) + C_BN + C_QN + IntToStr(Lang) + C_EN + C_RN;
   // Пишем в лог путь к программе
   V_StartLog := V_StartLog + LogMyPath + C_TN + C_BN + V_MyPath;
   // Если профиль не найден, то создаём его в настройках юзера виндовс
@@ -4821,7 +4868,7 @@ begin
         begin
           LoadFromStream(TwitterHttpClient.RcvdStream);
           // Разбираем данные XML
-          Xlog(C_RN + XMLData, EmptyStr);
+          //Xlog(C_RN + XMLData, EmptyStr);
           // Проверяем на ошибки и отображаем если они есть
           if Root <> nil then
           begin
@@ -4943,7 +4990,7 @@ begin
   XShowForm(HistoryForm);
 end;
 
-procedure TMainForm.UpdateHttpClientSendEnd(Sender: TObject);
+procedure TMainForm.HttpClientSendEnd(Sender: TObject);
 begin
   // Увеличиваем статистику исходящего трафика
   V_TrafSend := V_TrafSend + (Sender as THttpCli).SentCount;
@@ -4955,14 +5002,14 @@ end;
 {$ENDREGION}
 {$REGION 'UpdateHttpClientSessionClosed'}
 
-procedure TMainForm.UpdateHttpClientSessionClosed(Sender: TObject);
+procedure TMainForm.HttpClientSessionClosed(Sender: TObject);
 var
   S: string;
 begin
   // Обрабатываем возможные ошибки в работе http сокета
-  if (UpdateHttpClient.StatusCode = 0) or (UpdateHttpClient.StatusCode >= 400) then
+  if (HttpClient.StatusCode = 0) or (HttpClient.StatusCode >= 400) then
   begin
-    S := Format(ErrorHttpClient(UpdateHttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
+    S := Format(ErrorHttpClient(HttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
     DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
     if Assigned(UpdateForm) then
       UpdateForm.InfoMemo.Lines.Add(C_RN + S);
@@ -4972,7 +5019,7 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TMainForm.UpdateHttpClientSocksConnected(Sender: TObject; ErrCode: Word);
+procedure TMainForm.HttpClientSocksConnected(Sender: TObject; ErrCode: Word);
 begin
   // Если возникла ошибка, то сообщаем об этом
   if ErrCode <> 0 then
@@ -4981,7 +5028,7 @@ begin
   end;
 end;
 
-procedure TMainForm.UpdateHttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
+procedure TMainForm.HttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
 begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
@@ -5080,6 +5127,35 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TMainForm.LinkCompress_MenuClick(Sender: TObject);
+const
+  P = 'url=%s&security_token=null';
+var
+  L: string;
+  S: AnsiString;
+begin
+  // Делаем запрос для укорочения ссылки
+  if InputQuery(LinkCompress_Menu.Caption, 'URL' + C_TN, L) then
+  begin
+    if L <> EmptyStr then
+    begin
+      L := UrlEncode(L);
+      S := Format(P, [L]);
+      // Сбрасываем сокет если он занят чем то другим или висит
+      HttpClient.Abort;
+      // Ставим флаг задания
+      HttpClient.Location := EmptyStr;
+      HttpClient.Tag := 4;
+      // Запускаем проверку обновлений программы на сайте
+      HttpClient.URL := 'http://goo.gl/api/shorten';
+      HttpClient.SendStream := TMemoryStream.Create;
+      HttpClient.SendStream.Write(S[1], Length(S));
+      HttpClient.SendStream.Seek(0, 0);
+      HttpClient.PostASync;
+    end;
+  end;
+end;
 
 procedure TMainForm.MRAWSocketSocksConnected(Sender: TObject; ErrCode: Word);
 begin
