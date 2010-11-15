@@ -108,6 +108,7 @@ object ChatForm: TChatForm
         CharSet = DEFAULT_CHARSET
         MarginHeight = 0
         MarginWidth = 5
+        HtOptions = [HtPrintTableBackground, HtPrintMonochromeBlack, HtShowVScroll]
         OnMouseMove = HTMLChatViewerMouseMove
         OnMouseDown = HTMLChatViewerMouseDown
         OnKeyDown = HTMLChatViewerKeyDown

@@ -201,6 +201,7 @@ object HistoryForm: THistoryForm
     NoSelect = False
     ScrollBars = ssVertical
     CharSet = DEFAULT_CHARSET
+    HtOptions = [HtPrintTableBackground, HtPrintMonochromeBlack, HtShowDummyCaret, HtShowVScroll]
     OnMouseMove = HTMLHistoryViewerMouseMove
     OnKeyDown = HTMLHistoryViewerKeyDown
   end

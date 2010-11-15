@@ -829,9 +829,9 @@ begin
   SetLength(S, 140);
   // Если форма не существует, то создаём её
   if not Assigned(MemoForm) then
-    MemoForm := TMemoForm.Create(Self);
+    Application.CreateForm(TMemoForm, MemoForm);
   // Делаем запрос в форме на обновление программы
-  MemoForm.PostInTwitter(S);
+  MemoForm.PostInTwitter(Trim(S));
   // Отображаем окно
   XShowForm(MemoForm);
 end;
@@ -1275,6 +1275,7 @@ begin
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
   // Формируем строку html стиля
+  HTMLChatViewer.DoubleBuffered := True;
   HTMLStyle := Format(C_HTML_head, [V_ChatCSS, C_IMadering]);
   // Пока скрываем всегда отображение участников конференции
   ChatCategoryButtons.Visible := False;
@@ -1483,8 +1484,7 @@ end;
 
 procedure TChatForm.HTMLChatViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  // При нажатии комбинации клавиш Ctrl + C в истории чата
-  // копируем выделенный текст в буфер обмена
+  // При нажатии комбинации клавиш Ctrl + C в истории чата копируем выделенный текст в буфер обмена
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 67) then
     HTMLChatViewer.CopyToClipboard;
 end;

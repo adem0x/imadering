@@ -457,7 +457,7 @@ begin
   if (K_Email <> EmptyStr) and (K_Mess <> EmptyStr) then
     Exit;
   S_Log := S_Log + C_Id + C_TN + C_BN + M_Id + C_LN + C_BN + 'Flag' + C_TN + C_BN + M_Flag + C_LN + C_BN + 'From' + C_TN + C_BN + M_From + C_LN + C_BN + 'Text' + C_TN + C_BN + Mess;
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[6].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[6].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -551,7 +551,7 @@ begin
     end;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[12].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[12].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -757,7 +757,7 @@ begin
     end;
   end;
   // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[29].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[29].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 {$ENDREGION}
 {$REGION 'MRA_GoOffline'}
@@ -906,7 +906,7 @@ begin
   MainForm.JvTimerList.Events[11].Enabled := False;
   MainForm.JvTimerList.Events[11].Enabled := True;
   // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[9].Pkt_Name + C_RN + Trim(S_Log), C_Mra);
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[9].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 {$ENDREGION}
 {$REGION 'MRA_ParseOfflineMess'}
@@ -955,7 +955,7 @@ begin
     end;
   end;
   // Пишем в лог
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[17].Pkt_Name + C_RN + S_Log, C_Mra);
+  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[17].Pkt_Name, S_Log, C_Mra);
   // Если идентификатор не пустой, то отправляем пакет удаления этого оффлайн сообщения с сервера
   if M_id <> EmptyStr then
   begin

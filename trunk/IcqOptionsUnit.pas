@@ -231,6 +231,13 @@ type
     Label1: TLabel;
     ClientLoginIdEdit: TEdit;
     ClientLoginIDLabel: TLabel;
+    ConnectionGroupBox: TGroupBox;
+    Bevel2: TBevel;
+    ServerLabel: TLabel;
+    PortLabel: TLabel;
+    UseSSLCheckBox: TCheckBox;
+    PortEdit: TEdit;
+    ServerComboBox: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -338,12 +345,22 @@ begin
                       end;
                     PassEdit.OnChange := PassEditChange;
                     // --------------------------------------------------------------------------
-                    // Загружаем остальные настройки
+                    // Загружаем настройки идентификации
                     Sub_Node := XML_Node.Items.ItemNamed[C_ClientLoginID];
                     if Sub_Node <> nil then
                     begin
                       if Sub_Node.Value <> EmptyStr then
                         ClientLoginIdEdit.Text := Sub_Node.Value;
+                    end;
+                    // --------------------------------------------------------------------------
+                    // Загружаем сервер подключения
+                    Sub_Node := XML_Node.Items.ItemNamed[C_CustomServer];
+                    if Sub_Node <> nil then
+                    begin
+                      if Sub_Node.Properties.Value(C_Host) <> EmptyStr then
+                        ServerComboBox.Text := Sub_Node.Properties.Value(C_Host);
+                      if Sub_Node.Properties.Value(C_Port) <> EmptyStr then
+                        PortEdit.Text := Sub_Node.Properties.Value(C_Port);
                     end;
                     // --------------------------------------------------------------------------
                   end;
@@ -379,8 +396,16 @@ begin
       ICQ_LoginPassword := PassEdit.Hint;
     end;
   // --------------------------------------------------------------------------
-  //
-  ICQ_ClientLoginID := ClientLoginIdEdit.Text;
+  // Настройки сервера подключения
+  if (ServerComboBox.Text <> EmptyStr) and (PortEdit.Text <> EmptyStr) then
+  begin
+    ICQ_LoginServerAddr := ServerComboBox.Text;
+    ICQ_LoginServerPort := PortEdit.Text;
+  end;
+  // --------------------------------------------------------------------------
+  // Настройки идентификации клиента
+  if ClientLoginIdEdit.Text <> EmptyStr then
+    ICQ_ClientLoginID := ClientLoginIdEdit.Text;
   // --------------------------------------------------------------------------
   // Деактивируем кнопку применения настроек
   ApplyButton.Enabled := False;
@@ -425,7 +450,12 @@ begin
             if PassEdit.Text <> EmptyStr then
               PassEdit.Text := C_MaskPass;
             // --------------------------------------------------------------------------
-            // Сохраняем другие настройки
+            // Сохраняем сервер подключения
+            Sub_Node := XML_Node.Items.Add(C_CustomServer);
+            Sub_Node.Properties.Add(C_Host, ServerComboBox.Text);
+            Sub_Node.Properties.Add(C_Port, PortEdit.Text);
+            // --------------------------------------------------------------------------
+            // Сохраняем настройки идентификации
             Sub_Node := XML_Node.Items.Add(C_ClientLoginID);
             Sub_Node.Value := ClientLoginIdEdit.Text;
             // --------------------------------------------------------------------------
@@ -861,6 +891,9 @@ begin
   PersonalGenderInfoComboBox.Items.NameValueSeparator := C_BN;
   // Логин ID
   ClientLoginIdEdit.Text := ICQ_ClientLoginID;
+  // Сервер
+  ServerComboBox.Text := ICQ_LoginServerAddr;
+  PortEdit.Text := ICQ_LoginServerPort;
   // Загружаем настройки
   LoadSettings;
   // Переводим форму на другие языки

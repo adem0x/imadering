@@ -85,7 +85,7 @@
     <UserInfoCap c="Информация о контакте"/>
     <GameCaption c="Игра %s"/>
     <EmailCount c="У вас в ящике %s непрочитанных писем!_r__r_Всего в ящике %s писем."/>
-    <CharsCount c="%d из %d"/>
+    <CharsCount c="%d из %d символов"/>
     <NoAdmin c="У вас нет прав на запись файлов!_r_Необходимы права администратора."/>
     <NewProgErr c="Ошибка запуска другого профиля программы."/>
     <HistoryCompressed c="Создан архив с историей сообщений. Для просмотра предыдущей истории сообщений откройте архив в окне просмотра истории."/>
@@ -127,7 +127,7 @@
     <SMS_ACK c="SMS сообщение отправлено."/>
     <GMale c="Мужской"/>
     <GFemale c="Женский"/>
-    <LogException1 c="В программе произошла ошибка"/>
+    <LogException1 c="В программе IMadering произошла ошибка"/>
     <LogException2 c="Вы можете скопировать информацию об этой ошибке и выложить для разработчиков на форуме проекта IMadering с описанием действий, при которых возникла данная ошибка. Или уведомить об ошибке любым другим способом."/>
     <LNick c="Ник"/>
     <LName c="Имя"/>
@@ -162,6 +162,7 @@
     <LHair c="Цвет волос"/>
     <LChildren c="Детей"/>
     <LastUpDate c="Дата изменения данных"/>
+    <ShortURL c="Короткая ссылка URL &quot;%s&quot; скопирована в буфер обмена."/>
   </Vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>
@@ -635,6 +636,10 @@
     <SendCustomICQPacketButton c="Отправить"/>
     <SendCustomICQPaketTimerCheckBox c="Повторять отправку в цикле (секунды):"/>
     <ClientLoginIDLabel c="Логин ID:"/>
+    <ConnectionGroupBox c="Настройки соединения"/>
+    <ServerLabel c="Сервер:"/>
+    <PortLabel c="Порт:"/>
+    <UseSSLCheckBox c="Использовать SSL шифрование трафика"/>
   </IcqOptionsForm>
   <icq_countries>
     <c1 c=""/>
@@ -1187,7 +1192,7 @@
     <CustomServerLabel c="Сервер:"/>
     <CustomPortLabel c="Порт:"/>
     <CustomServerCheckBox c="Вручную задать адрес и порт сервера"/>
-    <UseSSLCheckBox c="Использовать SSL"/>
+    <UseSSLCheckBox c="Использовать SSL шифрование трафика"/>
   </JabberOptionsForm>
   <MraOptionsForm c="Опции: Mail.ru Agent">
     <MRAOptionButtonGroup_0 c="Учётная запись"/>

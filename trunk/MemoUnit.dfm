@@ -39,6 +39,12 @@ object MemoForm: TMemoForm
     Width = 3
     Height = 13
     Alignment = taRightJustify
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clGreen
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
   end
   object InfoMemo: TMemo
     Left = 8
@@ -49,7 +55,6 @@ object MemoForm: TMemoForm
     ScrollBars = ssVertical
     TabOrder = 0
     OnChange = InfoMemoChange
-    OnKeyPress = InfoMemoKeyPress
   end
   object YesBitBtn: TBitBtn
     Left = 386
