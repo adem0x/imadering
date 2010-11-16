@@ -452,6 +452,7 @@
     <CloseLastChatMenu c="Close this tab"/>
     <SendUpWapRu c="Send files through UpWap.ru"/>
     <ChatHTMLQTextTwitter c="Quote of Twitter (140 characters)"/>
+    <SearchInGoogle c="Search in Google"/>
   </ChatForm>
   <FileTransferForm c="File Transfer">
     <FileNameLabel c="Current file:"/>

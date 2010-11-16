@@ -542,16 +542,16 @@ begin
           ApplyProxyHttpClient(HttpClient);
         end;
       // HTTP сокет для Twitter протокола
-      if TwitterHttpClient.State <> HttpConnected then
+      if TwitterClient.State <> HttpConnected then
         begin
-          TwitterHttpClient.Abort;
-          ApplyProxyHttpClient(TwitterHttpClient);
+          TwitterClient.Abort;
+          ApplyProxyHttpClient(TwitterClient);
         end;
       // HTTP сокет для аватар MRA протокола
-      if MRAAvatarHttpClient.State <> HttpConnected then
+      if MRAAvatarClient.State <> HttpConnected then
         begin
-          MRAAvatarHttpClient.Abort;
-          ApplyProxyHttpClient(MRAAvatarHttpClient);
+          MRAAvatarClient.Abort;
+          ApplyProxyHttpClient(MRAAvatarClient);
         end;
       // HTTP сокет для передачи файлов
       if (Assigned(FileTransferForm)) and (FileTransferForm.SendFileHttpClient.State <> HttpConnected) then

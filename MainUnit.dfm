@@ -1113,7 +1113,7 @@ object MainForm: TMainForm
       OnClick = DumpICQClick
     end
   end
-  object MRAAvatarHttpClient: THttpCli
+  object MRAAvatarClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
     Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
@@ -1384,7 +1384,7 @@ object MainForm: TMainForm
       OnClick = CloseProgram_MenuClick
     end
   end
-  object TwitterHttpClient: THttpCli
+  object TwitterClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
     Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
@@ -1400,10 +1400,10 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnSessionClosed = TwitterHttpClientSessionClosed
+    OnSessionClosed = TwitterClientSessionClosed
     OnDocBegin = HttpClientDocBegin
     OnSendEnd = HttpClientSendEnd
-    OnRequestDone = TwitterHttpClientRequestDone
+    OnRequestDone = TwitterClientRequestDone
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = HttpClientSocksConnected
     OnSocksError = HttpClientSocksError

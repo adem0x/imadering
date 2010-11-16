@@ -251,9 +251,9 @@ begin
       // Начинаем заполнение параметров
       V_Twitter_Params := TStringList.Create;
       try
-        V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + 'hrL4RlfT8MVOWbDdeY0EQ';//X_Twitter_OAuth_Consumer_Key;
-        V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + '1';//Twitter_Generate_Nonce;
-        V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + '1289564825';//IntToStr(DateTimeToUnix(Now));
+        V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+        V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
+        V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
         with V_Twitter_Params do
         begin
           Add(V_Twitter_OAuth_Consumer_Key);
@@ -262,13 +262,23 @@ begin
           Add(V_Twitter_OAuth_Timestamp);
           Add(C_Twitter_OAuth_Version);
         end;
-        V_Twitter_OAuth_Signature := C_Twitter_OAuth_Signature + Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Request_Token, 'GET', V_Twitter_Params);
+        V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Request_Token, C_GET, EmptyStr, V_Twitter_Params);
       finally
         V_Twitter_Params.Free;
       end;
+      // Делаем запрос ключей от twitter
+      // Сбрасываем сокет если он занят чем то другим или висит
+      with MainForm.TwitterClient do
+      begin
+        Abort;
+        // Ставим флаг задания
+        Tag := 0;
+        // Запускаем проверку обновлений программы на сайте
+        URL := C_UpdateURL;
+        GetASync;
+      end;
 
-      XLog('', C_Twitter_Host + C_Twitter_Request_Token + '?' + V_Twitter_OAuth_Consumer_Key + C_AN + V_Twitter_OAuth_Nonce + C_AN + C_Twitter_OAuth_Signature_Method //
-       + C_AN + V_Twitter_OAuth_Timestamp + C_AN + C_Twitter_OAuth_Version + C_AN + V_Twitter_OAuth_Signature, '');
+
 
     end;
     // Закрываем это окно
