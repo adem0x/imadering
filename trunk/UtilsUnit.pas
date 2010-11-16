@@ -165,7 +165,7 @@ function ReverseString(s: string): string;
 function Twitter_Generate_Nonce: string;
 function Twitter_Encrypt_HMAC_SHA1(Input, AKey: string): string;
 function EncodeRFC3986(s: string): string;
-function Twitter_HMAC_SHA1_Signature(xURL, RequestMethod: string; Params: TStringList): string;
+function Twitter_HMAC_SHA1_Signature(xURL, ReqMethod, xToken: string; xParams: TStringList): string;
 
 {$ENDREGION}
 
@@ -2563,18 +2563,22 @@ end;
 {$ENDREGION}
 {$REGION 'Twitter_HMAC_SHA1_Signature'}
 
-function Twitter_HMAC_SHA1_Signature(xURL, RequestMethod: string; Params: TStringList): string;
+function Twitter_HMAC_SHA1_Signature(xURL, ReqMethod, xToken: string; xParams: TStringList): string;
 var
-  strBase, strParams, strKey: string;
+  strBase, strParams, strKey, strSignature: string;
   I: integer;
 begin
   // Создаём сигнатуру для запросов twitter
-  for I := 0 to Params.Count - 1 do
-    strParams := strParams + C_AN + Params[i];
+  for I := 0 to xParams.Count - 1 do
+    strParams := strParams + C_AN + xParams[i];
   Delete(strParams, 1, 1);
-  strBase := RequestMethod + C_AN + EncodeRFC3986(xURL + '/') + C_AN + EncodeRFC3986(strParams);
-  strKey := {X_Twitter_OAuth_Consumer_Secret} 'QXromX9owFx7Gx0ma8LK0fApX0kVqYf1CXWuGRyuP4' + C_AN;
-  Result := EncodeRFC3986(Base64Encode(Twitter_Encrypt_HMAC_SHA1(strBase, strKey)));
+  strBase := ReqMethod + C_AN + EncodeRFC3986(xURL) + C_AN + EncodeRFC3986(strParams);
+  if xToken <> EmptyStr then
+    strKey := X_Twitter_OAuth_Consumer_Secret + C_AN + EncodeRFC3986(xToken)
+  else
+    strKey := X_Twitter_OAuth_Consumer_Secret + C_AN;
+  strSignature := EncodeRFC3986(Base64Encode(Twitter_Encrypt_HMAC_SHA1(strBase, strKey)));
+  Result := xURL + '?' + strParams + C_AN + C_Twitter_OAuth_Signature + strSignature;
 end;
 {$ENDREGION}
 

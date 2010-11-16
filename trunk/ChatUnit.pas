@@ -125,6 +125,7 @@ type
     FlagImage: TImage;
     ChatHTMLQTextTwitter: TMenuItem;
     GenderImage: TImage;
+    SearchInGoogle: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure MyAvatarPanelSpeedButtonClick(Sender: TObject);
     procedure ChatSplitterMoved(Sender: TObject);
@@ -190,6 +191,7 @@ type
     procedure ChatHTMLQTextTwitterClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure HTMLChatViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure SearchInGoogleClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -858,6 +860,15 @@ begin
   InputRichEdit.PasteFromClipboard;
 end;
 
+procedure TChatForm.SearchInGoogleClick(Sender: TObject);
+var
+  S: string;
+begin
+  // Делаем поиск выделенного текста в Google
+  S := UrlEncode(Trim(HTMLChatViewer.SelText));
+  OpenURL(Format(C_GoogleSearch, [S]));
+end;
+
 procedure TChatForm.SendAllClick(Sender: TObject);
 begin
   //
@@ -1439,12 +1450,14 @@ begin
     ChatHTMLTextCopy.Enabled := False;
     ChatHTMLQText.Enabled := False;
     ChatHTMLQTextTwitter.Enabled := False;
+    SearchInGoogle.Enabled := False;
   end
   else
   begin
     ChatHTMLTextCopy.Enabled := True;
     ChatHTMLQText.Enabled := True;
     ChatHTMLQTextTwitter.Enabled := True;
+    SearchInGoogle.Enabled := True;
   end;
 end;
 

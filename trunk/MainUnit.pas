@@ -141,7 +141,7 @@ type
     AddNewContact: TMenuItem;
     History_Menu: TMenuItem;
     Traffic_Menu: TMenuItem;
-    MRAAvatarHttpClient: THttpCli;
+    MRAAvatarClient: THttpCli;
     RightMRAPopupMenu: TPopupMenu;
     RightJabberPopupMenu: TPopupMenu;
     JabberStatusInvisible: TMenuItem;
@@ -243,7 +243,7 @@ type
     CLSearchTopToolButton: TToolButton;
     CLSearchONMenu: TMenuItem;
     TopCLSearchONMenu: TMenuItem;
-    TwitterHttpClient: THttpCli;
+    TwitterClient: THttpCli;
     SaveTextAsFileDialog: TSaveTextFileDialog;
     MraSMSSendMenu: TMenuItem;
     N34: TMenuItem;
@@ -408,8 +408,8 @@ type
     procedure HttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
     procedure TopCLSearchONMenuClick(Sender: TObject);
     procedure CLSearchONMenuClick(Sender: TObject);
-    procedure TwitterHttpClientSessionClosed(Sender: TObject);
-    procedure TwitterHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+    procedure TwitterClientSessionClosed(Sender: TObject);
+    procedure TwitterClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
     procedure JvTimerListEvents10Timer(Sender: TObject);
     procedure MraSMSSendMenuClick(Sender: TObject);
     procedure JvTimerListEvents13Timer(Sender: TObject);
@@ -2783,13 +2783,16 @@ begin
     V_UpdateAuto := False
   else
     V_UpdateAuto := True;
-  // Сбрасываем сокет если он занят чем то другим или висит
-  HttpClient.Abort;
-  // Ставим флаг задания
-  HttpClient.Tag := 0;
-  // Запускаем проверку обновлений программы на сайте
-  HttpClient.URL := C_UpdateURL;
-  HttpClient.GetASync;
+  with HttpClient do
+  begin
+    // Сбрасываем сокет если он занят чем то другим или висит
+    Abort;
+    // Ставим флаг задания
+    Tag := 0;
+    // Запускаем проверку обновлений программы на сайте
+    URL := C_UpdateURL;
+    GetASync;
+  end;
 end;
 
 {$ENDREGION}
@@ -3987,8 +3990,8 @@ begin
       MRA_GoOffline;
     // Отключаем HTTP сокеты
     HttpClient.Abort;
-    MRAAvatarHttpClient.Abort;
-    TwitterHttpClient.Abort;
+    MRAAvatarClient.Abort;
+    TwitterClient.Abort;
     if Assigned(FileTransferForm) then
       FileTransferForm.SendFileHttpClient.Abort;
     if Assigned(GTransForm) then
@@ -4836,7 +4839,7 @@ end;
 {$ENDREGION}
 {$REGION 'TwitterHttpClientRequestDone'}
 
-procedure TMainForm.TwitterHttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
+procedure TMainForm.TwitterClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 var
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
@@ -4845,28 +4848,28 @@ var
 begin
   try
     // Высвобождаем память отправки данных
-    if TwitterHttpClient.SendStream <> nil then
+    if TwitterClient.SendStream <> nil then
     begin
-      TwitterHttpClient.SendStream.Free;
-      TwitterHttpClient.SendStream := nil;
+      TwitterClient.SendStream.Free;
+      TwitterClient.SendStream := nil;
     end;
     // Читаем полученные http данные из блока памяти
-    if TwitterHttpClient.RcvdStream <> nil then
+    if TwitterClient.RcvdStream <> nil then
     begin
       // Инициализируем XML
       JvXML_Create(JvXML);
       try
         // Увеличиваем статистику входящего трафика
-        V_TrafRecev := V_TrafRecev + TwitterHttpClient.RcvdCount;
-        V_AllTrafRecev := V_AllTrafRecev + TwitterHttpClient.RcvdCount;
+        V_TrafRecev := V_TrafRecev + TwitterClient.RcvdCount;
+        V_AllTrafRecev := V_AllTrafRecev + TwitterClient.RcvdCount;
         if Assigned(TrafficForm) then
           Traffic_MenuClick(nil);
         // Обнуляем позицию начала чтения в блоке памяти
-        TwitterHttpClient.RcvdStream.Position := 0;
+        TwitterClient.RcvdStream.Position := 0;
         // Читаем данные в лист
         with JvXML do
         begin
-          LoadFromStream(TwitterHttpClient.RcvdStream);
+          LoadFromStream(TwitterClient.RcvdStream);
           // Разбираем данные XML
           //Xlog(C_RN + XMLData, EmptyStr);
           // Проверяем на ошибки и отображаем если они есть
@@ -4910,8 +4913,8 @@ begin
       finally
         JvXML.Free;
         // Высвобождаем блок памяти
-        TwitterHttpClient.RcvdStream.Free;
-        TwitterHttpClient.RcvdStream := nil;
+        TwitterClient.RcvdStream.Free;
+        TwitterClient.RcvdStream := nil;
       end;
     end;
   except
@@ -4923,14 +4926,14 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TMainForm.TwitterHttpClientSessionClosed(Sender: TObject);
+procedure TMainForm.TwitterClientSessionClosed(Sender: TObject);
 var
   S: string;
 begin
   // Обрабатываем возможные ошибки в работе http сокета
-  if (TwitterHttpClient.StatusCode = 0) or (TwitterHttpClient.StatusCode >= 400) then
+  if (TwitterClient.StatusCode = 0) or (TwitterClient.StatusCode >= 400) then
   begin
-    S := Format(ErrorHttpClient(TwitterHttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
+    S := Format(ErrorHttpClient(TwitterClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
     DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
   end;
 end;
@@ -5142,17 +5145,20 @@ begin
     begin
       L := UrlEncode(L);
       S := Format(P, [L]);
-      // Сбрасываем сокет если он занят чем то другим или висит
-      HttpClient.Abort;
-      // Ставим флаг задания
-      HttpClient.Location := EmptyStr;
-      HttpClient.Tag := 4;
-      // Запускаем проверку обновлений программы на сайте
-      HttpClient.URL := 'http://goo.gl/api/shorten';
-      HttpClient.SendStream := TMemoryStream.Create;
-      HttpClient.SendStream.Write(S[1], Length(S));
-      HttpClient.SendStream.Seek(0, 0);
-      HttpClient.PostASync;
+      with HttpClient do
+      begin
+        // Сбрасываем сокет если он занят чем то другим или висит
+        Abort;
+        // Ставим флаг задания
+        Location := EmptyStr;
+        Tag := 4;
+        // Запускаем проверку обновлений программы на сайте
+        URL := 'http://goo.gl/api/shorten';
+        SendStream := TMemoryStream.Create;
+        SendStream.Write(S[1], Length(S));
+        SendStream.Seek(0, 0);
+        PostASync;
+      end;
     end;
   end;
 end;

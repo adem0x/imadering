@@ -216,6 +216,7 @@ const
   C_PostInTwit = 'http://twitter.com/statuses/update.xml?source=IMadering&status=%s&in_reply_to_status_id=';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
   C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
+  C_GoogleSearch = 'http://www.google.com/search?q=%s&sourceid=imadering&ie=utf-8&oe=utf-8';
   // Twitter API
   C_Twitter_Host = 'http://api.twitter.com/';
   C_Twitter_OAuth_Consumer_Key = 'oauth_consumer_key=';
@@ -234,6 +235,8 @@ const
   C_Twitter_Request_Token = 'oauth/request_token';
   C_Twitter_Authorize = 'oauth/authorize';
   C_Twitter_Access_Token = 'oauth/access_token';
+  C_GET = 'GET';
+  C_POST = 'POST';
   // Другие команды
   C_FM = 'Max';
   C_FT = 'Top';

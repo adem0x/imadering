@@ -933,6 +933,10 @@ object ChatForm: TChatForm
       ImageIndex = 268
       OnClick = ChatHTMLQTextTwitterClick
     end
+    object SearchInGoogle: TMenuItem
+      ImageIndex = 77
+      OnClick = SearchInGoogleClick
+    end
   end
   object QmessPopupMenu: TPopupMenu
     AutoHotkeys = maManual
