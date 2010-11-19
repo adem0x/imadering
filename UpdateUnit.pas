@@ -89,8 +89,12 @@ begin
   // Деактивируем кнопку Прервать
   AbortBitBtn.Enabled := False;
   // Ставим флаг отбоя обработки закачки
-  MainForm.HttpClient.Tag := 2;
-  MainForm.HttpClient.Abort;
+  with MainForm.HttpClient do
+  begin
+    Tag := 2;
+    Close;
+    Abort;
+  end;
   // Выводим информацию о прекрашении закачки обноления
   InfoMemo.Lines.Add(Lang_Vars[111].L_S);
 end;
@@ -149,8 +153,6 @@ begin
   StartBitBtn.Enabled := False;
   // Активируем кнопку Прервать
   AbortBitBtn.Enabled := True;
-  // Ставим флаг обработки закачки файла обновления
-  MainForm.HttpClient.Tag := 1;
   // Вставляем в мемо пробел
   if InfoMemo.Text <> EmptyStr then
     InfoMemo.Lines.Add(EmptyStr);
@@ -160,10 +162,18 @@ begin
   // Выводим информацию о начале закачки обноления
   InfoMemo.Lines.Add(Lang_Vars[110].L_S + ' (' + V_UpdateVersionPath + ')');
   // Запускаем закачку файла обновления с сайта
-  MainForm.HttpClient.Abort;
-  MainForm.HttpClient.URL := C_GoogleCodeURL + V_UpdateVersionPath;
-  Xlog(C_HTTP + C_BN + Log_Get, 'URL: ' + MainForm.HttpClient.URL, EmptyStr);
-  MainForm.HttpClient.GetASync;
+  with MainForm.HttpClient do
+  begin
+    // Сбрасываем сокет если он занят чем то другим или висит
+    Close;
+    Abort;
+    // Ставим флаг обработки закачки файла обновления
+    Tag := 1;
+    LocationChangeMaxCount := 5;
+    URL := C_GoogleCodeURL + V_UpdateVersionPath;
+    XLog(Name + C_BN + Log_Send, URL, C_HTTP, False);
+    GetASync;
+  end;
 end;
 
 {$ENDREGION}

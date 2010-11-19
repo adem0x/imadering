@@ -278,6 +278,7 @@ begin
         with MainForm.TwitterClient do
         begin
           // Сбрасываем сокет если он занят чем то другим или висит
+          Close;
           Abort;
           // Ставим флаг задания
           Tag := 0;

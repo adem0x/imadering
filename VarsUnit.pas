@@ -216,7 +216,7 @@ const
   C_DownPage = 'http://imadering.com/download.htm';
   C_PostInTwit = 'http://twitter.com/statuses/update.xml?source=IMadering&status=%s&in_reply_to_status_id=';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
-  C_UpdateURL = 'http://imadering.googlecode.com/files/version.txt';
+  C_UpdateURL = 'http://imadering.googlecode.com/files/Version.xml';
   C_GoogleSearch = 'http://www.google.com/search?q=%s&sourceid=imadering&ie=utf-8&oe=utf-8';
   // Twitter API
   C_Twitter_Host = 'http://api.twitter.com/';
