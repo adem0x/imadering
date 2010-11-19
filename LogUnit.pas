@@ -52,6 +52,7 @@ type
     HexToBEText_Menu: TMenuItem;
     ToUtf8Text_Menu: TMenuItem;
     HTMLLogViewer: THTMLViewer;
+    HTTP_DumpSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure ClearLogSpeedButtonClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
@@ -159,6 +160,7 @@ begin
     GetBitmap(221, SearchSpeedButton.Glyph);
     GetBitmap(185, SendEmailSpeedButton.Glyph);
     GetBitmap(1, RosterSpeedButton.Glyph);
+    GetBitmap(267, HTTP_DumpSpeedButton.Glyph);
   end;
   // Переводим окно на другие языки
   TranslateForm;

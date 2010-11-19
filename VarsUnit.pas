@@ -48,6 +48,7 @@ const
   C_DD = '_';
   C_XX = 'X';
   C_AN = '&';
+  C_GT = '?';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -226,8 +227,8 @@ const
   C_Twitter_OAuth_Token = 'oauth_token=';
   C_Twitter_OAuth_Token_Secret = 'oauth_token_secret=';
   C_Twitter_Authenticity_Token = 'authenticity_token=';
-  C_Twitter_Username = 'session[username_or_email]=';
-  C_Twitter_Password = 'session[password]=';
+  C_Twitter_Username = 'session%5Busername_or_email%5D=';
+  C_Twitter_Password = 'session%5Bpassword%5D=';
   C_Twitter_OAuth_Verifier = 'oauth_verifier=';
   C_Twitter_OAuth_Version = 'oauth_version=1.0';
   C_Twitter_OAuth_Signature_Method = 'oauth_signature_method=HMAC-SHA1';
@@ -235,6 +236,7 @@ const
   C_Twitter_Request_Token = 'oauth/request_token';
   C_Twitter_Authorize = 'oauth/authorize';
   C_Twitter_Access_Token = 'oauth/access_token';
+  C_Twitter_PostMsg = '1/statuses/update.xml';
   C_GET = 'GET';
   C_POST = 'POST';
   // Другие команды
@@ -316,8 +318,6 @@ var
 {$REGION 'Twitter_Vars'}
   V_Twitter_Username: string;
   V_Twitter_Password: string;
-  V_Twitter_OAuth_Username: string;
-  V_Twitter_OAuth_Password: string;
   V_Twitter_OAuth_Consumer_Key: string;
   V_Twitter_OAuth_Nonce: string;
   V_Twitter_OAuth_Timestamp: string;
@@ -325,7 +325,8 @@ var
   V_Twitter_OAuth_Token: string;
   V_Twitter_OAuth_Token_Secret: string;
   V_Twitter_Authenticity_Token: string;
-  V_Twitter_OAuth_Verifier: string;
+  V_Twitter_OAuth_PIN: string;
+  V_Twitter_PostMsg: string;
   V_Twitter_Params: TStringList;
 {$ENDREGION}
 {$REGION 'CL_Vars'}

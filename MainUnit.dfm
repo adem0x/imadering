@@ -1113,7 +1113,7 @@ object MainForm: TMainForm
       OnClick = DumpICQClick
     end
   end
-  object MRAAvatarClient: THttpCli
+  object MRA_PhotoClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
     Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'

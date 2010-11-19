@@ -200,7 +200,6 @@ procedure TMemoForm.YesBitBtnClick(Sender: TObject);
 // label
 // x;
 var
-  S{, PostData}: string;
   FrmLogin: TLoginForm;
 begin
   // Автообновление
@@ -218,68 +217,76 @@ begin
   end
   else if Twit then // Пост в Твиттер
   begin
-    S := Trim(InfoMemo.Text);
-    if S = EmptyStr then
-      Exit;
-    // Проверяем логин Твита
-    if (V_Twitter_Username = EmptyStr) or (V_Twitter_Password = EmptyStr) then
+    V_Twitter_PostMsg := Trim(InfoMemo.Text);
+    if V_Twitter_PostMsg <> EmptyStr then
     begin
-      FrmLogin := TLoginForm.Create(Application);
-      try
-        MainForm.AllImageList.GetIcon(268, FrmLogin.Icon);
-        FrmLogin.Caption := C_Twitter;
-        // Модально спрашиваем логин и пароль
-        if FrmLogin.ShowModal = MrOk then
-        begin
-          // Сохраняем в настройках логин и пароль для Twitter
-
-          if FrmLogin.SavePassCheckBox.Checked then
-          begin
-
-          end;
-          // Запоминаем логин и пароль твиттера
-          V_Twitter_Username := FrmLogin.AccountEdit.Text;
-          V_Twitter_Password := FrmLogin.PasswordEdit.Text;
-        end;
-      finally
-        FreeAndNil(FrmLogin);
-      end;
-    end;
-    // Запускаем авторизацию в твиттер
-    if (V_Twitter_Username <> EmptyStr) and (V_Twitter_Password <> EmptyStr) then
-    begin
-      // Начинаем заполнение параметров
-      V_Twitter_Params := TStringList.Create;
-      try
-        V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
-        V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
-        V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
-        with V_Twitter_Params do
-        begin
-          Add(V_Twitter_OAuth_Consumer_Key);
-          Add(V_Twitter_OAuth_Nonce);
-          Add(C_Twitter_OAuth_Signature_Method);
-          Add(V_Twitter_OAuth_Timestamp);
-          Add(C_Twitter_OAuth_Version);
-        end;
-        V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Request_Token, C_GET, EmptyStr, V_Twitter_Params);
-      finally
-        V_Twitter_Params.Free;
-      end;
-      // Делаем запрос ключей от twitter
-      // Сбрасываем сокет если он занят чем то другим или висит
-      with MainForm.TwitterClient do
+      // Ограничиваем длинну текста
+      if Length(V_Twitter_PostMsg) > 140 then
+        SetLength(V_Twitter_PostMsg, 140);
+      // Проверяем логин Твита
+      if (V_Twitter_Username = EmptyStr) or (V_Twitter_Password = EmptyStr) then
       begin
-        Abort;
-        // Ставим флаг задания
-        Tag := 0;
-        // Запускаем проверку обновлений программы на сайте
-        URL := C_UpdateURL;
-        GetASync;
+        FrmLogin := TLoginForm.Create(Application);
+        try
+          MainForm.AllImageList.GetIcon(268, FrmLogin.Icon);
+          FrmLogin.Caption := C_Twitter;
+          // Модально спрашиваем логин и пароль
+          if FrmLogin.ShowModal = MrOk then
+          begin
+            // Сохраняем в настройках логин и пароль для Twitter
+
+            if FrmLogin.SavePassCheckBox.Checked then
+            begin
+
+            end;
+            // Запоминаем логин и пароль твиттера
+            V_Twitter_Username := FrmLogin.AccountEdit.Text;
+            V_Twitter_Password := FrmLogin.PasswordEdit.Text;
+          end;
+        finally
+          FreeAndNil(FrmLogin);
+        end;
       end;
-
-
-
+      // Запускаем авторизацию в твиттер
+      if (V_Twitter_Username <> EmptyStr) and (V_Twitter_Password <> EmptyStr) then
+      begin
+        // Обнуляем параметры Twitter
+        V_Twitter_OAuth_Signature := EmptyStr;
+        V_Twitter_OAuth_Token := EmptyStr;
+        V_Twitter_OAuth_Token_Secret := EmptyStr;
+        V_Twitter_Authenticity_Token := EmptyStr;
+        V_Twitter_OAuth_PIN := EmptyStr;
+        // Начинаем заполнение параметров
+        V_Twitter_Params := TStringList.Create;
+        try
+          V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+          V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
+          V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
+          with V_Twitter_Params do
+          begin
+            Add(V_Twitter_OAuth_Consumer_Key);
+            Add(V_Twitter_OAuth_Nonce);
+            Add(C_Twitter_OAuth_Signature_Method);
+            Add(V_Twitter_OAuth_Timestamp);
+            Add(C_Twitter_OAuth_Version);
+          end;
+          V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Request_Token, C_GET, EmptyStr, V_Twitter_Params);
+        finally
+          V_Twitter_Params.Free;
+        end;
+        // Делаем запрос ключей от twitter
+        with MainForm.TwitterClient do
+        begin
+          // Сбрасываем сокет если он занят чем то другим или висит
+          Abort;
+          // Ставим флаг задания
+          Tag := 0;
+          // Запускаем авторизацию в Twitter
+          URL := V_Twitter_OAuth_Signature;
+          XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+          GetASync;
+        end;
+      end;
     end;
     // Закрываем это окно
     Close;

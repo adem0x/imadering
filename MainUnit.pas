@@ -141,7 +141,7 @@ type
     AddNewContact: TMenuItem;
     History_Menu: TMenuItem;
     Traffic_Menu: TMenuItem;
-    MRAAvatarClient: THttpCli;
+    MRA_PhotoClient: THttpCli;
     RightMRAPopupMenu: TPopupMenu;
     RightJabberPopupMenu: TPopupMenu;
     JabberStatusInvisible: TMenuItem;
@@ -3990,7 +3990,7 @@ begin
       MRA_GoOffline;
     // Отключаем HTTP сокеты
     HttpClient.Abort;
-    MRAAvatarClient.Abort;
+    MRA_PhotoClient.Abort;
     TwitterClient.Abort;
     if Assigned(FileTransferForm) then
       FileTransferForm.SendFileHttpClient.Abort;
@@ -4842,10 +4842,16 @@ end;
 procedure TMainForm.TwitterClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 var
   JvXML: TJvSimpleXml;
-  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
-  I, Count: Integer;
-  Msg, User_Name: string;
+  XML_Node: TJvSimpleXmlElem;
+  List: TStringList;
+  Form_Flag, PIN_Flag, Login_Flag, PostMsg_Flag: Boolean;
+  PostData: AnsiString;
+  S: string;
 begin
+  Form_Flag := False;
+  PIN_Flag := False;
+  Login_Flag := False;
+  PostMsg_Flag := False;
   try
     // Высвобождаем память отправки данных
     if TwitterClient.SendStream <> nil then
@@ -4856,8 +4862,8 @@ begin
     // Читаем полученные http данные из блока памяти
     if TwitterClient.RcvdStream <> nil then
     begin
-      // Инициализируем XML
-      JvXML_Create(JvXML);
+      // Создаём временный лист
+      List := TStringList.Create;
       try
         // Увеличиваем статистику входящего трафика
         V_TrafRecev := V_TrafRecev + TwitterClient.RcvdCount;
@@ -4866,52 +4872,124 @@ begin
           Traffic_MenuClick(nil);
         // Обнуляем позицию начала чтения в блоке памяти
         TwitterClient.RcvdStream.Position := 0;
-        // Читаем данные в лист
-        with JvXML do
-        begin
-          LoadFromStream(TwitterClient.RcvdStream);
-          // Разбираем данные XML
-          //Xlog(C_RN + XMLData, EmptyStr);
-          // Проверяем на ошибки и отображаем если они есть
-          if Root <> nil then
-          begin
-            XML_Node := Root.Items.ItemNamed['error'];
-            if XML_Node <> nil then
-              DAShow(Lang_Vars[17].L_S, XML_Node.Value, EmptyStr, 134, 2, 0);
-            // Проверяем на успешную публикацию
-            XML_Node := Root.Items.ItemNamed['created_at'];
-            if XML_Node <> nil then
-              DAShow(Lang_Vars[16].L_S, Lang_Vars[60].L_S, EmptyStr, 133, 3, 0);
-            // Начинаем разбор списка
-            if Root.Properties.Value('type') = 'array' then
+        // Определяем выполнение задания для данных по флагу
+        case TwitterClient.Tag of
+          0: // Запрос ключей OAuth
             begin
-              Count := Root.Items.Count; // Получаем количество вложенных пакетов
-              for I := 0 to Count - 1 do
+              // Читаем данные в лист
+              List.LoadFromStream(TwitterClient.RcvdStream, TEncoding.UTF8);
+              S := Trim(List.Text);
+              // Разбираем данные в листе
+              if S <> EmptyStr then
               begin
-                XML_Node := Root.Items[I];
-                if XML_Node <> nil then
+                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                // Парсим ключи
+                V_Twitter_OAuth_Token := IsolateTextString(S, C_Twitter_OAuth_Token, C_AN);
+                V_Twitter_OAuth_Token_Secret := IsolateTextString(S, C_Twitter_OAuth_Token_Secret, C_AN);
+                if (V_Twitter_OAuth_Token <> EmptyStr) and (V_Twitter_OAuth_Token_Secret <> EmptyStr) then
                 begin
-                  Sub_Node := XML_Node.Items.ItemNamed['text'];
-                  if Sub_Node <> nil then
-                  begin
-                    Msg := EmptyStr;
-                    Msg := HtmlStrToString(Sub_Node.Value);
-                  end;
-                  Sub_Node := XML_Node.Items.ItemNamed['user'];
-                  if Sub_Node <> nil then
-                  begin
-                    Tri_Node := Sub_Node.Items.ItemNamed['name'];
-                    if Tri_Node <> nil then
-                      User_Name := Tri_Node.Value;
-                  end;
-                  DAShow(User_Name, Msg, EmptyStr, 165, 1, 0);
+                  XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
+                   + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
+                  // Ставим флаг для получения формы логина
+                  Form_Flag := True;
+                  //OpenURL(C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
                 end;
               end;
             end;
-          end;
+          1:
+            begin
+              // Читаем данные в лист
+              List.LoadFromStream(TwitterClient.RcvdStream, TEncoding.UTF8);
+              S := Trim(List.Text);
+              // Разбираем данные в листе
+              if S <> EmptyStr then
+              begin
+                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                V_Twitter_Authenticity_Token := IsolateTextString(S, 'name="authenticity_token"', '>');
+                V_Twitter_Authenticity_Token := EncodeRFC3986(IsolateTextString(V_Twitter_Authenticity_Token, 'value="', '"'));
+                // Ставим флаг для получения ПИН кода
+                if V_Twitter_Authenticity_Token <> EmptyStr then
+                begin
+                  XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token, C_Twitter);
+                  PIN_Flag := True;
+                end;
+              end;
+            end;
+          2:
+            begin
+              // Читаем данные в лист
+              List.LoadFromStream(TwitterClient.RcvdStream, TEncoding.UTF8);
+              S := Trim(List.Text);
+              // Разбираем данные в листе
+              if S <> EmptyStr then
+              begin
+                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                V_Twitter_OAuth_PIN := IsolateTextString(S, 'id="oauth_pin"', '/');
+                V_Twitter_OAuth_PIN := Trim(IsolateTextString(V_Twitter_OAuth_PIN, '>', '<'));
+                // Ставим флаг для логина с полученным ПИН кодом
+                if V_Twitter_OAuth_PIN <> EmptyStr then
+                begin
+                  XLog(C_Twitter + C_BN + Log_Parsing, 'PIN' + C_TN + C_BN + C_QN + V_Twitter_OAuth_PIN + C_EN, C_Twitter);
+                  Login_Flag := True;
+                end
+                else // Сообщаем, что были введены не верные логин или пароль
+                begin
+                  V_Twitter_Username := EmptyStr;
+                  V_Twitter_Password := EmptyStr;
+                  DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Twitter]), EmptyStr, 134, 2, 0);
+                end;
+              end;
+            end;
+          3:
+            begin
+              // Читаем данные в лист
+              List.LoadFromStream(TwitterClient.RcvdStream, TEncoding.UTF8);
+              S := Trim(List.Text);
+              // Разбираем данные в листе
+              if S <> EmptyStr then
+              begin
+                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                V_Twitter_OAuth_Token := EmptyStr;
+                V_Twitter_OAuth_Token_Secret := EmptyStr;
+                V_Twitter_OAuth_Token := IsolateTextString(S, C_Twitter_OAuth_Token, C_AN);
+                V_Twitter_OAuth_Token_Secret := IsolateTextString(S, C_Twitter_OAuth_Token_Secret, C_AN);
+                // Ставим флаг для постинга сообщения
+                if (V_Twitter_OAuth_Token <> EmptyStr) and (V_Twitter_OAuth_Token_Secret <> EmptyStr) then
+                begin
+                  XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
+                   + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
+                  PostMsg_Flag := True;
+                end;
+              end;
+            end;
+          4:
+            begin
+              // Инициализируем XML
+              JvXML_Create(JvXML);
+              try
+                with JvXML do
+                begin
+                  LoadFromStream(TwitterClient.RcvdStream);
+                  XLog(C_Twitter + C_BN + Log_Get, Trim(XMLData), C_Twitter);
+                  if Root <> nil then
+                  begin
+                    // Проверяем на ошибки и отображаем если они есть
+                    XML_Node := Root.Items.ItemNamed['error'];
+                    if XML_Node <> nil then
+                      DAShow(Lang_Vars[17].L_S + C_BN + C_Twitter, XML_Node.Value, EmptyStr, 134, 2, 0);
+                    // Проверяем на успешную публикацию
+                    XML_Node := Root.Items.ItemNamed['created_at'];
+                    if XML_Node <> nil then
+                      DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[60].L_S, [C_Twitter]), EmptyStr, 133, 3, 0);
+                  end;
+                end;
+              finally
+                JvXML.Free;
+              end;
+            end;
         end;
       finally
-        JvXML.Free;
+        List.Free;
         // Высвобождаем блок памяти
         TwitterClient.RcvdStream.Free;
         TwitterClient.RcvdStream := nil;
@@ -4920,6 +4998,126 @@ begin
   except
     on E: Exception do
       IMaderingEventsException(Self, E);
+  end;
+  // Запускаем получение формы логина
+  if Form_Flag then
+  begin
+    with TwitterClient do
+    begin
+      // Сбрасываем сокет если он занят чем то другим или висит
+      Abort;
+      // Ставим флаг задания
+      Tag := 1;
+      // Запускаем получение формы логина
+      URL := C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token;
+      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+      GetASync;
+    end;
+    Exit;
+  end;
+  // Запускаем получение ПИН кода
+  if PIN_Flag then
+  begin
+    PostData := EmptyStr;
+    with TwitterClient do
+    begin
+      // Сбрасываем сокет если он занят чем то другим или висит
+      Abort;
+      // Ставим флаг задания
+      Tag := 2;
+      // Запускаем получение ПИН кода
+      URL := C_Twitter_Host + C_Twitter_Authorize + C_GT //
+       + C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token + C_AN //
+       + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_AN //
+       + C_Twitter_Username + EncodeRFC3986(V_Twitter_Username) + C_AN //
+       + C_Twitter_Password + EncodeRFC3986(V_Twitter_Password);
+      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+      SendStream := TMemoryStream.Create;
+      SendStream.Write(PostData[1], Length(PostData));
+      SendStream.Seek(0, 0);
+      PostASync;
+    end;
+    Exit;
+  end;
+  // Запускаем логин с полученным ПИН кодом
+  if Login_Flag then
+  begin
+    // Начинаем заполнение параметров
+    V_Twitter_Params := TStringList.Create;
+    try
+      V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+      V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
+      V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
+      with V_Twitter_Params do
+      begin
+        Add(V_Twitter_OAuth_Consumer_Key);
+        Add(V_Twitter_OAuth_Nonce);
+        Add(C_Twitter_OAuth_Signature_Method);
+        Add(V_Twitter_OAuth_Timestamp);
+        Add(C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
+        Add(C_Twitter_OAuth_Verifier + V_Twitter_OAuth_PIN);
+        Add(C_Twitter_OAuth_Version);
+      end;
+      V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Access_Token, C_POST, V_Twitter_OAuth_Token_Secret, V_Twitter_Params);
+    finally
+      V_Twitter_Params.Free;
+    end;
+    PostData := EmptyStr;
+    with TwitterClient do
+    begin
+      // Сбрасываем сокет если он занят чем то другим или висит
+      Abort;
+      // Ставим флаг задания
+      Tag := 3;
+      // Запускаем логин с полученным ПИН кодом
+      URL := V_Twitter_OAuth_Signature;
+      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+      SendStream := TMemoryStream.Create;
+      SendStream.Write(PostData[1], Length(PostData));
+      SendStream.Seek(0, 0);
+      PostASync;
+    end;
+    Exit;
+  end;
+  // Запускаем постинг сообщения
+  if PostMsg_Flag then
+  begin
+    // Начинаем заполнение параметров
+    V_Twitter_Params := TStringList.Create;
+    try
+      V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+      V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
+      V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
+      with V_Twitter_Params do
+      begin
+        Add(V_Twitter_OAuth_Consumer_Key);
+        Add(V_Twitter_OAuth_Nonce);
+        Add(C_Twitter_OAuth_Signature_Method);
+        Add(V_Twitter_OAuth_Timestamp);
+        Add(C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
+        Add(C_Twitter_OAuth_Version);
+        Add('status=' + EncodeRFC3986(V_Twitter_PostMsg));
+      end;
+      V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_PostMsg, C_POST, V_Twitter_OAuth_Token_Secret, V_Twitter_Params);
+    finally
+      V_Twitter_Params.Free;
+    end;
+    PostData := EmptyStr;
+    with TwitterClient do
+    begin
+      // Сбрасываем сокет если он занят чем то другим или висит
+      Abort;
+      // Ставим флаг задания
+      Tag := 4;
+      // Запускаем логин с полученным ПИН кодом
+      URL := V_Twitter_OAuth_Signature;
+      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+      SendStream := TMemoryStream.Create;
+      SendStream.Write(PostData[1], Length(PostData));
+      SendStream.Seek(0, 0);
+      PostASync;
+    end;
+    Exit;
   end;
 end;
 
@@ -4969,10 +5167,37 @@ end;
 
 procedure TMainForm.OpenGame_MenuClick(Sender: TObject);
 begin
-  // Открываем в окне чата закладку с играми
+  {// Открываем в окне чата закладку с играми
   if not Assigned(GamesForm) then
     Application.CreateForm(TGamesForm, GamesForm);
-  XShowForm(GamesForm);
+  XShowForm(GamesForm);}
+
+  {// Начинаем заполнение параметров
+        V_Twitter_Params := TStringList.Create;
+        try
+          V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+          V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + 'LWxSdhIMJCxm7gYYh';
+          V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + '1289926677';
+          with V_Twitter_Params do
+          begin
+            Add(V_Twitter_OAuth_Consumer_Key);
+            Add(V_Twitter_OAuth_Nonce);
+            Add(C_Twitter_OAuth_Signature_Method);
+            Add(V_Twitter_OAuth_Timestamp);
+            Add('oauth_token=97632226-QITBxcIbnCKOcQWafBEqJT4a7ievzaaEj6BbMuo7A');
+            Add(C_Twitter_OAuth_Version);
+
+            //Add('source=mbpidgin');
+            //Add('status=test');
+
+          end;
+          V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature('http://api.twitter.com/1/statuses/friends.xml', C_POST, '7tDQ9MHCiPotGP3mwPdaT2WfS9Yf3kYMSfaWr4eLQ', V_Twitter_Params);
+        finally
+          V_Twitter_Params.Free;
+        end;
+
+   xlog('', V_Twitter_OAuth_Signature, '');}
+
 end;
 
 procedure TMainForm.OpenGroupsCLClick(Sender: TObject);

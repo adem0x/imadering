@@ -54,7 +54,9 @@ uses
   Htmlview,
   OverbyteIcsMD5,
   OverbyteIcsSha1,
-  OverbyteIcsMimeUtils;
+  OverbyteIcsMimeUtils,
+  OverbyteIcsUtils,
+  OverbyteIcsLibrary;
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -164,7 +166,10 @@ function GetFlagFile(Path, CountryCode, CountryName: string): string;
 function ReverseString(s: string): string;
 function Twitter_Generate_Nonce: string;
 function Twitter_Encrypt_HMAC_SHA1(Input, AKey: string): string;
-function EncodeRFC3986(s: string): string;
+
+//function EncodeRFC3986(s: string): string;
+function EncodeRFC3986(const S: string; DstCodePage: Cardinal = CP_UTF8): string;
+
 function Twitter_HMAC_SHA1_Signature(xURL, ReqMethod, xToken: string; xParams: TStringList): string;
 
 {$ENDREGION}
@@ -770,6 +775,7 @@ begin
     or ((Proto = C_Jabber) and JabberDumpSpeedButton.Down) //
     or ((Proto = C_Mra) and MRADumpSpeedButton.Down) //
     or ((Proto = C_Twitter) and TwitDumpSpeedButton.Down) //
+    or ((Proto = C_HTTP) and HTTP_DumpSpeedButton.Down) //
     or (Proto = EmptyStr) then // Добавляем в лог новое сообщение
       AddLogText(XLogHead, XLogData, InData);
   end;
@@ -2533,17 +2539,43 @@ end;
 {$ENDREGION}
 {$REGION 'EncodeRFC3986'}
 
-function EncodeRFC3986(s: string): string;
+function EncodeRFC3986(const S: string; DstCodePage: Cardinal = CP_UTF8): string;
 var
-  i: integer;
+  I, J: Integer;
+  AStr: AnsiString;
+  RStr: AnsiString;
+  HexStr: string[2];
 begin
-  Result := EmptyStr;
-  for i := 1 to length(s) do
-    case Ord(s[i]) of
-      45, 46, 48..57, 65..90, 95, 97..122, 126: Result := Result + s[i];
+{$IFDEF COMPILER12_UP}
+  AStr := UnicodeToAnsi(S, DstCodePage);
+{$ELSE}
+  if DstCodePage = CP_UTF8 then
+    AStr := StringToUtf8(S)
+  else
+    AStr := S;
+{$ENDIF}
+  SetLength(RStr, Length(AStr) * 3);
+  J := 0;
+  for I := 1 to Length(AStr) do
+  begin
+    case AStr[I] of
+      '0'..'9', 'A'..'Z', 'a'..'z', '.', '-', '_', '~':
+        begin
+          Inc(J);
+          RStr[J] := AStr[I];
+        end
     else
-      Result := Result + '%' + IntToHex(Ord(s[i]), 2);
+      Inc(J);
+      RStr[J] := '%';
+      HexStr := IcsIntToHexA(Ord(AStr[I]), 2);
+      Inc(J);
+      RStr[J] := HexStr[1];
+      Inc(J);
+      RStr[J] := HexStr[2];
     end;
+  end;
+  SetLength(RStr, J);
+  Result := string(RStr);
 end;
 {$ENDREGION}
 {$REGION 'Twitter_Generate_Nonce'}
@@ -2578,7 +2610,7 @@ begin
   else
     strKey := X_Twitter_OAuth_Consumer_Secret + C_AN;
   strSignature := EncodeRFC3986(Base64Encode(Twitter_Encrypt_HMAC_SHA1(strBase, strKey)));
-  Result := xURL + '?' + strParams + C_AN + C_Twitter_OAuth_Signature + strSignature;
+  Result := xURL + C_GT + strParams + C_AN + C_Twitter_OAuth_Signature + strSignature;
 end;
 {$ENDREGION}
 
