@@ -651,7 +651,7 @@ object MainForm: TMainForm
     MultiThreaded = False
     RequestVer = '1.0'
     FollowRelocation = True
-    LocationChangeMaxCount = 0
+    LocationChangeMaxCount = 5
     ServerAuth = httpAuthNone
     ProxyAuth = httpAuthNone
     BandwidthLimit = 10000

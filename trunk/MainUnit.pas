@@ -498,7 +498,8 @@ uses
   ShellApi,
   SMSUnit,
   GamesUnit,
-  RosterUnit;
+  RosterUnit,
+  HTTPUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -1110,41 +1111,49 @@ end;
 procedure TMainForm.HttpClientDocEnd(Sender: TObject);
 begin
   // Получаем укороченную ссылку
-  if HttpClient.Tag = 4 then
+  with HttpClient do
   begin
-    if HttpClient.Location <> EmptyStr then
+    if Tag = 4 then
     begin
-      SetClipBoardText(HttpClient.Location);
-      DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[161].L_S, [HttpClient.Location]), EmptyStr, 133, 3, 60000);
+      if Location <> EmptyStr then
+      begin
+        SetClipBoardText(Location);
+        XLog(Name + C_BN + Log_Get, Location, C_HTTP);
+        DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[161].L_S, [Location]), EmptyStr, 133, 3, 60000);
+      end;
+      // Высвобождаем память отправки данных
+      if SendStream <> nil then
+      begin
+        SendStream.Free;
+        SendStream := nil;
+      end;
+      // Читаем полученные http данные из блока памяти
+      if RcvdStream <> nil then
+      begin
+        RcvdStream.Free;
+        RcvdStream := nil;
+      end;
+      CloseAsync;
+      Abort;
     end;
-    // Высвобождаем память отправки данных
-    if HttpClient.SendStream <> nil then
-    begin
-      HttpClient.SendStream.Free;
-      HttpClient.SendStream := nil;
-    end;
-    // Читаем полученные http данные из блока памяти
-    if HttpClient.RcvdStream <> nil then
-    begin
-      HttpClient.RcvdStream.Free;
-      HttpClient.RcvdStream := nil;
-    end;
-    HttpClient.CloseAsync;
-    HttpClient.Abort;
   end;
 end;
 
 procedure TMainForm.HttpClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 var
-  List: TStringList;
+  {List: TStringList;
+  Str: string;}
   S, Ver, Bild, Mess: string;
   UpdateFile: TMemoryStream;
+  C_Flag: Boolean;
+  JvXML: TJvSimpleXml;
+  XML_Node: TJvSimpleXmlElem;
 
   procedure ShowUpdateNote;
   begin
     // Если форма не существует, то создаём её
     if not Assigned(MemoForm) then
-      MemoForm := TMemoForm.Create(Self);
+      Application.CreateForm(TMemoForm, MemoForm);
     // Делаем запрос в форме на обновление программы
     MemoForm.UpDateVersion(Mess);
     // Отображаем окно
@@ -1152,6 +1161,7 @@ var
   end;
 
 begin
+  C_Flag := False;
   try
     // Высвобождаем память отправки данных
     if HttpClient.SendStream <> nil then
@@ -1162,8 +1172,6 @@ begin
     // Читаем полученные http данные из блока памяти
     if HttpClient.RcvdStream <> nil then
     begin
-      // Создаём временный лист
-      List := TStringList.Create;
       try
         // Увеличиваем статистику входящего трафика
         V_TrafRecev := V_TrafRecev + HttpClient.RcvdCount;
@@ -1176,37 +1184,63 @@ begin
         case HttpClient.Tag of
           0: // Информация об обновлении IMadering
             begin
-              // Читаем данные в лист
-              List.LoadFromStream(HttpClient.RcvdStream, TEncoding.UTF8);
-              // Разбираем данные в листе
-              if List.Text > EmptyStr then
-              begin
-                // Получаем версию и информацию сборки
-                S := IsolateTextString(List.Text, '<version>', '</version>');
-                Ver := LeftStr(S, 3);
-                Bild := RightStr(S, 3);
-                Mess := IsolateTextString(List.Text, '<info>', '</info>');
-                // Запоминаем переменную аддэйтпатч для автообновления
-                V_UpdateVersionPath := Format(V_UpdateVersionPath, [Ver, Bild]);
-                Xlog(C_HTTP + C_BN + Log_Get, List.Text + C_RN + V_UpdateVersionPath, EmptyStr);
-                // Отображаем всплывающее окно с информацией о новой версии
-                if (Ver <> EmptyStr) and (Bild <> EmptyStr) then
+              // Инициализируем XML
+              JvXML_Create(JvXML);
+              try
+                with JvXML do
                 begin
-                  // Если версия на сайте выше текущей
-                  if StrToInt(S) > StrToInt(ReplaceStr(V_FullVersion, '.', EmptyStr)) then
+                  LoadFromStream(HttpClient.RcvdStream);
+                  Xlog(HttpClient.Name + C_BN + Log_Get, Trim(UTF8ToString(XMLData)), C_HTTP);
+                  if Root <> nil then
                   begin
-                    DAShow(Lang_Vars[16].L_S, Lang_Vars[13].L_S, EmptyStr, 133, 3, 100000000);
-                    ShowUpdateNote;
-                  end
-                  else if not V_UpdateAuto then
-                    DAShow(Lang_Vars[16].L_S, Lang_Vars[14].L_S, EmptyStr, 133, 0, 0);
-                end
-                else if not V_UpdateAuto then
-                  DAShow(Lang_Vars[16].L_S, Lang_Vars[15].L_S, EmptyStr, 134, 2, 0);
+                    // Получаем версию сборки
+                    XML_Node := Root.Items.ItemNamed['version'];
+                    if XML_Node <> nil then
+                    begin
+                      S := XML_Node.Value;
+                      if S <> EmptyStr then
+                      begin
+                        Ver := LeftStr(S, 3);
+                        Bild := RightStr(S, 3);
+                        // Запоминаем переменную аддэйтпатч для автообновления
+                        V_UpdateVersionPath := Format(V_UpdateVersionPath, [Ver, Bild]);
+                        Xlog(HttpClient.Name + C_BN + Log_Parsing, V_UpdateVersionPath, C_HTTP);
+                      end;
+                    end;
+                    // Получаем информацию к версии
+                    XML_Node := Root.Items.ItemNamed['info'];
+                    if XML_Node <> nil then
+                      Mess := Trim(XML_Node.Value);
+                    // Отображаем всплывающее окно с информацией о новой версии
+                    if (Ver <> EmptyStr) and (Bild <> EmptyStr) then
+                    begin
+                      // Если версия на сайте выше текущей
+                      if StrToInt(S) > StrToInt(ReplaceStr(V_FullVersion, '.', EmptyStr)) then
+                      begin
+                        DAShow(Lang_Vars[16].L_S, Lang_Vars[13].L_S, EmptyStr, 133, 3, 100000000);
+                        ShowUpdateNote;
+                      end
+                      else if not V_UpdateAuto then
+                        DAShow(Lang_Vars[16].L_S, Lang_Vars[14].L_S, EmptyStr, 133, 0, 0);
+                    end
+                    else if not V_UpdateAuto then
+                      DAShow(Lang_Vars[16].L_S, Lang_Vars[15].L_S, EmptyStr, 134, 2, 0);
+                    // Получаем флаг версии
+                    XML_Node := Root.Items.ItemNamed['c'];
+                    if XML_Node <> nil then
+                    begin
+                      if XML_Node.Value = '1' then
+                        C_Flag := True;
+                    end;
+                  end;
+                end;
+              finally
+                JvXML.Free;
               end;
             end;
           1: // Получен файл с обновлением IMadering
             begin
+              Xlog(HttpClient.Name + C_BN + Log_Get, C_QN + 'File' + C_EN, C_HTTP);
               if Assigned(UpdateForm) then
               begin
                 with UpdateForm do
@@ -1254,23 +1288,39 @@ begin
                 end;
               end;
             end;
-          2:  // Ничего не делаем, потому что это сброс задания
+          2: // Ничего не делаем, потому что это сброс задания
             begin
             end;
-          3:  // Для тестов
+          3: // Для тестов
             begin
+              {// Создаём временный лист
+              List := TStringList.Create;
+              try
+                // Читаем данные в лист
+                List.LoadFromStream(HttpClient.RcvdStream, TEncoding.UTF8);
+                Str := Trim(List.Text);
+                // Разбираем данные в листе
+                if Str <> EmptyStr then
+                begin
+                  Xlog(HttpClient.Name + C_BN + Log_Get, Str, C_HTTP);
+                end;
+              finally
+                List.Free;
+              end;}
             end;
-          4:  // Получение укороченной ссылки от сервиса Google
+          4: // Получение укороченной ссылки от сервиса Google
             begin
             end;
         end;
       finally
-        List.Free;
         // Высвобождаем блок памяти
         HttpClient.RcvdStream.Free;
         HttpClient.RcvdStream := nil;
       end;
     end;
+    // Обрабатываем флаги
+    if C_Flag then
+      Update_Info_OK;
   except
     on E: Exception do
       IMaderingEventsException(Self, E);
@@ -2786,11 +2836,14 @@ begin
   with HttpClient do
   begin
     // Сбрасываем сокет если он занят чем то другим или висит
+    Close;
     Abort;
     // Ставим флаг задания
     Tag := 0;
     // Запускаем проверку обновлений программы на сайте
+    LocationChangeMaxCount := 5;
     URL := C_UpdateURL;
+    XLog(Name + C_BN + Log_Send, URL, C_HTTP, False);
     GetASync;
   end;
 end;
@@ -4889,7 +4942,7 @@ begin
                 if (V_Twitter_OAuth_Token <> EmptyStr) and (V_Twitter_OAuth_Token_Secret <> EmptyStr) then
                 begin
                   XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
-                   + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
+                    + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
                   // Ставим флаг для получения формы логина
                   Form_Flag := True;
                   //OpenURL(C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
@@ -4957,7 +5010,7 @@ begin
                 if (V_Twitter_OAuth_Token <> EmptyStr) and (V_Twitter_OAuth_Token_Secret <> EmptyStr) then
                 begin
                   XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
-                   + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
+                    + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
                   PostMsg_Flag := True;
                 end;
               end;
@@ -4995,129 +5048,132 @@ begin
         TwitterClient.RcvdStream := nil;
       end;
     end;
+    // Запускаем получение формы логина
+    if Form_Flag then
+    begin
+      with TwitterClient do
+      begin
+        // Сбрасываем сокет если он занят чем то другим или висит
+        Close;
+        Abort;
+        // Ставим флаг задания
+        Tag := 1;
+        // Запускаем получение формы логина
+        URL := C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token;
+        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        GetASync;
+      end;
+      Exit;
+    end;
+    // Запускаем получение ПИН кода
+    if PIN_Flag then
+    begin
+      PostData := EmptyStr;
+      with TwitterClient do
+      begin
+        // Сбрасываем сокет если он занят чем то другим или висит
+        Close;
+        Abort;
+        // Ставим флаг задания
+        Tag := 2;
+        // Запускаем получение ПИН кода
+        URL := C_Twitter_Host + C_Twitter_Authorize + C_GT //
+        + C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token + C_AN //
+        + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_AN //
+        + C_Twitter_Username + EncodeRFC3986(V_Twitter_Username) + C_AN //
+        + C_Twitter_Password + EncodeRFC3986(V_Twitter_Password);
+        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        SendStream := TMemoryStream.Create;
+        SendStream.Write(PostData[1], Length(PostData));
+        SendStream.Seek(0, 0);
+        PostASync;
+      end;
+      Exit;
+    end;
+    // Запускаем логин с полученным ПИН кодом
+    if Login_Flag then
+    begin
+      // Начинаем заполнение параметров
+      V_Twitter_Params := TStringList.Create;
+      try
+        V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+        V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
+        V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
+        with V_Twitter_Params do
+        begin
+          Add(V_Twitter_OAuth_Consumer_Key);
+          Add(V_Twitter_OAuth_Nonce);
+          Add(C_Twitter_OAuth_Signature_Method);
+          Add(V_Twitter_OAuth_Timestamp);
+          Add(C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
+          Add(C_Twitter_OAuth_Verifier + V_Twitter_OAuth_PIN);
+          Add(C_Twitter_OAuth_Version);
+        end;
+        V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Access_Token, C_POST, V_Twitter_OAuth_Token_Secret, V_Twitter_Params);
+      finally
+        V_Twitter_Params.Free;
+      end;
+      PostData := EmptyStr;
+      with TwitterClient do
+      begin
+        // Сбрасываем сокет если он занят чем то другим или висит
+        Close;
+        Abort;
+        // Ставим флаг задания
+        Tag := 3;
+        // Запускаем логин с полученным ПИН кодом
+        URL := V_Twitter_OAuth_Signature;
+        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        SendStream := TMemoryStream.Create;
+        SendStream.Write(PostData[1], Length(PostData));
+        SendStream.Seek(0, 0);
+        PostASync;
+      end;
+      Exit;
+    end;
+    // Запускаем постинг сообщения
+    if PostMsg_Flag then
+    begin
+      // Начинаем заполнение параметров
+      V_Twitter_Params := TStringList.Create;
+      try
+        V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
+        V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
+        V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
+        with V_Twitter_Params do
+        begin
+          Add(V_Twitter_OAuth_Consumer_Key);
+          Add(V_Twitter_OAuth_Nonce);
+          Add(C_Twitter_OAuth_Signature_Method);
+          Add(V_Twitter_OAuth_Timestamp);
+          Add(C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
+          Add(C_Twitter_OAuth_Version);
+          Add('status=' + EncodeRFC3986(V_Twitter_PostMsg));
+        end;
+        V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_PostMsg, C_POST, V_Twitter_OAuth_Token_Secret, V_Twitter_Params);
+      finally
+        V_Twitter_Params.Free;
+      end;
+      PostData := EmptyStr;
+      with TwitterClient do
+      begin
+        // Сбрасываем сокет если он занят чем то другим или висит
+        Close;
+        Abort;
+        // Ставим флаг задания
+        Tag := 4;
+        // Запускаем логин с полученным ПИН кодом
+        URL := V_Twitter_OAuth_Signature;
+        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        SendStream := TMemoryStream.Create;
+        SendStream.Write(PostData[1], Length(PostData));
+        SendStream.Seek(0, 0);
+        PostASync;
+      end;
+    end;
   except
     on E: Exception do
       IMaderingEventsException(Self, E);
-  end;
-  // Запускаем получение формы логина
-  if Form_Flag then
-  begin
-    with TwitterClient do
-    begin
-      // Сбрасываем сокет если он занят чем то другим или висит
-      Abort;
-      // Ставим флаг задания
-      Tag := 1;
-      // Запускаем получение формы логина
-      URL := C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token;
-      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
-      GetASync;
-    end;
-    Exit;
-  end;
-  // Запускаем получение ПИН кода
-  if PIN_Flag then
-  begin
-    PostData := EmptyStr;
-    with TwitterClient do
-    begin
-      // Сбрасываем сокет если он занят чем то другим или висит
-      Abort;
-      // Ставим флаг задания
-      Tag := 2;
-      // Запускаем получение ПИН кода
-      URL := C_Twitter_Host + C_Twitter_Authorize + C_GT //
-       + C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token + C_AN //
-       + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_AN //
-       + C_Twitter_Username + EncodeRFC3986(V_Twitter_Username) + C_AN //
-       + C_Twitter_Password + EncodeRFC3986(V_Twitter_Password);
-      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
-      SendStream := TMemoryStream.Create;
-      SendStream.Write(PostData[1], Length(PostData));
-      SendStream.Seek(0, 0);
-      PostASync;
-    end;
-    Exit;
-  end;
-  // Запускаем логин с полученным ПИН кодом
-  if Login_Flag then
-  begin
-    // Начинаем заполнение параметров
-    V_Twitter_Params := TStringList.Create;
-    try
-      V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
-      V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
-      V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
-      with V_Twitter_Params do
-      begin
-        Add(V_Twitter_OAuth_Consumer_Key);
-        Add(V_Twitter_OAuth_Nonce);
-        Add(C_Twitter_OAuth_Signature_Method);
-        Add(V_Twitter_OAuth_Timestamp);
-        Add(C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
-        Add(C_Twitter_OAuth_Verifier + V_Twitter_OAuth_PIN);
-        Add(C_Twitter_OAuth_Version);
-      end;
-      V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_Access_Token, C_POST, V_Twitter_OAuth_Token_Secret, V_Twitter_Params);
-    finally
-      V_Twitter_Params.Free;
-    end;
-    PostData := EmptyStr;
-    with TwitterClient do
-    begin
-      // Сбрасываем сокет если он занят чем то другим или висит
-      Abort;
-      // Ставим флаг задания
-      Tag := 3;
-      // Запускаем логин с полученным ПИН кодом
-      URL := V_Twitter_OAuth_Signature;
-      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
-      SendStream := TMemoryStream.Create;
-      SendStream.Write(PostData[1], Length(PostData));
-      SendStream.Seek(0, 0);
-      PostASync;
-    end;
-    Exit;
-  end;
-  // Запускаем постинг сообщения
-  if PostMsg_Flag then
-  begin
-    // Начинаем заполнение параметров
-    V_Twitter_Params := TStringList.Create;
-    try
-      V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
-      V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + Twitter_Generate_Nonce;
-      V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + IntToStr(DateTimeToUnix(Now));
-      with V_Twitter_Params do
-      begin
-        Add(V_Twitter_OAuth_Consumer_Key);
-        Add(V_Twitter_OAuth_Nonce);
-        Add(C_Twitter_OAuth_Signature_Method);
-        Add(V_Twitter_OAuth_Timestamp);
-        Add(C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
-        Add(C_Twitter_OAuth_Version);
-        Add('status=' + EncodeRFC3986(V_Twitter_PostMsg));
-      end;
-      V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature(C_Twitter_Host + C_Twitter_PostMsg, C_POST, V_Twitter_OAuth_Token_Secret, V_Twitter_Params);
-    finally
-      V_Twitter_Params.Free;
-    end;
-    PostData := EmptyStr;
-    with TwitterClient do
-    begin
-      // Сбрасываем сокет если он занят чем то другим или висит
-      Abort;
-      // Ставим флаг задания
-      Tag := 4;
-      // Запускаем логин с полученным ПИН кодом
-      URL := V_Twitter_OAuth_Signature;
-      XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
-      SendStream := TMemoryStream.Create;
-      SendStream.Write(PostData[1], Length(PostData));
-      SendStream.Seek(0, 0);
-      PostASync;
-    end;
-    Exit;
   end;
 end;
 
@@ -5167,37 +5223,10 @@ end;
 
 procedure TMainForm.OpenGame_MenuClick(Sender: TObject);
 begin
-  {// Открываем в окне чата закладку с играми
+  // Открываем в окне чата закладку с играми
   if not Assigned(GamesForm) then
     Application.CreateForm(TGamesForm, GamesForm);
-  XShowForm(GamesForm);}
-
-  {// Начинаем заполнение параметров
-        V_Twitter_Params := TStringList.Create;
-        try
-          V_Twitter_OAuth_Consumer_Key := C_Twitter_OAuth_Consumer_Key + X_Twitter_OAuth_Consumer_Key;
-          V_Twitter_OAuth_Nonce := C_Twitter_OAuth_Nonce + 'LWxSdhIMJCxm7gYYh';
-          V_Twitter_OAuth_Timestamp := C_Twitter_OAuth_Timestamp + '1289926677';
-          with V_Twitter_Params do
-          begin
-            Add(V_Twitter_OAuth_Consumer_Key);
-            Add(V_Twitter_OAuth_Nonce);
-            Add(C_Twitter_OAuth_Signature_Method);
-            Add(V_Twitter_OAuth_Timestamp);
-            Add('oauth_token=97632226-QITBxcIbnCKOcQWafBEqJT4a7ievzaaEj6BbMuo7A');
-            Add(C_Twitter_OAuth_Version);
-
-            //Add('source=mbpidgin');
-            //Add('status=test');
-
-          end;
-          V_Twitter_OAuth_Signature := Twitter_HMAC_SHA1_Signature('http://api.twitter.com/1/statuses/friends.xml', C_POST, '7tDQ9MHCiPotGP3mwPdaT2WfS9Yf3kYMSfaWr4eLQ', V_Twitter_Params);
-        finally
-          V_Twitter_Params.Free;
-        end;
-
-   xlog('', V_Twitter_OAuth_Signature, '');}
-
+  XShowForm(GamesForm);
 end;
 
 procedure TMainForm.OpenGroupsCLClick(Sender: TObject);
@@ -5369,16 +5398,20 @@ begin
     if L <> EmptyStr then
     begin
       L := UrlEncode(L);
-      S := Format(P, [L]);
+      L := Format(P, [L]);
+      S := EmptyStr;
       with HttpClient do
       begin
         // Сбрасываем сокет если он занят чем то другим или висит
+        Close;
         Abort;
         // Ставим флаг задания
         Location := EmptyStr;
         Tag := 4;
-        // Запускаем проверку обновлений программы на сайте
-        URL := 'http://goo.gl/api/shorten';
+        // Запускаем получение укороченной ссылки
+        LocationChangeMaxCount := 0;
+        URL := 'http://goo.gl/api/shorten' + C_GT + L;
+        XLog(Name + C_BN + Log_Send, URL, C_HTTP, False);
         SendStream := TMemoryStream.Create;
         SendStream.Write(S[1], Length(S));
         SendStream.Seek(0, 0);
