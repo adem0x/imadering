@@ -52,7 +52,7 @@
     <UpDateUn c="Installing ..."/>
     <UpDateOK c="The update is complete._r__r_To complete the update, you must restart the program IMadering!"/>
     <PostInTwitter c="Publish a message in %s"/>
-    <TwitPostOK c="Message has been published in your %s page."/>
+    <TwitPostOK c="Your message was successfully published on your %s page."/>
     <Account c="Account"/>
     <LoginParams c="Before you connect to the %s server, first enter your account and password!"/>
     <ParsingPktError c="Failed to parse the data received from the server."/>

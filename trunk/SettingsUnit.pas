@@ -548,10 +548,10 @@ begin
           ApplyProxyHttpClient(TwitterClient);
         end;
       // HTTP сокет для аватар MRA протокола
-      if MRAAvatarClient.State <> HttpConnected then
+      if MRA_PhotoClient.State <> HttpConnected then
         begin
-          MRAAvatarClient.Abort;
-          ApplyProxyHttpClient(MRAAvatarClient);
+          MRA_PhotoClient.Abort;
+          ApplyProxyHttpClient(MRA_PhotoClient);
         end;
       // HTTP сокет для передачи файлов
       if (Assigned(FileTransferForm)) and (FileTransferForm.SendFileHttpClient.State <> HttpConnected) then

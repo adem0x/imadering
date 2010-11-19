@@ -828,7 +828,8 @@ begin
   // Цетируем выделенный текст в twitter
   S := HTMLChatViewer.SelText;
   // Ограничиваем длинну текста до 140 символов
-  SetLength(S, 140);
+  if Length(S) > 140 then
+    SetLength(S, 140);
   // Если форма не существует, то создаём её
   if not Assigned(MemoForm) then
     Application.CreateForm(TMemoForm, MemoForm);

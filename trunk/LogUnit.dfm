@@ -143,7 +143,7 @@ object LogForm: TLogForm
       OnClick = SendEmailSpeedButtonClick
     end
     object RosterSpeedButton: TSpeedButton
-      Left = 121
+      Left = 150
       Top = 1
       Width = 23
       Height = 22
@@ -151,6 +151,17 @@ object LogForm: TLogForm
       ParentShowHint = False
       ShowHint = True
       OnClick = RosterSpeedButtonClick
+    end
+    object HTTP_DumpSpeedButton: TSpeedButton
+      Left = 121
+      Top = 1
+      Width = 23
+      Height = 22
+      AllowAllUp = True
+      GroupIndex = 5
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   object HTMLLogViewer: THTMLViewer
