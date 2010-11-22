@@ -2,10 +2,11 @@ object CLSearchForm: TCLSearchForm
   Left = 0
   Top = 0
   ClientHeight = 258
-  ClientWidth = 413
+  ClientWidth = 481
   Color = clBtnFace
-  Constraints.MinHeight = 230
-  Constraints.MinWidth = 420
+  Constraints.MinHeight = 292
+  Constraints.MinWidth = 489
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,11 +24,12 @@ object CLSearchForm: TCLSearchForm
   object TopPanel: TPanel
     Left = 0
     Top = 0
-    Width = 413
+    Width = 481
     Height = 57
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 413
     object CLSearchLabel: TLabel
       Left = 11
       Top = 9
@@ -37,7 +39,7 @@ object CLSearchForm: TCLSearchForm
     object CLSearchEdit: TEdit
       Left = 10
       Top = 28
-      Width = 392
+      Width = 460
       Height = 21
       TabOrder = 0
       OnChange = CLSearchEditChange
@@ -46,7 +48,7 @@ object CLSearchForm: TCLSearchForm
   object CLSearchJvListView: TJvListView
     Left = 0
     Top = 57
-    Width = 413
+    Width = 481
     Height = 201
     Align = alClient
     Columns = <
@@ -55,6 +57,9 @@ object CLSearchForm: TCLSearchForm
       end
       item
         Width = 225
+      end
+      item
+        Width = 70
       end>
     Groups = <>
     HideSelection = False
@@ -67,7 +72,7 @@ object CLSearchForm: TCLSearchForm
     OnDblClick = CLSearchJvListViewDblClick
     OnSelectItem = CLSearchJvListViewSelectItem
     AutoSelect = False
-    ColumnsOrder = '0=180,1=225'
+    ColumnsOrder = '0=180,1=225,2=70'
     HeaderImagePosition = hipRight
     HeaderImages = MainForm.AllImageList
     ExtendedColumns = <
@@ -78,6 +83,9 @@ object CLSearchForm: TCLSearchForm
       item
         HeaderImagePosition = hipRight
         UseParentHeaderImagePosition = False
+      end
+      item
+        HeaderImagePosition = hipRight
       end>
     ExplicitLeft = 8
     ExplicitTop = 63

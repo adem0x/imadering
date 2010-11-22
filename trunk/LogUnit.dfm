@@ -12,12 +12,14 @@ object LogForm: TLogForm
   Font.Name = 'Tahoma'
   Font.Style = []
   HelpFile = 'T'
+  KeyPreview = True
   OldCreateOrder = False
   Scaled = False
   ScreenSnap = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnDblClick = FormDblClick
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object BottomPanel: TPanel

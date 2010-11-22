@@ -394,6 +394,11 @@ begin
           ICQ_LoginUIN := ICQUINEdit.Text;
         end;
       ICQ_LoginPassword := PassEdit.Hint;
+      // Делаем подсказку
+      if ICQ_LoginUIN <> EmptyStr then
+        MainForm.ICQToolButton.Hint := Format(C_AS, [C_Icq]) + C_BN + C_NN + C_BN + C_QN + ICQ_LoginUIN + C_EN
+      else
+        MainForm.ICQToolButton.Hint := Format(C_AS, [C_Icq]);
     end;
   // --------------------------------------------------------------------------
   // Настройки сервера подключения

@@ -67,7 +67,8 @@ implementation
 uses
   MainUnit,
   UtilsUnit,
-  OverbyteIcsUrl;
+  OverbyteIcsUrl,
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -81,9 +82,54 @@ const
 procedure TCLSearchForm.CLSearchEditChange(Sender: TObject);
 var
   I: Integer;
+  SearchText: string;
+
+  procedure FindInRoster(Proto: string);
+  var
+    Z: Integer;
+    XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+    UIN, Nick: string;
+  begin
+    if V_Roster <> nil then
+    begin
+      with V_Roster do
+      begin
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[Proto];
+          if XML_Node <> nil then
+          begin
+            // Открываем раздел контактов
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            if Sub_Node <> nil then
+            begin
+              // Ищем параметр этого контакта
+              for Z := 0 to Sub_Node.Items.Count - 1 do
+              begin
+                Tri_Node := Sub_Node.Items.Item[Z];
+                if Tri_Node <> nil then
+                begin
+                  UIN := WideUpperCase(UrlDecode(Tri_Node.Properties.Value(C_Login)));
+                  Nick := WideUpperCase(UrlDecode(Tri_Node.Properties.Value(C_Nick)));
+                  // Если нашли текст в учётной записи или нике
+                  if (Pos(SearchText, UIN) > 0) or (Pos(SearchText, Nick) > 0) then
+                  begin
+                    CLSearchJvListView.Items.Add.Caption := Tri_Node.Properties.Value(C_Login);
+                    CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Tri_Node.Properties.Value(C_Nick)));
+                    CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Proto);
+                    CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Tri_Node.Properties.Value(C_Status));
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+
 begin
-  // Делаем поиск совпадений введенных символов в учётных записях и никах
-  // контактов в списке
+  // Делаем поиск совпадений введенных символов в учётных записях и никах контактов в списке
   // Очищаем список контактов от предыдущего поиска
   CLSearchJvListView.Clear;
   // Сбрасываем стрелочки сортировки в других столбцах
@@ -92,23 +138,14 @@ begin
   // Делаем поиск текста
   if CLSearchEdit.Text <> EmptyStr then
   begin
-    {with RosterForm.RosterJvListView do
-    begin
-      for I := 0 to Items.Count - 1 do
-      begin
-        // Если это группы ICQ или NoCL, то пропускаем
-        if (Length(Items[I].Caption) <= 4) or (Items[I].Caption = C_NoCL) then
-          Continue;
-        // Если нашли текст в учётной записи или нике
-        if (Pos(WideUpperCase(CLSearchEdit.Text), WideUpperCase(Items[I].Caption)) > 0) or (Pos(WideUpperCase(CLSearchEdit.Text),
-          WideUpperCase(URLDecode(Items[I].SubItems[0]))) > 0) then
-        begin
-          CLSearchJvListView.Items.Add.Caption := Items[I].Caption;
-          CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Items[I].SubItems[0]));
-          CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Items[I].SubItems[6]);
-        end;
-      end;
-    end;}
+    SearchText := WideUpperCase(CLSearchEdit.Text);
+    // Ищем раздел нужного нам протокола
+    if MainForm.ICQToolButton.Visible then
+      FindInRoster(C_Icq)
+    else if MainForm.JabberToolButton.Visible then
+      FindInRoster(C_Jabber)
+    else if MainForm.MRAToolButton.Visible then
+      FindInRoster(C_Mra);
   end;
 end;
 
@@ -136,26 +173,26 @@ begin
   if CLSearchJvListView.Selected <> nil then
   begin
     // Открываем чат с этим контактом
-    //RosterForm.OpenChatPage(nil, CLSearchJvListView.Selected.Caption);
+    MainForm.SendMessageForContactClick(nil);
   end;
 end;
 
 procedure TCLSearchForm.CLSearchJvListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
-{var
-  CLItem: TButtonItem;}
+var
+  KL_Item: TButtonItem;
 begin
   // Если выделили контакт, то выделяем его и в КЛ
   if Selected then
   begin
-    {CLItem := RosterForm.ReqCLContact(Item.Caption);
-    if CLItem <> nil then
+    KL_Item := ReqCLContact(Item.SubItems[1], Item.Caption);
+    if KL_Item <> nil then
     begin
       // Выделяем этот контакт в КЛ
-      MainForm.ContactList.SelectedItem := CLItem;
-      if CLItem.Category.Collapsed then
-        CLItem.Category.Collapsed := False;
-      MainForm.ContactList.ScrollIntoView(CLItem);
-    end;}
+      MainForm.ContactList.SelectedItem := KL_Item;
+      if KL_Item.Category.Collapsed then
+        KL_Item.Category.Collapsed := False;
+      MainForm.ContactList.ScrollIntoView(KL_Item);
+    end;
   end;
 end;
 

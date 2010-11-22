@@ -206,12 +206,20 @@ begin
   // Обновляем данные логина в протоколе
   if JabberJIDEdit.Enabled then
     begin
-      if JabberJIDEdit.Text <> Jabber_LoginUIN then
+      if JabberJIDEdit.Text <> Jabber_JID then
         begin
           ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта
           Jabber_JID := JabberJIDEdit.Text;
         end;
       Jabber_LoginPassword := PassEdit.Hint;
+      // Разбираем JID на логин и сервер
+      Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
+      Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
+      // Делаем подсказку
+      if Jabber_JID <> EmptyStr then
+        MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]) + C_BN + C_NN + C_BN + C_QN + Jabber_JID + C_EN
+      else
+        MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]);
     end;
   // --------------------------------------------------------------------------
   // Применяем настройку порта сервера

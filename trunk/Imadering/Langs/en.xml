@@ -208,10 +208,10 @@
     <OpenGroupsCL c="Open groups"/>
     <CloseGroupsCL c="Close groups"/>
     <HideEmptyGroups c="Hide empty groups"/>
-    <AddNewGroupICQ c="Create a new group"/>
+    <AddGroupCL c="Create a new group"/>
     <RenemeGroupCL c="Rename group"/>
     <DeleteGroupCL c="Remove group"/>
-    <AddNewContactICQ c="Add contact"/>
+    <AddContactCL c="Add contact"/>
     <ICQSettings c="Network settings"/>
     <ICQSearchNewContact c="Search for new contacts"/>
     <ICQXStatus c="Additional status"/>
@@ -358,6 +358,7 @@
     <CLSearchLabel c="Account or Nickname:"/>
     <CLSearchJvListView_0 c="Account"/>
     <CLSearchJvListView_1 c="Nickname"/>
+    <CLSearchJvListView_2 c="Protocol"/>
   </CLSearchForm>
   <HistoryForm c="History">
     <ContactsLabel c="Contact:"/>
@@ -1148,10 +1149,6 @@
   <XStatusForm c=" Additional ICQ status">
     <BirthDayCheckBox c="Show ball birthday"/>
   </XStatusForm>
-  <UpdateForm c="Updating version IMadering">
-    <StartBitBtn c="Continue"/>
-    <AbortBitBtn c="Abort"/>
-  </UpdateForm>
   <UniqForm c="Unique settings">
     <SoundsGroupBox c="Sounds"/>
     <OnlineSoundPathSpeedButton h="_b_File_d__r_Specify the path to the file"/>

@@ -183,6 +183,11 @@ begin
           MRA_LoginUIN := MraEmailEdit.Text + MRAEmailComboBox.Text;
         end;
       MRA_LoginPassword := PassEdit.Hint;
+      // Делаем подсказку
+      if MraEmailEdit.Text <> EmptyStr then
+        MainForm.MRAToolButton.Hint := Format(C_AS, [C_Mra]) + C_BN + C_NN + C_BN + C_QN + MRA_LoginUIN + C_EN
+      else
+        MainForm.MRAToolButton.Hint := Format(C_AS, [C_Mra]);
     end;
   // --------------------------------------------------------------------------
   // Применяем настройки сервера

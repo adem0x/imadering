@@ -208,10 +208,10 @@
     <OpenGroupsCL c="Открыть группы"/>
     <CloseGroupsCL c="Закрыть группы"/>
     <HideEmptyGroups c="Скрывать пустые группы"/>
-    <AddNewGroupICQ c="Создать новую группу"/>
+    <AddGroupCL c="Создать новую группу"/>
     <RenemeGroupCL c="Переименовать группу"/>
     <DeleteGroupCL c="Удалить группу"/>
-    <AddNewContactICQ c="Добавить контакт"/>
+    <AddContactCL c="Добавить контакт"/>
     <ICQSettings c="Настройки сети"/>
     <ICQSearchNewContact c="Поиск новых контактов"/>
     <ICQXStatus c="Дополнительный статус"/>
@@ -358,6 +358,7 @@
     <CLSearchLabel c="Учётная запись или Ник:"/>
     <CLSearchJvListView_0 c="Учётная запись"/>
     <CLSearchJvListView_1 c="Ник"/>
+    <CLSearchJvListView_2 c="Протокол"/>
   </CLSearchForm>
   <HistoryForm c="История">
     <ContactsLabel c="Контакт:"/>
@@ -1148,10 +1149,6 @@
   <XStatusForm c=" Дополнительный ICQ статус">
     <BirthDayCheckBox c="Показывать шарик дня рождения"/>
   </XStatusForm>
-  <UpdateForm c="Обновление версии IMadering">
-    <StartBitBtn c="Возобновить"/>
-    <AbortBitBtn c="Прервать"/>
-  </UpdateForm>
   <UniqForm c="Уникальные настройки контакта">
     <SoundsGroupBox c="Звуки"/>
     <OnlineSoundPathSpeedButton h="_b_Файл_d__r_Указать путь к файлу"/>
