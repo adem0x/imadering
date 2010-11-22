@@ -93,7 +93,6 @@ object MainForm: TMainForm
       Tag = 2
       Left = 23
       Top = 0
-      Hint = '<b>ICQ</b>'
       ImageIndex = 9
       ParentShowHint = False
       PopupMenu = ICQPopupMenu
@@ -106,7 +105,6 @@ object MainForm: TMainForm
       Tag = 3
       Left = 46
       Top = 0
-      Hint = '<b>MRA</b>'
       ImageIndex = 23
       ParentShowHint = False
       PopupMenu = MRAPopupMenu
@@ -119,7 +117,6 @@ object MainForm: TMainForm
       Tag = 4
       Left = 69
       Top = 0
-      Hint = '<b>Jabber</b>'
       ImageIndex = 30
       ParentShowHint = False
       PopupMenu = JabberPopupMenu
@@ -659,7 +656,6 @@ object MainForm: TMainForm
     Options = []
     OnSessionClosed = HttpClientSessionClosed
     OnDocBegin = HttpClientDocBegin
-    OnDocData = HttpClientDocData
     OnDocEnd = HttpClientDocEnd
     OnSendEnd = HttpClientSendEnd
     OnRequestDone = HttpClientRequestDone
@@ -691,20 +687,10 @@ object MainForm: TMainForm
     object N5: TMenuItem
       Caption = '-'
     end
-    object AddNewGroupICQ: TMenuItem
+    object AddGroupCL: TMenuItem
       Tag = 1
       ImageIndex = 153
-      OnClick = AddNewGroupICQClick
-    end
-    object AddNewGroupJabber: TMenuItem
-      Tag = 2
-      ImageIndex = 153
-      OnClick = AddNewGroupICQClick
-    end
-    object AddNewGroupMRA: TMenuItem
-      Tag = 3
-      ImageIndex = 153
-      OnClick = AddNewGroupICQClick
+      OnClick = AddGroupCLClick
     end
     object RenemeGroupCL: TMenuItem
       ImageIndex = 154
@@ -724,20 +710,10 @@ object MainForm: TMainForm
     object N18: TMenuItem
       Caption = '-'
     end
-    object AddNewContactICQ: TMenuItem
+    object AddContactCL: TMenuItem
       Tag = 1
       ImageIndex = 143
-      OnClick = AddNewContactICQClick
-    end
-    object AddNewContactJabber: TMenuItem
-      Tag = 2
-      ImageIndex = 143
-      OnClick = AddNewContactICQClick
-    end
-    object AddNewContactMRA: TMenuItem
-      Tag = 3
-      ImageIndex = 143
-      OnClick = AddNewContactICQClick
+      OnClick = AddContactCLClick
     end
   end
   object ICQPopupMenu: TPopupMenu
@@ -753,6 +729,15 @@ object MainForm: TMainForm
     object ICQSearchNewContact: TMenuItem
       ImageIndex = 235
       OnClick = ICQSearchNewContactClick
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object ICQAddGroup: TMenuItem
+      ImageIndex = 153
+    end
+    object ICQAddContact: TMenuItem
+      ImageIndex = 143
     end
     object N9: TMenuItem
       Caption = '-'
@@ -840,6 +825,15 @@ object MainForm: TMainForm
     object MRASettings: TMenuItem
       ImageIndex = 160
       OnClick = MRASettingsClick
+    end
+    object N19: TMenuItem
+      Caption = '-'
+    end
+    object MRAAddGroup: TMenuItem
+      ImageIndex = 153
+    end
+    object MRAAddContact: TMenuItem
+      ImageIndex = 143
     end
     object N16: TMenuItem
       Caption = '-'
@@ -934,6 +928,15 @@ object MainForm: TMainForm
     object JabberSearchNewContact: TMenuItem
       ImageIndex = 235
       OnClick = JabberSearchNewContactClick
+    end
+    object N31: TMenuItem
+      Caption = '-'
+    end
+    object JabberAddGroup: TMenuItem
+      ImageIndex = 153
+    end
+    object JabberAddContact: TMenuItem
+      ImageIndex = 143
     end
     object N25: TMenuItem
       Caption = '-'
@@ -1129,7 +1132,11 @@ object MainForm: TMainForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
+    OnDocBegin = HttpClientDocBegin
+    OnSendEnd = HttpClientSendEnd
     SocksAuthentication = socksNoAuthentication
+    OnSocksConnected = HttpClientSocksConnected
+    OnSocksError = HttpClientSocksError
     Left = 48
     Top = 64
   end

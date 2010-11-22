@@ -72,6 +72,7 @@ type
     procedure WriteLogSpeedButtonClick(Sender: TObject);
     procedure ToUtf8Text_MenuClick(Sender: TObject);
     procedure HTMLLogViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -216,6 +217,13 @@ procedure TLogForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
   TranslateForm;
+end;
+
+procedure TLogForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  // Открываем поиск по тексту
+  if (GetKeyState(VK_CONTROL) < 0) and (Key = 70) then
+    SearchSpeedButtonClick(nil);
 end;
 
 procedure TLogForm.CopySelText_MenuClick(Sender: TObject);

@@ -49,6 +49,8 @@ const
   C_XX = 'X';
   C_AN = '&';
   C_GT = '?';
+  C_AS = '<b>%s</b>';
+  C_NN = '-';
   С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
@@ -304,7 +306,6 @@ var
   V_AccountToNick: TStringList;
   V_AvatarServiceDisable: Boolean = False;
   V_UpdateAuto: Boolean = True;
-  V_UpdateVersionPath: string = 'Update_%s_%s.7z';
   V_FloatingFrm: TFloatingForm;
   V_LastClick: TDateTime;
   V_FullVersion: string;

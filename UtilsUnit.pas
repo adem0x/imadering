@@ -49,7 +49,6 @@ uses
   ComCtrls,
   JvSimpleXml,
   ButtonGroup,
-  UpdateUnit,
   DateUtils,
   Htmlview,
   OverbyteIcsMD5,
@@ -144,7 +143,7 @@ function UnicodeBEHex2Text(HexText: string): string;
 procedure JvXML_Create(var JvXML: TJvSimpleXml);
 procedure JvXML_LoadStr(var JvXML: TJvSimpleXml; DataStr: string);
 function StrArrayToStr(StrArr: array of string): string;
-function UnpackArhive(HFile: string): Boolean;
+//function UnpackArhive(HFile: string): Boolean;
 function HtmlStrToString(const HtmlText: string): string;
 // function Twit_ParseDateTime(Sdate: string): TDateTime;
 function ReverseHexUnicodeChar(S: string): string;
@@ -735,7 +734,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := Format(Lang_Vars[23].L_S, [SName]) + C_RN + WSocketErrorDesc(Errcode) + C_RN + Format(Lang_Vars[27].L_S, [Errcode]);
+  Result := Format(Lang_Vars[23].L_S, [SName]) + C_BN + WSocketErrorDesc(Errcode) + C_BN + C_QN + Format(Lang_Vars[27].L_S, [Errcode]) + C_EN;
 end;
 
 {$ENDREGION}
@@ -1960,36 +1959,35 @@ end;
 
 function ErrorHttpClient(ErrCode: Integer): string;
 begin
+  Result := Lang_Vars[23].L_S + C_BN;
   case Errcode of
-    0: Result := Lang_Vars[23].L_S;
-    400: Result := Err400;
-    401: Result := Err401;
-    402: Result := Err402;
-    403: Result := Err403;
-    404: Result := Err404;
-    405: Result := Err405;
-    406: Result := Err406;
-    407: Result := Err407;
-    408: Result := Err408;
-    409: Result := Err409;
-    410: Result := Err410;
-    411: Result := Err411;
-    412: Result := Err412;
-    413: Result := Err413;
-    414: Result := Err414;
-    415: Result := Err415;
-    416: Result := Err416;
-    417: Result := Err417;
-    500: Result := Err500;
-    501: Result := Err501;
-    502: Result := Err502;
-    503: Result := Err503;
-    504: Result := Err504;
-    505: Result := Err505
-  else
-    Result := Lang_Vars[23].L_S;
+    0: Result := Result + EmptyStr;
+    400: Result := Result + Err400;
+    401: Result := Result + Err401;
+    402: Result := Result + Err402;
+    403: Result := Result + Err403;
+    404: Result := Result + Err404;
+    405: Result := Result + Err405;
+    406: Result := Result + Err406;
+    407: Result := Result + Err407;
+    408: Result := Result + Err408;
+    409: Result := Result + Err409;
+    410: Result := Result + Err410;
+    411: Result := Result + Err411;
+    412: Result := Result + Err412;
+    413: Result := Result + Err413;
+    414: Result := Result + Err414;
+    415: Result := Result + Err415;
+    416: Result := Result + Err416;
+    417: Result := Result + Err417;
+    500: Result := Result + Err500;
+    501: Result := Result + Err501;
+    502: Result := Result + Err502;
+    503: Result := Result + Err503;
+    504: Result := Result + Err504;
+    505: Result := Result + Err505;
   end;
-  Result := Result + '%s' + '[ ' + Format(Lang_Vars[27].L_S, [Errcode]) + ' ]';
+  Result := Result + C_BN + C_QN + Format(Lang_Vars[27].L_S, [Errcode]) + C_EN;
 end;
 
 {$ENDREGION}
@@ -2354,7 +2352,7 @@ end;
 {$ENDREGION}
 {$REGION 'UnpackArhive'}
 
-function UnpackArhive(HFile: string): Boolean;
+{function UnpackArhive(HFile: string): Boolean;
 var
   ArchiveFileName: string;
   AFormat: TJclDecompressArchiveClass;
@@ -2368,7 +2366,7 @@ begin
   begin
     V_FArchive := AFormat.Create(ArchiveFileName);
     V_FArchive.Password := EmptyStr;
-    V_FArchive.OnProgress := UpdateForm.ArchiveProgress;
+    V_FArchive.OnProgress := nil;
     if V_FArchive is TJclDecompressArchive then
     begin
       TJclDecompressArchive(V_FArchive).ListFiles;
@@ -2376,7 +2374,7 @@ begin
     end;
     Result := True;
   end;
-end;
+end;}
 
 {$ENDREGION}
 {$REGION 'CheckMessage_Smilies'}

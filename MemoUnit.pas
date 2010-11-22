@@ -68,7 +68,6 @@ uses
   IcqProtoUnit,
   VarsUnit,
   UtilsUnit,
-  UpdateUnit,
   OverbyteIcsUrl,
   OverbyteIcsHttpProt,
   LoginUnit,
@@ -205,13 +204,8 @@ begin
   // Автообновление
   if UpDate then
   begin
-    // Открываем окно автообновления
-    if not Assigned(UpdateForm) then
-      Application.CreateForm(TUpdateForm, UpdateForm);
-    // Отображаем окно на передний план
-    XShowForm(UpdateForm);
-    // Запускаем процесс получения информации для обновления
-    UpdateForm.StartBitBtnClick(nil);
+    // Открываем офсайт
+    OpenURL(C_SitePage);
     // Закрываем это окно
     Close;
   end

@@ -116,13 +116,13 @@ type
     OpenGroupsCL: TMenuItem;
     CloseGroupsCL: TMenuItem;
     N5: TMenuItem;
-    AddNewGroupICQ: TMenuItem;
+    AddGroupCL: TMenuItem;
     RenemeGroupCL: TMenuItem;
     DeleteGroupCL: TMenuItem;
     N20: TMenuItem;
     SearchInCL: TMenuItem;
     N18: TMenuItem;
-    AddNewContactICQ: TMenuItem;
+    AddContactCL: TMenuItem;
     SendMessageForContact: TMenuItem;
     CheckStatusContact: TMenuItem;
     N21: TMenuItem;
@@ -196,11 +196,7 @@ type
     TopSoundsONMenu: TMenuItem;
     TopHistoryONMenu: TMenuItem;
     TopTrafficONMenu: TMenuItem;
-    AddNewGroupJabber: TMenuItem;
-    AddNewGroupMRA: TMenuItem;
     JabberSslContext: TSslContext;
-    AddNewContactJabber: TMenuItem;
-    AddNewContactMRA: TMenuItem;
     SendFileMenu: TMenuItem;
     SendFileUpWapru: TMenuItem;
     SendFileOpenDialog: TOpenDialog;
@@ -268,6 +264,15 @@ type
     DumpMRA: TMenuItem;
     DumpICQ: TMenuItem;
     DumpJabber: TMenuItem;
+    ICQAddGroup: TMenuItem;
+    MRAAddGroup: TMenuItem;
+    JabberAddGroup: TMenuItem;
+    ICQAddContact: TMenuItem;
+    N2: TMenuItem;
+    MRAAddContact: TMenuItem;
+    N19: TMenuItem;
+    JabberAddContact: TMenuItem;
+    N31: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -308,10 +313,10 @@ type
     procedure CopyAccountContactClick(Sender: TObject);
     procedure OpenGroupsCLClick(Sender: TObject);
     procedure CloseGroupsCLClick(Sender: TObject);
-    procedure AddNewGroupICQClick(Sender: TObject);
+    procedure AddGroupCLClick(Sender: TObject);
     procedure RenemeGroupCLClick(Sender: TObject);
     procedure DeleteGroupCLClick(Sender: TObject);
-    procedure AddNewContactICQClick(Sender: TObject);
+    procedure AddContactCLClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
     procedure GrandAuthContactClick(Sender: TObject);
@@ -323,7 +328,6 @@ type
     procedure Traffic_MenuClick(Sender: TObject);
     procedure HttpClientSendEnd(Sender: TObject);
     procedure ICQWSocketSendData(Sender: TObject; BytesSent: Integer);
-    procedure HttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
     procedure JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
     procedure JabberWSocketSessionClosed(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSessionConnected(Sender: TObject; ErrCode: Word);
@@ -482,7 +486,6 @@ uses
   HistoryUnit,
   CLSearchUnit,
   TrafficUnit,
-  UpdateUnit,
   AddContactUnit,
   JabberProtoUnit,
   MraProtoUnit,
@@ -582,6 +585,8 @@ begin
   ICQStatusInvisible.Caption := Lang_Vars[78].L_S;
   ICQStatusInvisibleForAll.Caption := Lang_Vars[79].L_S;
   ICQStatusOffline.Caption := Lang_Vars[80].L_S;
+  ICQAddGroup.Caption := AddGroupCL.Caption;
+  ICQAddContact.Caption := AddContactCL.Caption;
   //
   MRASettings.Caption := ICQSettings.Caption;
   MRAXStatus.Caption := ICQXStatus.Caption;
@@ -600,6 +605,8 @@ begin
   MRAStatusOffline.Caption := Lang_Vars[80].L_S;
   PingMRAServer.Caption := PingICQServer.Caption;
   UnstableMRAStatus.Caption := UnstableICQStatus.Caption;
+  MRAAddGroup.Caption := AddGroupCL.Caption;
+  MRAAddContact.Caption := AddContactCL.Caption;
   //
   JabberSettings.Caption := ICQSettings.Caption;
   JabberSearchNewContact.Caption := ICQSearchNewContact.Caption;
@@ -619,6 +626,8 @@ begin
   JabberStatusOffline.Caption := Lang_Vars[80].L_S;
   PingJabberServer.Caption := PingICQServer.Caption;
   UnstableJabberStatus.Caption := UnstableICQStatus.Caption;
+  JabberAddGroup.Caption := AddGroupCL.Caption;
+  JabberAddContact.Caption := AddContactCL.Caption;
   //
   AllStatusFFC.Caption := Lang_Vars[67].L_S;
   AllStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -968,9 +977,6 @@ begin
   if Jabber_Offline_Phaze then
   begin
     S_Log := S_Log + C_Login + C_TN + C_BN + Jabber_JID + C_RN;
-    // Разбираем JID на логин и сервер
-    Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
-    Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
     // Если сервер и порт указаны вручную
     with JabberOptionsForm do
       if CustomServerCheckBox.Checked then
@@ -1079,33 +1085,6 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'UpdateHttpClientDocData'}
-
-procedure TMainForm.HttpClientDocData(Sender: TObject; Buffer: Pointer; Len: Integer);
-begin
-  // Отображаем процесс получения данных
-  if Assigned(UpdateForm) then
-  begin
-    with UpdateForm do
-    begin
-      if HttpClient.ContentLength > -1 then
-      begin
-        LoadSizeLabel.Caption := Format(Lang_Vars[64].L_S, [FloatToStrF(HttpClient.RcvdCount / 1000, FfFixed, 7, 1)]);
-        DownloadProgressBar.Max := HttpClient.ContentLength;
-        DownloadProgressBar.Position := HttpClient.RcvdCount;
-      end;
-      // Обновляем форму и контролы чтобы видеть изменения
-      Update;
-    end;
-  end;
-  // Если был активирован аборт сессии, то выходим и отключаем сокет
-  if HttpClient.Tag = 2 then
-  begin
-    HttpClient.CloseAsync;
-    HttpClient.Abort;
-  end;
-end;
-{$ENDREGION}
 {$REGION 'HttpClientRequestDone'}
 
 procedure TMainForm.HttpClientDocEnd(Sender: TObject);
@@ -1143,8 +1122,7 @@ procedure TMainForm.HttpClientRequestDone(Sender: TObject; RqType: THttpRequest;
 var
   {List: TStringList;
   Str: string;}
-  S, Ver, Bild, Mess: string;
-  UpdateFile: TMemoryStream;
+  Ver, Mess: string;
   C_Flag: Boolean;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
@@ -1196,26 +1174,16 @@ begin
                     // Получаем версию сборки
                     XML_Node := Root.Items.ItemNamed['version'];
                     if XML_Node <> nil then
-                    begin
-                      S := XML_Node.Value;
-                      if S <> EmptyStr then
-                      begin
-                        Ver := LeftStr(S, 3);
-                        Bild := RightStr(S, 3);
-                        // Запоминаем переменную аддэйтпатч для автообновления
-                        V_UpdateVersionPath := Format(V_UpdateVersionPath, [Ver, Bild]);
-                        Xlog(HttpClient.Name + C_BN + Log_Parsing, V_UpdateVersionPath, C_HTTP);
-                      end;
-                    end;
+                      Ver := XML_Node.Value;
                     // Получаем информацию к версии
                     XML_Node := Root.Items.ItemNamed['info'];
                     if XML_Node <> nil then
                       Mess := Trim(XML_Node.Value);
                     // Отображаем всплывающее окно с информацией о новой версии
-                    if (Ver <> EmptyStr) and (Bild <> EmptyStr) then
+                    if Ver <> EmptyStr then
                     begin
                       // Если версия на сайте выше текущей
-                      if StrToInt(S) > StrToInt(ReplaceStr(V_FullVersion, '.', EmptyStr)) then
+                      if StrToInt(Ver) > StrToInt(ReplaceStr(V_FullVersion, '.', EmptyStr)) then
                       begin
                         DAShow(Lang_Vars[16].L_S, Lang_Vars[13].L_S, EmptyStr, 133, 3, 100000000);
                         ShowUpdateNote;
@@ -1238,55 +1206,22 @@ begin
                 JvXML.Free;
               end;
             end;
-          1: // Получен файл с обновлением IMadering
+          1: // Обработка флагов
             begin
-              Xlog(HttpClient.Name + C_BN + Log_Get, C_QN + 'File' + C_EN, C_HTTP);
-              if Assigned(UpdateForm) then
-              begin
-                with UpdateForm do
+              {// Создаём временный лист
+              List := TStringList.Create;
+              try
+                // Читаем данные в лист
+                List.LoadFromStream(HttpClient.RcvdStream, TEncoding.UTF8);
+                Str := Trim(List.Text);
+                // Разбираем данные в листе
+                if Str <> EmptyStr then
                 begin
-                  // Создаём блок в памяти для приёма файла обновления
-                  UpdateFile := TMemoryStream.Create;
-                  try
-                    // Читаем данные в память
-                    UpdateFile.LoadFromStream(HttpClient.RcvdStream);
-                    // Информируем о успешной закачке файла обновления
-                    InfoMemo.Lines.Add(Lang_Vars[112].L_S);
-                    // Сохраняем полученный файл
-                    UpdateFile.SaveToFile(V_Profile + V_UpdateVersionPath);
-                    // Проверяем есть ли у нас права на запись в папку с программой
-                    if ForceDirectories(V_MyPath + C_Infos) then
-                    begin
-                      // Удаляем тестовую папку
-                      if DirectoryExists(V_MyPath + C_Infos) then
-                        RemoveDir(V_MyPath + C_Infos);
-                      // Начинаем установку обновления
-                      InfoMemo.Lines.Add(Lang_Vars[113].L_S);
-                      // Переименовываем файл Imadering.exe
-                      if FileExists(V_MyPath + C_ExeName) then
-                        RenameFile(V_MyPath + C_ExeName, V_MyPath + 'Imadering.old');
-                      // Распаковываем архив
-                      if UnpackArhive(V_Profile + V_UpdateVersionPath) then
-                      begin
-                        InfoMemo.Lines.Add(Lang_Vars[114].L_S);
-                        if FileExists(V_Profile + V_UpdateVersionPath) then
-                          DeleteFile(V_Profile + V_UpdateVersionPath);
-                      end;
-                    end
-                    else
-                    begin
-                      // Сообщаем, что прав на запись обновления у нас нет
-                      DAShow(Lang_Vars[17].L_S, Lang_Vars[63].L_S, EmptyStr, 134, 2, 0);
-                      // Открываем папку со скачанным архивом
-                      ShellExecute(0, 'open', PChar(V_Profile), nil, nil, SW_SHOW);
-                    end;
-                    AbortBitBtn.Enabled := False;
-                  finally
-                    // Уничтожаем блок памяти
-                    FreeAndNil(UpdateFile);
-                  end;
+                  Xlog(HttpClient.Name + C_BN + Log_Get, Str, C_HTTP);
                 end;
-              end;
+              finally
+                List.Free;
+              end;}
             end;
           2: // Ничего не делаем, потому что это сброс задания
             begin
@@ -3648,24 +3583,21 @@ begin
     // Выделяем контакт на котором был правый клик мыши
     ContactList.SelectedItem := RoasterButton;
     // Активируем или деактивируем нужные для этого контакта пункты меню
-    // Для ICQ
-    if RoasterButton.ContactType = C_Icq then
+    if RoasterButton.ContactType = C_Icq then // Для ICQ
     begin
       DelYourSelfContact.Visible := True;
       CheckStatusContact.Visible := True;
       GrandAuthContact.Visible := True;
       SendAddContact.Visible := True;
     end
-      // Для Jabber
-    else if RoasterButton.ContactType = C_Jabber then
+    else if RoasterButton.ContactType = C_Jabber then // Для Jabber
     begin
       DelYourSelfContact.Visible := False;
       CheckStatusContact.Visible := False;
       GrandAuthContact.Visible := False;
       SendAddContact.Visible := False;
     end
-      // Для MRA
-    else if RoasterButton.ContactType = C_Mra then
+    else if RoasterButton.ContactType = C_Mra then // Для MRA
     begin
       DelYourSelfContact.Visible := False;
       CheckStatusContact.Visible := False;
@@ -3684,55 +3616,20 @@ begin
       begin
         SelectedItem := RoasterGroup;
         // Управляем пунктами меню для группы
+        AddGroupCL.Visible := True;
         RenemeGroupCL.Visible := True;
         DeleteGroupCL.Visible := True;
-        // Управляем протоколами групп
-        if RoasterGroup.GroupType = C_Icq then
-        begin
-          AddNewGroupICQ.Visible := True;
-          AddNewGroupJabber.Visible := False;
-          AddNewGroupMRA.Visible := False;
-          //
-          AddNewContactICQ.Visible := True;
-          AddNewContactJabber.Visible := False;
-          AddNewContactMRA.Visible := False;
-        end
-        else if RoasterGroup.GroupType = C_Jabber then
-        begin
-          AddNewGroupICQ.Visible := False;
-          AddNewGroupJabber.Visible := True;
-          AddNewGroupMRA.Visible := False;
-          //
-          AddNewContactICQ.Visible := False;
-          AddNewContactJabber.Visible := True;
-          AddNewContactMRA.Visible := False;
-        end
-        else if RoasterGroup.GroupType = C_Mra then
-        begin
-          AddNewGroupICQ.Visible := False;
-          AddNewGroupJabber.Visible := False;
-          AddNewGroupMRA.Visible := True;
-          //
-          AddNewContactICQ.Visible := False;
-          AddNewContactJabber.Visible := False;
-          AddNewContactMRA.Visible := True;
-        end;
+        AddContactCL.Visible := True;
       end
       else
       begin
         // Если клик не по группе, то убираем выделение отовсюду
         ContactList.SelectedItem := nil;
         // Управляем пунктами меню для группы
+        AddGroupCL.Visible := False;
         RenemeGroupCL.Visible := False;
         DeleteGroupCL.Visible := False;
-        // Управляем протоколами групп
-        AddNewGroupICQ.Visible := True;
-        AddNewGroupJabber.Visible := True;
-        AddNewGroupMRA.Visible := True;
-        // Добавление контактов в протоколы
-        AddNewContactICQ.Visible := True;
-        AddNewContactJabber.Visible := True;
-        AddNewContactMRA.Visible := True;
+        AddContactCL.Visible := False;
       end;
     end;
     // Отображаем меню
@@ -3781,82 +3678,61 @@ procedure TMainForm.CopyAccountContactClick(Sender: TObject);
 begin
   // Копируем имя учётной записи контакта в буфер обмена
   if ContactList.SelectedItem <> nil then
-    SetClipboardText((ContactList.SelectedItem as TButtonItem).UIN);
+    SetClipboardText(UrlDecode((ContactList.SelectedItem as TButtonItem).UIN));
 end;
 
 {$ENDREGION}
 {$REGION 'DeleteContactClick'}
 
 procedure TMainForm.DeleteContactClick(Sender: TObject);
-{ var
-  RosterItem: TListItem; }
+var
+  UIN, Nick, Proto: string;
+  Get_Node: TJvSimpleXmlElem;
+  KL_Item: TButtonItem;
 begin
-  { //--Если ничего не активно для удаления, то выходим
-    if ContactList.SelectedItem <> nil then
+  // Начинаем удаление контакта
+  if ContactList.SelectedItem <> nil then
+  begin
+    // Выводим диалог подтверждения удаления контакта
+    UIN := (ContactList.SelectedItem as TButtonItem).UIN;
+    Nick := (ContactList.SelectedItem as TButtonItem).Caption;
+    Proto := (ContactList.SelectedItem as TButtonItem).ContactType;
+    if MessageBox(Handle, PChar(Format(Lang_Vars[83].L_S, [Nick])), PChar(DeleteContact.Caption + C_BN + Proto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
     begin
-    //--Удаляем контакт из списка контактов
-    //--Блокируем всё окно со списком контактов
-    MainForm.Enabled := false;
-    try
-    //--Выводим диалог подтверждения удаления контакта
-    if MessageBox(Handle, PChar(Format(DellContactL, [ContactList.SelectedItem.Caption])), PChar((Sender as TMenuItem).Hint),
-    MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
-    begin
-    with ContactList do
-    begin
-    //--Сканируем Ростер и ищем этот контакт
-    RosterItem := RosterForm.ReqRosterItem(SelectedItem.UIN);
-    //--Удаляем эту кнопку с контактом из КЛ
-    SelectedItem.Free;
-    if RosterItem <> nil then
-    begin
-    //--Смотрим какой протокол у удаляемого контакта
-    if RosterItem.SubItems[3] = C_Icq then
-    begin
-    //--Смотрим из какой группы этот контакт
-    if RosterItem.SubItems[1] = '0000' then
-    begin
-    //--Если это контакт из группы временных, то удаляем его как временный
-    //--Отправляем пакет для удаления контакта из списка на сервере
-    ICQ_DeleteTempContact(RosterItem.Caption, RosterItem.SubItems[4],
-    RosterItem.SubItems[5], RosterItem.SubItems[12]);
-    RosterItem.Delete;
-    end
-    else if RosterItem.SubItems[1] = S_NoCL then
-    begin
-    //--Если контакт из группы "Не в списке"
-    RosterItem.Delete;
-    end
-    else
-    begin
-    //--Иначе удаляем контакт как положено
-    ICQ_DeleteContact(RosterItem.Caption, RosterItem.SubItems[1],
-    RosterItem.SubItems[4], RosterItem.SubItems[0],
-    RosterItem.SubItems[9], RosterItem.SubItems[11],
-    RosterItem.SubItems[10]);
-    RosterItem.Delete;
-    end;
-    end
-    //--Удаляем по протоколу Jabber
-    else if RosterItem.SubItems[3] = S_Jabber then
-    begin
+      // Обновляем параметры этого контакта в Ростере
+      Get_Node := RosterGetItem(Proto, C_Contact + C_SS, C_Login, UIN);
+      if Get_Node <> nil then
+      begin
+        if Proto = C_Icq then
+        begin
+          // Смотрим из какой группы этот контакт
+          if Get_Node.Properties.Value(C_Group + C_Id) = '0000' then // Если это контакт из группы временных, то удаляем его как временный
+            ICQ_DeleteTempContact(UIN, Get_Node.Properties.Value(C_Id), Get_Node.Properties.Value(C_Type), Get_Node.Properties.Value(C_Time + C_Id))
+          else
+          begin
+            // Иначе удаляем контакт как положено
+            ICQ_DeleteContact(UIN, Get_Node.Properties.Value(C_Group + C_Id), Get_Node.Properties.Value(C_Id), Nick, //
+            '', '', '');
+          end;
+        end
+        else if Proto = C_Jabber then
+        begin
 
-    end
-    //--Удаляем по протоколу Mra
-    else if RosterItem.SubItems[3] = S_Mra then
-    begin
+        end
+        else if Proto = C_Mra then
+        begin
 
+        end;
+        // Удаляем этот контакт в Ростере
+        Get_Node.Clear;
+        // Удаляем этот контакт в КЛ
+        KL_Item := ReqCLContact(Proto, UIN);
+        KL_Item.Free;
+        // Обновляем КЛ
+        UpdateFullCL;
+      end;
     end;
-    //--Обновляем КЛ
-    RosterForm.UpdateFullCL;
-    end;
-    end;
-    end;
-    finally
-    //--В любом случае разблокировываем окно контактов
-    MainForm.Enabled := true;
-    end;
-    end; }
+  end;
 end;
 
 {$ENDREGION}
@@ -4086,7 +3962,7 @@ end;
 {$ENDREGION}
 {$REGION 'AddNewContactICQClick'}
 
-procedure TMainForm.AddNewContactICQClick(Sender: TObject);
+procedure TMainForm.AddContactCLClick(Sender: TObject);
 var
   FrmAddContact: TAddContactForm;
 begin
@@ -4114,7 +3990,7 @@ end;
 {$ENDREGION}
 {$REGION 'AddNewGroupICQClick'}
 
-procedure TMainForm.AddNewGroupICQClick(Sender: TObject);
+procedure TMainForm.AddGroupCLClick(Sender: TObject);
 {var
   FrmAddGroup: TGroupManagerForm;}
 begin
@@ -5187,7 +5063,7 @@ begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (TwitterClient.StatusCode = 0) or (TwitterClient.StatusCode >= 400) then
   begin
-    S := Format(ErrorHttpClient(TwitterClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
+    S := Format(ErrorHttpClient(TwitterClient.StatusCode), [(Sender as THttpCli).Name]);
     DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
   end;
 end;
@@ -5266,10 +5142,8 @@ begin
   // Обрабатываем возможные ошибки в работе http сокета
   if (HttpClient.StatusCode = 0) or (HttpClient.StatusCode >= 400) then
   begin
-    S := Format(ErrorHttpClient(HttpClient.StatusCode), [(Sender as THttpCli).Name, C_RN]);
+    S := Format(ErrorHttpClient(HttpClient.StatusCode), [(Sender as THttpCli).Name]);
     DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
-    if Assigned(UpdateForm) then
-      UpdateForm.InfoMemo.Lines.Add(C_RN + S);
   end;
 end;
 
@@ -5286,12 +5160,14 @@ begin
 end;
 
 procedure TMainForm.HttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
+var
+  S: string;
 begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
   begin
-    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + (Sender as THttpCli).name + ' ]', EmptyStr, 134,
-      2, 0);
+    S := Format(Lang_Vars[23].L_S, [(Sender as THttpCli).name]) + C_BN + Msg + C_BN + C_QN + Format(Lang_Vars[27].L_S, [Error]) + C_EN;
+    DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
   end;
 end;
 
