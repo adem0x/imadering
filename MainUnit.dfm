@@ -738,6 +738,7 @@ object MainForm: TMainForm
     end
     object ICQAddContact: TMenuItem
       ImageIndex = 143
+      OnClick = ICQAddContactClick
     end
     object N9: TMenuItem
       Caption = '-'
@@ -834,6 +835,7 @@ object MainForm: TMainForm
     end
     object MRAAddContact: TMenuItem
       ImageIndex = 143
+      OnClick = MRAAddContactClick
     end
     object N16: TMenuItem
       Caption = '-'
@@ -937,6 +939,7 @@ object MainForm: TMainForm
     end
     object JabberAddContact: TMenuItem
       ImageIndex = 143
+      OnClick = JabberAddContactClick
     end
     object N25: TMenuItem
       Caption = '-'

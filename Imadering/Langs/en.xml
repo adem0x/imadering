@@ -163,6 +163,8 @@
     <LChildren c="Children"/>
     <LastUpDate c="Date of change data"/>
     <ShortURL c="Short reference of URL: &quot;%s&quot; copied in the clipboard."/>
+    <DellContactOK c="Contact was successfully removed from your contact list!"/>
+    <DellContactErr c="Error when deleting a contact."/>
   </Vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>

@@ -163,6 +163,8 @@
     <LChildren c="Детей"/>
     <LastUpDate c="Дата изменения данных"/>
     <ShortURL c="Короткая ссылка URL &quot;%s&quot; скопирована в буфер обмена."/>
+    <DellContactOK c="Контакт успешно удалён из вашего списка контактов!"/>
+    <DellContactErr c="Ошибка при удалении контакта."/>
   </Vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>

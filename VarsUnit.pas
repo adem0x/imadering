@@ -470,7 +470,7 @@ var
 {$REGION 'LangVars'}
 
   // Переменные для языка | Lang_Vars[127].L_S
-  Lang_Vars: packed array[0..161] of record
+  Lang_Vars: packed array[0..163] of record
     L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
@@ -521,7 +521,7 @@ var
     (L_N: 'UserTyping'; L_S: ''), // 46
     (L_N: 'UserStatus'; L_S: ''), // 47
     (L_N: 'HexToText'; L_S: ''), // 48
-    (L_N: 'IgCLGroupCaption'; L_S: ''), // 49
+    (L_N: '---'; L_S: ''), // 49
     (L_N: 'GMale'; L_S: ''), // 50
     (L_N: 'GFemale'; L_S: ''), // 51
     (L_N: 'LogException1'; L_S: ''), // 52
@@ -633,7 +633,9 @@ var
     (L_N: 'LHair'; L_S: ''), // 158
     (L_N: 'LChildren'; L_S: ''), // 159
     (L_N: 'LastUpDate'; L_S: ''), // 160
-    (L_N: 'ShortURL'; L_S: '')); // 161
+    (L_N: 'ShortURL'; L_S: ''), // 161
+    (L_N: 'DellContactOK'; L_S: ''), // 162
+    (L_N: 'DellContactErr'; L_S: '')); // 163
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}

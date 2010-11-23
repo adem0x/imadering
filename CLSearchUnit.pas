@@ -46,6 +46,7 @@ type
     procedure CLSearchJvListViewDblClick(Sender: TObject);
     procedure CLSearchJvListViewColumnClick(Sender: TObject; Column: TListColumn);
     procedure FormDblClick(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
 
   private
     { Private declarations }
@@ -114,7 +115,7 @@ var
                   // Если нашли текст в учётной записи или нике
                   if (Pos(SearchText, UIN) > 0) or (Pos(SearchText, Nick) > 0) then
                   begin
-                    CLSearchJvListView.Items.Add.Caption := Tri_Node.Properties.Value(C_Login);
+                    CLSearchJvListView.Items.Add.Caption := URLDecode(Tri_Node.Properties.Value(C_Login));
                     CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Tri_Node.Properties.Value(C_Nick)));
                     CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Proto);
                     CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Tri_Node.Properties.Value(C_Status));
@@ -141,10 +142,10 @@ begin
     SearchText := WideUpperCase(CLSearchEdit.Text);
     // Ищем раздел нужного нам протокола
     if MainForm.ICQToolButton.Visible then
-      FindInRoster(C_Icq)
-    else if MainForm.JabberToolButton.Visible then
-      FindInRoster(C_Jabber)
-    else if MainForm.MRAToolButton.Visible then
+      FindInRoster(C_Icq);
+    if MainForm.JabberToolButton.Visible then
+      FindInRoster(C_Jabber);
+    if MainForm.MRAToolButton.Visible then
       FindInRoster(C_Mra);
   end;
 end;
@@ -184,7 +185,14 @@ begin
   // Если выделили контакт, то выделяем его и в КЛ
   if Selected then
   begin
-    KL_Item := ReqCLContact(Item.SubItems[1], Item.Caption);
+    // Отключаем режим КЛ только онлайн контакты
+    if MainForm.OnlyOnlineContactsToolButton.Down then
+    begin
+      MainForm.OnlyOnlineContactsToolButton.Down := false;
+      MainForm.OnlyOnlineContactsToolButtonClick(nil);
+    end;
+    // Получаем этот контакт в КЛ
+    KL_Item := ReqCLContact(Item.SubItems[1], UrlEncode(Item.Caption));
     if KL_Item <> nil then
     begin
       // Выделяем этот контакт в КЛ
@@ -192,7 +200,9 @@ begin
       if KL_Item.Category.Collapsed then
         KL_Item.Category.Collapsed := False;
       MainForm.ContactList.ScrollIntoView(KL_Item);
-    end;
+    end
+    else
+      MainForm.ContactList.SelectedItem := nil;
   end;
 end;
 
@@ -258,6 +268,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'FormDestroy'}
+
+procedure TCLSearchForm.FormDeactivate(Sender: TObject);
+begin
+  // Сбрасываем выделенние
+  CLSearchJvListView.Selected := nil;
+end;
 
 procedure TCLSearchForm.FormDestroy(Sender: TObject);
 var

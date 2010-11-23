@@ -3061,9 +3061,11 @@ begin
       // Изменения
 
       if not Handled then
-        HintStr := '<b>' + CurrentCat.GroupCaption + '</b>';
-      {if CurrentCat.GroupType > EmptyStr then
-        HintStr := HintStr + '<BR>' + CurrentCat.GroupType;}
+        HintStr := Format(C_AS, [CurrentCat.GroupCaption]);
+      if CurrentCat.GroupType > EmptyStr then
+        HintStr := HintStr + C_BR + CurrentCat.GroupType;
+      if CurrentCat.GroupId > EmptyStr then
+        HintStr := HintStr + C_BN + C_QN + C_Id + C_TN + C_BN + CurrentCat.GroupId + C_EN;
 
       // Конец изменений
 
