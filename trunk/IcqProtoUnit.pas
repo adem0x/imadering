@@ -335,7 +335,7 @@ const
 
   // Расшифровка пакетов для лога
   ICQ_Pkt_Names:
-    packed array[0..56] of record Pkt_Code: Integer;
+    packed array[0..57] of record Pkt_Code: Integer;
     Pkt_Name:
     string;
   end
@@ -395,7 +395,8 @@ const
     (Pkt_Code: $130E; Pkt_Name: 'SRV_SSI_MOD_ACK'), // 53
     (Pkt_Code: $1503; Pkt_Name: 'SRV_META_REPLY'), // 54
     (Pkt_Code: $1319; Pkt_Name: 'SRV_SSI_AUTH_REQ'), // 55
-    (Pkt_Code: $0206; Pkt_Name: 'SRV_USER_ONLINE_INFO')); // 56
+    (Pkt_Code: $0206; Pkt_Name: 'SRV_USER_ONLINE_INFO'), // 56
+    (Pkt_Code: $130A; Pkt_Name: 'CLI_SSI_DELETE')); // 57
 
 {$ENDREGION}
 {$REGION 'Vars'}
@@ -434,11 +435,14 @@ var
   ICQ_MyIcon_Hash: string;
   ICQ_KeepAlive: Boolean = True;
   ICQ_Reconnect: Boolean = False;
+  // SSI begin
   ICQ_SSI_Phaze: Boolean = False;
   ICQ_Add_Contact_Phaze: Boolean = False;
-  ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick: string;
-  ICQ_Group_Delete_Phaze: Boolean = False;
+  ICQ_Dell_Contact_Phaze: Boolean = False;
+  ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, ICQ_Add_Group_Name: string;
   ICQ_Add_Group_Phaze: Boolean = False;
+  ICQ_Dell_Group_Phaze: Boolean = False;
+  // SSI end
   ICQ_ReqInfo_UIN: string;
   ICQ_Avatar_Connect_Phaze: Boolean = False;
   ICQ_Avatar_Work_Phaze: Boolean = False;
@@ -1432,7 +1436,7 @@ procedure ICQ_UpdateGroup_AddContact(GrCaption, IGroupId: string; CiDlist: TStri
 var
   I, Len1, Len2: Integer;
   Pkt, Pkt1, Pkt2: RawByteString;
-  Utf8Capt: RawByteString;
+  Utf8Capt: UTF8String;
 begin
   // Обновляем группу при добавлении контакта в серверном КЛ
   Utf8Capt := UTF8Encode(GrCaption);
@@ -1531,146 +1535,134 @@ end;
 {$REGION 'ICQ_Parse_130E_UpdateAck'}
 
 procedure ICQ_Parse_130E_UpdateAck(PktData: string);
-{var
-  I: Integer;
-  CliDL: TStringList;
-  GrCap: string;
-  ListItemD: TListItem;}
+var
+  ContactsIds: TStringList;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+
+  procedure BuildContactsIds(GId: string);
+  var
+    I: Integer;
+  begin
+    // Составляем список групп из Ростера
+    if V_Roster <> nil then
+    begin
+      with V_Roster do
+      begin
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[C_Icq];
+          if XML_Node <> nil then
+          begin
+            // Открываем раздел групп
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            if Sub_Node <> nil then
+            begin
+              for I := 0 to Sub_Node.Items.Count - 1 do
+              begin
+                Tri_Node := Sub_Node.Items.Item[I];
+                if Tri_Node <> nil then
+                begin
+                  if Tri_Node.Properties.Value(C_Group + C_Id) = GId then
+                    ContactsIds.Add(Tri_Node.Properties.Value(C_Id));
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+
 begin
-  {// Если это не фаза работы с серверным КЛ, то выходим
+  // Если это не фаза работы с серверным КЛ, то выходим
   if not ICQ_SSI_Phaze then
     Exit;
-  // Пропускаем ненужные значения
-  NextData(PktData, 18);
   // Если это фаза добавления контакта
   if ICQ_Add_Contact_Phaze then
   begin
     // Смотрим на ответ сервера
-    case HexToInt(NextData(PktData, 2)) of
-      $00:
+    case HexToInt(Text2Hex(NextData(PktData, 2))) of
+      $0000:
         begin
           // Создаём список для занесения в него всех идентификаторов контактов
-          CliDL := TStringList.Create;
+          ContactsIds := TStringList.Create;
           try
             // Заносим в список все идентификаторы контактов из этой группы
-            with RosterForm.RosterJvListView do
-            begin
-              for I := 0 to Items.Count - 1 do
-              begin
-                // Если идентификатор группы в которую добавляем новый контакт совпадает
-                // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
-                if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = C_Icq) then
-                  CliDL.Add(Items[I].SubItems[4]);
-                // Получаем название группы в которую добавляем контакт
-                if Items[I].Caption = ICQ_Add_GroupId then
-                  GrCap := Items[I].SubItems[1];
-              end;
-            end;
+            BuildContactsIds(ICQ_Add_GroupId);
             // Добавляем в список новый идентификатор контакта
-            CliDL.Add(ICQ_Add_cId);
+            ContactsIds.Add(ICQ_Add_cId);
             // Обновляем группу в серверном КЛ
-            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
+            ICQ_UpdateGroup_AddContact(ICQ_Add_Group_Name, ICQ_Add_GroupId, ContactsIds);
           finally
-            CliDL.Free;
+            ContactsIds.Free;
           end;
           // Закрываем сессию добавления контакта
-          ICQ_AddEnd;
-          ICQ_Add_Contact_Phaze := False;
           ICQ_SSI_Phaze := False;
+          ICQ_Add_Contact_Phaze := False;
+          ICQ_AddEnd;
           // Успешно добавляем контакт в локальный список контактов
-          ListItemD := RosterForm.RosterJvListView.Items.Add;
-          with ListItemD do
+          if V_Roster <> nil then
           begin
-            Caption := ICQ_Add_UIN;
-            // Подготавиливаем все значения
-            RosterForm.RosterItemSetFull(ListItemD);
-            // Обновляем субстроки
-            SubItems[0] := ICQ_Add_Nick;
-            SubItems[1] := ICQ_Add_GroupId;
-            SubItems[2] := 'both';
-            SubItems[3] := C_Icq;
-            SubItems[4] := ICQ_Add_cId;
-            SubItems[5] := '0000';
-            SubItems[6] := '9';
+            with V_Roster do
+            begin
+              if Root <> nil then
+              begin
+                // Ищем раздел MRA
+                XML_Node := Root.Items.ItemNamed[C_Icq];
+                if XML_Node <> nil then
+                begin
+                  // Ищем раздел контактов
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                  if Sub_Node <> nil then
+                  begin
+                    // Добавляем этот контакт в эту группу
+                    Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                    Tri_Node.Properties.Add(C_Login, URLEncode(ICQ_Add_UIN));
+                    Tri_Node.Properties.Add(C_Group + C_Id, ICQ_Add_GroupId);
+                    Tri_Node.Properties.Add(C_Status, 9);
+                    Tri_Node.Properties.Add(C_Nick, URLEncode(ICQ_Add_Nick));
+                  end;
+                end;
+              end;
+            end;
           end;
           // Строим локальный КЛ
-          RosterForm.UpdateFullCL;
+          UpdateFullCL;
           // Сообщаем об успешном добавлении контакта
-          DAShow(Lang_Vars[16].L_S, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
         end;
-      $0E:
+      $000E:
         begin
-          // Создаём список для занесения в него всех идентификаторов контактов
-          CliDL := TStringList.Create;
-          try
-            // Заносим в список все идентификаторы контактов из этой группы
-            with RosterForm.RosterJvListView do
-            begin
-              for I := 0 to Items.Count - 1 do
-              begin
-                // Если идентификатор группы в которую добавляем новый контакт совпадает
-                // с идентификатором группы контактов в списке, то добавляем их идентификаторы в список
-                if (Items[I].SubItems[1] = ICQ_Add_GroupId) and (Items[I].SubItems[3] = C_Icq) then
-                  CliDL.Add(Items[I].SubItems[4]);
-                // Получаем название группы в которую добавляем контакт
-                if Items[I].Caption = ICQ_Add_GroupId then
-                  GrCap := Items[I].SubItems[1];
-              end;
-            end;
-            // Обновляем группу в серверном КЛ
-            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-            // Закрываем сессию
-            ICQ_AddEnd;
-            // Добавляем контакт уже как неавторизованный
-            ICQ_AddContact(ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, True);
-            // Добавляем в список новый идентификатор контакта
-            CliDL.Add(ICQ_Add_cId);
-            // Обновляем группу в серверном КЛ
-            ICQ_UpdateGroup_AddContact(GrCap, ICQ_Add_GroupId, CliDL);
-          finally
-            CliDL.Free;
-          end;
-          // Закрываем сессию добавления контакта
+          // Закрываем сессию
           ICQ_AddEnd;
-          ICQ_Add_Contact_Phaze := False;
-          ICQ_SSI_Phaze := False;
-          // Успешно добавляем контакт в локальный список контактов
-          ListItemD := RosterForm.RosterJvListView.Items.Add;
-          with ListItemD do
-          begin
-            Caption := ICQ_Add_UIN;
-            // Подготавиливаем все значения
-            RosterForm.RosterItemSetFull(ListItemD);
-            // Обновляем субстроки
-            SubItems[0] := ICQ_Add_Nick;
-            SubItems[1] := ICQ_Add_GroupId;
-            SubItems[2] := 'none';
-            SubItems[3] := C_Icq;
-            SubItems[4] := ICQ_Add_cId;
-            SubItems[5] := '0000';
-            SubItems[6] := '80';
-            SubItems[8] := '220';
-          end;
-          // Строим локальный КЛ
-          RosterForm.UpdateFullCL;
-          // Сообщаем об успешном добавлении контакта
-          DAShow(Lang_Vars[16].L_S, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
+          // Добавляем контакт уже как неавторизованный
+          ICQ_AddContact(ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, True);
         end
     else
       begin
         // Закрываем сессию добавления контакта
-        ICQ_AddEnd;
-        ICQ_Add_Contact_Phaze := False;
         ICQ_SSI_Phaze := False;
+        ICQ_Add_Contact_Phaze := False;
+        ICQ_AddEnd;
         // Сообщаем об ошибке добавления нового контакта в серверный КЛ
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
       end;
     end;
   end
-    // Если это фаза добавления группы
-  else if ICQ_Add_Group_Phaze then
+  else if ICQ_Dell_Contact_Phaze then // Если это фаза удаления контакта
   begin
-    case HexToInt(NextData(PktData, 2)) of
+    // Закрываем сессию удаления контакта
+    ICQ_SSI_Phaze := False;
+    ICQ_Dell_Contact_Phaze := False;
+    // Смотрим на ответ сервера
+    if HexToInt(Text2Hex(NextData(PktData, 2))) = $0000 then
+      DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[162].L_S, EmptyStr, 133, 3, 0)
+    else
+      DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[163].L_S, EmptyStr, 134, 2, 0);
+  end
+  else if ICQ_Add_Group_Phaze then // Если это фаза добавления группы
+  begin
+    {case HexToInt(NextData(PktData, 2)) of
       $00:
         begin
           // Создаём список для занесения в него идентификаторов групп
@@ -1722,12 +1714,11 @@ begin
         // Сообщаем об ошибке добавления новой группы в серверный КЛ
         DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
       end;
-    end;
+    end;}
   end
-    // Если это фаза удаления группы
-  else if ICQ_Group_Delete_Phaze then
+  else if ICQ_Dell_Group_Phaze then // Если это фаза удаления группы
   begin
-    case HexToInt(NextData(PktData, 2)) of
+    {case HexToInt(NextData(PktData, 2)) of
       $00:
         begin
           CliDL := TStringList.Create;
@@ -1764,8 +1755,8 @@ begin
         ICQ_SSI_Phaze := False;
         DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
       end;
-    end;
-  end;}
+    end;}
+  end;
 end;
 
 {$ENDREGION}
@@ -1775,7 +1766,7 @@ procedure ICQ_AddContact(UIN, GroupId, CId, Nick: string; NoAuth: Boolean);
 var
   Len: Integer;
   Pkt, Pkt1: RawByteString;
-  Utf8Nick: RawByteString;
+  Utf8Nick: UTF8String;
 begin
   // Формируем пакет для добавления нового контакта в серверный КЛ
   Utf8Nick := UTF8Encode(Nick);
@@ -4338,14 +4329,6 @@ begin
           Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
           Tri_Node.Properties.Add(C_Id, C_NoCL);
-        end;
-        // Добавляем группу для игнорируемых контактов
-        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_IgCL];
-        if Tri_Node = nil then
-        begin
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_IgCL);
-          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[49].L_S));
-          Tri_Node.Properties.Add(C_Id, C_IgCL);
         end;
       end;
     end;

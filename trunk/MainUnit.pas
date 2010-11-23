@@ -435,6 +435,9 @@ type
     procedure LinkCompress_MenuClick(Sender: TObject);
     procedure HttpClientDocEnd(Sender: TObject);
     procedure PostInTwitter_MenuClick(Sender: TObject);
+    procedure ICQAddContactClick(Sender: TObject);
+    procedure MRAAddContactClick(Sender: TObject);
+    procedure JabberAddContactClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -781,6 +784,27 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
+procedure TMainForm.MRAAddContactClick(Sender: TObject);
+var
+  FrmAddContact: TAddContactForm;
+begin
+  // Выводим форму добавления новой группы
+  FrmAddContact := TAddContactForm.Create(Self);
+  try
+    with FrmAddContact do
+    begin
+      // Ставим флаг какой протокол
+      ContactType := C_Mra;
+      // Строим список групп этого протокола
+      BuildGroupList(ContactType, EmptyStr);
+      // Отображаем окно модально
+      ShowModal;
+    end;
+  finally
+    FreeAndNil(FrmAddContact);
+  end;
+end;
+
 procedure TMainForm.MRASettingsClick(Sender: TObject);
 begin
   // Открываем настройки сети MRA протокола
@@ -916,6 +940,27 @@ begin
 end;
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TMainForm.JabberAddContactClick(Sender: TObject);
+var
+  FrmAddContact: TAddContactForm;
+begin
+  // Выводим форму добавления новой группы
+  FrmAddContact := TAddContactForm.Create(Self);
+  try
+    with FrmAddContact do
+    begin
+      // Ставим флаг какой протокол
+      ContactType := C_Jabber;
+      // Строим список групп этого протокола
+      BuildGroupList(ContactType, EmptyStr);
+      // Отображаем окно модально
+      ShowModal;
+    end;
+  finally
+    FreeAndNil(FrmAddContact);
+  end;
+end;
 
 procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
 begin
@@ -1277,6 +1322,27 @@ begin
   // Создаём блок памяти для приёма http данных
   (Sender as THttpCli)
     .RcvdStream := TMemoryStream.Create;
+end;
+
+procedure TMainForm.ICQAddContactClick(Sender: TObject);
+var
+  FrmAddContact: TAddContactForm;
+begin
+  // Выводим форму добавления новой группы
+  FrmAddContact := TAddContactForm.Create(Self);
+  try
+    with FrmAddContact do
+    begin
+      // Ставим флаг какой протокол
+      ContactType := C_Icq;
+      // Строим список групп этого протокола
+      BuildGroupList(ContactType, EmptyStr);
+      // Отображаем окно модально
+      ShowModal;
+    end;
+  finally
+    FreeAndNil(FrmAddContact);
+  end;
 end;
 
 procedure TMainForm.ICQSearchNewContactClick(Sender: TObject);
@@ -1854,11 +1920,11 @@ begin
                               ICQ_SSI_Phaze := False;
                               DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
                             end
-                            else if ICQ_Group_Delete_Phaze then
+                            else if ICQ_Dell_Group_Phaze then
                             begin
                               // Деактивируем фазу и выводим сообщение об ошибке и разбираем следующий пакет
                               ICQ_AddEnd;
-                              ICQ_Group_Delete_Phaze := False;
+                              ICQ_Dell_Group_Phaze := False;
                               ICQ_SSI_Phaze := False;
                               DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
                             end;
@@ -1923,7 +1989,7 @@ begin
                             else
                               NextData(HexPkt, 6);
                             // Разбираем пакет подтверждения операций со списком контактов
-                            // ICQ_Parse_130E_UpdateAck(HexPkt);
+                            ICQ_Parse_130E_UpdateAck(HexPkt);
                           end;
                       end;
                     end;
@@ -3415,12 +3481,117 @@ end;
 {$REGION 'RenemeGroupCLClick'}
 
 procedure TMainForm.RenemeGroupCLClick(Sender: TObject);
-{var
-  FrmAddGroup: TGroupManagerForm;
-  I: Integer;}
+var
+  I: Integer;
+  OldGName, GName, GProto, GId: string;
+  GroupsIds: TStringList;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
-  {// Выводим форму добавления новой группы
-  FrmAddGroup := TGroupManagerForm.Create(Self);
+  // Начинаем переименование группы
+  if RoasterGroup <> nil then
+  begin
+    // Выводим диалог подтверждения удаления контакта
+    GName := RoasterGroup.GroupCaption;
+    OldGName := GName;
+    GProto := RoasterGroup.GroupType;
+    GId := RoasterGroup.GroupId;
+    if InputQuery(RenemeGroupCL.Caption + C_BN + GProto, RenemeGroupCL.Caption + C_TN, GName) then
+    begin
+      // Проверяем в сети ли этот протокол
+      if NotProtoOnline(GProto) then
+        Exit;
+      // Смотрим какой протокол у группы
+      if GProto = C_Icq then
+      begin
+        // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+        if ICQ_SSI_Phaze then
+        begin
+          DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+          Exit;
+        end;
+        // Если это нередактируемые группы, то выходим
+        if (GName = EmptyStr) or (GName = OldGName) or (GId = EmptyStr) or (GId = C_NoCL) or (GId = '0000') or (GId = '0001') then
+          Exit;
+        // Создаём список для идентификаторов групп
+        GroupsIds := TStringList.Create;
+        try
+          // Заносим в список идентификаторы групп из Ростера
+          if V_Roster <> nil then
+          begin
+            with V_Roster do
+            begin
+              if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[C_Icq];
+                if XML_Node <> nil then
+                begin
+                  // Открываем раздел групп
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                  if Sub_Node <> nil then
+                  begin
+                    for I := 0 to Sub_Node.Items.Count - 1 do
+                    begin
+                      Tri_Node := Sub_Node.Items.Item[I];
+                      if Tri_Node <> nil then
+                      begin
+                        if (Tri_Node.Properties.Value(C_Id) = C_NoCL) or (Tri_Node.Properties.Value(C_Id) = '0000') then
+                          Continue;
+                        GroupsIds.Add(Tri_Node.Properties.Value(C_Id));
+                      end;
+                    end;
+                  end;
+                end;
+              end;
+            end;
+          end;
+          // Обновляем имя группы на сервере
+          ICQ_UpdateGroup_AddContact(GName, GId, GroupsIds);
+        finally
+          GroupsIds.Free;
+        end;
+        // Переименовываем группу в Ростере
+        if V_Roster <> nil then
+        begin
+          with V_Roster do
+          begin
+            if Root <> nil then
+            begin
+              XML_Node := Root.Items.ItemNamed[C_Icq];
+              if XML_Node <> nil then
+              begin
+                // Открываем раздел групп
+                Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                if Sub_Node <> nil then
+                begin
+                  for I := 0 to Sub_Node.Items.Count - 1 do
+                  begin
+                    Tri_Node := Sub_Node.Items.Item[I];
+                    if Tri_Node <> nil then
+                    begin
+                      if Tri_Node.Properties.Value(C_Id) = GId then
+                        RosterUpdateProp(Tri_Node, C_Name, UrlEncode(GName));
+                    end;
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      end
+      else if GProto = C_Jabber then
+      begin
+
+      end
+      else if GProto = C_Mra then
+      begin
+
+      end;
+      // Обновляем КЛ
+      UpdateFullCL;
+    end;
+  end;
+
+  {FrmAddGroup := TGroupManagerForm.Create(Self);
   try
     with FrmAddGroup do
     begin
@@ -3703,25 +3874,35 @@ begin
       Get_Node := RosterGetItem(Proto, C_Contact + C_SS, C_Login, UIN);
       if Get_Node <> nil then
       begin
+        // Проверяем в сети ли этот протокол
+        if NotProtoOnline(Proto) then
+          Exit;
+        // Смотрим какой это протокол
         if Proto = C_Icq then
         begin
           // Смотрим из какой группы этот контакт
           if Get_Node.Properties.Value(C_Group + C_Id) = '0000' then // Если это контакт из группы временных, то удаляем его как временный
-            ICQ_DeleteTempContact(UIN, Get_Node.Properties.Value(C_Id), Get_Node.Properties.Value(C_Type), Get_Node.Properties.Value(C_Time + C_Id))
+          begin
+            ICQ_SSI_Phaze := True;
+            ICQ_Dell_Contact_Phaze := True;
+            ICQ_DeleteTempContact(UIN, Get_Node.Properties.Value(C_Id), Get_Node.Properties.Value(C_Type), Get_Node.Properties.Value(C_Time + C_Id));
+          end
           else
           begin
             // Иначе удаляем контакт как положено
+            ICQ_SSI_Phaze := True;
+            ICQ_Dell_Contact_Phaze := True;
             ICQ_DeleteContact(UIN, Get_Node.Properties.Value(C_Group + C_Id), Get_Node.Properties.Value(C_Id), Nick, //
-            '', '', '');
+              '', '', '');
           end;
         end
         else if Proto = C_Jabber then
         begin
-
+          Exit;
         end
         else if Proto = C_Mra then
         begin
-
+          Exit;
         end;
         // Удаляем этот контакт в Ростере
         Get_Node.Clear;
@@ -3966,24 +4147,23 @@ procedure TMainForm.AddContactCLClick(Sender: TObject);
 var
   FrmAddContact: TAddContactForm;
 begin
-  // Выводим форму добавления новой группы
-  FrmAddContact := TAddContactForm.Create(Self);
-  try
-    with FrmAddContact do
-    begin
-      // Ставим флаг какой протокол
-      case (Sender as TMenuItem).Tag of
-        1: ContactType := C_Icq;
-        2: ContactType := C_Jabber;
-        3: ContactType := C_Mra;
+  if RoasterGroup <> nil then
+  begin
+    // Выводим форму добавления новой группы
+    FrmAddContact := TAddContactForm.Create(Self);
+    try
+      with FrmAddContact do
+      begin
+        // Ставим флаг какой протокол
+        ContactType := RoasterGroup.GroupType;
+        // Строим список групп этого протокола
+        BuildGroupList(ContactType, RoasterGroup.GroupId);
+        // Отображаем окно модально
+        ShowModal;
       end;
-      // Строим список групп этого протокола
-      BuildGroupList(ContactType);
-      // Отображаем окно модально
-      ShowModal;
+    finally
+      FreeAndNil(FrmAddContact);
     end;
-  finally
-    FreeAndNil(FrmAddContact);
   end;
 end;
 

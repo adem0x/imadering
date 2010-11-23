@@ -4,7 +4,7 @@ object AddContactForm: TAddContactForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   ClientHeight = 129
-  ClientWidth = 281
+  ClientWidth = 330
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -44,7 +44,7 @@ object AddContactForm: TAddContactForm
   object AccountEdit: TEdit
     Left = 111
     Top = 8
-    Width = 162
+    Width = 211
     Height = 21
     TabStop = False
     MaxLength = 40
@@ -53,7 +53,7 @@ object AddContactForm: TAddContactForm
   object NameEdit: TEdit
     Left = 111
     Top = 35
-    Width = 162
+    Width = 211
     Height = 21
     TabStop = False
     MaxLength = 40
@@ -62,7 +62,7 @@ object AddContactForm: TAddContactForm
   object GroupComboBox: TComboBox
     Left = 111
     Top = 62
-    Width = 162
+    Width = 211
     Height = 21
     Style = csDropDownList
     TabOrder = 2
@@ -77,7 +77,7 @@ object AddContactForm: TAddContactForm
     TabOrder = 3
   end
   object AddContactButton: TButton
-    Left = 176
+    Left = 225
     Top = 96
     Width = 97
     Height = 25

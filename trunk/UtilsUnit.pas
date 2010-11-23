@@ -845,17 +845,11 @@ begin
   Result := False;
   // Проверяем онлайн ли клиент для этого протокола
   if (Proto = C_Icq) and (not Icq_work_phaze) then
-  begin
-    Proto := UpperCase(Proto);
-    Result := True;
-  end
+    Result := True
   else if (Proto = C_Jabber) and (not Jabber_work_phaze) then
     Result := True
   else if (Proto = C_Mra) and (not Mra_work_phaze) then
-  begin
-    Proto := UpperCase(Proto);
     Result := True;
-  end;
   if Result then
     Dashow(Lang_Vars[18].L_S, Format(Lang_Vars[31].L_S, [Proto]), EmptyStr, 133, 3, 0);
 end;

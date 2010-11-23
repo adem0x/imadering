@@ -19,6 +19,7 @@ object CLSearchForm: TCLSearchForm
   OnCreate = FormCreate
   OnDblClick = FormDblClick
   OnDestroy = FormDestroy
+  OnDeactivate = FormDeactivate
   PixelsPerInch = 96
   TextHeight = 13
   object TopPanel: TPanel
@@ -29,7 +30,6 @@ object CLSearchForm: TCLSearchForm
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 413
     object CLSearchLabel: TLabel
       Left = 11
       Top = 9
@@ -86,6 +86,7 @@ object CLSearchForm: TCLSearchForm
       end
       item
         HeaderImagePosition = hipRight
+        UseParentHeaderImagePosition = False
       end>
     ExplicitLeft = 8
     ExplicitTop = 63
