@@ -65,7 +65,6 @@
     <TempGroupCaption c="Temporary"/>
     <NoCLGroupCaption c="Not in list"/>
     <PhoneGroupCaption c="Telephones"/>
-    <IgCLGroupCaption c="Ignored"/>
     <ConnectTime c="Connected"/>
     <RegDate c="Registered"/>
     <ProtoVersion c="Protocol version"/>
@@ -95,6 +94,8 @@
     <AddGroupOK c="Group successfully added to your list of contacts!"/>
     <AddGroupErr_1 c="This group already exists in your contact list."/>
     <AddGroupErr_2 c="Error adding group."/>
+    <RenGroupOK c="The Group has successfully renamed!"/>
+    <RenGroupErr c="Error renaming the group."/>
     <DellGroup c="The group &quot;%s&quot; will be removed. Are you sure?"/>
     <DellGroupOK c="Group successfully deleted from your contact list!"/>
     <DellGroupErr c="Error deleting group."/>

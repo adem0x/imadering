@@ -438,9 +438,11 @@ var
   // SSI begin
   ICQ_SSI_Phaze: Boolean = False;
   ICQ_Add_Contact_Phaze: Boolean = False;
+  ICQ_Ren_Contact_Phaze: Boolean = False;
   ICQ_Dell_Contact_Phaze: Boolean = False;
   ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, ICQ_Add_Group_Name: string;
   ICQ_Add_Group_Phaze: Boolean = False;
+  ICQ_Ren_Group_Phaze: Boolean = False;
   ICQ_Dell_Group_Phaze: Boolean = False;
   // SSI end
   ICQ_ReqInfo_UIN: string;
@@ -1306,7 +1308,6 @@ end;
 procedure ICQ_DeleteTempContactMulti(TCList: TStringList);
 var
   Pkt, Pkt1, Pkt2: string;
-  ZTCL: TStringList;
 
   function CreateDelTempContsPkt: string;
   label
@@ -1318,10 +1319,10 @@ var
     Pkt := EmptyStr;
     Pkt1 := EmptyStr;
     Pkt2 := EmptyStr;
-    if ZTCL.Count > 50 then
+    if TCList.Count > 50 then
       C := 50
     else
-      C := ZTCL.Count - 1;
+      C := TCList.Count - 1;
     for I := 0 to C do
     begin
       ZUIN := EmptyStr;
@@ -1329,10 +1330,10 @@ var
       ZType := EmptyStr;
       ZTimeId := EmptyStr;
       Pkt2 := EmptyStr;
-      ZUIN := Parse(';', ZTCL.Strings[I], 1);
-      ZId := Parse(';', ZTCL.Strings[I], 2);
-      ZType := Parse(';', ZTCL.Strings[I], 3);
-      ZTimeId := Parse(';', ZTCL.Strings[I], 4);
+      ZUIN := Parse(';', TCList.Strings[I], 1);
+      ZId := Parse(';', TCList.Strings[I], 2);
+      ZType := Parse(';', TCList.Strings[I], 3);
+      ZTimeId := Parse(';', TCList.Strings[I], 4);
       Pkt2 := '006d' + ZTimeId;
       if ZTimeId = EmptyStr then
         Pkt2 := Pkt2 + '000100';
@@ -1343,7 +1344,7 @@ var
     X: ;
     if A <= C then
     begin
-      ZTCL.Delete(0);
+      TCList.Delete(0);
       A := A + 1;
       goto X;
     end;
@@ -1352,18 +1353,8 @@ var
   end;
 
 begin
-  ZTCL := TStringList.Create;
-  //
-  try
-    ZTCL.Assign(TCList);
-    while ZTCL.Count > 0 do
-    begin
-      ICQ_SendPkt('2', CreateDelTempContsPkt);
-    end;
-    //
-  finally
-    ZTCL.Free;
-  end;
+  while TCList.Count > 0 do
+    ICQ_SendPkt('2', CreateDelTempContsPkt);
 end;
 
 {$ENDREGION}
@@ -1715,6 +1706,17 @@ begin
         DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
       end;
     end;}
+  end
+  else if ICQ_Ren_Group_Phaze then // Если это фаза переименования группы
+  begin
+    // Закрываем сессию удаления контакта
+    ICQ_SSI_Phaze := False;
+    ICQ_Ren_Contact_Phaze := False;
+    // Смотрим на ответ сервера
+    if HexToInt(Text2Hex(NextData(PktData, 2))) = $0000 then
+      DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[49].L_S, EmptyStr, 133, 3, 0)
+    else
+      DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[164].L_S, EmptyStr, 134, 2, 0);
   end
   else if ICQ_Dell_Group_Phaze then // Если это фаза удаления группы
   begin

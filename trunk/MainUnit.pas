@@ -3486,6 +3486,7 @@ var
   OldGName, GName, GProto, GId: string;
   GroupsIds: TStringList;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  Get_Node: TJvSimpleXmlElem;
 begin
   // Начинаем переименование группы
   if RoasterGroup <> nil then
@@ -3503,12 +3504,12 @@ begin
       // Смотрим какой протокол у группы
       if GProto = C_Icq then
       begin
-        // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+        {// Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
         if ICQ_SSI_Phaze then
         begin
           DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
           Exit;
-        end;
+        end;}
         // Если это нередактируемые группы, то выходим
         if (GName = EmptyStr) or (GName = OldGName) or (GId = EmptyStr) or (GId = C_NoCL) or (GId = '0000') or (GId = '0001') then
           Exit;
@@ -3545,78 +3546,29 @@ begin
             end;
           end;
           // Обновляем имя группы на сервере
+          ICQ_SSI_Phaze := True;
+          ICQ_Ren_Group_Phaze := True;
           ICQ_UpdateGroup_AddContact(GName, GId, GroupsIds);
         finally
           GroupsIds.Free;
         end;
         // Переименовываем группу в Ростере
-        if V_Roster <> nil then
-        begin
-          with V_Roster do
-          begin
-            if Root <> nil then
-            begin
-              XML_Node := Root.Items.ItemNamed[C_Icq];
-              if XML_Node <> nil then
-              begin
-                // Открываем раздел групп
-                Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
-                if Sub_Node <> nil then
-                begin
-                  for I := 0 to Sub_Node.Items.Count - 1 do
-                  begin
-                    Tri_Node := Sub_Node.Items.Item[I];
-                    if Tri_Node <> nil then
-                    begin
-                      if Tri_Node.Properties.Value(C_Id) = GId then
-                        RosterUpdateProp(Tri_Node, C_Name, UrlEncode(GName));
-                    end;
-                  end;
-                end;
-              end;
-            end;
-          end;
-        end;
+        Get_Node := RosterGetItem(C_Icq, C_Group + C_SS, C_Id, GId);
+        if Get_Node <> nil then
+          RosterUpdateProp(Get_Node, C_Name, UrlEncode(GName));
       end
       else if GProto = C_Jabber then
       begin
-
+        Exit;
       end
       else if GProto = C_Mra then
       begin
-
+        Exit;
       end;
       // Обновляем КЛ
       UpdateFullCL;
     end;
   end;
-
-  {FrmAddGroup := TGroupManagerForm.Create(Self);
-  try
-    with FrmAddGroup do
-    begin
-      Caption := (Sender as TMenuItem).Caption;
-      // Ставим флаг, что это не добавление группы, а переименование
-      Create_Group := False;
-      // Вставляем название группы которую хотим переименовать
-      for I := 0 to ContactList.Categories.Count - 1 do
-      begin
-        if ContactList.Categories[I].GroupSelected then
-        begin
-          GNameEdit.Text := ContactList.Categories[I].GroupCaption;
-          Name_Group := ContactList.Categories[I].GroupCaption;
-          // Флаги протокола
-          GroupType := ContactList.Categories[I].GroupType;
-          Id_Group := ContactList.Categories[I].GroupId;
-          Break;
-        end;
-      end;
-      // Отображаем окно модально
-      ShowModal;
-    end;
-  finally
-    FreeAndNil(FrmAddGroup);
-  end;}
 end;
 
 {$ENDREGION}
@@ -3920,116 +3872,151 @@ end;
 {$REGION 'DeleteGroupCLClick'}
 
 procedure TMainForm.DeleteGroupCLClick(Sender: TObject);
-{label
-  X;
+//label
+  //X;
 var
-  GroupProto, GroupId, GroupName: string;
+  GProto, GId, GName: string;
   I: Integer;
-  TCL: TStringList;}
+  TCL: TStringList;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
-  {// Блокируем всё окно со списком контактов
-  MainForm.Enabled := False;
-  try
-    // Смотрим какого это протокола группа
-    for I := 0 to ContactList.Categories.Count - 1 do
+  // Начинаем удаление группы
+  if RoasterGroup <> nil then
+  begin
+    GName := RoasterGroup.GroupCaption;
+    GProto := RoasterGroup.GroupType;
+    GId := RoasterGroup.GroupId;
+    if MessageBox(Handle, PChar(Format(Lang_Vars[117].L_S, [GName])), PChar(DeleteGroupCL.Caption + C_BN + GProto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
     begin
-      if ContactList.Categories[I].GroupSelected then
+      // Проверяем в сети ли этот протокол
+      if NotProtoOnline(GProto) then
+        Exit;
+      // Смотрим какой протокол у группы
+      if GProto = C_Icq then
       begin
-        GroupProto := ContactList.Categories[I].GroupType;
-        GroupId := ContactList.Categories[I].GroupId;
-        GroupName := ContactList.Categories[I].GroupCaption;
-        Break;
+        // Если это группа не "Не в списке"
+        if GId <> C_NoCL then
+        begin
+          // Удаляем группу временных контактов
+          if GId = '0000' then
+          begin
+            // Создаём список для идентификаторов временных контактов
+            TCL := TStringList.Create;
+            try
+              // Заносим в список идентификаторы групп из Ростера
+              if V_Roster <> nil then
+              begin
+                with V_Roster do
+                begin
+                  if Root <> nil then
+                  begin
+                    XML_Node := Root.Items.ItemNamed[C_Icq];
+                    if XML_Node <> nil then
+                    begin
+                      // Открываем раздел групп
+                      Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                      if Sub_Node <> nil then
+                      begin
+                        for I := 0 to Sub_Node.Items.Count - 1 do
+                        begin
+                          Tri_Node := Sub_Node.Items.Item[I];
+                          if Tri_Node <> nil then
+                          begin
+                            if Tri_Node.Properties.Value(C_Group + C_Id) = '0000' then
+                              TCL.Add(Tri_Node.Properties.Value(C_Login) + C_LN + Tri_Node.Properties.Value(C_Id) //
+                                + C_LN + Tri_Node.Properties.Value(C_Type) + C_LN + Tri_Node.Properties.Value(C_Time + C_Id));
+                          end;
+                        end;
+                      end;
+                    end;
+                  end;
+                end;
+              end;
+              // Начинаем удаление временных контактов на сервере
+              if TCL.Count > 0 then
+                ICQ_DeleteTempContactMulti(TCL);
+            finally
+              TCL.Free;
+            end;
+          end
+          else
+          begin
+            // Открываем фазу удаления группы с сервера
+            ICQ_SSI_Phaze := True;
+            ICQ_Dell_Group_Phaze := True;
+            ICQ_DeleteGroup(GName, GId);
+          end;
+        end;
+      end
+      else if GProto = C_Jabber then
+      begin
+        Exit;
+      end
+      else if GProto = C_Mra then
+      begin
+        Exit;
       end;
-    end;
-    // Выводим диалог подтверждения удаления контакта
-    if MessageBox(Handle, PChar(Format(Lang_Vars[117].L_S, [GroupName])), PChar((Sender as TMenuItem).Hint), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = MrYes then
-    begin
-      // Удаляем группу вместе с контактами из локального КЛ
+      // Удаляем группу и контакты этой группы из Ростера
+      if V_Roster <> nil then
+      begin
+        with V_Roster do
+        begin
+          if Root <> nil then
+          begin
+            XML_Node := Root.Items.ItemNamed[GProto];
+            if XML_Node <> nil then
+            begin
+              // Открываем раздел групп
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              if Sub_Node <> nil then
+              begin
+                for I := 0 to Sub_Node.Items.Count - 1 do
+                begin
+                  Tri_Node := Sub_Node.Items.Item[I];
+                  if Tri_Node <> nil then
+                  begin
+                    if Tri_Node.Properties.Value(C_Id) = GId then
+                    begin
+                      Tri_Node.Clear;
+                      Break;
+                    end;
+                  end;
+                end;
+              end;
+              // Открываем раздел контактов
+              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+              if Sub_Node <> nil then
+              begin
+                for I := 0 to Sub_Node.Items.Count - 1 do
+                begin
+                  Tri_Node := Sub_Node.Items.Item[I];
+                  if Tri_Node <> nil then
+                  begin
+                    if Tri_Node.Properties.Value(C_Group + C_Id) = GId then
+                    begin
+                      Tri_Node.Clear;
+                      Break;
+                    end;
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+      // Удаляем группу вместе с контактами из КЛ
       for I := 0 to ContactList.Categories.Count - 1 do
       begin
-        if ContactList.Categories[I].GroupSelected then
+        if (ContactList.Categories[I].GroupType = GProto) and (ContactList.Categories[I].GroupId = GId) then
         begin
           ContactList.Categories[I].Free;
           Break;
         end;
       end;
-      // Если это группа "Не в списке"
-      if GroupId = C_NoCL then
-      begin
-        //
-        Exit;
-      end;
-      // Удаляем выбранную группу ICQ
-      if GroupProto = C_Icq then
-      begin
-        // Удаляем группу временных контактов
-        if GroupId = '0000' then
-        begin
-          // Создаём список для идентификаторов временных контактов
-          TCL := TStringList.Create;
-          try
-            with RosterForm.RosterJvListView do
-            begin
-              for I := 0 to Items.Count - 1 do
-              begin
-                if (Items[I].SubItems[3] = C_Icq) and (Items[I].SubItems[1] = '0000') then
-                begin
-                  TCL.Add(Items[I].Caption + ';' + Items[I].SubItems[4] + ';' + Items[I].SubItems[5] + ';' + Items[I].SubItems[12]);
-                end;
-              end;
-            end;
-            // Начинаем удаление временных контактов на сервере
-            if TCL.Count > 0 then
-              ICQ_DeleteTempContactMulti(TCL);
-          finally
-            TCL.Free;
-          end;
-        end
-        else
-        begin
-          // Открываем фазу удаления группы с сервера
-          ICQ_DeleteGroup(GroupName, GroupId);
-          ICQ_Group_Delete_Phaze := True;
-          ICQ_SSI_Phaze := True;
-        end;
-        // Удаляем группу в локальном Ростере
-        with RosterForm.RosterJvListView do
-        begin
-          for I := 0 to Items.Count - 1 do
-          begin
-            if (Items[I].SubItems[3] = C_Icq) and (Length(Items[I].Caption) = 4) and (Items[I].Caption = GroupId) then
-            begin
-              Items[I].Delete;
-              Break;
-            end;
-          end;
-          // Удаляем все контакты из локального Ростера что были в этой группе
-          X: ;
-          for I := 0 to Items.Count - 1 do
-          begin
-            if (Items[I].SubItems[3] = C_Icq) and (Items[I].SubItems[1] = GroupId) then
-            begin
-              Items[I].Delete;
-              goto X;
-            end;
-          end;
-        end;
-      end
-        // Удаляем выбранную группу Jabber
-      else if GroupProto = C_Jabber then
-      begin
-
-      end
-        // Удаляем выбранную группу Mra
-      else if GroupProto = C_Mra then
-      begin
-
-      end;
+      // Обновляем КЛ
+      UpdateFullCL;
     end;
-  finally
-    // В любом случае разблокировываем окно контактов
-    MainForm.Enabled := True;
-  end;}
+  end;
 end;
 
 {$ENDREGION}
