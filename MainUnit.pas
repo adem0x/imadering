@@ -438,6 +438,9 @@ type
     procedure ICQAddContactClick(Sender: TObject);
     procedure MRAAddContactClick(Sender: TObject);
     procedure JabberAddContactClick(Sender: TObject);
+    procedure ICQAddGroupClick(Sender: TObject);
+    procedure JabberAddGroupClick(Sender: TObject);
+    procedure MRAAddGroupClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -805,6 +808,12 @@ begin
   end;
 end;
 
+procedure TMainForm.MRAAddGroupClick(Sender: TObject);
+begin
+  //
+
+end;
+
 procedure TMainForm.MRASettingsClick(Sender: TObject);
 begin
   // Открываем настройки сети MRA протокола
@@ -960,6 +969,12 @@ begin
   finally
     FreeAndNil(FrmAddContact);
   end;
+end;
+
+procedure TMainForm.JabberAddGroupClick(Sender: TObject);
+begin
+  //
+
 end;
 
 procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
@@ -1342,6 +1357,56 @@ begin
     end;
   finally
     FreeAndNil(FrmAddContact);
+  end;
+end;
+
+procedure TMainForm.ICQAddGroupClick(Sender: TObject);
+label
+  X;
+var
+  GName, GProto, NewId: string;
+  Get_Node: TJvSimpleXmlElem;
+begin
+  // Начинаем добаление новой группы
+  GProto := C_Icq;
+  if InputQuery(AddGroupCL.Caption + C_BN + GProto, AddGroupCL.Caption + C_TN, GName) then
+  begin
+    // Проверяем в сети ли этот протокол
+    if NotProtoOnline(GProto) then
+      Exit;
+    // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+    if ICQ_SSI_Phaze then
+    begin
+      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+      Exit;
+    end;
+    // Если имя группы пустое, то выходим
+    if GName = EmptyStr then
+      Exit;
+    // Ищем есть ли такая группа уже в Ростере
+    Get_Node := RosterGetItem(GProto, C_Group + C_SS, C_Name, UrlEncode(GName));
+    if Get_Node <> nil then
+    begin
+      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
+      Exit;
+    end
+    else
+    begin
+      // Генерируем идентификатор для этой группы
+      X: ;
+      Randomize;
+      NewId := IntToHex(Random($7FFF), 4);
+      // Ищем нет ли уже такого идентификатора в списке контактов
+      Get_Node := RosterGetItem(GProto, C_Group + C_SS, C_Id, NewId);
+      if Get_Node <> nil then
+        goto X;
+      // Открываем сессию и добавляем группу
+      ICQ_Add_Nick := GName;
+      ICQ_Add_GroupId := NewId;
+      ICQ_SSI_Phaze := True;
+      ICQ_Add_Group_Phaze := True;
+      ICQ_AddGroup(GName, NewId);
+    end;
   end;
 end;
 
@@ -3504,12 +3569,12 @@ begin
       // Смотрим какой протокол у группы
       if GProto = C_Icq then
       begin
-        {// Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+        // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
         if ICQ_SSI_Phaze then
         begin
           DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
           Exit;
-        end;}
+        end;
         // Если это нередактируемые группы, то выходим
         if (GName = EmptyStr) or (GName = OldGName) or (GId = EmptyStr) or (GId = C_NoCL) or (GId = '0000') or (GId = '0001') then
           Exit;
@@ -3832,6 +3897,12 @@ begin
         // Смотрим какой это протокол
         if Proto = C_Icq then
         begin
+          // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+          if ICQ_SSI_Phaze then
+          begin
+            DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+            Exit;
+          end;
           // Смотрим из какой группы этот контакт
           if Get_Node.Properties.Value(C_Group + C_Id) = '0000' then // Если это контакт из группы временных, то удаляем его как временный
           begin
@@ -3872,8 +3943,6 @@ end;
 {$REGION 'DeleteGroupCLClick'}
 
 procedure TMainForm.DeleteGroupCLClick(Sender: TObject);
-//label
-  //X;
 var
   GProto, GId, GName: string;
   I: Integer;
@@ -3897,9 +3966,18 @@ begin
         // Если это группа не "Не в списке"
         if GId <> C_NoCL then
         begin
+          // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+          if ICQ_SSI_Phaze then
+          begin
+            DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+            Exit;
+          end;
           // Удаляем группу временных контактов
           if GId = '0000' then
           begin
+            // Открываем фазу удаления группы с сервера
+            ICQ_SSI_Phaze := True;
+            ICQ_Dell_Group_Phaze := True;
             // Создаём список для идентификаторов временных контактов
             TCL := TStringList.Create;
             try
@@ -3993,10 +4071,7 @@ begin
                   if Tri_Node <> nil then
                   begin
                     if Tri_Node.Properties.Value(C_Group + C_Id) = GId then
-                    begin
                       Tri_Node.Clear;
-                      Break;
-                    end;
                   end;
                 end;
               end;
@@ -4158,31 +4233,21 @@ end;
 {$REGION 'AddNewGroupICQClick'}
 
 procedure TMainForm.AddGroupCLClick(Sender: TObject);
-{var
-  FrmAddGroup: TGroupManagerForm;}
+var
+  GProto: string;
 begin
-  {// Выводим форму добавления новой группы
-  FrmAddGroup := TGroupManagerForm.Create(Self);
-  try
-    with FrmAddGroup do
-    begin
-      Caption := (Sender as TMenuItem).Caption;
-      // Добавляем название группы по умолчанию
-      GNameEdit.Text := Lang_Vars[96].L_S;
-      // Ставим флаг, что это добавление новой группы
-      Create_Group := True;
-      // Ставим флаг какой протокол
-      case (Sender as TMenuItem).Tag of
-        1: GroupType := C_Icq;
-        2: GroupType := C_Jabber;
-        3: GroupType := C_Mra;
-      end;
-      // Отображаем окно модально
-      ShowModal;
-    end;
-  finally
-    FreeAndNil(FrmAddGroup);
-  end;}
+  // Начинаем добаление новой группы
+  if RoasterGroup <> nil then
+  begin
+    GProto := RoasterGroup.GroupType;
+    // Смотрим какой протокол
+    if GProto = C_Icq then
+      ICQAddGroupClick(nil)
+    else if GProto = C_Jabber then
+      JabberAddGroupClick(nil)
+    else if GProto = C_Mra then
+      MRAAddGroupClick(nil);
+  end;
 end;
 {$ENDREGION}
 {$REGION 'AnketaContactClick'}

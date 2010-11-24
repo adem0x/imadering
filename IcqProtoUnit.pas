@@ -438,6 +438,7 @@ var
   // SSI begin
   ICQ_SSI_Phaze: Boolean = False;
   ICQ_Add_Contact_Phaze: Boolean = False;
+  ICQ_Add_Contact_Auth: Boolean = False;
   ICQ_Ren_Contact_Phaze: Boolean = False;
   ICQ_Dell_Contact_Phaze: Boolean = False;
   ICQ_Add_UIN, ICQ_Add_GroupId, ICQ_Add_cId, ICQ_Add_Nick, ICQ_Add_Group_Name: string;
@@ -1527,7 +1528,9 @@ end;
 
 procedure ICQ_Parse_130E_UpdateAck(PktData: string);
 var
+  Z: Integer;
   ContactsIds: TStringList;
+  GroupsIds: TStringList;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 
   procedure BuildContactsIds(GId: string);
@@ -1612,6 +1615,14 @@ begin
                     Tri_Node.Properties.Add(C_Group + C_Id, ICQ_Add_GroupId);
                     Tri_Node.Properties.Add(C_Status, 9);
                     Tri_Node.Properties.Add(C_Nick, URLEncode(ICQ_Add_Nick));
+                    if ICQ_Add_Contact_Auth then
+                    begin
+                      Tri_Node.Properties.Add(C_Auth, C_AuthNone);
+                      Tri_Node.Properties.Add(C_Client, '220');
+                    end
+                    else
+                      Tri_Node.Properties.Add(C_Auth, C_AuthBoth);
+                    ICQ_Add_Contact_Auth := False;
                   end;
                 end;
               end;
@@ -1624,6 +1635,7 @@ begin
         end;
       $000E:
         begin
+          ICQ_Add_Contact_Auth := True;
           // Закрываем сессию
           ICQ_AddEnd;
           // Добавляем контакт уже как неавторизованный
@@ -1653,59 +1665,86 @@ begin
   end
   else if ICQ_Add_Group_Phaze then // Если это фаза добавления группы
   begin
-    {case HexToInt(NextData(PktData, 2)) of
-      $00:
+    case HexToInt(Text2Hex(NextData(PktData, 2))) of
+      $0000:
         begin
           // Создаём список для занесения в него идентификаторов групп
-          CliDL := TStringList.Create;
+          GroupsIds := TStringList.Create;
           try
             // Заносим в список идентификаторы групп
-            with RosterForm.RosterJvListView do
+            if V_Roster <> nil then
             begin
-              for I := 0 to Items.Count - 1 do
+              with V_Roster do
               begin
-                // Добавляем идентификаторы групп в список
-                if (Items[I].Caption = C_NoCL) or (Items[I].Caption = '0000') then
-                  Continue;
-                if (Items[I].SubItems[3] = C_Icq) and (Length(Items[I].Caption) = 4) then
-                  CliDL.Add(Items[I].Caption);
+                if Root <> nil then
+                begin
+                  XML_Node := Root.Items.ItemNamed[C_Icq];
+                  if XML_Node <> nil then
+                  begin
+                    // Открываем раздел групп
+                    Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                    if Sub_Node <> nil then
+                    begin
+                      for Z := 0 to Sub_Node.Items.Count - 1 do
+                      begin
+                        Tri_Node := Sub_Node.Items.Item[Z];
+                        if Tri_Node <> nil then
+                        begin
+                          if (Tri_Node.Properties.Value(C_Id) = C_NoCL) or (Tri_Node.Properties.Value(C_Id) = '0000') then
+                            Continue;
+                          GroupsIds.Add(Tri_Node.Properties.Value(C_Id));
+                        end;
+                      end;
+                    end;
+                  end;
+                end;
               end;
             end;
             // Обновляем группы на сервере и закрываем сессию
-            ICQ_UpdateGroup_AddGroup(CliDL);
+            ICQ_UpdateGroup_AddGroup(GroupsIds);
             ICQ_AddEnd;
-            ICQ_Add_Group_Phaze := False;
             ICQ_SSI_Phaze := False;
+            ICQ_Add_Group_Phaze := False;
           finally
-            CliDL.Free;
+            GroupsIds.Free;
           end;
           // Добавляем группу в локальный КЛ
-          ListItemD := RosterForm.RosterJvListView.Items.Add;
-          with ListItemD do
+          if V_Roster <> nil then
           begin
-            Caption := ICQ_Add_GroupId;
-            // Подготавиливаем все значения
-            RosterForm.RosterItemSetFull(ListItemD);
-            // Обновляем субстроки
-            SubItems[1] := ICQ_Add_Nick;
-            SubItems[3] := C_Icq;
-            SubItems[4] := ICQ_Add_GroupId;
+            with V_Roster do
+            begin
+              if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[C_Icq];
+                if XML_Node <> nil then
+                begin
+                  // Открываем раздел групп
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                  if Sub_Node <> nil then
+                  begin
+                    Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                    Tri_Node.Properties.Add(C_Name, URLEncode(ICQ_Add_Nick));
+                    Tri_Node.Properties.Add(C_Id, ICQ_Add_GroupId);
+                  end;
+                end;
+              end;
+            end;
           end;
           // Строим локальный КЛ
-          RosterForm.UpdateFullCL;
+          UpdateFullCL;
           // Сообщаем об успешном добавлении группы
-          DAShow(Lang_Vars[16].L_S, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
         end
     else
       begin
         // Закрываем сессию добавления группы
         ICQ_AddEnd;
-        ICQ_Add_Group_Phaze := False;
         ICQ_SSI_Phaze := False;
+        ICQ_Add_Group_Phaze := False;
         // Сообщаем об ошибке добавления новой группы в серверный КЛ
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
       end;
-    end;}
+    end;
   end
   else if ICQ_Ren_Group_Phaze then // Если это фаза переименования группы
   begin
@@ -1720,44 +1759,61 @@ begin
   end
   else if ICQ_Dell_Group_Phaze then // Если это фаза удаления группы
   begin
-    {case HexToInt(NextData(PktData, 2)) of
-      $00:
+    case HexToInt(Text2Hex(NextData(PktData, 2))) of
+      $0000:
         begin
-          CliDL := TStringList.Create;
+          GroupsIds := TStringList.Create;
           try
             // Заносим в список идентификаторы групп
-            with RosterForm.RosterJvListView do
+            if V_Roster <> nil then
             begin
-              for I := 0 to Items.Count - 1 do
+              with V_Roster do
               begin
-                // Добавляем идентификаторы групп в список
-                if (Items[I].Caption = C_NoCL) or (Items[I].Caption = '0000') then
-                  Continue;
-                if (Items[I].SubItems[3] = C_Icq) and (Length(Items[I].Caption) = 4) then
-                  CliDL.Add(Items[I].Caption);
+                if Root <> nil then
+                begin
+                  XML_Node := Root.Items.ItemNamed[C_Icq];
+                  if XML_Node <> nil then
+                  begin
+                    // Открываем раздел групп
+                    Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                    if Sub_Node <> nil then
+                    begin
+                      for Z := 0 to Sub_Node.Items.Count - 1 do
+                      begin
+                        Tri_Node := Sub_Node.Items.Item[Z];
+                        if Tri_Node <> nil then
+                        begin
+                          if (Tri_Node.Properties.Value(C_Id) = C_NoCL) or (Tri_Node.Properties.Value(C_Id) = '0000') then
+                            Continue;
+                          GroupsIds.Add(Tri_Node.Properties.Value(C_Id));
+                        end;
+                      end;
+                    end;
+                  end;
+                end;
               end;
             end;
             // Обновляем группы на сервере
-            ICQ_UpdateGroup_AddGroup(CliDL);
+            ICQ_UpdateGroup_AddGroup(GroupsIds);
             ICQ_AddEnd;
           finally
-            CliDL.Free;
+            GroupsIds.Free;
           end;
           // Закрываем сесиию удаления группы
-          ICQ_Group_Delete_Phaze := False;
           ICQ_SSI_Phaze := False;
+          ICQ_Dell_Group_Phaze := False;
           // Сообщаем об успешном добавлении группы
-          DAShow(Lang_Vars[16].L_S, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
         end
     else
       begin
         // Закрываем сессию удаления группы
         ICQ_AddEnd;
-        ICQ_Group_Delete_Phaze := False;
         ICQ_SSI_Phaze := False;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
+        ICQ_Dell_Group_Phaze := False;
+        DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
       end;
-    end;}
+    end;
   end;
 end;
 

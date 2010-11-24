@@ -339,16 +339,19 @@ begin
                     // Если такую группу не нашли, то добавляем её
                     if not Group_Yes then
                     begin
-                      with Categories.Add do
+                      if Tri_Node.Properties.Value(C_Name) <> EmptyStr then
                       begin
-                        Caption := URLDecode(Tri_Node.Properties.Value(C_Name));
-                        GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Name));
-                        GroupId := Tri_Node.Properties.Value(C_Id);
-                        GroupType := C_Icq;
-                        GroupImage := 242;
-                        // Сворачиваем группу временных контактов
-                        if GroupId = '0000' then
-                          Collapsed := True;
+                        with Categories.Add do
+                        begin
+                          Caption := URLDecode(Tri_Node.Properties.Value(C_Name));
+                          GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Name));
+                          GroupId := Tri_Node.Properties.Value(C_Id);
+                          GroupType := C_Icq;
+                          GroupImage := 242;
+                          // Сворачиваем группу временных контактов
+                          if GroupId = '0000' then
+                            Collapsed := True;
+                        end;
                       end;
                     end;
                   end;
