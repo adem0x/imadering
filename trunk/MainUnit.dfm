@@ -735,6 +735,7 @@ object MainForm: TMainForm
     end
     object ICQAddGroup: TMenuItem
       ImageIndex = 153
+      OnClick = ICQAddGroupClick
     end
     object ICQAddContact: TMenuItem
       ImageIndex = 143
@@ -832,6 +833,7 @@ object MainForm: TMainForm
     end
     object MRAAddGroup: TMenuItem
       ImageIndex = 153
+      OnClick = MRAAddGroupClick
     end
     object MRAAddContact: TMenuItem
       ImageIndex = 143
@@ -936,6 +938,7 @@ object MainForm: TMainForm
     end
     object JabberAddGroup: TMenuItem
       ImageIndex = 153
+      OnClick = JabberAddGroupClick
     end
     object JabberAddContact: TMenuItem
       ImageIndex = 143
