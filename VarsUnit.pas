@@ -51,7 +51,6 @@ const
   C_GT = '?';
   C_AS = '<b>%s</b>';
   C_NN = '-';
-  С_Hour = 3600000 / MSecsPerDay;
   C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
   C_WM_APPBAR = WM_USER + 1;
@@ -101,7 +100,6 @@ const
   C_TLV = 'TLV';
   C_Value = 'Value';
   C_NoCL = 'nocl';
-  C_IgCL = 'igcl';
   C_Gtrans = 'Gtrans';
   C_MaskPass = '----------------------';
   C_Login = 'Login';
@@ -131,6 +129,9 @@ const
   C_HTML_Female = '<IMG NAME=I SRC="./Icons/%s/female.gif" ALIGN=ABSMIDDLE BORDER=0>';
   C_HTML_head = '<html><head>%s<title>%s</title></head><body>';
   C_HTML_Email = '<a href="mailto:%s">%s</a>';
+  C_HTML_Font_Red = '<font color=clred>';
+  C_HTML_Font_Blue = '<font color=clblue>';
+  C_HTML_Font_End = '</font>';
   C_cbold = 'cbold';
   C_cdef = 'cdef';
   C_nbsp = '&nbsp;';
@@ -149,7 +150,6 @@ const
   C_Auth = 'Auth';
   C_AuthBoth = 'both';
   C_AuthNone = 'none';
-  C_XStatus = 'XStatus';
   C_XText = 'XText';
   C_Geo = 'Geo';
   C_InMess = 'InMess';
@@ -169,6 +169,7 @@ const
   C_IntIP = 'IntIP';
   C_MsgCannel = 'MsgCannel';
   C_Caps = 'Caps';
+  C_ProtoVer = 'ProtoVer';
   // Команды для информации
   C_NameInfo = 'Name_info';
   C_Nick = 'Nick';
@@ -470,7 +471,7 @@ var
 {$REGION 'LangVars'}
 
   // Переменные для языка | Lang_Vars[127].L_S
-  Lang_Vars: packed array[0..164] of record
+  Lang_Vars: packed array[0..166] of record
     L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
@@ -636,7 +637,9 @@ var
     (L_N: 'ShortURL'; L_S: ''), // 161
     (L_N: 'DellContactOK'; L_S: ''), // 162
     (L_N: 'DellContactErr'; L_S: ''), // 163
-    (L_N: 'RenGroupErr'; L_S: '')); // 164
+    (L_N: 'RenGroupErr'; L_S: ''), // 164
+    (L_N: 'Send'; L_S: ''), // 165
+    (L_N: 'BuildDate'; L_S: '')); // 166
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}

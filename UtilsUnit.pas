@@ -82,7 +82,6 @@ procedure ICQA_SendPkt(Channel, Data: string);
 function NumToIp(Addr: LongWord): string;
 function UnixToDateTime(const Avalue: Int64): TDateTime;
 function DateTimeToUnix(ConvDate: TDateTime): Longint;
-function GetTimeZone: Integer;
 function TailLineTail(Ahistory: string; AlinesCount: Integer): string;
 procedure FormFlash(Hnd: Hwnd);
 function ExisValidCharactersText(Value: string): Boolean;
@@ -450,8 +449,7 @@ end;
 procedure JvXML_LoadStr(var JvXML: TJvSimpleXml; DataStr: string);
 begin
   // Загружаем xml данные и выставляем параметры
-  DataStr := #$EF + #$BB + #$BF + UTF8Encode('<?xml version="1.0" encoding="UTF-8" ?>' + DataStr);
-  JvXML.LoadFromString(DataStr);
+  JvXML.LoadFromString(#$EF + #$BB + #$BF + UTF8Encode('<?xml version="1.0" encoding="UTF-8" ?>' + DataStr));
 end;
 
 {$ENDREGION}
@@ -1443,25 +1441,19 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'GetTimeZone'}
-
-function GetTimeZone: Integer;
-var
-  TimeZone: TTimeZoneInformation;
-begin
-  GetTimeZoneInformation(TimeZone);
-  Result := TimeZone.Bias div -60;
-end;
-
-{$ENDREGION}
 {$REGION 'UnixToDateTime'}
 
 function UnixToDateTime(const Avalue: Int64): TDateTime;
+const
+  UnixStartDate: TDateTime = 25569;
+var
+  x: double;
+  lTimeZone: TTimeZoneInformation;
 begin
-  // Вычисляем время из юникс представления времени
-  Result := ((Avalue / SecsPerDay) + UnixDateDelta) + GetTimeZone * С_Hour;
-  // Почему то + 1 час нужно добавить для точности
-  Result := Result + С_Hour;
+  GetTimeZoneInformation(lTimeZone);
+  x := (Avalue / 86400) + UnixStartDate;
+  Result := x;
+  Result := Result - (lTimeZone.Bias / 1440);
 end;
 
 {$ENDREGION}

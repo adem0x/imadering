@@ -24,7 +24,7 @@ uses
   Dialogs,
   StdCtrls,
   CategoryButtons,
-  Buttons;
+  Buttons, ExtCtrls;
 
 type
   TMemoForm = class(TForm)
@@ -33,6 +33,13 @@ type
     YesBitBtn: TBitBtn;
     NoBitBtn: TBitBtn;
     CountLabel: TLabel;
+    UpdatePanel: TPanel;
+    LastVerLabel: TLabel;
+    NewVerLabel: TLabel;
+    LastNumberLabel: TLabel;
+    NewNumberLabel: TLabel;
+    LastDateLabel: TLabel;
+    NewDateLabel: TLabel;
     procedure YesBitBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -48,7 +55,7 @@ type
     Invite: Boolean;
     UpDate: Boolean;
     Twit: Boolean;
-    procedure UpDateVersion(M: string);
+    procedure UpDateVersion(xVer, xDate, xInfo: string);
     procedure PostInTwitter(M: string);
     procedure TranslateForm;
   end;
@@ -92,7 +99,6 @@ begin
   TranslateForm;
   // Присваиваем иконку окну и кнопке
   MainForm.AllImageList.GetBitmap(139, NoBitBtn.Glyph);
-  MainForm.AllImageList.GetBitmap(140, YesBitBtn.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
@@ -152,21 +158,33 @@ end;
 {$ENDREGION}
 {$REGION 'UpDateVersion'}
 
-procedure TMemoForm.UpDateVersion(M: string);
+procedure TMemoForm.UpDateVersion(xVer, xDate, xInfo: string);
 begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(6, Icon);
   // Отображаем информацию и запрос на закачку новой версии
-  Caption := Lang_Vars[42].L_S;
+  Caption := Lang_Vars[13].L_S;
   HeadLabel.Caption := Lang_Vars[41].L_S;
   CountLabel.Caption := EmptyStr;
-  InfoMemo.Text := Lang_Vars[13].L_S + C_RN + C_RN + M;
+  InfoMemo.Text := xInfo;
+  YesBitBtn.Caption := Lang_Vars[42].L_S;
+  YesBitBtn.Glyph.Assign(nil);
+  MainForm.AllImageList.GetBitmap(267, YesBitBtn.Glyph);
+  UpdatePanel.Visible := True;
+  InfoMemo.Top := 87;
+  InfoMemo.Height := 224;
+  // Отображаем информацию о текущей версии
+  LastNumberLabel.Caption := V_FullVersion;
+  LastDateLabel.Caption := Lang_Vars[166].L_S + C_TN + C_BN + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
+  // Отображаем информацию о новой версии
+  NewNumberLabel.Caption := xVer;
+  NewDateLabel.Caption := Lang_Vars[166].L_S + C_TN + C_BN + xDate;
   // Ставим флаги функции окна
   UpDate := True;
   Invite := False;
   Twit := False;
   // Блокируем мемо
-  InfoMemo.readonly := True;
+  InfoMemo.ReadOnly := True;
   InfoMemo.Color := ClBtnFace;
 end;
 
@@ -177,10 +195,16 @@ procedure TMemoForm.PostInTwitter(M: string);
 begin
   // Ставим иконку окну
   MainForm.AllImageList.GetIcon(272, Icon);
-  // Отображаем информацию и запрос на закачку новой версии
-  Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
-  HeadLabel.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
+  // Переключаем окно в режим постинга в Twitter
+  Caption := C_Twitter;
+  HeadLabel.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]) + C_GT;
   InfoMemo.Text := M;
+  YesBitBtn.Caption := Lang_Vars[165].L_S;
+  YesBitBtn.Glyph.Assign(nil);
+  MainForm.AllImageList.GetBitmap(166, YesBitBtn.Glyph);
+  UpdatePanel.Visible := False;
+  InfoMemo.Top := 27;
+  InfoMemo.Height := 284;
   // Ставим флаги функции окна
   UpDate := False;
   Invite := False;
@@ -196,8 +220,6 @@ end;
 {$REGION 'YesBitBtnClick'}
 
 procedure TMemoForm.YesBitBtnClick(Sender: TObject);
-// label
-// x;
 var
   FrmLogin: TLoginForm;
 begin
@@ -303,7 +325,6 @@ begin
     ICQ_ReqAuthSend(RoasterForm.Roaster_Sel_Button.UIN, Memo1.Text);
     end;
     //
-    x: ;
     ModalResult := mrOk; }
 end;
 

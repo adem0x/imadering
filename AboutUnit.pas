@@ -283,7 +283,7 @@ begin
   // Сведения о версии программы
   VersionLabel.Caption := Format(Lang_Vars[4].L_S, [V_FullVersion]);
   // Получаем дату компиляци файла
-  DataLabel.Caption := DataLabel.Caption + C_BN + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
+  DataLabel.Caption := Lang_Vars[166].L_S + C_TN + C_BN + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
   // Присваиваем начальное значение длинны списка титров
   AboutLen := 0;
   // Стартуем показ титров

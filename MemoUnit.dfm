@@ -48,18 +48,18 @@ object MemoForm: TMemoForm
   end
   object InfoMemo: TMemo
     Left = 8
-    Top = 27
+    Top = 87
     Width = 475
-    Height = 284
+    Height = 224
     TabStop = False
     ScrollBars = ssVertical
     TabOrder = 0
     OnChange = InfoMemoChange
   end
   object YesBitBtn: TBitBtn
-    Left = 386
+    Left = 364
     Top = 317
-    Width = 97
+    Width = 119
     Height = 25
     Default = True
     DoubleBuffered = True
@@ -79,5 +79,76 @@ object MemoForm: TMemoForm
     TabOrder = 2
     TabStop = False
     OnClick = NoBitBtnClick
+  end
+  object UpdatePanel: TPanel
+    Left = 8
+    Top = 27
+    Width = 475
+    Height = 54
+    BevelKind = bkTile
+    BevelOuter = bvNone
+    TabOrder = 3
+    object LastVerLabel: TLabel
+      Left = 130
+      Top = 8
+      Width = 61
+      Height = 13
+      Alignment = taRightJustify
+      Caption = 'LastVerLabel'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object NewVerLabel: TLabel
+      Left = 129
+      Top = 28
+      Width = 62
+      Height = 13
+      Alignment = taRightJustify
+      Caption = 'NewVerLabel'
+    end
+    object LastNumberLabel: TLabel
+      Left = 197
+      Top = 8
+      Width = 98
+      Height = 13
+      Caption = 'LastNumberLabel'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGreen
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object NewNumberLabel: TLabel
+      Left = 197
+      Top = 28
+      Width = 97
+      Height = 13
+      Caption = 'NewNumberLabel'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clMaroon
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object LastDateLabel: TLabel
+      Left = 301
+      Top = 8
+      Width = 68
+      Height = 13
+      Caption = 'LastDateLabel'
+    end
+    object NewDateLabel: TLabel
+      Left = 301
+      Top = 28
+      Width = 69
+      Height = 13
+      Caption = 'NewDateLabel'
+    end
   end
 end
