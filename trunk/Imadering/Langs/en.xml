@@ -42,7 +42,7 @@
     <GtransErr_2 c="You must first select the language for the translation!"/>
     <Apply c="Apply"/>
     <Empty c="( Empty )"/>
-    <NewVerYES c="We find the new version IMadering._r__r_To view go to the website www.imadering.com"/>
+    <NewVerYES c="Available a new version of IMadering"/>
     <NewVerNO c="New version not found."/>
     <NewVerErr c="Error obtaining data the new version."/>
     <DownCount c="Download: %s KB"/>
@@ -71,8 +71,8 @@
     <ClientVariable c="Possible client"/>
     <CellularPhone c="Cellular"/>
     <Note c="Note"/>
-    <UpDateAuto c="Update version automatically?"/>
-    <UpDateCaption c="Update"/>
+    <UpDateAuto c="Download the new version?"/>
+    <UpDateCaption c="Download"/>
     <QReply c="Hi!;How are you?;Bye"/>
     <HistoryDell c="Are you sure you want to delete the history of communications?"/>
     <UserCloseChat c="The interlocutor closed the chat window!"/>
@@ -166,6 +166,8 @@
     <ShortURL c="Short reference of URL: &quot;%s&quot; copied in the clipboard."/>
     <DellContactOK c="Contact was successfully removed from your contact list!"/>
     <DellContactErr c="Error when deleting a contact."/>
+    <Send c="Send"/>
+    <BuildDate c="Build date"/>
   </Vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
@@ -332,7 +334,6 @@
   </Infos>
   <AboutForm c="About">
     <SiteLabel c="Site program:"/>
-    <DataLabel c="Build date:"/>
     <HistoryLabel c="History"/>
     <LegalLabel c="License"/>
     <CheckUpdateBitBtn c="Check update"/>
@@ -1146,8 +1147,9 @@
     <TopAllCopyHTML c="Copy all"/>
   </ContactInfoForm>
   <MemoForm c="">
-    <YesBitBtn c="Yes"/>
     <NoBitBtn c="No"/>
+    <LastVerLabel c="You are using version:"/>
+    <NewVerLabel c="The latest available version:"/>
   </MemoForm>
   <XStatusForm c=" Additional ICQ status">
     <BirthDayCheckBox c="Show ball birthday"/>

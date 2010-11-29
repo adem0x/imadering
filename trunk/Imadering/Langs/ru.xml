@@ -42,7 +42,7 @@
     <GtransErr_2 c="Сначала необходимо выбрать языки для перевода!"/>
     <Apply c="Применить"/>
     <Empty c="( Пусто )"/>
-    <NewVerYES c="Доступна новая версия IMadering._r__r_Для ознакомления зайдите на сайт www.imadering.com"/>
+    <NewVerYES c="Доступна новая версия IMadering"/>
     <NewVerNO c="Новой версии не обнаружено."/>
     <NewVerErr c="Ошибка получения данных о новой версии."/>
     <DownCount c="Скачано: %s KB"/>
@@ -71,8 +71,8 @@
     <ClientVariable c="Возможный клиент"/>
     <CellularPhone c="Сотовый"/>
     <Note c="Заметка"/>
-    <UpDateAuto c="Обновить версию автоматически?"/>
-    <UpDateCaption c="Обновление"/>
+    <UpDateAuto c="Скачать новую версию программы?"/>
+    <UpDateCaption c="Скачать"/>
     <QReply c="Привет!;Как дела?;Пока"/>
     <HistoryDell c="Вы действительно хотите удалить историю сообщений?"/>
     <UserCloseChat c="Собеседник закрыл окно чата!"/>
@@ -166,6 +166,8 @@
     <ShortURL c="Короткая ссылка URL &quot;%s&quot; скопирована в буфер обмена."/>
     <DellContactOK c="Контакт успешно удалён из вашего списка контактов!"/>
     <DellContactErr c="Ошибка при удалении контакта."/>
+    <Send c="Отправить"/>
+    <BuildDate c="Дата сборки"/>
   </Vars>
   <ProfileForm c="Выбор профиля">
     <ProfileLabel c="Локальный профиль:"/>
@@ -332,7 +334,6 @@
   </Infos>
   <AboutForm c="О программе">
     <SiteLabel c="Сайт программы:"/>
-    <DataLabel c="Дата сборки:"/>
     <HistoryLabel c="История"/>
     <LegalLabel c="Лицензия"/>
     <CheckUpdateBitBtn c="Проверить обновление"/>
@@ -1146,8 +1147,9 @@
     <TopAllCopyHTML c="Копировать всё"/>
   </ContactInfoForm>
   <MemoForm c="">
-    <YesBitBtn c="Да"/>
     <NoBitBtn c="Нет"/>
+    <LastVerLabel c="Вы используете версию:"/>
+    <NewVerLabel c="Последняя доступная версия:"/>
   </MemoForm>
   <XStatusForm c=" Дополнительный ICQ статус">
     <BirthDayCheckBox c="Показывать шарик дня рождения"/>

@@ -44,7 +44,9 @@ uses
   VarsUnit,
   UtilsUnit,
   OverbyteIcsUrl,
-  IcqProtoUnit;
+  IcqProtoUnit,
+  JabberProtoUnit,
+  MraProtoUnit;
 {$ENDREGION}
 
 {$REGION 'OpenChatPage'}
@@ -156,6 +158,8 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    if Tri_Node.Properties.Value(C_Name) = EmptyStr then
+                      Continue;
                     // Сканируем группы КЛ
                     Group_Yes := False;
                     for G := 0 to Categories.Count - 1 do
@@ -195,6 +199,8 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    if Tri_Node.Properties.Value(C_Login) = EmptyStr then
+                      Continue;
                     A: ;
                     // Запоминаем статус этого контакта
                     S := Tri_Node.Properties.IntValue(C_Status);
@@ -222,18 +228,21 @@ begin
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               // Если статус в сети
-                              if (S <> 23) and (S <> 25) and (S <> 275) then
+                              if (S <> 23) and (S <> 275) and (S <> 312) then
                               begin
                                 // Поднимаем этот контакт вверх группы
                                 index := 0;
                                 // Назначаем ему синий цвет
                                 NickColor := 2;
+                                // Обновляем подсказку
+                                Hint := MRA_CreateHint(Tri_Node);
                               end
-                              else // Если статус не в сети и скрывать оффлайн контакты
+                              else // Если статус не в сети
                               begin
+                                // Если скрывать оффлайн контакты
                                 if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2) then
                                   Free
                                 else
@@ -245,9 +254,10 @@ begin
                                     NickColor := 1
                                   else
                                     NickColor := 0;
+                                  // Обновляем подсказку
+                                  Hint := MRA_CreateHint(Tri_Node);
                                 end;
                               end;
-                              // Hint := URLDecode(Items[I].SubItems[34]);
                             end;
                             Break;
                           end;
@@ -255,43 +265,43 @@ begin
                         // Добавляем контакт в эту группу в КЛ
                         if not Contact_Yes then
                         begin
-                          // Если статус не в сети и скрывать оффлайн контакты
-                          if (S = 23) and (MainForm.OnlyOnlineContactsToolButton.Down) and //
-                          (Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2) then
-                            Continue;
-                          // Добавляем контакт
-                          with Categories[G].Items.Add do
-                          begin
-                            Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
-                            if Caption = EmptyStr then
-                              Caption := Tri_Node.Properties.Value(C_Login);
-                            UIN := Tri_Node.Properties.Value(C_Login);
-                            Status := S;
-                            if Tri_Node.Properties.Value(C_Mess) = C_XX then
-                              ImageIndex := 165
-                            else
-                              ImageIndex := S;
-                            XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
-                            CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                            PImageIndex := -1;
-                            // Если статус в сети
-                            if (S <> 23) and (S <> 275) and (S <> 312) then
+                            // Если статус не в сети и скрывать оффлайн контакты
+                            if (S = 23) and (MainForm.OnlyOnlineContactsToolButton.Down) and //
+                            (Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2) then
+                              Continue;
+                            // Добавляем контакт
+                            with Categories[G].Items.Add do
                             begin
-                              // Поднимаем этот контакт вверх группы
-                              index := 0;
-                              // Назначаем ему синий цвет
-                              NickColor := 2;
-                            end
-                            else
-                            begin
-                              if Categories[G].GroupId <> C_NoCL then
-                                NickColor := 1
+                              Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
+                              if Caption = EmptyStr then
+                                Caption := Tri_Node.Properties.Value(C_Login);
+                              UIN := Tri_Node.Properties.Value(C_Login);
+                              Status := S;
+                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                                ImageIndex := 165
                               else
-                                NickColor := 0;
+                                ImageIndex := S;
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              CImageIndex := Tri_Node.Properties.IntValue(C_Client);
+                              PImageIndex := -1;
+                              // Если статус в сети
+                              if (S <> 23) and (S <> 275) and (S <> 312) then
+                              begin
+                                // Поднимаем этот контакт вверх группы
+                                index := 0;
+                                // Назначаем ему синий цвет
+                                NickColor := 2;
+                              end
+                              else
+                              begin
+                                if Categories[G].GroupId <> C_NoCL then
+                                  NickColor := 1
+                                else
+                                  NickColor := 0;
+                              end;
+                              ContactType := C_Mra;
+                              Hint := MRA_CreateHint(Tri_Node);
                             end;
-                            ContactType := C_Mra;
-                            // Hint := URLDecode(Items[I].SubItems[34]);
-                          end;
                         end;
                         Break;
                       end;
@@ -322,6 +332,8 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    if Tri_Node.Properties.Value(C_Name) = EmptyStr then
+                      Continue;
                     // Сканируем группы КЛ
                     Group_Yes := False;
                     for G := 0 to Categories.Count - 1 do
@@ -339,19 +351,16 @@ begin
                     // Если такую группу не нашли, то добавляем её
                     if not Group_Yes then
                     begin
-                      if Tri_Node.Properties.Value(C_Name) <> EmptyStr then
+                      with Categories.Add do
                       begin
-                        with Categories.Add do
-                        begin
-                          Caption := URLDecode(Tri_Node.Properties.Value(C_Name));
-                          GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Name));
-                          GroupId := Tri_Node.Properties.Value(C_Id);
-                          GroupType := C_Icq;
-                          GroupImage := 242;
-                          // Сворачиваем группу временных контактов
-                          if GroupId = '0000' then
-                            Collapsed := True;
-                        end;
+                        Caption := URLDecode(Tri_Node.Properties.Value(C_Name));
+                        GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Name));
+                        GroupId := Tri_Node.Properties.Value(C_Id);
+                        GroupType := C_Icq;
+                        GroupImage := 242;
+                        // Сворачиваем группу временных контактов
+                        if GroupId = '0000' then
+                          Collapsed := True;
                       end;
                     end;
                   end;
@@ -367,6 +376,8 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    if Tri_Node.Properties.Value(C_Login) = EmptyStr then
+                      Continue;
                     // Запоминаем статус этого контакта
                     S := Tri_Node.Properties.IntValue(C_Status);
                     // Сканируем группу контакта в КЛ
@@ -391,19 +402,22 @@ begin
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               // Если статус в сети
-                              if (S <> 9) and (S <> 80) and (S <> 214) then
+                              if (S <> 9) and (S <> 214) then
                               begin
                                 // Поднимаем этот контакт вверх группы
                                 index := 0;
                                 // Назначаем ему синий цвет
                                 NickColor := 2;
+                                // Обновляем подсказку
+                                Hint := ICQ_CreateHint(Tri_Node);
                               end
-                              else // Если статус не в сети и скрывать оффлайн контакты
+                              else // Если статус не в сети
                               begin
-                                if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) and (Categories[G].GroupId <> C_Phone_m2) then
+                                // Если скрывать оффлайн контакты
+                                if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
                                   Free
                                 else
                                 begin
@@ -414,9 +428,10 @@ begin
                                     NickColor := 1
                                   else
                                     NickColor := 0;
+                                  // Обновляем подсказку
+                                  Hint := ICQ_CreateHint(Tri_Node);
                                 end;
                               end;
-                              // Hint := URLDecode(Items[I].SubItems[34]);
                             end;
                             Break;
                           end;
@@ -424,42 +439,42 @@ begin
                         // Добавляем контакт в эту группу в КЛ
                         if not Contact_Yes then
                         begin
-                          // Если статус не в сети и скрывать оффлайн контакты
-                          if (S = 9) and (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
-                            Continue;
-                          // Добавляем контакт
-                          with Categories[G].Items.Add do
-                          begin
-                            Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
-                            if Caption = EmptyStr then
-                              Caption := Tri_Node.Properties.Value(C_Login);
-                            UIN := Tri_Node.Properties.Value(C_Login);
-                            Status := S;
-                            if Tri_Node.Properties.Value(C_Mess) = C_XX then
-                              ImageIndex := 165
-                            else
-                              ImageIndex := S;
-                            XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
-                            CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                            PImageIndex := -1;
-                            // Если статус в сети
-                            if (S <> 9) and (S <> 214) then
+                            // Если статус не в сети и скрывать оффлайн контакты
+                            if (S = 9) and (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
+                              Continue;
+                            // Добавляем контакт
+                            with Categories[G].Items.Add do
                             begin
-                              // Поднимаем этот контакт вверх группы
-                              index := 0;
-                              // Назначаем ему синий цвет
-                              NickColor := 2;
-                            end
-                            else
-                            begin
-                              if Categories[G].GroupId <> C_NoCL then
-                                NickColor := 1
+                              Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
+                              if Caption = EmptyStr then
+                                Caption := Tri_Node.Properties.Value(C_Login);
+                              UIN := Tri_Node.Properties.Value(C_Login);
+                              Status := S;
+                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                                ImageIndex := 165
                               else
-                                NickColor := 0;
+                                ImageIndex := S;
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              CImageIndex := Tri_Node.Properties.IntValue(C_Client);
+                              PImageIndex := -1;
+                              // Если статус в сети
+                              if (S <> 9) and (S <> 214) then
+                              begin
+                                // Поднимаем этот контакт вверх группы
+                                index := 0;
+                                // Назначаем ему синий цвет
+                                NickColor := 2;
+                              end
+                              else
+                              begin
+                                if Categories[G].GroupId <> C_NoCL then
+                                  NickColor := 1
+                                else
+                                  NickColor := 0;
+                              end;
+                              ContactType := C_Icq;
+                              Hint := ICQ_CreateHint(Tri_Node);
                             end;
-                            ContactType := C_Icq;
-                            // Hint := URLDecode(Items[I].SubItems[34]);
-                          end;
                         end;
                         Break;
                       end;
@@ -483,6 +498,8 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    if Tri_Node.Properties.Value(C_Name) = EmptyStr then
+                      Continue;
                     // Сканируем группы КЛ
                     Group_Yes := False;
                     for G := 0 to Categories.Count - 1 do
@@ -522,6 +539,8 @@ begin
                   Tri_Node := Sub_Node.Items.Item[I];
                   if Tri_Node <> nil then
                   begin
+                    if Tri_Node.Properties.Value(C_Login) = EmptyStr then
+                      Continue;
                     // Запоминаем статус этого контакта
                     S := Tri_Node.Properties.IntValue(C_Status);
                     // Сканируем группу контакта в КЛ
@@ -548,7 +567,7 @@ begin
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               // Если статус в сети
                               if (S <> 30) and (S <> 42) then
@@ -557,9 +576,12 @@ begin
                                 index := 0;
                                 // Назначаем ему синий цвет
                                 NickColor := 2;
+                                // Обновляем подсказку
+                                Hint := Jab_CreateHint(Tri_Node);
                               end
-                              else // Если статус не в сети и скрывать оффлайн контакты
+                              else // Если статус не в сети
                               begin
+                                // Если скрывать оффлайн контакты
                                 if (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
                                   Free
                                 else
@@ -571,9 +593,10 @@ begin
                                     NickColor := 1
                                   else
                                     NickColor := 0;
+                                  // Обновляем подсказку
+                                  Hint := Jab_CreateHint(Tri_Node);
                                 end;
                               end;
-                              // Hint := URLDecode(Items[I].SubItems[34]);
                             end;
                             Break;
                           end;
@@ -581,11 +604,61 @@ begin
                         // Добавляем контакт в эту группу в КЛ
                         if not Contact_Yes then
                         begin
+                            // Если статус не в сети и скрывать оффлайн контакты
+                            if (S = 30) and (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
+                              Continue;
+                            // Добавляем контакт
+                            with Categories[G].Items.Add do
+                            begin
+                              Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
+                              if Caption = EmptyStr then
+                                Caption := Tri_Node.Properties.Value(C_Login);
+                              UIN := Tri_Node.Properties.Value(C_Login);
+                              Status := S;
+                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                                ImageIndex := 165
+                              else
+                                ImageIndex := S;
+                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              CImageIndex := Tri_Node.Properties.IntValue(C_Client);
+                              PImageIndex := -1;
+                              // Если статус в сети
+                              if (S <> 30) and (S <> 42) then
+                              begin
+                                // Поднимаем этот контакт вверх группы
+                                index := 0;
+                                // Назначаем ему синий цвет
+                                NickColor := 2;
+                              end
+                              else
+                              begin
+                                if Categories[G].GroupId <> C_NoCL then
+                                  NickColor := 1
+                                else
+                                  NickColor := 0;
+                              end;
+                              ContactType := C_Jabber;
+                              Hint := Jab_CreateHint(Tri_Node);
+                            end;
+                        end;
+                        Break;
+                      end;
+                    end;
+                    // Если такую группу не нашли
+                    if not Group_Yes then
+                    begin
+                        with Categories.Add do
+                        begin
+                          Caption := URLDecode(Tri_Node.Properties.Value(C_Group + C_Id));
+                          GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Group + C_Id));
+                          GroupId := Tri_Node.Properties.Value(C_Group + C_Id);
+                          GroupType := C_Jabber;
+                          GroupImage := 43;
                           // Если статус не в сети и скрывать оффлайн контакты
-                          if (S = 30) and (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
+                          if (S = 9) and (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
                             Continue;
-                          // Добавляем контакт
-                          with Categories[G].Items.Add do
+                          // Добавляем контакт в эту группу в КЛ
+                          with Items.Add do
                           begin
                             Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
                             if Caption = EmptyStr then
@@ -596,7 +669,7 @@ begin
                               ImageIndex := 165
                             else
                               ImageIndex := S;
-                            XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
+                            XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
                             CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                             PImageIndex := -1;
                             // Если статус в сети
@@ -615,59 +688,9 @@ begin
                                 NickColor := 0;
                             end;
                             ContactType := C_Jabber;
-                            // Hint := URLDecode(Items[I].SubItems[34]);
+                            Hint := Jab_CreateHint(Tri_Node);
                           end;
                         end;
-                        Break;
-                      end;
-                    end;
-                    // Если такую группу не нашли
-                    if not Group_Yes then
-                    begin
-                      with Categories.Add do
-                      begin
-                        Caption := URLDecode(Tri_Node.Properties.Value(C_Group + C_Id));
-                        GroupCaption := URLDecode(Tri_Node.Properties.Value(C_Group + C_Id));
-                        GroupId := Tri_Node.Properties.Value(C_Group + C_Id);
-                        GroupType := C_Jabber;
-                        GroupImage := 43;
-                        // Если статус не в сети и скрывать оффлайн контакты
-                        if (S = 9) and (MainForm.OnlyOnlineContactsToolButton.Down) and (Categories[G].GroupId <> C_NoCL) then
-                          Continue;
-                        // Добавляем контакт в эту группу в КЛ
-                        with Items.Add do
-                        begin
-                          Caption := Trim(URLDecode(Tri_Node.Properties.Value(C_Nick)));
-                          if Caption = EmptyStr then
-                            Caption := Tri_Node.Properties.Value(C_Login);
-                          UIN := Tri_Node.Properties.Value(C_Login);
-                          Status := S;
-                          if Tri_Node.Properties.Value(C_Mess) = C_XX then
-                            ImageIndex := 165
-                          else
-                            ImageIndex := S;
-                          XImageIndex := Tri_Node.Properties.IntValue(C_XStatus);
-                          CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                          PImageIndex := -1;
-                          // Если статус в сети
-                          if (S <> 30) and (S <> 42) then
-                          begin
-                            // Поднимаем этот контакт вверх группы
-                            index := 0;
-                            // Назначаем ему синий цвет
-                            NickColor := 2;
-                          end
-                          else
-                          begin
-                            if Categories[G].GroupId <> C_NoCL then
-                              NickColor := 1
-                            else
-                              NickColor := 0;
-                          end;
-                          ContactType := C_Jabber;
-                          // Hint := URLDecode(Items[I].SubItems[34]);
-                        end;
-                      end;
                     end;
                   end;
                 end;
@@ -679,7 +702,7 @@ begin
             for G := 0 to Categories.Count - 1 do
             begin
               if (Categories[I].GroupId = C_Phone_m2) or (Categories[I].GroupId = C_AuthNone) or //
-              (Categories[I].GroupId = C_NoCL) or (Categories[I].GroupId = C_IgCL) or MainForm.HideEmptyGroups.Checked then
+              (Categories[I].GroupId = C_NoCL) or MainForm.HideEmptyGroups.Checked then
               begin
                 if Categories[I].Items.Count = 0 then
                 begin

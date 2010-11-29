@@ -32,7 +32,8 @@ uses
   Graphics,
   StdCtrls,
   GraphUtil,
-  ActnList;
+  ActnList,
+  OverbyteIcsUrl;
 
 { const
   crDragCopy = TCursor(-23); { New cursor, with a plus for copying }
@@ -3065,7 +3066,7 @@ begin
       if CurrentCat.GroupType > EmptyStr then
         HintStr := HintStr + C_BR + CurrentCat.GroupType;
       if CurrentCat.GroupId > EmptyStr then
-        HintStr := HintStr + C_BN + C_QN + C_Id + C_TN + C_BN + CurrentCat.GroupId + C_EN;
+        HintStr := HintStr + C_BN + C_QN + C_Id + C_TN + C_BN + UrlDecode(CurrentCat.GroupId) + C_EN;
 
       // Конец изменений
 

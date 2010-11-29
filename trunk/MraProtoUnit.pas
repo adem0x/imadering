@@ -232,6 +232,9 @@ procedure MRA_GoOffline;
 function MRA_StatusCodeToImg(KStatusCode, KXStatusCode: string): string;
 function MRA_ClientToImg(KClient: string): string;
 procedure MRA_ParseSMS_ACK(PktData: string);
+function MRA_StatusImgId2String(ImgId: string): string;
+function MRA_CreateHint(XML_Node: TJvSimpleXmlElem): string;
+
 {$ENDREGION}
 
 implementation
@@ -396,6 +399,18 @@ begin
           XML_Node := Root.Items.ItemNamed[C_Mra];
           if XML_Node <> nil then
           begin
+            // Открываем раздел групп
+            Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+            if Sub_Node = nil then
+              Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+            // Добавляем группу для контактов "не в списке"
+            Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+            if Tri_Node = nil then
+            begin
+              Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+              Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+              Tri_Node.Properties.Add(C_Id, C_NoCL);
+            end;
             // Ищем раздел контактов
             Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
             if Sub_Node <> nil then
@@ -737,15 +752,15 @@ begin
               end;
             end;
             Tri_Node.Properties.Add(C_Phone, URLEncode(KPhone));
-            Tri_Node.Properties.Add(C_XStatus + C_Name, URLEncode(KXStatus));
-            Tri_Node.Properties.Add(C_XStatus, Parse(C_LN, StatusIcons, 2));
+            Tri_Node.Properties.Add(C_XX + C_Status + C_Name, URLEncode(KXStatus));
+            Tri_Node.Properties.Add(C_XX + C_Status, Parse(C_LN, StatusIcons, 2));
             Tri_Node.Properties.Add(C_XText, URLEncode(KXText));
             Tri_Node.Properties.Add(C_Client + C_Name, URLEncode(KClient));
             Tri_Node.Properties.Add(C_Geo, URLEncode(KGeo));
             // Заполняем лог
             S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Login + C_TN + C_BN + KEmail + C_LN //
             + C_BN + C_Nick + C_TN + C_BN + GName + C_LN + C_BN + C_Auth + C_TN + C_BN + BoolToStr(KAuth) + C_LN + C_BN + C_Status //
-            + C_TN + C_BN + KStatus + C_LN + C_BN + C_Phone + C_TN + C_BN + KPhone + C_LN + C_BN + C_XStatus + C_TN + C_BN + KXStatus //
+            + C_TN + C_BN + KStatus + C_LN + C_BN + C_Phone + C_TN + C_BN + KPhone + C_LN + C_BN + C_XX + C_Status + C_TN + C_BN + KXStatus //
             + C_LN + C_BN + C_XText + C_TN + C_BN + KXText + C_LN + C_BN + C_Client + C_Name + C_TN + C_BN + KClient + C_LN + C_BN //
             + C_Geo + C_TN + C_BN + Text2Hex(GeoPkt) + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
@@ -828,8 +843,8 @@ begin
                 if (Tri_Node.Properties.IntValue(C_Status) <> 275) and (Tri_Node.Properties.IntValue(C_Status) <> 312) then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '23');
-                  RosterUpdateProp(Tri_Node, C_XStatus, '-1');
-                  RosterUpdateProp(Tri_Node, C_XStatus + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');
+                  RosterUpdateProp(Tri_Node, C_XX + C_Status + C_Name, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_XText, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_Client, '-1');
                   RosterUpdateProp(Tri_Node, C_Client + C_Name, EmptyStr);
@@ -874,7 +889,7 @@ begin
   S_Log := S_Log + C_Status + C_TN + C_BN + StatusCode + C_RN;
   // Получаем код дополнительного статуса
   XStatusCode := GetLastLS;
-  S_Log := S_Log + C_XStatus + C_TN + C_BN + XStatusCode + C_RN;
+  S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + XStatusCode + C_RN;
   // Получаем подпись дополнительного статуса
   XStatusText := GetLastLS;
   S_Log := S_Log + C_XText + C_TN + C_BN + XStatusText + C_RN;
@@ -896,8 +911,8 @@ begin
   if Get_Node <> nil then
   begin
     RosterUpdateProp(Get_Node, C_Status, Parse(C_LN, StatusIcons, 1));
-    RosterUpdateProp(Get_Node, C_XStatus + C_Name, XStatusCode);
-    RosterUpdateProp(Get_Node, C_XStatus, Parse(C_LN, StatusIcons, 2));
+    RosterUpdateProp(Get_Node, C_XX + C_Status + C_Name, XStatusCode);
+    RosterUpdateProp(Get_Node, C_XX + C_Status, Parse(C_LN, StatusIcons, 2));
     RosterUpdateProp(Get_Node, C_XText, URLEncode(XStatusText));
     RosterUpdateProp(Get_Node, C_Client + C_Name, URLEncode(KClient));
     RosterUpdateProp(Get_Node, C_Client, MRA_ClientToImg(KClient));
@@ -977,6 +992,81 @@ begin
   if Flag = '01000000' then
     DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[94].L_S, [C_Mra]), EmptyStr, 133, 3, 0);
 end;
+{$ENDREGION}
+{$REGION 'MRA_StatusImgId2String'}
+
+function MRA_StatusImgId2String(ImgId: string): string;
+begin
+  // Распознаём текст статуса из картинки
+  Result := Lang_Vars[81].L_S;
+  if ImgId = '26' then
+    Result := Lang_Vars[67].L_S
+  else if ImgId = '290' then
+    Result := Lang_Vars[68].L_S
+  else if ImgId = '291' then
+    Result := Lang_Vars[69].L_S
+  else if ImgId = '292' then
+    Result := Lang_Vars[70].L_S
+  else if ImgId = '293' then
+    Result := Lang_Vars[71].L_S
+  else if ImgId = '294' then
+    Result := Lang_Vars[72].L_S
+  else if ImgId = '22' then
+    Result := Lang_Vars[73].L_S
+  else if ImgId = '295' then
+    Result := Lang_Vars[74].L_S
+  else if ImgId = '296' then
+    Result := Lang_Vars[75].L_S
+  else if ImgId = '27' then
+    Result := Lang_Vars[76].L_S
+  else if ImgId = '24' then
+    Result := Lang_Vars[77].L_S
+  else if ImgId = '21' then
+    Result := Lang_Vars[78].L_S
+  else if ImgId = '23' then
+    Result := Lang_Vars[80].L_S
+  else if ImgId = '312' then
+    Result := Lang_Vars[81].L_S;
+end;
+
+{$ENDREGION}
+{$REGION 'MRA_CreateHint'}
+
+function MRA_CreateHint(XML_Node: TJvSimpleXmlElem): string;
+var
+  XText: string;
+begin
+  // Формируем всплывающую подсказку для контакта MRA
+  if XML_Node <> nil then
+  begin
+    // Учётная запись
+    Result := Format(C_AS, [C_Mra + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Login))]);
+    // Ник
+    if XML_Node.Properties.Value(C_Nick) <> XML_Node.Properties.Value(C_Login) then
+      Result := Result + C_BR + Format(C_AS, [URLDecode(XML_Node.Properties.Value(C_Nick))]);
+    Result := Result + C_BR;
+    // Статус
+    if XML_Node.Properties.Value(C_Client) = '220' then // Если статус требует авторизации, то пишем об этом
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + Lang_Vars[82].L_S
+    else if (XML_Node.Properties.Value(C_Status) = '23') then  // Если статус "Не в сети"
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + MainForm.JabberStatusOffline.Caption
+    else // Определяем статус и пишем его словами
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Blue + MRA_StatusImgId2String(XML_Node.Properties.Value(C_Status));
+    Result := Result + C_HTML_Font_End;
+    // Если есть текст доп. статуса, то пишем его
+    if XML_Node.Properties.Value(C_XText) <> EmptyStr then
+    begin
+      XText := URLDecode(XML_Node.Properties.Value(C_XText));
+      if Length(XText) > 30 then
+        XText := Copy(XText, 1, 30) + '...';
+      Result := Result + C_BR + C_HTML_Font_Red + XText + C_HTML_Font_End;
+    end;
+    // Клиент
+    if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Client + C_Name);
+  end;
+end;
+
 {$ENDREGION}
 
 end.

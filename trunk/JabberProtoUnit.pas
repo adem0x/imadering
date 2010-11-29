@@ -176,6 +176,16 @@ var
   Jabber_Offline_Phaze: Boolean = True;
   // Фазы работы конец
   J_SessionId: string;
+  // SSI begin
+  Jab_SSI_Phaze: Boolean = False;
+  Jab_Add_Contact_Phaze: Boolean = False;
+  Jab_Ren_Contact_Phaze: Boolean = False;
+  Jab_Dell_Contact_Phaze: Boolean = False;
+  Jab_Add_JID, Jab_Add_Group_Name: string;
+  Jab_Add_Group_Phaze: Boolean = False;
+  Jab_Ren_Group_Phaze: Boolean = False;
+  Jab_Dell_Group_Phaze: Boolean = False;
+  // SSI end
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -195,6 +205,10 @@ procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem);
 procedure Jab_SendMessage(MJID, Msg: string);
 procedure Jab_GetUserInfo(MJID: string);
 procedure Jab_ParseUserInfo(MJID: string; PktData: TJvSimpleXmlElem);
+procedure Jab_AddContact(CJID, CNick, CGroup: string);
+procedure Jab_DellContact(CJID: string);
+function Jab_StatusImgId2String(ImgId: string): string;
+function Jab_CreateHint(XML_Node: TJvSimpleXmlElem): string;
 
 {$ENDREGION}
 
@@ -335,6 +349,7 @@ begin
   Jabber_myBeautifulSocketBuffer := EmptyStr;
   Jabber_BuffPkt := EmptyStr;
   Jabber_Seq := 0;
+  Jab_SSI_Phaze := False;
   // Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do
   begin
@@ -372,8 +387,8 @@ begin
                 if Tri_Node.Properties.IntValue(C_Status) <> 42 then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '30');
-                  RosterUpdateProp(Tri_Node, C_XStatus, '-1');
-                  RosterUpdateProp(Tri_Node, C_XStatus + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');
+                  RosterUpdateProp(Tri_Node, C_XX + C_Status + C_Name, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_XText, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_Client, '-1');
                   RosterUpdateProp(Tri_Node, C_Client + C_Name, EmptyStr);
@@ -451,6 +466,8 @@ end;
 {$REGION 'Jab_ParseRoster'}
 
 procedure Jab_ParseRoster(PktData: TJvSimpleXmlElem);
+label
+  X;
 var
   Cnt, I: Integer;
   Item_Node, XML_Node, Sub_Node, Tri_Node, Group_Node: TJvSimpleXmlElem;
@@ -463,57 +480,93 @@ begin
     begin
       if Root <> nil then
       begin
-        // Очищаем раздел Jabber если он есть
-        XML_Node := Root.Items.ItemNamed[C_Jabber];
-        // Добавляем раздел групп
-        Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
-        if Sub_Node = nil then
-          Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
-        // Добавляем группу контактов с ошибочным идентификатором группы
-        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_AuthNone];
-        if Tri_Node = nil then
+        // Если это фаза работы с серверным КЛ
+        if Jab_SSI_Phaze then
         begin
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
-          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
-          Tri_Node.Properties.Add(C_Id, C_AuthNone);
-        end;
-        // Получаем количество записей с контактами
-        Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
-        Cnt := PktData.Items.Count;
-        // Разбираем список контактов в пакете
-        for I := 0 to Cnt - 1 do
-        begin
-          Item_Node := PktData.Items[I];
-          if Item_Node <> nil then
+          // Если это фаза добавления контакта
+          if Jab_Add_Contact_Phaze then
           begin
-            // Логин контакта
-            Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
-            JID := Item_Node.Properties.Value('jid');
-            Tri_Node.Properties.Add(C_Login, URLEncode(JID));
-            // Ник контакта
-            Nick := XML2Text(UTF8ToString(Item_Node.Properties.Value('name')));
-            if Nick = EmptyStr then
-              Nick := JID;
-            Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
-            // Авторизация
-            Tri_Node.Properties.Add(C_Auth, Item_Node.Properties.Value('subscription'));
-            // Группа контакта
-            Group := EmptyStr;
-            Group_Node := Item_Node.Items.ItemNamed['group'];
-            if Group_Node <> nil then
-            begin
-              Group := XML2Text(UTF8ToString(Group_Node.Value));
-              Tri_Node.Properties.Add(C_Group + C_Id, URLEncode(Group));
-            end;
-            if Group = EmptyStr then
-              Tri_Node.Properties.Add(C_Group + C_Id, C_AuthNone);
-            // Начальный статус
-            Tri_Node.Properties.Add(C_Status, 30);
+            Jab_Add_Contact_Phaze := False;
+            // Сообщаем об успешном добавлении контакта
+            DAShow(Lang_Vars[16].L_S + C_BN + C_Jabber, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
+            // Добавляем контакт в Ростер
+            goto X;
+          end
+          else if Jab_Dell_Contact_Phaze then
+          begin
+            Jab_Dell_Contact_Phaze := False;
+            // Сообщаем об успешном удалении контакта
+            DAShow(Lang_Vars[16].L_S + C_BN + C_Jabber, Lang_Vars[162].L_S, EmptyStr, 133, 3, 0);
+          end
+          else if Jab_Dell_Group_Phaze then
+          begin
+            Jab_Dell_Group_Phaze := False;
+            // Сообщаем об успешном удалении группы
+            DAShow(Lang_Vars[16].L_S + C_BN + C_Jabber, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
           end;
+          // Закрываем сесиию работы с серверным КЛ
+          Jab_SSI_Phaze := False;
+        end
+        else
+        begin
+          X: ;
+          // Открываем раздел Jabber если он есть
+          XML_Node := Root.Items.ItemNamed[C_Jabber];
+          // Добавляем раздел групп
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+          if Sub_Node = nil then
+            Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+          // Добавляем группу контактов с ошибочным идентификатором группы
+          Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_AuthNone];
+          if Tri_Node = nil then
+          begin
+            Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
+            Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
+            Tri_Node.Properties.Add(C_Id, C_AuthNone);
+          end;
+          // Открываем раздел контактов
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          // Получаем количество записей с контактами
+          Cnt := PktData.Items.Count;
+          // Разбираем список контактов в пакете
+          for I := 0 to Cnt - 1 do
+          begin
+            Item_Node := PktData.Items[I];
+            if Item_Node <> nil then
+            begin
+              // Если это не удаление записи на сервере
+              if Item_Node.Properties.Value('subscription') <> 'remove' then
+              begin
+                // Логин контакта
+                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
+                JID := Item_Node.Properties.Value('jid');
+                Tri_Node.Properties.Add(C_Login, URLEncode(JID));
+                // Ник контакта
+                Nick := XML2Text(UTF8ToString(Item_Node.Properties.Value('name')));
+                if Nick = EmptyStr then
+                  Nick := JID;
+                Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
+                // Авторизация
+                Tri_Node.Properties.Add(C_Auth, Item_Node.Properties.Value('subscription'));
+                // Группа контакта
+                Group := EmptyStr;
+                Group_Node := Item_Node.Items.ItemNamed['group'];
+                if Group_Node <> nil then
+                begin
+                  Group := XML2Text(UTF8ToString(Group_Node.Value));
+                  Tri_Node.Properties.Add(C_Group + C_Id, URLEncode(Group));
+                end;
+                if Group = EmptyStr then
+                  Tri_Node.Properties.Add(C_Group + C_Id, C_AuthNone);
+                // Начальный статус
+                Tri_Node.Properties.Add(C_Status, 30);
+              end;
+            end;
+          end;
+          // Запускаем обработку Ростера
+          V_CollapseGroupsRestore := True;
+          UpdateFullCL;
         end;
-        // Запускаем обработку Ростера
-        V_CollapseGroupsRestore := True;
-        UpdateFullCL;
       end;
     end;
   end;
@@ -701,6 +754,18 @@ begin
           XML_Node := Root.Items.ItemNamed[C_Jabber];
           if XML_Node <> nil then
           begin
+            // Открываем раздел групп
+            Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+            if Sub_Node = nil then
+              Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+            // Добавляем группу для контактов "не в списке"
+            Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+            if Tri_Node = nil then
+            begin
+              Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+              Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+              Tri_Node.Properties.Add(C_Id, C_NoCL);
+            end;
             // Ищем раздел контактов
             Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
             if Sub_Node <> nil then
@@ -1097,6 +1162,108 @@ begin
   end;
 end;
 {$ENDREGION}
+{$REGION 'Jab_AddContact'}
 
+procedure Jab_AddContact(CJID, CNick, CGroup: string);
+var
+  Pkt: string;
+begin
+  // Добавляем контакт
+  Pkt := Format(Iq_TypeSet, [Jabber_Seq]) + '<query xmlns=''' + Iq_Roster + '''>' //
+  + '<item jid=''' + CJID + ''' name=''' + CNick + ''' subscription=''none''><group>' + CGroup + '</group></item></query></iq>';
+  Jab_SendPkt(Pkt);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_DellContact'}
+
+procedure Jab_DellContact(CJID: string);
+var
+  Pkt: string;
+begin
+  // Удаляем контакт
+  Pkt := Format(Iq_TypeSet, [Jabber_Seq]) + '<query xmlns=''' + Iq_Roster + '''>' //
+  + '<item jid=''' + CJID + ''' subscription=''remove'' /></query></iq>';
+  Jab_SendPkt(Pkt);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_StatusImgId2String'}
+
+function Jab_StatusImgId2String(ImgId: string): string;
+begin
+  // Распознаём текст статуса из картинки
+  Result := Lang_Vars[81].L_S;
+  if ImgId = '36' then
+    Result := Lang_Vars[67].L_S
+  else if ImgId = '38' then
+    Result := Lang_Vars[68].L_S
+  else if ImgId = '37' then
+    Result := Lang_Vars[69].L_S
+  else if ImgId = '39' then
+    Result := Lang_Vars[70].L_S
+  else if ImgId = '40' then
+    Result := Lang_Vars[71].L_S
+  else if ImgId = '35' then
+    Result := Lang_Vars[72].L_S
+  else if ImgId = '29' then
+    Result := Lang_Vars[73].L_S
+  else if ImgId = '34' then
+    Result := Lang_Vars[74].L_S
+  else if ImgId = '32' then
+    Result := Lang_Vars[75].L_S
+  else if ImgId = '33' then
+    Result := Lang_Vars[76].L_S
+  else if ImgId = '28' then
+    Result := Lang_Vars[77].L_S
+  else if ImgId = '31' then
+    Result := Lang_Vars[78].L_S
+  else if ImgId = '30' then
+    Result := Lang_Vars[80].L_S
+  else if ImgId = '42' then
+    Result := Lang_Vars[81].L_S;
+end;
+
+{$ENDREGION}
+{$REGION 'Jab_CreateHint'}
+
+function Jab_CreateHint(XML_Node: TJvSimpleXmlElem): string;
+var
+  XText: string;
+begin
+  // Формируем всплывающую подсказку для контакта Jabber
+  if XML_Node <> nil then
+  begin
+    // Учётная запись
+    Result := Format(C_AS, ['JID' + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Login))]);
+    // Ник
+    if XML_Node.Properties.Value(C_Nick) <> XML_Node.Properties.Value(C_Login) then
+      Result := Result + C_BR + Format(C_AS, [URLDecode(XML_Node.Properties.Value(C_Nick))]);
+    Result := Result + C_BR;
+    // Статус
+    if XML_Node.Properties.Value(C_Client) = '220' then // Если статус требует авторизации, то пишем об этом
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + Lang_Vars[82].L_S
+    else if (XML_Node.Properties.Value(C_Status) = '30') then  // Если статус "Не в сети"
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + MainForm.JabberStatusOffline.Caption
+    else // Определяем статус и пишем его словами
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Blue + Jab_StatusImgId2String(XML_Node.Properties.Value(C_Status));
+    Result := Result + C_HTML_Font_End;
+    // Если есть текст доп. статуса, то пишем его
+    if XML_Node.Properties.Value(C_XText) <> EmptyStr then
+    begin
+      XText := URLDecode(XML_Node.Properties.Value(C_XText));
+      if Length(XText) > 30 then
+        XText := Copy(XText, 1, 30) + '...';
+      Result := Result + C_BR + C_HTML_Font_Red + XText + C_HTML_Font_End;
+    end;
+    // Клиент
+    if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Client + C_Name);
+  end;
+end;
+
+{$ENDREGION}
 end.
 

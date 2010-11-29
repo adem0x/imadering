@@ -360,19 +360,19 @@ begin
       NotifyPanel.Font.Color := ClWindowText;
     end;
     // Выводим текст доп. статуса и иконку доп статуса
-    if '' <> EmptyStr then
+    if Get_Node.Properties.Value(C_XText) <> EmptyStr then
     begin
       Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
       // Если есть и иконка доп. статуса
-      if '' <> '-1' then
+      if Get_Node.Properties.Value(C_XX + C_Status) <> '-1' then
         Doc := Doc + C_HistoryX;
-      Doc := Doc + Format(C_HistoryInfo, [URLDecode('')]);
+      Doc := Doc + Format(C_HistoryInfo, [URLDecode(Get_Node.Properties.Value(C_XText))]);
       LoadHTMLStrings(HTMLChatViewer, Doc);
       // Преобразуем и подгружаем иконку доп. статуса
-      if '' > '-1' then
+      if Get_Node.Properties.Value(C_XX + C_Status) > '-1' then
       begin
         V_XStatusImg.Assign(nil);
-        MainForm.AllImageList.GetBitmap(StrToInt('0'), V_XStatusImg);
+        MainForm.AllImageList.GetBitmap(StrToInt(Get_Node.Properties.Value(C_XX + C_Status)), V_XStatusImg);
         V_XStatusMem.Clear;
         V_XStatusImg.SaveToStream(V_XStatusMem);
         HTMLChatViewer.ReplaceImage(C_XX, V_XStatusMem);

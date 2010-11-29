@@ -296,7 +296,6 @@ const
   ICQ_Status_ATWORK = '6000'; // Work [qip] 20
   ICQ_Status_LUNCH = '2001'; // Lunch [qip] 15
   ICQ_Status_OFFLINE = 'FFFF'; // Set status to offline 9
-  ICQ_Status_UNK = '8888'; // Unknown status 214
   // Не авторизован статус и иконка номер 80 предупредительная иконка номер 220
 
 {$ENDREGION}
@@ -477,11 +476,12 @@ function ICQ_CliSetOnlineInfoPkt(XClient, XVer, XStatusCap, Cap1, Cap2, Cap3: st
 function ICQ_CliSetICBMparametersPkt: string;
 function ICQ_CliSetFullStatusPkt: string;
 function ICQ_StatusImgId2Code(ImgId: Integer): string;
+function ICQ_StatusImgId2String(ImgId: string): string;
+function ICQ_StatusCode2ImgId(StatusCode: string): Integer;
 function ICQ_CliClientReadyPkt: string;
 function ICQ_CreateShortStatusPkt: string;
 procedure ICQ_UserUnkStatus_030A(PktData: string);
 procedure ICQ_UserOnline_Event(UIN, Status, UserClass, IntIP, IntPort, ExtIP, ConnFlag, ProtoVer, TimeReg, CapsId, Caps, IconHash, ConnTime: string);
-function ICQ_StatusCode2ImgId(StatusCode: string): Integer;
 procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
 procedure ICQ_UserOffline_030C(PktData: string);
 procedure ICQ_SendMessage_0406(SUIN, SMsg: string; InUnicode: Boolean);
@@ -520,7 +520,6 @@ procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCi
 procedure ICQ_UserSentTyping_0414(PktData: string);
 procedure ICQ_SRV_MSGACK_ADVANCED(PktData: string; ClientOk: Boolean);
 // procedure ICQ_Send_SMS(CNumber, Smstext: string);
-function ICQ_StatusCode2String(StatusCode: string): string;
 procedure ICQ_SearchNewBase(NickName, FirstName, LastName, City, Keywords: string; Gender, AgeRange, Marital, Country, Language, PageIndex: Integer; OnlineOnly: Boolean);
 procedure ICQ_GetAvatarBosServer;
 procedure ICQ_Parse_0105(PktData: string);
@@ -529,7 +528,7 @@ procedure ICQ_Parse_UserAvatar(PktData: string);
 procedure ICQ_SaveInfo_Auth_WebAvare(IAuth, IWebAvare: Boolean);
 procedure ICQ_UpdatePrivate_Group(InvizStatus: string);
 procedure ICQ_PassChange(Pass: string);
-function ICQ_CreateHint(RosterItem: TListItem): string;
+function ICQ_CreateHint(XML_Node: TJvSimpleXmlElem): string;
 
 {$ENDREGION}
 
@@ -768,113 +767,95 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'ICQ_StatusCode2String'}
+{$REGION 'ICQ_StatusImgId2String'}
 
-function ICQ_StatusCode2String(StatusCode: string): string;
-var
-  ShortStatus: string;
+function ICQ_StatusImgId2String(ImgId: string): string;
 begin
-  // Обрезаем статус до 4 символов для чистоты распознавания статуса
-  ShortStatus := RightStr(StatusCode, 4);
-  //
+  // Распознаём текст статуса из картинки
   Result := Lang_Vars[81].L_S;
-  if ShortStatus = ICQ_Status_ONLINE then
-    Result := Lang_Vars[77].L_S
-  else if ShortStatus = ICQ_Status_AWAY then
-    Result := Lang_Vars[73].L_S
-  else if ShortStatus = ICQ_Status_OFFLINE then
-    Result := Lang_Vars[80].L_S
-  else if ShortStatus = ICQ_Status_INVISIBLE then
-    Result := Lang_Vars[78].L_S
-  else if ShortStatus = ICQ_Status_OCCUPIED then
-    Result := Lang_Vars[75].L_S
-  else if ShortStatus = ICQ_Status_OCCUPIED1 then
-    Result := Lang_Vars[75].L_S
-  else if ShortStatus = ICQ_Status_DND then
-    Result := Lang_Vars[76].L_S
-  else if ShortStatus = ICQ_Status_DND1 then
-    Result := Lang_Vars[76].L_S
-  else if ShortStatus = ICQ_Status_DND2 then
-    Result := Lang_Vars[76].L_S
-  else if ShortStatus = ICQ_Status_NA then
-    Result := Lang_Vars[74].L_S
-  else if ShortStatus = ICQ_Status_NA1 then
-    Result := Lang_Vars[74].L_S
-  else if ShortStatus = ICQ_Status_LUNCH then
-    Result := Lang_Vars[72].L_S
-  else if ShortStatus = ICQ_Status_FFC then
+  if ImgId = '16' then
     Result := Lang_Vars[67].L_S
-  else if ShortStatus = ICQ_Status_DEPRESSION then
-    Result := Lang_Vars[69].L_S
-  else if ShortStatus = ICQ_Status_EVIL then
+  else if ImgId = '18' then
     Result := Lang_Vars[68].L_S
-  else if ShortStatus = ICQ_Status_ATHOME then
+  else if ImgId = '17' then
+    Result := Lang_Vars[69].L_S
+  else if ImgId = '19' then
     Result := Lang_Vars[70].L_S
-  else if ShortStatus = ICQ_Status_ATWORK then
+  else if ImgId = '20' then
     Result := Lang_Vars[71].L_S
-  else if ShortStatus = ICQ_Status_UNK then
+  else if ImgId = '15' then
+    Result := Lang_Vars[72].L_S
+  else if ImgId = '8' then
+    Result := Lang_Vars[73].L_S
+  else if ImgId = '14' then
+    Result := Lang_Vars[74].L_S
+  else if ImgId = '12' then
+    Result := Lang_Vars[75].L_S
+  else if ImgId = '13' then
+    Result := Lang_Vars[76].L_S
+  else if ImgId = '7' then
+    Result := Lang_Vars[77].L_S
+  else if ImgId = '10' then
+    Result := Lang_Vars[78].L_S
+  else if ImgId = '9' then
+    Result := Lang_Vars[80].L_S
+  else if ImgId = '214' then
     Result := Lang_Vars[81].L_S;
 end;
 
 {$ENDREGION}
 {$REGION 'ICQ_CreateHint'}
 
-function ICQ_CreateHint(RosterItem: TListItem): string;
+function ICQ_CreateHint(XML_Node: TJvSimpleXmlElem): string;
 var
-  LnLf, XText: string;
+  XText: string;
 begin
   // Формируем всплывающую подсказку для контакта ICQ
-  if RosterItem <> nil then
+  if XML_Node <> nil then
   begin
     // Учётная запись
-    Result := '<b>UIN: ' + RosterItem.Caption + '</b>';
+    Result := Format(C_AS, [C_Icq + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Login))]);
     // Ник
-    if RosterItem.SubItems[0] <> RosterItem.Caption then
-      Result := Result + '<br><b>' + URLDecode(RosterItem.SubItems[0]) + '</b>';
-    Result := Result + '<br>';
-    // Имя и Фамилия
-    //LnLf := NameAndLast(RosterItem.Caption, RosterItem.SubItems[3]);
-    if LnLf <> EmptyStr then
-      Result := Result + '<b>' + LnLf + '</b><br>';
-    // Если стасут оффлайн или неизвестный, то пишем "Не в сети"
-    if (RosterItem.SubItems[6] = '9') or (RosterItem.SubItems[6] = '214') then
-      Result := Result + Lang_Vars[47].L_S + C_TN + '<font color=clred>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(9))
-        // Если статус требует авторизации, то пишем об этом
-    else if RosterItem.SubItems[6] = '80' then
-      Result := Result + Lang_Vars[47].L_S + C_TN + '<font color=clred>' + Lang_Vars[82].L_S
-        // Определяем статус и пишем его словами
-    else
-      Result := Result + Lang_Vars[47].L_S + C_TN + '<font color=clblue>' + ICQ_StatusCode2String(ICQ_StatusImgId2Code(StrToInt(RosterItem.SubItems[6])));
-    Result := Result + '</font>';
+    if XML_Node.Properties.Value(C_Nick) <> XML_Node.Properties.Value(C_Login) then
+      Result := Result + C_BR + Format(C_AS, [URLDecode(XML_Node.Properties.Value(C_Nick))]);
+    Result := Result + C_BR;
+    // Статус
+    if XML_Node.Properties.Value(C_Client) = '220' then // Если статус требует авторизации, то пишем об этом
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + Lang_Vars[82].L_S
+    else if XML_Node.Properties.Value(C_Status) = '9' then // Если статус "Не в сети"
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + MainForm.ICQStatusOffline.Caption
+    else // Определяем статус и пишем его словами
+      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Blue + ICQ_StatusImgId2String(XML_Node.Properties.Value(C_Status));
+    Result := Result + C_HTML_Font_End;
     // Если есть текст доп. статуса, то пишем его
-    if RosterItem.SubItems[31] <> EmptyStr then
+    if XML_Node.Properties.Value(C_XText) <> EmptyStr then
     begin
-      XText := URLDecode(RosterItem.SubItems[31]);
-      if Length(XText) > 20 then
-        XText := Copy(XText, 1, 20) + '...';
-      Result := Result + '<br><font color=clred>' + XText + '</font>';
+      XText := URLDecode(XML_Node.Properties.Value(C_XText));
+      if Length(XText) > 30 then
+        XText := Copy(XText, 1, 30) + '...';
+      Result := Result + C_BR + C_HTML_Font_Red + XText + C_HTML_Font_End;
     end;
     // Время подключения
-    if RosterItem.SubItems[30] <> EmptyStr then
-      Result := Result + '<br>' + Lang_Vars[35].L_S + C_TN + RosterItem.SubItems[30];
+    if XML_Node.Properties.Value(C_Time) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[35].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Time);
     // Дата регистрации UIN
-    if RosterItem.SubItems[26] <> EmptyStr then
-      Result := Result + '<br>' + Lang_Vars[36].L_S + C_TN + RosterItem.SubItems[26];
+    if XML_Node.Properties.Value(C_RegDate) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[36].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_RegDate);
     // Версия протокола
-    if RosterItem.SubItems[25] <> EmptyStr then
-      Result := Result + '<br>' + Lang_Vars[37].L_S + C_TN + RosterItem.SubItems[25];
+    if XML_Node.Properties.Value(C_ProtoVer) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[37].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_ProtoVer);
     // Клиент
-    if RosterItem.SubItems[32] <> EmptyStr then
-      Result := Result + '<br>' + Lang_Vars[38].L_S + C_TN + RosterItem.SubItems[32];
+    if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Client + C_Name);
     // Телефон
-    if RosterItem.SubItems[9] <> EmptyStr then
-      Result := Result + '<br>' + Lang_Vars[39].L_S + C_TN + URLDecode(RosterItem.SubItems[9]);
+    if XML_Node.Properties.Value(C_Phone) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[39].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Phone));
     // Заметка
-    if RosterItem.SubItems[10] <> EmptyStr then
-      Result := Result + '<br>' + Lang_Vars[40].L_S + C_TN + URLDecode(RosterItem.SubItems[10]);
+    if XML_Node.Properties.Value(C_Note) <> EmptyStr then
+      Result := Result + C_BR + Lang_Vars[40].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Note));
     // Email
-    if RosterItem.SubItems[11] <> EmptyStr then
-      Result := Result + '<br>' + C_Email + C_TN + URLDecode(RosterItem.SubItems[11]);
+    if XML_Node.Properties.Value(C_Email) <> EmptyStr then
+      Result := Result + C_BR + C_Email + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Email));
   end;
 end;
 
@@ -1802,7 +1783,7 @@ begin
           // Закрываем сесиию удаления группы
           ICQ_SSI_Phaze := False;
           ICQ_Dell_Group_Phaze := False;
-          // Сообщаем об успешном добавлении группы
+          // Сообщаем об успешном удалении группы
           DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
         end
     else
@@ -2030,6 +2011,7 @@ var
   Auth, EndSearch, WebAware: Boolean;
   Date64: Int64;
   SDate64: TDateTime absolute Date64;
+  lTimeZone: TTimeZoneInformation;
   TLV, SubPkt, LastUpdateInfo, ACountry, S_Log, PTLV: string;
   CLContact: TButtonItem;
   ChatPage: TToolButton;
@@ -2164,7 +2146,8 @@ begin
                 Date64 := HexToInt64(Text2Hex(NextData(PktData, MsgLen)));
                 if Date64 > 0 then
                 begin
-                  SDate64 := SDate64 + (48 * С_Hour);
+                  GetTimeZoneInformation(lTimeZone);
+                  SDate64 := (SDate64 + 2) - (lTimeZone.Bias / 1440);
                   // Вычисляем возраст
                   Age := CalculateAge(SDate64, Date);
                   // Разбираем дату на день - месяц - год
@@ -2691,7 +2674,8 @@ begin
                 Date64 := HexToInt64(Text2Hex(NextData(PktData, MsgLen)));
                 if Date64 > 0 then
                 begin
-                  SDate64 := SDate64 + (48 * С_Hour);
+                  GetTimeZoneInformation(lTimeZone);
+                  SDate64 := (SDate64 + 2) - (lTimeZone.Bias / 1440);
                   LastUpdateInfo := DateTimeToStr(SDate64);
                   S_Log := S_Log + C_LastChange + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + LastUpdateInfo + C_RN;
                 end;
@@ -3016,9 +3000,7 @@ begin
   else if ShortStatus = ICQ_Status_ATHOME then
     Result := 19
   else if ShortStatus = ICQ_Status_ATWORK then
-    Result := 20
-  else if ShortStatus = ICQ_Status_UNK then
-    Result := 214;
+    Result := 20;
 end;
 
 {$ENDREGION}
@@ -3145,10 +3127,22 @@ begin
     begin
       if Root <> nil then
       begin
-        // Ищем раздел MRA
+        // Ищем раздел ICQ
         XML_Node := Root.Items.ItemNamed[C_Icq];
         if XML_Node <> nil then
         begin
+          // Открываем раздел групп
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+          if Sub_Node = nil then
+            Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+          // Добавляем группу для контактов "не в списке"
+          Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+          if Tri_Node = nil then
+          begin
+            Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+            Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
+            Tri_Node.Properties.Add(C_Id, C_NoCL);
+          end;
           // Ищем раздел контактов
           Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
           if Sub_Node <> nil then
@@ -3679,11 +3673,14 @@ begin
   if Get_Node <> nil then
   begin
     RosterUpdateProp(Get_Node, C_Status, IntToStr(StatusIcoInd));
-    RosterUpdateProp(Get_Node, C_XStatus + C_Name, URLEncode(IXStatNew));
-    RosterUpdateProp(Get_Node, C_XStatus, IntToStr(IXStat));
+    RosterUpdateProp(Get_Node, C_XX + C_Status + C_Name, URLEncode(IXStatNew));
+    RosterUpdateProp(Get_Node, C_XX + C_Status, IntToStr(IXStat));
     RosterUpdateProp(Get_Node, C_XText, URLEncode(IXText));
     RosterUpdateProp(Get_Node, C_Client + C_Name, PClient);
     RosterUpdateProp(Get_Node, C_Client, IntToStr(IClient));
+    RosterUpdateProp(Get_Node, C_Time, ConnTime);
+    RosterUpdateProp(Get_Node, C_RegDate, TimeReg);
+    RosterUpdateProp(Get_Node, C_ProtoVer, ProtoVer);
   end;
   // Запускаем таймер задержку событий Ростера
   MainForm.JvTimerList.Events[11].Enabled := False;
@@ -3704,8 +3701,8 @@ begin
   // Получаем длинну UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   UIN := NextData(PktData, Len);
-  // Запускаем событие контакт онлайн с неизвестным статусом номер иконки 214
-  ICQ_UserOnline_Event(UIN, '88888888', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
+  // Запускаем событие контакт онлайн
+  ICQ_UserOnline_Event(UIN, '00000000', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
 end;
 
 {$ENDREGION}
@@ -3759,7 +3756,7 @@ begin
           ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
           S_Log := S_Log + 'ConnFlag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnFlag + C_RN;
           ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
-          S_Log := S_Log + 'ProtoVer' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ProtoVer + C_RN;
+          S_Log := S_Log + C_ProtoVer + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ProtoVer + C_RN;
           // Дополнительные поля для как правило для нужд программистов
           S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
           S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 8)) + C_RN;
@@ -3782,7 +3779,7 @@ begin
       $0005: // Дата регистраций UIN
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-          TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
+          TimeReg := DateToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
           S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
         end;
       $0019: // Укороченные капабилитисы
@@ -4822,11 +4819,13 @@ begin
                 if Tri_Node.Properties.IntValue(C_Status) <> 214 then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '9');
-                  RosterUpdateProp(Tri_Node, C_XStatus, '-1');
-                  RosterUpdateProp(Tri_Node, C_XStatus + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');
+                  RosterUpdateProp(Tri_Node, C_XX + C_Status + C_Name, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_XText, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_Client, '-1');
                   RosterUpdateProp(Tri_Node, C_Client + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_Time, EmptyStr);
+                  RosterUpdateProp(Tri_Node, C_ProtoVer, EmptyStr);
                 end;
               end;
             end;

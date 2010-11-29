@@ -972,9 +972,61 @@ begin
 end;
 
 procedure TMainForm.JabberAddGroupClick(Sender: TObject);
+var
+  GName, GProto: string;
+  Get_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
-  //
-
+  // Начинаем добаление новой группы
+  GProto := C_Jabber;
+  if InputQuery(AddGroupCL.Caption + C_BN + GProto, AddGroupCL.Caption + C_TN, GName) then
+  begin
+    // Если имя группы пустое, то выходим
+    if GName = EmptyStr then
+      Exit;
+    // Ищем есть ли такая группа уже в Ростере
+    Get_Node := RosterGetItem(GProto, C_Group + C_SS, C_Name, UrlEncode(GName));
+    if Get_Node <> nil then
+    begin
+      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
+      Exit;
+    end;
+    Get_Node := RosterGetItem(GProto, C_Contact + C_SS, C_Group + C_Id, UrlEncode(GName));
+    if Get_Node <> nil then
+    begin
+      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
+      Exit;
+    end;
+    if Get_Node = nil then
+    begin
+      // Добавляем новую группу в локальный КЛ
+      if V_Roster <> nil then
+      begin
+        with V_Roster do
+        begin
+          if Root <> nil then
+          begin
+            XML_Node := Root.Items.ItemNamed[GProto];
+            if XML_Node <> nil then
+            begin
+              // Открываем раздел групп
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              if Sub_Node <> nil then
+              begin
+                Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node.Properties.Add(C_Name, URLEncode(GName));
+                Tri_Node.Properties.Add(C_Id, URLEncode(GName));
+              end;
+            end;
+          end;
+        end;
+      end;
+      // Строим локальный КЛ
+      UpdateFullCL;
+      // Сообщаем об успешном добавлении группы
+      DAShow(Lang_Vars[16].L_S + C_BN + GProto, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
+    end;
+  end;
 end;
 
 procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
@@ -1182,7 +1234,7 @@ procedure TMainForm.HttpClientRequestDone(Sender: TObject; RqType: THttpRequest;
 var
   {List: TStringList;
   Str: string;}
-  Ver, Mess: string;
+  Ver, FullVer, BuildDate, Mess: string;
   C_Flag: Boolean;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
@@ -1193,7 +1245,7 @@ var
     if not Assigned(MemoForm) then
       Application.CreateForm(TMemoForm, MemoForm);
     // Делаем запрос в форме на обновление программы
-    MemoForm.UpDateVersion(Mess);
+    MemoForm.UpDateVersion(FullVer, BuildDate, Mess);
     // Отображаем окно
     XShowForm(MemoForm);
   end;
@@ -1234,7 +1286,11 @@ begin
                     // Получаем версию сборки
                     XML_Node := Root.Items.ItemNamed['version'];
                     if XML_Node <> nil then
+                    begin
+                      FullVer := XML_Node.Properties.Value('v');
+                      BuildDate := XML_Node.Properties.Value('d');
                       Ver := XML_Node.Value;
+                    end;
                     // Получаем информацию к версии
                     XML_Node := Root.Items.ItemNamed['info'];
                     if XML_Node <> nil then
@@ -2356,7 +2412,7 @@ begin
     SList := TStringList.Create;
     try
       JclLastExceptStackListToStrings(SList, False, False, False, False);
-      AddLogText(Lang_Vars[52].L_S, SList.Text + C_BR + Lang_Vars[53].L_S, True);
+      AddLogText(Lang_Vars[52].L_S, SList.Text + C_RN + Lang_Vars[53].L_S, True);
     finally
       SList.Free;
     end;
@@ -2477,7 +2533,7 @@ begin
               if Root <> nil then
               begin
                 // Пишем в лог данные пакета
-                XLog(C_Jabber + C_BN + Log_Get, Trim(Root.SaveToString), C_Jabber);
+                XLog(C_Jabber + C_BN + Log_Get, UTF8ToString(Trim(Root.SaveToString)), C_Jabber);
                 // Если это стадия подключения к серверу жаббер
                 if Jabber_Connect_Phaze then
                 begin
@@ -3713,6 +3769,8 @@ begin
   end;
   // Запоминаем индекс кнопки
   ButtonInd := Button.index;
+  // Перерисовываем компонент
+  ContactList.Update;
 end;
 
 {$ENDREGION}
@@ -3823,6 +3881,8 @@ begin
     // Отображаем меню
     ContactListPopupMenu.Popup(FCursor.X, FCursor.Y);
   end;
+  // Перерисовываем компонент
+  ContactList.Update;
 end;
 
 {$ENDREGION}
@@ -3891,47 +3951,54 @@ begin
       Get_Node := RosterGetItem(Proto, C_Contact + C_SS, C_Login, UIN);
       if Get_Node <> nil then
       begin
-        // Проверяем в сети ли этот протокол
-        if NotProtoOnline(Proto) then
-          Exit;
-        // Смотрим какой это протокол
-        if Proto = C_Icq then
+        if Get_Node.Properties.Value(C_Group + C_Id) <> C_NoCL then
         begin
-          // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
-          if ICQ_SSI_Phaze then
+          // Проверяем в сети ли этот протокол
+          if NotProtoOnline(Proto) then
+            Exit;
+          // Смотрим какой это протокол
+          if Proto = C_Icq then
           begin
-            DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+            // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
+            if ICQ_SSI_Phaze then
+            begin
+              DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+              Exit;
+            end;
+            // Смотрим из какой группы этот контакт
+            if Get_Node.Properties.Value(C_Group + C_Id) = '0000' then // Если это контакт из группы временных, то удаляем его как временный
+            begin
+              ICQ_SSI_Phaze := True;
+              ICQ_Dell_Contact_Phaze := True;
+              ICQ_DeleteTempContact(UrlDecode(UIN), Get_Node.Properties.Value(C_Id), Get_Node.Properties.Value(C_Type), Get_Node.Properties.Value(C_Time + C_Id));
+            end
+            else
+            begin
+              // Иначе удаляем контакт как положено
+              ICQ_SSI_Phaze := True;
+              ICQ_Dell_Contact_Phaze := True;
+              ICQ_DeleteContact(UrlDecode(UIN), Get_Node.Properties.Value(C_Group + C_Id), Get_Node.Properties.Value(C_Id), Nick, //
+                '', '', '');
+            end;
+          end
+          else if Proto = C_Jabber then
+          begin
+            // Удаляем контакт из КЛ
+            Jab_SSI_Phaze := True;
+            Jab_Dell_Contact_Phaze := True;
+            Jab_DellContact(UrlDecode(UIN));
+          end
+          else if Proto = C_Mra then
+          begin
             Exit;
           end;
-          // Смотрим из какой группы этот контакт
-          if Get_Node.Properties.Value(C_Group + C_Id) = '0000' then // Если это контакт из группы временных, то удаляем его как временный
-          begin
-            ICQ_SSI_Phaze := True;
-            ICQ_Dell_Contact_Phaze := True;
-            ICQ_DeleteTempContact(UIN, Get_Node.Properties.Value(C_Id), Get_Node.Properties.Value(C_Type), Get_Node.Properties.Value(C_Time + C_Id));
-          end
-          else
-          begin
-            // Иначе удаляем контакт как положено
-            ICQ_SSI_Phaze := True;
-            ICQ_Dell_Contact_Phaze := True;
-            ICQ_DeleteContact(UIN, Get_Node.Properties.Value(C_Group + C_Id), Get_Node.Properties.Value(C_Id), Nick, //
-              '', '', '');
-          end;
-        end
-        else if Proto = C_Jabber then
-        begin
-          Exit;
-        end
-        else if Proto = C_Mra then
-        begin
-          Exit;
         end;
         // Удаляем этот контакт в Ростере
         Get_Node.Clear;
         // Удаляем этот контакт в КЛ
         KL_Item := ReqCLContact(Proto, UIN);
-        KL_Item.Free;
+        if KL_Item <> nil then
+          KL_Item.Free;
         // Обновляем КЛ
         UpdateFullCL;
       end;
@@ -3957,14 +4024,14 @@ begin
     GId := RoasterGroup.GroupId;
     if MessageBox(Handle, PChar(Format(Lang_Vars[117].L_S, [GName])), PChar(DeleteGroupCL.Caption + C_BN + GProto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
     begin
-      // Проверяем в сети ли этот протокол
-      if NotProtoOnline(GProto) then
-        Exit;
-      // Смотрим какой протокол у группы
-      if GProto = C_Icq then
+      // Если это группа не "Не в списке"
+      if GId <> C_NoCL then
       begin
-        // Если это группа не "Не в списке"
-        if GId <> C_NoCL then
+        // Проверяем в сети ли этот протокол
+        if NotProtoOnline(GProto) then
+          Exit;
+        // Смотрим какой протокол у группы
+        if GProto = C_Icq then
         begin
           // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
           if ICQ_SSI_Phaze then
@@ -4001,7 +4068,7 @@ begin
                           if Tri_Node <> nil then
                           begin
                             if Tri_Node.Properties.Value(C_Group + C_Id) = '0000' then
-                              TCL.Add(Tri_Node.Properties.Value(C_Login) + C_LN + Tri_Node.Properties.Value(C_Id) //
+                              TCL.Add(UrlDecode(Tri_Node.Properties.Value(C_Login)) + C_LN + Tri_Node.Properties.Value(C_Id) //
                                 + C_LN + Tri_Node.Properties.Value(C_Type) + C_LN + Tri_Node.Properties.Value(C_Time + C_Id));
                           end;
                         end;
@@ -4024,15 +4091,46 @@ begin
             ICQ_Dell_Group_Phaze := True;
             ICQ_DeleteGroup(GName, GId);
           end;
+        end
+        else if GProto = C_Jabber then
+        begin
+          // Удаляем все контакты в этой группе
+          if V_Roster <> nil then
+          begin
+            with V_Roster do
+            begin
+              if Root <> nil then
+              begin
+                XML_Node := Root.Items.ItemNamed[C_Jabber];
+                if XML_Node <> nil then
+                begin
+                  // Открываем раздел групп
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                  if Sub_Node <> nil then
+                  begin
+                    for I := 0 to Sub_Node.Items.Count - 1 do
+                    begin
+                      Tri_Node := Sub_Node.Items.Item[I];
+                      if Tri_Node <> nil then
+                      begin
+                        if Tri_Node.Properties.Value(C_Group + C_Id) = GId then
+                        begin
+                          Jab_SSI_Phaze := True;
+                          Jab_Dell_Group_Phaze := True;
+                          Jab_DellContact(UrlDecode(Tri_Node.Properties.Value(C_Login)));
+                        end;
+                      end;
+                    end;
+                  end;
+                end;
+              end;
+            end;
+          end;
+        end
+        else if GProto = C_Mra then
+        begin
+          Exit;
         end;
-      end
-      else if GProto = C_Jabber then
-      begin
-        Exit;
-      end
-      else if GProto = C_Mra then
-      begin
-        Exit;
       end;
       // Удаляем группу и контакты этой группы из Ростера
       if V_Roster <> nil then
@@ -4055,7 +4153,7 @@ begin
                   begin
                     if Tri_Node.Properties.Value(C_Id) = GId then
                     begin
-                      Tri_Node.Clear;
+                      Sub_Node.Items.Remove(Tri_Node);
                       Break;
                     end;
                   end;
