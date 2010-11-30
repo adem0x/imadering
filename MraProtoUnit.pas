@@ -453,20 +453,26 @@ begin
                 Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
                 Tri_Node.Properties.Add(C_Mess, C_XX);
               end;
+              // Записываем история в файл истории с этим контактом
+              HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_Htm_Ext;
+              Mess := Text2XML(Mess);
+              CheckMessage_BR(Mess);
+              DecorateURL(Mess);
+              SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
+              // Добавляем сообщение в текущий чат
+              if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(M_From), MsgD, Mess) then
+                UpdateFullCL
+              else
+              begin
+                // Снимаем метку о непрочитанном сообщении
+                if Tri_Node <> nil then
+                  RosterUpdateProp(Tri_Node, C_Mess, EmptyStr);
+              end;
             end;
           end;
         end;
       end;
     end;
-    // Записываем история в файл истории с этим контактов
-    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_Htm_Ext;
-    Mess := Text2XML(Mess);
-    CheckMessage_BR(Mess);
-    DecorateURL(Mess);
-    SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
-    // Добавляем сообщение в текущий чат
-    if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(M_From), MsgD, Mess) then
-      UpdateFullCL;
   end;
   // Пишем в лог
   if (K_Email <> EmptyStr) and (K_Mess <> EmptyStr) then
@@ -1063,7 +1069,7 @@ begin
     end;
     // Клиент
     if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Client + C_Name);
+      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
   end;
 end;
 

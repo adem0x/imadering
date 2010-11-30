@@ -690,7 +690,10 @@ begin
     // Смотрим кто у нас первый в очереди на прочтение сообщения
     if V_InMessList <> nil then
       if V_InMessList.Count > 0 then
-        UIN := V_InMessList.Strings[V_InMessList.Count - 1];
+      begin
+        UIN := V_InMessList.Strings[0];
+        V_InMessList.Delete(0);
+      end;
     // Если в очереди кто-то есть, то ищем его в КЛ
     with ContactList do
     begin
@@ -707,7 +710,7 @@ begin
               Categories[G].Items[K].ImageIndex := Categories[G].Items[K].Status;
               // Открываем чат с этим контактом
               OpenChatPage(Categories[G].Items[K], Categories[G].Items[K].ContactType);
-              // Выходим из циклов
+              // Выходим из цикла
               Exit;
             end;
           end

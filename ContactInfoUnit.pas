@@ -601,6 +601,7 @@ begin
         end;
         if Trim(WSite) <> EmptyStr then
         begin
+          DecorateURL(WSite);
           AddHTML(BottomHTMLViewer, Lang_Vars[143].L_S + C_TN + C_BN, C_cbold);
           AddHTML(BottomHTMLViewer, WSite, C_cdef, True);
         end;
