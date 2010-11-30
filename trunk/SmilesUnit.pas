@@ -116,6 +116,7 @@ begin
     begin
       Text := Text + C_BN + SmiliesHTMLViewer.TitleAttr;
       SelStart := GetTextLen;
+      Modified := True;
     end;
   // Закрываем подсказки
   CloseSmiliesHint;

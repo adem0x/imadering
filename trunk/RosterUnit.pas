@@ -114,7 +114,7 @@ begin
       // Отображаем окно сообщений
       XShowForm(ChatForm);
       // Ставим фокус в поле ввода текста
-      if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
+      if (ChatForm.Visible) and (InputRichEdit.CanFocus) then
         InputRichEdit.SetFocus;
     end;
   end;

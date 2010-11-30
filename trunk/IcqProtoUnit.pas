@@ -35,7 +35,8 @@ uses
   GtransUnit,
   JvSimpleXml,
   OverbyteIcsUtils,
-  LogUnit;
+  LogUnit,
+  StrUtils;
 
 {$ENDREGION}
 {$REGION 'Const Capabilities'}
@@ -296,7 +297,7 @@ const
   ICQ_Status_ATWORK = '6000'; // Work [qip] 20
   ICQ_Status_LUNCH = '2001'; // Lunch [qip] 15
   ICQ_Status_OFFLINE = 'FFFF'; // Set status to offline 9
-  // Не авторизован статус и иконка номер 80 предупредительная иконка номер 220
+  ICQ_Status_UNK = '8888'; // Unknown status 214
 
 {$ENDREGION}
 {$REGION 'Const Messages ID'}
@@ -846,7 +847,7 @@ begin
       Result := Result + C_BR + Lang_Vars[37].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_ProtoVer);
     // Клиент
     if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Client + C_Name);
+      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
     // Телефон
     if XML_Node.Properties.Value(C_Phone) <> EmptyStr then
       Result := Result + C_BR + Lang_Vars[39].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Phone));
@@ -3000,7 +3001,9 @@ begin
   else if ShortStatus = ICQ_Status_ATHOME then
     Result := 19
   else if ShortStatus = ICQ_Status_ATWORK then
-    Result := 20;
+    Result := 20
+  else if ShortStatus = ICQ_Status_UNK then
+    Result := 214;
 end;
 
 {$ENDREGION}
@@ -3108,7 +3111,7 @@ begin
     with GTransForm.GtransListView.Items.Add do
     begin
       // Изменяем направление перевода для исходящих и входящих сообщений
-      ImageIndex := 167;
+      ImageIndex := 213;
       SubItems.Add(UIN);
       SubItems.Add(Mess);
       SubItems.Add(C_Icq);
@@ -3189,20 +3192,26 @@ begin
                 if ICQ_Work_Phaze then
                   ICQ_ReqInfo_New_Pkt(UIN);
             end;
+            // Записываем сообщение в файл истории с этим контактом
+            HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + C_Htm_Ext;
+            Mess := Text2XML(Mess);
+            CheckMessage_BR(Mess);
+            DecorateURL(Mess);
+            SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
+            // Добавляем сообщение в текущий чат
+            if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(UIN), MsgD, Mess) then
+              UpdateFullCL
+            else
+            begin
+              // Снимаем метку о непрочитанном сообщении
+              if Tri_Node <> nil then
+                RosterUpdateProp(Tri_Node, C_Mess, EmptyStr);
+            end;
           end;
         end;
       end;
     end;
   end;
-  // Записываем история в файл истории с этим контактов
-  HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + C_Htm_Ext;
-  Mess := Text2XML(Mess);
-  CheckMessage_BR(Mess);
-  DecorateURL(Mess);
-  SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
-  // Добавляем сообщение в текущий чат
-  if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(UIN), MsgD, Mess) then
-    UpdateFullCL;
 end;
 
 {$ENDREGION}
@@ -3702,7 +3711,7 @@ begin
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   UIN := NextData(PktData, Len);
   // Запускаем событие контакт онлайн
-  ICQ_UserOnline_Event(UIN, '00000000', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
+  ICQ_UserOnline_Event(UIN, '88888888', EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr, EmptyStr);
 end;
 
 {$ENDREGION}

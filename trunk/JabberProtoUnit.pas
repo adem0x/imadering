@@ -122,9 +122,9 @@ const
     (Client_Caps: 'http://bombus.pl/caps'; Client_Name: 'Bombus'; Client_Img: '212'), // 19
     (Client_Caps: 'http://exodus.jabberstudio.org/caps'; Client_Name: 'Exodus'; Client_Img: '-1'), // 20
     (Client_Caps: 'http://gaim.sf.net/caps'; Client_Name: 'Gaim'; Client_Img: '-1'), // 21
-    (Client_Caps: 'http://www.google.com/xmpp/client/caps'; Client_Name: 'GTalk'; Client_Img: '-1'), // 22
-    (Client_Caps: 'http://mail.google.com/xmpp/client/caps'; Client_Name: 'GMail'; Client_Img: '-1'), // 23
-    (Client_Caps: 'http://talk.google.com/xmpp/bot/caps'; Client_Name: 'GMail'; Client_Img: '-1'), // 24
+    (Client_Caps: 'http://www.google.com/xmpp/client/caps'; Client_Name: 'GTalk'; Client_Img: '77'), // 22
+    (Client_Caps: 'http://mail.google.com/xmpp/client/caps'; Client_Name: 'GMail'; Client_Img: '77'), // 23
+    (Client_Caps: 'http://talk.google.com/xmpp/bot/caps'; Client_Name: 'GMail'; Client_Img: '77'), // 24
     (Client_Caps: 'http://www.apple.com/ichat/caps'; Client_Name: 'iChat'; Client_Img: '-1'), // 25
     (Client_Caps: 'http://dev.jabbim.cz/jabbim/caps'; Client_Name: 'JabbIM'; Client_Img: '-1'), // 26
     (Client_Caps: 'http://jajc.jrudevels.org/caps'; Client_Name: 'JAJC'; Client_Img: '-1'), // 27
@@ -808,20 +808,26 @@ begin
                 Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
                 Tri_Node.Properties.Add(C_Mess, C_XX);
               end;
+              // Записываем история в файл истории с этим контактом
+              HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + C_Htm_Ext;
+              Mess := Text2XML(Mess);
+              CheckMessage_BR(Mess);
+              DecorateURL(Mess);
+              SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
+              // Добавляем сообщение в текущий чат
+              if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(PJID), MsgD, Mess) then
+                UpdateFullCL
+              else
+              begin
+                // Снимаем метку о непрочитанном сообщении
+                if Tri_Node <> nil then
+                  RosterUpdateProp(Tri_Node, C_Mess, EmptyStr);
+              end;
             end;
           end;
         end;
       end;
     end;
-    // Записываем история в файл истории с этим контактов
-    HistoryFile := V_ProfilePath + C_HistoryFolder + C_Jabber + C_BN + Jabber_LoginUIN + C_BN + PJID + C_Htm_Ext;
-    Mess := Text2XML(Mess);
-    CheckMessage_BR(Mess);
-    DecorateURL(Mess);
-    SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
-    // Добавляем сообщение в текущий чат
-    if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(PJID), MsgD, Mess) then
-      UpdateFullCL;
   end;
 end;
 
@@ -1260,7 +1266,7 @@ begin
     end;
     // Клиент
     if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Client + C_Name);
+      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
   end;
 end;
 

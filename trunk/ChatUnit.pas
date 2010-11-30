@@ -207,13 +207,12 @@ type
     OutMessIndex: LongInt;
     ChatButton: TButtonItem;
     User_Proto: string;
-    User_Avatar_Hash: string;
     procedure TranslateForm;
     procedure CheckMessage_ClearTag(var Msg: string);
     procedure AddChatText(Nick_Time, Mess_Text: string; MessIn: Boolean = False);
     procedure CreateFastReplyMenu;
     function AddMessInActiveChat(CNick, CPopMsg, CId, CMsgD, CMess: string): Boolean;
-    procedure CreateNewChat(CButton: TToolButton);
+    procedure CreateNewChat(CButton: TToolButton; ResetChat: Boolean = True);
     procedure RemoveChatPageButton(ChatButton: TToolButton);
     procedure Save_Input_Text;
   end;
@@ -259,11 +258,12 @@ const
 {$ENDREGION}
 {$REGION 'CreateNewChat'}
 
-procedure TChatForm.CreateNewChat(CButton: TToolButton);
+procedure TChatForm.CreateNewChat(CButton: TToolButton; ResetChat: Boolean = True);
 var
   UIN, HistoryFile, Doc, HistoryText, ImageFile, MyAvatarUIN: string;
+  First, Last, FullName, Age, Gender, Country: string;
   JvXML: TJvSimpleXml;
-  Get_Node, XML_Node: TJvSimpleXmlElem;
+  Get_Node, XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Применяем параметры нового чата
   UIN := CButton.HelpKeyword;
@@ -275,8 +275,14 @@ begin
     User_Proto := C_Mra;
   // Ставим учётную запись контакта в информационное поле
   UIN_Panel.Caption := UrlDecode(UIN);
-  // Очищаем поле ввода
-  InputRichEdit.Clear;
+  // Очищаем поле ввода и другие информации
+  if ResetChat then
+    InputRichEdit.Clear;
+  Name_Panel.Caption := EmptyStr;
+  City_Panel.Caption := EmptyStr;
+  Age_Panel.Caption := EmptyStr;
+  FlagImage.Picture.Assign(nil);
+  GenderImage.Picture.Assign(nil);
   // Ищем эту запись в Ростере и помечаем что сообщения прочитаны и получаем параметры
   Get_Node := RosterGetItem(User_Proto, C_Contact + C_SS, C_Login, UIN);
   if Get_Node <> nil then
@@ -284,103 +290,87 @@ begin
     // Снимаем метку о непрочитанном сообщении
     RosterUpdateProp(Get_Node, C_Mess, EmptyStr);
     CButton.Tag := Get_Node.Properties.IntValue(C_Status);
-    CButton.Hint := URLDecode('');
-    User_Avatar_Hash := Hex2Text('');
     // Загружаем файл истории сообщений
-    if User_Proto = C_Icq then
-      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + ICQ_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext
-    else if User_Proto = C_Jabber then
-      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + Jabber_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext
-    else if User_Proto = C_Mra then
-      HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + MRA_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext;
-    if FileExists(HistoryFile) then
+    if ResetChat then
     begin
-      // Проверяем создавать или нет архив истории
-      if CreateHistoryArhive(HistoryFile) then
+      if User_Proto = C_Icq then
+        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + ICQ_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext
+      else if User_Proto = C_Jabber then
+        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + Jabber_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext
+      else if User_Proto = C_Mra then
+        HistoryFile := V_ProfilePath + C_HistoryFolder + User_Proto + C_BN + MRA_LoginUIN + C_BN + UrlDecode(UIN) + C_Htm_Ext;
+      if FileExists(HistoryFile) then
       begin
-        // Если сжатие истории закончено успешно, то удаляем файл истории
-        DeleteFile(HistoryFile);
-        // Сообщаем о создании архива и записываем это в новый файл для памятки
-        HistoryText := Format(C_HistoryInfo, [Lang_Vars[66].L_S]);
-        SaveTextInHistory(HistoryText, HistoryFile);
+        // Проверяем создавать или нет архив истории
+        if CreateHistoryArhive(HistoryFile) then
+        begin
+          // Если сжатие истории закончено успешно, то удаляем файл истории
+          DeleteFile(HistoryFile);
+          // Сообщаем о создании архива и записываем это в новый файл для памятки
+          HistoryText := Format(C_HistoryInfo, [Lang_Vars[66].L_S]);
+          SaveTextInHistory(HistoryText, HistoryFile);
+        end
+        else
+          HistoryText := ReadFromFile(HistoryFile, true);
+      end;
+      // Отображаем историю в чате
+      if HistoryText <> EmptyStr then
+      begin
+        // Очищаем чат от другой истории
+        HTMLChatViewer.Clear;
+        // Добавляем стили
+        Doc := HTMLStyle;
+        // Загружаем из файла истории указанное количесво сообщений
+        Doc := Doc + TailLineTail(HistoryText, 5);
+        if not V_TextSmilies then
+          CheckMessage_Smilies(Doc);
+        SetLength(Doc, Length(Doc) - 6);
+        Doc := Doc + C_HR;
+        LoadHTMLStrings(HTMLChatViewer, Doc);
       end
       else
-        HistoryText := ReadFromFile(HistoryFile, true);
-    end;
-    // Отображаем историю в чате
-    if HistoryText <> EmptyStr then
-    begin
-      // Очищаем чат от другой истории
-      HTMLChatViewer.Clear;
-      // Добавляем стили
-      Doc := HTMLStyle;
-      // Загружаем из файла истории указанное количесво сообщений
-      Doc := Doc + TailLineTail(HistoryText, 5);
-      if not V_TextSmilies then
-        CheckMessage_Smilies(Doc);
-      SetLength(Doc, Length(Doc) - 6);
-      Doc := Doc + C_HR;
-      LoadHTMLStrings(HTMLChatViewer, Doc);
-    end
-    else
-    begin
-      // Очищаем чат от другой истории
-      HTMLChatViewer.Clear;
-      // Добавляем стили
-      Doc := HTMLStyle;
-      LoadHTMLStrings(HTMLChatViewer, Doc);
-    end;
-    // Ставим имя и фамилию в информационное поле
-    Name_Panel.Caption := '';
-    // Ставим город и возраст в информационное поле
-    City_Panel.Caption := '';
-    Age_Panel.Caption := '';
-    // Ставим флаг страны
-    ImageFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, '', EmptyStr);
-    if FileExists(ImageFile) then
-      FlagImage.Picture.LoadFromFile(ImageFile)
-    else
-      FlagImage.Picture.Assign(nil);
-    // Ставим иконку пола
-    ImageFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + '' + C_GIF_Ext;
-    if FileExists(ImageFile) then
-      GenderImage.Picture.LoadFromFile(ImageFile)
-    else
-      GenderImage.Picture.Assign(nil);
-    // Ставим клиент в информационное поле
-    if '' <> EmptyStr then
-    begin
-      NotifyPanel.Caption := '';
-      NotifyPanel.Font.Color := ClWindowText;
-      NotifyPanel.Hint := '';
-    end
-    else
-    begin
-      NotifyPanel.Caption := '...';
-      NotifyPanel.Font.Color := ClWindowText;
-    end;
-    // Выводим текст доп. статуса и иконку доп статуса
-    if Get_Node.Properties.Value(C_XText) <> EmptyStr then
-    begin
-      Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
-      // Если есть и иконка доп. статуса
-      if Get_Node.Properties.Value(C_XX + C_Status) <> '-1' then
-        Doc := Doc + C_HistoryX;
-      Doc := Doc + Format(C_HistoryInfo, [URLDecode(Get_Node.Properties.Value(C_XText))]);
-      LoadHTMLStrings(HTMLChatViewer, Doc);
-      // Преобразуем и подгружаем иконку доп. статуса
-      if Get_Node.Properties.Value(C_XX + C_Status) > '-1' then
       begin
-        V_XStatusImg.Assign(nil);
-        MainForm.AllImageList.GetBitmap(StrToInt(Get_Node.Properties.Value(C_XX + C_Status)), V_XStatusImg);
-        V_XStatusMem.Clear;
-        V_XStatusImg.SaveToStream(V_XStatusMem);
-        HTMLChatViewer.ReplaceImage(C_XX, V_XStatusMem);
+        // Очищаем чат от другой истории
+        HTMLChatViewer.Clear;
+        // Добавляем стили
+        Doc := HTMLStyle;
+        LoadHTMLStrings(HTMLChatViewer, Doc);
       end;
+      // Ставим клиент в информационное поле
+      if Get_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
+      begin
+        NotifyPanel.Hint := Get_Node.Properties.Value(C_Client + C_Name);
+        NotifyPanel.Caption := NotifyPanel.Hint;
+        NotifyPanel.Font.Color := ClWindowText;
+      end
+      else
+      begin
+        NotifyPanel.Caption := '...';
+        NotifyPanel.Font.Color := ClWindowText;
+      end;
+      // Выводим текст доп. статуса и иконку доп статуса
+      if Get_Node.Properties.Value(C_XText) <> EmptyStr then
+      begin
+        Doc := UTF8ToString(HTMLChatViewer.DocumentSource);
+        // Если есть и иконка доп. статуса
+        if Get_Node.Properties.Value(C_XX + C_Status) <> '-1' then
+          Doc := Doc + C_HistoryX;
+        Doc := Doc + Format(C_HistoryInfo, [URLDecode(Get_Node.Properties.Value(C_XText))]);
+        LoadHTMLStrings(HTMLChatViewer, Doc);
+        // Преобразуем и подгружаем иконку доп. статуса
+        if Get_Node.Properties.Value(C_XX + C_Status) > '-1' then
+        begin
+          V_XStatusImg.Assign(nil);
+          MainForm.AllImageList.GetBitmap(StrToInt(Get_Node.Properties.Value(C_XX + C_Status)), V_XStatusImg);
+          V_XStatusMem.Clear;
+          V_XStatusImg.SaveToStream(V_XStatusMem);
+          HTMLChatViewer.ReplaceImage(C_XX, V_XStatusMem);
+        end;
+      end;
+      // Ставим каретку в самый низ текста
+      HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
+      HTMLChatViewer.CaretPos := Length(Doc);
     end;
-    // Ставим каретку в самый низ текста
-    HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
-    HTMLChatViewer.CaretPos := Length(Doc);
     // Выставляем уникальные параметры для этого контакта
     GtransSpeedButton.Down := False;
     // Инициализируем XML
@@ -393,6 +383,61 @@ begin
           LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext);
           if Root <> nil then
           begin
+            XML_Node := Root.Items.ItemNamed[C_Infos];
+            if XML_Node <> nil then
+            begin
+              // Ставим имя и фамилию в информационное поле
+              Sub_Node := XML_Node.Items.ItemNamed[C_NameInfo];
+              if Sub_Node <> nil then
+              begin
+                First := Trim(URLDecode(Sub_Node.Properties.Value(C_First)));
+                Last := Trim(URLDecode(Sub_Node.Properties.Value(C_Last)));
+                FullName := Trim(URLDecode(Sub_Node.Properties.Value(C_Name)));
+                if IsNotNull([First, Last, FullName]) then
+                begin
+                  if FullName <> EmptyStr then
+                    Name_Panel.Caption := FullName
+                  else
+                  begin
+                    if First <> EmptyStr then
+                      Name_Panel.Caption := First + C_BN;
+                    Name_Panel.Caption := Name_Panel.Caption + Last;
+                  end;
+                end;
+              end;
+              // Ставим город и флаг страны
+              Sub_Node := XML_Node.Items.ItemNamed[C_HomeInfo];
+              if Sub_Node <> nil then
+              begin
+                City_Panel.Caption := URLDecode(Sub_Node.Properties.Value(C_City));
+                Country := URLDecode(Sub_Node.Properties.Value(C_Country));
+                ImageFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, Country, EmptyStr);
+                if FileExists(ImageFile) then
+                  FlagImage.Picture.LoadFromFile(ImageFile);
+              end;
+              // Ставим возраст в информационное поле
+              Sub_Node := XML_Node.Items.ItemNamed[C_AgeInfo];
+              if Sub_Node <> nil then
+              begin
+                Age := Sub_Node.Properties.Value(C_Age);
+                if (Age <> EmptyStr) and (Age <> '0') then
+                  Age_Panel.Caption := Lang_Vars[131].L_S + C_TN + C_BN + Age;
+              end;
+              // Ставим иконку пола
+              Sub_Node := XML_Node.Items.ItemNamed[C_PerInfo];
+              if Sub_Node <> nil then
+              begin
+                Gender := Sub_Node.Properties.Value(C_Gender);
+                if Gender = '1' then
+                  Gender := 'female'
+                else if Gender = '2' then
+                  Gender := 'male';
+                ImageFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + Gender + C_GIF_Ext;
+                if FileExists(ImageFile) then
+                  GenderImage.Picture.LoadFromFile(ImageFile);
+              end;
+            end;
+
             // Подгружаем параметры перевода для этого контакта
             {XML_Node := Root.Items.ItemNamed[C_Gtrans];
             if XML_Node <> nil then
@@ -403,9 +448,12 @@ begin
             // Подгружаем свою аватарку если установлена
 
             // Вставляем ранее набранный текст в поле набора
-            XML_Node := Root.Items.ItemNamed[C_OutMess];
-            if XML_Node <> nil then
-              InputRichEdit.Text := UrlDecode(XML_Node.Value);
+            if ResetChat then
+            begin
+              XML_Node := Root.Items.ItemNamed[C_OutMess];
+              if XML_Node <> nil then
+                InputRichEdit.Text := UrlDecode(XML_Node.Value);
+            end;
           end;
         end;
       end;
@@ -418,10 +466,11 @@ begin
   // Ставим курсор в поле ввода после последнего символа
   InputRichEdit.SelStart := InputRichEdit.GetTextLen;
   // Ставим фокус в поле ввода текста
-  if (InputRichEdit.CanFocus) and (ChatForm.Visible) then
+  if (ChatForm.Visible) and (InputRichEdit.CanFocus) then
     InputRichEdit.SetFocus;
   // Сбрасываем флаг модификации поля ввода
-  InputRichEdit.Modified := False;
+  if ResetChat then
+    InputRichEdit.Modified := False;
   // Удаляем отметку о сообщении из списка очереди входящих сообщений
   DellcIdInMessList(UIN);
   // Сбрасываем иконку сообщения в этой закладке
@@ -499,7 +548,6 @@ begin
     ContactImage.Picture.Assign(nil);
     ContactImage.Picture.Assign(NoAvatar.Picture);
     end;}
-
 end;
 
 {$ENDREGION}
@@ -536,7 +584,7 @@ begin
   // Играем звук входящего сообщения
   ImPlaySnd(2);
   // Показываем всплывашку с сообщением
-  DAShow(CNick, CPopMsg, CId, 165, 1, 0);
+  DAShow(CNick, CPopMsg, UrlDecode(CId), 165, 1, 0);
   // Ставим иконку с сообщением на закладке в чате
   ChatTab := ReqChatPage(CId);
   if ChatTab <> nil then
@@ -1166,7 +1214,7 @@ begin
     begin
       if Buttons[I].Down then
       begin
-        CreateNewChat(Buttons[I]);
+        CreateNewChat(Buttons[I], False);
         Break;
       end;
     end;
