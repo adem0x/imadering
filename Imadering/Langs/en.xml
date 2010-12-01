@@ -229,7 +229,7 @@
     <HistoryContact c="Message history"/>
     <CopyAccountContact c="Copy account name"/>
     <AddNewContact c="Add contact to list"/>
-    <EditContact c="Edit contact"/>
+    <EditContact c="Rename contact"/>
     <DeleteContact c="Delete contact"/>
     <FloatContactMenu c="Floating contact"/>
     <NextContactMenu c="Additional"/>
@@ -536,16 +536,6 @@
     <GroupLabel c="Group:"/>
     <AddContactButton c="Add"/>
   </AddContactForm>
-  <EditContactForm c="Edit contact">
-    <NickLabel c="Nickname:"/>
-    <PhoneLabel c="Phone:"/>
-    <EmailLabel c="Email:"/>
-    <NoteLabel c="Note:"/>
-    <OKButton c="Save"/>
-  </EditContactForm>
-  <GroupManagerForm>
-    <GNameLabel c="Group name:"/>
-  </GroupManagerForm>
   <IcqOptionsForm c="Options: ICQ">
     <ICQOptionButtonGroup_0 c="Account"/>
     <ICQOptionButtonGroup_1 c="Connecting"/>

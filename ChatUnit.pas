@@ -1972,6 +1972,8 @@ begin
       // Очищаем поле ввода теста
       InputRichEdit.Clear;
       InputRichEditChange(nil);
+      InputRichEdit.Modified := True;
+      Save_Input_Text;
       // Выходим
       Exit;
     end;
