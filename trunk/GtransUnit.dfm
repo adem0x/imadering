@@ -121,8 +121,12 @@ object GTransForm: TGTransForm
   object GtransHttpClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
-    Agent = 'Opera/9.64 (Windows NT 5.1; U; ru) Presto/2.1.1'
-    Accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*'
+    Agent = 'Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.5.24 Version/10.54'
+    Accept = 
+      'text/html, application/xml;q=0.9, application/xhtml+xml, image/p' +
+      'ng, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1'
+    AcceptLanguage = 'ru-RU,ru;q=0.9,en;q=0.8'
+    Connection = 'Keep-Alive'
     NoCache = False
     ContentTypePost = 'application/x-www-form-urlencoded'
     MultiThreaded = False

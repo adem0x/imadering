@@ -229,7 +229,7 @@
     <HistoryContact c="История сообщений"/>
     <CopyAccountContact c="Скопировать имя учётной записи"/>
     <AddNewContact c="Добавить контакт в список"/>
-    <EditContact c="Редактировать контакт"/>
+    <EditContact c="Переименовать контакт"/>
     <DeleteContact c="Удалить контакт"/>
     <FloatContactMenu c="Плавающий контакт"/>
     <NextContactMenu c="Дополнительно"/>
@@ -536,16 +536,6 @@
     <GroupLabel c="Группа:"/>
     <AddContactButton c="Добавить"/>
   </AddContactForm>
-  <EditContactForm c="Редактировать контакт">
-    <NickLabel c="Ник:"/>
-    <PhoneLabel c="Телефон:"/>
-    <EmailLabel c="Email:"/>
-    <NoteLabel c="Заметка:"/>
-    <OKButton c="Сохранить"/>
-  </EditContactForm>
-  <GroupManagerForm>
-    <GNameLabel c="Название группы:"/>
-  </GroupManagerForm>
   <IcqOptionsForm c="Опции: ICQ">
     <ICQOptionButtonGroup_0 c="Учётная запись"/>
     <ICQOptionButtonGroup_1 c="Подключение"/>
