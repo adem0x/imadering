@@ -554,10 +554,10 @@ begin
           ApplyProxyHttpClient(MRA_PhotoClient);
         end;
       // HTTP сокет для передачи файлов
-      if (Assigned(FileTransferForm)) and (FileTransferForm.SendFileHttpClient.State <> HttpConnected) then
+      if (Assigned(FileTransferForm)) and (FileTransferForm.SendFileClient.State <> HttpConnected) then
         begin
-          FileTransferForm.SendFileHttpClient.Abort;
-          ApplyProxyHttpClient(FileTransferForm.SendFileHttpClient);
+          FileTransferForm.SendFileClient.Abort;
+          ApplyProxyHttpClient(FileTransferForm.SendFileClient);
         end;
       // HTTP сокет для переводчика
       if (Assigned(GtransForm)) and (GtransForm.GtransHttpClient.State <> HttpConnected) then

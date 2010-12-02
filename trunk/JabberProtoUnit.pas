@@ -96,7 +96,7 @@ const
 {$ENDREGION}
 {$REGION 'Jabber_Client_Icons'}
   J_Client_Icons:
-    packed array[0..48] of record
+    packed array[0..50] of record
     Client_Caps: string;
     Client_Name: string;
     Client_Img: string;
@@ -148,7 +148,9 @@ const
     (Client_Caps: 'Mblogi.qip.ru'; Client_Name: 'Blogi QIP'; Client_Img: '-1'), // 45
     (Client_Caps: 'http://juick.com/caps'; Client_Name: 'Juick'; Client_Img: '-1'), // 46
     (Client_Caps: 'http://dev.jabbim.cz/jdisk/'; Client_Name: 'Jdisk'; Client_Img: '-1'), // 47
-    (Client_Caps: 'http://vacuum-im.googlecode.com'; Client_Name: 'Vacuum IM'; Client_Img: '-1')); // 48
+    (Client_Caps: 'http://vacuum-im.googlecode.com'; Client_Name: 'Vacuum IM'; Client_Img: '-1'), // 48
+    (Client_Caps: 'http://2010.qip.ru/caps'; Client_Name: 'QIP 2010'; Client_Img: '103'), // 49
+    (Client_Caps: 'http://imadering.com/caps'; Client_Name: 'IMadering Client'; Client_Img: '0')); // 50
 
 {$ENDREGION}
 {$REGION 'Vars'}

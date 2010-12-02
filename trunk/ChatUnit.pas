@@ -339,7 +339,7 @@ begin
       // Ставим клиент в информационное поле
       if Get_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
       begin
-        NotifyPanel.Hint := Get_Node.Properties.Value(C_Client + C_Name);
+        NotifyPanel.Hint := UrlDecode(Get_Node.Properties.Value(C_Client + C_Name));
         NotifyPanel.Caption := NotifyPanel.Hint;
         NotifyPanel.Font.Color := ClWindowText;
       end
@@ -1176,8 +1176,17 @@ begin
       DAShow(Lang_Vars[18].L_S, Lang_Vars[93].L_S, EmptyStr, 133, 3, 0);
       Exit;
     end;
+    // Активируем кнопки
+    DescEdit.Enabled := True;
+    DescEdit.Color := ClWindow;
+    PassEdit.Enabled := True;
+    PassEdit.Color := ClWindow;
+    SendFileButton.Enabled := True;
+    BottomInfoPanel.Caption := EmptyStr;
+    SendProgressBar.Position := 0;
     // Выбираем способ передачи файла
-    Tag := (Sender as TMenuItem).Tag; // 1 - UpWap.ru
+    // 1 - UpWap.ru
+    Tag := (Sender as TMenuItem).Tag;
     TopInfoPanel.Caption := Lang_Vars[88].L_S + Name_Panel.Caption;
     T_UIN := UIN_Panel.Caption;
     T_UserType := User_Proto;

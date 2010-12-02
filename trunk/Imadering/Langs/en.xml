@@ -189,6 +189,7 @@
     <ClearLogSpeedButton h="_b_Clean_d__r_Delete all the log"/>
     <SendEmailSpeedButton h="_b_Send by E-mail_d__r_Send all or selected text to the developers"/>
     <RosterSpeedButton h="_b_Unload roster_d__r_Save the database of contacts in the file"/>
+    <HTTP_DumpSpeedButton h="_b_Packages HTTP_d__r_Enable or disable_r_the display of log data protocol"/>
     <CopySelText_Menu c="Copy"/>
     <CopyAllText_Menu c="Copy all"/>
   </LogForm>
