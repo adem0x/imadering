@@ -160,7 +160,7 @@ object FileTransferForm: TFileTransferForm
     TabStop = False
     OnClick = SendFileButtonClick
   end
-  object SendFileHttpClient: THttpCli
+  object SendFileClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
     Agent = 'Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.5.24 Version/10.54'
@@ -180,15 +180,14 @@ object FileTransferForm: TFileTransferForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnSessionClosed = SendFileHttpClientSessionClosed
-    OnDocBegin = SendFileHttpClientDocBegin
-    OnDocEnd = SendFileHttpClientDocEnd
-    OnSendData = SendFileHttpClientSendData
-    OnSendEnd = SendFileHttpClientSendEnd
-    OnRequestDone = SendFileHttpClientRequestDone
+    OnSessionClosed = SendFileClientSessionClosed
+    OnDocBegin = SendFileClientDocBegin
+    OnSendData = SendFileClientSendData
+    OnSendEnd = SendFileClientSendEnd
+    OnRequestDone = SendFileClientRequestDone
     SocksAuthentication = socksNoAuthentication
-    OnSocksConnected = SendFileHttpClientSocksConnected
-    OnSocksError = SendFileHttpClientSocksError
+    OnSocksConnected = SendFileClientSocksConnected
+    OnSocksError = SendFileClientSocksError
     Left = 160
     Top = 8
   end

@@ -607,6 +607,7 @@ var
 begin
   // Копируем юин из хинта, ибо потом он пропадает! O_o
   zUIN := Hint;
+  zUIN := URLEncode(zUIN);
   // Если по окну нажата была правая клавиша мыши, то сбрасываем флаги сообщений для этого контакта
   if Button = mbRight then
   begin
@@ -616,11 +617,11 @@ begin
     if zUIN <> EmptyStr then
     begin
       // Сбрасываем иконку сообщения в Ростере
-      Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(zUIN));
+      Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, zUIN);
       if Get_Node = nil then
-        Get_Node := RosterGetItem(C_Mra, C_Contact + C_SS, C_Login, URLEncode(zUIN));
+        Get_Node := RosterGetItem(C_Mra, C_Contact + C_SS, C_Login, zUIN);
       if Get_Node = nil then
-        Get_Node := RosterGetItem(C_Jabber, C_Contact + C_SS, C_Login, URLEncode(zUIN));
+        Get_Node := RosterGetItem(C_Jabber, C_Contact + C_SS, C_Login, zUIN);
       if Get_Node <> nil then
       begin
         RosterUpdateProp(Get_Node, C_Mess, EmptyStr);

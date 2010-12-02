@@ -189,6 +189,7 @@
     <ClearLogSpeedButton h="_b_Очистить_d__r_Удалить все сообщения лога"/>
     <SendEmailSpeedButton h="_b_Отправить по E-mail_d__r_Отослать весь или выделенный текст разработчикам"/>
     <RosterSpeedButton h="_b_Выгрузить ростер_d__r_Сохранить базу данных контактов в файл"/>
+    <HTTP_DumpSpeedButton h="_b_Пакеты HTTP_d__r_Включить или выключить_r_отображение в логе данных протокола"/>
     <CopySelText_Menu c="Копировать"/>
     <CopyAllText_Menu c="Копировать всё"/>
   </LogForm>

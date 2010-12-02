@@ -4266,7 +4266,7 @@ begin
     MRA_PhotoClient.Abort;
     TwitterClient.Abort;
     if Assigned(FileTransferForm) then
-      FileTransferForm.SendFileHttpClient.Abort;
+      FileTransferForm.SendFileClient.Abort;
     if Assigned(GTransForm) then
       GTransForm.GtransHttpClient.Abort;
     // Уничтожаем ресурсы списков
@@ -4852,10 +4852,10 @@ var
 begin
   if NotProtoOnline((ContactList.SelectedItem as TButtonItem).ContactType) then
     Exit;
-  // --Открываем форму отправки файлов
+  // Открываем форму отправки файлов
   if not Assigned(FileTransferForm) then
-    FileTransferForm := TFileTransferForm.Create(Self);
-  // --Присваиваем переменную способа передачи
+    Application.CreateForm(TFileTransferForm, FileTransferForm);
+  // Присваиваем переменную способа передачи
   with FileTransferForm do
   begin
     if CancelBitBtn.Enabled then
@@ -4864,25 +4864,34 @@ begin
       DAShow(Lang_Vars[18].L_S, Lang_Vars[93].L_S, EmptyStr, 133, 3, 0);
       Exit;
     end;
+    // Активируем кнопки
+    DescEdit.Enabled := True;
+    DescEdit.Color := ClWindow;
+    PassEdit.Enabled := True;
+    PassEdit.Color := ClWindow;
+    SendFileButton.Enabled := True;
+    BottomInfoPanel.Caption := EmptyStr;
+    SendProgressBar.Position := 0;
     // Выбираем способ передачи файла
+    // 1 - UpWap.ru
     Tag := (Sender as TMenuItem).Tag;
     TopInfoPanel.Caption := Lang_Vars[88].L_S + (ContactList.SelectedItem as TButtonItem).Caption;
-    T_UIN := (ContactList.SelectedItem as TButtonItem).UIN;
+    T_UIN := UrlDecode((ContactList.SelectedItem as TButtonItem).UIN);
     T_UserType := (ContactList.SelectedItem as TButtonItem).ContactType;
-    // --Открываем диалог выбора файла для передачи
+    // Открываем диалог выбора файла для передачи
     if SendFileOpenDialog.Execute then
     begin
       T_FilePath := SendFileOpenDialog.FileName;
       T_FileName := GetFileName(SendFileOpenDialog.FileName);
       FileNamePanel.Caption := C_BN + T_FileName;
       FileNamePanel.Hint := T_FileName;
-      // --Вычисляем размер файла
+      // Вычисляем размер файла
       Fsize := GetFileSize(SendFileOpenDialog.FileName);
       if Fsize > 1000000 then
         FileSizePanel.Caption := FloatToStrF(Fsize / 1000000, FfFixed, 18, 3) + ' MB'
       else
         FileSizePanel.Caption := FloatToStrF(Fsize / 1000, FfFixed, 18, 3) + ' KB';
-      // --Отображаем окно
+      // Отображаем окно
       XShowForm(FileTransferForm);
     end;
   end;
