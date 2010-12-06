@@ -221,7 +221,7 @@ const
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
   C_UpdateURL = 'http://imadering.googlecode.com/files/Version.xml';
   C_GoogleSearch = 'http://www.google.com/search?client=imadering&q=%s&sourceid=imadering&ie=utf-8&oe=utf-8';
-  C_GoogleTrans = 'http://www.google.com/translate_a/t?client=t&sl=%s&tl=%s&ie=utf-8&oe=utf-8&q=%s';
+  C_GoogleTrans = 'http://www.google.com/translate_a/t?client=imadering&sl=%s&tl=%s&ie=utf-8&oe=utf-8&q=%s';
   // Twitter API
   C_Twitter_Host = 'http://api.twitter.com/';
   C_Twitter_OAuth_Consumer_Key = 'oauth_consumer_key=';

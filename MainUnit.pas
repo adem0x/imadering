@@ -4268,7 +4268,7 @@ begin
     if Assigned(FileTransferForm) then
       FileTransferForm.SendFileClient.Abort;
     if Assigned(GTransForm) then
-      GTransForm.GtransHttpClient.Abort;
+      GTransForm.GtransClient.Abort;
     // Уничтожаем ресурсы списков
     if Assigned(V_InMessList) then
       FreeAndNil(V_InMessList);

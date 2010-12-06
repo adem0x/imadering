@@ -79,9 +79,9 @@ object GTransForm: TGTransForm
   end
   object GtransListView: TListView
     Left = 0
-    Top = 85
+    Top = 108
     Width = 425
-    Height = 234
+    Height = 211
     Align = alBottom
     Columns = <
       item
@@ -118,7 +118,18 @@ object GTransForm: TGTransForm
     TabStop = False
     OnClick = GtansResetClick
   end
-  object GtransHttpClient: THttpCli
+  object TranslitCheckBox: TCheckBox
+    Left = 8
+    Top = 85
+    Width = 409
+    Height = 17
+    TabStop = False
+    Caption = '#Enable translit'
+    Checked = True
+    State = cbChecked
+    TabOrder = 6
+  end
+  object GtransClient: THttpCli
     LocalAddr = '0.0.0.0'
     ProxyPort = '80'
     Agent = 'Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.5.24 Version/10.54'
@@ -138,12 +149,12 @@ object GTransForm: TGTransForm
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
-    OnSessionClosed = GtransHttpClientSessionClosed
-    OnDocBegin = GtransHttpClientDocBegin
-    OnRequestDone = GtransHttpClientRequestDone
+    OnSessionClosed = GtransClientSessionClosed
+    OnDocBegin = GtransClientDocBegin
+    OnRequestDone = GtransClientRequestDone
     SocksAuthentication = socksNoAuthentication
-    OnSocksConnected = GtransHttpClientSocksConnected
-    OnSocksError = GtransHttpClientSocksError
+    OnSocksConnected = GtransClientSocksConnected
+    OnSocksError = GtransClientSocksError
     Left = 160
     Top = 144
   end

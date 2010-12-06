@@ -321,10 +321,10 @@ begin
         if List.Text <> EmptyStr then
         begin
           Doc := UTF8ToString(List.Text);
+          Xlog(SendFileClient.Name + C_BN + Log_Get, Trim(Doc), C_HTTP);
           case SendFileClient.Tag of // Определяем выполнение задания для данных по флагу
             0:
               begin
-                Xlog(SendFileClient.Name + C_BN + Log_Get, Doc, C_HTTP);
                 // Узнаём ключ сессии
                 Skey := EmptyStr;
                 Skey := IsolateTextString(Doc, 'action="', '"');
@@ -365,7 +365,6 @@ begin
               end;
             1:
               begin
-                Xlog(SendFileClient.Name + C_BN + Log_Get, Doc, C_HTTP);
                 // Ищем информацию об успешной закачке файла на сервер
                 if Pos(C_UpWap_FileOK, Doc) > 0 then
                 begin

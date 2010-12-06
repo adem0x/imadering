@@ -560,10 +560,10 @@ begin
           ApplyProxyHttpClient(FileTransferForm.SendFileClient);
         end;
       // HTTP сокет для переводчика
-      if (Assigned(GtransForm)) and (GtransForm.GtransHttpClient.State <> HttpConnected) then
+      if (Assigned(GtransForm)) and (GtransForm.GtransClient.State <> HttpConnected) then
         begin
-          GtransForm.GtransHttpClient.Abort;
-          ApplyProxyHttpClient(GtransForm.GtransHttpClient);
+          GtransForm.GtransClient.Abort;
+          ApplyProxyHttpClient(GtransForm.GtransClient);
         end;
       // HTTP сокет для игр
       if (Assigned(GamesForm)) and (GamesForm.GameLoadHttpClient.State <> HttpConnected) then

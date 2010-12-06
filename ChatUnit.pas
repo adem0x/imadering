@@ -372,7 +372,8 @@ begin
       HTMLChatViewer.CaretPos := Length(Doc);
     end;
     // Выставляем уникальные параметры для этого контакта
-    GtransSpeedButton.Down := False;
+    if ResetChat then
+      GtransSpeedButton.Down := False;
     // Инициализируем XML
     JvXML_Create(JvXML);
     try
@@ -437,22 +438,20 @@ begin
                   GenderImage.Picture.LoadFromFile(ImageFile);
               end;
             end;
-
-            // Подгружаем параметры перевода для этого контакта
-            {XML_Node := Root.Items.ItemNamed[C_Gtrans];
-            if XML_Node <> nil then
-            begin
-              GtransSpeedButton.Down := XML_Node.BoolValue;
-            end;}
-
-            // Подгружаем свою аватарку если установлена
-
             // Вставляем ранее набранный текст в поле набора
             if ResetChat then
             begin
               XML_Node := Root.Items.ItemNamed[C_OutMess];
               if XML_Node <> nil then
                 InputRichEdit.Text := UrlDecode(XML_Node.Value);
+              // Подгружаем параметры перевода для этого контакта
+              XML_Node := Root.Items.ItemNamed[C_Gtrans];
+              if XML_Node <> nil then
+              begin
+                GtransSpeedButton.Down := XML_Node.BoolValue;
+              end;
+              // Подгружаем свою аватарку если установлена
+
             end;
           end;
         end;
@@ -1429,11 +1428,14 @@ begin
   begin
     // Отображаем модально окно переводчика
     if not Assigned(GTransForm) then
-      GTransForm := TGTransForm.Create(MainForm);
-    GTransForm.Hide;
-    GTransForm.YourLangComboBox.Enabled := True;
-    GTransForm.ToLangComboBox.Enabled := True;
-    GTransForm.OKBitBtn.Enabled := True;
+      Application.CreateForm(TGTransForm, GTransForm);
+    with GTransForm do
+    begin
+      Hide;
+      YourLangComboBox.Enabled := True;
+      ToLangComboBox.Enabled := True;
+      OKBitBtn.Enabled := True;
+    end;
     // Если перевод выключен, то деактивируем кнопку перевода
     if GTransForm.ShowModal <> 1 then
       GtransSpeedButton.Down := False;
@@ -1447,8 +1449,8 @@ begin
     try
       with JvXML do
       begin
-        if FileExists(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + '.usr') then
-          LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + '.usr');
+        if FileExists(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext) then
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext);
         if Root <> nil then
         begin
           // Находим раздел gtrans если он есть
@@ -1460,7 +1462,7 @@ begin
           // Сохраняем состояние GTrans
           XML_Node.BoolValue := False;
           // Записываем сам файл
-          SaveToFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + '.usr');
+          SaveToFile(V_ProfilePath + C_AnketaFolder + User_Proto + C_BN + UIN_Panel.Caption + C_XML_Ext);
         end;
       end;
     finally
@@ -1492,7 +1494,7 @@ begin
   if Button = MbRight then
   begin
     if not Assigned(GTransForm) then
-      GTransForm := TGTransForm.Create(MainForm);
+      Application.CreateForm(TGTransForm, GTransForm);
     GTransForm.YourLangComboBox.Enabled := False;
     GTransForm.ToLangComboBox.Enabled := False;
     GTransForm.OKBitBtn.Enabled := False;
@@ -1843,7 +1845,7 @@ end;
 
 procedure TChatForm.InputRichEditKeyPress(Sender: TObject; var Key: Char);
 label
-  X;
+  X, Y;
 var
   MsgD, Msg, HMsg, HistoryFile: string;
 begin
@@ -1903,11 +1905,11 @@ begin
       // Копируем текст сообщения
       Msg := TrimRight(InputRichEdit.Text);
       // Переводим сообщение если активна функция Gtrans
-      {if GtransSpeedButton.Down then
+      if GtransSpeedButton.Down then
       begin
         // Если форма перевода не создана, то создаём её
         if not Assigned(GTransForm) then
-          GTransForm := TGTransForm.Create(MainForm);
+          Application.CreateForm(TGTransForm, GTransForm);
         // Заполняем переменные для перевода
         with GTransForm.GtransListView.Items.Add do
         begin
@@ -1917,12 +1919,8 @@ begin
           SubItems.Add(User_Proto);
         end;
         NotifyPanel.Caption := Lang_Vars[87].L_S;
-        // Очищаем поле ввода теста
-        InputRichEdit.Clear;
-        InputRichEditChange(Self);
-        // Выходим и предоставляем заверщить отправку сообщения технологии Gtans
-        Exit;
-      end;}
+        goto Y;
+      end;
       HMsg := Text2XML(Msg);
       // Добавляем сообщение в файл истории и в чат
       MsgD := V_YouAt + C_BN + C_QN + DateTimeChatMess + C_EN;
@@ -1979,6 +1977,7 @@ begin
       // Прокручиваем чат до конца
       HTMLChatViewer.VScrollBarPosition := HTMLChatViewer.VScrollBar.Max;
       // Очищаем поле ввода теста
+      Y: ;
       InputRichEdit.Clear;
       InputRichEditChange(nil);
       InputRichEdit.Modified := True;
