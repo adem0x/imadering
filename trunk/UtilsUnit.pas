@@ -95,6 +95,7 @@ function Chop(I, L: Integer; var S: string): string; overload;
 function Chop(Ss: string; var S: string): string; overload;
 function ReadFromFile(FileName: string; AsUnicode: boolean): string;
 function IsolateTextString(const S: string; Tag1, Tag2: string): string;
+procedure IsoLateText(const S: string; Tag1, Tag2: string; List: TStrings);
 function Int64ToHex(C: Int64): string;
 function Horospope(D, M: Integer): Integer;
 // function TranslitRus2Lat(const Str: string): string;
@@ -143,7 +144,7 @@ procedure JvXML_Create(var JvXML: TJvSimpleXml);
 procedure JvXML_LoadStr(var JvXML: TJvSimpleXml; DataStr: string);
 function StrArrayToStr(StrArr: array of string): string;
 //function UnpackArhive(HFile: string): Boolean;
-function HtmlStrToString(const HtmlText: string): string;
+//function HtmlStrToString(const HtmlText: string): string;
 // function Twit_ParseDateTime(Sdate: string): TDateTime;
 function ReverseHexUnicodeChar(S: string): string;
 function Text2UnicodeLEHex(Msg: string): string;
@@ -870,13 +871,10 @@ end;
 procedure CheckMessage_GAPI(var Msg: string);
 begin
   // Заменяем все коды спецсимволов в сообщении на соответствующий символ
-  Msg := ReplaceStr(Msg, '\u0026lt;', '<');
-  Msg := ReplaceStr(Msg, '\u0026gt;', '>');
-  Msg := ReplaceStr(Msg, '\u0026#39;', '''');
-  Msg := ReplaceStr(Msg, '\u003d', '=');
-  Msg := ReplaceStr(Msg, '\u0026quot;', '"');
-  Msg := ReplaceStr(Msg, '\u0026amp;', '&');
-  Msg := ReplaceStr(Msg, '\\\', '');
+  Msg := ReplaceStr(Msg, '\"', '"');
+  Msg := ReplaceStr(Msg, '\r\n', C_RN);
+  Msg := ReplaceStr(Msg, '\r', C_RN);
+  Msg := ReplaceStr(Msg, '\\', '\');
 end;
 
 {$ENDREGION}
@@ -1245,6 +1243,37 @@ begin
   until PScan = nil;
 end;
 
+{$ENDREGION}
+{$REGION 'IsoLateText'}
+  procedure IsoLateText(const S: string; Tag1, Tag2: string; List: TStrings);
+  var
+    PScan, PEnd, PTag1, PTag2: PChar;
+    FoundText: string;
+    SearchText: string;
+  begin
+    SearchText := Uppercase(S);
+    Tag1 := Uppercase(Tag1);
+    Tag2 := Uppercase(Tag2);
+    pTag1 := PChar(Tag1);
+    pTag2 := PChar(Tag2);
+    pScan := PChar(SearchText);
+    repeat
+      pScan := StrPos(PScan, PTag1);
+      if pScan <> nil then
+      begin
+        Inc(PScan, Length(Tag1));
+        pEnd := StrPos(PScan, PTag2);
+        if PEnd <> nil then
+        begin
+          SetString(FoundText, Pchar(S) + (PScan - PChar(SearchText)), PEnd - PScan);
+          list.Add(FoundText);
+          PScan := PEnd + Length(tag2);
+        end
+        else
+          PScan := nil;
+      end;
+    until PScan = nil;
+  end;
 {$ENDREGION}
 {$REGION 'ReadFromFile'}
 
@@ -2398,7 +2427,7 @@ end;
 {$ENDREGION}
 {$REGION 'HtmlStrToString'}
 
-function HtmlStrToString(const HtmlText: string): string;
+{function HtmlStrToString(const HtmlText: string): string;
 var
   I, J, HtmlLength: Integer;
 begin
@@ -2420,7 +2449,7 @@ begin
       Result := Result + HtmlText[I];
     Inc(I);
   end;
-end;
+end;}
 
 {$ENDREGION}
 {$REGION 'Twit_ParseDateTime'}

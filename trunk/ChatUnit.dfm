@@ -75,6 +75,7 @@ object ChatForm: TChatForm
       SelectedButtonColor = 15717318
       ShowHint = True
       TabOrder = 0
+      TabStop = False
       OnButtonClicked = ChatCategoryButtonsButtonClicked
       OnContextPopup = ChatCategoryButtonsContextPopup
       OnHotButton = ChatCategoryButtonsHotButton

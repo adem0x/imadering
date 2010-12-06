@@ -38,7 +38,7 @@
     <Status16 c="Authorization required"/>
     <GtransProcess c="Translation ..."/>
     <GtransOK c="Translated"/>
-    <GtransErr_1 c="Translation errors: %s"/>
+    <GtransErr_1 c="Translation error"/>
     <GtransErr_2 c="You must first select the language for the translation!"/>
     <Apply c="Apply"/>
     <Empty c="( Empty )"/>

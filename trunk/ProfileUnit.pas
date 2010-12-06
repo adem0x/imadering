@@ -273,6 +273,8 @@ begin
     JvTimerList.Events[12].Enabled := True;
     // В фоне создаём окно смайлов
     JvTimerList.Events[7].Enabled := True;
+    // Запускаем таймер перевода
+    JvTimerList.Events[8].Enabled := True;
   end;
   // Закрываем окно
   FClose := True;
