@@ -1969,11 +1969,11 @@ begin
           SubItems.Add(ALast);
           case AGender of
             0: Gend := EmptyStr;
-            1: Gend := Parse(' ', GenderComboBox.Items.Strings[1], 2);
-            2: Gend := Parse(' ', GenderComboBox.Items.Strings[2], 2);
+            1: Gend := Parse(C_BN, GenderComboBox.Items.Strings[1], 2);
+            2: Gend := Parse(C_BN, GenderComboBox.Items.Strings[2], 2);
           end;
           if (Gend <> EmptyStr) and (AAge <> '0') then
-            Gend := Gend + ' - ' + AAge
+            Gend := Gend + C_BN + C_NN + C_BN + AAge
           else if AAge <> '0' then
             Gend := AAge;
           SubItems.Add(Gend);
@@ -4825,7 +4825,7 @@ begin
               Tri_Node := Sub_Node.Items.Item[i];
               if Tri_Node <> nil then
               begin
-                if Tri_Node.Properties.IntValue(C_Status) <> 214 then
+                if Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '9');
                   RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');

@@ -39,11 +39,16 @@ uses
 {$REGION 'Const'}
 const
   J_RootNode = '<root>%s</root>';
-  Iq_TypeSet = '<iq type=''set'' id=''imadering_%d''>';
-  Iq_TypeGet = '<iq type=''get'' id=''imadering_%d''>';
+  Iq_TypeSet = '<iq type=''set'' id=''%d''>';
+  Iq_TypeGet = '<iq type=''get'' id=''%d''>';
   Iq_Roster = 'jabber:iq:roster';
   J_MessHead = '<message type=''chat'' to=''%s'' id=''%d''>';
   J_GetInfoHead = '<iq type=''get'' to=''%s'' id=''%d''><vCard xmlns=''vcard-temp'' prodid=''-//HandGen//NONSGML vGen v1.0//EN'' version=''2.0''/></iq>';
+  J_GetServices = '<iq type=''get'' to=''%s'' id=''%d''><query xmlns=''http://jabber.org/protocol/disco#items''/></iq>';
+  J_GetServicesInfo = '<iq type=''get'' to=''%s'' id=''%d''><query xmlns=''http://jabber.org/protocol/disco#info''/></iq>';
+  J_DellAccount = '<iq type=''set'' to=''%s'' id=''%d''><query xmlns="jabber:iq:register"><remove /></query></iq>';
+  J_RegAccount = '<iq type=''set'' id=''%d''><query xmlns=''jabber:iq:register''><username>%s</username><password>%s</password></query></iq>';
+  J_SearchUser = '<iq type=''set'' to=''%s'' id=''%d'' xml:lang=''en''><query xmlns=''jabber:iq:search''><x xmlns=''jabber:x:data'' type=''submit''>%s</x></query></iq>';
   J_RootTag = 'stream:stream';
   J_SessionEnd = '</stream:stream>';
   J_Features = 'stream:features';
@@ -60,6 +65,7 @@ const
   J_From = 'from';
 
   // Значение нод для информации о контакте
+  Node_JID = 'JID';
   Node_FN = 'FN';
   Node_N = 'N';
   Node_GIVEN = 'GIVEN';
@@ -188,6 +194,11 @@ var
   Jab_Ren_Group_Phaze: Boolean = False;
   Jab_Dell_Group_Phaze: Boolean = False;
   // SSI end
+  Jab_Server_Name: string;
+  Jab_VJID_Server: string;
+  Jab_Conference_Server: string;
+  Jab_RegNewAccount: Boolean = False;
+  Jab_Service_List: string;
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -203,7 +214,7 @@ procedure Jab_ParseRoster(PktData: TJvSimpleXmlElem);
 procedure Jab_ParseFeatures(PktData: TJvSimpleXmlElem);
 procedure Jab_ParseIQ(PktData: TJvSimpleXmlElem);
 procedure Jab_ParsePresence(PktData: TJvSimpleXmlElem);
-procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem);
+procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem; GJID: string = ''; GMsg: string = '');
 procedure Jab_SendMessage(MJID, Msg: string);
 procedure Jab_GetUserInfo(MJID: string);
 procedure Jab_ParseUserInfo(MJID: string; PktData: TJvSimpleXmlElem);
@@ -211,6 +222,14 @@ procedure Jab_AddContact(CJID, CNick, CGroup: string);
 procedure Jab_DellContact(CJID: string);
 function Jab_StatusImgId2String(ImgId: string): string;
 function Jab_CreateHint(XML_Node: TJvSimpleXmlElem): string;
+procedure Jab_GetServices;
+procedure Jab_GetServicesInfo(SJID: string);
+procedure Jab_ParseServices(PktData: TJvSimpleXmlElem);
+procedure Jab_ParseServicesInfo(PktData: TJvSimpleXmlElem);
+procedure Jab_Account_Delete;
+procedure Jab_Account_Reg(AName, APass: string);
+procedure Jab_UserSearch(S_Nick, S_Name, S_Last, S_City, S_Country, S_Email: string);
+procedure Jab_ParseUsersSearch(PktData: TJvSimpleXmlElem);
 
 {$ENDREGION}
 
@@ -221,7 +240,9 @@ implementation
 uses
   UtilsUnit,
   OverbyteIcsMD5,
-  RosterUnit;
+  RosterUnit,
+  GtransUnit,
+  ContactSearchUnit;
 
 {$ENDREGION}
 {$REGION 'Jab_Plain_Auth'}
@@ -340,7 +361,6 @@ begin
       PassEdit.Color := ClWindow;
       JIDonserverLabel.Enabled := True;
       RegNewAccountLabel.Enabled := True;
-      DeleteAccountLabel.Enabled := True;
     end;
   end;
   // Активируем фазу оффлайн и обнуляем буферы пакетов
@@ -352,6 +372,11 @@ begin
   Jabber_BuffPkt := EmptyStr;
   Jabber_Seq := 0;
   Jab_SSI_Phaze := False;
+  Jab_Server_Name := EmptyStr;
+  Jab_VJID_Server := EmptyStr;
+  Jab_Conference_Server := EmptyStr;
+  Jab_RegNewAccount := False;
+  Jab_Service_List := EmptyStr;
   // Если сокет подключён, то отсылаем пакет "до свидания"
   with MainForm do
   begin
@@ -386,7 +411,7 @@ begin
               Tri_Node := Sub_Node.Items.Item[i];
               if Tri_Node <> nil then
               begin
-                if Tri_Node.Properties.IntValue(C_Status) <> 42 then
+                if Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '30');
                   RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');
@@ -598,48 +623,59 @@ procedure Jab_ParseIQ(PktData: TJvSimpleXmlElem);
 var
   XML_Node: TJvSimpleXmlElem;
   FJID, QueryTLV: string;
+
+  procedure GetOnlineParams;
+  begin
+    // Запрашиваем список контактов
+    Jab_SendPkt(Jab_GetRoster);
+    // Устанавливаем статус
+    Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
+    // Запрашиваем свою инфу
+    Jab_GetUserInfo(Jabber_JID);
+    // Запрашиваем список сервисов сервера
+    Jab_GetServices;
+  end;
+
 begin
-  // Если къюри :)
-  XML_Node := PktData.Items.ItemNamed[J_Query];
-  if XML_Node <> nil then
+  if PktData <> nil then
   begin
-    QueryTLV := XML_Node.Properties.Value('xmlns');
-    if QueryTLV = Iq_Roster then // Если это список контактов
-      Jab_ParseRoster(XML_Node);
-  end;
-  // Если это информация о контакте
-  XML_Node := PktData.Items.ItemNamed['vCard'];
-  if XML_Node <> nil then
-  begin
-    FJID := PktData.Properties.Value(J_From);
-    // Отделяем ресурс
-    if Pos(C_FS, FJID) > 0 then
-      FJID := Parse(C_FS, FJID, 1);
-    Jab_ParseUserInfo(FJID, XML_Node);
-    Exit;
-  end;
-  // Если сессия открылась
-  XML_Node := PktData.Items.ItemNamed[J_Session];
-  if XML_Node <> nil then
-  begin
-    // Запрашиваем список контактов
-    Jab_SendPkt(Jab_GetRoster);
-    // Устанавливаем статус
-    Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
-    // Запрашиваем свою инфу
-    Jab_GetUserInfo(Jabber_JID);
-    // Выходим
-    Exit;
-  end;
-  // Такое можно было ожидать только от google talk
-  if (PktData.Properties.Value('type') = 'result') and (PktData.Properties.Value('id') = J_SessionId) then
-  begin
-    // Запрашиваем список контактов
-    Jab_SendPkt(Jab_GetRoster);
-    // Устанавливаем статус
-    Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
-    // Запрашиваем свою инфу
-    Jab_GetUserInfo(Jabber_JID);
+    // Если къюри :)
+    XML_Node := PktData.Items.ItemNamed[J_Query];
+    if XML_Node <> nil then
+    begin
+      QueryTLV := XML_Node.Properties.Value('xmlns');
+      if QueryTLV = Iq_Roster then // Если это список контактов
+        Jab_ParseRoster(XML_Node)
+      else if QueryTLV = 'http://jabber.org/protocol/disco#items' then
+        Jab_ParseServices(XML_Node)
+      else if QueryTLV = 'http://jabber.org/protocol/disco#info' then
+        Jab_ParseServicesInfo(PktData)
+      else if QueryTLV = 'jabber:iq:search' then
+        Jab_ParseUsersSearch(XML_Node);
+      Exit;
+    end;
+    // Если это информация о контакте
+    XML_Node := PktData.Items.ItemNamed['vCard'];
+    if XML_Node <> nil then
+    begin
+      FJID := PktData.Properties.Value(J_From);
+      // Отделяем ресурс
+      if Pos(C_FS, FJID) > 0 then
+        FJID := Parse(C_FS, FJID, 1);
+      Jab_ParseUserInfo(FJID, XML_Node);
+      Exit;
+    end;
+    // Если сессия открылась
+    XML_Node := PktData.Items.ItemNamed[J_Session];
+    if XML_Node <> nil then
+    begin
+      GetOnlineParams;
+      // Выходим
+      Exit;
+    end;
+    // Такое можно было ожидать только от google talk
+    if (PktData.Properties.Value('type') = 'result') and (PktData.Properties.Value('id') = J_SessionId) then
+      GetOnlineParams;
   end;
 end;
 
@@ -718,16 +754,28 @@ end;
 {$ENDREGION}
 {$REGION 'Jab_ParseMessage'}
 
-procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem);
+procedure Jab_ParseMessage(PktData: TJvSimpleXmlElem; GJID: string = ''; GMsg: string = '');
+label
+  X;
 var
   PJID, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   I: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
   Contact_Yes: Boolean;
+  GtransMsg: Boolean;
+  JvXML: TJvSimpleXml;
 begin
+  GtransMsg := False;
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     Application.CreateForm(TChatForm, ChatForm);
+  // Если это сообщение с переводом, то переходим дальше
+  if (GJID <> EmptyStr) and (GMsg <> EmptyStr) then
+  begin
+    PJID := GJID;
+    Mess := GMsg;
+    goto X;
+  end;
   // Получаем логин от кого пришло сообщение
   PJID := WideLowerCase(PktData.Properties.Value(J_From));
   // Получаем текст сообщения
@@ -740,7 +788,42 @@ begin
     // Отделяем ресурс
     if Pos(C_FS, PJID) > 0 then
       PJID := Parse(C_FS, PJID, 1);
+    // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
+    JvXML_Create(JvXML);
+    try
+      with JvXML do
+      begin
+        if FileExists(V_ProfilePath + C_AnketaFolder + C_Jabber + C_BN + PJID + C_XML_Ext) then
+        begin
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Jabber + C_BN + PJID + C_XML_Ext);
+          if Root <> nil then
+          begin
+            XML_Node := Root.Items.ItemNamed[C_Gtrans];
+            if XML_Node <> nil then
+              GtransMsg := XML_Node.BoolValue;
+          end;
+        end;
+      end;
+    finally
+      JvXML.Free;
+    end;
+    if GtransMsg then
+    begin
+      if not Assigned(GTransForm) then
+        Application.CreateForm(TGTransForm, GTransForm);
+      with GTransForm.GtransListView.Items.Add do
+      begin
+        // Изменяем направление перевода для исходящих и входящих сообщений
+        ImageIndex := 213;
+        SubItems.Add(PJID);
+        SubItems.Add(Mess);
+        SubItems.Add(C_Jabber);
+      end;
+      // Выходим
+      Exit;
+    end;
     // Форматируем сообщение
+    X: ;
     CheckMessage_BR(Mess);
     ChatForm.CheckMessage_ClearTag(Mess);
     PopMsg := Mess;
@@ -1253,7 +1336,7 @@ begin
     // Статус
     if XML_Node.Properties.Value(C_Client) = '220' then // Если статус требует авторизации, то пишем об этом
       Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + Lang_Vars[82].L_S
-    else if (XML_Node.Properties.Value(C_Status) = '30') then  // Если статус "Не в сети"
+    else if (XML_Node.Properties.Value(C_Status) = '30') then // Если статус "Не в сети"
       Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + MainForm.JabberStatusOffline.Caption
     else // Определяем статус и пишем его словами
       Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Blue + Jab_StatusImgId2String(XML_Node.Properties.Value(C_Status));
@@ -1273,5 +1356,237 @@ begin
 end;
 
 {$ENDREGION}
+{$REGION 'Jab_GetServises'}
+
+procedure Jab_GetServices;
+var
+  P: string;
+begin
+  // Запрашиваем сервисы сервера
+  P := Format(J_GetServices, [Parse(C_EE, Jabber_JID, 2), Jabber_Seq]);
+  Jab_SendPkt(P);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_GetServicesInfo'}
+
+procedure Jab_GetServicesInfo(SJID: string);
+var
+  P: string;
+begin
+  // Запрос информации о сервисе
+  // Запрашиваем сервисы сервера
+  P := Format(J_GetServicesInfo, [SJID, Jabber_Seq]);
+  Jab_SendPkt(P);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_ParseServices'}
+
+procedure Jab_ParseServices(PktData: TJvSimpleXmlElem);
+var
+  I: Integer;
+  XML_Node: TJvSimpleXmlElem;
+begin
+  // Разбираем сервисы поддерживаемые сервером
+  if PktData <> nil then
+  begin
+    for I := 0 to PktData.Items.Count - 1 do
+    begin
+      XML_Node := PktData.Items[I];
+      if XML_Node <> nil then
+        Jab_GetServicesInfo(XML_Node.Properties.Value('jid'));
+    end;
+  end;
+end;
+{$ENDREGION}
+{$REGION 'Jab_ParseServicesInfo'}
+
+procedure Jab_ParseServicesInfo(PktData: TJvSimpleXmlElem);
+var
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
+  Cat, SJID, T: string;
+begin
+  // Разбираем информацию о сервисе
+  if PktData <> nil then
+  begin
+    SJID := PktData.Properties.Value('from');
+    XML_Node := PktData.Items.ItemNamed[J_Query];
+    if XML_Node <> nil then
+    begin
+      Sub_Node := XML_Node.Items.ItemNamed['identity'];
+      if Sub_Node <> nil then
+      begin
+        Cat := Sub_Node.Properties.Value('category');
+        T := Sub_Node.Properties.Value('type');
+        Jab_Service_List := Jab_Service_List + SJID + C_BN + C_NN + C_BN + UTF8ToString(Sub_Node.Properties.Value('name')) + C_RN;
+        if (Cat = 'directory') and (T = 'user') then // Адрес сервиса для поиска контактов
+          Jab_VJID_Server := SJID
+        else if (Cat = 'conference') and (T = 'text') then // Адрес сервиса конференций
+          Jab_Conference_Server := SJID;
+      end;
+    end;
+    // Обновляем параметры в списке
+    JabberOptionsForm.SetOnlineVars;
+  end;
+end;
+{$ENDREGION}
+{$REGION 'Jab_Account_Delete'}
+
+procedure Jab_Account_Delete;
+var
+  P: string;
+begin
+  // Посылаем пакет удаления аккаунта
+  P := Format(J_DellAccount, [Jabber_JID, Jabber_Seq]);
+  Jab_SendPkt(P);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_Account_Reg'}
+
+procedure Jab_Account_Reg(AName, APass: string);
+var
+  P: string;
+begin
+  // Посылаем пакет регистрации аккаунта
+  P := Format(J_RegAccount, [Jabber_Seq, AName, APass]);
+  Jab_SendPkt(P);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_UserSearch'}
+
+procedure Jab_UserSearch(S_Nick, S_Name, S_Last, S_City, S_Country, S_Email: string);
+const
+  N = '<field var=''%s''><value>%s</value></field>';
+var
+  P, F: string;
+begin
+  // Формируем ноды с параметрами поиска (ejabberd)
+  if S_Nick <> EmptyStr then
+    F := F + Format(N, ['nick', S_Nick]);
+  if S_Name <> EmptyStr then
+    F := F + Format(N, ['first', S_Name]);
+  if S_Last <> EmptyStr then
+    F := F + Format(N, ['last', S_Last]);
+  if S_City <> EmptyStr then
+    F := F + Format(N, ['locality', S_City]);
+  if S_Country <> EmptyStr then
+    F := F + Format(N, ['ctry', S_Country]);
+  if S_Email <> EmptyStr then
+    F := F + Format(N, ['email', S_Email]);
+  // Формируем ноды с параметрами поиска (Openfire)
+  if S_Nick <> EmptyStr then
+    F := F + Format(N, ['search', S_Nick])
+  else if S_Name <> EmptyStr then
+    F := F + Format(N, ['search', S_Name])
+  else if S_Email <> EmptyStr then
+    F := F + Format(N, ['search', S_Email]);
+  F := F + Format(N, ['Username', '1']);
+  F := F + Format(N, ['Name', '1']);
+  F := F + Format(N, ['Email', '1']);
+  // Ищем контакты на сервере по параметрам
+  P := Format(J_SearchUser, [Jab_VJID_Server, Jabber_Seq, F]);
+  Jab_SendPkt(P);
+  // Увеличиваем счётчик исходящих jabber пакетов
+  Inc(Jabber_Seq);
+end;
+{$ENDREGION}
+{$REGION 'Jab_ParseUsersSearch'}
+
+procedure Jab_ParseUsersSearch(PktData: TJvSimpleXmlElem);
+var
+  I, F: Integer;
+  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  ListItemD: TListItem;
+  S, SJID, SFN, SNick, SName, SLast, SBDay, SCountry, SCity, SEmail: string;
+begin
+  if Assigned(ContactSearchForm) then
+  begin
+    // Разбираем пакет поиска контактов
+    if PktData <> nil then
+    begin
+      with ContactSearchForm do
+      begin
+        // Поиск заверщён
+        StatusPanel.Caption := Lang_Vars[122].L_S;
+        // Начинаем добавление записи в список найденных
+        SearchResultJvListView.Items.BeginUpdate;
+        try
+          XML_Node := PktData.Items.ItemNamed['x'];
+          if XML_Node <> nil then
+          begin
+            for I := 0 to XML_Node.Items.Count - 1 do
+            begin
+              Sub_Node := XML_Node.Items[I];
+              if Sub_Node <> nil then
+              begin
+                if Sub_Node.Name = 'item' then
+                begin
+                  ListItemD := SearchResultJvListView.Items.Add;
+                  with ListItemD do
+                  begin
+                    Checked := False;
+                    Caption := EmptyStr; // Иконка анкеты
+                    SubItems.Add(EmptyStr); // Иконка чата
+                    for F := 0 to Sub_Node.Items.Count - 1 do
+                    begin
+                      Tri_Node := Sub_Node.Items[F];
+                      if Tri_Node <> nil then
+                      begin
+                        S := UpperCase(Tri_Node.Properties.Value('var'));
+                        if S = Node_JID then
+                          SJID := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = Node_FN then
+                          SFN := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = 'USERNAME' then
+                          SNick := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = 'NICK' then
+                          SNick := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = 'FIRST' then
+                          SName := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = 'NAME' then
+                          SName := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = 'LAST' then
+                          SLast := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = Node_BDAY then
+                          SBDay := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = Node_CTRY then
+                          SCountry := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = Node_LOCALITY then
+                          SCity := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value)
+                        else if S = Node_EMAIL then
+                          SEmail := UTF8ToString(Tri_Node.Items.ItemNamed['value'].Value);
+                      end;
+                    end;
+                    SubItems.Add(SJID);
+                    SubItems.Add(SNick);
+                    SubItems.Add(SName);
+                    SubItems.Add(SLast);
+                    SubItems.Add(SBDay);
+                    SubItems.Add(Lang_Vars[124].L_S);
+                    SubItems.Add(EmptyStr); // Иконка быстрых сообщений
+                    SubItems.Add(SCountry);
+                    SubItems.Add(SCity);
+                    SubItems.Add(SEmail);
+                  end;
+                end;
+              end;
+            end;
+          end;
+        finally
+          SearchResultJvListView.Items.EndUpdate;
+        end;
+      end;
+    end;
+  end;
+end;
+{$ENDREGION}
+
 end.
 

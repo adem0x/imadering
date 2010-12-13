@@ -607,14 +607,17 @@ begin
 end;
 
 procedure TChatForm.QSpeedButtonClick(Sender: TObject);
+var
+  Get_Node: TJvSimpleXmlElem;
+  S: string;
 begin
-  {// Достаём из Ростера последнее сообщение от этого контакта
-  RosterItem := RosterForm.ReqRosterItem(InfoPanel2.Caption);
-  if RosterItem <> nil then
-    begin
-      if RosterItem.SubItems[15] <> EmptyStr then
-        InputRichEdit.Lines.Add('> ' + URLDecode(RosterItem.SubItems[15]));
-    end;}
+  Get_Node := RosterGetItem(User_Proto, C_Contact + C_SS, C_Login, URLEncode(UIN_Panel.Caption));
+  if Get_Node <> nil then
+  begin
+    S := URLDecode(Get_Node.Properties.Value(C_InMess));
+    if S <> EmptyStr then
+      InputRichEdit.Lines.Add(C_EV + C_BN + S);
+  end;
 end;
 
 procedure TChatForm.QuickMessClick(Sender: TObject);
@@ -623,7 +626,7 @@ begin
   if InputRichEdit.SelText <> EmptyStr then
     InputRichEdit.SelText := TMenuItem(Sender).Caption
   else if InputRichEdit.Text <> EmptyStr then
-    InputRichEdit.SelText := ' ' + TMenuItem(Sender).Caption
+    InputRichEdit.SelText := C_BN + TMenuItem(Sender).Caption
   else
     InputRichEdit.SelText := TMenuItem(Sender).Caption;
 end;
@@ -854,7 +857,7 @@ begin
       if (Count > 0) then
       begin
         for I := 0 to Count - 1 do
-          Strings[I] := '> ' + Strings[I];
+          Strings[I] := C_EV + C_BN + Strings[I];
         InputRichEdit.Lines.Add(Text);
       end;
     finally
@@ -1005,7 +1008,7 @@ end;
 procedure TChatForm.EditContactSpeedButtonClick(Sender: TObject);
 begin
   //
-  ShowMessage(Lang_Vars[6].L_S);
+
 end;
 
 procedure TChatForm.ChatSplitterMoved(Sender: TObject);

@@ -104,7 +104,6 @@ type
     MRAStatusFFC: TMenuItem;
     N15: TMenuItem;
     MRAXStatus: TMenuItem;
-    N16: TMenuItem;
     MRASettings: TMenuItem;
     N17: TMenuItem;
     JabberSettings: TMenuItem;
@@ -273,6 +272,7 @@ type
     N19: TMenuItem;
     JabberAddContact: TMenuItem;
     N31: TMenuItem;
+    MRASearchNewContact: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -358,7 +358,6 @@ type
     procedure HideEmptyGroupsClick(Sender: TObject);
     procedure RightICQPopupMenuPopup(Sender: TObject);
     procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-    procedure JabberSearchNewContactClick(Sender: TObject);
     procedure ICQSearchNewContactClick(Sender: TObject);
     procedure CloseActiveFormActionExecute(Sender: TObject);
     procedure ChatTabCloseActionExecute(Sender: TObject);
@@ -595,6 +594,7 @@ begin
   ICQAddContact.Caption := AddContactCL.Caption;
   //
   MRASettings.Caption := ICQSettings.Caption;
+  MRASearchNewContact.Caption := ICQSearchNewContact.Caption;
   MRAXStatus.Caption := ICQXStatus.Caption;
   MRAStatusFFC.Caption := Lang_Vars[67].L_S;
   MRAStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -794,7 +794,7 @@ procedure TMainForm.MRAAddContactClick(Sender: TObject);
 var
   FrmAddContact: TAddContactForm;
 begin
-  // Выводим форму добавления новой группы
+  // Выводим форму добавления нового контакта
   FrmAddContact := TAddContactForm.Create(Self);
   try
     with FrmAddContact do
@@ -957,7 +957,7 @@ procedure TMainForm.JabberAddContactClick(Sender: TObject);
 var
   FrmAddContact: TAddContactForm;
 begin
-  // Выводим форму добавления новой группы
+  // Выводим форму добавления нового контакта
   FrmAddContact := TAddContactForm.Create(Self);
   try
     with FrmAddContact do
@@ -1030,11 +1030,6 @@ begin
       DAShow(Lang_Vars[16].L_S + C_BN + GProto, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
     end;
   end;
-end;
-
-procedure TMainForm.JabberSearchNewContactClick(Sender: TObject);
-begin
-  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TMainForm.JabberSettingsClick(Sender: TObject);
@@ -1112,7 +1107,6 @@ begin
         PassEdit.Color := ClBtnFace;
         JIDonserverLabel.Enabled := False;
         RegNewAccountLabel.Enabled := False;
-        DeleteAccountLabel.Enabled := False;
       end;
     end;
     // Активируем фазу коннекта к серверу Jabber
@@ -1402,7 +1396,7 @@ procedure TMainForm.ICQAddContactClick(Sender: TObject);
 var
   FrmAddContact: TAddContactForm;
 begin
-  // Выводим форму добавления новой группы
+  // Выводим форму добавления нового контакта
   FrmAddContact := TAddContactForm.Create(Self);
   try
     with FrmAddContact do
@@ -1473,7 +1467,18 @@ procedure TMainForm.ICQSearchNewContactClick(Sender: TObject);
 begin
   // Открываем окно поиска новых контактов
   if not Assigned(ContactSearchForm) then
-    ContactSearchForm := TContactSearchForm.Create(Self);
+    Application.CreateForm(TContactSearchForm, ContactSearchForm);
+  // Устанавливаем протокол поиска контактов
+  with ContactSearchForm do
+  begin
+    if Sender = ICQSearchNewContact then
+      SearchICQ
+    else if Sender = JabberSearchNewContact then
+      SearchJabber
+    else if Sender = MRASearchNewContact then
+      SearchMRA;
+    Caption := HelpKeyword + C_BN + SearchProto;
+  end;
   // Открываем окно
   XShowForm(ContactSearchForm);
 end;
@@ -2540,6 +2545,14 @@ begin
                 // Если это стадия подключения к серверу жаббер
                 if Jabber_Connect_Phaze then
                 begin
+                  // Если это процесс регистрации, то отправляем пакет регистрации нового аккаунта
+                  if Jab_RegNewAccount then
+                  begin
+                    // Отправляем пакет простой регистрации
+                    Jab_Account_Reg(Jabber_LoginUIN, Jabber_LoginPassword);
+                    // Снимаем флаг регистрации нового аккаунта
+                    Jab_RegNewAccount := False;
+                  end;
                   // Ищем механизм авторизации DIGEST-MD5
                   if Pos('>DIGEST-MD5<', Pkt) > 0 then
                     Jab_SendPkt(J_MD5Mechanism) // Отсылаем запрос challenge
@@ -2558,7 +2571,7 @@ begin
                       // Отсылаем пакет с авторизацией
                       Jab_SendPkt(Jab_DigestMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
                   end
-                  else if Pos('<not-authorized', Pkt) > 0 then
+                  else if (Pos('failure', Pkt) > 0) and (Pos('auth', Pkt) > 0) then
                   begin
                     // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
                     DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Jabber]), EmptyStr, 134, 2, 0);
@@ -3449,17 +3462,14 @@ end;
 {$REGION 'OpenTrafficClick'}
 
 procedure TMainForm.Traffic_MenuClick(Sender: TObject);
-const
-  C_KB = 'KB';
-  C_MB = 'MB';
 begin
   // Отображаем окно трафика
   if not Assigned(TrafficForm) then
     Application.CreateForm(TTrafficForm, TrafficForm);
   // Показываем сколько трафика передано за эту сессию
-  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_PN + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_PN + DateTimeToStr(V_SesDataTraf);
+  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_BN + C_PN + C_BN + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_BN + C_PN + C_BN + DateTimeToStr(V_SesDataTraf);
   // Показываем сколько трафика передано всего
-  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_PN + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_PN + V_AllSesDataTraf;
+  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_BN + C_PN + C_BN + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_BN + C_PN + C_BN + V_AllSesDataTraf;
   // Отображаем окно
   XShowForm(TrafficForm);
 end;
@@ -4511,9 +4521,6 @@ begin
   MainToolTopButton.Visible := False;
   // Делаем окно прилипающим к краям экрана
   ScreenSnap := True;
-  // Проверяем если ли старый файл после обновления, если есть, то удаляем
-  if FileExists(V_MyPath + C_ImaderingOld) then
-    DeleteFile(V_MyPath + C_ImaderingOld);
   // Проверяем могут ли воспроизводится звуки на компьютере
   if InitMixer = 0 then
     V_SoundON := False;

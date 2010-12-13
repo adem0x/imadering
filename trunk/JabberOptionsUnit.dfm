@@ -116,7 +116,7 @@ object JabberOptionsForm: TJabberOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = AccountPage
+      ActivePage = ParamsPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -130,7 +130,7 @@ object JabberOptionsForm: TJabberOptionsForm
           Left = 0
           Top = 0
           Width = 428
-          Height = 232
+          Height = 255
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -140,7 +140,7 @@ object JabberOptionsForm: TJabberOptionsForm
           TabOrder = 0
           object RegNewAccountLabel: TLabel
             Left = 80
-            Top = 177
+            Top = 170
             Width = 3
             Height = 13
             Cursor = crHandPoint
@@ -150,6 +150,7 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+            OnClick = RegNewAccountLabelClick
             OnMouseEnter = JIDonserverLabelMouseEnter
             OnMouseLeave = JIDonserverLabelMouseLeave
           end
@@ -179,7 +180,7 @@ object JabberOptionsForm: TJabberOptionsForm
           end
           object DeleteAccountLabel: TLabel
             Left = 80
-            Top = 204
+            Top = 208
             Width = 3
             Height = 13
             Cursor = crHandPoint
@@ -189,6 +190,7 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+            OnClick = DeleteAccountLabelClick
             OnMouseEnter = JIDonserverLabelMouseEnter
             OnMouseLeave = JIDonserverLabelMouseLeave
           end
@@ -206,6 +208,40 @@ object JabberOptionsForm: TJabberOptionsForm
             Font.Style = [fsBold]
             ParentFont = False
             OnClick = JIDonserverLabelClick
+            OnMouseEnter = JIDonserverLabelMouseEnter
+            OnMouseLeave = JIDonserverLabelMouseLeave
+          end
+          object ServersListLabel: TLabel
+            Left = 80
+            Top = 227
+            Width = 118
+            Height = 13
+            Cursor = crHandPoint
+            Caption = '#Jabber Servers List'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clNavy
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            OnClick = ServersListLabelClick
+            OnMouseEnter = JIDonserverLabelMouseEnter
+            OnMouseLeave = JIDonserverLabelMouseLeave
+          end
+          object RegWebNewAccountLabel: TLabel
+            Left = 80
+            Top = 189
+            Width = 134
+            Height = 13
+            Cursor = crHandPoint
+            Caption = '#Reg Web New Account'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clNavy
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            OnClick = RegWebNewAccountLabelClick
             OnMouseEnter = JIDonserverLabelMouseEnter
             OnMouseLeave = JIDonserverLabelMouseLeave
           end
@@ -272,9 +308,9 @@ object JabberOptionsForm: TJabberOptionsForm
         end
         object AccountOptionGroupBox: TGroupBox
           Left = 0
-          Top = 238
+          Top = 261
           Width = 428
-          Height = 118
+          Height = 95
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -528,6 +564,39 @@ object JabberOptionsForm: TJabberOptionsForm
         Width = 428
         Height = 356
         Caption = 'ParamsPage'
+        object ParamInfoGroupBox: TGroupBox
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+          object ParamInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 20
+            Width = 403
+            Height = 324
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -12
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 0
+          end
+        end
       end
       object ConsolePage: TJvStandardPage
         Left = 0
@@ -547,12 +616,11 @@ object JabberOptionsForm: TJabberOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
-          object Label1: TLabel
+          object CustomPktLabel: TLabel
             Left = 14
             Top = 88
-            Width = 159
+            Width = 3
             Height = 13
-            Caption = '#'#1055#1072#1082#1077#1090' '#1076#1072#1085#1085#1099#1093' '#1074' XML '#1092#1086#1088#1084#1072#1090#1077
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -596,19 +664,22 @@ object JabberOptionsForm: TJabberOptionsForm
             ScrollBars = ssVertical
             TabOrder = 1
           end
-          object SendCustomXMLPacketButton: TButton
-            Left = 322
+          object SendCustomXMLPacketButton: TBitBtn
+            Left = 318
             Top = 324
-            Width = 96
+            Width = 98
             Height = 25
+            DoubleBuffered = True
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
+            ParentDoubleBuffered = False
             ParentFont = False
             TabOrder = 2
             TabStop = False
+            OnClick = SendCustomXMLPacketButtonClick
           end
         end
       end

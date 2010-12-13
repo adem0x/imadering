@@ -380,7 +380,7 @@
     <CopyHistorySelText c="Copy"/>
     <CopyAllHistoryText c="Copy all"/>
   </HistoryForm>
-  <SearchForm c="Search new ICQ contacts">
+  <ContactSearchForm c="Search new contacts">
     <NotPreviousClearCheckBox c="Do not clear the previous results"/>
     <OnlyOnlineCheckBox c="Only network"/>
     <SearchBitBtn c="Search"/>
@@ -408,7 +408,7 @@
     <LangLabel c="Language:"/>
     <KeyWordLabel c="Keywords:"/>
     <GlobalSearchCheckBox c="Global search"/>
-    <UINSearchCheckBox c="Search for UIN"/>
+    <UINSearchCheckBox c="Search for"/>
     <EmailSearchCheckBox c="Search by Email"/>
     <KeyWordSearchCheckBox c="Search by keyword"/>
     <ICQStatusCheckSM c="Check status"/>
@@ -418,7 +418,7 @@
     <AddContactInCLSM c="Add contact to contact list"/>
     <SaveSM c="Save list in file"/>
     <LoadSM c="Load a list from file"/>
-  </SearchForm>
+  </ContactSearchForm>
   <ChatForm c="Messaging window">
     <ChatFontToolButton h="_b_Font and styles_d__r_Font settings and text colors"/>
     <UniqToolButton h="_b_Unique settings_d__r_Edit settings for this contact"/>
@@ -630,7 +630,6 @@
     <AvatarInfoGroupBox c="Avatar"/>
     <ParamInfoGroupBox c="Additional online options"/>
     <CustomICQPacketGroupBox c="Sending custom data packet"/>
-    <SendCustomICQPacketButton c="Submit"/>
     <SendCustomICQPaketTimerCheckBox c="Repeat send in the cycle (seconds):"/>
     <ClientLoginIDLabel c="Login ID:"/>
     <ConnectionGroupBox c="Connection settings"/>
@@ -1187,6 +1186,9 @@
     <CustomPortLabel c="Port:"/>
     <CustomServerCheckBox c="Manually specify the server address and port"/>
     <UseSSLCheckBox c="Use traffic SSL encryption"/>
+    <ConsoleGroupBox c="Sending custom data packet"/>
+    <CustomPktLabel c="Packet data in XML format"/>
+    <ParamInfoGroupBox c="Additional online options"/>
   </JabberOptionsForm>
   <MraOptionsForm c="Options: Mail.ru Agent">
     <MRAOptionButtonGroup_0 c="Account"/>
