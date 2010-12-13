@@ -832,6 +832,14 @@ object MainForm: TMainForm
       ImageIndex = 160
       OnClick = MRASettingsClick
     end
+    object MRASearchNewContact: TMenuItem
+      ImageIndex = 235
+      OnClick = ICQSearchNewContactClick
+    end
+    object MraSMSSendMenu: TMenuItem
+      ImageIndex = 276
+      OnClick = MraSMSSendMenuClick
+    end
     object N19: TMenuItem
       Caption = '-'
     end
@@ -842,13 +850,6 @@ object MainForm: TMainForm
     object MRAAddContact: TMenuItem
       ImageIndex = 143
       OnClick = MRAAddContactClick
-    end
-    object N16: TMenuItem
-      Caption = '-'
-    end
-    object MraSMSSendMenu: TMenuItem
-      ImageIndex = 276
-      OnClick = MraSMSSendMenuClick
     end
     object N34: TMenuItem
       Caption = '-'
@@ -935,7 +936,7 @@ object MainForm: TMainForm
     end
     object JabberSearchNewContact: TMenuItem
       ImageIndex = 235
-      OnClick = JabberSearchNewContactClick
+      OnClick = ICQSearchNewContactClick
     end
     object N31: TMenuItem
       Caption = '-'

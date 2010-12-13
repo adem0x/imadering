@@ -874,6 +874,7 @@ begin
   Msg := ReplaceStr(Msg, '\"', '"');
   Msg := ReplaceStr(Msg, '\r\n', C_RN);
   Msg := ReplaceStr(Msg, '\r', C_RN);
+  Msg := ReplaceStr(Msg, '\n', C_RN);
   Msg := ReplaceStr(Msg, '\\', '\');
 end;
 

@@ -84,10 +84,14 @@ type
     ConsoleGroupBox: TGroupBox;
     DumpInfoRichEdit: TRichEdit;
     SendCustomXMLPacketRichEdit: TRichEdit;
-    SendCustomXMLPacketButton: TButton;
     AvatarPage: TJvStandardPage;
     ProxyGroupBox: TGroupBox;
-    Label1: TLabel;
+    CustomPktLabel: TLabel;
+    ServersListLabel: TLabel;
+    RegWebNewAccountLabel: TLabel;
+    SendCustomXMLPacketButton: TBitBtn;
+    ParamInfoGroupBox: TGroupBox;
+    ParamInfoRichEdit: TRichEdit;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);
@@ -105,6 +109,11 @@ type
     procedure JabberJIDEditChange(Sender: TObject);
     procedure PassEditClick(Sender: TObject);
     procedure ShowPassCheckBoxClick(Sender: TObject);
+    procedure ServersListLabelClick(Sender: TObject);
+    procedure DeleteAccountLabelClick(Sender: TObject);
+    procedure RegNewAccountLabelClick(Sender: TObject);
+    procedure RegWebNewAccountLabelClick(Sender: TObject);
+    procedure SendCustomXMLPacketButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -115,6 +124,7 @@ type
     procedure TranslateForm;
     procedure ApplySettings;
     procedure SaveSettings;
+    procedure SetOnlineVars;
   end;
 
 {$ENDREGION}
@@ -149,43 +159,43 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      if FileExists(V_ProfilePath + C_SettingsFileName) then
       begin
-        if FileExists(V_ProfilePath + C_SettingsFileName) then
+        LoadFromFile(V_ProfilePath + C_SettingsFileName);
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[C_Jabber];
+          if XML_Node <> nil then
           begin
-            LoadFromFile(V_ProfilePath + C_SettingsFileName);
-            if Root <> nil then
-              begin
-                XML_Node := Root.Items.ItemNamed[C_Jabber];
-                if XML_Node <> nil then
-                  begin
-                    // --------------------------------------------------------------------------
-                    // Загружаем данные логина
-                    JabberJIDEdit.Text := XML_Node.Properties.Value(C_Login);
-                    SavePassCheckBox.Checked := XML_Node.Properties.BoolValue(C_SavePass);
-                    // Загружаем пароль
-                    PassEdit.OnChange := nil;
-                    PassEdit.Text := XML_Node.Properties.Value(C_Pass);
-                    if PassEdit.Text <> EmptyStr then
-                      begin
-                        PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
-                        PassEdit.Text := C_MaskPass;
-                      end;
-                    PassEdit.OnChange := PassEditChange;
-                    // --------------------------------------------------------------------------
-                    // Загружаем настройки сервера
-                    Sub_Node := XML_Node.Items.ItemNamed[C_CustomServer];
-                    if Sub_Node <> nil then
-                      begin
-                        CustomServerCheckBox.Checked := Sub_Node.BoolValue;
-                        CustomServerEdit.Text := Sub_Node.Properties.Value(C_Host);
-                        CustomPortEdit.Text := Sub_Node.Properties.Value(C_Port);
-                        UseSSLCheckBox.Checked := Sub_Node.Properties.BoolValue('ssl');
-                      end;
-                    // --------------------------------------------------------------------------
-                  end;
-              end;
+            // --------------------------------------------------------------------------
+            // Загружаем данные логина
+            JabberJIDEdit.Text := XML_Node.Properties.Value(C_Login);
+            SavePassCheckBox.Checked := XML_Node.Properties.BoolValue(C_SavePass);
+            // Загружаем пароль
+            PassEdit.OnChange := nil;
+            PassEdit.Text := XML_Node.Properties.Value(C_Pass);
+            if PassEdit.Text <> EmptyStr then
+            begin
+              PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
+              PassEdit.Text := C_MaskPass;
+            end;
+            PassEdit.OnChange := PassEditChange;
+            // --------------------------------------------------------------------------
+            // Загружаем настройки сервера
+            Sub_Node := XML_Node.Items.ItemNamed[C_CustomServer];
+            if Sub_Node <> nil then
+            begin
+              CustomServerCheckBox.Checked := Sub_Node.BoolValue;
+              CustomServerEdit.Text := Sub_Node.Properties.Value(C_Host);
+              CustomPortEdit.Text := Sub_Node.Properties.Value(C_Port);
+              UseSSLCheckBox.Checked := Sub_Node.Properties.BoolValue('ssl');
+            end;
+            // --------------------------------------------------------------------------
           end;
+        end;
       end;
+    end;
   finally
     JvXML.Free;
   end;
@@ -205,22 +215,22 @@ begin
   JabberJIDEdit.Text := NormalizeScreenName(JabberJIDEdit.Text);
   // Обновляем данные логина в протоколе
   if JabberJIDEdit.Enabled then
+  begin
+    if JabberJIDEdit.Text <> Jabber_JID then
     begin
-      if JabberJIDEdit.Text <> Jabber_JID then
-        begin
-          ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта
-          Jabber_JID := JabberJIDEdit.Text;
-        end;
-      Jabber_LoginPassword := PassEdit.Hint;
-      // Разбираем JID на логин и сервер
-      Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
-      Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
-      // Делаем подсказку
-      if Jabber_JID <> EmptyStr then
-        MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]) + C_BN + C_NN + C_BN + C_QN + Jabber_JID + C_EN
-      else
-        MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]);
+      ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта
+      Jabber_JID := JabberJIDEdit.Text;
     end;
+    Jabber_LoginPassword := PassEdit.Hint;
+    // Разбираем JID на логин и сервер
+    Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
+    Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
+    // Делаем подсказку
+    if Jabber_JID <> EmptyStr then
+      MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]) + C_BN + C_NN + C_BN + C_QN + Jabber_JID + C_EN
+    else
+      MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]);
+  end;
   // --------------------------------------------------------------------------
   // Применяем настройку порта сервера
   if CustomServerCheckBox.Checked then
@@ -247,43 +257,43 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      if FileExists(V_ProfilePath + C_SettingsFileName) then
+        LoadFromFile(V_ProfilePath + C_SettingsFileName);
+      if Root <> nil then
       begin
-        if FileExists(V_ProfilePath + C_SettingsFileName) then
-          LoadFromFile(V_ProfilePath + C_SettingsFileName);
-        if Root <> nil then
-          begin
-            // Очищаем раздел главной формы если он есть
-            XML_Node := Root.Items.ItemNamed[C_Jabber];
-            if XML_Node <> nil then
-              XML_Node.Clear
-            else
-              XML_Node := Root.Items.Add(C_Jabber);
-            // --------------------------------------------------------------------------
-            // Записываем данные логина
-            XML_Node.Properties.Add(C_Login, JabberJIDEdit.Text);
-            XML_Node.Properties.Add(C_SavePass, SavePassCheckBox.Checked);
-            if SavePassCheckBox.Checked then
-              XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.Hint)))
-            else
-              begin
-                XML_Node.Properties.Add(C_Pass, EmptyStr);
-                PassEdit.Text := EmptyStr;
-              end;
-            // Маскируем пароль
-            if PassEdit.Text <> EmptyStr then
-              PassEdit.Text := C_MaskPass;
-            // --------------------------------------------------------------------------
-            // Сохраняем настройки сервера
-            Sub_Node := XML_Node.Items.Add(C_CustomServer);
-            Sub_Node.Properties.Add(C_Host, CustomServerEdit.Text);
-            Sub_Node.Properties.Add(C_Port, CustomPortEdit.Text);
-            Sub_Node.Properties.Add('ssl', UseSSLCheckBox.Checked);
-            Sub_Node.BoolValue := CustomServerCheckBox.Checked;
-            // --------------------------------------------------------------------------
-            // Сохраняем файл
-            SaveToFile(V_ProfilePath + C_SettingsFileName);
-          end;
+        // Очищаем раздел главной формы если он есть
+        XML_Node := Root.Items.ItemNamed[C_Jabber];
+        if XML_Node <> nil then
+          XML_Node.Clear
+        else
+          XML_Node := Root.Items.Add(C_Jabber);
+        // --------------------------------------------------------------------------
+        // Записываем данные логина
+        XML_Node.Properties.Add(C_Login, JabberJIDEdit.Text);
+        XML_Node.Properties.Add(C_SavePass, SavePassCheckBox.Checked);
+        if SavePassCheckBox.Checked then
+          XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.Hint)))
+        else
+        begin
+          XML_Node.Properties.Add(C_Pass, EmptyStr);
+          PassEdit.Text := EmptyStr;
+        end;
+        // Маскируем пароль
+        if PassEdit.Text <> EmptyStr then
+          PassEdit.Text := C_MaskPass;
+        // --------------------------------------------------------------------------
+        // Сохраняем настройки сервера
+        Sub_Node := XML_Node.Items.Add(C_CustomServer);
+        Sub_Node.Properties.Add(C_Host, CustomServerEdit.Text);
+        Sub_Node.Properties.Add(C_Port, CustomPortEdit.Text);
+        Sub_Node.Properties.Add('ssl', UseSSLCheckBox.Checked);
+        Sub_Node.BoolValue := CustomServerCheckBox.Checked;
+        // --------------------------------------------------------------------------
+        // Сохраняем файл
+        SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
+    end;
   finally
     JvXML.Free;
   end;
@@ -295,18 +305,54 @@ end;
 {$REGION 'TranslateForm'}
 
 procedure TJabberOptionsForm.TranslateForm;
+var
+  JvXML: TJvSimpleXml;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
   // Создаём шаблон для перевода
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
+  // Инициализируем XML
+  JvXML_Create(JvXML);
+  try
+    with JvXML do
+    begin
+      // Загружаем настройки
+      if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
+      begin
+        // Загружаем файл языка
+        LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[C_Infos];
+          if XML_Node <> nil then
+          begin
+            // Загружаем инфы
+            Sub_Node := XML_Node.Items.ItemNamed[C_SendDump];
+            if Sub_Node <> nil then
+              DumpInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value(C_CS));
+          end;
+        end;
+      end;
+    end;
+  finally
+    JvXML.Free;
+  end;
   // Другое
   CancelButton.Caption := Lang_Vars[9].L_S;
   ApplyButton.Caption := Lang_Vars[10].L_S;
+  SendCustomXMLPacketButton.Caption := Lang_Vars[165].L_S;
 end;
 
 {$ENDREGION}
 {$REGION 'Set_JabberOrgClick'}
+
+procedure TJabberOptionsForm.ServersListLabelClick(Sender: TObject);
+begin
+  // Открываем список жаббер серверов
+  OpenURL('http://xmpp.org/services');
+end;
 
 procedure TJabberOptionsForm.Set_JabberOrgClick(Sender: TObject);
 begin
@@ -316,19 +362,22 @@ begin
   JabberJIDEdit.Text := JabberJIDEdit.Text + (Sender as TMenuItem).Hint;
   // Правим параметры серверов
   case (Sender as TMenuItem).Tag of
-    1, 2, 5: begin
+    1, 2, 5:
+      begin
         CustomServerCheckBox.Checked := False;
         CustomServerEdit.Text := '';
         CustomPortEdit.Text := '';
         UseSSLCheckBox.Checked := False;
       end;
-    3: begin
+    3:
+      begin
         CustomServerCheckBox.Checked := True;
         CustomServerEdit.Text := 'webim.qip.ru';
         CustomPortEdit.Text := '5222';
         UseSSLCheckBox.Checked := False;
       end;
-    4: begin
+    4:
+      begin
         CustomServerCheckBox.Checked := True;
         CustomServerEdit.Text := 'talk.google.com';
         CustomPortEdit.Text := '5223';
@@ -347,6 +396,7 @@ begin
   MainForm.AllImageList.GetBitmap(3, CancelButton.Glyph);
   MainForm.AllImageList.GetBitmap(222, ApplyButton.Glyph);
   MainForm.AllImageList.GetBitmap(140, OKButton.Glyph);
+  MainForm.AllImageList.GetBitmap(166, SendCustomXMLPacketButton.Glyph);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
@@ -354,8 +404,11 @@ begin
   LoadSettings;
   // Переводим форму на другие языки
   TranslateForm;
-  // активизируем их
+  // Применяем настройки
   ApplySettings;
+  // Подгружаем произвольный пакет
+  if FileExists(V_ProfilePath + C_Jabber + C_BN + C_PacketFileName) then
+    SendCustomXMLPacketRichEdit.Lines.LoadFromFile(V_ProfilePath + C_Jabber + C_BN + C_PacketFileName);
 end;
 
 {$ENDREGION}
@@ -369,7 +422,10 @@ begin
   OptionJvPageList.ActivePage := AccountPage;
   JabberOptionButtonGroup.ItemIndex := 0;
   // Прокручиваем рич в верх против глюка в вайн
+  DumpInfoRichEdit.SelStart := 0;
   SendMessage(DumpInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+  // Загружаем онлайн параметры
+  SetOnlineVars;
 end;
 
 {$ENDREGION}
@@ -432,20 +488,29 @@ procedure TJabberOptionsForm.CustomServerCheckBoxClick(Sender: TObject);
 begin
   // Активируем настройку сервера
   if CustomServerCheckBox.Checked then
-    begin
-      CustomServerEdit.Enabled := True;
-      CustomServerEdit.Color := ClWindow;
-      CustomPortEdit.Enabled := True;
-      CustomPortEdit.Color := ClWindow;
-    end
+  begin
+    CustomServerEdit.Enabled := True;
+    CustomServerEdit.Color := ClWindow;
+    CustomPortEdit.Enabled := True;
+    CustomPortEdit.Color := ClWindow;
+  end
   else
-    begin
-      CustomServerEdit.Enabled := False;
-      CustomServerEdit.Color := ClBtnFace;
-      CustomPortEdit.Enabled := False;
-      CustomPortEdit.Color := ClBtnFace;
-    end;
+  begin
+    CustomServerEdit.Enabled := False;
+    CustomServerEdit.Color := ClBtnFace;
+    CustomPortEdit.Enabled := False;
+    CustomPortEdit.Color := ClBtnFace;
+  end;
   JabberJIDEditChange(nil);
+end;
+
+procedure TJabberOptionsForm.DeleteAccountLabelClick(Sender: TObject);
+begin
+  // Проверяем что этот протокол в сети
+  if NotProtoOnline(C_Jabber) then
+    Exit;
+  // Удаляем учётную запись
+  Jab_Account_Delete;
 end;
 
 procedure TJabberOptionsForm.JIDonserverLabelClick(Sender: TObject);
@@ -458,13 +523,15 @@ begin
 end;
 
 procedure TJabberOptionsForm.JIDonserverLabelMouseEnter(Sender: TObject);
-begin (Sender as TLabel)
-  .Font.Color := ClBlue;
+begin
+  (Sender as TLabel)
+    .Font.Color := ClBlue;
 end;
 
 procedure TJabberOptionsForm.JIDonserverLabelMouseLeave(Sender: TObject);
-begin (Sender as TLabel)
-  .Font.Color := ClNavy;
+begin
+  (Sender as TLabel)
+    .Font.Color := ClNavy;
 end;
 
 procedure TJabberOptionsForm.OKButtonClick(Sender: TObject);
@@ -490,6 +557,63 @@ begin
     PassEdit.Text := EmptyStr;
 end;
 
+procedure TJabberOptionsForm.RegNewAccountLabelClick(Sender: TObject);
+begin
+  // Применяем параметры
+  ApplySettings;
+  // Ставим флаг регистрации нового аккаунта
+  Jab_RegNewAccount := True;
+  // Регистрируем новую учётную запись
+  MainForm.JabberStatusOnlineClick(MainForm.JabberStatusOnline);
+end;
+
+procedure TJabberOptionsForm.RegWebNewAccountLabelClick(Sender: TObject);
+var
+  S: string;
+begin
+  // Открываем регистрацию нового аккаунта на сайте
+  S := Parse(C_EE, JabberJIDEdit.Text, 2);
+  if S <> EmptyStr then
+    OpenURL(S);
+end;
+
+{$ENDREGION}
+{$REGION 'SendCustomXMLPacketButtonClick'}
+
+procedure TJabberOptionsForm.SendCustomXMLPacketButtonClick(Sender: TObject);
+var
+  Pkt: string;
+begin
+  // Сохраняем пакет локально для дальнейшего использования
+  SendCustomXMLPacketRichEdit.Lines.SaveToFile(V_ProfilePath + C_Jabber + C_BN + C_PacketFileName);
+  // Если пакет больше нуля и рабочая фаза icq подключения
+  if NotProtoOnline(C_Jabber) then
+    Exit;
+  // Отправляем произвольный пакет данных
+  Pkt := Trim(SendCustomXMLPacketRichEdit.Lines.Text);
+  if Pkt <> EmptyStr then
+    Jab_SendPkt(SendCustomXMLPacketRichEdit.Lines.Text);
+end;
+{$ENDREGION}
+{$REGION 'SetOnlineVars'}
+
+procedure TJabberOptionsForm.SetOnlineVars;
+begin
+  // Заполняем мемо дополнительной информацией о ICQ аккаунте
+  ParamInfoRichEdit.Clear;
+  // Начинаем заполнение строк
+  ParamInfoRichEdit.Lines.BeginUpdate;
+  // Добавляем информацию не вошедшую в другие разделы
+  if Jab_Service_List <> EmptyStr then
+    ParamInfoRichEdit.Lines.Add(Jab_Service_List);
+  // Заканчиваем заполнение строк
+  ParamInfoRichEdit.Lines.EndUpdate;
+  // Прокручиваем
+  ParamInfoRichEdit.SelStart := 0;
+  SendMessage(ParamInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+end;
+
 {$ENDREGION}
 
 end.
+

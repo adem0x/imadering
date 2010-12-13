@@ -56,7 +56,6 @@ type
     procedure GtansResetClick(Sender: TObject);
     procedure CancelBitBtnClick(Sender: TObject);
     procedure GTClearListClick(Sender: TObject);
-    procedure ClearMessPopupMenuPopup(Sender: TObject);
     procedure GtransListViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GtransClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
     procedure FormDblClick(Sender: TObject);
@@ -345,15 +344,6 @@ begin
   Hide;
 end;
 
-procedure TGTransForm.ClearMessPopupMenuPopup(Sender: TObject);
-begin
-  // Если сообщений нету, то блокируем пункт меню
-  if GtransListView.Selected <> nil then
-    GTClearList.Enabled := True
-  else
-    GTClearList.Enabled := False;
-end;
-
 procedure TGTransForm.FormDblClick(Sender: TObject);
 begin
   // Устанавливаем перевод
@@ -463,11 +453,9 @@ begin
               begin
                 TransList.Clear;
                 IsoLateText(GMsg, '"translit":"', '","', TransList);
-                if TransList.Count > 0 then
-                begin
-                  TMsg := Trim(ReplaceStr(TransList.Text, C_RN, C_BN));
+                TMsg := Trim(ReplaceStr(TransList.Text, C_RN, C_BN));
+                if TMsg <> EmptyStr then
                   Xlog(GtransClient.Name + C_BN + Log_Parsing, TMsg, C_HTTP);
-                end;
               end;
             finally
               TransList.Free;
@@ -558,13 +546,9 @@ begin
                   if GUserType = C_Icq then // ICQ
                     ICQ_ReqMsgNotify(GUIN, HMsg, '', '', '', '', '', '', '', '', True)
                   else if GUserType = C_Jabber then // Jabber
-                  begin
-
-                  end
+                    Jab_ParseMessage(nil, GUIN, HMsg)
                   else if GUserType = C_Mra then // MRA
-                  begin
-
-                  end;
+                    MRA_MessageRecv(EmptyStr, GUIN, HMsg);
                 end;
               end;
             end;

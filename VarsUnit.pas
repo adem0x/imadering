@@ -51,6 +51,9 @@ const
   C_GT = '?';
   C_AS = '<b>%s</b>';
   C_NN = '-';
+  C_EV = '>';
+  C_KB = 'KB';
+  C_MB = 'MB';
   C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
   C_WM_APPBAR = WM_USER + 1;
@@ -78,7 +81,7 @@ const
   C_Nick_BD_FileName = 'Nicks.txt';
   C_ReplyFileName = 'Reply.txt';
   C_NoAvatarFileName = '\noavatar.gif';
-  C_ImaderingOld = 'Imadering.old';
+  C_PacketFileName = 'packet.txt';
   C_XML_Files = '*.xml';
   C_GIF_Ext = '.gif';
   C_JPG_Ext = '.jpg';
@@ -212,6 +215,7 @@ const
   C_Smok = 'Smok';
   C_Hair = 'Hair';
   C_Children = 'Children';
+  C_SendDump = 'SendDump';
   // URL ссылки
   C_IcqReg = 'http://www.icq.com/register';
   C_MraReg = 'http://win.mail.ru/cgi-bin/signup';

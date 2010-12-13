@@ -176,10 +176,12 @@ object ContactSearchForm: TContactSearchForm
       item
         Width = 80
       end>
+    DoubleBuffered = True
     Groups = <>
     HideSelection = False
     ReadOnly = True
     RowSelect = True
+    ParentDoubleBuffered = False
     PopupMenu = SearchResultPopupMenu
     SmallImages = MainForm.AllImageList
     TabOrder = 2
@@ -493,7 +495,7 @@ object ContactSearchForm: TContactSearchForm
         OnChange = UINSearchEditChange
       end
     end
-    object GroupBox1: TGroupBox
+    object EmailSearchGroupBox: TGroupBox
       Left = 5
       Top = 66
       Width = 214
@@ -524,7 +526,7 @@ object ContactSearchForm: TContactSearchForm
         OnChange = EmailSearchEditChange
       end
     end
-    object GroupBox2: TGroupBox
+    object KeyWordSearchGroupBox: TGroupBox
       Left = 5
       Top = 128
       Width = 214

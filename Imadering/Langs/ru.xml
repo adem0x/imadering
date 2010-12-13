@@ -380,7 +380,7 @@
     <CopyHistorySelText c="Копировать"/>
     <CopyAllHistoryText c="Копировать всё"/>
   </HistoryForm>
-  <SearchForm c="Поиск новых контактов ICQ">
+  <ContactSearchForm c="Поиск новых контактов">
     <NotPreviousClearCheckBox c="Не очищать предыдущие результаты"/>
     <OnlyOnlineCheckBox c="Только в сети"/>
     <SearchBitBtn c="Искать"/>
@@ -408,7 +408,7 @@
     <LangLabel c="Язык:"/>
     <KeyWordLabel c="Ключ. слова:"/>
     <GlobalSearchCheckBox c="Глобальный поиск"/>
-    <UINSearchCheckBox c="Искать по UIN"/>
+    <UINSearchCheckBox c="Искать по"/>
     <EmailSearchCheckBox c="Искать по Email"/>
     <KeyWordSearchCheckBox c="Поиск по ключ. слову"/>
     <ICQStatusCheckSM c="Проверка статуса"/>
@@ -418,7 +418,7 @@
     <AddContactInCLSM c="Добавить контакт в список"/>
     <SaveSM c="Сохранить список в файл"/>
     <LoadSM c="Загрузить список из файла"/>
-  </SearchForm>
+  </ContactSearchForm>
   <ChatForm c="Окно сообщений">
     <ChatFontToolButton h="_b_Шрифт и стили_d__r_Настройки шрифта и цвета текста"/>
     <UniqToolButton h="_b_Уникальные настройки_d__r_Редактировать настройки для этого контакта"/>
@@ -630,7 +630,6 @@
     <AvatarInfoGroupBox c="Аватар"/>
     <ParamInfoGroupBox c="Дополнительные онлайн параметры"/>
     <CustomICQPacketGroupBox c="Отсылка произвольного пакета данных"/>
-    <SendCustomICQPacketButton c="Отправить"/>
     <SendCustomICQPaketTimerCheckBox c="Повторять отправку в цикле (секунды):"/>
     <ClientLoginIDLabel c="Логин ID:"/>
     <ConnectionGroupBox c="Настройки соединения"/>
@@ -1187,6 +1186,9 @@
     <CustomPortLabel c="Порт:"/>
     <CustomServerCheckBox c="Вручную задать адрес и порт сервера"/>
     <UseSSLCheckBox c="Использовать SSL шифрование трафика"/>
+    <ConsoleGroupBox c="Отсылка произвольного пакета данных"/>
+    <CustomPktLabel c="Пакет данных в XML формате"/>
+    <ParamInfoGroupBox c="Дополнительные онлайн параметры"/>
   </JabberOptionsForm>
   <MraOptionsForm c="Опции: Mail.ru Agent">
     <MRAOptionButtonGroup_0 c="Учётная запись"/>

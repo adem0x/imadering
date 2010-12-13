@@ -91,7 +91,7 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = AccountPage
+      ActivePage = ConsolePage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -250,7 +250,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Width = 428
         Height = 356
         Caption = 'ConnectPage'
-        ExplicitLeft = 1
         object ConnectionGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -2710,21 +2709,6 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
           end
-          object SendCustomICQPacketButton: TButton
-            Left = 320
-            Top = 324
-            Width = 96
-            Height = 25
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-            TabStop = False
-            OnClick = SendCustomICQPacketButtonClick
-          end
           object SendCustomICQPacketRichEdit: TRichEdit
             Left = 13
             Top = 108
@@ -2739,7 +2723,7 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
             PlainText = True
             ScrollBars = ssVertical
-            TabOrder = 1
+            TabOrder = 0
           end
           object DumpInfoRichEdit: TRichEdit
             Left = 13
@@ -2759,7 +2743,24 @@ object IcqOptionsForm: TIcqOptionsForm
             PlainText = True
             ReadOnly = True
             ScrollBars = ssVertical
+            TabOrder = 1
+          end
+          object SendCustomICQPacketButton: TBitBtn
+            Left = 318
+            Top = 324
+            Width = 98
+            Height = 25
+            DoubleBuffered = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentDoubleBuffered = False
+            ParentFont = False
             TabOrder = 2
+            TabStop = False
+            OnClick = SendCustomICQPacketButtonClick
           end
         end
       end

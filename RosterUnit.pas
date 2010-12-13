@@ -95,6 +95,7 @@ begin
         ChatTab.AutoSize := True;
         ChatTab.Grouped := True;
         ChatTab.ImageIndex := CButton.Status;
+        ChatTab.Tag := CButton.Status;
         ChatTab.OnMouseDown := ToolButtonMouseDown;
         ChatTab.OnMouseUp := ToolButtonMouseUp;
         ChatTab.OnContextPopup := ToolButtonContextPopup;

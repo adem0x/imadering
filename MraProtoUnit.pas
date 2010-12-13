@@ -245,7 +245,9 @@ uses
   UtilsUnit,
   LogUnit,
   OverbyteIcsUrl,
-  RosterUnit;
+  RosterUnit,
+  GtransUnit;
+
 {$ENDREGION}
 {$REGION 'MRA_StatusCodeToImg'}
 
@@ -331,13 +333,16 @@ end;
 
 procedure MRA_MessageRecv(PktData: string; K_Email: string = ''; K_Mess: string = '');
 label
-  A;
+  X;
 var
   S_Log, M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   I, Len: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
   Contact_Yes: Boolean;
+  GtransMsg: Boolean;
+  JvXML: TJvSimpleXml;
 begin
+  GtransMsg := False;
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     Application.CreateForm(TChatForm, ChatForm);
@@ -346,7 +351,7 @@ begin
   begin
     M_From := K_Email;
     Mess := Text2XML(K_Mess);
-    goto A;
+    goto X;
   end;
   // Получаем Id сообщения
   M_Id := Text2Hex(NextData(PktData, 4));
@@ -382,8 +387,42 @@ begin
     // Отсылаем подтверждение о доставке
     if (M_Flag <> '0004') and (M_Flag <> '0400') and (M_Flag <> '3000') then
       MRA_SendMessageACK(M_From, M_Id);
+    // Если для этого контакта активна функция перевода, то отправляем сообщение в список буфера для автоматического перевода
+    JvXML_Create(JvXML);
+    try
+      with JvXML do
+      begin
+        if FileExists(V_ProfilePath + C_AnketaFolder + C_Mra + C_BN + M_From + C_XML_Ext) then
+        begin
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Mra + C_BN + M_From + C_XML_Ext);
+          if Root <> nil then
+          begin
+            XML_Node := Root.Items.ItemNamed[C_Gtrans];
+            if XML_Node <> nil then
+              GtransMsg := XML_Node.BoolValue;
+          end;
+        end;
+      end;
+    finally
+      JvXML.Free;
+    end;
+    if GtransMsg then
+    begin
+      if not Assigned(GTransForm) then
+        Application.CreateForm(TGTransForm, GTransForm);
+      with GTransForm.GtransListView.Items.Add do
+      begin
+        // Изменяем направление перевода для исходящих и входящих сообщений
+        ImageIndex := 213;
+        SubItems.Add(M_From);
+        SubItems.Add(Mess);
+        SubItems.Add(C_Mra);
+      end;
+      // Выходим
+      Exit;
+    end;
     // Форматируем сообщение
-    A: ;
+    X: ;
     CheckMessage_BR(Mess);
     ChatForm.CheckMessage_ClearTag(Mess);
     PopMsg := Mess;
@@ -846,7 +885,7 @@ begin
               Tri_Node := Sub_Node.Items.Item[i];
               if Tri_Node <> nil then
               begin
-                if (Tri_Node.Properties.IntValue(C_Status) <> 275) and (Tri_Node.Properties.IntValue(C_Status) <> 312) then
+                if (Tri_Node.Properties.IntValue(C_Status) <> 275) and (Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL) then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '23');
                   RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');

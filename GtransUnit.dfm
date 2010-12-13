@@ -125,8 +125,6 @@ object GTransForm: TGTransForm
     Height = 17
     TabStop = False
     Caption = '#Enable translit'
-    Checked = True
-    State = cbChecked
     TabOrder = 6
   end
   object GtransClient: THttpCli
@@ -162,7 +160,6 @@ object GTransForm: TGTransForm
     Alignment = paCenter
     AutoHotkeys = maManual
     Images = MainForm.AllImageList
-    OnPopup = ClearMessPopupMenuPopup
     Left = 192
     Top = 144
     object GTClearList: TMenuItem
