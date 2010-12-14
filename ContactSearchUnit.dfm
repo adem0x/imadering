@@ -345,7 +345,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         TabStop = False
-        TabOrder = 0
+        TabOrder = 1
         OnChange = NickEditChange
       end
       object NameEdit: TEdit
@@ -354,7 +354,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         TabStop = False
-        TabOrder = 1
+        TabOrder = 2
         OnChange = NickEditChange
       end
       object FamilyEdit: TEdit
@@ -363,7 +363,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         TabStop = False
-        TabOrder = 2
+        TabOrder = 3
         OnChange = NickEditChange
       end
       object GenderComboBox: TComboBox
@@ -372,7 +372,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         Style = csDropDownList
-        TabOrder = 3
+        TabOrder = 4
         TabStop = False
         OnChange = NickEditChange
       end
@@ -382,7 +382,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         Style = csDropDownList
-        TabOrder = 4
+        TabOrder = 5
         TabStop = False
         OnChange = NickEditChange
         Items.Strings = (
@@ -402,7 +402,7 @@ object ContactSearchForm: TContactSearchForm
         Height = 21
         Style = csDropDownList
         DropDownCount = 20
-        TabOrder = 5
+        TabOrder = 6
         TabStop = False
         OnChange = NickEditChange
       end
@@ -413,7 +413,7 @@ object ContactSearchForm: TContactSearchForm
         Height = 21
         Style = csDropDownList
         DropDownCount = 20
-        TabOrder = 6
+        TabOrder = 7
         TabStop = False
         OnChange = NickEditChange
       end
@@ -423,7 +423,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         TabStop = False
-        TabOrder = 7
+        TabOrder = 8
         OnChange = NickEditChange
       end
       object LangComboBox: TComboBox
@@ -433,7 +433,7 @@ object ContactSearchForm: TContactSearchForm
         Height = 21
         Style = csDropDownList
         DropDownCount = 20
-        TabOrder = 8
+        TabOrder = 9
         TabStop = False
         OnChange = NickEditChange
       end
@@ -443,7 +443,7 @@ object ContactSearchForm: TContactSearchForm
         Width = 101
         Height = 21
         TabStop = False
-        TabOrder = 9
+        TabOrder = 0
         OnChange = NickEditChange
       end
       object GlobalSearchCheckBox: TCheckBox

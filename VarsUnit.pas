@@ -260,7 +260,12 @@ const
   C_CS = 'c';
   C_HS = 'h';
   C_SS = 's';
-  // Ответы прокси
+  // Прокси
+  C_Proxy_Auth = 'Proxy-Authorization: Basic';
+  C_Proxy_Connect = 'CONNECT';
+  C_Proxy_Type = 'HTTP/';
+  C_Proxy_Alive = 'Connection: Keep-alive';
+  C_Proxy_Host = 'Host';
   C_Proxy_0_OK = 'HTTP/1.0 200';
   C_Proxy_1_OK = 'HTTP/1.1 200';
   C_Proxy_S0_OK = 'HTTPS/1.0 200';

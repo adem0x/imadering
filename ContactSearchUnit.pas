@@ -512,10 +512,13 @@ begin
     end
     else if SearchProto = C_Jabber then
     begin
+      // Ставим сообщение что идёт поиск
+      StatusPanel.Caption := Lang_Vars[121].L_S;
+      // Ищем
       if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, CountryComboBox.Text]) then
       begin
         if Jabber_Work_Phaze then
-          Jab_UserSearch(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, CountryComboBox.Text, EmptyStr);
+          Jab_UserSearch(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, Parse(C_BN, CountryComboBox.Text, 2), EmptyStr);
       end;
     end
     else if SearchProto = C_Mra then
@@ -1049,6 +1052,19 @@ begin
   SearchNextPageBitBtn.Enabled := True;
   UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + C_BN + 'UIN';
   ResultClearSpeedButtonClick(nil);
+  // Контролы глобального поиска
+  GenderComboBox.Enabled := True;
+  GenderComboBox.Color := clWindow;
+  AgeComboBox.Enabled := True;
+  AgeComboBox.Color := clWindow;
+  CountryComboBox.Style := csDropDownList;
+  SetCustomWidthComboBox(CountryComboBox);
+  LangComboBox.Enabled := True;
+  LangComboBox.Color := clWindow;
+  MaritalComboBox.Enabled := True;
+  MaritalComboBox.Color := clWindow;
+  KeyWordEdit.Enabled := True;
+  KeyWordEdit.Color := clWindow;
 end;
 {$ENDREGION}
 {$REGION 'SearchJabber'}
@@ -1073,6 +1089,19 @@ begin
   SearchNextPageBitBtn.Enabled := False;
   UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + C_BN + 'JID';
   ResultClearSpeedButtonClick(nil);
+  // Контролы глобального поиска
+  GenderComboBox.Enabled := False;
+  GenderComboBox.Color := clBtnFace;
+  AgeComboBox.Enabled := False;
+  AgeComboBox.Color := clBtnFace;
+  CountryComboBox.Style := csDropDown;
+  SetCustomWidthComboBox(CountryComboBox);
+  LangComboBox.Enabled := False;
+  LangComboBox.Color := clBtnFace;
+  MaritalComboBox.Enabled := False;
+  MaritalComboBox.Color := clBtnFace;
+  KeyWordEdit.Enabled := False;
+  KeyWordEdit.Color := clBtnFace;
 end;
 {$ENDREGION}
 {$REGION 'SearchMRA'}
