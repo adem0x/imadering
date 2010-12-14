@@ -1131,6 +1131,7 @@ begin
     end;
     // Прорисовываем интерфэйс
     Update;
+    // Отключаем SSL
     JabberWSocket.SslEnable := False;
     // Подключаем сокет
     JabberWSocket.Connect;
@@ -1722,6 +1723,8 @@ begin
     // HTTP прокси коннект
     if (V_HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
     begin
+      // Пишем в лог ответ прокси
+      XLog(C_Icq + C_BN + Log_Get, Pkt, C_Icq);
       // Заносим данные в специальный буфер
       ICQ_myBeautifulSocketBuffer := ICQ_myBeautifulSocketBuffer + Pkt;
       // Если нет ответа нормального от прокси, то выходим
@@ -2357,17 +2360,19 @@ begin
   begin
     // Составляем адрес
     if ICQ_Connect_Phaze then
-      Http_data := ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort
+      Http_data := ICQ_LoginServerAddr + C_TN + ICQ_LoginServerPort
     else
-      Http_data := ICQ_Bos_IP + ':' + ICQ_Bos_Port;
+      Http_data := ICQ_Bos_IP + C_TN + ICQ_Bos_Port;
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
-      Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
-      Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
+      Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
+      Http_login := C_Proxy_Auth + C_BN + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
-    Http_data := 'CONNECT ' + Http_data + ' HTTP/1.0' + C_RN + 'User-agent: Mozilla/4.08 [en] (WinNT; U)' + C_RN + Http_login + C_RN;
+    Http_data := C_Proxy_Connect + C_BN + Http_data + C_BN + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
+     + C_Proxy_Alive + C_RN + C_Proxy_Host + C_TN + C_BN + Http_data + C_RN + Http_login + C_RN;
+    XLog(C_Icq + C_BN + Log_Send, Http_data, C_Icq, False);
     // Отсылаем запрос для прокси
     ICQWSocket.SendStr(Http_data);
   end;
@@ -2469,6 +2474,8 @@ begin
     // HTTP прокси коннект
     if (V_HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
     begin
+      // Пишем ответ прокси в лог
+      XLog(C_Jabber + C_BN + Log_Get, Pkt, C_Jabber);
       // Заносим данные в специальный буфер
       Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
       // Если нет ответа нормального от прокси, то выходим
@@ -2484,6 +2491,18 @@ begin
       begin
         Jabber_HTTP_Connect_Phaze := True;
         XLog(C_Jabber + C_BN + Log_Get, Log_Proxy_OK, C_Jabber);
+        // Отсылаем строку начала сессии с сервером
+        // Если активно SSL
+        if Jabber_UseSSL then
+        begin
+          JabberWSocket.SslEnable := True;
+          JabberWSocket.StartSslHandshake;
+        end;
+        // Если сервер и порт указаны вручную
+        if JabberOptionsForm.CustomServerCheckBox.Checked then
+          Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
+        else
+          Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
       end
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
@@ -2703,22 +2722,25 @@ begin
   begin
     // Составляем адрес
     if Jabber_Connect_Phaze then
-      Http_data := Jabber_ServerAddr + ':' + Jabber_ServerPort;
+      Http_data := Jabber_ServerAddr + C_TN + Jabber_ServerPort;
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
       Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
-      Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
+      Http_login := C_Proxy_Auth + C_BN + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
-    Http_data := 'CONNECT ' + Http_data + ' HTTP/1.0' + C_RN + 'User-agent: Mozilla/4.08 [en] (WinNT; U)' + C_RN + Http_login + C_RN;
+    Http_data := C_Proxy_Connect + C_BN + Http_data + C_BN + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
+     + C_Proxy_Alive + C_RN + C_Proxy_Host + C_TN + C_BN + Http_data + C_RN + Http_login + C_RN;
+    XLog(C_Jabber + C_BN + Log_Send, Http_data, C_Jabber, False);
     // Отсылаем запрос для прокси
     JabberWSocket.SendStr(Http_data);
+    Exit;
   end;
   // Если активно SSL
-  JabberWSocket.SslEnable := Jabber_UseSSL;
+  if Jabber_UseSSL then
+    JabberWSocket.SslEnable := True;
   // Отсылаем строку начала сессии с сервером
-  // Если сервер и порт указаны вручную
   if JabberOptionsForm.CustomServerCheckBox.Checked then
     Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
   else
@@ -3172,6 +3194,8 @@ begin
     // HTTP прокси коннект
     if (V_HttpProxy_Enable) and ((MRA_Connect_Phaze) or (MRA_BosConnect_Phaze)) and (not MRA_HTTP_Connect_Phaze) then
     begin
+      // Пишем ответ прокси в лог
+      XLog(C_Mra + C_BN + Log_Get, Pkt, C_Mra);
       // Заносим данные в специальный буфер
       MRA_myBeautifulSocketBuffer := MRA_myBeautifulSocketBuffer + Pkt;
       // Если нет ответа нормального от прокси, то выходим
@@ -3228,7 +3252,7 @@ begin
     // Если фаза первого подключания к серверу MRA
     if MRA_Connect_Phaze then
     begin
-      MRA_Bos_Addr := MRA_BuffPkt;
+      MRA_Bos_Addr := Trim(MRA_BuffPkt);
       XLog(C_Mra + C_BN + Log_Parsing + C_BN + Log_BosServer, MRA_Bos_Addr, C_Mra);
       // Получаем адрес Bos сервера для подключения
       MRA_Bos_IP := Parse(C_TN, MRA_Bos_Addr, 1);
@@ -5588,19 +5612,22 @@ begin
   begin
     // Составляем адрес
     if MRA_Connect_Phaze then
-      Http_data := MRA_LoginServerAddr + ':' + MRA_LoginServerPort
+      Http_data := MRA_LoginServerAddr + C_TN + MRA_LoginServerPort
     else
-      Http_data := MRA_Bos_IP + ':' + MRA_Bos_Port;
+      Http_data := MRA_Bos_IP + C_TN + MRA_Bos_Port;
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
-      Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
-      Http_login := 'Authorization: Basic ' + Http_login + C_RN + 'Proxy-authorization: Basic ' + Http_login + C_RN;
+      Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
+      Http_login := C_Proxy_Auth + C_BN + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
-    Http_data := 'CONNECT ' + Http_data + ' HTTP/1.0' + C_RN + 'User-agent: Mozilla/4.08 [en] (WinNT; U)' + C_RN + Http_login + C_RN;
+    Http_data := C_Proxy_Connect + C_BN + Http_data + C_BN + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
+     + C_Proxy_Alive + C_RN + C_Proxy_Host + C_TN + C_BN + Http_data + C_RN + Http_login + C_RN;
+    XLog(C_Mra + C_BN + Log_Send, Http_data, C_Mra, False);
     // Отсылаем запрос для прокси
     MRAWSocket.SendStr(Http_data);
+    Exit;
   end;
   // Если уже подключились в Bos серверу
   if MRA_BosConnect_Phaze then

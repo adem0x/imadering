@@ -4754,7 +4754,7 @@ begin
     Events[4].Enabled := False;
     Events[5].Enabled := False;
   end;
-  // Если существует форма настроек протокола ICQ, то блокируем там контролы
+  // Если существует форма настроек протокола ICQ, то разблокируем там контролы
   if Assigned(IcqOptionsForm) then
   begin
     with IcqOptionsForm do

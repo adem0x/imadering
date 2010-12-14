@@ -448,7 +448,7 @@ function Jab_SetSession: string;
 begin
   Result := Format(Iq_TypeSet, [Jabber_Seq]) + '<session xmlns=''urn:ietf:params:xml:ns:xmpp-session''/>' + '</iq>';
   // Запоминаем Id для запроса сессии (google talk)
-  J_SessionId := Format('imadering_%d', [Jabber_Seq]);
+  J_SessionId := IntToStr(Jabber_Seq);
   // Увеличиваем счётчик исходящих jabber пакетов
   Inc(Jabber_Seq);
 end;
