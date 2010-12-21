@@ -42,7 +42,8 @@ uses
   JclDebug,
   JvSimpleXml,
   ExtDlgs,
-  IOUtils;
+  IOUtils,
+  OverbyteIcsUtils;
 
 type
   TMainForm = class(TForm)
@@ -273,6 +274,12 @@ type
     JabberAddContact: TMenuItem;
     N31: TMenuItem;
     MRASearchNewContact: TMenuItem;
+    N16: TMenuItem;
+    N33: TMenuItem;
+    N36: TMenuItem;
+    ICQ_Addition: TMenuItem;
+    MRA_Addition: TMenuItem;
+    Jabber_Addition: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -440,6 +447,9 @@ type
     procedure ICQAddGroupClick(Sender: TObject);
     procedure JabberAddGroupClick(Sender: TObject);
     procedure MRAAddGroupClick(Sender: TObject);
+    procedure HttpClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+    procedure TwitterClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+    procedure MRA_PhotoClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 
   private
     { Private declarations }
@@ -576,6 +586,8 @@ begin
   DumpICQ.Caption := Format(Lang_Vars[11].L_S, [C_ICQ]);
   DumpJabber.Caption := Format(Lang_Vars[11].L_S, [C_Jabber]);
   // Применяем перевод статусов в меню
+  ICQSettings.Caption := Settings_Menu.Caption + C_BN + C_Icq;
+  ICQ_Addition.Caption := NextContactMenu.Caption;
   ICQStatusFFC.Caption := Lang_Vars[67].L_S;
   ICQStatusEvil.Caption := Lang_Vars[68].L_S;
   ICQStatusDepres.Caption := Lang_Vars[69].L_S;
@@ -592,8 +604,9 @@ begin
   ICQStatusOffline.Caption := Lang_Vars[80].L_S;
   ICQAddGroup.Caption := AddGroupCL.Caption;
   ICQAddContact.Caption := AddContactCL.Caption;
-  //
-  MRASettings.Caption := ICQSettings.Caption;
+  // MRA
+  MRASettings.Caption := Settings_Menu.Caption + C_BN + C_Mra;
+  MRA_Addition.Caption := NextContactMenu.Caption;
   MRASearchNewContact.Caption := ICQSearchNewContact.Caption;
   MRAXStatus.Caption := ICQXStatus.Caption;
   MRAStatusFFC.Caption := Lang_Vars[67].L_S;
@@ -613,8 +626,9 @@ begin
   UnstableMRAStatus.Caption := UnstableICQStatus.Caption;
   MRAAddGroup.Caption := AddGroupCL.Caption;
   MRAAddContact.Caption := AddContactCL.Caption;
-  //
-  JabberSettings.Caption := ICQSettings.Caption;
+  // Jabber
+  JabberSettings.Caption := Settings_Menu.Caption + C_BN + C_Jabber;
+  Jabber_Addition.Caption := NextContactMenu.Caption;
   JabberSearchNewContact.Caption := ICQSearchNewContact.Caption;
   JabberXStatus.Caption := ICQXStatus.Caption;
   JabberStatusFFC.Caption := Lang_Vars[67].L_S;
@@ -634,7 +648,7 @@ begin
   UnstableJabberStatus.Caption := UnstableICQStatus.Caption;
   JabberAddGroup.Caption := AddGroupCL.Caption;
   JabberAddContact.Caption := AddContactCL.Caption;
-  //
+  // All Statuses
   AllStatusFFC.Caption := Lang_Vars[67].L_S;
   AllStatusEvil.Caption := Lang_Vars[68].L_S;
   AllStatusDepres.Caption := Lang_Vars[69].L_S;
@@ -787,6 +801,12 @@ begin
     ClearContacts(C_Mra);
   end;
 end;
+procedure TMainForm.MRA_PhotoClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+begin
+  // Управляем кукие
+  XLog(MRA_PhotoClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
+end;
+
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -1233,7 +1253,7 @@ var
   {List: TStringList;
   Str: string;}
   Ver, FullVer, BuildDate, Mess: string;
-  C_Flag: Boolean;
+  C_Flag1, C_Flag2: Boolean;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
 
@@ -1249,7 +1269,8 @@ var
   end;
 
 begin
-  C_Flag := False;
+  C_Flag1 := False;
+  C_Flag2 := False;
   try
     // Высвобождаем память отправки данных
     if HttpClient.SendStream <> nil then
@@ -1312,7 +1333,7 @@ begin
                     if XML_Node <> nil then
                     begin
                       if XML_Node.Value = '1' then
-                        C_Flag := True;
+                        C_Flag1 := True;
                     end;
                   end;
                 end;
@@ -1322,20 +1343,7 @@ begin
             end;
           1: // Обработка флагов
             begin
-              {// Создаём временный лист
-              List := TStringList.Create;
-              try
-                // Читаем данные в лист
-                List.LoadFromStream(HttpClient.RcvdStream, TEncoding.UTF8);
-                Str := Trim(List.Text);
-                // Разбираем данные в листе
-                if Str <> EmptyStr then
-                begin
-                  Xlog(HttpClient.Name + C_BN + Log_Get, Str, C_HTTP);
-                end;
-              finally
-                List.Free;
-              end;}
+              C_Flag2 := True;
             end;
           2: // Ничего не делаем, потому что это сброс задания
             begin
@@ -1368,8 +1376,10 @@ begin
       end;
     end;
     // Обрабатываем флаги
-    if C_Flag then
-      Update_Info_OK;
+    if C_Flag1 then
+      Update_Info_OK(False);
+    if C_Flag2 then
+      Update_Info_OK(True);
   except
     on E: Exception do
       IMaderingEventsException(Self, E);
@@ -1384,6 +1394,12 @@ begin
   // Скрываем кнопку истории сообщений на нижней панели
   HistoryONMenu.Checked := not HistoryONMenu.Checked;
   HistoryToolButton.Visible := not HistoryToolButton.Visible;
+end;
+
+procedure TMainForm.HttpClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+begin
+  // Управляем кукие
+  ParseCookie(Data);
 end;
 
 procedure TMainForm.HttpClientDocBegin(Sender: TObject);
@@ -2588,7 +2604,9 @@ begin
                       Jab_SendPkt(J_ChallengeOK)
                     else
                       // Отсылаем пакет с авторизацией
-                      Jab_SendPkt(Jab_DigestMD5_Auth(Jabber_LoginUIN, Jabber_ServerAddr, Jabber_LoginPassword, Challenge, GetRandomHexBytes(32)));
+                      Jab_SendPkt(Jab_DigestMD5_Auth(UnicodeToAnsi(Jabber_LoginUIN, CP_UTF8), //
+                       UnicodeToAnsi(Jabber_ServerAddr, CP_UTF8), UnicodeToAnsi(Jabber_LoginPassword, CP_UTF8), //
+                        Challenge, GetRandomHexBytes(32)));
                   end
                   else if (Pos('failure', Pkt) > 0) and (Pos('auth', Pkt) > 0) then
                   begin
@@ -5140,6 +5158,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'TwitterHttpClientRequestDone'}
+
+procedure TMainForm.TwitterClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+begin
+  // Управляем кукие
+  XLog(TwitterClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
+end;
 
 procedure TMainForm.TwitterClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
 var

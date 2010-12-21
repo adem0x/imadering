@@ -92,6 +92,24 @@ type
     SendCustomXMLPacketButton: TBitBtn;
     ParamInfoGroupBox: TGroupBox;
     ParamInfoRichEdit: TRichEdit;
+    PassChangePage: TJvStandardPage;
+    PassChangeGroupBox: TGroupBox;
+    RetypeNewPassLabel: TLabel;
+    NewPassChangeLabel: TLabel;
+    CurrentPassChangeLabel: TLabel;
+    ChangePassButton: TButton;
+    ShowPassChangeCheckBox: TCheckBox;
+    RetypeNewPassEdit: TEdit;
+    NewPassChangeEdit: TEdit;
+    CurrentPassChangeEdit: TEdit;
+    PassChangeInfoRichEdit: TRichEdit;
+    Eye: TJvStandardPage;
+    EyeGroupBox: TGroupBox;
+    ClearEyeButton: TButton;
+    EyeDisableCheckBox: TCheckBox;
+    EyeInfoRichEdit: TRichEdit;
+    EyeListView: TListView;
+    JvStandardPage1: TJvStandardPage;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);
@@ -114,6 +132,8 @@ type
     procedure RegNewAccountLabelClick(Sender: TObject);
     procedure RegWebNewAccountLabelClick(Sender: TObject);
     procedure SendCustomXMLPacketButtonClick(Sender: TObject);
+    procedure ShowPassChangeCheckBoxClick(Sender: TObject);
+    procedure ChangePassButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -329,9 +349,15 @@ begin
           if XML_Node <> nil then
           begin
             // Загружаем инфы
-            Sub_Node := XML_Node.Items.ItemNamed[C_SendDump];
+            Sub_Node := XML_Node.Items.ItemNamed[DumpInfoRichEdit.Name];
             if Sub_Node <> nil then
               DumpInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value(C_CS));
+            Sub_Node := XML_Node.Items.ItemNamed[EyeInfoRichEdit.Name];
+            if Sub_Node <> nil then
+              EyeInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
+            Sub_Node := XML_Node.Items.ItemNamed[PassChangeInfoRichEdit.Name];
+            if Sub_Node <> nil then
+              PassChangeInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
           end;
         end;
       end;
@@ -343,6 +369,8 @@ begin
   CancelButton.Caption := Lang_Vars[9].L_S;
   ApplyButton.Caption := Lang_Vars[10].L_S;
   SendCustomXMLPacketButton.Caption := Lang_Vars[165].L_S;
+  ChangePassButton.Caption := PassChangeGroupBox.Caption;
+  ShowPassChangeCheckBox.Caption := ShowPassCheckBox.Caption;
 end;
 
 {$ENDREGION}
@@ -424,6 +452,8 @@ begin
   // Прокручиваем рич в верх против глюка в вайн
   DumpInfoRichEdit.SelStart := 0;
   SendMessage(DumpInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+  EyeInfoRichEdit.SelStart := 0;
+  SendMessage(EyeInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
   // Загружаем онлайн параметры
   SetOnlineVars;
 end;
@@ -437,6 +467,23 @@ begin
   ApplySettings;
   // Сохраняем настройки
   SaveSettings;
+end;
+
+procedure TJabberOptionsForm.ShowPassChangeCheckBoxClick(Sender: TObject);
+begin
+  // Отображаем пароли
+  if ShowPassChangeCheckBox.Checked then
+  begin
+    CurrentPassChangeEdit.PasswordChar := #0;
+    NewPassChangeEdit.PasswordChar := #0;
+    RetypeNewPassEdit.PasswordChar := #0;
+  end
+  else
+  begin
+    CurrentPassChangeEdit.PasswordChar := '*';
+    NewPassChangeEdit.PasswordChar := '*';
+    RetypeNewPassEdit.PasswordChar := '*';
+  end;
 end;
 
 procedure TJabberOptionsForm.ShowPassCheckBoxClick(Sender: TObject);
@@ -456,6 +503,22 @@ procedure TJabberOptionsForm.CancelButtonClick(Sender: TObject);
 begin
   // Закрываем окно
   Close;
+end;
+
+procedure TJabberOptionsForm.ChangePassButtonClick(Sender: TObject);
+begin
+  // Меняем пароль
+  if not NotProtoOnline(C_Jabber) then
+  begin
+    if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> Jabber_LoginPassword) or (NewPassChangeEdit.Text = EmptyStr) or (Length(NewPassChangeEdit.Text) < 6) or
+      (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
+      DAShow(Lang_Vars[18].L_S, Format(Lang_Vars[29].L_S, [C_Jabber]), EmptyStr, 134, 2, 0)
+    else
+    begin
+      Jab_PassChange(RetypeNewPassEdit.Text);
+      Jabber_ChangePassword := RetypeNewPassEdit.Text;
+    end;
+  end;
 end;
 
 procedure TJabberOptionsForm.FormDblClick(Sender: TObject);

@@ -412,7 +412,6 @@ var
   ICQ_Avatar_HexPkt: string;
   ICQ_LoginUIN: string;
   ICQ_LoginPassword: string;
-  ICQ_ChangePassword: string = '';
   // Фазы работы начало
   ICQ_Connect_Phaze: Boolean = False;
   ICQ_HTTP_Connect_Phaze: Boolean = False;
@@ -528,7 +527,6 @@ procedure ICQ_GetAvatarImage(AUIN, AHash: string);
 procedure ICQ_Parse_UserAvatar(PktData: string);
 procedure ICQ_SaveInfo_Auth_WebAvare(IAuth, IWebAvare: Boolean);
 procedure ICQ_UpdatePrivate_Group(InvizStatus: string);
-procedure ICQ_PassChange(Pass: string);
 function ICQ_CreateHint(XML_Node: TJvSimpleXmlElem): string;
 
 {$ENDREGION}
@@ -541,23 +539,6 @@ uses
   UtilsUnit,
   OverbyteIcsMD5,
   RosterUnit;
-
-{$ENDREGION}
-{$REGION 'ICQ_PassChange'}
-
-procedure ICQ_PassChange(Pass: string);
-var
-  Len: Integer;
-  Pkt, Pkt1: string;
-begin
-  // Собираем пакет для смены пароля
-  Pkt1 := IntToHex(Swap32(StrToInt(ICQ_LoginUIN)), 8) + 'd007' + IntToHex(Random($9000), 4) + '2e04' + IntToHex(Swap16(Length(Pass)), 4) + Text2Hex(Pass) + '00';
-  Len := Length(Hex2Text(Pkt1));
-  Pkt1 := IntToHex((Len + 2), 4) + IntToHex(Swap16(Len), 4) + Pkt1;
-  Pkt := '00150002000000000000' + '0001' + Pkt1;
-  // Отсылаем пакет
-  ICQ_SendPkt('2', Pkt);
-end;
 
 {$ENDREGION}
 {$REGION 'ICQ_SaveInfo_Auth_WebAvare'}
@@ -2023,16 +2004,6 @@ begin
   // Сканируем тело пакета на нужные нам TLV
   PTLV := Text2Hex(NextData(PktData, 2));
   case HexToInt(PTLV) of
-    $AA00: // Пароль на учётную запись успешно изменён
-      begin
-        if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
-        begin
-          ICQ_LoginPassword := ICQ_ChangePassword;
-          // Информируем об успешной смене пароля
-          DAShow(Lang_Vars[16].L_S, Lang_Vars[30].L_S, EmptyStr, 133, 3, 0);
-          Exit;
-        end;
-      end;
     $DC0F: // Анкетная информация успешно изменена
       begin
         if HexToInt(Text2Hex(NextData(PktData, 1))) = $0A then
@@ -4614,8 +4585,8 @@ var
   Digest: TMD5Digest;
 begin
   // Уменьшаем длинну пароля до 8 символов (ограничение протокола ICQ)
-  if Length(ICQ_LoginPassword) > 8 then
-    Setlength(ICQ_LoginPassword, 8);
+  if Length(CPass) > 8 then
+    Setlength(CPass, 8);
   // Вычисляем MD5 хэш пароля
   CLIENT_MD5_STRING := 'AOL Instant Messenger (SM)';
   MD5Init(State);

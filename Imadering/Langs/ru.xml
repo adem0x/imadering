@@ -41,7 +41,7 @@
     <GtransErr_1 c="Ошибка перевода"/>
     <GtransErr_2 c="Сначала необходимо выбрать языки для перевода!"/>
     <Apply c="Применить"/>
-    <Empty c="( Пусто )"/>
+    <Empty c="[ Пусто ]"/>
     <NewVerYES c="Доступна новая версия IMadering"/>
     <NewVerNO c="Новой версии не обнаружено."/>
     <NewVerErr c="Ошибка получения данных о новой версии."/>
@@ -218,7 +218,6 @@
     <RenemeGroupCL c="Переименовать группу"/>
     <DeleteGroupCL c="Удалить группу"/>
     <AddContactCL c="Добавить контакт"/>
-    <ICQSettings c="Настройки сети"/>
     <ICQSearchNewContact c="Поиск новых контактов"/>
     <ICQXStatus c="Дополнительный статус"/>
     <SendMessageForContact c="Отправить сообщение"/>
@@ -327,11 +326,12 @@
     <KeyboardSoundsCheckBox c="Воспроизводить звуки нажатия клавиш."/>
   </SettingsForm>
   <Infos>
-    <SendDump c="Внимание! Эта функция предназначена для очень опытных пользователей. Используйте её только если вы точно знаете, что вы делаете. Последствия могут быть непредсказуемые."/>
+    <DumpInfoRichEdit c="Внимание! Эта функция предназначена для очень опытных пользователей. Используйте её только если вы точно знаете, что вы делаете. Последствия могут быть непредсказуемые."/>
     <About c="IMadering - графический клиент обмена сообщениями, позволяет использовать ICQ, XMPP, Twitter и MRA одновременно. Написан на Delphi 2010. Проект с открытым исходным кодом._r__r_Вы можете изменять и распространять программу по условиям GPL (версии 2 или более поздней). Копия GPL содержится в файле, распространяемом с IMadering. Авторские права на IMadering принадлежат участникам проекта. Мы не предоставляем никаких гарантий на эту программу."/>
     <ClientId c="Внимание! Эти настройки предназначены для опытных пользователей. Если вы не знаете, что это такое, пожалуйста, оставьте всё как есть. Изменение идентификатора клиента может сделать недоступными некоторые функции или стать причиной нестабильной работы программы."/>
-    <PassChange c="Для смены пароля, вам необходимо ввести текущий пароль и новый пароль дважды. Настоятельно рекомендуется использовать в новом пароле комбинацию цифр и букв латинского алфавита. Длина пароля должна быть в пределах от 6 до 8 символов."/>
+    <PassChangeInfoRichEdit c="Для смены пароля, вам необходимо ввести текущий пароль и новый пароль дважды. Настоятельно рекомендуется использовать в новом пароле комбинацию цифр и букв латинского алфавита. Длина пароля должна быть в пределах от 6 до 8 символов."/>
     <Language c="Русский._r_Автор: Эдуард толмачёв._r__r_Если вы обнаружили ошибку в переводе, то сообщите, пожалуйста, об этом на нашем форуме http://imadering.mybb.ru_r_Дата: 27.01.2010"/>
+    <EyeInfoRichEdit c="Эта функция позволяет видеть, кто вас добавил, кто читал ваши статус-сообщения, и все другие сервисные пакеты от тех пользователей, которых нет в вашем списке контактов."/>
   </Infos>
   <AboutForm c="О программе">
     <SiteLabel c="Сайт программы:"/>
@@ -542,7 +542,7 @@
     <ICQOptionButtonGroup_1 c="Подключение"/>
     <ICQOptionButtonGroup_2 c="Приватность"/>
     <ICQOptionButtonGroup_3 c="ID клиента"/>
-    <ICQOptionButtonGroup_4 c="Сменить пароль"/>
+    <ICQOptionButtonGroup_4 c="Всевидящее око"/>
     <ICQOptionButtonGroup_5 c="Моя анкета"/>
     <ICQOptionButtonGroup_6 c="Дом"/>
     <ICQOptionButtonGroup_7 c="Работа"/>
@@ -558,7 +558,6 @@
     <RegNewUINLabel c="Зарегистрировать новый UIN"/>
     <ShowPassCheckBox c="Показать пароль"/>
     <SavePassCheckBox c="Сохранить пароль"/>
-    <AccountGroupBox2 c="Опции"/>
     <ShowAwayTimeCheckBox c="Показывать контактам время простоя или моего отсутствия"/>
     <AutoReqAuthCheckBox c="Автоматически запрашивать авторизацию при добавлении контакта"/>
     <AuthAndWebStatusGroupBox c="Авторизация и Web-статус"/>
@@ -571,13 +570,6 @@
     <ClientProtoVerLabel c="Версия протокола:"/>
     <ClientCapsLabel c="Здесь можно добавить свои характеристики клиента (до 16 знаков):"/>
     <ClientVersionLabel c="Версия клиента:"/>
-    <PassChangeGroupBox c="Сменить пароль"/>
-    <RetypeNewPassLabel c="Подтвердить новый пароль:"/>
-    <NewPassChangeLabel c="Новый пароль:"/>
-    <ReqPassChangeLabel c="Забыли пароль?"/>
-    <CurrentPassChangeLabel c="Текущий пароль:"/>
-    <ChangePassButton c="Сменить"/>
-    <ShowPassChangeCheckBox c="Показать пароль"/>
     <MyInfoNameGroupBox c="Имя"/>
     <FamilyInfoLabel c="Фамилия:"/>
     <NameInfoLabel c="Имя:"/>
@@ -630,12 +622,18 @@
     <AvatarInfoGroupBox c="Аватар"/>
     <ParamInfoGroupBox c="Дополнительные онлайн параметры"/>
     <CustomICQPacketGroupBox c="Отсылка произвольного пакета данных"/>
-    <SendCustomICQPaketTimerCheckBox c="Повторять отправку в цикле (секунды):"/>
     <ClientLoginIDLabel c="Логин ID:"/>
     <ConnectionGroupBox c="Настройки соединения"/>
     <ServerLabel c="Сервер:"/>
     <PortLabel c="Порт:"/>
     <UseSSLCheckBox c="Использовать SSL шифрование трафика"/>
+    <CustomPktLabel c="Пакет данных в HEX формате"/>
+    <EyeGroupBox c="Всевидящее око"/>
+    <EyeDisableCheckBox c="Отключить око"/>
+    <ClearEyeButton c="Очистить список"/>
+    <EyeListView_0 c="Учётная запись"/>
+    <EyeListView_1 c="Время события"/>
+    <ChangePassLabel c="Сменить пароль"/>
   </IcqOptionsForm>
   <icq_countries>
     <c1 c=""/>
@@ -1170,6 +1168,8 @@
     <JabberOptionButtonGroup_7 c="Аватар"/>
     <JabberOptionButtonGroup_8 c="Параметры"/>
     <JabberOptionButtonGroup_9 c="XML консоль"/>
+    <JabberOptionButtonGroup_10 c="Сменить пароль"/>
+    <JabberOptionButtonGroup_11 c="Всевидящее око"/>
     <AccountGroupBox c="Учётная запись"/>
     <RegNewAccountLabel c="Зарегистрировать эту учётную запись"/>
     <ICQUINLabel c="Учётная запись (JID@server):"/>
@@ -1189,6 +1189,15 @@
     <ConsoleGroupBox c="Отсылка произвольного пакета данных"/>
     <CustomPktLabel c="Пакет данных в XML формате"/>
     <ParamInfoGroupBox c="Дополнительные онлайн параметры"/>
+    <PassChangeGroupBox c="Сменить пароль"/>
+    <CurrentPassChangeLabel c="Текущий пароль:"/>
+    <NewPassChangeLabel c="Новый пароль:"/>
+    <RetypeNewPassLabel c="Подтвердить новый пароль:"/>
+    <EyeGroupBox c="Всевидящее око"/>
+    <EyeDisableCheckBox c="Отключить око"/>
+    <ClearEyeButton c="Очистить список"/>
+    <EyeListView_0 c="Учётная запись"/>
+    <EyeListView_1 c="Время события"/>
   </JabberOptionsForm>
   <MraOptionsForm c="Опции: Mail.ru Agent">
     <MRAOptionButtonGroup_0 c="Учётная запись"/>

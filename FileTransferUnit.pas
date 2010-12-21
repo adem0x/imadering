@@ -60,6 +60,7 @@ type
     procedure SendFileClientSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure SendFileClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
     procedure FormDblClick(Sender: TObject);
+    procedure SendFileClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 
   private
     { Private declarations }
@@ -140,6 +141,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TFileTransferForm.SendFileClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+begin
+  // Управляем кукие
+  XLog(SendFileClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
+end;
 
 procedure TFileTransferForm.SendFileClientDocBegin(Sender: TObject);
 begin

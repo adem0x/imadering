@@ -46,7 +46,7 @@ type
     ApplyButton: TBitBtn;
     CancelButton: TBitBtn;
     OKButton: TBitBtn;
-    PassChangePage: TJvStandardPage;
+    Eye: TJvStandardPage;
     AnketaPage: TJvStandardPage;
     ClientIDGroupBox: TGroupBox;
     ClientIDComboBox: TComboBox;
@@ -82,16 +82,9 @@ type
     ClientCaps3Edit: TEdit;
     ClientVersionEdit: TEdit;
     ClientVersionLabel: TLabel;
-    PassChangeGroupBox: TGroupBox;
-    ChangePassButton: TButton;
-    ShowPassChangeCheckBox: TCheckBox;
-    RetypeNewPassEdit: TEdit;
-    RetypeNewPassLabel: TLabel;
-    NewPassChangeEdit: TEdit;
-    NewPassChangeLabel: TLabel;
-    ReqPassChangeLabel: TLabel;
-    CurrentPassChangeEdit: TEdit;
-    CurrentPassChangeLabel: TLabel;
+    EyeGroupBox: TGroupBox;
+    ClearEyeButton: TButton;
+    EyeDisableCheckBox: TCheckBox;
     FamilyInfoEdit: TEdit;
     FamilyInfoLabel: TLabel;
     NameInfoEdit: TEdit;
@@ -217,7 +210,6 @@ type
     ParamInfoGroupBox: TGroupBox;
     SendCustomICQPacketRichEdit: TRichEdit;
     ParamInfoRichEdit: TRichEdit;
-    AccountGroupBox2: TGroupBox;
     RegNewUINLabel: TLabel;
     ConnectPage: TJvStandardPage;
     DumpInfoRichEdit: TRichEdit;
@@ -225,9 +217,9 @@ type
     AboutInfoRichEdit: TRichEdit;
     Bevel1: TBevel;
     ClientIdInfoRichEdit: TRichEdit;
-    PassChangeInfoRichEdit: TRichEdit;
+    EyeInfoRichEdit: TRichEdit;
     PersonalBirthDayInfoLabel: TLabel;
-    Label1: TLabel;
+    CustomPktLabel: TLabel;
     ClientLoginIdEdit: TEdit;
     ClientLoginIDLabel: TLabel;
     ConnectionGroupBox: TGroupBox;
@@ -238,6 +230,8 @@ type
     PortEdit: TEdit;
     ServerComboBox: TComboBox;
     SendCustomICQPacketButton: TBitBtn;
+    EyeListView: TListView;
+    ChangePassLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure ReqPassLabelMouseLeave(Sender: TObject);
     procedure ReqPassLabelMouseEnter(Sender: TObject);
@@ -248,8 +242,6 @@ type
     procedure OKButtonClick(Sender: TObject);
     procedure ShowPassCheckBoxClick(Sender: TObject);
     procedure ReqPassLabelClick(Sender: TObject);
-    procedure ShowPassChangeCheckBoxClick(Sender: TObject);
-    procedure ChangePassButtonClick(Sender: TObject);
     procedure PassEditClick(Sender: TObject);
     procedure RegNewUINLabelClick(Sender: TObject);
     procedure ICQOptionButtonGroupKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -257,6 +249,7 @@ type
     procedure PassEditChange(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure SendCustomICQPacketButtonClick(Sender: TObject);
+    procedure ChangePassLabelClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -294,7 +287,6 @@ uses
 
 const
   C_ClientId = 'ClientId';
-  C_PassChange = 'PassChange';
   C_ClientLoginID = 'ClientLoginID';
   C_IcqCountries = 'icq_countries';
   C_IcqLangs = 'icq_languages';
@@ -506,10 +498,10 @@ begin
             Sub_Node := XML_Node.Items.ItemNamed[C_ClientId];
             if Sub_Node <> nil then
               ClientIdInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
-            Sub_Node := XML_Node.Items.ItemNamed[C_PassChange];
+            Sub_Node := XML_Node.Items.ItemNamed[EyeInfoRichEdit.Name];
             if Sub_Node <> nil then
-              PassChangeInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
-            Sub_Node := XML_Node.Items.ItemNamed[C_SendDump];
+              EyeInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
+            Sub_Node := XML_Node.Items.ItemNamed[DumpInfoRichEdit.Name];
             if Sub_Node <> nil then
               DumpInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
           end;
@@ -747,30 +739,18 @@ begin
   Close;
 end;
 
+procedure TIcqOptionsForm.ChangePassLabelClick(Sender: TObject);
+begin
+  // Открываем страницу смены пароля
+  OpenURL('http://www.icq.com/support/change_password/');
+end;
+
 procedure TIcqOptionsForm.ApplyButtonClick(Sender: TObject);
 begin
   // Применяем настройки
   ApplySettings;
   // Сохраняем настройки
   SaveSettings;
-end;
-
-{$ENDREGION}
-{$REGION 'ChangePassButtonClick'}
-
-procedure TIcqOptionsForm.ChangePassButtonClick(Sender: TObject);
-begin
-  if not NotProtoOnline(C_Icq) then
-  begin
-    if (CurrentPassChangeEdit.Text = EmptyStr) or (CurrentPassChangeEdit.Text <> ICQ_LoginPassword) or (NewPassChangeEdit.Text = EmptyStr) or (Length(NewPassChangeEdit.Text) < 6) or
-      (RetypeNewPassEdit.Text = EmptyStr) or (RetypeNewPassEdit.Text <> NewPassChangeEdit.Text) then
-      DAShow(Lang_Vars[18].L_S, Lang_Vars[29].L_S, EmptyStr, 134, 2, 0)
-    else
-    begin
-      ICQ_PassChange(RetypeNewPassEdit.Text);
-      ICQ_ChangePassword := RetypeNewPassEdit.Text;
-    end;
-  end;
 end;
 
 {$ENDREGION}
@@ -801,22 +781,6 @@ begin
     PassEdit.PasswordChar := '*';
   // Восстанавливаем событие изменения поля пароля
   PassEdit.OnChange := PassEditChange;
-end;
-
-procedure TIcqOptionsForm.ShowPassChangeCheckBoxClick(Sender: TObject);
-begin
-  if ShowPassChangeCheckBox.Checked then
-  begin
-    CurrentPassChangeEdit.PasswordChar := #0;
-    NewPassChangeEdit.PasswordChar := #0;
-    RetypeNewPassEdit.PasswordChar := #0;
-  end
-  else
-  begin
-    CurrentPassChangeEdit.PasswordChar := '*';
-    NewPassChangeEdit.PasswordChar := '*';
-    RetypeNewPassEdit.PasswordChar := '*';
-  end;
 end;
 
 procedure TIcqOptionsForm.ICQUINEditChange(Sender: TObject);
@@ -894,8 +858,8 @@ begin
   // Прокручиваем рич в верх против глюка в вайн
   ClientIdInfoRichEdit.SelStart := 0;
   SendMessage(ClientIdInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
-  PassChangeInfoRichEdit.SelStart := 0;
-  SendMessage(PassChangeInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
+  EyeInfoRichEdit.SelStart := 0;
+  SendMessage(EyeInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
   DumpInfoRichEdit.SelStart := 0;
   SendMessage(DumpInfoRichEdit.Handle, EM_SCROLL, SB_TOP, 0);
   // Загружаем онлайн параметры

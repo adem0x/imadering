@@ -373,6 +373,7 @@ object GamesForm: TGamesForm
     OnDocBegin = GameLoadHttpClientDocBegin
     OnDocData = GameLoadHttpClientDocData
     OnRequestDone = GameLoadHttpClientRequestDone
+    OnCookie = GameLoadHttpClientCookie
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = GameLoadHttpClientSocksConnected
     OnSocksError = GameLoadHttpClientSocksError

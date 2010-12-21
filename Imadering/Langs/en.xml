@@ -41,7 +41,7 @@
     <GtransErr_1 c="Translation error"/>
     <GtransErr_2 c="You must first select the language for the translation!"/>
     <Apply c="Apply"/>
-    <Empty c="( Empty )"/>
+    <Empty c="[ Empty ]"/>
     <NewVerYES c="Available a new version of IMadering"/>
     <NewVerNO c="New version not found."/>
     <NewVerErr c="Error obtaining data the new version."/>
@@ -218,7 +218,6 @@
     <RenemeGroupCL c="Rename group"/>
     <DeleteGroupCL c="Remove group"/>
     <AddContactCL c="Add contact"/>
-    <ICQSettings c="Network settings"/>
     <ICQSearchNewContact c="Search for new contacts"/>
     <ICQXStatus c="Additional status"/>
     <SendMessageForContact c="Send message"/>
@@ -327,11 +326,12 @@
     <KeyboardSoundsCheckBox c="Play the key sounds."/>
   </SettingsForm>
   <Infos>
-    <SendDump c="Warning this feature is designed for very experienced users. Use it only if you know exactly what you are doing. The consequences could be unpredictable."/>
+    <DumpInfoRichEdit c="Warning this feature is designed for very experienced users. Use it only if you know exactly what you are doing. The consequences could be unpredictable."/>
     <About c="IMadering is a graphical messaging client which is capable of connecting to ICQ, XMPP, Twitter and MRA all at once. It is written using Delphi 2010. Project with open source._r__r_You may modify and redistribute the program under the terms of the GPL (version 2 or later). A copy of the GPL is contained in the file distributed with IMadering. IMadering is copyrighted by its contributors. We provide no warranty for this program."/>
     <ClientId c="Warning! These settings are for advanced users. If you do not know what it is, please leave everything as is. Change the customer ID may make certain features unavailable or cause unstable operation of the program."/>
-    <PassChange c="To change your password, you must enter your current password and new password twice. It is strongly recommended to use the new password a combination of numbers and letters of the alphabet. Your password must be between 6 to 8 characters."/>
+    <PassChangeInfoRichEdit c="To change your password, you must enter your current password and new password twice. It is strongly recommended to use the new password a combination of numbers and letters of the alphabet. Your password must be between 6 to 8 characters."/>
     <Language c="English._r_Author: Eduard Tolmachev._r__r_Don't see your native language? Please visit the IMadering website and look for it there. If you have translated IMadering into your language and would like to share it with other users, feel free to post the translation in our forum http://imadering.mybb.ru_r_Date: 27.01.2010"/>
+    <EyeInfoRichEdit c="All-seeing eye feature allows you to see who added you, who tried to read your status message, and all other service packets from all users who are not in your contact list."/>
   </Infos>
   <AboutForm c="About">
     <SiteLabel c="Site program:"/>
@@ -542,7 +542,7 @@
     <ICQOptionButtonGroup_1 c="Connecting"/>
     <ICQOptionButtonGroup_2 c="Privacy"/>
     <ICQOptionButtonGroup_3 c="Client ID"/>
-    <ICQOptionButtonGroup_4 c="Change password"/>
+    <ICQOptionButtonGroup_4 c="All-seeing Eye"/>
     <ICQOptionButtonGroup_5 c="My profile"/>
     <ICQOptionButtonGroup_6 c="Home"/>
     <ICQOptionButtonGroup_7 c="Work"/>
@@ -558,7 +558,6 @@
     <RegNewUINLabel c="Register a new UIN"/>
     <ShowPassCheckBox c="Show password"/>
     <SavePassCheckBox c="Save password"/>
-    <AccountGroupBox2 c="Options"/>
     <ShowAwayTimeCheckBox c="Allow others to see how long I've been idle"/>
     <AutoReqAuthCheckBox c="Automatically send authorization request on adding contact"/>
     <AuthAndWebStatusGroupBox c="Authorization / Web aware"/>
@@ -571,13 +570,6 @@
     <ClientProtoVerLabel c="Protocol version:"/>
     <ClientCapsLabel c="You can add here 3 client capability strings (max 16 chars):"/>
     <ClientVersionLabel c="Client version:"/>
-    <PassChangeGroupBox c="Change password"/>
-    <RetypeNewPassLabel c="Confirm new password:"/>
-    <NewPassChangeLabel c="New password:"/>
-    <ReqPassChangeLabel c="Forgot your password?"/>
-    <CurrentPassChangeLabel c="Current password:"/>
-    <ChangePassButton c="Change"/>
-    <ShowPassChangeCheckBox c="Show password"/>
     <MyInfoNameGroupBox c="Name"/>
     <FamilyInfoLabel c="Surname:"/>
     <NameInfoLabel c="Name:"/>
@@ -630,12 +622,18 @@
     <AvatarInfoGroupBox c="Avatar"/>
     <ParamInfoGroupBox c="Additional online options"/>
     <CustomICQPacketGroupBox c="Sending custom data packet"/>
-    <SendCustomICQPaketTimerCheckBox c="Repeat send in the cycle (seconds):"/>
     <ClientLoginIDLabel c="Login ID:"/>
     <ConnectionGroupBox c="Connection settings"/>
     <ServerLabel c="Server:"/>
     <PortLabel c="Port:"/>
     <UseSSLCheckBox c="Use traffic SSL encryption"/>
+    <CustomPktLabel c="Packet data in HEX format"/>
+    <EyeGroupBox c="All-seeing Eye"/>
+    <EyeDisableCheckBox c="Disable all-seeing eye"/>
+    <ClearEyeButton c="Clear list"/>
+    <EyeListView_0 c="Account"/>
+    <EyeListView_1 c="Event time"/>
+    <ChangePassLabel c="Change password"/>
   </IcqOptionsForm>
   <icq_countries>
     <c1 c=""/>
@@ -1170,6 +1168,8 @@
     <JabberOptionButtonGroup_7 c="Avatar"/>
     <JabberOptionButtonGroup_8 c="Optional"/>
     <JabberOptionButtonGroup_9 c="XML console"/>
+    <JabberOptionButtonGroup_10 c="Change password"/>
+    <JabberOptionButtonGroup_11 c="All-seeing Eye"/>
     <AccountGroupBox c="Account"/>
     <RegNewAccountLabel c="Register this account"/>
     <ICQUINLabel c="Account (JID@server):"/>
@@ -1189,6 +1189,15 @@
     <ConsoleGroupBox c="Sending custom data packet"/>
     <CustomPktLabel c="Packet data in XML format"/>
     <ParamInfoGroupBox c="Additional online options"/>
+    <PassChangeGroupBox c="Change password"/>
+    <CurrentPassChangeLabel c="Current password:"/>
+    <NewPassChangeLabel c="New password:"/>
+    <RetypeNewPassLabel c="Confirm new password:"/>
+    <EyeGroupBox c="All-seeing Eye"/>
+    <EyeDisableCheckBox c="Disable all-seeing eye"/>
+    <ClearEyeButton c="Clear list"/>
+    <EyeListView_0 c="Account"/>
+    <EyeListView_1 c="Event time"/>
   </JabberOptionsForm>
   <MraOptionsForm c="Options: Mail.ru Agent">
     <MRAOptionButtonGroup_0 c="Account"/>

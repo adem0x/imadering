@@ -84,6 +84,7 @@ type
     procedure FlashPlayerURLLabelClick(Sender: TObject);
     procedure FlashPlayerURLLabelMouseEnter(Sender: TObject);
     procedure FlashPlayerURLLabelMouseLeave(Sender: TObject);
+    procedure GameLoadHttpClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 
   private
     { Private declarations }
@@ -321,6 +322,12 @@ begin
   // Сброс игры
   if Flash <> nil then
     Flash.Rewind;
+end;
+
+procedure TGamesForm.GameLoadHttpClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+begin
+  // Управляем кукие
+  XLog(GameLoadHttpClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
 end;
 
 procedure TGamesForm.GameLoadHttpClientDocBegin(Sender: TObject);

@@ -96,6 +96,14 @@ object JabberOptionsForm: TJabberOptionsForm
       end
       item
         ImageIndex = 171
+      end
+      item
+        ImageIndex = 173
+      end
+      item
+        ImageIndex = 232
+      end
+      item
       end>
     ItemIndex = 0
     TabOrder = 0
@@ -116,7 +124,7 @@ object JabberOptionsForm: TJabberOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = ParamsPage
+      ActivePage = JvStandardPage1
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -682,6 +690,257 @@ object JabberOptionsForm: TJabberOptionsForm
             OnClick = SendCustomXMLPacketButtonClick
           end
         end
+      end
+      object PassChangePage: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'PassChangePage'
+        object PassChangeGroupBox: TGroupBox
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+          object RetypeNewPassLabel: TLabel
+            Left = 113
+            Top = 241
+            Width = 3
+            Height = 13
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object NewPassChangeLabel: TLabel
+            Left = 113
+            Top = 187
+            Width = 3
+            Height = 13
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object CurrentPassChangeLabel: TLabel
+            Left = 113
+            Top = 112
+            Width = 3
+            Height = 13
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object ChangePassButton: TButton
+            Left = 112
+            Top = 317
+            Width = 207
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            OnClick = ChangePassButtonClick
+          end
+          object ShowPassChangeCheckBox: TCheckBox
+            Left = 112
+            Top = 287
+            Width = 296
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            OnClick = ShowPassChangeCheckBoxClick
+          end
+          object RetypeNewPassEdit: TEdit
+            Left = 112
+            Top = 260
+            Width = 207
+            Height = 21
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            MaxLength = 8
+            ParentFont = False
+            PasswordChar = '*'
+            TabOrder = 4
+          end
+          object NewPassChangeEdit: TEdit
+            Left = 112
+            Top = 206
+            Width = 207
+            Height = 21
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            MaxLength = 8
+            ParentFont = False
+            PasswordChar = '*'
+            TabOrder = 3
+          end
+          object CurrentPassChangeEdit: TEdit
+            Left = 112
+            Top = 131
+            Width = 207
+            Height = 21
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            PasswordChar = '*'
+            TabOrder = 2
+          end
+          object PassChangeInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 20
+            Width = 403
+            Height = 77
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -12
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 5
+          end
+        end
+      end
+      object Eye: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'Eye'
+        object EyeGroupBox: TGroupBox
+          Left = 0
+          Top = 0
+          Width = 428
+          Height = 356
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+          object ClearEyeButton: TButton
+            Left = 145
+            Top = 324
+            Width = 137
+            Height = 25
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+          end
+          object EyeDisableCheckBox: TCheckBox
+            Left = 13
+            Top = 79
+            Width = 403
+            Height = 17
+            TabStop = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+          end
+          object EyeInfoRichEdit: TRichEdit
+            Left = 13
+            Top = 20
+            Width = 403
+            Height = 53
+            TabStop = False
+            BevelKind = bkFlat
+            BorderStyle = bsNone
+            Color = clBtnFace
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -12
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            PlainText = True
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 2
+          end
+          object EyeListView: TListView
+            Left = 13
+            Top = 102
+            Width = 404
+            Height = 215
+            Columns = <
+              item
+                Width = 210
+              end
+              item
+                Width = 188
+              end>
+            ColumnClick = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            HideSelection = False
+            ReadOnly = True
+            RowSelect = True
+            ParentFont = False
+            TabOrder = 3
+            TabStop = False
+            ViewStyle = vsReport
+          end
+        end
+      end
+      object JvStandardPage1: TJvStandardPage
+        Left = 0
+        Top = 0
+        Width = 428
+        Height = 356
+        Caption = 'JvStandardPage1'
       end
     end
   end

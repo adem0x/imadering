@@ -1532,10 +1532,7 @@ begin
       if Ofs + I <= Length(Data) then
       begin
         S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
-        if I = 8 then
-          S1 := S1 + C_BN + C_BN
-        else
-          S1 := S1 + C_BN;
+        S1 := S1 + C_BN;
         if Data[Ofs + I] < #32 then
           S2 := S2 + '.'
         else

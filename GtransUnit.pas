@@ -59,6 +59,7 @@ type
     procedure GtransListViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GtransClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
     procedure FormDblClick(Sender: TObject);
+    procedure GtransClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 
   private
     { Private declarations }
@@ -322,6 +323,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TGTransForm.GtransClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+begin
+  // Управляем кукие
+  XLog(GtransClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
+end;
 
 procedure TGTransForm.GtransClientDocBegin(Sender: TObject);
 begin

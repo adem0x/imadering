@@ -49,6 +49,7 @@ const
   J_DellAccount = '<iq type=''set'' to=''%s'' id=''%d''><query xmlns="jabber:iq:register"><remove /></query></iq>';
   J_RegAccount = '<iq type=''set'' id=''%d''><query xmlns=''jabber:iq:register''><username>%s</username><password>%s</password></query></iq>';
   J_SearchUser = '<iq type=''set'' to=''%s'' id=''%d'' xml:lang=''en''><query xmlns=''jabber:iq:search''><x xmlns=''jabber:x:data'' type=''submit''>%s</x></query></iq>';
+  J_PassChange = '<iq type=''set'' to=''%s'' id=''%d''><query xmlns="jabber:iq:register"><username>%s</username><password>%s</password></query></iq>';
   J_RootTag = 'stream:stream';
   J_SessionEnd = '</stream:stream>';
   J_Features = 'stream:features';
@@ -167,6 +168,7 @@ var
   Jabber_JID: string;
   Jabber_LoginUIN: string;
   Jabber_LoginPassword: string;
+  Jabber_ChangePassword: string;
   Jabber_ServerAddr: string;
   Jabber_ServerPort: string;
   Jabber_Reconnect: Boolean = False;
@@ -184,6 +186,7 @@ var
   Jabber_Offline_Phaze: Boolean = True;
   // Фазы работы конец
   J_SessionId: string;
+  J_PassChangeId: string;
   // SSI begin
   Jab_SSI_Phaze: Boolean = False;
   Jab_Add_Contact_Phaze: Boolean = False;
@@ -230,6 +233,7 @@ procedure Jab_Account_Delete;
 procedure Jab_Account_Reg(AName, APass: string);
 procedure Jab_UserSearch(S_Nick, S_Name, S_Last, S_City, S_Country, S_Email: string);
 procedure Jab_ParseUsersSearch(PktData: TJvSimpleXmlElem);
+procedure Jab_PassChange(NewPass: string);
 
 {$ENDREGION}
 
@@ -257,7 +261,7 @@ begin
   // Записываем в память параметры логина
   Buff := Ujid + ''#0 + Uu + ''#0 + Upass;
   // Кодируем в строку
-  C := Base64Encode(Buff);
+  C := Base64Encode(UnicodeToAnsi(Buff, CP_UTF8));
   Result := C;
 end;
 
@@ -651,7 +655,14 @@ begin
       else if QueryTLV = 'http://jabber.org/protocol/disco#info' then
         Jab_ParseServicesInfo(PktData)
       else if QueryTLV = 'jabber:iq:search' then
-        Jab_ParseUsersSearch(XML_Node);
+        Jab_ParseUsersSearch(XML_Node)
+      else if QueryTLV = 'jabber:iq:register' then
+        if PktData.Properties.Value('id') = J_PassChangeId then
+        begin
+          Jabber_LoginPassword := Jabber_ChangePassword;
+          // Информируем об успешной смене пароля
+          DAShow(Lang_Vars[16].L_S + C_BN + C_Jabber, Format(Lang_Vars[30].L_S, ['JID' + C_TN + C_BN + Jabber_JID]), EmptyStr, 133, 3, 0);
+        end;
       Exit;
     end;
     // Если это информация о контакте
@@ -1586,6 +1597,20 @@ begin
     end;
   end;
 end;
+{$ENDREGION}
+{$REGION 'Jab_PassChange'}
+  procedure Jab_PassChange(NewPass: string);
+  var
+    P: string;
+  begin
+    // Запоминаем Id запроса
+    J_PassChangeId := IntToStr(Jabber_Seq);
+    // Меняем пароль
+    P := Format(J_PassChange, [Parse(C_EE, Jabber_JID, 2), Jabber_Seq, Jabber_LoginUIN, NewPass]);
+    Jab_SendPkt(P);
+    // Увеличиваем счётчик исходящих jabber пакетов
+    Inc(Jabber_Seq);
+  end;
 {$ENDREGION}
 
 end.
