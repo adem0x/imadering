@@ -150,6 +150,7 @@ object GTransForm: TGTransForm
     OnSessionClosed = GtransClientSessionClosed
     OnDocBegin = GtransClientDocBegin
     OnRequestDone = GtransClientRequestDone
+    OnCookie = GtransClientCookie
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = GtransClientSocksConnected
     OnSocksError = GtransClientSocksError

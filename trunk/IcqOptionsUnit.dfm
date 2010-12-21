@@ -45,7 +45,7 @@ object IcqOptionsForm: TIcqOptionsForm
         ImageIndex = 172
       end
       item
-        ImageIndex = 173
+        ImageIndex = 232
       end
       item
         ImageIndex = 174
@@ -91,7 +91,7 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = ConsolePage
+      ActivePage = AccountPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -105,7 +105,7 @@ object IcqOptionsForm: TIcqOptionsForm
           Left = 0
           Top = 0
           Width = 428
-          Height = 232
+          Height = 356
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -169,6 +169,22 @@ object IcqOptionsForm: TIcqOptionsForm
             OnMouseEnter = ReqPassLabelMouseEnter
             OnMouseLeave = ReqPassLabelMouseLeave
           end
+          object ChangePassLabel: TLabel
+            Left = 80
+            Top = 230
+            Width = 3
+            Height = 13
+            Cursor = crHandPoint
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clNavy
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            OnClick = ChangePassLabelClick
+            OnMouseEnter = ReqPassLabelMouseEnter
+            OnMouseLeave = ReqPassLabelMouseLeave
+          end
           object ICQUINEdit: TEdit
             Left = 78
             Top = 43
@@ -229,19 +245,6 @@ object IcqOptionsForm: TIcqOptionsForm
             TabOrder = 3
             OnClick = ICQUINEditChange
           end
-        end
-        object AccountGroupBox2: TGroupBox
-          Left = 0
-          Top = 238
-          Width = 428
-          Height = 118
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          TabOrder = 1
         end
       end
       object ConnectPage: TJvStandardPage
@@ -679,13 +682,13 @@ object IcqOptionsForm: TIcqOptionsForm
           end
         end
       end
-      object PassChangePage: TJvStandardPage
+      object Eye: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'PassChangePage'
-        object PassChangeGroupBox: TGroupBox
+        Caption = 'Eye'
+        object EyeGroupBox: TGroupBox
           Left = 0
           Top = 0
           Width = 428
@@ -697,62 +700,10 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
-          object RetypeNewPassLabel: TLabel
-            Left = 113
-            Top = 241
-            Width = 3
-            Height = 13
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object NewPassChangeLabel: TLabel
-            Left = 113
-            Top = 187
-            Width = 3
-            Height = 13
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object ReqPassChangeLabel: TLabel
-            Left = 113
-            Top = 158
-            Width = 3
-            Height = 13
-            Cursor = crHandPoint
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clNavy
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            OnClick = ReqPassLabelClick
-            OnMouseEnter = ReqPassLabelMouseEnter
-            OnMouseLeave = ReqPassLabelMouseLeave
-          end
-          object CurrentPassChangeLabel: TLabel
-            Left = 113
-            Top = 112
-            Width = 3
-            Height = 13
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object ChangePassButton: TButton
-            Left = 112
-            Top = 317
-            Width = 207
+          object ClearEyeButton: TButton
+            Left = 145
+            Top = 324
+            Width = 137
             Height = 25
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -762,12 +713,11 @@ object IcqOptionsForm: TIcqOptionsForm
             ParentFont = False
             TabOrder = 0
             TabStop = False
-            OnClick = ChangePassButtonClick
           end
-          object ShowPassChangeCheckBox: TCheckBox
-            Left = 112
-            Top = 287
-            Width = 296
+          object EyeDisableCheckBox: TCheckBox
+            Left = 13
+            Top = 79
+            Width = 403
             Height = 17
             TabStop = False
             Font.Charset = DEFAULT_CHARSET
@@ -777,57 +727,12 @@ object IcqOptionsForm: TIcqOptionsForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
-            OnClick = ShowPassChangeCheckBoxClick
           end
-          object RetypeNewPassEdit: TEdit
-            Left = 112
-            Top = 260
-            Width = 207
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            MaxLength = 8
-            ParentFont = False
-            PasswordChar = '*'
-            TabOrder = 4
-          end
-          object NewPassChangeEdit: TEdit
-            Left = 112
-            Top = 206
-            Width = 207
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            MaxLength = 8
-            ParentFont = False
-            PasswordChar = '*'
-            TabOrder = 3
-          end
-          object CurrentPassChangeEdit: TEdit
-            Left = 112
-            Top = 131
-            Width = 207
-            Height = 21
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            PasswordChar = '*'
-            TabOrder = 2
-          end
-          object PassChangeInfoRichEdit: TRichEdit
+          object EyeInfoRichEdit: TRichEdit
             Left = 13
             Top = 20
             Width = 403
-            Height = 77
+            Height = 53
             TabStop = False
             BevelKind = bkFlat
             BorderStyle = bsNone
@@ -841,7 +746,33 @@ object IcqOptionsForm: TIcqOptionsForm
             PlainText = True
             ReadOnly = True
             ScrollBars = ssVertical
-            TabOrder = 5
+            TabOrder = 2
+          end
+          object EyeListView: TListView
+            Left = 13
+            Top = 102
+            Width = 404
+            Height = 215
+            Columns = <
+              item
+                Width = 210
+              end
+              item
+                Width = 188
+              end>
+            ColumnClick = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            HideSelection = False
+            ReadOnly = True
+            RowSelect = True
+            ParentFont = False
+            TabOrder = 3
+            TabStop = False
+            ViewStyle = vsReport
           end
         end
       end
@@ -2696,12 +2627,11 @@ object IcqOptionsForm: TIcqOptionsForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
-          object Label1: TLabel
+          object CustomPktLabel: TLabel
             Left = 14
             Top = 89
-            Width = 159
+            Width = 3
             Height = 13
-            Caption = '#'#1055#1072#1082#1077#1090' '#1076#1072#1085#1085#1099#1093' '#1074' HEX '#1092#1086#1088#1084#1072#1090#1077
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11

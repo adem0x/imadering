@@ -173,6 +173,7 @@ const
   C_MsgCannel = 'MsgCannel';
   C_Caps = 'Caps';
   C_ProtoVer = 'ProtoVer';
+  C_Cookie = 'Cookie';
   // Команды для информации
   C_NameInfo = 'Name_info';
   C_Nick = 'Nick';
@@ -215,7 +216,6 @@ const
   C_Smok = 'Smok';
   C_Hair = 'Hair';
   C_Children = 'Children';
-  C_SendDump = 'SendDump';
   // URL ссылки
   C_IcqReg = 'http://www.icq.com/register';
   C_MraReg = 'http://win.mail.ru/cgi-bin/signup';

@@ -185,6 +185,7 @@ object FileTransferForm: TFileTransferForm
     OnSendData = SendFileClientSendData
     OnSendEnd = SendFileClientSendEnd
     OnRequestDone = SendFileClientRequestDone
+    OnCookie = SendFileClientCookie
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = SendFileClientSocksConnected
     OnSocksError = SendFileClientSocksError

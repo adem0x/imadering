@@ -314,7 +314,7 @@ object MainForm: TMainForm
         Name = 'Check Update Timer'
         Cycled = False
         Enabled = False
-        Interval = 60000
+        Interval = 10000
         OnTimer = JvTimerListEvents2Timer
       end
       item
@@ -663,6 +663,7 @@ object MainForm: TMainForm
     OnDocEnd = HttpClientDocEnd
     OnSendEnd = HttpClientSendEnd
     OnRequestDone = HttpClientRequestDone
+    OnCookie = HttpClientCookie
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = HttpClientSocksConnected
     OnSocksError = HttpClientSocksError
@@ -729,6 +730,14 @@ object MainForm: TMainForm
     object ICQSettings: TMenuItem
       ImageIndex = 160
       OnClick = ICQSettingsClick
+    end
+    object ICQ_Addition: TMenuItem
+      ImageIndex = 274
+      object TMenuItem
+      end
+    end
+    object N16: TMenuItem
+      Caption = '-'
     end
     object ICQSearchNewContact: TMenuItem
       ImageIndex = 235
@@ -832,6 +841,14 @@ object MainForm: TMainForm
       ImageIndex = 160
       OnClick = MRASettingsClick
     end
+    object MRA_Addition: TMenuItem
+      ImageIndex = 274
+      object TMenuItem
+      end
+    end
+    object N33: TMenuItem
+      Caption = '-'
+    end
     object MRASearchNewContact: TMenuItem
       ImageIndex = 235
       OnClick = ICQSearchNewContactClick
@@ -933,6 +950,14 @@ object MainForm: TMainForm
     object JabberSettings: TMenuItem
       ImageIndex = 160
       OnClick = JabberSettingsClick
+    end
+    object Jabber_Addition: TMenuItem
+      ImageIndex = 274
+      object TMenuItem
+      end
+    end
+    object N36: TMenuItem
+      Caption = '-'
     end
     object JabberSearchNewContact: TMenuItem
       ImageIndex = 235
@@ -1149,6 +1174,7 @@ object MainForm: TMainForm
     Options = []
     OnDocBegin = HttpClientDocBegin
     OnSendEnd = HttpClientSendEnd
+    OnCookie = MRA_PhotoClientCookie
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = HttpClientSocksConnected
     OnSocksError = HttpClientSocksError
@@ -1430,6 +1456,7 @@ object MainForm: TMainForm
     OnDocBegin = HttpClientDocBegin
     OnSendEnd = HttpClientSendEnd
     OnRequestDone = TwitterClientRequestDone
+    OnCookie = TwitterClientCookie
     SocksAuthentication = socksNoAuthentication
     OnSocksConnected = HttpClientSocksConnected
     OnSocksError = HttpClientSocksError
