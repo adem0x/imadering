@@ -280,6 +280,8 @@ type
     ICQ_Addition: TMenuItem;
     MRA_Addition: TMenuItem;
     Jabber_Addition: TMenuItem;
+    JoinConf_Menu: TMenuItem;
+    ConfList_Menu: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -450,6 +452,8 @@ type
     procedure HttpClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
     procedure TwitterClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
     procedure MRA_PhotoClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
+    procedure JoinConf_MenuClick(Sender: TObject);
+    procedure ConfList_MenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -517,7 +521,9 @@ uses
   SMSUnit,
   GamesUnit,
   RosterUnit,
-  HTTPUnit;
+  HTTPUnit,
+  ConfUnit,
+  JBrowseUnit;
 
 {$ENDREGION}
 {$REGION 'MyConst'}
@@ -970,6 +976,14 @@ begin
     ClearContacts(C_Jabber);
   end;
 end;
+procedure TMainForm.JoinConf_MenuClick(Sender: TObject);
+begin
+  // Открываем окно входа в конференцию
+  if not Assigned(ConfForm) then
+    Application.CreateForm(TConfForm, ConfForm);
+  XShowForm(ConfForm);
+end;
+
 {$ENDREGION}
 {$REGION 'Other'}
 
@@ -3805,6 +3819,14 @@ end;
 
 {$ENDREGION}
 {$REGION 'ContactListButtonClicked'}
+
+procedure TMainForm.ConfList_MenuClick(Sender: TObject);
+begin
+  // Открываем окно со списком чат комнат
+  if not Assigned(JBrowseForm) then
+    Application.CreateForm(TJBrowseForm, JBrowseForm);
+  XShowForm(JBrowseForm);
+end;
 
 procedure TMainForm.ContactListButtonClicked(Sender: TObject; const Button: TButtonItem);
 var

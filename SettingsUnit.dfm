@@ -75,7 +75,6 @@ object SettingsForm: TSettingsForm
     ItemIndex = 0
     ParentDoubleBuffered = False
     TabOrder = 0
-    TabStop = False
     OnButtonClicked = SettingButtonGroupButtonClicked
     OnKeyDown = SettingButtonGroupKeyDown
   end

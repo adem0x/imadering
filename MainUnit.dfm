@@ -953,7 +953,13 @@ object MainForm: TMainForm
     end
     object Jabber_Addition: TMenuItem
       ImageIndex = 274
-      object TMenuItem
+      object JoinConf_Menu: TMenuItem
+        ImageIndex = 236
+        OnClick = JoinConf_MenuClick
+      end
+      object ConfList_Menu: TMenuItem
+        ImageIndex = 250
+        OnClick = ConfList_MenuClick
       end
     end
     object N36: TMenuItem
