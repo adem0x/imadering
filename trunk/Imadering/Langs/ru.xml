@@ -254,6 +254,8 @@
     <SnapToLeft c="К левому краю экрана"/>
     <TopModeToolButton h="_b_Поверх всех окон_d__r_Включить или выключить режим окна"/>
     <MraSMSSendMenu c="Отправить SMS"/>
+    <JoinConf_Menu c="Создать или Войти в чат"/>
+    <ConfList_Menu c="Список чат-комнат"/>
   </MainForm>
   <SettingsForm c="Настройки">
     <SettingButtonGroup_0 c="Общие"/>
@@ -1259,4 +1261,13 @@
     <AcceptCertButton c="Принять"/>
     <RefuseCertButton c="Отвергнуть"/>
   </ShowCertForm>
+  <ConfForm c="Создание или Подключение к чату">
+    <ConfGroupBox c="Информация о комнате"/>
+    <ConfServerLabel c="Сервер:"/>
+    <RoomLabel c="Комната:"/>
+    <NickLabel c="Ник:"/>
+    <PassLabel c="Пароль:"/>
+    <AddBookmarkCheckBox c="Добавить комнату в закладки"/>
+    <JoinButton c="Войти"/>
+  </ConfForm>
 </root>

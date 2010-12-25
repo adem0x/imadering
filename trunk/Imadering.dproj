@@ -156,6 +156,12 @@
 			<DCCReference Include="lib\CategoryButtons.pas"/>
 			<DCCReference Include="lib\ButtonGroup.pas"/>
 			<DCCReference Include="lib\ImgList.pas"/>
+			<DCCReference Include="ConfUnit.pas">
+				<Form>ConfForm</Form>
+			</DCCReference>
+			<DCCReference Include="JBrowseUnit.pas">
+				<Form>JBrowseForm</Form>
+			</DCCReference>
 			<None Include="Imadering.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

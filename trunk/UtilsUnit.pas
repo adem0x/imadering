@@ -165,10 +165,7 @@ function GetFlagFile(Path, CountryCode, CountryName: string): string;
 function ReverseString(s: string): string;
 function Twitter_Generate_Nonce: string;
 function Twitter_Encrypt_HMAC_SHA1(Input, AKey: string): string;
-
-//function EncodeRFC3986(s: string): string;
 function EncodeRFC3986(const S: string; DstCodePage: Cardinal = CP_UTF8): string;
-
 function Twitter_HMAC_SHA1_Signature(xURL, ReqMethod, xToken: string; xParams: TStringList): string;
 
 {$ENDREGION}
@@ -645,7 +642,7 @@ var
   XML_Node: TJvSimpleXmlElem;
 begin
   // Создаём необходимые папки
-  ForceDirectories(V_ProfilePath + 'Langs\Forms\');
+  ForceDirectories(V_ProfilePath);
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
@@ -697,7 +694,7 @@ begin
         end;
       end;
       // Записываем сам файл
-      SaveToFile(V_ProfilePath + 'Langs\Forms\' + Xform.name + C_XML_Ext);
+      SaveToFile(V_ProfilePath + Xform.name + C_XML_Ext);
     end;
   finally
     JvXML.Free;

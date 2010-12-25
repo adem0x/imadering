@@ -254,6 +254,8 @@
     <SnapToLeft c="Left screen edge"/>
     <TopModeToolButton h="_b_Always on top_d__r_Enable or disable window mode"/>
     <MraSMSSendMenu c="Send SMS"/>
+    <JoinConf_Menu c="Create or Join Groupchat"/>
+    <ConfList_Menu c="Browse Chatrooms"/>
   </MainForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
@@ -1259,4 +1261,13 @@
     <AcceptCertButton c="Accept"/>
     <RefuseCertButton c="Reject"/>
   </ShowCertForm>
+  <ConfForm c="Create or Join Groupchat">
+    <ConfGroupBox c="Room information"/>
+    <ConfServerLabel c="Server:"/>
+    <RoomLabel c="Room:"/>
+    <NickLabel c="Nickname:"/>
+    <PassLabel c="Password:"/>
+    <AddBookmarkCheckBox c="Add groupchat in bookmarks"/>
+    <JoinButton c="Join"/>
+  </ConfForm>
 </root>

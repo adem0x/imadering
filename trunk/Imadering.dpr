@@ -50,7 +50,9 @@ uses
   ComCtrls in 'lib\ComCtrls.pas',
   CategoryButtons in 'lib\CategoryButtons.pas',
   ButtonGroup in 'lib\ButtonGroup.pas',
-  ImgList in 'lib\ImgList.pas';
+  ImgList in 'lib\ImgList.pas',
+  ConfUnit in 'ConfUnit.pas' {ConfForm},
+  JBrowseUnit in 'JBrowseUnit.pas' {JBrowseForm};
 
 {$R *.res}
 {$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
