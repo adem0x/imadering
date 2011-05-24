@@ -8,6 +8,7 @@ object SmilesForm: TSmilesForm
   Color = clWindow
   TransparentColorValue = clWhite
   Ctl3D = False
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

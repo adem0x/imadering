@@ -196,13 +196,13 @@ begin
     begin
       // Страна
       if CountryComboBox.ItemIndex > 0 then
-        CountryInd := StrToInt(IsolateTextString(CountryComboBox.Text, C_QN, C_EN));
+        CountryInd := StrToInt(IsolateTextString(CountryComboBox.Text, '[', ']'));
       // Язык
       if LangComboBox.ItemIndex > 0 then
-        LangInd := StrToInt(IsolateTextString(LangComboBox.Text, C_QN, C_EN));
+        LangInd := StrToInt(IsolateTextString(LangComboBox.Text, '[', ']'));
       // Брак
       if MaritalComboBox.ItemIndex > 0 then
-        MaritalInd := StrToInt(IsolateTextString(MaritalComboBox.Text, C_QN, C_EN));
+        MaritalInd := StrToInt(IsolateTextString(MaritalComboBox.Text, '[', ']'));
     end;
     // Начинаем поиск
     StatusPanel.Caption := Lang_Vars[121].L_S;
@@ -264,19 +264,19 @@ begin
         if XML_Node <> nil then
         begin
           // Открываем раздел групп
-          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
           if Sub_Node = nil then
-            Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+            Sub_Node := XML_Node.Items.Add(C_Group + 's');
           // Добавляем группу для контактов "не в списке"
-          Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+          Tri_Node := Sub_Node.Items.ItemNamed[C_Group + '_' + C_NoCL];
           if Tri_Node = nil then
           begin
-            Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+            Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_NoCL);
             Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
             Tri_Node.Properties.Add(C_Id, C_NoCL);
           end;
           // Ищем раздел контактов
-          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
           if Sub_Node <> nil then
           begin
             for I := 0 to Sub_Node.Items.Count - 1 do
@@ -308,7 +308,7 @@ begin
             if not Contact_Yes then
             begin
               // Добавляем этот контакт в эту группу
-              Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+              Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(Sub_Node.Items.Count + 1));
               Tri_Node.Properties.Add(C_Login, URLEncode(UIN));
               Tri_Node.Properties.Add(C_Group + C_Id, C_NoCL);
               Tri_Node.Properties.Add(C_Status, Status);
@@ -396,7 +396,7 @@ begin
   // Сохраняем результаты поиска в файл
   with MainForm do
   begin
-    SaveTextAsFileDialog.FileName := SearchProto + C_BN + 'search result';
+    SaveTextAsFileDialog.FileName := SearchProto + ' ' + 'search result';
     if SaveTextAsFileDialog.Execute then
       SearchResultJvListView.SaveToCSV(SaveTextAsFileDialog.FileName);
   end;
@@ -449,8 +449,8 @@ begin
           Checked := False;
           Caption := EmptyStr; // Иконка анкеты
           SubItems.Add(EmptyStr); // Иконка чата
-          if Pos(C_EE, UINSearchEdit.Text) = 0 then
-            SubItems.Add(UINSearchEdit.Text + C_EE + Parse(C_EE, Jabber_JID, 2))
+          if Pos('@', UINSearchEdit.Text) = 0 then
+            SubItems.Add(UINSearchEdit.Text + '@' + Parse('@', Jabber_JID, 2))
           else
             SubItems.Add(UINSearchEdit.Text);
           SubItems.Add(EmptyStr);
@@ -518,7 +518,7 @@ begin
       if IsNotNull([NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, CountryComboBox.Text]) then
       begin
         if Jabber_Work_Phaze then
-          Jab_UserSearch(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, Parse(C_BN, CountryComboBox.Text, 2), EmptyStr);
+          Jab_UserSearch(NickEdit.Text, NameEdit.Text, FamilyEdit.Text, CityEdit.Text, Parse(' ', CountryComboBox.Text, 2), EmptyStr);
       end;
     end
     else if SearchProto = C_Mra then
@@ -590,7 +590,7 @@ begin
       FOptions := [];
       Include(FOptions, FsBold);
       Font.Style := FOptions;
-      Text := C_BN + Lang_Vars[102].L_S;
+      Text := ' ' + Lang_Vars[102].L_S;
       Tag := 1;
     end;
   end;
@@ -1022,7 +1022,7 @@ begin
       begin
         if Jabber_Work_Phaze then
         begin
-          Jab_SendMessage(Selected.SubItems[1], QMessageEdit.Text);
+          Jab_SendMessage(J_ChatType, Selected.SubItems[1], QMessageEdit.Text);
           Selected.Checked := True;
         end;
       end
@@ -1050,7 +1050,7 @@ begin
   GlobalSearchGroupBox.Visible := True;
   TopPanel.Height := 188;
   SearchNextPageBitBtn.Enabled := True;
-  UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + C_BN + 'UIN';
+  UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + ' ' + 'UIN';
   ResultClearSpeedButtonClick(nil);
   // Контролы глобального поиска
   GenderComboBox.Enabled := True;
@@ -1087,7 +1087,7 @@ begin
   end;
   KeyWordSearchGroupBox.Visible := False;
   SearchNextPageBitBtn.Enabled := False;
-  UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + C_BN + 'JID';
+  UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + ' ' + 'JID';
   ResultClearSpeedButtonClick(nil);
   // Контролы глобального поиска
   GenderComboBox.Enabled := False;
@@ -1115,7 +1115,7 @@ begin
   GlobalSearchGroupBox.Visible := False;
   TopPanel.Height := 65;
   SearchNextPageBitBtn.Enabled := False;
-  UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + C_BN + C_Email;
+  UINSearchCheckBox.Caption := UINSearchCheckBox.HelpKeyword + ' ' + C_Email;
   ResultClearSpeedButtonClick(nil);
 end;
 {$ENDREGION}

@@ -25,7 +25,8 @@ uses
   JclCompression,
   Htmlview,
   Messages,
-  ShellApi;
+  ShellApi,
+  JvAppHotKey;
 
 {$ENDREGION}
 
@@ -36,24 +37,11 @@ const
   C_MN = '%0D%0A';
   C_BR = '<br>';
   C_HR = '<HR>';
-  C_BN = ' ';
-  C_PN = '|';
-  C_LN = ';';
-  C_TN = ':';
-  C_SN = '\';
-  C_FS = '/';
-  C_QN = '[';
-  C_EN = ']';
-  C_EE = '@';
-  C_DD = '_';
-  C_XX = 'X';
-  C_AN = '&';
-  C_GT = '?';
   C_AS = '<b>%s</b>';
-  C_NN = '-';
-  C_EV = '>';
   C_KB = 'KB';
   C_MB = 'MB';
+  C_VS = '%s';
+  C_VD = '%d';
   C_DTseconds = 1 / SecsPerDay;
   C_DblClickTime = 0.6 * C_DTseconds;
   C_WM_APPBAR = WM_USER + 1;
@@ -61,6 +49,7 @@ const
   X_Twitter_OAuth_Consumer_Secret = 'uKWHm36A2ZpaGnmSNKQh0hT2rD656xRWtPYJ6Kg';
 {$ENDREGION}
 {$REGION 'FilesConst'}
+
   C_Profiles = 'Profiles\';
   C_AnketaFolder = 'Contacts\';
   C_AvatarFolder = 'Avatars\';
@@ -71,6 +60,7 @@ const
   C_IconsFolder = 'Icons\';
   C_SoundsFolder = 'Sounds\';
   C_LangsFolder = 'Langs\';
+  C_PluginsFolder = 'Plugins\';
   C_SettingsFileName = 'Settings.xml';
   C_ProfilesFileName = 'Profiles.xml';
   C_GamesCatalogFileName = 'Catalog.txt';
@@ -80,8 +70,9 @@ const
   C_ContactListFileName = 'Roster.xml';
   C_Nick_BD_FileName = 'Nicks.txt';
   C_ReplyFileName = 'Reply.txt';
-  C_NoAvatarFileName = '\noavatar.gif';
+  C_NoAvatarFileName = 'noavatar.gif';
   C_PacketFileName = 'packet.txt';
+  C_InfoFileName = 'Info.txt';
   C_XML_Files = '*.xml';
   C_GIF_Ext = '.gif';
   C_JPG_Ext = '.jpg';
@@ -90,6 +81,7 @@ const
   C_BMP_Ext = '.bmp';
   C_XML_Ext = '.xml';
   C_Htm_Ext = '.htm';
+
 {$ENDREGION}
 {$REGION 'CommandsConst'}
   // Команды протоколов
@@ -99,10 +91,12 @@ const
   C_Mra = 'MRA';
   C_Twitter = 'Twitter';
   C_HTTP = 'HTTP';
+  C_Bimoid = 'Bimoid';
   // Команды смежного использования
   C_TLV = 'TLV';
   C_Value = 'Value';
   C_NoCL = 'nocl';
+  C_IgCL = 'igcl';
   C_Gtrans = 'Gtrans';
   C_MaskPass = '----------------------';
   C_Login = 'Login';
@@ -114,10 +108,7 @@ const
   C_ExeName = 'Imadering.exe';
   C_Host = 'Host';
   C_Port = 'Port';
-  C_Profile = 'Profile';
   C_Cur = 'Current';
-  C_Auto = 'Auto_login';
-  C_AutoDell = 'Auto_dellete';
   C_Email = 'Email';
   C_MailTo = 'mailto:';
   C_MailText = 'imadering@mail.ru?subject=%s&body=%s';
@@ -126,15 +117,19 @@ const
   C_HistoryIn = '<span class=b>%s</span><br><span class=c>%s</span><br><br>';
   C_HistoryOut = '<span class=a>%s</span><br><span class=c>%s</span><br><br>';
   C_HistoryInfo = '<span class=d>%s</span><br><br>';
+  C_HistoryLoad = '<span class=b>%s</span><br><br>';
   C_HistoryX = '<IMG NAME=X SRC="" ALIGN=ABSMIDDLE BORDER=0> ';
   C_HTML_Flags = '<IMG NAME=I SRC="./Flags/%s" ALIGN=ABSMIDDLE BORDER=0>';
   C_HTML_Male = '<IMG NAME=I SRC="./Icons/%s/male.gif" ALIGN=ABSMIDDLE BORDER=0>';
   C_HTML_Female = '<IMG NAME=I SRC="./Icons/%s/female.gif" ALIGN=ABSMIDDLE BORDER=0>';
+  C_HTML_InImg = '<IMG NAME=I SRC="./Icons/%s/inmess.gif" ALIGN=ABSMIDDLE BORDER=0>&nbsp;';
+  C_HTML_OutImg = '<IMG NAME=O%d SRC="./Icons/%s/outmess1.gif" ALIGN=ABSMIDDLE BORDER=0>&nbsp;';
   C_HTML_head = '<html><head>%s<title>%s</title></head><body>';
   C_HTML_Email = '<a href="mailto:%s">%s</a>';
   C_HTML_Font_Red = '<font color=clred>';
   C_HTML_Font_Blue = '<font color=clblue>';
   C_HTML_Font_End = '</font>';
+  C_Auth_Req = '%s<br>%s<br><input type="button" value="%s" ONCLICK="auth_yes"/>&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="%s" ONCLICK="auth_no"/>';
   C_cbold = 'cbold';
   C_cdef = 'cdef';
   C_nbsp = '&nbsp;';
@@ -158,7 +153,7 @@ const
   C_InMess = 'InMess';
   C_OutMess = 'OutMess';
   C_Mess = 'Mess';
-  C_Sounds = 'Sounds';
+  //C_Sounds = 'Sounds';
   C_Item = 'Item';
   C_Type = 'Type';
   C_Note = 'Note';
@@ -219,8 +214,8 @@ const
   // URL ссылки
   C_IcqReg = 'http://www.icq.com/register';
   C_MraReg = 'http://win.mail.ru/cgi-bin/signup';
-  C_SitePage = 'http://imadering.com';
-  C_DownPage = 'http://imadering.com/download.htm';
+  C_SitePage = 'http://www.imadering.com';
+  C_DonatePage = '<br><center><a href="http://www.imadering.com/donate">%s</a></center>';
   C_PostInTwit = 'http://twitter.com/statuses/update.xml?source=IMadering&status=%s&in_reply_to_status_id=';
   C_GoogleCodeURL = 'http://imadering.googlecode.com/files/';
   C_UpdateURL = 'http://imadering.googlecode.com/files/Version.xml';
@@ -255,11 +250,7 @@ const
   C_FW = 'Width';
   C_TS = 'Send';
   C_TR = 'Received';
-  C_TD = 'Start_date';
-  C_PB = 'Button';
-  C_CS = 'c';
-  C_HS = 'h';
-  C_SS = 's';
+  C_TD = 'StartDate';
   // Прокси
   C_Proxy_Auth = 'Proxy-Authorization: Basic';
   C_Proxy_Connect = 'CONNECT';
@@ -275,27 +266,13 @@ const
   C_Proxy_S0_Err = 'HTTPS/1.0 407';
   C_Proxy_S1_Err = 'HTTPS/1.1 407';
 {$ENDREGION}
-{$REGION 'LogLangVars'}
+{$REGION 'BugReportConst'}
 
-  // Для Лога
+  // Для Багрепорта
   LogMyPath: string = 'Program path';
   LogProfile: string = 'Profile path';
-  LogIconCount: string = 'Uploaded %d icons';
   Log_WinVer: string = 'Windows version: %u.%u.%u %s';
   Log_Lang_Code: string = 'System language';
-  Log_Get: string = 'get';
-  Log_Send: string = 'send';
-  Log_Parsing: string = 'parsing';
-  Log_Set_Status: string = 'Set status';
-  Log_Connect: string = 'Connecting to the server';
-  Log_HTTP_Proxy_Connect: string = 'Connecting to the proxy';
-  Log_Proxy_OK: string = 'Connecting to proxy OK.';
-  Log_Unk_Data: string = 'Get unknown or unimportant data';
-  Log_Gtrans_Req: string = 'The data translation: %s into %s';
-  Log_Gtrans_URL: string = 'Request for translation: %s into %s';
-  Log_Socket: string = 'Socket';
-  Log_BosServer: string = 'BosServer';
-  Log_PingInterval: string = 'Ping interval';
 
 {$ENDREGION}
 
@@ -325,6 +302,7 @@ var
   V_AutoDellProfile: Boolean = False;
   V_Roster: TJvSimpleXml;
   V_StartLog: string;
+  V_Tray_AllStatus: Integer = 256;
 
 {$ENDREGION}
 {$REGION 'Twitter_Vars'}
@@ -347,7 +325,6 @@ var
   V_AlphaBlendInactive: Boolean = False;
   V_RoasterAlphaBlend: Boolean = False;
   V_RoasterAlphaValue: Integer = 255;
-  V_GroupHeaderColor: TColor = $00FFDEFF;
   V_CollapseGroupsRestore: Boolean = True;
   V_PKeySearch: string;
   V_CurGroup: Integer;
@@ -402,42 +379,34 @@ var
   V_SoundON: Boolean = True;
   // 1
   V_SoundConnect: Boolean;
-  V_SoundConnect_Name: string;
   V_SoundConnect_Path: string;
   V_SoundConnect_Mask: string = 'Sounds\%s\Connect.wav';
   // 2
   V_SoundIncMsg: Boolean;
-  V_SoundIncMsg_Name: string;
   V_SoundIncMsg_Path: string;
   V_SoundIncMsg_Mask: string = 'Sounds\%s\IncMsg.wav';
   // 3
   V_SoundMsgSend: Boolean;
-  V_SoundMsgSend_Name: string;
   V_SoundMsgSend_Path: string;
   V_SoundMsgSend_Mask: string = 'Sounds\%s\MsgSend.wav';
   // 4
   V_SoungUserOnline: Boolean;
-  V_SoungUserOnline_Name: string;
   V_SoungUserOnline_Path: string;
   V_SoungUserOnline_Mask: string = 'Sounds\%s\UserOnline.wav';
   // 5
   V_SoundEvent: Boolean;
-  V_SoundEvent_Name: string;
   V_SoundEvent_Path: string;
   V_SoundEvent_Mask: string = 'Sounds\%s\Event.wav';
   // 6
   V_SoundFileSend: Boolean;
-  V_SoundFileSend_Name: string;
   V_SoundFileSend_Path: string;
   V_SoundFileSend_Mask: string = 'Sounds\%s\FileSend.wav';
   // 7
   V_SoundError: Boolean;
-  V_SoundError_Name: string;
   V_SoundError_Path: string;
   V_SoundError_Mask: string = 'Sounds\%s\Error.wav';
   // 11
   V_SoundUserOffline: Boolean;
-  V_SoundUserOffline_Name: string;
   V_SoundUserOffline_Path: string;
   V_SoundUserOffline_Mask: string = 'Sounds\%s\UserOffline.wav';
 {$ENDREGION}
@@ -456,10 +425,9 @@ var
 
   // Переменные оформления всплывающих подсказок
   V_FDAOptions: TJvDesktopAlertOptions;
-  V_DACount: Integer = 0;
-  V_DATimeShow: Integer = 7000;
+  V_DATimeShow: Integer = 7;
   V_DAPos: Integer = 3;
-  V_DAStyle: Integer = 0;
+  V_DARows: Integer = 4;
 
 {$ENDREGION}
 {$REGION 'ChatVars'}
@@ -481,7 +449,7 @@ var
 {$REGION 'LangVars'}
 
   // Переменные для языка | Lang_Vars[127].L_S
-  Lang_Vars: packed array[0..166] of record
+  Lang_Vars: packed array[0..173] of record
     L_N, L_S: string;
   end = ((L_N: 'RestoreFromTray'; L_S: ''), // 0
     (L_N: 'HideInTray'; L_S: ''), // 1
@@ -494,7 +462,7 @@ var
     (L_N: 'Close'; L_S: ''), // 8
     (L_N: 'Cancel'; L_S: ''), // 9
     (L_N: 'Apply'; L_S: ''), // 10
-    (L_N: 'DumpProto'; L_S: ''), // 11
+    (L_N: 'Donate'; L_S: ''), // 11
     (L_N: 'Empty'; L_S: ''), // 12
     (L_N: 'NewVerYES'; L_S: ''), // 13
     (L_N: 'NewVerNO'; L_S: ''), // 14
@@ -649,7 +617,14 @@ var
     (L_N: 'DellContactErr'; L_S: ''), // 163
     (L_N: 'RenGroupErr'; L_S: ''), // 164
     (L_N: 'Send'; L_S: ''), // 165
-    (L_N: 'BuildDate'; L_S: '')); // 166
+    (L_N: 'BuildDate'; L_S: ''), // 166
+    (L_N: 'HotKeyErr'; L_S: ''), // 167
+    (L_N: 'TranslationErr'; L_S: ''), // 168
+    (L_N: 'NewMessages'; L_S: ''), // 169
+    (L_N: 'IgGroupCaption'; L_S: ''), // 170
+    (L_N: 'AuthYes'; L_S: ''), // 171
+    (L_N: 'AuthNo'; L_S: ''), // 172
+    (L_N: 'X'; L_S: ''));
 
 {$ENDREGION}
 {$REGION 'ICQ_Connect_Errors_Vars'}
@@ -774,6 +749,16 @@ var
     string = 'Не поддерживаемая версия HTTP.';
 
 {$ENDREGION}
+{$REGION 'HotKeys vars'}
+
+  HotKey1: TJvApplicationHotKey;
+  HotKey2: TJvApplicationHotKey;
+  HotKey3: TJvApplicationHotKey;
+  HotKey4: TJvApplicationHotKey;
+  HotKey5: TJvApplicationHotKey;
+  HotKey6: TJvApplicationHotKey;
+
+{$ENDREGION}
 
 procedure SetLangVars;
 
@@ -792,9 +777,10 @@ uses
 
 procedure SetLangVars;
 var
-  I: Integer;
+  I, II: Integer;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
+  TransYes: Boolean;
 begin
   // Инициализируем XML
   JvXML_Create(JvXML);
@@ -814,7 +800,30 @@ begin
             begin
               Sub_Node := XML_Node.Items.ItemNamed[Lang_Vars[I].L_N];
               if Sub_Node <> nil then
-                Lang_Vars[I].L_S := XML2Text(CheckText_RN(Sub_Node.Properties.Value(C_CS)));
+                Lang_Vars[I].L_S := XML2Text(CheckText_RN(Sub_Node.Properties.Value('c')))
+              else // Проверяем соответствие перевода
+                DAShow(Lang_Vars[19].L_S, Format(Lang_Vars[168].L_S, [Lang_Vars[I].L_N]), EmptyStr, 134, 2, 0);
+            end;
+            // Проверяем соответствие перевода
+            if XML_Node.Items.Count > Length(Lang_Vars) then
+            begin
+              for I := 0 to XML_Node.Items.Count - 1 do
+              begin
+                TransYes := False;
+                for II := 0 to Length(Lang_Vars) - 1 do
+                begin
+                  if XML_Node.Items[I].Name = Lang_Vars[II].L_N then
+                  begin
+                    TransYes := True;
+                    Break;
+                  end;
+                end;
+                if not TransYes then
+                begin
+                  DAShow(Lang_Vars[19].L_S, Format(Lang_Vars[168].L_S, [XML_Node.Items[I].Name]), EmptyStr, 134, 2, 0);
+                  Exit;
+                end;
+              end;
             end;
           end;
         end;
@@ -828,4 +837,5 @@ end;
 {$ENDREGION}
 
 end.
+
 

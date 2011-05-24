@@ -6,6 +6,7 @@ object ContactSearchForm: TContactSearchForm
   Color = clBtnFace
   Constraints.MinHeight = 510
   Constraints.MinWidth = 601
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

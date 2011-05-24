@@ -6,6 +6,7 @@ object IcqOptionsForm: TIcqOptionsForm
   ClientHeight = 413
   ClientWidth = 597
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,9 +14,8 @@ object IcqOptionsForm: TIcqOptionsForm
   Font.Style = []
   HelpFile = 'T'
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
-  ScreenSnap = True
   OnCreate = FormCreate
   OnDblClick = FormDblClick
   OnShow = FormShow
@@ -91,7 +91,7 @@ object IcqOptionsForm: TIcqOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = AccountPage
+      ActivePage = PersonalPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -100,7 +100,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -252,7 +251,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ConnectPage'
         object ConnectionGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -357,7 +355,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'PrivatPage'
         object OtherOptionsGroupBox: TGroupBox
           Left = 0
           Top = 212
@@ -478,7 +475,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'IDClientPage'
         object ClientIDGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -651,9 +647,9 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 403
             Height = 77
             TabStop = False
-            BevelKind = bkFlat
+            BevelKind = bkTile
             BorderStyle = bsNone
-            Color = clBtnFace
+            Color = clInfoBk
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
@@ -687,7 +683,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'Eye'
         object EyeGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -734,9 +729,9 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 403
             Height = 53
             TabStop = False
-            BevelKind = bkFlat
+            BevelKind = bkTile
             BorderStyle = bsNone
-            Color = clBtnFace
+            Color = clInfoBk
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
@@ -781,7 +776,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AnketaPage'
         object MyInfoNameGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -1165,7 +1159,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'HomePage'
         object OriginalInfoGroupBox: TGroupBox
           Left = 0
           Top = 231
@@ -1497,7 +1490,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'WorkPage'
         object WorkInfoGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -1856,7 +1848,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'PersonalPage'
         object PersonalInfoGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -2319,7 +2310,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'InterestsPage'
         object LangsInfoGroupBox: TGroupBox
           Left = 0
           Top = 138
@@ -2554,7 +2544,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AvatarPage'
         object AvatarInfoGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -2574,7 +2563,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ParamsPage'
         object ParamInfoGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -2614,7 +2602,6 @@ object IcqOptionsForm: TIcqOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ConsolePage'
         object CustomICQPacketGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -2661,9 +2648,9 @@ object IcqOptionsForm: TIcqOptionsForm
             Width = 403
             Height = 61
             TabStop = False
-            BevelKind = bkFlat
+            BevelKind = bkTile
             BorderStyle = bsNone
-            Color = clBtnFace
+            Color = clInfoBk
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
             Font.Height = -12

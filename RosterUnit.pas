@@ -1,4 +1,12 @@
-﻿unit RosterUnit;
+﻿{ *******************************************************************************
+  Copyright (c) 2004-2010 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+  ******************************************************************************* }
+
+unit RosterUnit;
 
 interface
 
@@ -29,7 +37,7 @@ uses
 procedure UpdateFullCL;
 procedure ClearContacts(CType: string);
 procedure OpenChatPage(CButton: TButtonItem; Proto: string);
-function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXmlElem;
+function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string; Pass: integer = 0): TJvSimpleXmlElem;
 procedure RosterUpdateProp(R_Node: TJvSimpleXmlElem; R_Prop, R_Value: string);
 procedure DellcIdInMessList(CId: string);
 function ReqChatPage(CId: string): TToolButton;
@@ -131,6 +139,7 @@ var
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
   Group_Yes, Contact_Yes: Boolean;
   JvXML: TJvSimpleXml;
+  xType: string;
 begin
   with MainForm.ContactList do
   begin
@@ -150,7 +159,7 @@ begin
             if XML_Node <> nil then
             begin
               // Открываем раздел с группами
-              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
               if Sub_Node <> nil then
               begin
                 // Запускаем цикл сканирования групп
@@ -191,7 +200,7 @@ begin
                 end;
               end;
               // Открываем раздел с контактами
-              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
               if Sub_Node <> nil then
               begin
                 // Запускаем цикл сканирования контактов
@@ -225,11 +234,11 @@ begin
                             with Categories[G].Items[K] do
                             begin
                               Status := S;
-                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              if Tri_Node.Properties.Value(C_Mess) = 'X' then
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               // Если статус в сети
                               if (S <> 23) and (S <> 275) and (S <> 312) then
@@ -278,11 +287,11 @@ begin
                                 Caption := Tri_Node.Properties.Value(C_Login);
                               UIN := Tri_Node.Properties.Value(C_Login);
                               Status := S;
-                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              if Tri_Node.Properties.Value(C_Mess) = 'X' then
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               PImageIndex := -1;
                               // Если статус в сети
@@ -324,7 +333,7 @@ begin
             if XML_Node <> nil then
             begin
               // Открываем раздел с группами
-              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
               if Sub_Node <> nil then
               begin
                 // Запускаем цикл сканирования групп
@@ -368,7 +377,7 @@ begin
                 end;
               end;
               // Открываем раздел с контактами
-              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
               if Sub_Node <> nil then
               begin
                 // Запускаем цикл сканирования контактов
@@ -399,13 +408,23 @@ begin
                             with Categories[G].Items[K] do
                             begin
                               Status := S;
-                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              if Tri_Node.Properties.Value(C_Mess) = 'X' then
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                              // Если статус в сети
+                              // Обрабатываем приватные флаги контакта
+                              xType := Tri_Node.Properties.Value('P');
+                              if xType = 'E' then // игнорируемый
+                                PImageIndex := 150
+                              else if xType = '2' then // видящий
+                                PImageIndex := 231
+                              else if xType = '3' then // невидящий
+                                PImageIndex := 232
+                              else // нормальный
+                                PImageIndex := -1;
+                              // Если статус в сети или есть сообщение
                               if (S <> 9) and (S <> 214) then
                               begin
                                 // Поднимаем этот контакт вверх группы
@@ -451,13 +470,22 @@ begin
                                 Caption := Tri_Node.Properties.Value(C_Login);
                               UIN := Tri_Node.Properties.Value(C_Login);
                               Status := S;
-                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              if Tri_Node.Properties.Value(C_Mess) = 'X' then
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
-                              PImageIndex := -1;
+                              // Обрабатываем приватные флаги контакта
+                              xType := Tri_Node.Properties.Value('P');
+                              if xType = 'E' then // игнорируемый
+                                PImageIndex := 150
+                              else if xType = '2' then // видящий
+                                PImageIndex := 231
+                              else if xType = '3' then // невидящий
+                                PImageIndex := 232
+                              else // нормальный
+                                PImageIndex := -1;
                               // Если статус в сети
                               if (S <> 9) and (S <> 214) then
                               begin
@@ -490,7 +518,7 @@ begin
             if XML_Node <> nil then
             begin
               // Открываем раздел с группами
-              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
               if Sub_Node <> nil then
               begin
                 // Запускаем цикл сканирования групп
@@ -531,7 +559,7 @@ begin
                 end;
               end;
               // Открываем раздел с контактами
-              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
               if Sub_Node <> nil then
               begin
                 // Запускаем цикл сканирования контактов
@@ -564,11 +592,11 @@ begin
                             with Categories[G].Items[K] do
                             begin
                               Status := S;
-                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              if Tri_Node.Properties.Value(C_Mess) = 'X' then
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               // Если статус в сети
                               if (S <> 30) and (S <> 42) then
@@ -616,11 +644,11 @@ begin
                                 Caption := Tri_Node.Properties.Value(C_Login);
                               UIN := Tri_Node.Properties.Value(C_Login);
                               Status := S;
-                              if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                              if Tri_Node.Properties.Value(C_Mess) = 'X' then
                                 ImageIndex := 165
                               else
                                 ImageIndex := S;
-                              XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                              XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                               CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                               PImageIndex := -1;
                               // Если статус в сети
@@ -666,11 +694,11 @@ begin
                               Caption := Tri_Node.Properties.Value(C_Login);
                             UIN := Tri_Node.Properties.Value(C_Login);
                             Status := S;
-                            if Tri_Node.Properties.Value(C_Mess) = C_XX then
+                            if Tri_Node.Properties.Value(C_Mess) = 'X' then
                               ImageIndex := 165
                             else
                               ImageIndex := S;
-                            XImageIndex := Tri_Node.Properties.IntValue(C_XX + C_Status);
+                            XImageIndex := Tri_Node.Properties.IntValue('X' + C_Status);
                             CImageIndex := Tri_Node.Properties.IntValue(C_Client);
                             PImageIndex := -1;
                             // Если статус в сети
@@ -720,7 +748,7 @@ begin
               or (Categories[G].GroupId = C_NoCL) or (Categories[G].Items.Count = 0) //
               or (MainForm.OnlyOnlineContactsToolButton.Down) //
               or ((Categories[G].GroupId = C_Phone_m2) and (Categories[G].GroupType = C_Mra)) then
-                Categories[G].Caption := Categories[G].GroupCaption + C_BN + '-' + C_BN + IntToStr(Categories[G].Items.Count)
+                Categories[G].Caption := Categories[G].GroupCaption + ' ' + '-' + ' ' + IntToStr(Categories[G].Items.Count)
               else
               begin
                 I := Categories[G].Items.Count;
@@ -728,21 +756,21 @@ begin
                   case Categories[G].Items[K].Status of
                     9, 23, 25, 30, 41, 42, 80, 83, 84, 214, 298, 299, 300, 312: Dec(I);
                   end;
-                Categories[G].Caption := Categories[G].GroupCaption + C_BN + '-' + C_BN + Format('%d/%d', [I, Categories[G].Items.Count]);
+                Categories[G].Caption := Categories[G].GroupCaption + ' ' + '-' + ' ' + Format('%d/%d', [I, Categories[G].Items.Count]);
               end;
             end;
             // Восстанавливаем состояние свёрнутых групп
             if V_CollapseGroupsRestore then
             begin
               // Ищем раздел состояния групп
-              XML_Node := Root.Items.ItemNamed[C_Group + C_SS];
+              XML_Node := Root.Items.ItemNamed[C_Group + 's'];
               if XML_Node <> nil then
               begin
                 for G := 0 to Categories.Count - 1 do
                 begin
                   Sub_Node := XML_Node.Items.ItemNamed[ChangeCP(URLEncode(Categories[G].GroupCaption + Categories[G].GroupType + Categories[G].GroupId))];
                   if Sub_Node <> nil then
-                    Categories[G].Collapsed := Sub_Node.Properties.BoolValue(C_CS);
+                    Categories[G].Collapsed := Sub_Node.Properties.BoolValue('c');
                 end;
               end;
               V_CollapseGroupsRestore := False;
@@ -778,13 +806,13 @@ begin
         else
           XML_Node.Clear;
         // Создаём в разделе протокола секцию групп
-        Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+        Sub_Node := XML_Node.Items.Add(C_Group + 's');
         // Добавляем группу для контактов "не в списке"
-        Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+        Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_NoCL);
         Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
         Tri_Node.Properties.Add(C_Id, C_NoCL);
         // Создаём в разделе протокола секцию контактов
-        XML_Node.Items.Add(C_Contact + C_SS);
+        XML_Node.Items.Add(C_Contact + 's');
       end;
     end;
   end;
@@ -807,11 +835,12 @@ end;
 {$ENDREGION}
 {$REGION 'GetRosterItem'}
 
-function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string): TJvSimpleXmlElem;
+function RosterGetItem(R_Proto, R_Section, R_Item, R_Value: string; Pass: integer = 0): TJvSimpleXmlElem;
 var
-  I: Integer;
+  I, P: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
+  P := Pass;
   // Получаем из Ростера искомую ноду
   Result := nil;
   if (R_Proto <> EmptyStr) and (R_Section <> EmptyStr) and (R_Item <> EmptyStr) and (R_Value <> EmptyStr) then
@@ -838,6 +867,11 @@ begin
                 begin
                   if Tri_Node.Properties.Value(R_Item) = R_Value then
                   begin
+                    if P > 0 then
+                    begin
+                      Dec(P);
+                      Continue;
+                    end;
                     // Получаем искомую ноду
                     Result := Tri_Node;
                     // Прерываем цикл

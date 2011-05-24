@@ -1,5 +1,3 @@
-﻿IMadering Mix.
-Author: Petr Stepanov.
-
-Little changes made by Eduard Tolmachev.
-Date: 27.01.2010
+﻿IMadering Mix
+Author: Petr Stepanov. Little changes made by Edward Tolmachev
+Date: 06.01.2011

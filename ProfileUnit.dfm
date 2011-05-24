@@ -12,12 +12,14 @@ object ProfileForm: TProfileForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -147,7 +149,7 @@ object ProfileForm: TProfileForm
       TabStop = False
       OnClick = LoginButtonClick
     end
-    object AutoSignCheckBox: TCheckBox
+    object NoShowProfileFormCheckBox: TCheckBox
       Left = 10
       Top = 51
       Width = 218

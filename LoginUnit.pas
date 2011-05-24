@@ -34,6 +34,7 @@ type
     OKButton: TButton;
     CancelButton: TButton;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   private
     { Private declarations }
@@ -72,10 +73,16 @@ end;
 {$ENDREGION}
 {$REGION 'TranslateForm'}
 
+procedure TLoginForm.FormShow(Sender: TObject);
+begin
+  // Если логин указан, то переводим фокус на ввод пароля
+  if AccountEdit.Text <> EmptyStr then
+    if PasswordEdit.CanFocus then
+      PasswordEdit.SetFocus;
+end;
+
 procedure TLoginForm.TranslateForm;
 begin
-  // Создаём шаблон для перевода
-  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Другое

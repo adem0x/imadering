@@ -1,38 +1,38 @@
-﻿<height>245</height><width>340</width><info>Green animated smilies._r_Author: Michael Niedermayr._r__r_Site: www.greensmilies.com_r_Date: 27.01.2010</info>
+﻿<height>245</height><width>340</width><info>Green animated smilies_r_Author: Michael Niedermayr. Site: www.greensmilies.com_r_Date: 07.02.2011</info>
 O:-),O=)
 :-),:),=)
-:-(,:(,;(
+:-(,:(
 ;-),;)
 :-P,:P
-8-),8)
+8-)
 :-D,:D
 :-[,:[
-=-O,:-O
+=-O,:-O,O_O,O_o,o_O,O_0,o_0,0_O,0_o
 :-*,:*,:-{}
 :'(
 :-X,:-x
 >:o
 :-|
 :-\,:-/
-*JOKINGLY*
-]:->
-[:-}
+*JOKINGLY*,*8P*
+]:->,}:->,]:>,}:>,>:-],>:],*DIABLO*
+[:-},[:},*MUSIC*
 *KISSED*
-:-!
+:-!,;-!,:!,;!,:-~,;-~
 *TIRED*
 *KISSING*
-@}->--
-*THUMBS UP*
+@}->--,@}-:--,@>}--`---
+*THUMBS UP*,*THUMBS_UP*,*GOOD*
 *DRINK*
 *IN LOVE*,*IN_LOVE*
 *HELP*
 \m/
-%)
+%),%-)
 *BRAVO*
 *ROFL*,*LOL*
 *NO*
 *CRAZY*
-*DONT_KNOW*,*UNKNOWN*
+*DONT_KNOW*,*UNKNOWN*,:-$
 *YAHOO*,*YAHOO!*
 *HI*,*PREVED*,*PRIVET*,*HELLO*
 *YES*

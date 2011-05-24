@@ -52,11 +52,15 @@ type
     { Private declarations }
   public
     { Public declarations }
-    Invite: Boolean;
     UpDate: Boolean;
     Twit: Boolean;
+    xReqAuth: Boolean;
+    xUIN: string;
+    xNick: string;
+    xProto: string;
     procedure UpDateVersion(xVer, xDate, xInfo: string);
     procedure PostInTwitter(M: string);
+    procedure xReqAuthEnable(xHead: string);
     procedure TranslateForm;
   end;
 
@@ -110,7 +114,7 @@ end;
 procedure TMemoForm.FormShow(Sender: TObject);
 begin
   // Если Твит, то ставим фокус в поле ввода
-  if (Twit) and (InfoMemo.CanFocus) then
+  if ((Twit) or (xReqAuth)) and (InfoMemo.CanFocus) then
   begin
     InfoMemo.SetFocus;
     InfoMemo.SelStart := InfoMemo.GetTextLen;
@@ -145,7 +149,7 @@ end;
 procedure TMemoForm.InfoMemoChange(Sender: TObject);
 begin
   // Отображаем счётчик символов
-  if Twit then
+  if Twit or xReqAuth then
   begin
     CountLabel.Caption := Format(Lang_Vars[62].L_S, [InfoMemo.GetTextLen, 140]);
     if InfoMemo.GetTextLen > 140 then
@@ -175,14 +179,14 @@ begin
   InfoMemo.Height := 224;
   // Отображаем информацию о текущей версии
   LastNumberLabel.Caption := V_FullVersion;
-  LastDateLabel.Caption := Lang_Vars[166].L_S + C_TN + C_BN + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
+  LastDateLabel.Caption := Lang_Vars[166].L_S + ':' + ' ' + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
   // Отображаем информацию о новой версии
   NewNumberLabel.Caption := xVer;
-  NewDateLabel.Caption := Lang_Vars[166].L_S + C_TN + C_BN + xDate;
+  NewDateLabel.Caption := Lang_Vars[166].L_S + ':' + ' ' + xDate;
   // Ставим флаги функции окна
   UpDate := True;
-  Invite := False;
   Twit := False;
+  xReqAuth := False;
   // Блокируем мемо
   InfoMemo.ReadOnly := True;
   InfoMemo.Color := ClBtnFace;
@@ -197,7 +201,7 @@ begin
   MainForm.AllImageList.GetIcon(272, Icon);
   // Переключаем окно в режим постинга в Twitter
   Caption := C_Twitter;
-  HeadLabel.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]) + C_GT;
+  HeadLabel.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]) + '?';
   InfoMemo.Text := M;
   YesBitBtn.Caption := Lang_Vars[165].L_S;
   YesBitBtn.Glyph.Assign(nil);
@@ -207,8 +211,8 @@ begin
   InfoMemo.Height := 284;
   // Ставим флаги функции окна
   UpDate := False;
-  Invite := False;
   Twit := True;
+  xReqAuth := False;
   // Разблокируем мемо
   InfoMemo.ReadOnly := False;
   InfoMemo.Color := ClWindow;
@@ -216,6 +220,35 @@ begin
   InfoMemoChange(nil);
 end;
 
+{$ENDREGION}
+{$REGION 'xReqAuthEnable'}
+procedure TMemoForm.xReqAuthEnable(xHead: string);
+begin
+  // Ставим иконку окну
+  MainForm.AllImageList.GetIcon(277, Icon);
+  // Переключаем окно в режим запроса авторизации
+  if xNick <> EmptyStr then
+    Caption := xHead + ':' + ' ' + xNick
+  else
+    Caption := xHead + ':' + ' ' + xUIN;
+  HeadLabel.Caption := xHead + ':';
+  InfoMemo.Text := InfoMemo.Hint;
+  YesBitBtn.Caption := Lang_Vars[165].L_S;
+  YesBitBtn.Glyph.Assign(nil);
+  MainForm.AllImageList.GetBitmap(166, YesBitBtn.Glyph);
+  UpdatePanel.Visible := False;
+  InfoMemo.Top := 27;
+  InfoMemo.Height := 284;
+  // Ставим флаги функции окна
+  UpDate := False;
+  Twit := False;
+  xReqAuth := True;
+  // Разблокируем мемо
+  InfoMemo.ReadOnly := False;
+  InfoMemo.Color := ClWindow;
+  // Обновляем счётчик
+  InfoMemoChange(nil);
+end;
 {$ENDREGION}
 {$REGION 'YesBitBtnClick'}
 
@@ -300,32 +333,26 @@ begin
           Tag := 0;
           // Запускаем авторизацию в Twitter
           URL := V_Twitter_OAuth_Signature;
-          XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+          //XLog(C_Twitter + ' ' + Log_Send, URL, C_Twitter, False);
           GetASync;
         end;
       end;
     end;
     // Закрываем это окно
     Close;
-  end;
-
-  { if RoasterForm.Roaster_Sel_Button = nil then goto x;
-    //
-    if Invite then
+  end
+  else if xReqAuth then // Запрос авторизации
+  begin
+    if not NotProtoOnline(xProto) then
     begin
-    Sini := TIniFile.Create(Mypath + 'Config.ini');
-    Sini.WriteString('qwe', 'Invite', Encrypt(Memo1.Text, 12345));
-    Sini.Free;
-    //
-    ICQ_SendMessage_0406(RoasterForm.Roaster_Sel_Button.UIN, Memo1.Text, true);
-    end
-    else
-    begin
-    ICQ_SendGrandAuth(RoasterForm.Roaster_Sel_Button.UIN);
-    ICQ_ReqAuthSend(RoasterForm.Roaster_Sel_Button.UIN, Memo1.Text);
+      // Отправляем гранд авторизацию
+      ICQ_SendGrandAuth(xUIN);
+      // Отправляем запрос авторизации
+      ICQ_SendReqAuth(xUIN, Trim(InfoMemo.Text));
     end;
-    //
-    ModalResult := mrOk; }
+    // Закрываем это окно
+    Close;
+  end;
 end;
 
 {$ENDREGION}

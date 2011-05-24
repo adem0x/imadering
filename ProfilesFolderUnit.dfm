@@ -6,13 +6,14 @@ object ProfilesFolderForm: TProfilesFolderForm
   ClientHeight = 175
   ClientWidth = 404
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -36,6 +37,7 @@ object ProfilesFolderForm: TProfilesFolderForm
     Height = 17
     Checked = True
     TabOrder = 0
+    TabStop = True
   end
   object Folder1Edit: TEdit
     Left = 24

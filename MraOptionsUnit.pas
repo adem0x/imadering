@@ -132,15 +132,15 @@ begin
                     // --------------------------------------------------------------------------
                     // Загружаем данные логина
                     S_email := XML_Node.Properties.Value(C_Login);
-                    MraEmailEdit.Text := Parse(C_EE, S_email, 1);
-                    MRAEmailComboBox.ItemIndex := MRAEmailComboBox.Items.IndexOf(C_EE + Parse(C_EE, S_email, 2));
+                    MraEmailEdit.Text := Parse('@', S_email, 1);
+                    MRAEmailComboBox.ItemIndex := MRAEmailComboBox.Items.IndexOf('@' + Parse('@', S_email, 2));
                     SavePassCheckBox.Checked := XML_Node.Properties.BoolValue(C_SavePass);
                     // Загружаем пароль
                     PassEdit.OnChange := nil;
                     PassEdit.Text := XML_Node.Properties.Value(C_Pass);
                     if PassEdit.Text <> EmptyStr then
                       begin
-                        PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
+                        PassEdit.HelpKeyword := URLDecode(Base64Decode(PassEdit.Text));
                         PassEdit.Text := C_MaskPass;
                       end;
                     PassEdit.OnChange := PassEditChange;
@@ -182,10 +182,10 @@ begin
           ClearContacts(C_Mra); // Очищаем контакты предыдущего аккаунта
           MRA_LoginUIN := MraEmailEdit.Text + MRAEmailComboBox.Text;
         end;
-      MRA_LoginPassword := PassEdit.Hint;
+      MRA_LoginPassword := PassEdit.HelpKeyword;
       // Делаем подсказку
       if MraEmailEdit.Text <> EmptyStr then
-        MainForm.MRAToolButton.Hint := Format(C_AS, [C_Mra]) + C_BN + C_NN + C_BN + C_QN + MRA_LoginUIN + C_EN
+        MainForm.MRAToolButton.Hint := Format(C_AS, [C_Mra]) + ' ' + '-' + ' ' + '[' + MRA_LoginUIN + ']'
       else
         MainForm.MRAToolButton.Hint := Format(C_AS, [C_Mra]);
     end;
@@ -231,7 +231,7 @@ begin
             XML_Node.Properties.Add(C_Login, MraEmailEdit.Text + MRAEmailComboBox.Text);
             XML_Node.Properties.Add(C_SavePass, SavePassCheckBox.Checked);
             if SavePassCheckBox.Checked then
-              XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.Hint)))
+              XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.HelpKeyword)))
             else
               begin
                 XML_Node.Properties.Add(C_Pass, EmptyStr);
@@ -239,7 +239,11 @@ begin
               end;
             // Маскируем пароль
             if PassEdit.Text <> EmptyStr then
+            begin
+              PassEdit.OnChange := nil;
               PassEdit.Text := C_MaskPass;
+              PassEdit.OnChange := PassEditChange;
+            end;
             // --------------------------------------------------------------------------
             // Сохраняем настройки сервера
             Sub_Node := XML_Node.Items.Add(C_CustomServer);
@@ -373,7 +377,7 @@ end;
 
 procedure TMraOptionsForm.PassEditChange(Sender: TObject);
 begin
-  PassEdit.Hint := PassEdit.Text;
+  PassEdit.HelpKeyword := PassEdit.Text;
   // Активируем кнопку применения настроек
   ApplyButton.Enabled := True;
 end;

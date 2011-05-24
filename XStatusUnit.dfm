@@ -5,6 +5,7 @@ object XStatusForm: TXStatusForm
   ClientHeight = 298
   ClientWidth = 223
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

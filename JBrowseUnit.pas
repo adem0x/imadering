@@ -1,3 +1,11 @@
+{ *******************************************************************************
+  Copyright (c) 2004-2010 by Edyard Tolmachev
+  IMadering project
+  http://imadering.com
+  ICQ: 118648
+  E-mail: imadering@mail.ru
+  ******************************************************************************* }
+
 unit JBrowseUnit;
 
 interface

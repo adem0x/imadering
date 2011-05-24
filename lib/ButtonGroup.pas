@@ -775,7 +775,7 @@ begin
       InflateRect(Rect, 0, 0);
 
       if (BdsHot in State) and not(BdsDown in State) then
-        EdgeColor := ClHighlight; // Изменил
+        EdgeColor := GetShadowColor($00EFD3C6); // Изменил
 
       { Draw the edge outline }
       Canvas.Brush.Color := EdgeColor;

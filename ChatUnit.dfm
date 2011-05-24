@@ -6,12 +6,14 @@ object ChatForm: TChatForm
   Color = clBtnFace
   Constraints.MinHeight = 400
   Constraints.MinWidth = 400
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   HelpFile = 'T'
+  KeyPreview = True
   OldCreateOrder = False
   Scaled = False
   OnActivate = FormActivate
@@ -19,6 +21,7 @@ object ChatForm: TChatForm
   OnCreate = FormCreate
   OnDblClick = FormDblClick
   OnDestroy = FormDestroy
+  OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
   object ChatSplitter: TSplitter
@@ -88,6 +91,8 @@ object ChatForm: TChatForm
       Align = alClient
       BevelKind = bkTile
       BevelOuter = bvNone
+      DoubleBuffered = True
+      ParentDoubleBuffered = False
       ShowCaption = False
       TabOrder = 1
       object HTMLChatViewer: THTMLViewer
@@ -113,6 +118,7 @@ object ChatForm: TChatForm
         OnMouseMove = HTMLChatViewerMouseMove
         OnMouseDown = HTMLChatViewerMouseDown
         OnKeyDown = HTMLChatViewerKeyDown
+        OnObjectClick = HTMLChatViewerObjectClick
         OnParseEnd = HTMLChatViewerParseEnd
       end
     end
@@ -243,16 +249,8 @@ object ChatForm: TChatForm
           ShowHint = True
           OnClick = ChatFontToolButtonClick
         end
-        object UniqToolButton: TToolButton
-          Left = 23
-          Top = 0
-          ImageIndex = 247
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = UniqToolButtonClick
-        end
         object ContactMenuToolButton: TToolButton
-          Left = 46
+          Left = 23
           Top = 0
           ImageIndex = 218
           ParentShowHint = False
@@ -261,7 +259,7 @@ object ChatForm: TChatForm
           OnContextPopup = ContactMenuToolButtonContextPopup
         end
         object ChatSettingsToolButton: TToolButton
-          Left = 69
+          Left = 46
           Top = 0
           ImageIndex = 2
           ParentShowHint = False
@@ -269,7 +267,7 @@ object ChatForm: TChatForm
           OnClick = ChatSettingsToolButtonClick
         end
         object EnterKeyToolButton: TToolButton
-          Left = 92
+          Left = 69
           Top = 0
           Down = True
           ImageIndex = 219
@@ -278,13 +276,23 @@ object ChatForm: TChatForm
           Style = tbsCheck
         end
         object TypingTextToolButton: TToolButton
-          Left = 115
+          Left = 92
           Top = 0
           ImageIndex = 161
           ParentShowHint = False
           ShowHint = True
           Style = tbsCheck
           OnClick = TypingTextToolButtonClick
+        end
+        object PluginsToolButton: TToolButton
+          Left = 115
+          Top = 0
+          ImageIndex = 184
+          ParentShowHint = False
+          ShowHint = True
+          Visible = False
+          OnClick = PluginsToolButtonClick
+          OnContextPopup = PluginsToolButtonContextPopup
         end
       end
       object SendMessageBitBtn: TBitBtn
@@ -293,8 +301,6 @@ object ChatForm: TChatForm
         Width = 91
         Height = 25
         Anchors = [akRight, akBottom]
-        DoubleBuffered = True
-        ParentDoubleBuffered = False
         TabOrder = 1
         TabStop = False
         OnClick = SendMessageBitBtnClick
@@ -305,8 +311,6 @@ object ChatForm: TChatForm
         Width = 87
         Height = 25
         Anchors = [akLeft, akBottom]
-        DoubleBuffered = True
-        ParentDoubleBuffered = False
         TabOrder = 2
         TabStop = False
         OnClick = CloseTabBitBtnClick
@@ -414,27 +418,10 @@ object ChatForm: TChatForm
         PlainText = True
         PopupMenu = MemoPopupMenu
         ScrollBars = ssVertical
-        TabOrder = 2
+        TabOrder = 1
         OnChange = InputRichEditChange
         OnKeyDown = InputRichEditKeyDown
         OnKeyPress = InputRichEditKeyPress
-      end
-      object HTMLMsg: THTMLViewer
-        Left = 183
-        Top = 28
-        Width = 205
-        Height = 56
-        Cursor = crDefault
-        ViewImages = False
-        TabOrder = 1
-        DefBackground = clWhite
-        BorderStyle = HtNone
-        Visible = False
-        DefFontName = 'Tahoma'
-        DefPreFontName = 'Courier New'
-        NoSelect = False
-        ScrollBars = ssVertical
-        CharSet = DEFAULT_CHARSET
       end
     end
     object TopToolsPanel: TPanel

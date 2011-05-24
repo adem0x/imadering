@@ -141,48 +141,6 @@ const
     (Status_Code: '01000080'; XStatus_Code: 'status_invisible'; Status_Img: '21;-1')); // 59
 
 {$ENDREGION}
-{$REGION 'Array Pkt Codes'}
-
-  // Расшифровка пакетов для лога
-  MRA_Pkt_Names:
-    packed array[0..32] of record
-    Pkt_Code: Integer;
-    Pkt_Name: string;
-  end = ((Pkt_Code: $1001; Pkt_Name: 'HELLO'), // 0
-    (Pkt_Code: $1002; Pkt_Name: 'HELLO_ACK'), // 1
-    (Pkt_Code: $1004; Pkt_Name: 'LOGIN_ACK'), // 2
-    (Pkt_Code: $1005; Pkt_Name: 'LOGIN_REJ'), // 3
-    (Pkt_Code: $1006; Pkt_Name: 'PING'), // 4
-    (Pkt_Code: $1008; Pkt_Name: 'SEND_MESSAGE'), // 5
-    (Pkt_Code: $1009; Pkt_Name: 'MESSAGE_ACK'), // 6
-    (Pkt_Code: $1011; Pkt_Name: 'MESSAGE_RECV'), // 7
-    (Pkt_Code: $1012; Pkt_Name: 'MESSAGE_STATUS'), // 8
-    (Pkt_Code: $100F; Pkt_Name: 'USER_STATUS'), // 9
-    (Pkt_Code: $1013; Pkt_Name: 'LOGOUT'), // 10
-    (Pkt_Code: $1014; Pkt_Name: 'CONNECTION_PARAMS'), // 11
-    (Pkt_Code: $1015; Pkt_Name: 'USER_INFO'), // 12
-    (Pkt_Code: $1019; Pkt_Name: 'ADD_CONTACT'), // 13
-    (Pkt_Code: $101A; Pkt_Name: 'ADD_CONTACT_ACK'), // 14
-    (Pkt_Code: $101B; Pkt_Name: 'MODIFY_CONTACT'), // 15
-    (Pkt_Code: $101C; Pkt_Name: 'MODIFY_CONTACT_ACK'), // 16
-    (Pkt_Code: $101D; Pkt_Name: 'OFFLINE_MESSAGE_ACK'), // 17
-    (Pkt_Code: $101E; Pkt_Name: 'DELETE_OFFLINE_MESSAGE'), // 18
-    (Pkt_Code: $1020; Pkt_Name: 'AUTHORIZE'), // 19
-    (Pkt_Code: $1021; Pkt_Name: 'AUTHORIZE_ACK'), // 20
-    (Pkt_Code: $1022; Pkt_Name: 'CHANGE_STATUS'), // 21
-    (Pkt_Code: $1024; Pkt_Name: 'GET_MPOP_SESSION'), // 22
-    (Pkt_Code: $1025; Pkt_Name: 'MPOP_SESSION'), // 23
-    (Pkt_Code: $1026; Pkt_Name: 'FILE_TRANSFER'), // 24
-    (Pkt_Code: $1027; Pkt_Name: 'FILE_TRANSFER_ACK'), // 25
-    (Pkt_Code: $1029; Pkt_Name: 'WP_REQUEST'), // 26
-    (Pkt_Code: $1028; Pkt_Name: 'ANKETA_INFO'), // 27
-    (Pkt_Code: $1033; Pkt_Name: 'MAILBOX_STATUS'), // 28
-    (Pkt_Code: $1037; Pkt_Name: 'CONTACT_LIST2'), // 29
-    (Pkt_Code: $1038; Pkt_Name: 'LOGIN2'), // 30
-    (Pkt_Code: $1039; Pkt_Name: 'SEND_SMS'), // 31
-    (Pkt_Code: $1040; Pkt_Name: 'SMS_ACK')); // 32
-
-{$ENDREGION}
 {$REGION 'Vars'}
 
 var
@@ -243,10 +201,8 @@ implementation
 
 uses
   UtilsUnit,
-  LogUnit,
   OverbyteIcsUrl,
-  RosterUnit,
-  GtransUnit;
+  RosterUnit;
 
 {$ENDREGION}
 {$REGION 'MRA_StatusCodeToImg'}
@@ -335,7 +291,7 @@ procedure MRA_MessageRecv(PktData: string; K_Email: string = ''; K_Mess: string 
 label
   X;
 var
-  S_Log, M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
+  M_Id, M_Flag, M_From, Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   I, Len: Integer;
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
   Contact_Yes: Boolean;
@@ -392,9 +348,9 @@ begin
     try
       with JvXML do
       begin
-        if FileExists(V_ProfilePath + C_AnketaFolder + C_Mra + C_BN + M_From + C_XML_Ext) then
+        if FileExists(V_ProfilePath + C_AnketaFolder + C_Mra + ' ' + M_From + C_XML_Ext) then
         begin
-          LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Mra + C_BN + M_From + C_XML_Ext);
+          LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Mra + ' ' + M_From + C_XML_Ext);
           if Root <> nil then
           begin
             XML_Node := Root.Items.ItemNamed[C_Gtrans];
@@ -408,7 +364,7 @@ begin
     end;
     if GtransMsg then
     begin
-      if not Assigned(GTransForm) then
+      {if not Assigned(GTransForm) then
         Application.CreateForm(TGTransForm, GTransForm);
       with GTransForm.GtransListView.Items.Add do
       begin
@@ -417,14 +373,14 @@ begin
         SubItems.Add(M_From);
         SubItems.Add(Mess);
         SubItems.Add(C_Mra);
-      end;
+      end;}
       // Выходим
       Exit;
     end;
     // Форматируем сообщение
     X: ;
     CheckMessage_BR(Mess);
-    ChatForm.CheckMessage_ClearTag(Mess);
+    CheckMessage_ClearTag(Mess);
     PopMsg := Mess;
     // Ищем этот контакт в Ростере
     Contact_Yes := False;
@@ -439,19 +395,19 @@ begin
           if XML_Node <> nil then
           begin
             // Открываем раздел групп
-            Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+            Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
             if Sub_Node = nil then
-              Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+              Sub_Node := XML_Node.Items.Add(C_Group + 's');
             // Добавляем группу для контактов "не в списке"
-            Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+            Tri_Node := Sub_Node.Items.ItemNamed[C_Group + '_' + C_NoCL];
             if Tri_Node = nil then
             begin
-              Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+              Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_NoCL);
               Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
               Tri_Node.Properties.Add(C_Id, C_NoCL);
             end;
             // Ищем раздел контактов
-            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
             if Sub_Node <> nil then
             begin
               for I := 0 to Sub_Node.Items.Count - 1 do
@@ -468,9 +424,9 @@ begin
                     // Ник контакта из Ростера
                     Nick := URLDecode(Tri_Node.Properties.Value(C_Nick));
                     // Дата сообщения
-                    MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                    MsgD := Nick + ' ' + '[' + DateTimeChatMess + ']';
                     // Ставим метку о непрочитанном сообщении
-                    RosterUpdateProp(Tri_Node, C_Mess, C_XX);
+                    RosterUpdateProp(Tri_Node, C_Mess, 'X');
                     // Прерываем цикл
                     Break;
                   end;
@@ -482,18 +438,19 @@ begin
                 // Ищем его Ник в файле-кэше ников
                 Nick := SearchNickInCash(C_Mra, M_From);
                 // Дата сообщения
-                MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                MsgD := Nick + ' ' + '[' + DateTimeChatMess + ']';
                 // Добавляем этот контакт в эту группу
-                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(Sub_Node.Items.Count + 1));
                 Tri_Node.Properties.Add(C_Login, URLEncode(M_From));
                 Tri_Node.Properties.Add(C_Group + C_Id, C_NoCL);
                 Tri_Node.Properties.Add(C_Status, 312);
                 Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
                 Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
-                Tri_Node.Properties.Add(C_Mess, C_XX);
+                Tri_Node.Properties.Add(C_Mess, 'X');
               end;
               // Записываем история в файл истории с этим контактом
-              HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + C_BN + MRA_LoginUIN + C_BN + M_From + C_Htm_Ext;
+              ForceDirectories(V_ProfilePath + C_HistoryFolder + C_Mra + '\' + MRA_LoginUIN + '\');
+              HistoryFile := V_ProfilePath + C_HistoryFolder + C_Mra + '\' + MRA_LoginUIN + '\' + M_From + C_Htm_Ext;
               Mess := Text2XML(Mess);
               CheckMessage_BR(Mess);
               DecorateURL(Mess);
@@ -516,8 +473,6 @@ begin
   // Пишем в лог
   if (K_Email <> EmptyStr) and (K_Mess <> EmptyStr) then
     Exit;
-  S_Log := S_Log + C_Id + C_TN + C_BN + M_Id + C_LN + C_BN + 'Flag' + C_TN + C_BN + M_Flag + C_LN + C_BN + 'From' + C_TN + C_BN + M_From + C_LN + C_BN + 'Text' + C_TN + C_BN + Mess;
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[6].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -566,7 +521,7 @@ end;
 
 procedure MRA_ParseUserInfo(PktData: string);
 var
-  S_Log, S: string;
+  S: string;
 
   function GetLastLS: string;
   var
@@ -588,18 +543,14 @@ begin
   begin
     // Получаем текущие данные
     S := GetLastLS;
-    // Для лога
-    S_Log := S_Log + S + C_RN;
     // Получаем информацию
     if S = 'MESSAGES.TOTAL' then
     begin
       MRA_Email_Total := GetLastLS;
-      S_Log := S_Log + MRA_Email_Total + C_RN;
     end
     else if S = 'MESSAGES.UNREAD' then
     begin
       MRA_Email_Unread := GetLastLS;
-      S_Log := S_Log + MRA_Email_Unread + C_RN;
       // Сообщаем всплывашкой сколько Email сообщений
       if MRA_Email_Unread <> '0' then
         DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[59].L_S, [MRA_Email_Unread, MRA_Email_Total]), EmptyStr, 133, 3, 60000);
@@ -607,11 +558,8 @@ begin
     else if S = 'MRIM.NICKNAME' then
     begin
       MRA_MyNick := GetLastLS;
-      S_Log := S_Log + MRA_MyNick + C_RN;
     end;
   end;
-  // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[12].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 
 {$ENDREGION}
@@ -623,7 +571,7 @@ const
   Mask_s = 's';
 
 var
-  UL, S_Log, GMask, KMask, GId, GName, KEmail, KPhone, StatusIcons: string;
+  UL, GMask, KMask, GId, GName, KEmail, KPhone, StatusIcons: string;
   KStatus, KXStatus, KXText, KClient, KGeo, GeoPkt, Unk: string;
   I, M, Len, GCount: Integer;
   KAuth: Boolean;
@@ -631,7 +579,6 @@ var
 begin
   // Получаем ошибки списка контактов
   UL := Text2Hex(NextData(PktData, 4));
-  S_Log := S_Log + 'UL' + C_TN + C_BN + UL + C_RN;
   // Если ошибок в списке контактов нет
   if UL = '00000000' then
   begin
@@ -647,19 +594,16 @@ begin
           // Получаем количество групп
           GCount := HexToInt(Text2Hex(NextData(PktData, 4)));
           GCount := Swap32(GCount);
-          S_Log := S_Log + C_Group + C_BN + C_Count + C_TN + C_BN + IntToStr(GCount) + C_RN;
           // Получаем маску группы
           Len := HexToInt(Text2Hex(NextData(PktData, 4)));
           Len := Swap32(Len);
           GMask := NextData(PktData, Len);
-          S_Log := S_Log + C_Group + C_BN + C_Mask + C_TN + C_BN + GMask + C_RN;
           // Получаем маску контакта
           Len := HexToInt(Text2Hex(NextData(PktData, 4)));
           Len := Swap32(Len);
           KMask := NextData(PktData, Len);
-          S_Log := S_Log + C_Contact + C_BN + C_Mask + C_TN + C_BN + KMask + C_RN;
           // В цикле получаем группы
-          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
           for I := 0 to GCount - 1 do
           begin
             GId := EmptyStr;
@@ -673,7 +617,7 @@ begin
                     if M = 1 then
                       GId := Text2Hex(NextData(PktData, 4))
                     else
-                      Unk := Unk + C_QN + Mask_u + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, 4)) + C_LN + C_BN;
+                      Unk := Unk + '[' + Mask_u + IntToStr(M) + ']' + ' ' + Text2Hex(NextData(PktData, 4)) + ';' + ' ';
                   end;
                 Mask_s:
                   begin
@@ -682,27 +626,25 @@ begin
                     if M = 2 then
                       GName := UnicodeLEHex2Text(Text2Hex(NextData(PktData, Len)))
                     else
-                      Unk := Unk + C_QN + Mask_s + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, Len)) + C_LN + C_BN;
+                      Unk := Unk + '[' + Mask_s + IntToStr(M) + ']' + ' ' + Text2Hex(NextData(PktData, Len)) + ';' + ' ';
                   end;
               end;
             end;
             // Записываем в Ростер
-            Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(I));
+            Tri_Node := Sub_Node.Items.Add(C_Group + '_' + IntToStr(I));
             Tri_Node.Properties.Add(C_Name, URLEncode(GName));
             Tri_Node.Properties.Add(C_Id, GId);
-            // Заполняем лог
-            S_Log := S_Log + C_Group + C_BN + C_PN + C_BN + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Name + C_TN + C_BN + GName + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
           // Добавляем группу для телефонных контактов
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + WideLowerCase(C_Phone));
+          Tri_Node := Sub_Node.Items.Add(C_Group + '_' + WideLowerCase(C_Phone));
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[34].L_S));
           Tri_Node.Properties.Add(C_Id, C_Phone_m2);
           // Добавляем группу контактов с ошибочным идентификатором группы
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_AuthNone);
+          Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_AuthNone);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[7].L_S));
           Tri_Node.Properties.Add(C_Id, C_AuthNone);
           // Получаем контакты
-          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
           I := -1;
           while Length(PktData) > 0 do
           begin
@@ -733,7 +675,7 @@ begin
                     else if M = 6 then
                       KStatus := Text2Hex(NextData(PktData, 4))
                     else
-                      Unk := Unk + C_QN + Mask_u + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, 4)) + C_LN + C_BN;
+                      Unk := Unk + '[' + Mask_u + IntToStr(M) + ']' + ' ' + Text2Hex(NextData(PktData, 4)) + ';' + ' ';
                   end;
                 Mask_s:
                   begin
@@ -758,13 +700,13 @@ begin
 
                     end
                     else
-                      Unk := Unk + C_QN + Mask_s + IntToStr(M) + C_EN + C_BN + Text2Hex(NextData(PktData, Len)) + C_LN + C_BN;
+                      Unk := Unk + '[' + Mask_s + IntToStr(M) + ']' + ' ' + Text2Hex(NextData(PktData, Len)) + ';' + ' ';
                   end;
               end;
             end;
             // Записываем в Ростер
             StatusIcons := MRA_StatusCodeToImg(KStatus, KXStatus);
-            Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(I));
+            Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(I));
             if KEmail = C_Phone_m1 then
             begin
               Tri_Node.Properties.Add(C_Login, URLEncode(KPhone));
@@ -786,7 +728,7 @@ begin
               if KAuth then
               begin
                 Tri_Node.Properties.Add(C_Auth, C_AuthBoth);
-                Tri_Node.Properties.Add(C_Status, Parse(C_LN, StatusIcons, 1));
+                Tri_Node.Properties.Add(C_Status, Parse(';', StatusIcons, 1));
                 Tri_Node.Properties.Add(C_Client, MRA_ClientToImg(KClient));
               end
               else
@@ -797,17 +739,11 @@ begin
               end;
             end;
             Tri_Node.Properties.Add(C_Phone, URLEncode(KPhone));
-            Tri_Node.Properties.Add(C_XX + C_Status + C_Name, URLEncode(KXStatus));
-            Tri_Node.Properties.Add(C_XX + C_Status, Parse(C_LN, StatusIcons, 2));
+            Tri_Node.Properties.Add('X' + C_Status + C_Name, URLEncode(KXStatus));
+            Tri_Node.Properties.Add('X' + C_Status, Parse(';', StatusIcons, 2));
             Tri_Node.Properties.Add(C_XText, URLEncode(KXText));
             Tri_Node.Properties.Add(C_Client + C_Name, URLEncode(KClient));
             Tri_Node.Properties.Add(C_Geo, URLEncode(KGeo));
-            // Заполняем лог
-            S_Log := S_Log + C_Contact + C_BN + C_PN + C_BN + C_Group + C_Id + C_TN + C_BN + GId + C_LN + C_BN + C_Login + C_TN + C_BN + KEmail + C_LN //
-            + C_BN + C_Nick + C_TN + C_BN + GName + C_LN + C_BN + C_Auth + C_TN + C_BN + BoolToStr(KAuth) + C_LN + C_BN + C_Status //
-            + C_TN + C_BN + KStatus + C_LN + C_BN + C_Phone + C_TN + C_BN + KPhone + C_LN + C_BN + C_XX + C_Status + C_TN + C_BN + KXStatus //
-            + C_LN + C_BN + C_XText + C_TN + C_BN + KXText + C_LN + C_BN + C_Client + C_Name + C_TN + C_BN + KClient + C_LN + C_BN //
-            + C_Geo + C_TN + C_BN + Text2Hex(GeoPkt) + C_LN + C_BN + C_Unk + C_TN + C_BN + Unk + C_RN;
           end;
           // Запускаем обработку Ростера
           V_CollapseGroupsRestore := True;
@@ -816,8 +752,6 @@ begin
       end;
     end;
   end;
-  // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[29].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 {$ENDREGION}
 {$REGION 'MRA_GoOffline'}
@@ -828,7 +762,7 @@ var
   XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
 begin
   // Отключаем таймер факстатуса, пингов
-  MainForm.UnstableMRAStatus.Checked := False;
+  //MainForm.UnstableMRAStatus.Checked := False;
   with MainForm.JvTimerList do
   begin
     Events[10].Enabled := False;
@@ -877,7 +811,7 @@ begin
         if XML_Node <> nil then
         begin
           // Ищем раздел контактов
-          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
           if Sub_Node <> nil then
           begin
             for I := 0 to Sub_Node.Items.Count - 1 do
@@ -888,8 +822,8 @@ begin
                 if (Tri_Node.Properties.IntValue(C_Status) <> 275) and (Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL) then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '23');
-                  RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');
-                  RosterUpdateProp(Tri_Node, C_XX + C_Status + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, 'X' + C_Status, '-1');
+                  RosterUpdateProp(Tri_Node, 'X' + C_Status + C_Name, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_XText, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_Client, '-1');
                   RosterUpdateProp(Tri_Node, C_Client + C_Name, EmptyStr);
@@ -911,7 +845,7 @@ end;
 
 procedure MRA_ParseStatus(PktData: string);
 var
-  S_Log, StatusCode, XStatusCode, XStatusText, KEmail, Unk, KClient, StatusIcons: string;
+  StatusCode, XStatusCode, XStatusText, KEmail, Unk, KClient, StatusIcons: string;
   Get_Node: TJvSimpleXmlElem;
 
   function GetLastLS: string;
@@ -931,33 +865,26 @@ var
 begin
   // Получаем код статуса
   StatusCode := Text2Hex(NextData(PktData, 4));
-  S_Log := S_Log + C_Status + C_TN + C_BN + StatusCode + C_RN;
   // Получаем код дополнительного статуса
   XStatusCode := GetLastLS;
-  S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + XStatusCode + C_RN;
   // Получаем подпись дополнительного статуса
   XStatusText := GetLastLS;
-  S_Log := S_Log + C_XText + C_TN + C_BN + XStatusText + C_RN;
   // Получаем неизвестные данные
   Unk := GetLastLS;
-  S_Log := S_Log + C_Unk + C_TN + C_BN + Unk + C_RN;
   // Получаем Email от кого пришёл статус
   KEmail := GetLastLS;
-  S_Log := S_Log + C_Login + C_TN + C_BN + KEmail + C_RN;
   // Получаем неизвестные данные
   Unk := Text2Hex(NextData(PktData, 4));
-  S_Log := S_Log + C_Unk + C_TN + C_BN + Unk + C_RN;
   // Получаем версию клиента контакта
   KClient := GetLastLS;
-  S_Log := S_Log + C_Client + C_Name + C_TN + C_BN + KClient + C_RN;
   // Обновляем данные статуса пользователя в Ростере
   StatusIcons := MRA_StatusCodeToImg(StatusCode, XStatusCode);
-  Get_Node := RosterGetItem(C_Mra, C_Contact + C_SS, C_Login, URLEncode(KEmail));
+  Get_Node := RosterGetItem(C_Mra, C_Contact + 's', C_Login, URLEncode(KEmail));
   if Get_Node <> nil then
   begin
-    RosterUpdateProp(Get_Node, C_Status, Parse(C_LN, StatusIcons, 1));
-    RosterUpdateProp(Get_Node, C_XX + C_Status + C_Name, XStatusCode);
-    RosterUpdateProp(Get_Node, C_XX + C_Status, Parse(C_LN, StatusIcons, 2));
+    RosterUpdateProp(Get_Node, C_Status, Parse(';', StatusIcons, 1));
+    RosterUpdateProp(Get_Node, 'X' + C_Status + C_Name, XStatusCode);
+    RosterUpdateProp(Get_Node, 'X' + C_Status, Parse(';', StatusIcons, 2));
     RosterUpdateProp(Get_Node, C_XText, URLEncode(XStatusText));
     RosterUpdateProp(Get_Node, C_Client + C_Name, URLEncode(KClient));
     RosterUpdateProp(Get_Node, C_Client, MRA_ClientToImg(KClient));
@@ -965,8 +892,6 @@ begin
   // Запускаем обработку КЛ
   MainForm.JvTimerList.Events[11].Enabled := False;
   MainForm.JvTimerList.Events[11].Enabled := True;
-  // Пишем в лог данные пакета
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[9].Pkt_Name, Trim(S_Log), C_Mra);
 end;
 {$ENDREGION}
 {$REGION 'MRA_ParseOfflineMess'}
@@ -976,7 +901,7 @@ const
   Content_Text_ULE = 'text/plain; charset=UTF-16LE';
   Content_Encoding_B64 = 'base64';
 var
-  M_id, Pkt, M_Body, M_From, M_Mess, M_Flag, M_Type, M_Cod, S_Log: string;
+  M_id, Pkt, M_Body, M_From, M_Mess, M_Flag, M_Type, M_Cod: string;
   Len: Integer;
 begin
   // Получаем идентификатор оффлайн сообщения
@@ -986,8 +911,6 @@ begin
   Len := Swap32(Len);
   M_Body := NextData(PktData, Len);
   M_Body := ReplaceStr(M_Body, #$0A, C_RN);
-  // Пишем в лог данные пакета
-  S_Log := M_Body;
   // Парсим данные из тела сообщения
   if M_Body <> EmptyStr then
   begin
@@ -1010,12 +933,9 @@ begin
         M_Mess := UnicodeLEHex2Text(Text2Hex(M_Mess));
         // Инициируем событие получения онлайн сообщения
         MRA_MessageRecv(EmptyStr, M_From, M_Mess);
-        S_Log := S_Log + C_RN + 'Decode' + C_TN + C_BN + M_Mess;
       end;
     end;
   end;
-  // Пишем в лог
-  XLog(C_Mra + C_BN + Log_Parsing + C_BN + MRA_Pkt_Names[17].Pkt_Name, S_Log, C_Mra);
   // Если идентификатор не пустой, то отправляем пакет удаления этого оффлайн сообщения с сервера
   if M_id <> EmptyStr then
   begin
@@ -1085,18 +1005,18 @@ begin
   if XML_Node <> nil then
   begin
     // Учётная запись
-    Result := Format(C_AS, [C_Mra + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Login))]);
+    Result := Format(C_AS, [C_Mra + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Login))]);
     // Ник
     if XML_Node.Properties.Value(C_Nick) <> XML_Node.Properties.Value(C_Login) then
       Result := Result + C_BR + Format(C_AS, [URLDecode(XML_Node.Properties.Value(C_Nick))]);
     Result := Result + C_BR;
     // Статус
     if XML_Node.Properties.Value(C_Client) = '220' then // Если статус требует авторизации, то пишем об этом
-      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + Lang_Vars[82].L_S
+      Result := Result + Lang_Vars[47].L_S + ':' + ' ' + C_HTML_Font_Red + Lang_Vars[82].L_S
     else if (XML_Node.Properties.Value(C_Status) = '23') then  // Если статус "Не в сети"
-      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + MainForm.JabberStatusOffline.Caption
+      Result := Result + Lang_Vars[47].L_S + ':' + ' ' + C_HTML_Font_Red + MainForm.JabberStatusOffline.Caption
     else // Определяем статус и пишем его словами
-      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Blue + MRA_StatusImgId2String(XML_Node.Properties.Value(C_Status));
+      Result := Result + Lang_Vars[47].L_S + ':' + ' ' + C_HTML_Font_Blue + MRA_StatusImgId2String(XML_Node.Properties.Value(C_Status));
     Result := Result + C_HTML_Font_End;
     // Если есть текст доп. статуса, то пишем его
     if XML_Node.Properties.Value(C_XText) <> EmptyStr then
@@ -1108,7 +1028,7 @@ begin
     end;
     // Клиент
     if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
+      Result := Result + C_BR + Lang_Vars[38].L_S + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
   end;
 end;
 

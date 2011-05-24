@@ -40,7 +40,7 @@ type
     ProfileLabel: TLabel;
     LoginButton: TBitBtn;
     SiteLabel: TLabel;
-    AutoSignCheckBox: TCheckBox;
+    NoShowProfileFormCheckBox: TCheckBox;
     OpenProfilesSpeedButton: TSpeedButton;
     LangsPopupMenu: TPopupMenu;
     LangsImageList: TImageList;
@@ -63,6 +63,7 @@ type
     procedure LangsSpeedButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure AutoDellProfileCheckBoxClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
 
   private
     { Private declarations }
@@ -91,7 +92,6 @@ uses
   VarsUnit,
   UtilsUnit,
   SettingsUnit,
-  LogUnit,
   ProfilesFolderUnit,
   OverbyteIcsUtils,
   RosterUnit;
@@ -114,12 +114,12 @@ begin
       // Сохраняем язык по умолчанию
       Root.Items.Add(C_Lang, V_CurrentLang);
       // Сохраняем автовход в профиль
-      Root.Items.Add(C_Auto, AutoSignCheckBox.Checked);
-      V_ProfileAuto := AutoSignCheckBox.Checked;
+      Root.Items.Add(NoShowProfileFormCheckBox.Name, NoShowProfileFormCheckBox.Checked);
+      V_ProfileAuto := NoShowProfileFormCheckBox.Checked;
       // Сохраняем автоудаление профиля
-      Root.Items.Add(C_AutoDell, AutoDellProfileCheckBox.Checked);
+      Root.Items.Add(AutoDellProfileCheckBox.Name, AutoDellProfileCheckBox.Checked);
       // Сохраняем профиль по умолчанию
-      XML_Node := Root.Items.Add(C_Profile);
+      XML_Node := Root.Items.Add(ProfileComboBox.Name);
       XML_Node.Value := V_Profile;
       // Записываем сам файл
       SaveToFile(V_ProfilePath + C_ProfilesFileName);
@@ -153,17 +153,17 @@ begin
           if XML_Node <> nil then
             V_CurrentLang := XML_Node.Value;
           // Загружаем автовход в профиль
-          XML_Node := Root.Items.ItemNamed[C_Auto];
+          XML_Node := Root.Items.ItemNamed[NoShowProfileFormCheckBox.Name];
           if XML_Node <> nil then
-            AutoSignCheckBox.Checked := XML_Node.BoolValue;
-          V_ProfileAuto := AutoSignCheckBox.Checked;
+            NoShowProfileFormCheckBox.Checked := XML_Node.BoolValue;
+          V_ProfileAuto := NoShowProfileFormCheckBox.Checked;
           // Загружаем автоудаление профиля
-          XML_Node := Root.Items.ItemNamed[C_AutoDell];
+          XML_Node := Root.Items.ItemNamed[AutoDellProfileCheckBox.Name];
           if XML_Node <> nil then
             AutoDellProfileCheckBox.Checked := XML_Node.BoolValue;
           V_AutoDellProfile := AutoDellProfileCheckBox.Checked;
           // Получаем имя последнего профиля
-          XML_Node := Root.Items.ItemNamed[C_Profile];
+          XML_Node := Root.Items.ItemNamed[ProfileComboBox.Name];
           if XML_Node <> nil then
             ProfileComboBox.Text := XML_Node.Value;
         end;
@@ -207,11 +207,10 @@ begin
   V_YouAt := V_Profile;
   // Инициализируем папку с профилем
   PR := V_ProfilePath;
-  V_ProfilePath := V_ProfilePath + V_Profile + C_SN;
+  V_ProfilePath := V_ProfilePath + V_Profile + '\';
   V_Profile := PR;
-  V_StartLog := V_StartLog + C_RN + LogProfile + C_TN + C_BN + V_ProfilePath;
-  if Assigned(LogForm) then
-    LogForm.LoadStartLog;
+  // Вывод плагинам "Выбор профиля [путь к профилю]"
+  MainForm.JvPluginManager.BroadcastMessage(2, V_ProfilePath);
   // Создаём форму с настройками для применения настроек
   Application.CreateForm(TSettingsForm, SettingsForm);
   SettingsForm.ApplySettings;
@@ -235,7 +234,7 @@ begin
     MainForm.JvTimerList.Events[2].Enabled := True;
   // Создаём необходимые листы
   V_AccountToNick := TStringList.Create;
-  V_AccountToNick.NameValueSeparator := C_LN;
+  V_AccountToNick.NameValueSeparator := ';';
   V_InMessList := TStringList.Create;
   V_SmilesList := TStringList.Create;
   if FileExists(V_ProfilePath + C_Nick_BD_FileName) then
@@ -258,16 +257,17 @@ begin
   end;
   // Инициализируем переменную времени начала статистики трафика сессии
   V_SesDataTraf := Now;
-  // Если это первый старт программы то запускаем выбор протоколов
-  if not V_FirstStart then
-  begin
-    XShowForm(SettingsForm);
-    SettingsForm.SettingsJvPageList.ActivePageIndex := 12;
-    SettingsForm.SettingButtonGroup.ItemIndex := 12;
-  end;
-  // Запускаем таймер индикации событий в КЛ и чате
   with MainForm do
   begin
+    // Если это первый старт программы то запускаем выбор протоколов
+    if (not ICQToolButton.Visible) and (not JabberToolButton.Visible) //
+      and (not MRAToolButton.Visible) and (not BimoidToolButton.Visible) then
+    begin
+      XShowForm(SettingsForm);
+      SettingsForm.SettingsJvPageList.ActivePageIndex := 12;
+      SettingsForm.SettingButtonGroup.ItemIndex := 12;
+    end;
+    // Запускаем таймер индикации событий в КЛ и чате
     JvTimerList.Events[1].Enabled := True;
     // Запускаем таймер перерисовки иконки в трэе
     JvTimerList.Events[12].Enabled := True;
@@ -276,6 +276,9 @@ begin
     // Запускаем таймер перевода
     JvTimerList.Events[8].Enabled := True;
   end;
+  // Открываем новости IMadering
+  if SettingsForm.AutoOpenSiteCheckBox.Checked then
+    OpenURL(C_SitePage);
   // Закрываем окно
   FClose := True;
   Close;
@@ -330,14 +333,11 @@ procedure TProfileForm.LangMenuClick(Sender: TObject);
 begin
   // Применяем язык выбранный в меню
   TMenuItem(Sender).Default := true;
-  V_CurrentLang := IsolateTextString(TMenuItem(Sender).Caption, C_QN, C_EN);
+  V_CurrentLang := IsolateTextString(TMenuItem(Sender).Caption, '[', ']');
   // Подгружаем переменные языка
   SetLangVars;
   // Переводим форму
   TranslateForm;
-  // Применяем язык к форме лога
-  if Assigned(LogForm) then
-    LogForm.TranslateForm;
   // Применяем язык к главной форме
   MainForm.TranslateForm;
   // Устанавливаем иконку флага страны на кнопку
@@ -361,13 +361,11 @@ end;
 {$REGION 'FormCreate'}
 
 procedure TProfileForm.FormCreate(Sender: TObject);
-const
-  Logo = '\logo.png';
 label
   A;
 var
   FrmFolder: TProfilesFolderForm;
-  Folder, Langs, LangCode, FlagFile: string;
+  Folder, Langs, LangCode, FlagFile, Logo: string;
   JvXML: TJvSimpleXml;
   XML_Node: TJvSimpleXmlElem;
   FlagImg: TBitmap;
@@ -382,8 +380,9 @@ begin
     GetBitmap(139, DellProfileSpeedButton.Glyph);
   end;
   // Загружаем логотип программы
-  if FileExists(V_MyPath + C_IconsFolder + V_CurrentIcons + Logo) then
-    LogoImage.Picture.LoadFromFile(V_MyPath + C_IconsFolder + V_CurrentIcons + Logo);
+  Logo := V_MyPath + C_IconsFolder + V_CurrentIcons + '\' + 'logo' + C_PNG_Ext;
+  if FileExists(Logo) then
+    LogoImage.Picture.LoadFromFile(Logo);
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
@@ -409,7 +408,7 @@ begin
             if XML_Node <> nil then
             begin
               // Добавляем пункт этого языка в меню
-              LangsPopupMenu.Items.Add(NewItem(C_QN + LangCode + C_EN + C_BN + XML_Node.Properties.Value(C_Lang), 0, False, True, LangMenuClick, 0, LangCode));
+              LangsPopupMenu.Items.Add(NewItem('[' + LangCode + ']' + ' ' + XML_Node.Properties.Value(C_Lang), 0, False, True, LangMenuClick, 0, LangCode));
               LangsPopupMenu.Items[LangsPopupMenu.Items.Count - 1].Hint := LangCode;
               // Получаем флаг страны этого языка
               FlagFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, LangCode);
@@ -499,6 +498,13 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TProfileForm.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  // Если нажата клавиша Esc, то закрываем окно
+  if Key = #27 then
+    Close;
+end;
 
 procedure TProfileForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin

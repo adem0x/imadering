@@ -1143,7 +1143,7 @@ var
   Button: TButtonItem;
   CatHeight: Integer;
   CategoryBounds, CategoryFrameBounds, ButtonBounds, ChevronBounds: TRect;
-  GradientColor, SourceColor, TempColor: TColor;
+  GradientColor, SourceColor{, TempColor}: TColor;
   Caption: string;
   CaptionRect: TRect;
   CategoryRealBounds: TRect;
@@ -1176,12 +1176,21 @@ begin
   else
   begin
     Canvas.Brush.Color := SourceColor;
-    Canvas.FillRect(CategoryRealBounds)
+    Canvas.FillRect(CategoryRealBounds);
+
+    with CategoryRealBounds do
+    begin
+      Canvas.Pen.Color := GetShadowColor(SourceColor);
+      Canvas.Polyline([Point(Left, Top), Point(Right - 1, Top), { Top line }
+          Point(Right - 1, Bottom - 1), { Right side line }
+          Point(Left, Bottom - 1), { Bottom line }
+          Point(Left, Top)]); { Left side line }
+    end;
   end;
 
   with CategoryRealBounds do
   begin
-    Right := Right - 1;
+   (* Right := Right - 1;
     Bottom := Bottom - 1; // Внёс изменения
     // take care of the top left few pixels..
     TempColor := Self.Color;
@@ -1213,7 +1222,7 @@ begin
         Point(Left + 2, Bottom), { Bottom line }
         Point(Left, Bottom - 2), { Bottom left curve }
         Point(Left, Top + 2), { Left side line }
-        Point(Left + 2, Top)]); { Top left curve }
+        Point(Left + 2, Top)]); { Top left curve } *)
   end;
 
   { if ((Category.Collapsed) and (FSelectedItem <> nil) and
@@ -1251,7 +1260,11 @@ begin
   Canvas.Font.Color := Category.TextColor;
   if not VerticalCaption then
   begin
-    CaptionRect.Left := CategoryBounds.Left + 4 + CDropDownSize;
+    if (FImages <> nil) and (Category.GroupImage > -1) and (Category.GroupImage < FImages.Count) then
+      CaptionRect.Left := CategoryBounds.Left + 4 + CDropDownSize
+    else
+      CaptionRect.Left := CategoryBounds.Left + 17;
+
     CaptionRect.Top := CategoryBounds.Top + 1; // Внёс изменения
   end
   else
@@ -1261,7 +1274,11 @@ begin
     Canvas.Font.Orientation := 900;
   end;
 
-  CaptionRect.Right := CaptionRect.Left + CatHeight - 5; // Внёс изменения
+  if (FImages <> nil) and (Category.GroupImage > -1) and (Category.GroupImage < FImages.Count) then
+    CaptionRect.Right := CaptionRect.Left + CatHeight - 5 // Внёс изменения
+  else
+    CaptionRect.Right := CaptionRect.Left + CatHeight + 13;
+
   CaptionRect.Bottom := CaptionRect.Top + Canvas.TextHeight(Caption);
   Canvas.TextRect(CaptionRect, Caption, [TfNoClip, TfEndEllipsis]);
 
@@ -3054,6 +3071,9 @@ begin
           CurrentItem.ActionLink.DoShowHint(HintStr);
       end;
       LHintInfo.CursorRect := GetButtonRect(CurrentItem);
+
+      LHintInfo.HideTimeout := MaxInt; // добавил
+
       Handled := True;
     end
     else if (CurrentCat <> nil) then
@@ -3065,8 +3085,6 @@ begin
         HintStr := Format(C_AS, [CurrentCat.GroupCaption]);
       if CurrentCat.GroupType > EmptyStr then
         HintStr := HintStr + C_BR + CurrentCat.GroupType;
-      if CurrentCat.GroupId > EmptyStr then
-        HintStr := HintStr + C_BN + C_QN + C_Id + C_TN + C_BN + UrlDecode(CurrentCat.GroupId) + C_EN;
 
       // Конец изменений
 
@@ -4073,7 +4091,7 @@ begin
     GLastPreset := 0; }
 
   with TButtonCategories(Collection).CategoryButtons do
-    FColor := V_GroupHeaderColor;
+    FColor := clWhite;
 
   // Конец изменений
 

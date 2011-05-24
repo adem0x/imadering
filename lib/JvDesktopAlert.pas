@@ -63,7 +63,7 @@ var
   JvDefaultCaptionFromColor: TColor = TColor(clWhite);
   JvDefaultCaptionToColor: TColor = TColor(clWhite);
 
-// Конец изменений
+  // Конец изменений
 
 type
   // The possible animation styles as an enumeration
@@ -214,7 +214,7 @@ type
     property AutoFocus: Boolean read FAutoFocus write FAutoFocus default False;
     property AutoFree: Boolean read FAutoFree write FAutoFree default False;
 
-    property Options: TJvDesktopAlertOptions read FOptions write SetOptions default[DaoCanClick .. DaoCanClose];
+    property Options: TJvDesktopAlertOptions read FOptions write SetOptions default [DaoCanClick..DaoCanClose];
     property Colors: TJvDesktopAlertColors read FColors write SetColors;
     property Location: TJvDesktopAlertLocation read FLocation write SetLocation;
 
@@ -548,7 +548,8 @@ uses
   SysUtils,
   Messages,
   JvJVCLUtils,
-  JvTypes;
+  JvTypes,
+  VarsUnit;
 
 var
   GStacker: TJvDesktopAlertStack = nil;
@@ -558,7 +559,8 @@ begin
   case Style of
     AsFade: Result := TJvFadeAlertStyleHandler.Create(OwnerForm);
     AsCenterGrow: Result := TJvCenterGrowAlertStyleHandler.Create(OwnerForm);
-  else raise Exception.Create('');
+  else
+    raise Exception.Create('');
   end;
 end;
 
@@ -592,17 +594,17 @@ end;
 procedure TJvDesktopAlertColors.Assign(Source: TPersistent);
 begin
   if Source is TJvDesktopAlertColors then
+  begin
+    if Source <> Self then
     begin
-      if Source <> Self then
-        begin
-          FFrame := TJvDesktopAlertColors(Source).Frame;
-          FWindowFrom := TJvDesktopAlertColors(Source).WindowFrom;
-          FWindowTo := TJvDesktopAlertColors(Source).WindowTo;
-          FCaptionFrom := TJvDesktopAlertColors(Source).CaptionFrom;
-          FCaptionTo := TJvDesktopAlertColors(Source).CaptionTo;
-          Change;
-        end;
-    end
+      FFrame := TJvDesktopAlertColors(Source).Frame;
+      FWindowFrom := TJvDesktopAlertColors(Source).WindowFrom;
+      FWindowTo := TJvDesktopAlertColors(Source).WindowTo;
+      FCaptionFrom := TJvDesktopAlertColors(Source).CaptionFrom;
+      FCaptionTo := TJvDesktopAlertColors(Source).CaptionTo;
+      Change;
+    end;
+  end
   else
     inherited Assign(Source);
 end;
@@ -610,46 +612,46 @@ end;
 procedure TJvDesktopAlertColors.SetCaptionFrom(const Value: TColor);
 begin
   if FCaptionFrom <> Value then
-    begin
-      FCaptionFrom := Value;
-      Change;
-    end;
+  begin
+    FCaptionFrom := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertColors.SetCaptionTo(const Value: TColor);
 begin
   if FCaptionTo <> Value then
-    begin
-      FCaptionTo := Value;
-      Change;
-    end;
+  begin
+    FCaptionTo := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertColors.SetFrame(const Value: TColor);
 begin
   if FFrame <> Value then
-    begin
-      FFrame := Value;
-      Change;
-    end;
+  begin
+    FFrame := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertColors.SetWindowFrom(const Value: TColor);
 begin
   if FWindowFrom <> Value then
-    begin
-      FWindowFrom := Value;
-      Change;
-    end;
+  begin
+    FWindowFrom := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertColors.SetWindowTo(const Value: TColor);
 begin
   if FWindowTo <> Value then
-    begin
-      FWindowTo := Value;
-      Change;
-    end;
+  begin
+    FWindowTo := Value;
+    Change;
+  end;
 end;
 
 // === { TJvDesktopAlertLocation } ============================================
@@ -664,19 +666,19 @@ end;
 procedure TJvDesktopAlertLocation.SetHeight(const Value: Integer);
 begin
   if FHeight <> Value then
-    begin
-      FHeight := Value;
-      Change;
-    end;
+  begin
+    FHeight := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertLocation.SetLeft(const Value: Integer);
 begin
   if FLeft <> Value then
-    begin
-      FLeft := Value;
-      Change;
-    end;
+  begin
+    FLeft := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertLocation.SetPosition(const Value: TJvDesktopAlertPosition);
@@ -691,19 +693,19 @@ end;
 procedure TJvDesktopAlertLocation.SetTop(const Value: Integer);
 begin
   if FTop <> Value then
-    begin
-      FTop := Value;
-      Change;
-    end;
+  begin
+    FTop := Value;
+    Change;
+  end;
 end;
 
 procedure TJvDesktopAlertLocation.SetWidth(const Value: Integer);
 begin
   if FWidth <> Value then
-    begin
-      FWidth := Value;
-      Change;
-    end;
+  begin
+    FWidth := Value;
+    Change;
+  end;
 end;
 
 // === { TJvDesktopAlertButtonItem } ==========================================
@@ -711,14 +713,14 @@ end;
 procedure TJvDesktopAlertButtonItem.Assign(Source: TPersistent);
 begin
   if Source is TJvDesktopAlertButtonItem then
+  begin
+    if Source <> Self then
     begin
-      if Source <> Self then
-        begin
-          ImageIndex := TJvDesktopAlertButtonItem(Source).ImageIndex;
-          OnClick := TJvDesktopAlertButtonItem(Source).OnClick;
-          Tag := TJvDesktopAlertButtonItem(Source).Tag;
-        end;
-    end
+      ImageIndex := TJvDesktopAlertButtonItem(Source).ImageIndex;
+      OnClick := TJvDesktopAlertButtonItem(Source).OnClick;
+      Tag := TJvDesktopAlertButtonItem(Source).Tag;
+    end;
+  end
   else
     inherited Assign(Source);
 end;
@@ -732,7 +734,7 @@ end;
 
 function TJvDesktopAlertButtons.Add: TJvDesktopAlertButtonItem;
 begin
-  Result := TJvDesktopAlertButtonItem( inherited Add);
+  Result := TJvDesktopAlertButtonItem(inherited Add);
 end;
 
 procedure TJvDesktopAlertButtons.Assign(Source: TPersistent);
@@ -740,28 +742,27 @@ var
   I: Integer;
 begin
   if Source is TJvDesktopAlertButtons then
+  begin
+    if Source <> Self then
     begin
-      if Source <> Self then
-        begin
-          Clear;
-          for I := 0 to TJvDesktopAlertButtons(Source).Count - 1 do
-            Add.Assign(TJvDesktopAlertButtons(Source)[I]);
-        end;
-    end
+      Clear;
+      for I := 0 to TJvDesktopAlertButtons(Source).Count - 1 do
+        Add.Assign(TJvDesktopAlertButtons(Source)[I]);
+    end;
+  end
   else
     inherited Assign(Source);
 end;
 
 function TJvDesktopAlertButtons.GetItem(index: Integer): TJvDesktopAlertButtonItem;
 begin
-  Result := TJvDesktopAlertButtonItem( inherited Items[index]);
+  Result := TJvDesktopAlertButtonItem(inherited Items[index]);
 end;
 
 procedure TJvDesktopAlertButtons.SetItem(index: Integer; const Value: TJvDesktopAlertButtonItem);
 begin
   inherited Items[index] := Value;
 end;
-
 
 // === { TJvDesktopAlert } ====================================================
 
@@ -771,7 +772,7 @@ begin
   FButtons := TJvDesktopAlertButtons.Create(Self);
   FDesktopForm := TJvFormDesktopAlert.Create(Self);
   AlertStyle := AsFade;
-  FOptions := [DaoCanClick .. DaoCanClose];
+  FOptions := [DaoCanClick..DaoCanClose];
 end;
 
 destructor TJvDesktopAlert.Destroy;
@@ -783,9 +784,16 @@ end;
 
 function TJvDesktopAlert.Execute: Boolean;
 var
-  I, X, Y: Integer;
+  //I, X, Y: Integer;
   FActiveWindow, FActiveFocus: HWND;
 begin
+  // Ограничиваем по количеству рядов
+  if GetStacker.GetCount = V_DARows then
+  begin
+    if Assigned(GetStacker.GetItems(0)) then
+      GetStacker.Remove(GetStacker.GetItems(0));
+  end;
+
   inherited Execute;
 
   DesktopForm.OnShowing := InternalOnShowing;
@@ -811,48 +819,51 @@ begin
   DesktopForm.LblHeader.Font := HeaderFont;
   DesktopForm.LblText.Caption := MessageText;
 
-  for I := 0 to Length(FFormButtons) - 1 do
+  {for I := 0 to Length(FFormButtons) - 1 do
     FFormButtons[I].Free;
   SetLength(FFormButtons, Buttons.Count);
   X := 2;
   Y := DesktopForm.Height - 23;
+
   for I := 0 to Length(FFormButtons) - 1 do
+  begin
+    FFormButtons[I] := TJvDesktopAlertButton.Create(DesktopForm);
+    with TJvDesktopAlertButton(FFormButtons[I]) do
     begin
-      FFormButtons[I] := TJvDesktopAlertButton.Create(DesktopForm);
-      with TJvDesktopAlertButton(FFormButtons[I]) do
-        begin
-          SetBounds(X, Y, 21, 21);
-          ToolType := AbtImage;
-          Images := Self.Images;
-          ImageIndex := Buttons[I].ImageIndex;
-          Tag := Buttons[I].Tag;
-          InternalClick := Buttons[I].OnClick;
-          OnClick := DesktopForm.DoButtonClick;
-          Parent := DesktopForm;
-          Inc(X, 22);
-        end;
+      SetBounds(X, Y, 21, 21);
+      ToolType := AbtImage;
+      Images := Self.Images;
+      ImageIndex := Buttons[I].ImageIndex;
+      Tag := Buttons[I].Tag;
+      InternalClick := Buttons[I].OnClick;
+      OnClick := DesktopForm.DoButtonClick;
+      Parent := DesktopForm;
+      Inc(X, 22);
     end;
+  end;}
+
   Location.Position := GetStacker.Position;
   if not AutoFocus then
-    begin
-      FActiveFocus := GetFocus;
-      FActiveWindow := GetActiveWindow;
-    end
+  begin
+    FActiveFocus := GetFocus;
+    FActiveWindow := GetActiveWindow;
+  end
   else
-    begin
-      FActiveWindow := NullHandle;
-      FActiveFocus := NullHandle;
-    end;
+  begin
+    FActiveWindow := NullHandle;
+    FActiveFocus := NullHandle;
+  end;
   DesktopForm.AllowFocus := AutoFocus;
   DesktopForm.ShowNoActivate;
   Result := True;
   if not AutoFocus and (FActiveFocus <> GetFocus) then
-    begin
-      if (FActiveFocus <> NullHandle) then
-        SetFocus(FActiveFocus)
-      else if (FActiveWindow <> NullHandle) then
-        SetActiveWindow(FActiveWindow);
-    end;
+  begin
+    if (FActiveFocus <> NullHandle) then
+      SetFocus(FActiveFocus)
+    else if (FActiveWindow <> NullHandle) then
+      SetActiveWindow(FActiveWindow);
+  end;
+
   GetStacker.Add(DesktopForm);
 end;
 
@@ -916,17 +927,17 @@ var
   FEndInterval: Cardinal;
 begin
   if Assigned(FOnMessageClick) and (DaoCanClick in Options) then
-    begin
-      FEndInterval := StyleHandler.EndInterval;
-      try
-        StyleHandler.EndInterval := 0;
-        FOnMessageClick(Self); // (p3) should this be Sender instead?
-      finally
-        StyleHandler.EndInterval := FEndInterval;
-      end;
-      if not DesktopForm.MouseInControl then
-        StyleHandler.DoEndAnimation;
+  begin
+    FEndInterval := StyleHandler.EndInterval;
+    try
+      StyleHandler.EndInterval := 0;
+      FOnMessageClick(Self); // (p3) should this be Sender instead?
+    finally
+      StyleHandler.EndInterval := FEndInterval;
     end;
+    if not DesktopForm.MouseInControl then
+      StyleHandler.DoEndAnimation;
+  end;
 end;
 
 procedure TJvDesktopAlert.InternalMouseEnter(Sender: TObject);
@@ -946,21 +957,21 @@ begin
   if (CsDestroying in ComponentState) then
     Exit;
   if Location.Position = DapCustom then
-    begin
-      Location.Top := DesktopForm.Top;
-      Location.Left := DesktopForm.Left;
-    end;
+  begin
+    Location.Top := DesktopForm.Top;
+    Location.Left := DesktopForm.Left;
+  end;
   if Assigned(FOnClose) then
     FOnClose(Self);
   GetStacker.Remove(DesktopForm);
-  if AutoFree and (DesktopForm <> nil) and not(CsDesigning in ComponentState) then
-    begin
-      DesktopForm.OnClose := nil;
-      // post a message to the form so we have time to finish off all event handlers and
-      // timers before the form and component are freed
-      PostMessage(DesktopForm.Handle, JVDESKTOPALERT_AUTOFREE, WPARAM(DesktopForm), LPARAM(Self));
-      FDesktopForm := nil;
-    end;
+  if AutoFree and (DesktopForm <> nil) and not (CsDesigning in ComponentState) then
+  begin
+    DesktopForm.OnClose := nil;
+    // post a message to the form so we have time to finish off all event handlers and
+    // timers before the form and component are freed
+    PostMessage(DesktopForm.Handle, JVDESKTOPALERT_AUTOFREE, WPARAM(DesktopForm), LPARAM(Self));
+    FDesktopForm := nil;
+  end;
 end;
 
 procedure TJvDesktopAlert.InternalOnShow(Sender: TObject);
@@ -1090,47 +1101,47 @@ var
   Form: TJvCustomFormDesktopAlert;
 begin
   if (AForm <> nil) and (AForm is TJvCustomFormDesktopAlert) then
+  begin
+    // The basic trick here is to push piling forms down in the list, while keeping the
+    // static ones (i.e. a form that has the mouse pointer over it) in place.
+    index := FItems.IndexOf(AForm);
+    if index >= 0 then
     begin
-      // The basic trick here is to push piling forms down in the list, while keeping the
-      // static ones (i.e. a form that has the mouse pointer over it) in place.
-      index := FItems.IndexOf(AForm);
-      if index >= 0 then
+      FItems[index] := nil;
+
+      Inc(index);
+      while index < FItems.Count do
+      begin
+        Form := Items[index];
+        if Assigned(Form) and (not Form.MouseInControl) then
         begin
+          PrevNilSlot := Pred(index);
+          while FItems[PrevNilSlot] <> nil do
+            Dec(PrevNilSlot);
+          FItems[PrevNilSlot] := FItems[index];
           FItems[index] := nil;
-
-          Inc(index);
-          while index < FItems.Count do
-            begin
-              Form := Items[index];
-              if Assigned(Form) and (not Form.MouseInControl) then
-                begin
-                  PrevNilSlot := Pred(index);
-                  while FItems[PrevNilSlot] <> nil do
-                    Dec(PrevNilSlot);
-                  FItems[PrevNilSlot] := FItems[index];
-                  FItems[index] := nil;
-                end;
-
-              Inc(index);
-            end;
-
-          while (Pred(FItems.Count) >= 0) and (FItems[Pred(FItems.Count)] = nil) do
-            FItems.Delete(Pred(FItems.Count));
-
-          UpdatePositions;
         end;
+
+        Inc(index);
+      end;
+
+      while (Pred(FItems.Count) >= 0) and (FItems[Pred(FItems.Count)] = nil) do
+        FItems.Delete(Pred(FItems.Count));
+
+      UpdatePositions;
     end;
+  end;
 end;
 
 procedure TJvDesktopAlertStack.SetPosition(const Value: TJvDesktopAlertPosition);
 begin
   if FPosition <> Value then
-    begin
-      // if Value = dapCustom then raise
-      // Exception.Create('TJvDesktopAlertStack does not handle dapCustom alerts!');
-      // FItems.Clear;
-      FPosition := Value;
-    end;
+  begin
+    // if Value = dapCustom then raise
+    // Exception.Create('TJvDesktopAlertStack does not handle dapCustom alerts!');
+    // FItems.Clear;
+    FPosition := Value;
+  end;
 end;
 
 procedure TJvDesktopAlertStack.UpdatePositions;
@@ -1142,63 +1153,67 @@ var
 begin
   C := Count;
   if C > 0 then
-    begin
-      R := ScreenWorkArea;
-      case Position of
-        DapBottomRight: begin
-            Y := R.Bottom;
-            for I := 0 to Pred(C) do
-              begin
-                Form := Items[I];
-                if Assigned(Form) and Form.Visible then
-                  begin
-                    X := R.Right - Form.Width;
-                    Dec(Y, Form.Height);
-                    Form.SetNewOrigin(X, Y);
-                  end;
-              end;
+  begin
+    R := ScreenWorkArea;
+    case Position of
+      DapBottomRight:
+        begin
+          Y := R.Bottom;
+          for I := 0 to Pred(C) do
+          begin
+            Form := Items[I];
+            if Assigned(Form) and Form.Visible then
+            begin
+              X := R.Right - Form.Width;
+              Dec(Y, Form.Height);
+              Form.SetNewOrigin(X, Y);
+            end;
           end;
-        DapBottomLeft: begin
-            X := R.Left;
-            Y := R.Bottom;
-            for I := 0 to Pred(C) do
-              begin
-                Form := Items[I];
-                if Assigned(Form) and Form.Visible then
-                  begin
-                    Dec(Y, Form.Height);
-                    Form.SetNewOrigin(X, Y);
-                  end;
-              end;
+        end;
+      DapBottomLeft:
+        begin
+          X := R.Left;
+          Y := R.Bottom;
+          for I := 0 to Pred(C) do
+          begin
+            Form := Items[I];
+            if Assigned(Form) and Form.Visible then
+            begin
+              Dec(Y, Form.Height);
+              Form.SetNewOrigin(X, Y);
+            end;
           end;
-        DapTopRight: begin
-            Y := R.Top;
-            for I := 0 to Pred(C) do
-              begin
-                Form := Items[I];
-                if Assigned(Form) and Form.Visible then
-                  begin
-                    X := R.Right - Form.Width;
-                    Form.SetNewOrigin(X, Y);
-                    Inc(Y, Form.Height);
-                  end;
-              end;
+        end;
+      DapTopRight:
+        begin
+          Y := R.Top;
+          for I := 0 to Pred(C) do
+          begin
+            Form := Items[I];
+            if Assigned(Form) and Form.Visible then
+            begin
+              X := R.Right - Form.Width;
+              Form.SetNewOrigin(X, Y);
+              Inc(Y, Form.Height);
+            end;
           end;
-        DapTopLeft: begin
-            Y := R.Top;
-            X := R.Left;
-            for I := 0 to Pred(C) do
-              begin
-                Form := Items[I];
-                if Assigned(Form) and Form.Visible then
-                  begin
-                    Form.SetNewOrigin(X, Y);
-                    Inc(Y, Form.Height);
-                  end;
-              end;
+        end;
+      DapTopLeft:
+        begin
+          Y := R.Top;
+          X := R.Left;
+          for I := 0 to Pred(C) do
+          begin
+            Form := Items[I];
+            if Assigned(Form) and Form.Visible then
+            begin
+              Form.SetNewOrigin(X, Y);
+              Inc(Y, Form.Height);
+            end;
           end;
-      end;
+        end;
     end;
+  end;
 end;
 
 // === { TJvCustomDesktopAlertStyle } =========================================
@@ -1230,52 +1245,52 @@ end;
 procedure TJvCustomDesktopAlertStyleHandler.DoEndAnimation;
 begin
   if EndSteps > 0 then
-    begin
-      AnimTimer.Enabled := False;
-      AnimTimer.OnTimer := EndAnimTimer;
-      AnimTimer.Interval := EndInterval;
-      FCurrentStep := 0;
-      PrepareEndAnimation;
-      FStatus := HsEndAnim;
-      AnimTimer.Enabled := True;
-    end;
+  begin
+    AnimTimer.Enabled := False;
+    AnimTimer.OnTimer := EndAnimTimer;
+    AnimTimer.Interval := EndInterval;
+    FCurrentStep := 0;
+    PrepareEndAnimation;
+    FStatus := HsEndAnim;
+    AnimTimer.Enabled := True;
+  end;
 end;
 
 procedure TJvCustomDesktopAlertStyleHandler.DoDisplay;
 begin
   if DisplayDuration > 0 then
-    begin
-      AnimTimer.Enabled := False;
-      AnimTimer.OnTimer := DisplayTimer;
-      AnimTimer.Interval := DisplayDuration;
-      FCurrentStep := 0;
-      FStatus := HsDisplay;
-      AnimTimer.Enabled := True;
-    end;
+  begin
+    AnimTimer.Enabled := False;
+    AnimTimer.OnTimer := DisplayTimer;
+    AnimTimer.Interval := DisplayDuration;
+    FCurrentStep := 0;
+    FStatus := HsDisplay;
+    AnimTimer.Enabled := True;
+  end;
 end;
 
 procedure TJvCustomDesktopAlertStyleHandler.DoStartAnimation;
 begin
   if StartSteps > 0 then
-    begin
-      AnimTimer.Enabled := False;
-      AnimTimer.OnTimer := StartAnimTimer;
-      AnimTimer.Interval := StartInterval;
-      FCurrentStep := 0;
-      PrepareStartAnimation;
-      FStatus := HsStartAnim;
-      AnimTimer.Enabled := True;
-    end;
+  begin
+    AnimTimer.Enabled := False;
+    AnimTimer.OnTimer := StartAnimTimer;
+    AnimTimer.Interval := StartInterval;
+    FCurrentStep := 0;
+    PrepareStartAnimation;
+    FStatus := HsStartAnim;
+    AnimTimer.Enabled := True;
+  end;
 end;
 
 procedure TJvCustomDesktopAlertStyleHandler.EndAnimTimer(Sender: TObject);
 begin
   Inc(FCurrentStep);
   if CurrentStep >= EndSteps then
-    begin
-      AnimTimer.Enabled := False;
-      FinalizeEndAnimation;
-    end;
+  begin
+    AnimTimer.Enabled := False;
+    FinalizeEndAnimation;
+  end;
 end;
 
 procedure TJvCustomDesktopAlertStyleHandler.DisplayTimer(Sender: TObject);
@@ -1327,11 +1342,11 @@ procedure TJvCustomDesktopAlertStyleHandler.StartAnimTimer(Sender: TObject);
 begin
   Inc(FCurrentStep);
   if CurrentStep >= StartSteps then
-    begin
-      AnimTimer.Enabled := False;
-      FinalizeStartAnimation;
-      DoDisplay;
-    end;
+  begin
+    AnimTimer.Enabled := False;
+    FinalizeStartAnimation;
+    DoDisplay;
+  end;
 end;
 
 procedure TJvCustomDesktopAlertStyleHandler.FinalizeEndAnimation;
@@ -1371,11 +1386,11 @@ end;
 
 procedure TJvFadeAlertStyleHandler.AbortAnimation;
 begin
-  if not(Status in [HsDisplay, HsStartAnim]) then
-    begin
-      AnimTimer.Enabled := False;
-      DoAlphaBlend(MaxAlphaBlendValue);
-    end;
+  if not (Status in [HsDisplay, HsStartAnim]) then
+  begin
+    AnimTimer.Enabled := False;
+    DoAlphaBlend(MaxAlphaBlendValue);
+  end;
 end;
 
 procedure TJvFadeAlertStyleHandler.DoAlphaBlend(Value: Byte);
@@ -1383,31 +1398,31 @@ var
   DynamicSetLayeredWindowAttributes: TDynamicSetLayeredWindowAttributes;
   CurrentStyle: Cardinal;
 
-procedure InitProcs;
-const
-  SUser32 = 'User32.dll';
-var
-  ModH: HMODULE;
-begin
-  ModH := GetModuleHandle(SUser32);
-  if ModH <> 0 then
-    @DynamicSetLayeredWindowAttributes := GetProcAddress(ModH, 'SetLayeredWindowAttributes')
-  else
-    @DynamicSetLayeredWindowAttributes := nil;
-end;
+  procedure InitProcs;
+  const
+    SUser32 = 'User32.dll';
+  var
+    ModH: HMODULE;
+  begin
+    ModH := GetModuleHandle(SUser32);
+    if ModH <> 0 then
+      @DynamicSetLayeredWindowAttributes := GetProcAddress(ModH, 'SetLayeredWindowAttributes')
+    else
+      @DynamicSetLayeredWindowAttributes := nil;
+  end;
 
 begin
   if OwnerForm <> nil then
+  begin
+    InitProcs;
+    if OwnerForm.HandleAllocated and Assigned(DynamicSetLayeredWindowAttributes) then
     begin
-      InitProcs;
-      if OwnerForm.HandleAllocated and Assigned(DynamicSetLayeredWindowAttributes) then
-        begin
-          CurrentStyle := GetWindowLong(OwnerForm.Handle, GWL_EXSTYLE);
-          if (CurrentStyle and WS_EX_LAYERED) = 0 then
-            SetWindowLong(OwnerForm.Handle, GWL_EXSTYLE, GetWindowLong(OwnerForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
-          DynamicSetLayeredWindowAttributes(OwnerForm.Handle, 0, Value, LWA_ALPHA);
-        end;
+      CurrentStyle := GetWindowLong(OwnerForm.Handle, GWL_EXSTYLE);
+      if (CurrentStyle and WS_EX_LAYERED) = 0 then
+        SetWindowLong(OwnerForm.Handle, GWL_EXSTYLE, GetWindowLong(OwnerForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
+      DynamicSetLayeredWindowAttributes(OwnerForm.Handle, 0, Value, LWA_ALPHA);
     end;
+  end;
 end;
 
 procedure TJvFadeAlertStyleHandler.EndAnimTimer(Sender: TObject);
@@ -1473,11 +1488,11 @@ end;
 
 procedure TJvCenterGrowAlertStyleHandler.AbortAnimation;
 begin
-  if not(Status in [HsDisplay, HsStartAnim]) then
-    begin
-      AnimTimer.Enabled := False;
-      DoGrowRegion(MaxGrowthPercentage);
-    end;
+  if not (Status in [HsDisplay, HsStartAnim]) then
+  begin
+    AnimTimer.Enabled := False;
+    DoGrowRegion(MaxGrowthPercentage);
+  end;
 end;
 
 procedure TJvCenterGrowAlertStyleHandler.DoGrowRegion(Percentage: Double);
@@ -1488,18 +1503,18 @@ var
   RegionWidth: Integer;
 begin
   if OwnerForm <> nil then
-    begin
-      RegionHeight := Round(Percentage * OwnerForm.Height / 100.0);
-      RegionWidth := Round(Percentage * OwnerForm.Width / 100.0);
+  begin
+    RegionHeight := Round(Percentage * OwnerForm.Height / 100.0);
+    RegionWidth := Round(Percentage * OwnerForm.Width / 100.0);
 
-      RegionRect.Left := (OwnerForm.Width - RegionWidth) div 2;
-      RegionRect.Right := RegionRect.Left + RegionWidth;
-      RegionRect.Top := (OwnerForm.Height - RegionHeight) div 2;
-      RegionRect.Bottom := RegionRect.Top + RegionHeight;
+    RegionRect.Left := (OwnerForm.Width - RegionWidth) div 2;
+    RegionRect.Right := RegionRect.Left + RegionWidth;
+    RegionRect.Top := (OwnerForm.Height - RegionHeight) div 2;
+    RegionRect.Bottom := RegionRect.Top + RegionHeight;
 
-      Region := CreateRectRgnIndirect(RegionRect);
-      SetWindowRgn(OwnerForm.Handle, Region, True);
-    end;
+    Region := CreateRectRgnIndirect(RegionRect);
+    SetWindowRgn(OwnerForm.Handle, Region, True);
+  end;
 end;
 
 procedure TJvCenterGrowAlertStyleHandler.StartAnimTimer(Sender: TObject);
@@ -1569,12 +1584,12 @@ end;
 procedure TJvCustomDesktopAlert.Close(Immediate: Boolean);
 begin
   if Showing then
-    begin
-      if Immediate then
-        FDesktopForm.Close
-      else
-        FStyleHandler.DoEndAnimation;
-    end;
+  begin
+    if Immediate then
+      FDesktopForm.Close
+    else
+      FStyleHandler.DoEndAnimation;
+  end;
 end;
 
 constructor TJvCustomDesktopAlert.Create(AOwner: TComponent);
@@ -1584,23 +1599,23 @@ begin
   FLocation := TJvDesktopAlertLocation.Create;
   FLocation.OnChange := DoLocationChange;
   AlertStyle := AsFade;
-  FOptions := [DaoCanClick .. DaoCanClose];
+  FOptions := [DaoCanClick..DaoCanClose];
 end;
 
 destructor TJvCustomDesktopAlert.Destroy;
 begin
   // when AutoFreeing, Delphi doesn't like the component having an owner, so remove the Owner here
-  if FAutoFree and (Owner <> nil) and not(CsDesigning in ComponentState) then
+  if FAutoFree and (Owner <> nil) and not (CsDesigning in ComponentState) then
     Owner.RemoveComponent(Self);
   if (FDesktopForm <> nil) then
-    begin
-      if FDesktopForm.Showing then
-        FDesktopForm.Close;
-      FDesktopForm.OnClose := nil;
-      GetStacker.Remove(FDesktopForm);
-      FDesktopForm.Release;
-      FDesktopForm := nil;
-    end;
+  begin
+    if FDesktopForm.Showing then
+      FDesktopForm.Close;
+    FDesktopForm.OnClose := nil;
+    GetStacker.Remove(FDesktopForm);
+    FDesktopForm.Release;
+    FDesktopForm := nil;
+  end;
   FreeAndNil(FColors);
   FreeAndNil(FLocation);
   FreeAndNil(FStyleHandler);
@@ -1610,12 +1625,12 @@ end;
 procedure TJvCustomDesktopAlert.DoLocationChange(Sender: TObject);
 begin
   if GetStacker.Position <> Location.Position then
-    begin
-      if GetStacker = GlobalStacker then
-        GetStacker.Position := Location.Position
-      else
-        Location.Position := GetStacker.Position;
-    end;
+  begin
+    if GetStacker = GlobalStacker then
+      GetStacker.Position := Location.Position
+    else
+      Location.Position := GetStacker.Position;
+  end;
 end;
 
 function TJvCustomDesktopAlert.Execute: Boolean;
@@ -1623,11 +1638,11 @@ var
   ARect: TRect;
   Position: TJvDesktopAlertPosition;
 
-procedure CenterForm(AForm: TCustomForm; ARect: TRect);
-begin
-  AForm.Top := ARect.Top + ((ARect.Bottom - ARect.Top) - AForm.Height) div 2;
-  AForm.Left := ARect.Left + ((ARect.Right - ARect.Left) - AForm.Width) div 2;
-end;
+  procedure CenterForm(AForm: TCustomForm; ARect: TRect);
+  begin
+    AForm.Top := ARect.Top + ((ARect.Bottom - ARect.Top) - AForm.Height) div 2;
+    AForm.Left := ARect.Left + ((ARect.Right - ARect.Left) - AForm.Width) div 2;
+  end;
 
 begin
   Assert(FDesktopForm <> nil);
@@ -1635,7 +1650,7 @@ begin
     FDesktopForm.Close;
 
   ARect := ScreenWorkArea;
-  if (Application <> nil) and (Application.MainForm <> nil) and
+  {if (Application <> nil) and (Application.MainForm <> nil) and
     (Location.Position in [DapMainFormTopLeft, DapMainFormTopRight, DapMainFormBottomLeft, DapMainFormBottomRight]) then
     ARect := Application.MainForm.BoundsRect
   else if (Screen.ActiveForm <> nil) and (Location.Position in [DapActiveFormTopLeft, DapActiveFormTopRight, DapActiveFormBottomLeft,
@@ -1643,15 +1658,15 @@ begin
     ARect := Screen.ActiveForm.BoundsRect
   else if (Owner is TCustomForm) and (Location.Position in [DapOwnerFormTopLeft, DapOwnerFormTopRight, DapOwnerFormBottomLeft,
     DapOwnerFormBottomRight]) then
-    ARect := TCustomForm(Owner).BoundsRect;
+    ARect := TCustomForm(Owner).BoundsRect;}
 
   Position := Location.Position;
-  case Position of
+  {case Position of
     DapMainFormTopLeft, DapActiveFormTopLeft, DapOwnerFormTopLeft: Position := DapTopLeft;
     DapMainFormTopRight, DapActiveFormTopRight, DapOwnerFormTopRight: Position := DapTopRight;
     DapMainFormBottomLeft, DapActiveFormBottomLeft, DapOwnerFormBottomLeft: Position := DapBottomLeft;
     DapMainFormBottomRight, DapActiveFormBottomRight, DapOwnerFormBottomRight: Position := DapBottomRight;
-  end;
+  end;}
 
   if Location.Width <> 0 then
     FDesktopForm.Width := Location.Width
@@ -1661,28 +1676,35 @@ begin
     FDesktopForm.Height := Location.Height
   else
     FDesktopForm.Height := CDefaultAlertFormHeight;
+
   case Position of
-    DapTopLeft: begin
+    DapTopLeft:
+      begin
         FDesktopForm.Top := ARect.Top;
         FDesktopForm.Left := ARect.Left;
       end;
-    DapTopRight: begin
+    DapTopRight:
+      begin
         FDesktopForm.Top := ARect.Top;
         FDesktopForm.Left := ARect.Right - FDesktopForm.Width;
       end;
-    DapBottomLeft: begin
+    DapBottomLeft:
+      begin
         FDesktopForm.Top := ARect.Bottom - FDesktopForm.Height;
         FDesktopForm.Left := ARect.Left;
       end;
-    DapBottomRight: begin
+    DapBottomRight:
+      begin
         FDesktopForm.Top := ARect.Bottom - FDesktopForm.Height;
         FDesktopForm.Left := ARect.Right - FDesktopForm.Width;
       end;
-    DapCustom: begin
+    DapCustom:
+      begin
         FDesktopForm.Top := Location.Top;
         FDesktopForm.Left := Location.Left;
       end;
-    DapDesktopCenter, DapMainFormCenter, DapOwnerFormCenter, DapActiveFormCenter: begin
+    {DapDesktopCenter, DapMainFormCenter, DapOwnerFormCenter, DapActiveFormCenter:
+      begin
         CenterForm(FDesktopForm, ARect);
         if (Location.Position = DapActiveFormCenter) and (Screen.ActiveForm <> nil) then
           CenterForm(FDesktopForm, Screen.ActiveForm.BoundsRect)
@@ -1690,7 +1712,7 @@ begin
           CenterForm(FDesktopForm, Application.MainForm.BoundsRect)
         else if (Location.Position = DapOwnerFormCenter) and (Owner is TCustomForm) then
           CenterForm(FDesktopForm, TCustomForm(Owner).BoundsRect);
-      end;
+      end;}
   end;
 
   FDesktopForm.Moveable := (DaoCanMove in Options);
@@ -1722,21 +1744,21 @@ end;
 
 procedure TJvCustomDesktopAlert.InternalOnMove(Sender: TObject);
 begin
-  if not(CsDesigning in ComponentState) and not Location.AlwaysResetPosition and (Location.Position <> DapCustom) then
-    begin
-      GetStacker.Remove(FDesktopForm);
-      Location.Position := DapCustom;
-    end;
+  if not (CsDesigning in ComponentState) and not Location.AlwaysResetPosition and (Location.Position <> DapCustom) then
+  begin
+    GetStacker.Remove(FDesktopForm);
+    Location.Position := DapCustom;
+  end;
 end;
 
 procedure TJvCustomDesktopAlert.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
   if Operation = OpRemove then
-    begin
-      if AComponent = FStacker then
-        AlertStack := nil;
-    end;
+  begin
+    if AComponent = FStacker then
+      AlertStack := nil;
+  end;
 end;
 
 procedure TJvCustomDesktopAlert.SetAlertStack(const Value: TJvDesktopAlertStack);
@@ -1766,11 +1788,11 @@ end;
 procedure TJvCustomDesktopAlert.SetOptions(const Value: TJvDesktopAlertOptions);
 begin
   if FOptions <> Value then
-    begin
-      FOptions := Value;
-      if not(DaoCanMove in FOptions) then
-        Exclude(FOptions, DaoCanMoveAnywhere);
-    end;
+  begin
+    FOptions := Value;
+    if not (DaoCanMove in FOptions) then
+      Exclude(FOptions, DaoCanMoveAnywhere);
+  end;
 end;
 
 procedure TJvCustomDesktopAlert.SetStyleHandler(const Value: TJvCustomDesktopAlertStyleHandler);
@@ -1786,65 +1808,69 @@ end;
 { TJvDesktopAlertForm }
 
 function TJvDesktopAlertForm.Execute: Boolean;
-var
-  FActiveWindow, FActiveFocus: HWND;
+//var
+  //FActiveWindow, FActiveFocus: HWND;
 begin
-  inherited Execute;
+  {inherited Execute;
   FDesktopForm.Closeable := (DaoCanClose in Options);
   FDesktopForm.OnUserMove := InternalOnMove;
 
   Location.Position := GetStacker.Position;
   if not AutoFocus then
-    begin
-      FActiveFocus := GetFocus;
-      FActiveWindow := GetActiveWindow;
-    end
+  begin
+    FActiveFocus := GetFocus;
+    FActiveWindow := GetActiveWindow;
+  end
   else
-    begin
-      FActiveWindow := NullHandle;
-      FActiveFocus := NullHandle;
-    end;
+  begin
+    FActiveWindow := NullHandle;
+    FActiveFocus := NullHandle;
+  end;
   FDesktopForm.AllowFocus := AutoFocus;
-  FDesktopForm.ShowNoActivate;
+  FDesktopForm.ShowNoActivate;}
+
   Result := True;
-  if not AutoFocus and (FActiveFocus <> GetFocus) then
-    begin
-      if (FActiveFocus <> NullHandle) then
-        SetFocus(FActiveFocus)
-      else if (FActiveWindow <> NullHandle) then
-        SetActiveWindow(FActiveWindow);
-    end;
-  GetStacker.Add(FDesktopForm);
+
+  {if not AutoFocus and (FActiveFocus <> GetFocus) then
+  begin
+    if (FActiveFocus <> NullHandle) then
+      SetFocus(FActiveFocus)
+    else if (FActiveWindow <> NullHandle) then
+      SetActiveWindow(FActiveWindow);
+  end;
+
+  GetStacker.Add(FDesktopForm);}
 end;
 
 procedure TJvDesktopAlertForm.SetForm(const Value: TJvCustomFormDesktopAlert);
 begin
-  FDesktopForm := Value;
+  {FDesktopForm := Value;
   if Value <> nil then
-    begin
-      Location.Width := FDesktopForm.Width;
-      Location.Height := FDesktopForm.Height;
-    end;
+  begin
+    Location.Width := FDesktopForm.Width;
+    Location.Height := FDesktopForm.Height;
+  end;
   // reforce alert style so proper form will be assigned to alert displayer
-  AlertStyle := AlertStyle;
+  AlertStyle := AlertStyle;}
 end;
 
 initialization
 
 {$IFDEF UNITVERSIONING}
 
-RegisterUnitVersion(HInstance, UnitVersioning);
+  RegisterUnitVersion(HInstance, UnitVersioning);
 
 {$ENDIF UNITVERSIONING}
 
 finalization
 
-FreeAndNil(GStacker);
+  FreeAndNil(GStacker);
 
 {$IFDEF UNITVERSIONING}
 
-UnregisterUnitVersion(HInstance);
+  UnregisterUnitVersion(HInstance);
 
 {$ENDIF UNITVERSIONING}
 
 end.
+

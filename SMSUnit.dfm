@@ -6,6 +6,7 @@ object SMSForm: TSMSForm
   ClientHeight = 292
   ClientWidth = 329
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

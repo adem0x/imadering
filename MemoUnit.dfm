@@ -6,6 +6,7 @@ object MemoForm: TMemoForm
   ClientHeight = 350
   ClientWidth = 491
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,7 +14,7 @@ object MemoForm: TMemoForm
   Font.Style = []
   HelpFile = 'T'
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate

@@ -3,7 +3,6 @@ object FloatingForm: TFloatingForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsNone
-  Caption = 'FloatingForm'
   ClientHeight = 20
   ClientWidth = 162
   Color = clBtnFace

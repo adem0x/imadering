@@ -32,10 +32,8 @@ uses
   Graphics,
   CategoryButtons,
   OverbyteIcsUrl,
-  GtransUnit,
   JvSimpleXml,
   OverbyteIcsUtils,
-  LogUnit,
   StrUtils;
 
 {$ENDREGION}
@@ -331,74 +329,6 @@ const
   ICQ_SSL_Server = 'slogin.oscar.aol.com';
 
 {$ENDREGION}
-{$REGION 'Array Pkt Names'}
-
-  // Расшифровка пакетов для лога
-  ICQ_Pkt_Names:
-    packed array[0..57] of record Pkt_Code: Integer;
-    Pkt_Name:
-    string;
-  end
-  = ((Pkt_Code: $0001; Pkt_Name: 'SRV_HELLO'), // 0
-    (Pkt_Code: $0001; Pkt_Name: 'CLI_HELLO'), // 1
-    (Pkt_Code: 0; Pkt_Name: 'SRV_CLOSE'), // 2
-    (Pkt_Code: 0; Pkt_Name: 'CLI_CLOSE'), // 3
-    (Pkt_Code: $1706; Pkt_Name: 'CLI_LOGIN_UIN'), // 4
-    (Pkt_Code: $1707; Pkt_Name: 'SRV_MD5_KEY'), // 5
-    (Pkt_Code: $1702; Pkt_Name: 'CLI_LOGIN'), // 6
-    (Pkt_Code: $1703; Pkt_Name: 'SRV_BOS_SERVER_COOKIE'), // 7
-    (Pkt_Code: $0103; Pkt_Name: 'SRV_SERVICES_SUPPORT'), // 8
-    (Pkt_Code: $0115; Pkt_Name: 'SRV_WELL_KNOWN_URL'), // 9
-    (Pkt_Code: $0117; Pkt_Name: 'CLI_SERVICES_SET'), // 10
-    (Pkt_Code: $0118; Pkt_Name: 'SRV_SERVICES_VER'), // 11
-    (Pkt_Code: $0113; Pkt_Name: 'SRV_MESSAGE_DAY'), // 12
-    (Pkt_Code: $0108; Pkt_Name: 'CLI_RATE_INFO_ACK'), // 13
-    (Pkt_Code: $010E; Pkt_Name: 'CLI_SELF_INFO_REQ'), // 14
-    (Pkt_Code: $1302; Pkt_Name: 'CLI_SSI_RIGHTS_REQ'), // 15
-    (Pkt_Code: $1305; Pkt_Name: 'CLI_CONTACTS_LIST_REQ'), // 16
-    (Pkt_Code: $0202; Pkt_Name: 'CLI_LOC_RIGHTS_REQ'), // 17
-    (Pkt_Code: $0302; Pkt_Name: 'CLI_BUDDY_RIGHTS_REQ'), // 18
-    (Pkt_Code: $0404; Pkt_Name: 'CLI_MESS_PARAM_INFO_REQ'), // 19
-    (Pkt_Code: $0902; Pkt_Name: 'CLI_PRIVACY_RIGHTS_REQ'), // 20
-    (Pkt_Code: $010F; Pkt_Name: 'SRV_SELF_INFO'), // 21
-    (Pkt_Code: $0203; Pkt_Name: 'SRV_LOC_RIGHTS_INFO'), // 22
-    (Pkt_Code: $0303; Pkt_Name: 'SRV_BUDDY_RIGHTS_INFO'), // 23
-    (Pkt_Code: $0405; Pkt_Name: 'SRV_MESS_PARAM_INFO'), // 24
-    (Pkt_Code: $0903; Pkt_Name: 'SRV_PRIVACY_RIGHTS_INFO'), // 25
-    (Pkt_Code: $1303; Pkt_Name: 'SRV_SSI_RIGHTS_INFO'), // 26
-    (Pkt_Code: $1306; Pkt_Name: 'SRV_CONTACTS_LIST'), // 27
-    (Pkt_Code: $1307; Pkt_Name: 'CLI_SSI_ACTIVATE'), // 28
-    (Pkt_Code: $0204; Pkt_Name: 'CLI_SET_ONLINE_INFO'), // 29
-    (Pkt_Code: $0402; Pkt_Name: 'CLI_SET_ICBM_PARAM'), // 30
-    (Pkt_Code: $011E; Pkt_Name: 'CLI_SET_STATUS'), // 31
-    (Pkt_Code: $0102; Pkt_Name: 'CLI_SET_READY'), // 32
-    (Pkt_Code: $1502; Pkt_Name: 'CLI_ICQ_REQUEST'), // 33
-    (Pkt_Code: $0410; Pkt_Name: 'CLI_AIM_MESSAGING'), // 34
-    (Pkt_Code: $1304; Pkt_Name: 'CLI_CONTACTS_LIST_REQ'), // 35
-    (Pkt_Code: $0407; Pkt_Name: 'SRV_MESSAGE_REQ'), // 36
-    (Pkt_Code: $030B; Pkt_Name: 'SRV_CONTACT_ONLINE'), // 37
-    (Pkt_Code: $030C; Pkt_Name: 'SRV_CONTACT_OFFLINE'), // 38
-    (Pkt_Code: $030A; Pkt_Name: 'SRV_CONTACT_UNK_STATUS'), // 39
-    (Pkt_Code: $0406; Pkt_Name: 'CLI_SEND_MESSAGE'), // 40
-    (Pkt_Code: $010A; Pkt_Name: 'SRV_RATE_LIMIT_WARN'), // 41
-    (Pkt_Code: $040C; Pkt_Name: 'SRV_MESSAGE_ACK'), // 42
-    (Pkt_Code: $1311; Pkt_Name: 'SSI_EDIT_BEGIN'), // 43
-    (Pkt_Code: $1309; Pkt_Name: 'SSI_UPDATE'), // 44
-    (Pkt_Code: $1312; Pkt_Name: 'SSI_EDIT_END'), // 45
-    (Pkt_Code: $1308; Pkt_Name: 'SSI_ADD'), // 46
-    (Pkt_Code: $0414; Pkt_Name: 'TYPING_NOTIFICATION'), // 47
-    (Pkt_Code: $1314; Pkt_Name: 'SSI_AUTH_GRANT'), // 48
-    (Pkt_Code: $003C; Pkt_Name: 'CLI_PING'), // 49
-    (Pkt_Code: $0121; Pkt_Name: 'SRV_EXT_STATUS'), // 50
-    (Pkt_Code: $0B02; Pkt_Name: 'SRV_SET_REPORT_INTERVAL'), // 51
-    (Pkt_Code: $0417; Pkt_Name: 'SRV_AIM_MESSAGING'), // 52
-    (Pkt_Code: $130E; Pkt_Name: 'SRV_SSI_MOD_ACK'), // 53
-    (Pkt_Code: $1503; Pkt_Name: 'SRV_META_REPLY'), // 54
-    (Pkt_Code: $1319; Pkt_Name: 'SRV_SSI_AUTH_REQ'), // 55
-    (Pkt_Code: $0206; Pkt_Name: 'SRV_USER_ONLINE_INFO'), // 56
-    (Pkt_Code: $130A; Pkt_Name: 'CLI_SSI_DELETE')); // 57
-
-{$ENDREGION}
 {$REGION 'Vars'}
 
 var
@@ -432,7 +362,6 @@ var
   ICQ_MyUIN_RegTime: string;
   ICQ_CollSince, ICQ_SendMess, ICQ_OnlineDays, ICQ_AwayMess, ICQ_RecMess, ICQ_LastActive: string; // Vanity info
   ICQ_MyIcon_Hash: string;
-  ICQ_KeepAlive: Boolean = True;
   ICQ_Reconnect: Boolean = False;
   // SSI begin
   ICQ_SSI_Phaze: Boolean = False;
@@ -486,7 +415,7 @@ procedure ICQ_UserOnline_030B(PktData: string; CheckStatus: Boolean);
 procedure ICQ_UserOffline_030C(PktData: string);
 procedure ICQ_SendMessage_0406(SUIN, SMsg: string; InUnicode: Boolean);
 procedure ICQ_ReqMessage_0407(PktData: string);
-procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string; GTrans: Boolean = False);
+procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string; GTrans: Boolean = False; xAuth: Boolean = False);
 // procedure ICQ_SendRegNewUIN(Pass, ImgWord: string);
 procedure ICQ_SearchPoUIN_new(SUIN: string);
 procedure ICQ_SearchPoEmail_new(SEmail: string);
@@ -501,7 +430,6 @@ procedure ICQ_AddStart;
 procedure ICQ_AddEnd;
 procedure ICQ_DeleteContact(UIN, GroupId, Id, Nick, Cell, Email, Zametka: string);
 procedure ICQ_SendGrandAuth(UIN: string);
-procedure ICQ_SendYouAdded(UIN: string);
 procedure ICQ_DellMyFromCL(UIN: string);
 procedure ICQ_AddContact(UIN, GroupId, CId, Nick: string; NoAuth: Boolean);
 procedure ICQ_Parse_130E_UpdateAck(PktData: string);
@@ -511,7 +439,6 @@ procedure ICQ_UpdateGroup_AddGroup(GiDlist: TStringList);
 procedure ICQ_AddGroup(GName, GId: string);
 procedure ICQ_RenameAndEditContact(UIN, GroupId, Id, Nick, Cell, Email, Zametka: string);
 procedure ICQ_DeleteTempContactMulti(TCList: TStringList);
-procedure ICQ_ReqAuthSend(UIN, Mess: string);
 procedure ICQ_ReqInfo_New_Pkt(SUIN: string);
 // procedure ICQ_ReqInfo_New_Pkt_1(sUIN: string);
 procedure ICQ_SaveNew_InfoPkt(CUIN, CNick, CFirst, CLast, CGender, CAddress, CCity, CState, CZip, OCity, OState, Phone1, Phone2, Phone3, Phone4, Phone5, CHomePage, WCity, WState, WZip, WAddress,
@@ -528,6 +455,9 @@ procedure ICQ_Parse_UserAvatar(PktData: string);
 procedure ICQ_SaveInfo_Auth_WebAvare(IAuth, IWebAvare: Boolean);
 procedure ICQ_UpdatePrivate_Group(InvizStatus: string);
 function ICQ_CreateHint(XML_Node: TJvSimpleXmlElem): string;
+procedure ICQ_SendReqAuth(UIN, Mess: string);
+procedure ICQ_Parse_1319_ReqAuth(PktData: string);
+procedure ICQ_Auth_Yes_No(UIN: string; AuthFlag: Boolean);
 
 {$ENDREGION}
 
@@ -796,18 +726,18 @@ begin
   if XML_Node <> nil then
   begin
     // Учётная запись
-    Result := Format(C_AS, [C_Icq + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Login))]);
+    Result := Format(C_AS, [C_Icq + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Login))]);
     // Ник
     if XML_Node.Properties.Value(C_Nick) <> XML_Node.Properties.Value(C_Login) then
       Result := Result + C_BR + Format(C_AS, [URLDecode(XML_Node.Properties.Value(C_Nick))]);
     Result := Result + C_BR;
     // Статус
     if XML_Node.Properties.Value(C_Client) = '220' then // Если статус требует авторизации, то пишем об этом
-      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + Lang_Vars[82].L_S
+      Result := Result + Lang_Vars[47].L_S + ':' + ' ' + C_HTML_Font_Red + Lang_Vars[82].L_S
     else if XML_Node.Properties.Value(C_Status) = '9' then // Если статус "Не в сети"
-      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Red + MainForm.ICQStatusOffline.Caption
+      Result := Result + Lang_Vars[47].L_S + ':' + ' ' + C_HTML_Font_Red + MainForm.ICQStatusOffline.Caption
     else // Определяем статус и пишем его словами
-      Result := Result + Lang_Vars[47].L_S + C_TN + C_BN + C_HTML_Font_Blue + ICQ_StatusImgId2String(XML_Node.Properties.Value(C_Status));
+      Result := Result + Lang_Vars[47].L_S + ':' + ' ' + C_HTML_Font_Blue + ICQ_StatusImgId2String(XML_Node.Properties.Value(C_Status));
     Result := Result + C_HTML_Font_End;
     // Если есть текст доп. статуса, то пишем его
     if XML_Node.Properties.Value(C_XText) <> EmptyStr then
@@ -819,25 +749,25 @@ begin
     end;
     // Время подключения
     if XML_Node.Properties.Value(C_Time) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[35].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_Time);
+      Result := Result + C_BR + Lang_Vars[35].L_S + ':' + ' ' + XML_Node.Properties.Value(C_Time);
     // Дата регистрации UIN
     if XML_Node.Properties.Value(C_RegDate) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[36].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_RegDate);
+      Result := Result + C_BR + Lang_Vars[36].L_S + ':' + ' ' + XML_Node.Properties.Value(C_RegDate);
     // Версия протокола
     if XML_Node.Properties.Value(C_ProtoVer) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[37].L_S + C_TN + C_BN + XML_Node.Properties.Value(C_ProtoVer);
+      Result := Result + C_BR + Lang_Vars[37].L_S + ':' + ' ' + XML_Node.Properties.Value(C_ProtoVer);
     // Клиент
     if XML_Node.Properties.Value(C_Client + C_Name) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[38].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
+      Result := Result + C_BR + Lang_Vars[38].L_S + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Client + C_Name));
     // Телефон
     if XML_Node.Properties.Value(C_Phone) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[39].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Phone));
+      Result := Result + C_BR + Lang_Vars[39].L_S + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Phone));
     // Заметка
     if XML_Node.Properties.Value(C_Note) <> EmptyStr then
-      Result := Result + C_BR + Lang_Vars[40].L_S + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Note));
+      Result := Result + C_BR + Lang_Vars[40].L_S + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Note));
     // Email
     if XML_Node.Properties.Value(C_Email) <> EmptyStr then
-      Result := Result + C_BR + C_Email + C_TN + C_BN + URLDecode(XML_Node.Properties.Value(C_Email));
+      Result := Result + C_BR + C_Email + ':' + ' ' + URLDecode(XML_Node.Properties.Value(C_Email));
   end;
 end;
 
@@ -1253,20 +1183,6 @@ end;
   end; }
 
 {$ENDREGION}
-{$REGION 'ICQ_ReqAuthSend'}
-
-procedure ICQ_ReqAuthSend(UIN, Mess: string);
-var
-  Pkt, Utf8Mess: RawByteString;
-begin
-  // Собираем пакет запроса авторизации
-  Utf8Mess := UTF8Encode(Mess);
-  Pkt := '00130018000000000018' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + IntToHex(Length(Utf8Mess), 4) + Text2Hex(Utf8Mess) + '0000';
-  // Отсылаем пакет
-  ICQ_SendPkt('2', Pkt);
-end;
-
-{$ENDREGION}
 {$REGION 'ICQ_DeleteTempContactMulti'}
 
 procedure ICQ_DeleteTempContactMulti(TCList: TStringList);
@@ -1330,25 +1246,6 @@ var
 begin
   // Формируем пакет
   Pkt := '00130016000000000016' + IntToHex(Length(UIN), 2) + Text2Hex(UIN);
-  // Отсылаем пакет
-  ICQ_SendPkt('2', Pkt);
-end;
-
-{$ENDREGION}
-{$REGION 'ICQ_SendYouAdded'}
-
-procedure ICQ_SendYouAdded(UIN: string);
-var
-  Pkt, Rand1, Rand2, Rand3: string;
-begin
-  // Создаём рандомные куки
-  Rand1 := IntToHex(Random($AAAA), 4);
-  Rand2 := IntToHex(Random($AAAA), 4);
-  Rand3 := IntToHex(Random($AAAA), 4);
-  // Формируем пакет
-  Pkt := '00040006000000000006' + '0000' + Rand1 + Rand2 + '00000002' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + '0005005E00000000' + Rand1 + Rand2 +
-    '0000' + ICQ_Servises_Caps[19].Cap_HEX + '000A00020001000F0000271100361B000A00000' + '0000000000000000000000000000000000300000000' + Rand3 + '0E00' + Rand3 +
-    '0000000000000000000000000C000000040001000000030000';
   // Отсылаем пакет
   ICQ_SendPkt('2', Pkt);
 end;
@@ -1511,7 +1408,7 @@ var
           if XML_Node <> nil then
           begin
             // Открываем раздел групп
-            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
             if Sub_Node <> nil then
             begin
               for I := 0 to Sub_Node.Items.Count - 1 do
@@ -1569,11 +1466,11 @@ begin
                 if XML_Node <> nil then
                 begin
                   // Ищем раздел контактов
-                  Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
                   if Sub_Node <> nil then
                   begin
                     // Добавляем этот контакт в эту группу
-                    Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                    Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(Sub_Node.Items.Count + 1));
                     Tri_Node.Properties.Add(C_Login, URLEncode(ICQ_Add_UIN));
                     Tri_Node.Properties.Add(C_Group + C_Id, ICQ_Add_GroupId);
                     Tri_Node.Properties.Add(C_Status, 9);
@@ -1594,7 +1491,7 @@ begin
           // Строим локальный КЛ
           UpdateFullCL;
           // Сообщаем об успешном добавлении контакта
-          DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[16].L_S + ' ' + C_Icq, Lang_Vars[107].L_S, EmptyStr, 133, 3, 0);
         end;
       $000E:
         begin
@@ -1611,7 +1508,7 @@ begin
         ICQ_Add_Contact_Phaze := False;
         ICQ_AddEnd;
         // Сообщаем об ошибке добавления нового контакта в серверный КЛ
-        DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[106].L_S, EmptyStr, 134, 2, 0);
       end;
     end;
   end
@@ -1622,9 +1519,9 @@ begin
     ICQ_Dell_Contact_Phaze := False;
     // Смотрим на ответ сервера
     if HexToInt(Text2Hex(NextData(PktData, 2))) = $0000 then
-      DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[162].L_S, EmptyStr, 133, 3, 0)
+      DAShow(Lang_Vars[16].L_S + ' ' + C_Icq, Lang_Vars[162].L_S, EmptyStr, 133, 3, 0)
     else
-      DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[163].L_S, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[163].L_S, EmptyStr, 134, 2, 0);
   end
   else if ICQ_Add_Group_Phaze then // Если это фаза добавления группы
   begin
@@ -1645,7 +1542,7 @@ begin
                   if XML_Node <> nil then
                   begin
                     // Открываем раздел групп
-                    Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                    Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
                     if Sub_Node <> nil then
                     begin
                       for Z := 0 to Sub_Node.Items.Count - 1 do
@@ -1682,10 +1579,10 @@ begin
                 if XML_Node <> nil then
                 begin
                   // Открываем раздел групп
-                  Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
                   if Sub_Node <> nil then
                   begin
-                    Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                    Tri_Node := Sub_Node.Items.Add(C_Group + '_' + IntToStr(Sub_Node.Items.Count + 1));
                     Tri_Node.Properties.Add(C_Name, URLEncode(ICQ_Add_Nick));
                     Tri_Node.Properties.Add(C_Id, ICQ_Add_GroupId);
                   end;
@@ -1696,7 +1593,7 @@ begin
           // Строим локальный КЛ
           UpdateFullCL;
           // Сообщаем об успешном добавлении группы
-          DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[16].L_S + ' ' + C_Icq, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
         end
     else
       begin
@@ -1705,7 +1602,7 @@ begin
         ICQ_SSI_Phaze := False;
         ICQ_Add_Group_Phaze := False;
         // Сообщаем об ошибке добавления новой группы в серверный КЛ
-        DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[98].L_S, EmptyStr, 134, 2, 0);
       end;
     end;
   end
@@ -1716,9 +1613,9 @@ begin
     ICQ_Ren_Contact_Phaze := False;
     // Смотрим на ответ сервера
     if HexToInt(Text2Hex(NextData(PktData, 2))) = $0000 then
-      DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[49].L_S, EmptyStr, 133, 3, 0)
+      DAShow(Lang_Vars[16].L_S + ' ' + C_Icq, Lang_Vars[49].L_S, EmptyStr, 133, 3, 0)
     else
-      DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[164].L_S, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[164].L_S, EmptyStr, 134, 2, 0);
   end
   else if ICQ_Dell_Group_Phaze then // Если это фаза удаления группы
   begin
@@ -1738,7 +1635,7 @@ begin
                   if XML_Node <> nil then
                   begin
                     // Открываем раздел групп
-                    Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                    Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
                     if Sub_Node <> nil then
                     begin
                       for Z := 0 to Sub_Node.Items.Count - 1 do
@@ -1766,7 +1663,7 @@ begin
           ICQ_SSI_Phaze := False;
           ICQ_Dell_Group_Phaze := False;
           // Сообщаем об успешном удалении группы
-          DAShow(Lang_Vars[16].L_S + C_BN + C_Icq, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
+          DAShow(Lang_Vars[16].L_S + ' ' + C_Icq, Lang_Vars[100].L_S, EmptyStr, 133, 3, 0);
         end
     else
       begin
@@ -1774,7 +1671,7 @@ begin
         ICQ_AddEnd;
         ICQ_SSI_Phaze := False;
         ICQ_Dell_Group_Phaze := False;
-        DAShow(Lang_Vars[17].L_S + C_BN + C_Icq, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[99].L_S, EmptyStr, 134, 2, 0);
       end;
     end;
   end;
@@ -1950,11 +1847,11 @@ begin
           SubItems.Add(ALast);
           case AGender of
             0: Gend := EmptyStr;
-            1: Gend := Parse(C_BN, GenderComboBox.Items.Strings[1], 2);
-            2: Gend := Parse(C_BN, GenderComboBox.Items.Strings[2], 2);
+            1: Gend := Parse(' ', GenderComboBox.Items.Strings[1], 2);
+            2: Gend := Parse(' ', GenderComboBox.Items.Strings[2], 2);
           end;
           if (Gend <> EmptyStr) and (AAge <> '0') then
-            Gend := Gend + C_BN + C_NN + C_BN + AAge
+            Gend := Gend + ' ' + '-' + ' ' + AAge
           else if AAge <> '0' then
             Gend := AAge;
           SubItems.Add(Gend);
@@ -1994,7 +1891,7 @@ var
   Date64: Int64;
   SDate64: TDateTime absolute Date64;
   lTimeZone: TTimeZoneInformation;
-  TLV, SubPkt, LastUpdateInfo, ACountry, S_Log, PTLV: string;
+  TLV, SubPkt, LastUpdateInfo, ACountry, PTLV: string;
   CLContact: TButtonItem;
   ChatPage: TToolButton;
   JvXML: TJvSimpleXml;
@@ -2036,7 +1933,7 @@ begin
         // Делаем поиск с целью найти конец непонятных данных и обрезаем пакет по это место
         BMRes := Pos(#$00#$32#$00, PktData);
         if BMRes > 0 then
-          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, BMRes - 1)) + C_RN
+          NextData(PktData, BMRes - 1)
         else
           Exit;
         // Сбрасываем все переменные
@@ -2074,43 +1971,36 @@ begin
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UIN := NextData(PktData, MsgLen);
-                S_Log := S_Log + C_Login + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UIN + C_RN;
               end;
             $0050: // Получаем Email
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Email := Trim(Utf8ToString(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Email + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email + C_RN;
               end;
             $0064: // Получаем Имя
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 First := Trim(Utf8ToString(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_First + C_Name + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + First + C_RN;
               end;
             $006E: // Получаем Фамилию
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Last := Trim(Utf8ToString(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Last + C_Name + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Last + C_RN;
               end;
             $0078: // Получаем Ник
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Nick := Trim(Utf8ToString(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Nick + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Nick + C_RN;
               end;
             $0082: // Получаем Пол
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Gender := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Gender + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Gender) + C_RN;
               end;
             $0190: // Получаем Статус
               begin
                 NextData(PktData, 3);
                 SStatus := HexToInt(Text2Hex(NextData(PktData, 1)));
-                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(SStatus) + C_RN;
               end;
             $01A4: // Получаем Дату рождения в 64 битном формате
               begin
@@ -2125,7 +2015,6 @@ begin
                   // Разбираем дату на день - месяц - год
                   DecodeDate(SDate64, IYear, IMonth, IDay);
                 end;
-                S_Log := S_Log + C_Age + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Age) + C_RN;
               end;
             $0096: // Получаем суб TLV с инфой о месте жительства
               begin
@@ -2135,7 +2024,6 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
-                  S_Log := S_Log + C_MaskPass + C_BN + C_HomeInfo + C_BN + C_MaskPass + C_RN;
                   // Пропускаем данные
                   NextData(SubPkt, 4);
                   // Сканируем на нужные нам TLV
@@ -2147,35 +2035,30 @@ begin
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Country := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Country + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Country) + C_RN;
                         end;
                       $0078: // Получаем Штат
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           State := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_State + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + State + C_RN;
                         end;
                       $006E: // Получаем Город
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           City := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_City + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + City + C_RN;
                         end;
                       $0064: // Получаем Адрес
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Address := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Address + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Address + C_RN;
                         end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, MsgLen)) + C_RN;
+                        NextData(SubPkt, MsgLen);
                       end;
                     end;
                   end;
-                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
                 else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
@@ -2184,67 +2067,56 @@ begin
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Lang1 := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Lang + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Lang1) + C_RN;
               end;
             $00B4: // Получаем Язык 2
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Lang2 := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Lang + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Lang2) + C_RN;
               end;
             $00BE: // Получаем Язык 3
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Lang3 := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Lang + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Lang3) + C_RN;
               end;
             $012C: // Получаем статус Брака (холост, женат и т.д.)
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Marital := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Marital + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Marital) + C_RN;
               end;
             $0140: // Получаем количество Детей
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Children := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Children + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Children) + C_RN;
               end;
             $014A: // Получаем Религию
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Relig := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Relig + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Relig) + C_RN;
               end;
             $0154: // Получаем Сексуальную ориентацию
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Sexual := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Sexual + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Sexual) + C_RN;
               end;
             $015E: // Получаем Курительный статус
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Smok := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Smok + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Smok) + C_RN;
               end;
             $0168: // Получаем Рост
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Height := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Height + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Height) + C_RN;
               end;
             $0172: // Получаем Цвет волос
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Hair := HexToInt(Text2Hex(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_Hair + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Hair) + C_RN;
               end;
             $0186: // Получаем "О себе..."
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 About := Trim(Utf8ToString(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_AboutInfo + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + About + C_RN;
               end;
             $00A0: // Получаем суб TLV о месте рождения
               begin
@@ -2253,7 +2125,6 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
-                  S_Log := S_Log + C_MaskPass + C_BN + C_OHomeInfo + C_BN + C_MaskPass + C_RN;
                   // Пропускаем данные
                   NextData(SubPkt, 4);
                   // Сканируем на нужные TLV
@@ -2265,29 +2136,25 @@ begin
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           OCountry := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Country + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(OCountry) + C_RN;
                         end;
                       $0078: // Получаем Штат
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           OState := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_State + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + OState + C_RN;
                         end;
                       $006E: // Получаем Город
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           OCity := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_City + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + OCity + C_RN;
                         end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, MsgLen)) + C_RN;
+                        NextData(SubPkt, MsgLen);
                       end;
                     end;
                   end;
-                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
                 else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
@@ -2299,7 +2166,6 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
-                  S_Log := S_Log + C_MaskPass + C_BN + C_WorkInfo + C_BN + C_MaskPass + C_RN;
                   // Пропускаем данные
                   NextData(SubPkt, 4);
                   // Сканируем на нужные TLV
@@ -2311,71 +2177,60 @@ begin
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WCountry := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Country + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(WCountry) + C_RN;
                         end;
                       $00C8: // Получаем Зип
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WZip := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Zip + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WZip + C_RN;
                         end;
                       $00BE: // Получаем Штат
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WState := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_State + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WState + C_RN;
                         end;
                       $00B4: // Получаем Город
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WCity := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_City + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WCity + C_RN;
                         end;
                       $00AA: // Получаем Адрес
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WAddress := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Address + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WAddress + C_RN;
                         end;
                       $0082: // Получаем Профессию
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Occupation := HexToInt(Text2Hex(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Occup + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(Occupation) + C_RN;
                         end;
                       $0078: // Получаем Сайт
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           WSite := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Site + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WSite + C_RN;
                         end;
                       $007D: // Получаем Отдел
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Department := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Dep + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Department + C_RN;
                         end;
                       $006E: // Получаем Компанию
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Company := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Corp + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Company + C_RN;
                         end;
                       $0064: // Получаем Позицию
                         begin
                           MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                           Position := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Prof + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Position + C_RN;
                         end
                     else
                       begin
                         // Если пакет содержит другие TLV, то пропускаем их
                         MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, MsgLen)) + C_RN;
+                        NextData(SubPkt, MsgLen);
                       end;
                     end;
                   end;
-                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
                 else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
@@ -2387,33 +2242,19 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
-                  S_Log := S_Log + C_MaskPass + C_BN + C_EmailsInfo + C_SS + C_BN + C_MaskPass + C_RN;
                   // В цикле смотрим сколько ящиков указано
                   for I := 1 to HexToInt(Text2Hex(NextData(SubPkt, 2))) do
                   begin
                     NextData(SubPkt, 4); // Пропускаем данные
                     MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                     case I of
-                      1:
-                        begin
-                          Email1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Email + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email1 + C_RN;
-                        end;
-                      2:
-                        begin
-                          Email2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Email + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email2 + C_RN;
-                        end;
-                      3:
-                        begin
-                          Email3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Email + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Email3 + C_RN;
-                        end;
+                      1: Email1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                      2: Email2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                      3: Email3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                     end;
                     // Пропускаем какие-то данные
-                    S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, 12)) + C_RN;
+                    NextData(SubPkt, 12);
                   end;
-                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
                 else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
@@ -2425,7 +2266,6 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
-                  S_Log := S_Log + C_MaskPass + C_BN + C_IntInfo + C_BN + C_MaskPass + C_RN;
                   // Смотрим в цикле сколько указано интересов
                   for I := 1 to HexToInt(Text2Hex(NextData(SubPkt, 2))) do
                   begin
@@ -2437,32 +2277,27 @@ begin
                           Int1 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           NextData(SubPkt, 4);
                           I1 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                          S_Log := S_Log + C_IntInfo + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int1 + C_BN + C_QN + IntToStr(I1) + C_EN + C_RN;
                         end;
                       2:
                         begin
                           Int2 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           NextData(SubPkt, 4);
                           I2 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                          S_Log := S_Log + C_IntInfo + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int2 + C_BN + C_QN + IntToStr(I2) + C_EN + C_RN;
                         end;
                       3:
                         begin
                           Int3 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           NextData(SubPkt, 4);
                           I3 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                          S_Log := S_Log + C_IntInfo + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int3 + C_BN + C_QN + IntToStr(I3) + C_EN + C_RN;
                         end;
                       4:
                         begin
                           Int4 := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                           NextData(SubPkt, 4);
                           I4 := HexToInt(Text2Hex(NextData(SubPkt, 2)));
-                          S_Log := S_Log + C_IntInfo + '4' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Int4 + C_BN + C_QN + IntToStr(I4) + C_EN + C_RN;
                         end;
                     end;
                   end;
-                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
                 else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
@@ -2474,43 +2309,21 @@ begin
                 if MsgLen > 2 then
                 begin
                   SubPkt := NextData(PktData, MsgLen);
-                  S_Log := S_Log + C_MaskPass + C_BN + C_PhoneInfo + C_BN + C_MaskPass + C_RN;
                   // В цикле смотрим сколько указано телефонов
                   for I := 1 to HexToInt(Text2Hex(NextData(SubPkt, 2))) do
                   begin
                     NextData(SubPkt, 4);
                     MsgLen := HexToInt(Text2Hex(NextData(SubPkt, 2)));
                     case I of
-                      1:
-                        begin
-                          Phone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Phone + '1' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Phone + C_RN;
-                        end;
-                      2:
-                        begin
-                          Fax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Phone + '2' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Fax + C_RN;
-                        end;
-                      3:
-                        begin
-                          Cellular := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Phone + '3' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Cellular + C_RN;
-                        end;
-                      4:
-                        begin
-                          WPhone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Phone + '4' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WPhone + C_RN;
-                        end;
-                      5:
-                        begin
-                          WFax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
-                          S_Log := S_Log + C_Phone + '5' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + WFax + C_RN;
-                        end;
+                      1: Phone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                      2: Fax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                      3: Cellular := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                      4: WPhone := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
+                      5: WFax := Trim(Utf8ToString(NextData(SubPkt, MsgLen)));
                     end;
                     // Пропускаем какие-то данные
-                    S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubPkt, 6)) + C_RN;
+                    NextData(SubPkt, 6);
                   end;
-                  S_Log := S_Log + C_MaskPass + C_MaskPass + C_RN;
                 end
                 else // Пропускаем пустые данные
                   NextData(PktData, MsgLen);
@@ -2519,126 +2332,123 @@ begin
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
                 HomePage := Trim(Utf8ToString(NextData(PktData, MsgLen)));
-                S_Log := S_Log + C_HomePage + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + HomePage + C_RN;
               end;
-            $0046:
+            (* $0046: // Registered
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Trim(Utf8ToString(NextData(PktData, MsgLen)));
+               end;
+             $0055: // Pending
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Trim(Utf8ToString(NextData(PktData, MsgLen)));
+               end;
+             $003C: // Private Key
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $024E: // Validated
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Trim(Utf8ToString(NextData(PktData, MsgLen)));
+               end;
+             $0226: // MyLine
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Trim(Utf8ToString(NextData(PktData, MsgLen)));
+               end;
+             $021C: // BetaFlag
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $01FE: // Looking For
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end; *)
+            $01F9: // Privacy Level
               begin
                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Registered' + C_BN + C_Name + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
+                Text2Hex(NextData(PktData, MsgLen));
               end;
-            $0055:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Pending' + C_BN + C_Email + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
-              end;
-            $003C:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Private Key' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $024E:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Validated' + C_BN + 'Mobile' + C_BN + C_Phone + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
-              end;
-            $0226:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'MyLine' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
-              end;
-            $021C:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'BetaFlag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01FE:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Looking For' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01F9:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Privacy Level' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01F4:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Exposure Level' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01EA:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Allow Promotion' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01E0:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Service Flag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01D6:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Account Type' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01C2:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Local Language' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToStr(HexToInt(Text2Hex(NextData(PktData, MsgLen)))) + C_RN;
-              end;
-            $01B8:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'HasPhoto' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $01AE:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'PartnerIDs' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Trim(Utf8ToString(NextData(PktData, MsgLen))) + C_RN;
-              end;
-            $017C:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'TimeZone' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $0136:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Anniversary' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $0124:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Interests Background' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $0123:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Interests Group' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $010E:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Studies' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
-            $0104:
-              begin
-                MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + 'Education Level' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
-              end;
+            (* $01F4: // Exposure Level
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $01EA: // Allow Promotion
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $01E0: // Service Flag
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $01D6: // Account Type
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $01C2: // Local Language
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 IntToStr(HexToInt(Text2Hex(NextData(PktData, MsgLen))));
+               end;
+             $01B8: // HasPhoto
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $01AE: // PartnerIDs
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Trim(Utf8ToString(NextData(PktData, MsgLen)));
+               end;
+             $017C: // TimeZone
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $0136: // Anniversary
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $0124: // Interests Background
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $0123: // Interests Group
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $010E: // Studies
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end;
+             $0104: // Education Level
+               begin
+                 MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
+                 Text2Hex(NextData(PktData, MsgLen));
+               end; *)
             $0212: // Получаем ВебАваре флаг
               begin
                 NextData(PktData, 2);
                 if HexToInt(Text2Hex(NextData(PktData, 1))) = $01 then
                   WebAware := True;
-                S_Log := S_Log + C_WebAware + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + BoolToStr(WebAware) + C_RN;
               end;
             $019A: // Получаем флаг авторизации
               begin
                 NextData(PktData, 3);
                 if HexToInt(Text2Hex(NextData(PktData, 1))) = $00 then
                   Auth := True;
-                S_Log := S_Log + C_Auth + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + BoolToStr(Auth) + C_RN;
               end;
             $01CC: // Получаем Время последнего изменения инфы
               begin
@@ -2649,14 +2459,13 @@ begin
                   GetTimeZoneInformation(lTimeZone);
                   SDate64 := (SDate64 + 2) - (lTimeZone.Bias / 1440);
                   LastUpdateInfo := DateTimeToStr(SDate64);
-                  S_Log := S_Log + C_LastChange + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + LastUpdateInfo + C_RN;
                 end;
               end
           else
             begin
               // Если пакет содержит другие TLV, то пропускаем их
               MsgLen := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, MsgLen)) + C_RN;
+              NextData(PktData, MsgLen);
             end;
           end;
         end;
@@ -2674,7 +2483,7 @@ begin
               // Если такого контакта ещё нет в списке ников, то добавляем его ник
               if SearchNickInCash(C_Icq, UIN) = UIN then
               begin
-                V_AccountToNick.Add(C_Icq + C_BN + UrlEncode(UIN) + C_LN + UrlEncode(Nick));
+                V_AccountToNick.Add(C_Icq + ' ' + UrlEncode(UIN) + ';' + UrlEncode(Nick));
                 V_AccountToNick.SaveToFile(V_ProfilePath + C_Nick_BD_FileName, TEncoding.Unicode);
               end;
             end;
@@ -2683,7 +2492,7 @@ begin
           if (Nick > EmptyStr) and (Nick <> UIN) then
           begin
             // Присваиваем этот ник записи в Ростере
-            Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(UIN));
+            Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Login, URLEncode(UIN));
             if Get_Node <> nil then
             begin
               if Get_Node.Properties.Value(C_Nick) = URLEncode(UIN) then
@@ -2710,8 +2519,8 @@ begin
             with JvXML do
             begin
               // Загружаем файл и инфой о контакте
-              if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext) then
-                LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext);
+              if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + ' ' + UIN + C_XML_Ext) then
+                LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + ' ' + UIN + C_XML_Ext);
               if Root <> nil then
               begin
                 // Очищаем раздел инфы контакта
@@ -2775,10 +2584,10 @@ begin
                 Sub_Node.Properties.Add(C_Id + '4', I4);
                 // Записываем интересы
                 Sub_Node := XML_Node.Items.Add(C_IntInfo);
-                Sub_Node.Properties.Add(C_CS + '1', URLEncode(Int1));
-                Sub_Node.Properties.Add(C_CS + '2', URLEncode(Int2));
-                Sub_Node.Properties.Add(C_CS + '3', URLEncode(Int3));
-                Sub_Node.Properties.Add(C_CS + '4', URLEncode(Int4));
+                Sub_Node.Properties.Add('c' + '1', URLEncode(Int1));
+                Sub_Node.Properties.Add('c' + '2', URLEncode(Int2));
+                Sub_Node.Properties.Add('c' + '3', URLEncode(Int3));
+                Sub_Node.Properties.Add('c' + '4', URLEncode(Int4));
                 // Записываем "О себе"
                 XML_Node.Items.Add(C_AboutInfo, URLEncode(About));
                 // Записываем дату рождения
@@ -2806,7 +2615,7 @@ begin
               // Создаём необходимые папки
               ForceDirectories(V_ProfilePath + C_AnketaFolder);
               // Записываем сам файл
-              SaveToFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext);
+              SaveToFile(V_ProfilePath + C_AnketaFolder + C_Icq + ' ' + UIN + C_XML_Ext);
             end;
           finally
             JvXML.Free;
@@ -2848,17 +2657,12 @@ begin
         begin
           // Получаем текст страны из кода
           if Assigned(IcqOptionsForm) then
-            ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + IntToStr(Country) + C_EN];
+            ACountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + IntToStr(Country) + ']'];
           // Обрабатываем результаты поиска
           ICQ_NotifyAddSearchResults(UIN, Nick, First, Last, IntToStr(Age), StrArrayToStr([Email, Email1, Email2, Email3]), ACountry, City, Gender, SStatus, Auth, True);
         end;
       end;
-  else
-    S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + PTLV;
   end;
-  // Пишем в лог данные пакета
-  if S_Log <> EmptyStr then
-    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[54].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3028,9 +2832,9 @@ end;
 {$ENDREGION}
 {$REGION 'ICQ_ReqMsgNotify'}
 
-procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string; GTrans: Boolean = False);
+procedure ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime: string; GTrans: Boolean = False; xAuth: Boolean = False);
 label
-  X;
+  X, Y;
 var
   Nick, Mess, MsgD, PopMsg, HistoryFile: string;
   GtransMsg: Boolean;
@@ -3043,16 +2847,29 @@ begin
   // Если сообщение пустое, то выходим
   if Msg = EmptyStr then
     Exit;
+  Mess := Msg;
+  // Вывод плагинам "входящее сообщение ICQ [uin:message]"
+  MainForm.JvPluginManager.BroadcastMessage(14, UIN + ':' + Mess);
   // Если окно сообщений не было создано, то создаём его
   if not Assigned(ChatForm) then
     Application.CreateForm(TChatForm, ChatForm);
+  // Если это запрос авторизации
+  if xAuth then
+  begin
+    PopMsg := MainForm.ReqAuthContact.Caption + ':' + C_RN + Mess;
+    Mess := Text2XML(Mess);
+    CheckMessage_BR(Mess);
+    DecorateURL(Mess);
+    Mess := Format(C_Auth_Req, [MainForm.ReqAuthContact.Caption + ':', Mess, Lang_Vars[171].L_S, Lang_Vars[172].L_S]);
+    goto Y;
+  end;
   // Обрабатываем сообщение на наличие формата HTML
-  if Copy(Msg, 1, 6) = '<HTML>' then
-    ChatForm.CheckMessage_ClearTag(Msg);
-  // Окончательно обрабатываем сообщение
-  Mess := Text2XML(Msg);
-  CheckMessage_BR(Mess);
-  ChatForm.CheckMessage_ClearTag(Mess);
+  if Copy(Mess, 1, 6) = '<HTML>' then
+  begin
+    CheckMessage_BR(Mess);
+    CheckMessage_ClearTag(Mess);
+    Mess := XML2Text(Mess);
+  end;
   // Если это сообщение с переводом, то переходим дальше
   if GTrans then
     goto X;
@@ -3061,9 +2878,9 @@ begin
   try
     with JvXML do
     begin
-      if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext) then
+      if FileExists(V_ProfilePath + C_AnketaFolder + C_Icq + ' ' + UIN + C_XML_Ext) then
       begin
-        LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + C_BN + UIN + C_XML_Ext);
+        LoadFromFile(V_ProfilePath + C_AnketaFolder + C_Icq + ' ' + UIN + C_XML_Ext);
         if Root <> nil then
         begin
           XML_Node := Root.Items.ItemNamed[C_Gtrans];
@@ -3077,7 +2894,7 @@ begin
   end;
   if GtransMsg then
   begin
-    if not Assigned(GTransForm) then
+    {if not Assigned(GTransForm) then
       Application.CreateForm(TGTransForm, GTransForm);
     with GTransForm.GtransListView.Items.Add do
     begin
@@ -3086,13 +2903,14 @@ begin
       SubItems.Add(UIN);
       SubItems.Add(Mess);
       SubItems.Add(C_Icq);
-    end;
+    end;}
     // Выходим
     Exit;
   end;
   // Обрабатываем сообщение
   X: ;
   PopMsg := Mess;
+  Y: ;
   // Ищем этот контакт в Ростере
   Contact_Yes := False;
   if V_Roster <> nil then
@@ -3106,19 +2924,19 @@ begin
         if XML_Node <> nil then
         begin
           // Открываем раздел групп
-          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
           if Sub_Node = nil then
-            Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+            Sub_Node := XML_Node.Items.Add(C_Group + 's');
           // Добавляем группу для контактов "не в списке"
-          Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+          Tri_Node := Sub_Node.Items.ItemNamed[C_Group + '_' + C_NoCL];
           if Tri_Node = nil then
           begin
-            Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+            Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_NoCL);
             Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
             Tri_Node.Properties.Add(C_Id, C_NoCL);
           end;
           // Ищем раздел контактов
-          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
           if Sub_Node <> nil then
           begin
             for I := 0 to Sub_Node.Items.Count - 1 do
@@ -3131,13 +2949,14 @@ begin
                 begin
                   Contact_Yes := True;
                   // Записываем входяшее сообщение
-                  RosterUpdateProp(Tri_Node, C_InMess, UrlEncode(Mess));
+                  if not xAuth then
+                    RosterUpdateProp(Tri_Node, C_InMess, UrlEncode(Mess));
                   // Ник контакта из Ростера
                   Nick := URLDecode(Tri_Node.Properties.Value(C_Nick));
                   // Дата сообщения
-                  MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+                  MsgD := Nick + ' ' + '[' + DateTimeChatMess + ']';
                   // Ставим метку о непрочитанном сообщении
-                  RosterUpdateProp(Tri_Node, C_Mess, C_XX);
+                  RosterUpdateProp(Tri_Node, C_Mess, 'X');
                   // Прерываем цикл
                   Break;
                 end;
@@ -3149,25 +2968,30 @@ begin
               // Ищем его Ник в файле-кэше ников
               Nick := SearchNickInCash(C_Icq, UIN);
               // Дата сообщения
-              MsgD := Nick + C_BN + C_QN + DateTimeChatMess + C_EN;
+              MsgD := Nick + ' ' + '[' + DateTimeChatMess + ']';
               // Добавляем этот контакт в эту группу
-              Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+              Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(Sub_Node.Items.Count + 1));
               Tri_Node.Properties.Add(C_Login, URLEncode(UIN));
               Tri_Node.Properties.Add(C_Group + C_Id, C_NoCL);
               Tri_Node.Properties.Add(C_Status, 214);
               Tri_Node.Properties.Add(C_Nick, URLEncode(Nick));
-              Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
-              Tri_Node.Properties.Add(C_Mess, C_XX);
+              if not xAuth then
+                Tri_Node.Properties.Add(C_InMess, UrlEncode(Mess));
+              Tri_Node.Properties.Add(C_Mess, 'X');
               // Запрашиваем анкету неопознанных контактов
               if Nick = UIN then
                 if ICQ_Work_Phaze then
                   ICQ_ReqInfo_New_Pkt(UIN);
             end;
             // Записываем сообщение в файл истории с этим контактом
-            HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + C_BN + ICQ_LoginUIN + C_BN + UIN + C_Htm_Ext;
-            Mess := Text2XML(Mess);
-            CheckMessage_BR(Mess);
-            DecorateURL(Mess);
+            ForceDirectories(V_ProfilePath + C_HistoryFolder + C_Icq + '\' + ICQ_LoginUIN + '\');
+            HistoryFile := V_ProfilePath + C_HistoryFolder + C_Icq + '\' + ICQ_LoginUIN + '\' + UIN + C_Htm_Ext;
+            if not xAuth then
+            begin
+              Mess := Text2XML(Mess);
+              CheckMessage_BR(Mess);
+              DecorateURL(Mess);
+            end;
             SaveTextInHistory(Format(C_HistoryIn, [MsgD, Mess]), HistoryFile);
             // Добавляем сообщение в текущий чат
             if not ChatForm.AddMessInActiveChat(Nick, PopMsg, UrlEncode(UIN), MsgD, Mess) then
@@ -3192,8 +3016,7 @@ procedure ICQ_ReqMessage_0407(PktData: string);
 label
   X,
     Y,
-    Z,
-    E;
+    Z;
 var
   UIN, Msg, UserClass, Status, TimeReg, IconHash, ConnTime: string;
   SubData, ExtIP, IntPort, IntIP, Desc, URL, TLV: string;
@@ -3201,7 +3024,6 @@ var
   Len, ULen, CharsetNumber: Word;
   FSize: LongWord;
   MsgType: Word;
-  S_Log: string;
 begin
   // Пропускаем раздел куков
   NextData(PktData, 8);
@@ -3212,8 +3034,6 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        S_Log := S_Log + C_MsgCannel + C_TN + C_BN + TLV + C_RN;
-        S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3226,42 +3046,37 @@ begin
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
               end;
             $0006: // Статус
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
               end;
             $0005: // Дата регистраций UIN
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
               end;
             $001D: // Аватар хэш и другие доп. статусы
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
               end;
             $000F: // Время в сети
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+                NextData(PktData, Len);
               end;
             $0003: // Время подключения
               begin
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+              NextData(PktData, Len);
             end;
           end;
         end;
@@ -3297,13 +3112,12 @@ begin
                       Msg := UnicodeBEHex2Text(Text2Hex(Msg));
                   end;
                 end;
-                S_Log := S_Log + C_InMess + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Msg + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+              NextData(PktData, Len);
             end;
           end;
         end;
@@ -3312,8 +3126,6 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        S_Log := S_Log + C_MsgCannel + C_TN + C_BN + TLV + C_RN;
-        S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3326,42 +3138,37 @@ begin
               begin // Класс контакта (вдруг админ постучит)
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
               end;
             $0006:
               begin // Статус
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
               end;
             $0005:
               begin // Дата регистраций UIN
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
               end;
             $001D:
               begin // Аватар хэш и другие доп. статусы
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
               end;
             $000F:
               begin // Время в сети
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+                NextData(PktData, Len);
               end;
             $0003:
               begin // Время подключения
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+              NextData(PktData, Len);
             end;
           end;
         end;
@@ -3391,12 +3198,10 @@ begin
                       begin // Внешний IP
                         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                         ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                        S_Log := S_Log + C_ExtIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ExtIP + C_RN;
                       end;
                     $0005:
                       begin // Внутренний порт
                         IntPort := IntToStr(HexToInt(Text2Hex(NextData(PktData, 4))));
-                        S_Log := S_Log + C_IntIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntIP + C_TN + IntPort + C_RN;
                       end;
                     $2711:
                       begin // Сообщение
@@ -3405,22 +3210,21 @@ begin
                         // If this value is not present, this is not a message packet.
                         // Also, ICQ2001b does not send an ACK, SNAC(4,B), if this is not 0x1B.
                         if NextData(SubData, 1) <> #$1B then
-                          goto E;
+                          Exit;
                         NextData(SubData, 26 + 6 + 12); // 1B - 1 Len + FFSeq + Unknown
                         MsgType := HexToInt(Text2Hex((NextData(SubData, 1))));
-                        S_Log := S_Log + C_Mess + C_Type + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToHex(MsgType, 1) + C_RN;
                         NextData(SubData, 1 + 2 + 2); // MsgFlag + status code + priority code
                         if MsgType = M_FILE then // File request
                         begin
-                          goto E;
+                          Exit;
                         end
                         else if MsgType = M_CONTACTS then // Contact list message
                         begin
-                          goto E;
+                          Exit;
                         end
                         else if MsgType = M_ADVANCED then
                         begin
-                          goto E;
+                          Exit;
                         end
                         else
                         begin
@@ -3430,7 +3234,6 @@ begin
                           Msg := NextData(SubData, MsgLen);
                           if IsUtf8Valid(Msg) then // Изза ошибок в кодировке QIP 2005
                             Msg := UTF8ToString(Msg);
-                          S_Log := S_Log + C_InMess + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Msg + C_RN;
                           if Msg <> EmptyStr then
                           begin
                             if MsgType = M_URL then
@@ -3446,7 +3249,7 @@ begin
                     begin
                       // Если есть другие TLV, то пропускаем их
                       Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                      S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+                      NextData(PktData, Len);
                     end;
                   end;
                 end;
@@ -3455,7 +3258,7 @@ begin
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+              NextData(PktData, Len);
             end;
           end;
         end;
@@ -3464,8 +3267,6 @@ begin
       begin
         Len := HexToInt(Text2Hex(NextData(PktData, 1)));
         UIN := NextData(PktData, Len);
-        S_Log := S_Log + C_MsgCannel + C_TN + C_BN + TLV + C_RN;
-        S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
         NextData(PktData, 2); // Пропускаем что-то
         Count := HexToInt(Text2Hex(NextData(PktData, 2))); // Узнаём количество TLV в пакете
         if Count < 1 then
@@ -3478,42 +3279,37 @@ begin
               begin // Класс контакта (вдруг админ постучит)
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 UserClass := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
               end;
             $0006:
               begin // Статус
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 Status := Text2Hex(NextData(PktData, Len));
-                S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
               end;
             $0005:
               begin // Дата регистраций UIN
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 TimeReg := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
               end;
             $001D:
               begin // Аватар хэш и другие доп. статусы
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 IconHash := NextData(PktData, Len);
-                S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
               end;
             $000F:
               begin // Время в сети
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-                S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+                NextData(PktData, Len);
               end;
             $0003:
               begin // Время подключения
                 Len := HexToInt(Text2Hex(NextData(PktData, 2)));
                 ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-                S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
               end
           else
             begin
               // Если есть другие TLV, то пропускаем их
               Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-              S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+              NextData(PktData, Len);
             end;
           end;
         end;
@@ -3523,14 +3319,12 @@ begin
           NextData(PktData, 2);
           NextData(PktData, 4); // UIN
           MsgType := HexToInt(Text2Hex(NextData(PktData, 1)));
-          S_Log := S_Log + C_Mess + C_Type + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntToHex(MsgType, 1) + C_RN;
           NextData(PktData, 1); // MsgFlag
           MsgLen := Swap16(HexToInt(Text2Hex(NextData(PktData, 2))));
           Dec(MsgLen);
           Msg := NextData(PktData, MsgLen);
           if IsUtf8Valid(Msg) then // Изза ошибок в кодировке QIP 2005
             Msg := UTF8ToString(Msg);
-          S_Log := S_Log + C_InMess + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Msg + C_RN;
           if Msg <> EmptyStr then
           begin
             if MsgType = M_URL then
@@ -3541,22 +3335,16 @@ begin
             end
             else if MsgType = M_WEB_PAGE then
             begin
-              goto E;
+              Exit;
             end;
           end;
         end;
       end
   else
-    begin
-      S_Log := S_Log + Log_Unk_Data + C_RN + Trim(Dump(PktData)) + C_RN;
-      goto E;
-    end;
+    Exit;
   end;
   // Передаём полученные данные для события входящего сообщения
   ICQ_ReqMsgNotify(UIN, Msg, Status, UserClass, IntIP, IntPort, ExtIP, TimeReg, IconHash, ConnTime);
-  E: ;
-  // Пишем данные пакета в лог
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[36].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3567,7 +3355,7 @@ var
   I, StatusIcoInd, IXStat, IClient: Integer;
   BartID, BartLength, BartSubLen: Integer;
   //Utf8Sup: Boolean;
-  IHash, IXText, PClient, IXStatNew, S_Log: string;
+  IHash, IXText, PClient, IXStatNew: string;
   Get_Node: TJvSimpleXmlElem;
 begin
   // Получаем номер иконки из статуса
@@ -3593,14 +3381,12 @@ begin
         STATUS_MOOD: // Название x-статуса (картинка)
           begin
             IXStatNew := NextData(IconHash, BartLength);
-            S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + IXStatNew + C_RN;
             // Преобразуем новый тип доп. статуса в номер иконки
             for I := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
             begin
               if ICQ_XStatus_Codes[I].XStatus_Code = IXStatNew then
               begin
                 IXStat := ICQ_XStatus_Codes[I].XStatus_Icon + 44;
-                S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + ICQ_XStatus_Codes[I].XStatus_Code + C_RN;
                 Break;
               end;
             end;
@@ -3609,12 +3395,11 @@ begin
           begin
             BartSubLen := HexToInt(Text2Hex(NextData(IconHash, 2)));
             IXText := Utf8ToString(NextData(IconHash, BartSubLen));
-            S_Log := S_Log + C_XX + C_Mess + C_TN + C_BN + IXText + C_RN;
             if BartLength - BartSubLen > 0 then
               NextData(IconHash, BartLength - BartSubLen); // Тупые байты
           end;
       else
-        S_Log := S_Log + 'Bart' + C_Unk + C_TN + C_BN + Text2Hex(NextData(IconHash, BartLength)) + C_RN;
+        NextData(IconHash, BartLength);
       end;
     end;
   end;
@@ -3626,7 +3411,6 @@ begin
       if Pos(ICQ_XStatus_Codes[I].XStatus_Caps, Caps) > 0 then
       begin
         IXStat := ICQ_XStatus_Codes[I].XStatus_Icon + 44;
-        S_Log := S_Log + C_XX + C_Status + C_TN + C_BN + ICQ_XStatus_Codes[I].XStatus_Code + C_RN;
         Break;
       end;
     end;
@@ -3639,7 +3423,6 @@ begin
     begin
       PClient := ICQ_Clients_Caps[I].Client_Name;
       IClient := ICQ_Clients_Caps[I].Client_Icon;
-      S_Log := S_Log + C_Client + C_TN + C_BN + ICQ_Clients_Caps[I].Client_Name + C_RN;
       Break;
     end;
   end;
@@ -3649,12 +3432,12 @@ begin
   else
     Utf8Sup := False;}
   // Обновляем отображение контакта в Ростере
-  Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, URLEncode(UIN));
+  Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Login, URLEncode(UIN));
   if Get_Node <> nil then
   begin
     RosterUpdateProp(Get_Node, C_Status, IntToStr(StatusIcoInd));
-    RosterUpdateProp(Get_Node, C_XX + C_Status + C_Name, URLEncode(IXStatNew));
-    RosterUpdateProp(Get_Node, C_XX + C_Status, IntToStr(IXStat));
+    RosterUpdateProp(Get_Node, 'X' + C_Status + C_Name, URLEncode(IXStatNew));
+    RosterUpdateProp(Get_Node, 'X' + C_Status, IntToStr(IXStat));
     RosterUpdateProp(Get_Node, C_XText, URLEncode(IXText));
     RosterUpdateProp(Get_Node, C_Client + C_Name, PClient);
     RosterUpdateProp(Get_Node, C_Client, IntToStr(IClient));
@@ -3665,9 +3448,6 @@ begin
   // Запускаем таймер задержку событий Ростера
   MainForm.JvTimerList.Events[11].Enabled := False;
   MainForm.JvTimerList.Events[11].Enabled := True;
-  // Пишем в лог
-  if S_Log <> EmptyStr then
-    XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -3693,10 +3473,10 @@ label
   X;
 var
   UIN, IconHash, UserClass, TimeReg, ConnTime, Status: string;
-  Cap, CapsId, Caps, IntPort, ProtoVer, IntIP, ExtIP, ConnFlag: string;
-  Count, I, V: Word;
+  {Cap, }CapsId, Caps, IntPort, ProtoVer, IntIP, ExtIP, ConnFlag: string;
+  Count, I: Word;
   Len: Integer;
-  TLV, DCInfo, S, S_Log: string;
+  TLV, DCInfo {, S}: string;
 begin
   // Назначаем по умолчанию дефолтный статус
   Status := 'FFFFFFFF';
@@ -3704,7 +3484,6 @@ begin
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   // Получаем UIN чей статус нам прислал сервак
   UIN := NextData(PktData, Len);
-  S_Log := S_Log + C_Login + C_TN + C_BN + UIN + C_RN;
   // Пропускаем варнинглэвел (в icq всегда равен нулю)
   NextData(PktData, 2);
   // Получаем количество вложенных в пакет TLV
@@ -3721,7 +3500,6 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           UserClass := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + UserClass + C_RN;
         end;
       $000C: // DC информация
         begin
@@ -3731,139 +3509,115 @@ begin
           // Внутрений IP адрес и порт
           IntIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(DCInfo, 4)))));
           IntPort := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 4))));
-          S_Log := S_Log + C_IntIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + IntIP + C_TN + IntPort + C_RN;
           // Флаг подключения и версия протокола
           ConnFlag := Text2Hex(NextData(DCInfo, 1)); // Флаг подключения
-          S_Log := S_Log + 'ConnFlag' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnFlag + C_RN;
           ProtoVer := IntToStr(HexToInt(Text2Hex(NextData(DCInfo, 2))));
-          S_Log := S_Log + C_ProtoVer + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ProtoVer + C_RN;
           // Дополнительные поля для как правило для нужд программистов
-          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
-          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 8)) + C_RN;
-          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
-          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 4)) + C_RN;
-          S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(DCInfo, 6)) + C_RN;
+          NextData(DCInfo, 4);
+          NextData(DCInfo, 8);
+          NextData(DCInfo, 4);
+          NextData(DCInfo, 4);
+          NextData(DCInfo, 6);
         end;
       $000A: // Внешний IP адрес
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ExtIP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + C_ExtIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ExtIP + C_RN;
         end;
       $0006: // Статус
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           Status := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Status + C_RN;
         end;
       $0005: // Дата регистраций UIN
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           TimeReg := DateToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + TimeReg + C_RN;
         end;
       $0019: // Укороченные капабилитисы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           CapsId := Text2Hex(NextData(PktData, Len));
-          S := EmptyStr;
+          {S := EmptyStr;
           while Length(CapsId) > 0 do
           begin
             Cap := NextData(CapsId, 4);
-            if Assigned(LogForm) then
+            // Ищем названия капов характеристик
+            for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
             begin
-              if LogForm.ICQDumpSpeedButton.Down then
+              if (ICQ_Servises_Caps[V].Cap_HEX[5] + ICQ_Servises_Caps[V].Cap_HEX[6] + ICQ_Servises_Caps[V].Cap_HEX[7] + ICQ_Servises_Caps[V].Cap_HEX[8]) = Cap then
               begin
-                // Ищем названия капов характеристик
-                for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
-                begin
-                  if (ICQ_Servises_Caps[V].Cap_HEX[5] + ICQ_Servises_Caps[V].Cap_HEX[6] + ICQ_Servises_Caps[V].Cap_HEX[7] + ICQ_Servises_Caps[V].Cap_HEX[8]) = Cap then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_Servises_Caps[V].Cap_Name + C_EN;
-                    Break;
-                  end;
-                end;
+                Cap := Cap + ' ' + C_S14 + ICQ_Servises_Caps[V].Cap_Name + C_S15;
+                Break;
               end;
             end;
-            S := S + Cap + C_BN + C_PN + C_BN;
+            S := S + Cap + ' ' + C_S11 + ' ';
           end;
-          CapsId := S;
-          S_Log := S_Log + C_Caps + C_Id + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + CapsId + C_RN;
+          CapsId := S;}
         end;
       $000D: // Полные капабилитисы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           Caps := Text2Hex(NextData(PktData, Len));
-          S := EmptyStr;
+          {S := EmptyStr;
           while Length(Caps) > 0 do
           begin
             Cap := NextData(Caps, 32);
-            if Assigned(LogForm) then
+            // Ищем названия капов характеристик
+            for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
             begin
-              if LogForm.ICQDumpSpeedButton.Down then
+              if ICQ_Servises_Caps[V].Cap_HEX = Cap then
               begin
-                // Ищем названия капов характеристик
-                for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
-                begin
-                  if ICQ_Servises_Caps[V].Cap_HEX = Cap then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_Servises_Caps[V].Cap_Name + C_EN;
-                    Break;
-                  end;
-                end;
-                // Ищем названия капов Xстатусов
-                for V := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
-                begin
-                  if ICQ_XStatus_Codes[V].XStatus_Caps = Cap then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_XStatus_Codes[V].XStatus_Code + C_EN;
-                    Break;
-                  end;
-                end;
-                // Ищем названия капов клиентов
-                for V := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
-                begin
-                  if Pos(ICQ_Clients_Caps[V].Cap_HEX, Cap) > 0 then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_Clients_Caps[V].Client_Name + C_EN;
-                    Break;
-                  end;
-                end;
+                Cap := Cap + ' ' + C_S14 + ICQ_Servises_Caps[V].Cap_Name + C_S15;
+                Break;
               end;
             end;
-            S := S + Cap + C_BN + C_PN + C_BN;
+            // Ищем названия капов Xстатусов
+            for V := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
+            begin
+              if ICQ_XStatus_Codes[V].XStatus_Caps = Cap then
+              begin
+                Cap := Cap + ' ' + C_S14 + ICQ_XStatus_Codes[V].XStatus_Code + C_S15;
+                Break;
+              end;
+            end;
+            // Ищем названия капов клиентов
+            for V := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
+            begin
+              if Pos(ICQ_Clients_Caps[V].Cap_HEX, Cap) > 0 then
+              begin
+                Cap := Cap + ' ' + C_S14 + ICQ_Clients_Caps[V].Client_Name + C_S15;
+                Break;
+              end;
+            end;
+            S := S + Cap + ' ' + C_S11 + ' ';
           end;
-          Caps := S;
-          S_Log := S_Log + C_Caps + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Caps + C_RN;
+          Caps := S;}
         end;
       $001D: // Аватар хэш и другие доп. статусы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           IconHash := NextData(PktData, Len);
-          S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(IconHash) + C_RN;
         end;
       $000F: // Время в сети
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-          S_Log := S_Log + C_TimeOnline + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+          NextData(PktData, Len);
         end;
       $0003: // Время подключения
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ConnTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ConnTime + C_RN;
         end
     else
       begin
         // Если есть другие TLV, то пропускаем их
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+        NextData(PktData, Len);
       end;
     end;
   end;
   X: ;
-  // Пишем данные пакета в лог
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[37].Pkt_Name, Trim(S_Log), C_Icq);
   // Если это была проверка статуса то выводим сообщение
   if CheckStatus then
   begin
@@ -3890,7 +3644,6 @@ begin
   // Получаем длинну UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
   UIN := NextData(PktData, Len);
-  //XLog(C_Icq + Log_Get + Log_User_Offline_Event + UIN, C_Icq);
   // Ещё есть данные для расшифровки
 
   // Запускаем событие контакт онлайн со статусом оффлайн номер иконки 9
@@ -4061,23 +3814,26 @@ end;
 {$REGION 'ICQ_Parse_1306'}
 
 function ICQ_Parse_1306(PktData: string): Boolean;
-const
-  C_ChangeTime = 'ChangeTime';
+label
+  A, B;
 var
-  Len, Count, I: Integer;
+  Len, Count, I, P: Integer;
   CLTimeStamp: DWord;
-  SubData, QSN, QGroupId, QID, QType, QNick, TLV, S_Log: string;
+  SubData, QSN, QGroupId, QID, QType, QNick, TLV: string;
   QPhone, QNote, QEmail, QTimeId: string;
-  XML_Node, Sub_Node, Tri_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node, Tri_Node, Get_Node: TJvSimpleXmlElem;
   Dt: TDateTime;
+  Visible_Contacts, NotVisible_Contacts: TStringList;
 begin
   // Ставим не законченный результат разбора пакета (пока все части пакета не придут нужно ждать их от сервера)
   Result := False;
+  // Создаем списки видящих и невидящих контактов
+  Visible_Contacts := TStringList.Create;
+  NotVisible_Contacts := TStringList.Create;
   // Пропускаем версию КЛ
   NextData(PktData, 1);
   // Получаем количесво записей в нашем КЛ
   Count := HexToInt(Text2Hex(NextData(PktData, 2)));
-  S_Log := S_Log + C_Item + C_SS + C_BN + C_Count + C_TN + C_BN + IntToStr(Count) + C_RN;
   // Разбираем записи
   // Начинаем добаление записей контактов в Ростер
   if V_Roster <> nil then
@@ -4095,16 +3851,12 @@ begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           // Получаем имя записи
           QSN := Utf8ToString(NextData(PktData, Len));
-          S_Log := S_Log + C_Item + C_BN + C_PN + C_BN + C_Name + C_TN + C_BN + QSN + C_LN + C_BN;
           // Получаем идентификатор группы
           QGroupId := Text2Hex(NextData(PktData, 2));
-          S_Log := S_Log + C_Group + C_Id + C_TN + C_BN + QGroupId + C_LN + C_BN;
           // Идентификатор записи
           QID := Text2Hex(NextData(PktData, 2));
-          S_Log := S_Log + C_Id + C_TN + C_BN + QID + C_LN + C_BN;
           // Тип записи
           QType := Text2Hex(NextData(PktData, 2));
-          S_Log := S_Log + 'Type' + C_TN + C_BN + QType + C_LN + C_BN;
           // Длинна TLV записи
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           // Получаем субпакет записи
@@ -4114,11 +3866,11 @@ begin
             BUDDY_NORMAL: // Нормальный контакт
               begin
                 // Открываем раздел контактов
-                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
                 if Sub_Node = nil then
-                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                  Sub_Node := XML_Node.Items.Add(C_Contact + 's');
                 // Добавляем контакт в Ростер
-                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(Sub_Node.Items.Count + 1));
                 Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
                 Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
                 Tri_Node.Properties.Add(C_Status, 9);
@@ -4134,7 +3886,6 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         QNick := Utf8ToString(NextData(SubData, Len));
-                        S_Log := S_Log + C_Nick + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QNick + C_LN + C_BN;
                         if QNick <> EmptyStr then
                           Tri_Node.Properties.Add(C_Nick, URLEncode(QNick));
                       end;
@@ -4142,14 +3893,12 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         QPhone := Utf8ToString(NextData(SubData, Len));
-                        S_Log := S_Log + C_Phone + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QPhone + C_LN + C_BN;
                         Tri_Node.Properties.Add(C_Phone, URLEncode(QPhone));
                       end;
                     $0066: // Не авторизованый контакт
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         NextData(SubData, Len);
-                        S_Log := S_Log + C_Auth + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + C_AuthNone + C_LN + C_BN;
                         // Ставим флаг что контакт требует авторизации и ставим предупредительную иконку
                         RosterUpdateProp(Tri_Node, C_Auth, C_AuthNone);
                         RosterUpdateProp(Tri_Node, C_Client, '220');
@@ -4158,28 +3907,25 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         QNote := Utf8ToString(NextData(SubData, Len));
-                        S_Log := S_Log + C_Note + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QNote + C_LN + C_BN;
                         Tri_Node.Properties.Add(C_Note, URLEncode(QNote));
                       end;
                     $0137: // Email контакта
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         QEmail := Utf8ToString(NextData(SubData, Len));
-                        S_Log := S_Log + C_Email + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QEmail + C_LN + C_BN;
                         Tri_Node.Properties.Add(C_Email, URLEncode(QEmail));
                       end;
                     $006D: // TimeId
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         QTimeId := Text2Hex(NextData(SubData, Len));
-                        S_Log := S_Log + C_Time + C_Id + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QTimeId + C_LN + C_BN;
                         Tri_Node.Properties.Add(C_Time + C_Id, QTimeId);
                       end
                   else
                     begin
                       // Если пакет содержит другие TLV, то пропускаем их
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      S_Log := S_Log + C_Unk + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubData, Len)) + C_LN + C_BN;
+                      NextData(SubData, Len);
                     end;
                   end;
                 end;
@@ -4187,13 +3933,13 @@ begin
             BUDDY_GROUP: // Группа
               begin
                 // Открываем раздел групп
-                Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
                 if Sub_Node = nil then
-                  Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+                  Sub_Node := XML_Node.Items.Add(C_Group + 's');
                 // Нулевая группа для временных контактов в серверном КЛ
                 if QGroupId = '0000' then
                 begin
-                  Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                  Tri_Node := Sub_Node.Items.Add(C_Group + '_' + IntToStr(Sub_Node.Items.Count + 1));
                   Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[32].L_S));
                   Tri_Node.Properties.Add(C_Id, QGroupId);
                 end
@@ -4205,7 +3951,7 @@ begin
                     // Если есть хоть одна группа, то отключаем режим "нового" КЛ
                     NewKL := False;
                     // Записываем группу
-                    Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                    Tri_Node := Sub_Node.Items.Add(C_Group + '_' + IntToStr(Sub_Node.Items.Count + 1));
                     Tri_Node.Properties.Add(C_Name, URLEncode(QSN));
                     Tri_Node.Properties.Add(C_Id, QGroupId);
                   end;
@@ -4214,58 +3960,58 @@ begin
             BUDDY_UPGROUP: // Код для приватных групп
               begin
                 ICQ_UpdatePrivateGroup_Code := QID;
-                S_Log := S_Log + 'PrivateGroupId' + C_TN + C_BN + QID + C_LN;
               end;
             BUDDY_IGNORE: // Игнорируемые контакты
               begin
-                {// Открываем раздел контактов
-                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                // Открываем раздел контактов
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
                 if Sub_Node = nil then
-                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                  Sub_Node := XML_Node.Items.Add(C_Contact + 's');
                 // Добавляем контакт в Ростер
-                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node := Sub_Node.Items.Add(C_Contact + 'D' + IntToStr(Sub_Node.Items.Count + 1));
                 Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
                 Tri_Node.Properties.Add(C_Group + C_Id, C_IgCL);
                 Tri_Node.Properties.Add(C_Status, 9);
                 Tri_Node.Properties.Add(C_Id, QID);
-                Tri_Node.Properties.Add(C_Type, QType);}
+                Tri_Node.Properties.Add(C_Type, QType);
+                Tri_Node.Properties.Add('P', 'E');
+                // Сканируем субпакет на наличие нужных нам TLV пока длинна пакета больше нуля
+                while Length(SubData) > 0 do
+                begin
+                  TLV := Text2Hex(SubData[1] + SubData[2]);
+                  case HexToInt(Text2Hex(NextData(SubData, 2))) of
+                    $0131: // Ник контакта
+                      begin
+                        Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                        QNick := Utf8ToString(NextData(SubData, Len));
+                        if QNick <> EmptyStr then
+                          Tri_Node.Properties.Add(C_Nick, URLEncode(QNick));
+                      end
+                  else
+                    begin
+                      // Если пакет содержит другие TLV, то пропускаем их
+                      Len := HexToInt(Text2Hex(NextData(SubData, 2)));
+                      NextData(SubData, Len);
+                    end;
+                  end;
+                end;
               end;
             BUDDY_INVISIBLE: // Невидящие контакты
               begin
-                {// Открываем раздел контактов
-                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
-                if Sub_Node = nil then
-                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
-                // Добавляем контакт в Ростер
-                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
-                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
-                Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
-                Tri_Node.Properties.Add(C_Status, 9);
-                Tri_Node.Properties.Add(C_Id, QID);
-                Tri_Node.Properties.Add(C_Type, QType);}
+                NotVisible_Contacts.Add(URLEncode(QSN));
               end;
             BUDDY_VISIBLE: // Видящие контакты
               begin
-                {// Открываем раздел контактов
-                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
-                if Sub_Node = nil then
-                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
-                // Добавляем контакт в Ростер
-                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
-                Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
-                Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
-                Tri_Node.Properties.Add(C_Status, 9);
-                Tri_Node.Properties.Add(C_Id, QID);
-                Tri_Node.Properties.Add(C_Type, QType);}
+                Visible_Contacts.Add(URLEncode(QSN));
               end;
             BUDDY_DELETE, BUDDY_AUTORIZ: // Временные контакты из нулевой группы
               begin
                 // Открываем раздел контактов
-                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
                 if Sub_Node = nil then
-                  Sub_Node := XML_Node.Items.Add(C_Contact + C_SS);
+                  Sub_Node := XML_Node.Items.Add(C_Contact + 's');
                 // Добавляем контакт в Ростер
-                Tri_Node := Sub_Node.Items.Add(C_Contact + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node := Sub_Node.Items.Add(C_Contact + '_' + IntToStr(Sub_Node.Items.Count + 1));
                 Tri_Node.Properties.Add(C_Login, URLEncode(QSN));
                 Tri_Node.Properties.Add(C_Group + C_Id, QGroupId);
                 Tri_Node.Properties.Add(C_Status, 214);
@@ -4282,14 +4028,13 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         QTimeId := Text2Hex(NextData(SubData, Len));
-                        S_Log := S_Log + C_Time + C_Id + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + QTimeId + C_LN + C_BN;
                         Tri_Node.Properties.Add(C_Time + C_Id, QTimeId);
                       end
                   else
                     begin
                       // Если пакет содержит другие TLV, то пропускаем их
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      S_Log := S_Log + C_Unk + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubData, Len)) + C_LN + C_BN;
+                      NextData(SubData, Len);
                     end;
                   end;
                 end;
@@ -4305,44 +4050,38 @@ begin
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_CollSince := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                        S_Log := S_Log + 'CollSince' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_CollSince + C_LN + C_BN;
                       end;
                     $0150: // Всего отправлено сообщений
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_SendMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                        S_Log := S_Log + C_OutMess + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_SendMess + C_LN + C_BN;
                       end;
                     $0151: // Дней проведено в сети
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         Dt := HexToInt(Text2Hex(NextData(SubData, Len))) / 86400;
                         ICQ_OnlineDays := IntToStr(Trunc(Dt));
-                        S_Log := S_Log + 'OnlineDays' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_OnlineDays + C_LN + C_BN;
                       end;
                     $0152: // Всего отправлено Away сообщений
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_AwayMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                        S_Log := S_Log + 'AwayMess' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_AwayMess + C_LN + C_BN;
                       end;
                     $0153: // Всего получено сообщений
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_RecMess := IntToStr(HexToInt(Text2Hex(NextData(SubData, Len))));
-                        S_Log := S_Log + C_InMess + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_RecMess + C_LN + C_BN;
                       end;
                     $0160: // Активность
                       begin
                         Len := HexToInt(Text2Hex(NextData(SubData, 2)));
                         ICQ_LastActive := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(SubData, Len)))));
-                        S_Log := S_Log + 'LastActive' + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_LastActive + C_LN + C_BN;
                       end
                   else
                     begin
                       // Если пакет содержит другие TLV, то пропускаем их
                       Len := HexToInt(Text2Hex(NextData(SubData, 2)));
-                      S_Log := S_Log + C_Unk + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(SubData, Len)) + C_LN + C_BN;
+                      NextData(SubData, Len);
                     end;
                   end;
                 end;
@@ -4351,31 +4090,62 @@ begin
                   IcqOptionsForm.SetOnlineVars;
               end;
           end;
-          S_Log := S_Log + C_RN;
         end;
         // Открываем раздел групп
-        Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+        Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
         if Sub_Node = nil then
-          Sub_Node := XML_Node.Items.Add(C_Group + C_SS);
+          Sub_Node := XML_Node.Items.Add(C_Group + 's');
         // Добавляем группу для контактов "не в списке"
-        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + C_DD + C_NoCL];
+        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + '_' + C_NoCL];
         if Tri_Node = nil then
         begin
-          Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + C_NoCL);
+          Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_NoCL);
           Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[33].L_S));
           Tri_Node.Properties.Add(C_Id, C_NoCL);
+        end;
+        // Добавляем группу для игнорируемых контактов
+        Tri_Node := Sub_Node.Items.ItemNamed[C_Group + '_' + C_IgCL];
+        if Tri_Node = nil then
+        begin
+          Tri_Node := Sub_Node.Items.Add(C_Group + '_' + C_IgCL);
+          Tri_Node.Properties.Add(C_Name, URLEncode(Lang_Vars[170].L_S));
+          Tri_Node.Properties.Add(C_Id, C_IgCL);
+        end;
+        // Помечаем видящие контакты
+        for I := 0 to Visible_Contacts.Count - 1 do
+        begin
+          P := 0;
+          A: ;
+          Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Login, Visible_Contacts.Strings[I], P);
+          if Get_Node <> nil then
+            if Get_Node.Properties.Value(C_Group + C_Id) <> C_IgCL then
+              Get_Node.Properties.Add('P', '2')
+            else
+            begin
+              Inc(P);
+              goto A;
+            end;
+        end;
+        // Помечаем невидящие контакты
+        for I := 0 to NotVisible_Contacts.Count - 1 do
+        begin
+          P := 0;
+          B: ;
+          Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Login, NotVisible_Contacts.Strings[I], P);
+          if Get_Node <> nil then
+            if Get_Node.Properties.Value(C_Group + C_Id) <> C_IgCL then
+              Get_Node.Properties.Add('P', '3')
+            else
+            begin
+              Inc(P);
+              goto B;
+            end;
         end;
       end;
     end;
   end;
   // Финальное время контакт листа
   CLTimeStamp := HexToInt(Text2Hex(NextData(PktData, 4)));
-  if CLTimeStamp <> 0 then
-    S_Log := S_Log + C_ChangeTime + C_TN + C_BN + DateTimeToStr(UnixToDateTime(CLTimeStamp)) + C_RN
-  else
-    S_Log := S_Log + C_ChangeTime + C_TN + C_BN + '0' + C_RN;
-  // Пишем в лог данные пакета
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[27].Pkt_Name, Trim(S_Log), C_Icq);
   // Если время больше нуля, то заканчиваем с наполнением КЛ
   if CLTimeStamp <> 0 then
   begin
@@ -4397,6 +4167,9 @@ begin
     V_CollapseGroupsRestore := True;
     UpdateFullCL;
   end;
+  // Уничтожаем списки видящих и невидящих контактов
+  Visible_Contacts.Free;
+  NotVisible_Contacts.Free;
 end;
 
 {$ENDREGION}
@@ -4404,15 +4177,15 @@ end;
 
 procedure ICQ_Parse_010F(PktData: string);
 var
-  Len, Count, I, V: Integer;
-  TLV, S_Log, S, Cap, Caps: string;
+  Len, Count, I: Integer;
+  TLV, S, {Cap, }Caps: string;
 begin
   // Если пакет пустой, то выходим
   if PktData = EmptyStr then
     Exit;
   // Пропускаем наш UIN
   Len := HexToInt(Text2Hex(NextData(PktData, 1)));
-  S_Log := S_Log + C_Login + C_TN + C_BN + NextData(PktData, Len) + C_RN;
+  NextData(PktData, Len);
   // Пропускаем уровень предупреждений (в icq протоколе всегда равен 0)
   NextData(PktData, 2);
   // Получаем количесво вложенных в пакет TLV
@@ -4422,93 +4195,79 @@ begin
     TLV := Text2Hex(NextData(PktData, 2));
     // Сканируем пакет на наличие нужных нам TLV
     case HexToInt(TLV) of
-      $0001:
+      $0001: // User Class
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + C_UserClass + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
-      $0006:
+      $0006: // Status
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + C_Status + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
-      $000D:
+      $000D: // Caps
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           Caps := Text2Hex(NextData(PktData, Len));
-          S := EmptyStr;
+          {S := EmptyStr;
           while Length(Caps) > 0 do
           begin
             Cap := NextData(Caps, 32);
-            if Assigned(LogForm) then
+            // Ищем названия капов характеристик
+            for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
             begin
-              if LogForm.ICQDumpSpeedButton.Down then
+              if ICQ_Servises_Caps[V].Cap_HEX = Cap then
               begin
-                // Ищем названия капов характеристик
-                for V := Low(ICQ_Servises_Caps) to High(ICQ_Servises_Caps) do
-                begin
-                  if ICQ_Servises_Caps[V].Cap_HEX = Cap then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_Servises_Caps[V].Cap_Name + C_EN;
-                    Break;
-                  end;
-                end;
-                // Ищем названия капов Xстатусов
-                for V := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
-                begin
-                  if ICQ_XStatus_Codes[V].XStatus_Caps = Cap then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_XStatus_Codes[V].XStatus_Code + C_EN;
-                    Break;
-                  end;
-                end;
-                // Ищем названия капов клиентов
-                for V := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
-                begin
-                  if Pos(ICQ_Clients_Caps[V].Cap_HEX, Cap) > 0 then
-                  begin
-                    Cap := Cap + C_BN + C_QN + ICQ_Clients_Caps[V].Client_Name + C_EN;
-                    Break;
-                  end;
-                end;
+                Cap := Cap + ' ' + C_S14 + ICQ_Servises_Caps[V].Cap_Name + C_S15;
+                Break;
               end;
             end;
-            S := S + Cap + C_BN + C_PN + C_BN;
+            // Ищем названия капов Xстатусов
+            for V := Low(ICQ_XStatus_Codes) to High(ICQ_XStatus_Codes) do
+            begin
+              if ICQ_XStatus_Codes[V].XStatus_Caps = Cap then
+              begin
+                Cap := Cap + ' ' + C_S14 + ICQ_XStatus_Codes[V].XStatus_Code + C_S15;
+                Break;
+              end;
+            end;
+            // Ищем названия капов клиентов
+            for V := Low(ICQ_Clients_Caps) to High(ICQ_Clients_Caps) do
+            begin
+              if Pos(ICQ_Clients_Caps[V].Cap_HEX, Cap) > 0 then
+              begin
+                Cap := Cap + ' ' + C_S14 + ICQ_Clients_Caps[V].Client_Name + C_S15;
+                Break;
+              end;
+            end;
+            S := S + Cap + ' ' + C_S11 + ' ';
           end;
-          Caps := S;
-          S_Log := S_Log + C_Caps + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Caps + C_RN;
+          Caps := S;}
         end;
-      $000C:
+      $000C: // DC Info
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + 'DC Info' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
-      $000F:
+      $000F: // Idle Time
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + 'IdleTime' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
-      $0003:
+      $0003: // Signon Time
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + C_SignonTime + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
       $001D: // Аватар хэш и другие доп. статусы
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           S := Text2Hex(NextData(PktData, Len));
-          S_Log := S_Log + C_AvatarHash + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
         end;
       $0005: // Дата регистрации нашего UIN
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_MyUIN_RegTime := DateTimeToStr(UnixToDateTime(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + C_RegDate + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_MyUIN_RegTime + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.RegDateInfoEdit.Text := ICQ_MyUIN_RegTime;
@@ -4517,7 +4276,6 @@ begin
         begin
           Len := HexToInt(Text2Hex(NextData(PktData, 2)));
           ICQ_Online_IP := NumToIp(Swap32(HexToInt(Text2Hex(NextData(PktData, Len)))));
-          S_Log := S_Log + C_ExtIP + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Online_IP + C_RN;
           // Отображаем это в окне настроек ICQ
           if Assigned(IcqOptionsForm) then
             IcqOptionsForm.ExternalIPInfoEdit.Text := ICQ_Online_IP;
@@ -4526,12 +4284,10 @@ begin
       begin
         // Если пакет содержит другие TLV, то пропускаем их
         Len := HexToInt(Text2Hex(NextData(PktData, 2)));
-        S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(PktData, Len)) + C_RN;
+        NextData(PktData, Len);
       end;
     end;
   end;
-  // Пишем в лог данные пакета
-  XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[21].Pkt_Name, Trim(S_Log), C_Icq);
 end;
 
 {$ENDREGION}
@@ -4628,7 +4384,7 @@ begin
   if RosterItem <> nil then
     Nick := RosterItem.SubItems[0];
   if Nick > EmptyStr then
-    Nick := InfoNickL + C_BN + Nick;
+    Nick := InfoNickL + ' ' + Nick;
   if IClient > EmptyStr then
     Client := Lang_Vars[38].L_S + C_TN + IClient;}
   // Отображаем всплывающим сообщением статус контакта
@@ -4706,8 +4462,11 @@ begin
   else if ErrCode = '0022' then
     Result := ConnectErrors_0022
   else
-    Result := Lang_Vars[24].L_S + C_BN + C_QN + ErrCode + C_EN;
-  XLog(C_Icq, Result, C_Icq);
+    Result := Lang_Vars[24].L_S + ' ' + '[' + ErrCode + ']';
+  // Если это ошибка авторизации, то сбрасываем пароль
+  if (ErrCode = '0001') or (ErrCode = '0003') or (ErrCode = '0004') //
+  or (ErrCode = '0005') or (ErrCode = '0007') then
+    ICQ_LoginPassword := EmptyStr;
 end;
 
 {$ENDREGION}
@@ -4723,7 +4482,8 @@ begin
   with MainForm.JvTimerList do
   begin
     Events[4].Enabled := False;
-    Events[5].Enabled := False;
+    if not ICQ_Reconnect then
+      Events[5].Enabled := False;
   end;
   // Если существует форма настроек протокола ICQ, то разблокируем там контролы
   if Assigned(IcqOptionsForm) then
@@ -4769,7 +4529,6 @@ begin
     // Ставим иконку и значение статуса оффлайн
     ICQ_CurrentStatus := 9;
     ICQToolButton.ImageIndex := ICQ_CurrentStatus;
-    //ICQTrayIcon.IconIndex := ICQ_CurrentStatus;
     // Подсвечиваем в меню статуса ICQ статус оффлайн
     ICQStatusOffline.default := True;
   end;
@@ -4788,7 +4547,7 @@ begin
         if XML_Node <> nil then
         begin
           // Ищем раздел контактов
-          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
           if Sub_Node <> nil then
           begin
             for I := 0 to Sub_Node.Items.Count - 1 do
@@ -4799,13 +4558,14 @@ begin
                 if Tri_Node.Properties.Value(C_Group + C_Id) <> C_NoCL then
                 begin
                   RosterUpdateProp(Tri_Node, C_Status, '9');
-                  RosterUpdateProp(Tri_Node, C_XX + C_Status, '-1');
-                  RosterUpdateProp(Tri_Node, C_XX + C_Status + C_Name, EmptyStr);
+                  RosterUpdateProp(Tri_Node, 'X' + C_Status, '-1');
+                  RosterUpdateProp(Tri_Node, 'X' + C_Status + C_Name, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_XText, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_Client, '-1');
                   RosterUpdateProp(Tri_Node, C_Client + C_Name, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_Time, EmptyStr);
                   RosterUpdateProp(Tri_Node, C_ProtoVer, EmptyStr);
+                  RosterUpdateProp(Tri_Node, 'P', EmptyStr);
                 end;
               end;
             end;
@@ -4827,6 +4587,53 @@ begin
   + '094613494C7F11D18222444553540000' + '0946134E4C7F11D18222444553540000' + '563FC8090B6F41BD9F79422609DFA2F3' + '494D61646572696E6720436C69656E74';
 end;
 
+{$ENDREGION}
+{$REGION 'ICQ_SendReqAuth'}
+procedure ICQ_SendReqAuth(UIN, Mess: string);
+var
+  Pkt: string;
+  M: RawByteString;
+begin
+  // Формируем пакет запроса авторизации
+  M := UTF8Encode(Mess);
+  Pkt := '00130018000000000018' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + IntToHex(Length(M), 4) + Text2Hex(M) + '0000';
+  // Отсылаем пакет
+  ICQ_SendPkt('2', Pkt);
+end;
+{$ENDREGION}
+{$REGION 'ICQ_Parse_1319_ReqAuth'}
+
+procedure ICQ_Parse_1319_ReqAuth(PktData: string);
+var
+  Len: Integer;
+  qUIN, qMess: string;
+begin
+  // Разбираем пакет с запросом авторизации
+  // Получили UIN запрашивающего авторизацию
+  Len := HexToInt(Text2Hex(NextData(PktData, 1)));
+  qUIN := NextData(PktData, Len);
+  // Получаем сообщение с запросом авторизации
+  Len := HexToInt(Text2Hex(NextData(PktData, 2)));
+  qMess := UTF8ToString(NextData(PktData, Len));
+  // Имитируем получение обычного сообщения
+  ICQ_ReqMsgNotify(qUIN, qMess, '', '', '', '', '', '', '', '', True, True);
+end;
+{$ENDREGION}
+{$REGION 'ICQ_Auth_Yes_No'}
+
+  procedure ICQ_Auth_Yes_No(UIN: string; AuthFlag: Boolean);
+  var
+    Pkt, A: string;
+  begin
+    // Даем или отказываем в аторизации
+    if AuthFlag then
+      A := '01'
+    else
+      A := '00';
+    Pkt := '0013001A00000000001A' + IntToHex(Length(UIN), 2) + Text2Hex(UIN) + A + '00000000';
+    // Отсылаем пакет
+    ICQ_SendPkt('2', Pkt);
+  end;
 {$ENDREGION}
 
 end.

@@ -66,13 +66,13 @@ uses
 const
   JVDESKTOPALERT_AUTOFREE = WM_USER + 1001;
 
-// Начало изменений
+  // Начало изменений
 
 var
   CDefaultAlertFormWidth: integer = 180;
   CDefaultAlertFormHeight: integer = 140;
 
-// Конец изменений
+  // Конец изменений
 
 type
   TJvDesktopAlertButtonType = (AbtArrowLeft, AbtArrowRight, AbtClose, AbtMaximize, AbtMinimize, AbtDropDown, AbtDropDownChevron,
@@ -134,15 +134,15 @@ type
     FEndInterval: Cardinal;
     FMouseInControl: Boolean;
     procedure WMNCHitTest(var Msg: TWMNCHitTest);
-    message WM_NCHITTEST;
+      message WM_NCHITTEST;
     procedure WMActivate(var message: TWMActivate);
-    message WM_ACTIVATE;
+      message WM_ACTIVATE;
     procedure WMMouseActivate(var message: TWMMouseActivate);
-    message WM_MOUSEACTIVATE;
+      message WM_MOUSEACTIVATE;
     procedure WMMove(var Msg: TWMMove);
-    message WM_MOVE;
+      message WM_MOVE;
     procedure JvDeskTopAlertAutoFree(var Msg: TMessage);
-    message JVDESKTOPALERT_AUTOFREE;
+      message JVDESKTOPALERT_AUTOFREE;
     procedure DoMouseTimer(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     function GetVisible: Boolean;
@@ -207,12 +207,12 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure DoButtonClick(Sender: TObject);
 
-// Начало изменений
+    // Начало изменений
 
     procedure DoMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
 
-// КОнец изменений
+    // КОнец изменений
 
     property ClickableMessage: Boolean read FClickableMessage write FClickableMessage;
     property ParentFont;
@@ -227,7 +227,7 @@ type
 
 const
   UnitVersioning: TUnitVersionInfo = (RCSfile:
-      '$URL: https://jvcl.svn.sourceforge.net:443/svnroot/jvcl/trunk/jvcl/run/JvDesktopAlertForm.pas $'; Revision: '$Revision: 130 $';
+    '$URL: https://jvcl.svn.sourceforge.net:443/svnroot/jvcl/trunk/jvcl/run/JvDesktopAlertForm.pas $'; Revision: '$Revision: 130 $';
     Date: '$Date: 2009-08-09 19:59:21 +0200 (dim., 09 aoГ»t 2009) $'; LogPath: 'JVCL\run');
 
 {$ENDIF UNITVERSIONING}
@@ -245,7 +245,7 @@ uses
   ChatUnit,
   RosterUnit;
 
-{ .$R *.dfm } // not needed
+{ .$R *.dfm }// not needed
 
 const
   CAlphaIncrement = 5;
@@ -270,16 +270,16 @@ begin
   R.Bottom := R.Top + 2;
   if DrawDots then
     for I := 0 to 9 do // draw the dots
-      begin
-        Canvas.Brush.Color := ClGray;
-        Canvas.FillRect(R);
-        OffsetRect(R, 1, 1);
-        Canvas.Brush.Color := JvDefaultCaptionDotColor;
-        Canvas.FillRect(R);
-        Canvas.Brush.Color := JvDefaultCaptionDotShadowColor;
-        Canvas.FillRect(Rect(R.Left, R.Top, R.Left + 1, R.Top + 1));
-        OffsetRect(R, 3, -1);
-      end;
+    begin
+      Canvas.Brush.Color := ClGray;
+      Canvas.FillRect(R);
+      OffsetRect(R, 1, 1);
+      Canvas.Brush.Color := JvDefaultCaptionDotColor;
+      Canvas.FillRect(R);
+      Canvas.Brush.Color := JvDefaultCaptionDotShadowColor;
+      Canvas.FillRect(Rect(R.Left, R.Top, R.Left + 1, R.Top + 1));
+      OffsetRect(R, 3, -1);
+    end;
 end;
 
 procedure DrawDesktopAlertWindow(Canvas: TCanvas; WindowRect: TRect; FrameColor: TColor; WindowColorFrom, WindowColorTo, CaptionColorFrom,
@@ -352,7 +352,7 @@ begin
   LblText.SetBounds(5, 40, 160, 130); // Изменил
   LblText.Transparent := True;
   LblText.WordWrap := True;
-  LblText.Anchors := [AkLeft .. AkBottom];
+  LblText.Anchors := [AkLeft..AkBottom];
   LblText.OnMouseUP := DoMouseDown; // Изменил
 
   AcClose := TAction.Create(Self);
@@ -397,10 +397,10 @@ begin
 
   // if the form is not closeable, then do not show the button
   if not Closeable then
-    begin
-      TbClose.Visible := False;
-      TbDropDown.Left := TbClose.Left;
-    end;
+  begin
+    TbClose.Visible := False;
+    TbDropDown.Left := TbClose.Left;
+  end;
 
   ImIcon.Top := 5; // Изменил
   LblHeader.Top := ImIcon.Top;
@@ -462,125 +462,134 @@ var
   Rect: TRect;
 begin
   with Canvas do
+  begin
+    Rect := ClientRect;
+    Brush.Style := BsClear;
+    if BsMouseInside in MouseStates then
     begin
-      Rect := ClientRect;
-      Brush.Style := BsClear;
-      if BsMouseInside in MouseStates then
-        begin
-          Pen.Color := JvDefaultTrackBorderColor;
-          Rectangle(Rect);
-          InflateRect(Rect, -1, -1);
-          if BsMouseDown in MouseStates then
-            Brush.Color := JvDefaultHotTrackColor
-          else
-            Brush.Color := JvDefaultTrackColor;
-          FillRect(Rect);
-        end;
-      case ToolType of
-        AbtArrowLeft: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Style := [];
-            Canvas.Font.Size := 10;
-            DrawText(Canvas.Handle, '3', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtArrowRight: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Style := [];
-            Canvas.Font.Size := 10;
-            DrawText(Canvas.Handle, '4', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtClose: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Size := 7;
-            Canvas.Font.Style := [];
-            DrawText(Canvas.Handle, 'r', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtMaximize: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Style := [];
-            DrawText(Canvas.Handle, '2', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtMinimize: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Style := [];
-            DrawText(Canvas.Handle, '1', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtDropDown: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Size := 10;
-            Canvas.Font.Style := [];
-            DrawText(Canvas.Handle, 'u', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtDropDownChevron: begin // area should be 7x12
-            InflateRect(Rect, -((Rect.Right - Rect.Left) - 7) div 2, -((Rect.Bottom - Rect.Top) - 12) div 2);
-            Canvas.Pen.Color := ClWindowText;
-
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 2, Rect.Top);
-
-            Canvas.MoveTo(Rect.Left + 3, Rect.Top);
-            Canvas.LineTo(Rect.Left + 5, Rect.Top);
-            OffsetRect(Rect, 1, 1);
-
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 2, Rect.Top);
-
-            Canvas.MoveTo(Rect.Left + 3, Rect.Top);
-            Canvas.LineTo(Rect.Left + 5, Rect.Top);
-            OffsetRect(Rect, 1, 1);
-
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 2, Rect.Top);
-
-            Canvas.MoveTo(Rect.Left + 3, Rect.Top);
-            Canvas.LineTo(Rect.Left + 5, Rect.Top);
-            OffsetRect(Rect, -1, 1);
-
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 2, Rect.Top);
-
-            Canvas.MoveTo(Rect.Left + 3, Rect.Top);
-            Canvas.LineTo(Rect.Left + 5, Rect.Top);
-            OffsetRect(Rect, -1, 1);
-
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 2, Rect.Top);
-
-            Canvas.MoveTo(Rect.Left + 3, Rect.Top);
-            Canvas.LineTo(Rect.Left + 5, Rect.Top);
-
-            OffsetRect(Rect, 1, 4);
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 5, Rect.Top);
-            OffsetRect(Rect, 1, 1);
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 3, Rect.Top);
-            OffsetRect(Rect, 1, 1);
-            Canvas.MoveTo(Rect.Left, Rect.Top);
-            Canvas.LineTo(Rect.Left + 1, Rect.Top);
-          end;
-        AbtRestore: begin
-            Canvas.Font.name := CMarlett;
-            Canvas.Font.Style := [];
-            DrawText(Canvas.Handle, '3', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-          end;
-        AbtImage: begin
-            if (Images = nil) or (ImageIndex < 0) or (ImageIndex >= Images.Count) then
-              Exit;
-            Images.Draw(Canvas, (Width - Images.Width) div 2 + Ord(BsMouseDown in MouseStates), (Height - Images.Height) div 2 + Ord
-                (BsMouseDown in MouseStates), ImageIndex, DsTransparent, ItImage, Enabled);
-          end;
-      end;
+      Pen.Color := JvDefaultTrackBorderColor;
+      Rectangle(Rect);
+      InflateRect(Rect, -1, -1);
+      if BsMouseDown in MouseStates then
+        Brush.Color := JvDefaultHotTrackColor
+      else
+        Brush.Color := JvDefaultTrackColor;
+      FillRect(Rect);
     end;
+    case ToolType of
+      AbtArrowLeft:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Style := [];
+          Canvas.Font.Size := 10;
+          DrawText(Canvas.Handle, '3', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtArrowRight:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Style := [];
+          Canvas.Font.Size := 10;
+          DrawText(Canvas.Handle, '4', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtClose:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Size := 7;
+          Canvas.Font.Style := [];
+          DrawText(Canvas.Handle, 'r', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtMaximize:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Style := [];
+          DrawText(Canvas.Handle, '2', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtMinimize:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Style := [];
+          DrawText(Canvas.Handle, '1', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtDropDown:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Size := 10;
+          Canvas.Font.Style := [];
+          DrawText(Canvas.Handle, 'u', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtDropDownChevron:
+        begin // area should be 7x12
+          InflateRect(Rect, -((Rect.Right - Rect.Left) - 7) div 2, -((Rect.Bottom - Rect.Top) - 12) div 2);
+          Canvas.Pen.Color := ClWindowText;
+
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 2, Rect.Top);
+
+          Canvas.MoveTo(Rect.Left + 3, Rect.Top);
+          Canvas.LineTo(Rect.Left + 5, Rect.Top);
+          OffsetRect(Rect, 1, 1);
+
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 2, Rect.Top);
+
+          Canvas.MoveTo(Rect.Left + 3, Rect.Top);
+          Canvas.LineTo(Rect.Left + 5, Rect.Top);
+          OffsetRect(Rect, 1, 1);
+
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 2, Rect.Top);
+
+          Canvas.MoveTo(Rect.Left + 3, Rect.Top);
+          Canvas.LineTo(Rect.Left + 5, Rect.Top);
+          OffsetRect(Rect, -1, 1);
+
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 2, Rect.Top);
+
+          Canvas.MoveTo(Rect.Left + 3, Rect.Top);
+          Canvas.LineTo(Rect.Left + 5, Rect.Top);
+          OffsetRect(Rect, -1, 1);
+
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 2, Rect.Top);
+
+          Canvas.MoveTo(Rect.Left + 3, Rect.Top);
+          Canvas.LineTo(Rect.Left + 5, Rect.Top);
+
+          OffsetRect(Rect, 1, 4);
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 5, Rect.Top);
+          OffsetRect(Rect, 1, 1);
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 3, Rect.Top);
+          OffsetRect(Rect, 1, 1);
+          Canvas.MoveTo(Rect.Left, Rect.Top);
+          Canvas.LineTo(Rect.Left + 1, Rect.Top);
+        end;
+      AbtRestore:
+        begin
+          Canvas.Font.name := CMarlett;
+          Canvas.Font.Style := [];
+          DrawText(Canvas.Handle, '3', 1, Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+        end;
+      AbtImage:
+        begin
+          if (Images = nil) or (ImageIndex < 0) or (ImageIndex >= Images.Count) then
+            Exit;
+          Images.Draw(Canvas, (Width - Images.Width) div 2 + Ord(BsMouseDown in MouseStates), (Height - Images.Height) div 2 + Ord
+            (BsMouseDown in MouseStates), ImageIndex, DsTransparent, ItImage, Enabled);
+        end;
+    end;
+  end;
 end;
 
 procedure TJvDesktopAlertButton.SetImageIndex(const Value: TImageIndex);
 begin
   if FImageIndex <> Value then
-    begin
-      FImageIndex := Value;
-      Invalidate;
-    end;
+  begin
+    FImageIndex := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TJvDesktopAlertButton.SetImages(const Value: TCustomImageList);
@@ -592,10 +601,10 @@ end;
 procedure TJvDesktopAlertButton.SetToolType(const Value: TJvDesktopAlertButtonType);
 begin
   if FToolType <> Value then
-    begin
-      FToolType := Value;
-      Invalidate;
-    end;
+  begin
+    FToolType := Value;
+    Invalidate;
+  end;
 end;
 
 procedure TJvFormDesktopAlert.DoMouseDown(Sender: TObject;
@@ -605,7 +614,7 @@ var
   zUIN: string;
   Get_Node: TJvSimpleXmlElem;
 begin
-  // Копируем юин из хинта, ибо потом он пропадает! O_o
+  // Копируем юин из хинта, ибо потом он пропадает!
   zUIN := Hint;
   zUIN := URLEncode(zUIN);
   // Если по окну нажата была правая клавиша мыши, то сбрасываем флаги сообщений для этого контакта
@@ -617,11 +626,11 @@ begin
     if zUIN <> EmptyStr then
     begin
       // Сбрасываем иконку сообщения в Ростере
-      Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, zUIN);
+      Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Login, zUIN);
       if Get_Node = nil then
-        Get_Node := RosterGetItem(C_Mra, C_Contact + C_SS, C_Login, zUIN);
+        Get_Node := RosterGetItem(C_Mra, C_Contact + 's', C_Login, zUIN);
       if Get_Node = nil then
-        Get_Node := RosterGetItem(C_Jabber, C_Contact + C_SS, C_Login, zUIN);
+        Get_Node := RosterGetItem(C_Jabber, C_Contact + 's', C_Login, zUIN);
       if Get_Node <> nil then
       begin
         RosterUpdateProp(Get_Node, C_Mess, EmptyStr);
@@ -641,11 +650,14 @@ begin
       end;
       // Удаляем этот контакт из очереди на прочтение сообщений
       I := V_InMessList.IndexOf(zUIN);
-        if I > -1 then V_InMessList.Delete(I);
+      if I > -1 then
+        V_InMessList.Delete(I);
     end;
   end
-  // Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
-  else if Button = mbLeft then if zUIN <> EmptyStr then MainForm.TrayIconClick(nil);
+    // Если по окну нажали левой клавишей мыши, то открываем чат с этим контактом
+  else if Button = mbLeft then
+    if zUIN <> EmptyStr then
+      MainForm.TrayIconClick(nil);
   // Закрываем всплывающее окно
   Close;
 end;
@@ -655,20 +667,20 @@ var
   FEndInterval: Cardinal;
 begin
   if Sender is TJvDesktopAlertButton then
-    begin
-      FEndInterval := TJvDesktopAlert(Owner).StyleHandler.EndInterval;
-      try
-        // stop the animation while the OnClick handler executes:
-        // we don't want the form to disappear before we return
-        TJvDesktopAlert(Owner).StyleHandler.EndInterval := 0;
-        if Assigned(TJvDesktopAlertButton(Sender).InternalClick) then
-          TJvDesktopAlertButton(Sender).InternalClick(Sender);
-      finally
-        TJvDesktopAlert(Owner).StyleHandler.EndInterval := FEndInterval;
-        if not MouseInControl then
-          TJvDesktopAlert(Owner).StyleHandler.DoEndAnimation;
-      end;
+  begin
+    FEndInterval := TJvDesktopAlert(Owner).StyleHandler.EndInterval;
+    try
+      // stop the animation while the OnClick handler executes:
+      // we don't want the form to disappear before we return
+      TJvDesktopAlert(Owner).StyleHandler.EndInterval := 0;
+      if Assigned(TJvDesktopAlertButton(Sender).InternalClick) then
+        TJvDesktopAlertButton(Sender).InternalClick(Sender);
+    finally
+      TJvDesktopAlert(Owner).StyleHandler.EndInterval := FEndInterval;
+      if not MouseInControl then
+        TJvDesktopAlert(Owner).StyleHandler.DoEndAnimation;
     end;
+  end;
 end;
 
 procedure TJvFormDesktopAlert.DoDropDownClose(Sender: TObject);
@@ -737,13 +749,13 @@ procedure TJvCustomFormDesktopAlert.DoMouseTimer(Sender: TObject);
 var
   P: TPoint;
 
-function IsInForm(P: TPoint): Boolean;
-var
-  W: TControl;
-begin
-  W := ControlAtPos(P, True, True);
-  Result := (W = Self) or (FindVCLWindow(P) = Self) or ((W <> nil) and (GetParentForm(W) = Self));
-end;
+  function IsInForm(P: TPoint): Boolean;
+  var
+    W: TControl;
+  begin
+    W := ControlAtPos(P, True, True);
+    Result := (W = Self) or (FindVCLWindow(P) = Self) or ((W <> nil) and (GetParentForm(W) = Self));
+  end;
 
 begin
   // this is here to ensure that MouseInControl is correctly set even
@@ -792,10 +804,10 @@ procedure TJvCustomFormDesktopAlert.JvDeskTopAlertAutoFree(var Msg: TMessage);
 begin
   // WParam is us, LParam is the TJvDesktopAlert
   if Msg.WParam = WPARAM(Self) then
-    begin
-      Release;
-      TObject(Msg.LParam).Free;
-    end;
+  begin
+    Release;
+    TObject(Msg.LParam).Free;
+  end;
 end;
 
 procedure TJvCustomFormDesktopAlert.MouseEnter(AControl: TControl);
@@ -816,13 +828,13 @@ begin
   // make sure the mouse actually left the outer boundaries
   GetCursorPos(P);
   if MouseInControl and not PtInRect(BoundsRect, P) then
-    begin
-      if Assigned(FOnMouseLeave) then
-        FOnMouseLeave(Self);
-      if not TJvCustomDesktopAlert(Owner).StyleHandler.Active and (TJvCustomDesktopAlert(Owner).StyleHandler.DisplayDuration > 0) then
-        TJvCustomDesktopAlert(Owner).StyleHandler.DoEndAnimation;
-      FMouseInControl := False;
-    end;
+  begin
+    if Assigned(FOnMouseLeave) then
+      FOnMouseLeave(Self);
+    if not TJvCustomDesktopAlert(Owner).StyleHandler.Active and (TJvCustomDesktopAlert(Owner).StyleHandler.DisplayDuration > 0) then
+      TJvCustomDesktopAlert(Owner).StyleHandler.DoEndAnimation;
+    FMouseInControl := False;
+  end;
 end;
 
 procedure TJvCustomFormDesktopAlert.SetNewLeft(const Value: Integer);
@@ -835,13 +847,13 @@ var
   MoveEvent: TNotifyEvent;
 begin
   if ((Top <> ATop) or (Left <> ALeft)) and not MouseInControl then
-    begin
-      MoveEvent := FOnUserMove;
-      FOnUserMove := nil;
-      Left := ALeft;
-      Top := ATop;
-      FOnUserMove := MoveEvent;
-    end;
+  begin
+    MoveEvent := FOnUserMove;
+    FOnUserMove := nil;
+    Left := ALeft;
+    Top := ATop;
+    FOnUserMove := MoveEvent;
+  end;
 end;
 
 procedure TJvCustomFormDesktopAlert.SetNewTop(const Value: Integer);
@@ -897,10 +909,10 @@ begin
   with Msg do
     P := ScreenToClient(Point(XPos, YPos));
   if ((P.Y <= CCaptionHeight) and Moveable) or (MoveAnywhere and (ControlAtPos(P, False) = nil)) then
-    begin
-      TJvCustomDesktopAlert(Owner).StyleHandler.AbortAnimation;
-      Msg.Result := HTCAPTION;
-    end
+  begin
+    TJvCustomDesktopAlert(Owner).StyleHandler.AbortAnimation;
+    Msg.Result := HTCAPTION;
+  end
   else
     inherited;
 end;
@@ -909,18 +921,19 @@ initialization
 
 {$IFDEF UNITVERSIONING}
 
-RegisterUnitVersion(HInstance, UnitVersioning);
+  RegisterUnitVersion(HInstance, UnitVersioning);
 
 {$ENDIF UNITVERSIONING}
 
-RegisterClasses([TLabel, TImage, TAction, TJvDesktopAlertButton, TJvLabel]);
+  RegisterClasses([TLabel, TImage, TAction, TJvDesktopAlertButton, TJvLabel]);
 
 {$IFDEF UNITVERSIONING}
 
 finalization
 
-UnregisterUnitVersion(HInstance);
+  UnregisterUnitVersion(HInstance);
 
 {$ENDIF UNITVERSIONING}
 
 end.
+

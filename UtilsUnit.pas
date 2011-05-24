@@ -40,7 +40,6 @@ uses
   JabberProtoUnit,
   Registry,
   MraProtoUnit,
-  LogUnit,
   JclCompression,
   Buttons,
   TypInfo,
@@ -55,7 +54,9 @@ uses
   OverbyteIcsSha1,
   OverbyteIcsMimeUtils,
   OverbyteIcsUtils,
-  OverbyteIcsLibrary;
+  OverbyteIcsLibrary,
+  JvJVCLUtils,
+  SettingsUnit;
 
 {$ENDREGION}
 {$REGION 'Procedures and Functions'}
@@ -98,7 +99,6 @@ function IsolateTextString(const S: string; Tag1, Tag2: string): string;
 procedure IsoLateText(const S: string; Tag1, Tag2: string; List: TStrings);
 function Int64ToHex(C: Int64): string;
 function Horospope(D, M: Integer): Integer;
-// function TranslitRus2Lat(const Str: string): string;
 procedure DaShow(DaHead, DaText, DaId: string; DaIco, DaColor, DaVisible: Integer);
 function InitMixer: Hmixer;
 function Icq_BodySize(Pkt: string): Integer;
@@ -128,12 +128,10 @@ function CheckText_RN(Msg: string): string;
 function NotProtoOnline(Proto: string): Boolean;
 function GetFileDateTime(FileName: string): TDateTime;
 procedure Jab_SendPkt(SendData: string);
-procedure XLog(XLogHead, XLogData, Proto: string; InData: boolean = true);
 function RafinePath(const Path: string): string;
 function NotifyConnectError(SName: string; ErrCode: Integer): string;
 function CreateHistoryArhive(HFile: string): Boolean;
 procedure SaveTextInHistory(HString: string; HFileName: string);
-// procedure CreateLang(Xform: Tform);
 procedure SetLang(Xform: Tform);
 procedure CheckMessage_Smilies(var Msg: string);
 function ChangeCP(const Value: string): string;
@@ -167,11 +165,20 @@ function Twitter_Generate_Nonce: string;
 function Twitter_Encrypt_HMAC_SHA1(Input, AKey: string): string;
 function EncodeRFC3986(const S: string; DstCodePage: Cardinal = CP_UTF8): string;
 function Twitter_HMAC_SHA1_Signature(xURL, ReqMethod, xToken: string; xParams: TStringList): string;
+procedure CheckMessage_ClearTag(var Msg: string);
 
 {$ENDREGION}
 
 implementation
 
+{$REGION 'CheckMessage_ClearTag'}
+
+procedure CheckMessage_ClearTag(var Msg: string);
+begin
+  // Очишаем сообщение от HTML тэгов
+  Msg := HTMLPlainText(Msg);
+end;
+{$ENDREGION}
 {$REGION 'ReverseString'}
 
 function ReverseString(s: string): string;
@@ -438,7 +445,7 @@ begin
   JvXML.Options := FOptions;
   JvXML.Prolog.Encoding := 'UTF-8';
   JvXML.Root.name := 'root';
-  JvXML.IndentString := C_BN + C_BN;
+  JvXML.IndentString := ' ' + ' ';
 end;
 
 {$ENDREGION}
@@ -486,220 +493,166 @@ end;
 procedure SetLang(Xform: Tform);
 var
   I, II, M: Integer;
-  List: Tstringlist;
   PropInfo: PPropInfo;
   TK: TTypeKind;
   Str: string;
   JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
+  XML_Node, Sub_Node: TJvSimpleXmlElem;
+  TransYes: Boolean;
 begin
-  List := Tstringlist.Create;
-  try
-    // Инициализируем XML
-    JvXML_Create(JvXML);
-    try
-      with JvXML do
-      begin
-        if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
-        begin
-          // Загружаем файл языка
-          LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
-          if Root <> nil then
-          begin
-            // Переводим заголовок формы и получаем все остальные пункты
-            XML_Node := Root.Items.ItemNamed[Xform.name];
-            if XML_Node <> nil then
-            begin
-              Xform.Caption := XML_Node.Properties.Value('c');
-              List.Text := XML_Node.SaveToString;
-            end;
-          end;
-        end;
-      end;
-    finally
-      JvXML.Free;
-    end;
-    // Переводим компоненты формы с Caption
-    with Xform do
-      for I := 0 to ComponentCount - 1 do
-      begin
-        // Если этот компонент меню
-        if (Components[I] is TPopupMenu) then
-        begin
-          for M := 0 to (Components[I] as TPopupMenu).Items.Count - 1 do
-          begin
-            for II := 0 to List.Count - 1 do
-            begin
-              if (Components[I] as TPopupMenu).Items[M].name = IsolateTextString(List.Strings[II], '<', C_BN) then
-              begin
-                (Components[I] as TPopupMenu)
-                  .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                Break;
-              end;
-            end;
-          end;
-          Continue;
-        end;
-        // Если этот компонент ЛистВиев
-        if (Xform.Components[I] is TJvListView) then
-        begin
-          for M := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
-          begin
-            for II := 0 to List.Count - 1 do
-            begin
-              if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TJvListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
-              begin
-                (Components[I] as TJvListView)
-                  .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                Break;
-              end;
-            end;
-          end;
-          Continue;
-        end;
-        if (Xform.Components[I] is TListView) then
-        begin
-          for M := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
-          begin
-            for II := 0 to List.Count - 1 do
-            begin
-              if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TListView).Columns[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
-              begin
-                (Components[I] as TListView)
-                  .Columns[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                Break;
-              end;
-            end;
-          end;
-          Continue;
-        end;
-        // Если этот компонент Категория кнопок
-        if (Xform.Components[I] is TButtonGroup) then
-        begin
-          for M := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
-          begin
-            for II := 0 to List.Count - 1 do
-            begin
-              if (Xform.Components[I].name + '_' + IntToStr((Xform.Components[I] as TButtonGroup).Items[M].index)) = IsolateTextString(List.Strings[II], '<', C_BN) then
-              begin
-                (Components[I] as TButtonGroup)
-                  .Items[M].Caption := IsolateTextString(List.Strings[II], 'c="', '"');
-                Break;
-              end;
-            end;
-          end;
-          Continue;
-        end;
-        // Ищем компонент в списке по имени
-        for II := 0 to List.Count - 1 do
-        begin
-          if Components[I].name = IsolateTextString(List.Strings[II], '<', C_BN) then
-          begin
-            // Устанавливаем Caption через технологию RTTI
-            Str := EmptyStr;
-            Str := IsolateTextString(List.Strings[II], 'c="', '"');
-            if Str <> EmptyStr then
-            begin
-              PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
-              if PropInfo <> nil then
-              begin
-                TK := PropInfo^.PropType^.Kind;
-                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                  SetStrProp(Components[I], PropInfo, Str);
-              end;
-            end;
-            // Устанавливаем Hint через технологию RTTI
-            Str := EmptyStr;
-            Str := IsolateTextString(List.Strings[II], 'h="', '"');
-            if Str <> EmptyStr then
-            begin
-              PropInfo := GetPropInfo(Components[I].ClassInfo, 'Hint');
-              if PropInfo <> nil then
-              begin
-                TK := PropInfo^.PropType^.Kind;
-                if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-                  SetStrProp(Components[I], PropInfo, CheckText_Hint(Str));
-              end;
-            end;
-            Break;
-          end;
-        end;
-      end;
-  finally
-    List.Free;
-  end;
-end;
-
-{$ENDREGION}
-{$REGION 'CreateLang'}
-
-{procedure CreateLang(Xform: Tform);
-var
-  I, MI: Integer;
-  PropInfo: PPropInfo;
-  TK: TTypeKind;
-  JvXML: TJvSimpleXml;
-  XML_Node: TJvSimpleXmlElem;
-begin
-  // Создаём необходимые папки
-  ForceDirectories(V_ProfilePath);
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
     begin
-      // Записываем заголовок формы
-      XML_Node := Root.Items.Add(Xform.name);
-      XML_Node.Properties.Add(C_CS, Xform.Caption);
-      // Просматриваем все контролы на форме
-      for I := 0 to Xform.ComponentCount - 1 do
+      if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
       begin
-        // Пишем в файл всплывающие меню
-        if (Xform.Components[I] is TPopupMenu) then
+        // Загружаем файл языка
+        LoadFromFile(V_MyPath + Format(C_LangPath, [V_CurrentLang]));
+        if Root <> nil then
         begin
-          for MI := 0 to (Xform.Components[I] as TPopupMenu).Items.Count - 1 do
-            XML_Node.Items.Add((Xform.Components[I] as TPopupMenu).Items[MI].name).Properties.Add(C_CS, (Xform.Components[I] as TPopupMenu).Items[MI].Caption);
-          Continue;
-        end;
-        // Пишем в файл ЛистВиев
-        if (Xform.Components[I] is TJvListView) then
-        begin
-          for MI := 0 to (Xform.Components[I] as TJvListView).Columns.Count - 1 do
-            XML_Node.Items.Add(Xform.Components[I].name + C_DD + IntToStr((Xform.Components[I] as TJvListView).Columns[MI].index)).Properties.Add(C_CS,
-              (Xform.Components[I] as TJvListView).Columns[MI].Caption);
-          Continue;
-        end;
-        if (Xform.Components[I] is TListView) then
-        begin
-          for MI := 0 to (Xform.Components[I] as TListView).Columns.Count - 1 do
-            XML_Node.Items.Add(Xform.Components[I].name + C_DD + IntToStr((Xform.Components[I] as TListView).Columns[MI].index)).Properties.Add(C_CS,
-              (Xform.Components[I] as TListView).Columns[MI].Caption);
-          Continue;
-        end;
-        // Пишем в файл Категории кнопок
-        if (Xform.Components[I] is TButtonGroup) then
-        begin
-          for MI := 0 to (Xform.Components[I] as TButtonGroup).Items.Count - 1 do
-            XML_Node.Items.Add(Xform.Components[I].name + C_DD + IntToStr((Xform.Components[I] as TButtonGroup).Items[MI].index)).Properties.Add(C_CS,
-              (Xform.Components[I] as TButtonGroup).Items[MI].Caption);
-          Continue;
-        end;
-        // Пишем в файл все компоненты которые имеют Caption
-        PropInfo := GetPropInfo(Xform.Components[I].ClassInfo, 'Caption');
-        if PropInfo <> nil then
-        begin
-          TK := PropInfo^.PropType^.Kind;
-          if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
-            XML_Node.Items.Add(Xform.Components[I].name).Properties.Add(C_CS, GetStrProp(Xform.Components[I], PropInfo));
+          XML_Node := Root.Items.ItemNamed[Xform.name];
+          if XML_Node <> nil then
+          begin
+            with Xform do
+            begin
+              // Переводим заголовок формы
+              Caption := XML_Node.Properties.Value('c');
+              // Переводим компоненты формы
+              for I := 0 to ComponentCount - 1 do
+              begin
+                // Если этот компонент ЛистВиев
+                if (Components[I] is TJvListView) then
+                begin
+                  for M := 0 to (Components[I] as TJvListView).Columns.Count - 1 do
+                  begin
+                    Sub_Node := XML_Node.Items.ItemNamed[Components[I].Name + '_' + IntToStr(M)];
+                    if Sub_Node <> nil then
+                      (Components[I] as TJvListView).Columns[M].Caption := XML2Text(Sub_Node.Properties.Value('c'));
+                  end;
+                  Continue;
+                end;
+                if (Components[I] is TListView) then
+                begin
+                  for M := 0 to (Components[I] as TListView).Columns.Count - 1 do
+                  begin
+                    Sub_Node := XML_Node.Items.ItemNamed[Components[I].Name + '_' + IntToStr(M)];
+                    if Sub_Node <> nil then
+                      (Components[I] as TListView).Columns[M].Caption := XML2Text(Sub_Node.Properties.Value('c'));
+                  end;
+                  Continue;
+                end;
+                // Если этот компонент Категория кнопок
+                if (Components[I] is TButtonGroup) then
+                begin
+                  for M := 0 to (Components[I] as TButtonGroup).Items.Count - 1 do
+                  begin
+                    Sub_Node := XML_Node.Items.ItemNamed[Components[I].Name + '_' + IntToStr(M)];
+                    if Sub_Node <> nil then
+                      (Components[I] as TButtonGroup).Items[M].Caption := XML2Text(Sub_Node.Properties.Value('c'));
+                  end;
+                  Continue;
+                end;
+                // Если этот компонент Комбобокс
+                if (Components[I] is TComboBox) then
+                begin
+                  Sub_Node := XML_Node.Items.ItemNamed[Components[I].Name];
+                  if Sub_Node <> nil then
+                    (Components[I] as TComboBox).Items.Text := Trim(Sub_Node.Value);
+                  Continue;
+                end;
+                // Если это просто компонент
+                Sub_Node := XML_Node.Items.ItemNamed[Components[I].Name];
+                if Sub_Node <> nil then
+                begin
+                    // Устанавливаем Caption через технологию RTTI
+                    Str := EmptyStr;
+                    Str := XML2Text(Sub_Node.Properties.Value('c'));
+                    if Str <> EmptyStr then
+                    begin
+                      PropInfo := GetPropInfo(Components[I].ClassInfo, 'Caption');
+                      if PropInfo <> nil then
+                      begin
+                        TK := PropInfo^.PropType^.Kind;
+                        if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                          SetStrProp(Components[I], PropInfo, Str);
+                      end;
+                    end;
+                    // Устанавливаем Hint через технологию RTTI
+                    Str := EmptyStr;
+                    Str := XML2Text(Sub_Node.Properties.Value('h'));
+                    if Str <> EmptyStr then
+                    begin
+                      PropInfo := GetPropInfo(Components[I].ClassInfo, 'Hint');
+                      if PropInfo <> nil then
+                      begin
+                        TK := PropInfo^.PropType^.Kind;
+                        if (TK = TkString) or (TK = TkLString) or (TK = TkWString) or (TK = TkUString) then
+                          SetStrProp(Components[I], PropInfo, CheckText_Hint(Str));
+                      end;
+                    end;
+                end;
+              end;
+              // Проверяем соответствие перевода
+              for I := 0 to XML_Node.Items.Count - 1 do
+              begin
+                TransYes := False;
+                for II := 0 to ComponentCount - 1 do
+                begin
+                  // Если этот компонент ЛистВиев
+                  if (Components[II] is TJvListView) then
+                  begin
+                    for M := 0 to (Components[II] as TJvListView).Columns.Count - 1 do
+                    begin
+                      if Components[II].Name + '_' + IntToStr(M) = XML_Node.Items[I].Name then
+                      begin
+                        TransYes := True;
+                        Break;
+                      end;
+                    end;
+                  end
+                  else if (Components[II] is TListView) then
+                  begin
+                    for M := 0 to (Components[II] as TListView).Columns.Count - 1 do
+                    begin
+                      if Components[II].Name + '_' + IntToStr(M) = XML_Node.Items[I].Name then
+                      begin
+                        TransYes := True;
+                        Break;
+                      end;
+                    end;
+                  end
+                  else if (Components[II] is TButtonGroup) then // Если этот компонент Категория кнопок
+                  begin
+                    for M := 0 to (Components[II] as TButtonGroup).Items.Count - 1 do
+                    begin
+                      if Components[II].Name + '_' + IntToStr(M) = XML_Node.Items[I].Name then
+                      begin
+                        TransYes := True;
+                        Break;
+                      end;
+                    end;
+                  end
+                  else if Components[II].Name = XML_Node.Items[I].Name then // Если это просто компонент
+                    TransYes := True;
+                  if TransYes then
+                    Break;
+                end;
+                if not TransYes then
+                begin
+                  DAShow(Lang_Vars[19].L_S, Format(Lang_Vars[168].L_S, [XML_Node.Items[I].Name]), EmptyStr, 134, 2, 0);
+                  Exit;
+                end;
+              end;
+            end;
+          end;
         end;
       end;
-      // Записываем сам файл
-      SaveToFile(V_ProfilePath + Xform.name + C_XML_Ext);
     end;
   finally
     JvXML.Free;
   end;
-end;}
+end;
 
 {$ENDREGION}
 {$REGION 'SaveTextInHistory'}
@@ -730,7 +683,7 @@ end;
 function NotifyConnectError(SName: string; Errcode: Integer): string;
 begin
   // Определяем что за ошибка произошла при подключении
-  Result := Format(Lang_Vars[23].L_S, [SName]) + C_BN + WSocketErrorDesc(Errcode) + C_BN + C_QN + Format(Lang_Vars[27].L_S, [Errcode]) + C_EN;
+  Result := Format(Lang_Vars[23].L_S, [SName]) + ' ' + WSocketErrorDesc(Errcode) + ' ' + '[' + Format(Lang_Vars[27].L_S, [Errcode]) + ']';
 end;
 
 {$ENDREGION}
@@ -753,38 +706,14 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'XLog'}
-
-procedure XLog(XLogHead, XLogData, Proto: string; InData: boolean = true);
-begin
-  // Если окно лога не создано, то выходим
-  if not Assigned(LogForm) then
-    Exit;
-  // Если запись лога выключена, то выходим
-  with LogForm do
-  begin
-    if WriteLogSpeedButton.Down then
-      Exit;
-    // Проверяем какой протокол
-    if ((Proto = C_Icq) and ICQDumpSpeedButton.Down) //
-    or ((Proto = C_Jabber) and JabberDumpSpeedButton.Down) //
-    or ((Proto = C_Mra) and MRADumpSpeedButton.Down) //
-    or ((Proto = C_Twitter) and TwitDumpSpeedButton.Down) //
-    or ((Proto = C_HTTP) and HTTP_DumpSpeedButton.Down) //
-    or (Proto = EmptyStr) then // Добавляем в лог новое сообщение
-      AddLogText(XLogHead, XLogData, InData);
-  end;
-end;
-
-{$ENDREGION}
 {$REGION 'Jab_SendPkt'}
 
 procedure Jab_SendPkt(SendData: string);
-var
+{var
   JvXML: TJvSimpleXml;
-  Pkt, S: string;
+  Pkt, S: string;}
 begin
-  if Assigned(LogForm) then
+  {if Assigned(LogForm) then
     if LogForm.JabberDumpSpeedButton.Down then
     begin
       S := Copy(SendData, 2, 1);
@@ -799,7 +728,7 @@ begin
             JvXML_LoadStr(JvXML, Pkt);
             // Пишем в лог данные пакета
             if Root <> nil then
-              XLog(C_Jabber + C_BN + Log_Send, Trim(Root.SaveToString), C_Jabber, false);
+              XLog(C_Jabber + ' ' + Log_Send, Trim(Root.SaveToString), C_Jabber, false);
           end;
         finally
           JvXML.Free;
@@ -808,11 +737,11 @@ begin
       else
       begin
         if S = #09 then
-          XLog(C_Jabber + C_BN + Log_Send, 'Ping', C_Jabber, false)
+          XLog(C_Jabber + ' ' + Log_Send, 'Ping', C_Jabber, false)
         else
-          XLog(C_Jabber + C_BN + Log_Send, SendData, C_Jabber, false);
+          XLog(C_Jabber + ' ' + Log_Send, SendData, C_Jabber, false);
       end;
-    end;
+    end;}
   // Отправляем данные через сокет
   Mainform.JabberWSocket.SendStr(Utf8Encode(SendData));
 end;
@@ -858,8 +787,8 @@ begin
   // Заменяем все переходы на новую строку в сообщении на соответствующий тэг
   Msg := ReplaceStr(Msg, C_RN, C_BR);
   Msg := ReplaceStr(Msg, #10, C_BR);
-  Msg := ReplaceStr(Msg, C_BR + C_BN, C_BR + C_nbsp);
-  Msg := ReplaceStr(Msg, C_BN + C_BN, C_nbsp + C_nbsp);
+  Msg := ReplaceStr(Msg, C_BR + ' ', C_BR + C_nbsp);
+  Msg := ReplaceStr(Msg, ' ' + ' ', C_nbsp + C_nbsp);
 end;
 
 {$ENDREGION}
@@ -956,7 +885,6 @@ begin
   Text := Stringreplace(Text, 'http://', ' <a href="http://', [RfReplaceAll, RfIgnoreCase]);
   Text := Stringreplace(Text, 'https://', ' <a href="https://', [RfReplaceAll, RfIgnoreCase]);
   Text := Stringreplace(Text, 'ftp://', ' <a href="ftp://', [RfReplaceAll, RfIgnoreCase]);
-  Text := Stringreplace(Text, 'www.', ' <a href="www.', [RfReplaceAll, RfIgnoreCase]);
   //
   Str := Text;
   A: ;
@@ -978,14 +906,24 @@ begin
         UrlText := NextData(Str, R - 1);
         FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
       end
+      else if (B > 0) and (R = 0) then
+      begin
+        UrlText := NextData(Str, B - 1);
+        FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
+      end
       else if (R > 0) and (R < B) then
       begin
         UrlText := NextData(Str, R - 1);
         FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
       end
-      else if (B > 0) and (R = 0) then
+      else if (R > 0) and (R > B) and (B <> 0) then
       begin
-        UrlText := NextData(Str, B - 1);
+        UrlText := NextData(Str, R - 1);
+        FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
+      end
+      else if (R > 0) and (B = 0) then
+      begin
+        UrlText := NextData(Str, R - 1);
         FinalText := FinalText + UrlText + '">' + UrlText + '</a>';
       end;
     end
@@ -1014,41 +952,6 @@ begin
   end;
   Result := False;
 end;
-
-{$ENDREGION}
-{$REGION 'TranslitRus2Lat'}
-
-{ function TranslitRus2Lat(const Str: string): string;
-  const
-  Rarrayl = 'абвгдеёжзийклмнопрстуфхцчшщьыъэюя';
-  Rarrayu = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ';
-  Colchar = 33;
-  Arr: array [1 .. 2, 1 .. Colchar] of string = (('a', 'b', 'v', 'g', 'd', 'e', 'yo', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'kh', 'ts', 'ch', 'sh', 'shch', '''',
-  'y', '''', 'e', 'yu', 'ya'), ('A', 'B', 'V', 'G', 'D', 'E', 'Yo', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'Kh', 'Ts', 'Ch', 'Sh', 'Shch', '''', 'Y', '''',
-  'E', 'Yu', 'Ya'));
-  var
-  I: Integer;
-  Lens: Integer;
-  P: Integer;
-  D: Byte;
-  begin
-  Result := EmptyStr;
-  Lens := Length(Str);
-  for I := 1 to Lens do
-  begin
-  D := 1;
-  P := Pos(Str[I], Rarrayl);
-  if P = 0 then
-  begin
-  P := Pos(Str[I], Rarrayu);
-  D := 2
-  end;
-  if P <> 0 then
-  Result := Result + Arr[D, P]
-  else
-  Result := Result + Str[I];
-  end;
-  end; }
 
 {$ENDREGION}
 {$REGION 'Horospope'}
@@ -1149,6 +1052,12 @@ var
   Da: TJvDesktopAlert;
   Ico: TIcon;
 begin
+  // Если отключен показ всплывающих окон, то выходим
+  if Assigned(SettingsForm) then
+    if SettingsForm.PopupMessEnableCheckBox.Checked then
+      Exit;
+  // Вывод плагинам "Всплывающее сообщение [данные сообщения]"
+  MainForm.JvPluginManager.BroadcastMessage(4, DaText + ';' + DaId + ';' + IntToStr(DaColor));
   // Применяем параметры для всплывающего окна
   if DaVisible = 0 then
     DaVisible := V_DATimeShow;
@@ -1157,8 +1066,8 @@ begin
   Da.AutoFree := True;
   Da.AutoFocus := False;
   Da.Location.Position := TJvDesktopAlertPosition(V_DAPos);
-  Da.AlertStyle := TJvAlertStyle(V_DaStyle);
-  Da.StyleHandler.DisplayDuration := DaVisible;
+  Da.AlertStyle := TJvAlertStyle(0);
+  Da.StyleHandler.DisplayDuration := DaVisible * 1000;
   Da.StyleHandler.StartInterval := 10;
   Da.StyleHandler.StartSteps := 10;
   Da.StyleHandler.EndInterval := 10;
@@ -1185,8 +1094,6 @@ begin
         Da.Colors.WindowTo := TColor($00DAF4FF);
         // Воспроизводим звук ошибки
         ImPlaySnd(7);
-        // Пишем в окно лога
-        Xlog(DaHead, DaText, EmptyStr);
       end;
     3: // Зелёный
       begin
@@ -1205,6 +1112,8 @@ begin
   Da.Hint := DaId;
   // Вызываем показ всплывающего окна
   Da.Execute;
+  // Уничтожаем Иконку
+  FreeAndNil(Ico);
 end;
 
 {$ENDREGION}
@@ -1243,35 +1152,36 @@ end;
 
 {$ENDREGION}
 {$REGION 'IsoLateText'}
-  procedure IsoLateText(const S: string; Tag1, Tag2: string; List: TStrings);
-  var
-    PScan, PEnd, PTag1, PTag2: PChar;
-    FoundText: string;
-    SearchText: string;
-  begin
-    SearchText := Uppercase(S);
-    Tag1 := Uppercase(Tag1);
-    Tag2 := Uppercase(Tag2);
-    pTag1 := PChar(Tag1);
-    pTag2 := PChar(Tag2);
-    pScan := PChar(SearchText);
-    repeat
-      pScan := StrPos(PScan, PTag1);
-      if pScan <> nil then
+
+procedure IsoLateText(const S: string; Tag1, Tag2: string; List: TStrings);
+var
+  PScan, PEnd, PTag1, PTag2: PChar;
+  FoundText: string;
+  SearchText: string;
+begin
+  SearchText := Uppercase(S);
+  Tag1 := Uppercase(Tag1);
+  Tag2 := Uppercase(Tag2);
+  pTag1 := PChar(Tag1);
+  pTag2 := PChar(Tag2);
+  pScan := PChar(SearchText);
+  repeat
+    pScan := StrPos(PScan, PTag1);
+    if pScan <> nil then
+    begin
+      Inc(PScan, Length(Tag1));
+      pEnd := StrPos(PScan, PTag2);
+      if PEnd <> nil then
       begin
-        Inc(PScan, Length(Tag1));
-        pEnd := StrPos(PScan, PTag2);
-        if PEnd <> nil then
-        begin
-          SetString(FoundText, Pchar(S) + (PScan - PChar(SearchText)), PEnd - PScan);
-          list.Add(FoundText);
-          PScan := PEnd + Length(tag2);
-        end
-        else
-          PScan := nil;
-      end;
-    until PScan = nil;
-  end;
+        SetString(FoundText, Pchar(S) + (PScan - PChar(SearchText)), PEnd - PScan);
+        list.Add(FoundText);
+        PScan := PEnd + Length(tag2);
+      end
+      else
+        PScan := nil;
+    end;
+  until PScan = nil;
+end;
 {$ENDREGION}
 {$REGION 'ReadFromFile'}
 
@@ -1450,18 +1360,16 @@ begin
       F := List.Count
     else
       F := AlinesCount;
-    // Вычисляем обратный отсчёт
-    F := List.Count - F;
-    // Запускаем цикл граббинда посдежних сообщений из истории
-    for I := List.Count - 1 downto F do
-      Result := Result + List.Strings[I] + C_RN;
-    // Заносим результат снова в список
-    List.Text := Result;
-    // Обнуляем результат
-    Result := EmptyStr;
-    // Переворачиваем строки в списке
-    for I := List.Count - 1 downto 0 do
-      Result := Result + List.Strings[I] + C_RN;
+    // Запускаем цикл получения последних сообщений из истории
+    for I := List.Count - F to List.Count - 1 do
+    begin
+      if List.Strings[I][13] = 'a' then
+        Result := Result + Format(C_HTML_OutImg, [0, V_CurrentIcons]) + List.Strings[I] + C_RN
+      else if List.Strings[I][13] = 'b' then
+        Result := Result + Format(C_HTML_InImg, [V_CurrentIcons]) + List.Strings[I] + C_RN
+      else
+        Result := Result + List.Strings[I] + C_RN;
+    end;
   finally
     List.Free;
   end;
@@ -1529,13 +1437,13 @@ begin
       if Ofs + I <= Length(Data) then
       begin
         S1 := S1 + IntToHex(Ord(Data[Ofs + I]), 2);
-        S1 := S1 + C_BN;
+        S1 := S1 + ' ';
         if Data[Ofs + I] < #32 then
           S2 := S2 + '.'
         else
           S2 := S2 + Data[Ofs + I];
       end;
-    S1 := S1 + StringOfChar(C_BN, Cols * 3 + 4 - Length(S1));
+    S1 := S1 + StringOfChar(' ', Cols * 3 + 4 - Length(S1));
     Result := Result + S1 + S2 + C_RN;
     Inc(Ofs, Cols);
   end;
@@ -1566,36 +1474,18 @@ end;
 procedure ICQ_SendPkt(Channel, Data: string);
 var
   Str: RawByteString;
-  I, Len, PktType: Integer;
-  S_Name: string;
+  Len: Integer;
 begin
   // Вычисляем длинну данных
   Len := Length(Hex2text(Data));
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(Icq_seq, 4) + IntToHex(Len, 4) + Data);
-  // Пишем в лог данные пакета
-  if Assigned(LogForm) then
-    if LogForm.ICQDumpSpeedButton.Down then
-    begin
-      if Length(Str) >= 10 then
-        PktType := HexToInt(Text2Hex(Str[8] + Str[10]))
-      else
-        PktType := 0;
-      for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
-        if ICQ_Pkt_Names[I].Pkt_Code = PktType then
-        begin
-          if (PktType = $0001) or (PktType = 0) then
-            S_Name := ICQ_Pkt_Names[I + 1].Pkt_Name
-          else
-            S_Name := ICQ_Pkt_Names[I].Pkt_Name;
-          Break;
-        end;
-      XLog(C_Icq + C_BN + Log_Send + C_BN + S_Name, Trim(Dump(Str)), C_Icq, false);
-    end;
   // Отсылаем данные по сокету
   MainForm.IcqWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
   Inc(Icq_seq);
+  // Вывод плагинам "ICQ протокол [исходящие данные]"
+  MainForm.JvPluginManager.BroadcastMessage(10, Str);
 end;
 
 {$ENDREGION}
@@ -1611,7 +1501,7 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text('2A0' + Channel + IntToHex(ICQ_Avatar_Seq, 4) + IntToHex(Len, 4) + Data);
   // Пишем в лог данные пакета
-  XLog(C_Icq + 'A' + Log_Send, Trim(Dump(Str)), C_Icq, false);
+  //XLog(C_Icq + 'A' + Log_Send, Trim(Dump(Str)), C_Icq, false);
   // Отсылаем данные по сокету
   Mainform.IcqAvatarWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1624,8 +1514,7 @@ end;
 procedure Mra_SendPkt(PktType, Data: string; Nolen: Boolean = False);
 var
   Str: RawByteString;
-  I, Len, C: Integer;
-  S_Name: string;
+  Len: Integer;
 begin
   // Вычисляем длинну данных
   if not Nolen then
@@ -1635,7 +1524,7 @@ begin
   // Преобразуем данные в бинарный формат
   Str := Hex2text(Mra_magkey + Mra_protover + IntToHex(Swap32(Mra_seq), 8) + PktType + IntToHex(Swap32(Len), 8) + Data);
   // Пишем в лог данные пакета
-  if Assigned(LogForm) then
+  {if Assigned(LogForm) then
     if LogForm.MRADumpSpeedButton.Down then
     begin
       C := Swap16(HexToInt(LeftStr(PktType, 4)));
@@ -1645,8 +1534,8 @@ begin
           S_Name := MRA_Pkt_Names[I].Pkt_Name;
           Break;
         end;
-      XLog(C_Mra + C_BN + Log_Send + C_BN + S_Name, Trim(Dump(Str)), C_Mra, false);
-    end;
+      XLog(C_Mra + ' ' + Log_Send + ' ' + S_Name, Trim(Dump(Str)), C_Mra, false);
+    end;}
   // Отсылаем данные по сокету
   Mainform.MraWSocket.SendStr(Str);
   // Увеличиваем счётчик пакетов
@@ -1659,7 +1548,7 @@ end;
 function DateTimeChatMess: string;
 begin
   // YYYYMMDDHHNNSS
-  Result := FormatDateTime('HH:NN:SS', Time) + C_BN + FormatDateTime('DD.MM.YYYY', Date);
+  Result := FormatDateTime('HH:NN:SS', Time) + ' ' + FormatDateTime('DD.MM.YYYY', Date);
 end;
 
 {$ENDREGION}
@@ -1682,7 +1571,7 @@ end;
 
 function ChangeSpaces(const Value: string): string;
 begin
-  Result := ReplaceStr(Value, C_BN, '%20');
+  Result := ReplaceStr(Value, ' ', '%20');
 end;
 
 {$ENDREGION}
@@ -1706,7 +1595,7 @@ end;
 
 function DeleteSpaces(const Value: string): string;
 begin
-  Result := ReplaceStr(Value, C_BN, EmptyStr);
+  Result := ReplaceStr(Value, ' ', EmptyStr);
 end;
 
 {$ENDREGION}
@@ -1918,7 +1807,7 @@ begin
   if Sz > 0 then
   begin
     try
-      Buf := Allocmem(Sz);
+      Buf := AllocMem(Sz);
       GetFileVersionInfo(PChar(S), H, Sz, Buf);
       VerQueryValue(Buf, '\VarFileInfo\Translation', Value, Len);
       Ts := IntToHex(Makelong(Hiword(Longint(Value^)), Loword(Longint(Value^))), 8);
@@ -1926,6 +1815,7 @@ begin
       VerQueryValue(Buf, PChar('StringFileInfo\' + Ts + '\FileVersion'), Pointer(Value), Len);
       if Len > 1 then
         Result := StrPas(PChar(Value));
+      FreeMemory(Buf);
     except
     end;
   end;
@@ -1969,7 +1859,7 @@ end;
 
 function ErrorHttpClient(ErrCode: Integer): string;
 begin
-  Result := Lang_Vars[23].L_S + C_BN;
+  Result := Lang_Vars[23].L_S + ' ';
   case Errcode of
     0: Result := Result + EmptyStr;
     400: Result := Result + Err400;
@@ -1997,7 +1887,7 @@ begin
     504: Result := Result + Err504;
     505: Result := Result + Err505;
   end;
-  Result := Result + C_BN + C_QN + Format(Lang_Vars[27].L_S, [Errcode]) + C_EN;
+  Result := Result + ' ' + '[' + Format(Lang_Vars[27].L_S, [Errcode]) + ']';
 end;
 
 {$ENDREGION}
@@ -2063,7 +1953,7 @@ begin
     Exit;
   if Froot = EmptyStr then
   begin
-    Sp := Pos(C_BN, Tmps);
+    Sp := Pos(' ', Tmps);
     Tb := Pos(#09, Tmps);
     Cr := Pos(#10, Tmps);
     Nl := Pos(#13, Tmps);
@@ -2196,13 +2086,13 @@ begin
           Sndplaysound(PChar(V_SoundError_Path), Snd_async);
       8:
         begin
-          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + C_SN + 'Type' + f_ext;
+          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + '\' + 'Type' + f_ext;
           if (FileExists(SFilePath)) then
             Sndplaysound(PChar(SFilePath), Snd_async);
         end;
       9:
         begin
-          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + C_SN + 'Back' + f_ext;
+          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + '\' + 'Back' + f_ext;
           if (FileExists(SFilePath)) then
             Sndplaysound(PChar(SFilePath), Snd_async);
         end;
@@ -2210,7 +2100,7 @@ begin
         begin
           if (V_SoundON) and (V_SoundMsgSend) then
             Exit;
-          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + C_SN + 'MsgSend' + f_ext;
+          SFilePath := V_MyPath + C_SoundsFolder + V_CurrentSounds + '\' + 'MsgSend' + f_ext;
           if (FileExists(SFilePath)) then
             Sndplaysound(PChar(SFilePath), Snd_async);
         end;
@@ -2230,7 +2120,7 @@ begin
   if Assigned(V_AccountToNick) then
   begin
     // Находим ники в списке ников по учётной записи
-    Result := UrlDecode(V_AccountToNick.Values[Ctype + C_BN + UrlEncode(Cid)]);
+    Result := UrlDecode(V_AccountToNick.Values[Ctype + ' ' + UrlEncode(Cid)]);
     if Result = EmptyStr then
       Result := CId;
   end;
@@ -2401,17 +2291,19 @@ var
 
 begin
   // Определяем html тэги для вставки смайлов заместо их текстовых обозначений
-  ImgTag := '<img src="./Smilies/' + V_CurrentSmiles + '/%s" ALIGN="ABSMIDDLE" vspace="3" BORDER="0" alt="%s">';
+  ImgTag := '<img src="./Smilies/' + V_CurrentSmiles + '/%s" ALIGN="ABSMIDDLE" vspace="3" BORDER="0" alt="%s" />';
   // Сканируем список кодов смайлов на совпадения
   for I := 1 to V_SmilesList.Count - 1 do
   begin
-    for II := 1 to 20 do
+    for II := 1 to 10 do
     begin
-      Cod := Parse(',', V_SmilesList.Strings[I], II);
+      Cod := Text2XML(Parse(',', V_SmilesList.Strings[I], II));
       if Cod > EmptyStr then
       begin
         if Pos(Cod, Msg) > 0 then
-          Msg := ReplaceText(Msg, Cod, GenTag(IntToStr(I) + '.gif', Cod));
+        begin
+          Msg := ReplaceText(Msg, Cod, GenTag(IntToStr(I) + C_GIF_Ext, UrlEncode(XML2Text(Cod))));
+        end;
       end
       else
         Break;
@@ -2517,7 +2409,7 @@ begin
     Inc(SH_TimerCount);
     GetCursorPos(Pt);
     Pt1 := HtmlV.ScreenToClient(Pt);
-    TitleStr := HtmlV.TitleAttr;
+    TitleStr := UrlDecode(HtmlV.TitleAttr);
     if (TitleStr = EmptyStr) or not PtInRect(HtmlV.ClientRect, Pt1) then
     begin
       SH_OldTitle := EmptyStr;
@@ -2610,15 +2502,15 @@ var
 begin
   // Создаём сигнатуру для запросов twitter
   for I := 0 to xParams.Count - 1 do
-    strParams := strParams + C_AN + xParams[i];
+    strParams := strParams + '&' + xParams[i];
   Delete(strParams, 1, 1);
-  strBase := ReqMethod + C_AN + EncodeRFC3986(xURL) + C_AN + EncodeRFC3986(strParams);
+  strBase := ReqMethod + '&' + EncodeRFC3986(xURL) + '&' + EncodeRFC3986(strParams);
   if xToken <> EmptyStr then
-    strKey := X_Twitter_OAuth_Consumer_Secret + C_AN + EncodeRFC3986(xToken)
+    strKey := X_Twitter_OAuth_Consumer_Secret + '&' + EncodeRFC3986(xToken)
   else
-    strKey := X_Twitter_OAuth_Consumer_Secret + C_AN;
+    strKey := X_Twitter_OAuth_Consumer_Secret + '&';
   strSignature := EncodeRFC3986(Base64Encode(Twitter_Encrypt_HMAC_SHA1(strBase, strKey)));
-  Result := xURL + C_GT + strParams + C_AN + C_Twitter_OAuth_Signature + strSignature;
+  Result := xURL + '?' + strParams + '&' + C_Twitter_OAuth_Signature + strSignature;
 end;
 {$ENDREGION}
 

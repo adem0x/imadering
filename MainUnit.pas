@@ -36,14 +36,12 @@ uses
   StrUtils,
   OverbyteIcsMimeUtils,
   StdCtrls,
-  ActnList,
   GifImg,
-  AppEvnts,
   JclDebug,
   JvSimpleXml,
   ExtDlgs,
   IOUtils,
-  OverbyteIcsUtils;
+  OverbyteIcsUtils, JvComponentBase, JvAppHotKey, JvPluginManager;
 
 type
   TMainForm = class(TForm)
@@ -111,8 +109,6 @@ type
     SoundOnOffToolButton: TToolButton;
     OnlyOnlineContactsToolButton: TToolButton;
     ContactPopupMenu: TPopupMenu;
-    RightICQPopupMenu: TPopupMenu;
-    UnstableICQStatus: TMenuItem;
     OpenGroupsCL: TMenuItem;
     CloseGroupsCL: TMenuItem;
     N5: TMenuItem;
@@ -135,15 +131,11 @@ type
     N23: TMenuItem;
     NextContactMenu: TMenuItem;
     GrandAuthContact: TMenuItem;
-    SendAddContact: TMenuItem;
     DelYourSelfContact: TMenuItem;
-    SendInviteContact: TMenuItem;
     AddNewContact: TMenuItem;
     History_Menu: TMenuItem;
     Traffic_Menu: TMenuItem;
     MRA_PhotoClient: THttpCli;
-    RightMRAPopupMenu: TPopupMenu;
-    RightJabberPopupMenu: TPopupMenu;
     JabberStatusInvisible: TMenuItem;
     JabberStatusDND: TMenuItem;
     N25: TMenuItem;
@@ -159,17 +151,12 @@ type
     JabberStatusDepression: TMenuItem;
     JabberStatusEvil: TMenuItem;
     JabberStatusFFC: TMenuItem;
-    UnstableMRAStatus: TMenuItem;
-    UnstableJabberStatus: TMenuItem;
     SearchInCL_Menu: TMenuItem;
     HideEmptyGroups: TMenuItem;
     ICQSearchNewContact: TMenuItem;
     CheckUpdate_Menu: TMenuItem;
     N29: TMenuItem;
     JabberSearchNewContact: TMenuItem;
-    MainActionList: TActionList;
-    CloseActiveFormAction: TAction;
-    ChatTabCloseAction: TAction;
     TopPanelPopupMenu: TPopupMenu;
     BottomPanelPopupMenu: TPopupMenu;
     MainButtonONMenu: TMenuItem;
@@ -200,9 +187,6 @@ type
     SendFileMenu: TMenuItem;
     SendFileUpWapru: TMenuItem;
     SendFileOpenDialog: TOpenDialog;
-    ShowLog_Menu: TMenuItem;
-    IMaderingEvents: TApplicationEvents;
-    UniqContactSettingsMenu: TMenuItem;
     FloatContactMenu: TMenuItem;
     N27: TMenuItem;
     SwitchProfile_Menu: TMenuItem;
@@ -210,7 +194,6 @@ type
     TrayPopupMenu: TPopupMenu;
     CloseProgram_MenuTray: TMenuItem;
     N24: TMenuItem;
-    ShowLog_MenuTray: TMenuItem;
     N28: TMenuItem;
     HideInTray_MenuTray: TMenuItem;
     Status_MenuTray: TMenuItem;
@@ -232,9 +215,6 @@ type
     AllStatusDepres: TMenuItem;
     AllStatusEvil: TMenuItem;
     AllStatusFFC: TMenuItem;
-    PingICQServer: TMenuItem;
-    PingMRAServer: TMenuItem;
-    PingJabberServer: TMenuItem;
     CLSearchToolButton: TToolButton;
     CLSearchTopToolButton: TToolButton;
     CLSearchONMenu: TMenuItem;
@@ -261,9 +241,6 @@ type
     PostInTwitter_Menu: TMenuItem;
     LinkCompress_Menu: TMenuItem;
     N1: TMenuItem;
-    DumpMRA: TMenuItem;
-    DumpICQ: TMenuItem;
-    DumpJabber: TMenuItem;
     ICQAddGroup: TMenuItem;
     MRAAddGroup: TMenuItem;
     JabberAddGroup: TMenuItem;
@@ -282,6 +259,61 @@ type
     Jabber_Addition: TMenuItem;
     JoinConf_Menu: TMenuItem;
     ConfList_Menu: TMenuItem;
+    BimoidToolButton: TToolButton;
+    BimoidPopupMenu: TPopupMenu;
+    Bim_Settings: TMenuItem;
+    Bim_Addition: TMenuItem;
+    MenuItem3: TMenuItem;
+    Bim_SearchNewContact: TMenuItem;
+    MenuItem5: TMenuItem;
+    Bim_AddGroup: TMenuItem;
+    Bim_AddContact: TMenuItem;
+    MenuItem8: TMenuItem;
+    Bim_XStatus: TMenuItem;
+    MenuItem10: TMenuItem;
+    Bim_StatusFFC: TMenuItem;
+    Bim_StatusHome: TMenuItem;
+    Bim_StatusWork: TMenuItem;
+    MenuItem16: TMenuItem;
+    Bim_StatusLunch: TMenuItem;
+    Bim_StatusAway: TMenuItem;
+    Bim_StatusNA: TMenuItem;
+    Bim_StatusOccupied: TMenuItem;
+    Bim_StatusDND: TMenuItem;
+    MenuItem22: TMenuItem;
+    Bim_StatusOnline: TMenuItem;
+    Bim_StatusInvisible: TMenuItem;
+    Bim_StatusInvisibleForAll: TMenuItem;
+    MenuItem26: TMenuItem;
+    Bim_StatusOffline: TMenuItem;
+    JvPluginManager: TJvPluginManager;
+    UnstableICQStatus: TMenuItem;
+    MyICQDetails_Menu: TMenuItem;
+    ShowMyICQDetails_Menu: TMenuItem;
+    ChangeMyICQDetails_Menu: TMenuItem;
+    MyMRADetails_Menu: TMenuItem;
+    MyJabberDetails_Menu: TMenuItem;
+    MyBimoidDetails_Menu: TMenuItem;
+    ShowMyJabberDetails_Menu: TMenuItem;
+    ChangeMyJabberDetails_Menu: TMenuItem;
+    ShowMyMRADetails_Menu: TMenuItem;
+    ChangeMyMRADetails_Menu: TMenuItem;
+    ShowMyBimoidDetails_Menu: TMenuItem;
+    ChangeMyBimoidDetails_Menu: TMenuItem;
+    PluginsToolButton: TToolButton;
+    PluginsPopupMenu: TPopupMenu;
+    PluginsImageList: TImageList;
+    NewMessPanel: TPanel;
+    ReqAuthContact: TMenuItem;
+    HCategoryPanelGroup: TCategoryPanelGroup;
+    Bim_HCategoryPanel: TCategoryPanel;
+    Bim_HCategoryButtons: TCategoryButtons;
+    MRA_HCategoryPanel: TCategoryPanel;
+    MRA_HCategoryButtons: TCategoryButtons;
+    Jab_HCategoryPanel: TCategoryPanel;
+    Jab_HCategoryButtons: TCategoryButtons;
+    ICQ_HCategoryPanel: TCategoryPanel;
+    ICQ_HCategoryButtons: TCategoryButtons;
     procedure FormCreate(Sender: TObject);
     procedure JvTimerListEvents0Timer(Sender: TObject);
     procedure HintMaxTime(Sender: TObject);
@@ -329,9 +361,7 @@ type
     procedure EditContactClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
     procedure GrandAuthContactClick(Sender: TObject);
-    procedure SendAddContactClick(Sender: TObject);
     procedure DelYourSelfContactClick(Sender: TObject);
-    procedure SendInviteContactClick(Sender: TObject);
     procedure UnstableICQStatusClick(Sender: TObject);
     procedure History_MenuClick(Sender: TObject);
     procedure Traffic_MenuClick(Sender: TObject);
@@ -351,11 +381,9 @@ type
     procedure JabberWSocketSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure HttpClientSocksError(Sender: TObject; Error: Integer; Msg: string);
     procedure HttpClientSessionClosed(Sender: TObject);
-    procedure ICQWSocketError(Sender: TObject);
     procedure ICQWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure ICQWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure HttpClientSocksConnected(Sender: TObject; ErrCode: Word);
-    procedure JabberWSocketError(Sender: TObject);
     procedure JabberWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure JabberWSocketSocksConnected(Sender: TObject; ErrCode: Word);
     procedure JvTimerListEvents9Timer(Sender: TObject);
@@ -365,11 +393,8 @@ type
     procedure ContactListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ContactListPopupMenuPopup(Sender: TObject);
     procedure HideEmptyGroupsClick(Sender: TObject);
-    procedure RightICQPopupMenuPopup(Sender: TObject);
     procedure MainToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure ICQSearchNewContactClick(Sender: TObject);
-    procedure CloseActiveFormActionExecute(Sender: TObject);
-    procedure ChatTabCloseActionExecute(Sender: TObject);
     procedure BottomPanelPopupMenuPopup(Sender: TObject);
     procedure TopPanelToolButtonClick(Sender: TObject);
     procedure MRAStatusOnlineClick(Sender: TObject);
@@ -394,7 +419,6 @@ type
     procedure TopTrafficONMenuClick(Sender: TObject);
     procedure MRAStatusOfflineClick(Sender: TObject);
     procedure MRAWSocketDataAvailable(Sender: TObject; ErrCode: Word);
-    procedure MRAWSocketError(Sender: TObject);
     procedure MRAWSocketSendData(Sender: TObject; BytesSent: Integer);
     procedure MRAWSocketSessionAvailable(Sender: TObject; ErrCode: Word);
     procedure MRAWSocketSessionClosed(Sender: TObject; ErrCode: Word);
@@ -406,14 +430,10 @@ type
     procedure SocketBgException(Sender: TObject; E: Exception; var CanClose: Boolean);
     procedure SendFileUpWapruClick(Sender: TObject);
     procedure ContactListCategoryCollapase(Sender: TObject; const Category: TButtonCategory);
-    procedure ShowLog_MenuClick(Sender: TObject);
-    procedure IMaderingEventsException(Sender: TObject; E: Exception);
-    procedure UniqContactSettingsMenuClick(Sender: TObject);
     procedure FloatContactMenuClick(Sender: TObject);
     procedure SwitchProfile_MenuClick(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
     procedure CloseProgram_MenuClick(Sender: TObject);
-    procedure PingICQServerClick(Sender: TObject);
     procedure JvTimerListEvents8Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormDblClick(Sender: TObject);
@@ -437,9 +457,6 @@ type
     procedure HideInTray_MenuClick(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure CheckUpdate_MenuClick(Sender: TObject);
-    procedure DumpMRAClick(Sender: TObject);
-    procedure DumpICQClick(Sender: TObject);
-    procedure DumpJabberClick(Sender: TObject);
     procedure LinkCompress_MenuClick(Sender: TObject);
     procedure HttpClientDocEnd(Sender: TObject);
     procedure PostInTwitter_MenuClick(Sender: TObject);
@@ -454,6 +471,32 @@ type
     procedure MRA_PhotoClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
     procedure JoinConf_MenuClick(Sender: TObject);
     procedure ConfList_MenuClick(Sender: TObject);
+    procedure BimoidToolButtonClick(Sender: TObject);
+    procedure BimoidToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure Bim_StatusOnlineClick(Sender: TObject);
+    procedure Bim_SettingsClick(Sender: TObject);
+    procedure Bim_StatusOfflineClick(Sender: TObject);
+    procedure ICQWSocketError(Sender: TObject);
+    procedure JvTimerListEvents16Timer(Sender: TObject);
+    procedure ICQAvatarWSocketError(Sender: TObject);
+    procedure MRAWSocketError(Sender: TObject);
+    procedure JabberWSocketError(Sender: TObject);
+    procedure JvPluginManagerPlugInError(Sender: TObject; AError: Exception);
+    procedure ShowMyICQDetails_MenuClick(Sender: TObject);
+    procedure ShowMyJabberDetails_MenuClick(Sender: TObject);
+    procedure ShowMyMRADetails_MenuClick(Sender: TObject);
+    procedure ShowMyBimoidDetails_MenuClick(Sender: TObject);
+    procedure ChangeMyICQDetails_MenuClick(Sender: TObject);
+    procedure ChangeMyJabberDetails_MenuClick(Sender: TObject);
+    procedure JvPluginManagerNewCommand(Sender: TObject; ACaption, AHint, AData: string; AShortCut: TShortCut; ABitmap: TBitmap; AEvent: TNotifyEvent);
+    procedure PluginsToolButtonClick(Sender: TObject);
+    procedure PluginsToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure JvTimerListEvents17Timer(Sender: TObject);
+    procedure TrayPopupMenuPopup(Sender: TObject);
+    procedure AllStatusOfflineClick(Sender: TObject);
+    procedure NewMessPanelClick(Sender: TObject);
+    procedure ReqAuthContactClick(Sender: TObject);
+    procedure HCategoryPanelGroupCanResize(Sender: TObject; var NewWidth, NewHeight: Integer; var Resize: Boolean);
 
   private
     { Private declarations }
@@ -468,14 +511,17 @@ type
     { Public declarations }
     RoasterGroup: TButtonCategory;
     RoasterButton: TButtonItem;
+    procedure AppException(Sender: TObject; E: Exception);
     procedure TranslateForm;
     procedure LoadMainFormSettings;
     procedure SaveMainFormSettings;
     procedure ICQ_Enable(OnOff: Boolean);
     procedure MRA_Enable(OnOff: Boolean);
     procedure Jab_Enable(OnOff: Boolean);
-    procedure OpenFromTrayMessage(HUIN: string);
+    procedure Bim_Enable(OnOff: Boolean);
     procedure MainFormHideInTray;
+    procedure DoHotKey(Sender: TObject);
+    procedure DoHotKeyRegisterFailed(Sender: TObject; var HotKey: TShortCut);
   end;
 
 {$ENDREGION}
@@ -509,35 +555,18 @@ uses
   JabberProtoUnit,
   MraProtoUnit,
   ContactSearchUnit,
-  ShowCertUnit,
-  FileTransferUnit,
-  LogUnit,
   FloatingUnit,
-  UniqUnit,
   ProfileUnit,
-  GTransUnit,
   OverbyteIcsUrl,
   ShellApi,
   SMSUnit,
-  GamesUnit,
   RosterUnit,
-  HTTPUnit,
   ConfUnit,
-  JBrowseUnit;
-
-{$ENDREGION}
-{$REGION 'MyConst'}
-
-const
-  C_MainForm = 'Main_form';
-  C_MainFormOnlyOnline = 'Only_online';
-  C_MainFormFirst = 'First_start';
-  C_MainFormProto = 'Protos';
-  C_Traffic = 'Traffic';
-  C_MainFormHEG = 'Empty_group';
-  C_MainFormTP = 'Top_panel';
-  C_MainFormBP = 'Bottom_panel';
-  С_MainFormTop = 'Top_mode';
+  JBrowseUnit,
+  BimoidProtoUnit,
+  BimoidOptionsUnit,
+  BugReportUnit,
+  LoginUnit;
 
 {$ENDREGION}
 {$REGION 'WMEXITSIZEMOVE'}
@@ -559,8 +588,6 @@ end;
 
 procedure TMainForm.TranslateForm;
 begin
-  // Создаём шаблон для перевода
-  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Выставляем подсказки к кнопкам
@@ -577,7 +604,6 @@ begin
   Settings_MenuTray.Caption := Settings_Menu.Caption;
   CloseProgram_MenuTray.Caption := CloseProgram_Menu.Caption;
   SwitchProfile_MenuTray.Caption := SwitchProfile_Menu.Caption;
-  ShowLog_Menu.Caption := ShowLog_MenuTray.Caption;
   TopMainButtonONMenu.Caption := MainButtonONMenu.Caption;
   TopOnlyOnlineONMenu.Caption := OnlyOnlineONMenu.Caption;
   TopSoundsONMenu.Caption := SoundsONMenu.Caption;
@@ -588,11 +614,8 @@ begin
   TopCLSearchONMenu.Caption := CLSearchONMenu.Caption;
   PostInTwitter_Menu.Caption := Format(Lang_Vars[61].L_S, [C_Twitter]);
   LinkCompress_Menu.Caption := Lang_Vars[3].L_S;
-  DumpMRA.Caption := Format(Lang_Vars[11].L_S, [C_MRA]);
-  DumpICQ.Caption := Format(Lang_Vars[11].L_S, [C_ICQ]);
-  DumpJabber.Caption := Format(Lang_Vars[11].L_S, [C_Jabber]);
   // Применяем перевод статусов в меню
-  ICQSettings.Caption := Settings_Menu.Caption + C_BN + C_Icq;
+  ICQSettings.Caption := Settings_Menu.Caption + ' ' + C_Icq;
   ICQ_Addition.Caption := NextContactMenu.Caption;
   ICQStatusFFC.Caption := Lang_Vars[67].L_S;
   ICQStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -610,30 +633,11 @@ begin
   ICQStatusOffline.Caption := Lang_Vars[80].L_S;
   ICQAddGroup.Caption := AddGroupCL.Caption;
   ICQAddContact.Caption := AddContactCL.Caption;
-  // MRA
-  MRASettings.Caption := Settings_Menu.Caption + C_BN + C_Mra;
-  MRA_Addition.Caption := NextContactMenu.Caption;
-  MRASearchNewContact.Caption := ICQSearchNewContact.Caption;
-  MRAXStatus.Caption := ICQXStatus.Caption;
-  MRAStatusFFC.Caption := Lang_Vars[67].L_S;
-  MRAStatusEvil.Caption := Lang_Vars[68].L_S;
-  MRAStatusDepres.Caption := Lang_Vars[69].L_S;
-  MRAStatusHome.Caption := Lang_Vars[70].L_S;
-  MRAStatusWork.Caption := Lang_Vars[71].L_S;
-  MRAStatusLunch.Caption := Lang_Vars[72].L_S;
-  MRAStatusAway.Caption := Lang_Vars[73].L_S;
-  MRAStatusNA.Caption := Lang_Vars[74].L_S;
-  MRAStatusOccupied.Caption := Lang_Vars[75].L_S;
-  MRAStatusDND.Caption := Lang_Vars[76].L_S;
-  MRAStatusOnline.Caption := Lang_Vars[77].L_S;
-  MRAStatusInvisible.Caption := Lang_Vars[78].L_S;
-  MRAStatusOffline.Caption := Lang_Vars[80].L_S;
-  PingMRAServer.Caption := PingICQServer.Caption;
-  UnstableMRAStatus.Caption := UnstableICQStatus.Caption;
-  MRAAddGroup.Caption := AddGroupCL.Caption;
-  MRAAddContact.Caption := AddContactCL.Caption;
   // Jabber
-  JabberSettings.Caption := Settings_Menu.Caption + C_BN + C_Jabber;
+  JabberSettings.Caption := Settings_Menu.Caption + ' ' + C_Jabber;
+  MyJabberDetails_Menu.Caption := MyICQDetails_Menu.Caption;
+  ShowMyJabberDetails_Menu.Caption := ShowMyICQDetails_Menu.Caption;
+  ChangeMyJabberDetails_Menu.Caption := ChangeMyICQDetails_Menu.Caption;
   Jabber_Addition.Caption := NextContactMenu.Caption;
   JabberSearchNewContact.Caption := ICQSearchNewContact.Caption;
   JabberXStatus.Caption := ICQXStatus.Caption;
@@ -650,10 +654,55 @@ begin
   JabberStatusOnline.Caption := Lang_Vars[77].L_S;
   JabberStatusInvisible.Caption := Lang_Vars[78].L_S;
   JabberStatusOffline.Caption := Lang_Vars[80].L_S;
-  PingJabberServer.Caption := PingICQServer.Caption;
-  UnstableJabberStatus.Caption := UnstableICQStatus.Caption;
+  //UnstableJabberStatus.Caption := UnstableICQStatus.Caption;
   JabberAddGroup.Caption := AddGroupCL.Caption;
   JabberAddContact.Caption := AddContactCL.Caption;
+  // MRA
+  MRASettings.Caption := Settings_Menu.Caption + ' ' + C_Mra;
+  MyMRADetails_Menu.Caption := MyICQDetails_Menu.Caption;
+  ShowMyMRADetails_Menu.Caption := ShowMyICQDetails_Menu.Caption;
+  ChangeMyMRADetails_Menu.Caption := ChangeMyICQDetails_Menu.Caption;
+  MRA_Addition.Caption := NextContactMenu.Caption;
+  MRASearchNewContact.Caption := ICQSearchNewContact.Caption;
+  MRAXStatus.Caption := ICQXStatus.Caption;
+  MRAStatusFFC.Caption := Lang_Vars[67].L_S;
+  MRAStatusEvil.Caption := Lang_Vars[68].L_S;
+  MRAStatusDepres.Caption := Lang_Vars[69].L_S;
+  MRAStatusHome.Caption := Lang_Vars[70].L_S;
+  MRAStatusWork.Caption := Lang_Vars[71].L_S;
+  MRAStatusLunch.Caption := Lang_Vars[72].L_S;
+  MRAStatusAway.Caption := Lang_Vars[73].L_S;
+  MRAStatusNA.Caption := Lang_Vars[74].L_S;
+  MRAStatusOccupied.Caption := Lang_Vars[75].L_S;
+  MRAStatusDND.Caption := Lang_Vars[76].L_S;
+  MRAStatusOnline.Caption := Lang_Vars[77].L_S;
+  MRAStatusInvisible.Caption := Lang_Vars[78].L_S;
+  MRAStatusOffline.Caption := Lang_Vars[80].L_S;
+  //UnstableMRAStatus.Caption := UnstableICQStatus.Caption;
+  MRAAddGroup.Caption := AddGroupCL.Caption;
+  MRAAddContact.Caption := AddContactCL.Caption;
+  // Bimoid
+  Bim_Settings.Caption := Settings_Menu.Caption + ' ' + C_Bimoid;
+  MyBimoidDetails_Menu.Caption := MyICQDetails_Menu.Caption;
+  ShowMyBimoidDetails_Menu.Caption := ShowMyICQDetails_Menu.Caption;
+  ChangeMyBimoidDetails_Menu.Caption := ChangeMyICQDetails_Menu.Caption;
+  Bim_Addition.Caption := NextContactMenu.Caption;
+  Bim_SearchNewContact.Caption := ICQSearchNewContact.Caption;
+  Bim_XStatus.Caption := ICQXStatus.Caption;
+  Bim_StatusFFC.Caption := Lang_Vars[67].L_S;
+  Bim_StatusHome.Caption := Lang_Vars[70].L_S;
+  Bim_StatusWork.Caption := Lang_Vars[71].L_S;
+  Bim_StatusLunch.Caption := Lang_Vars[72].L_S;
+  Bim_StatusAway.Caption := Lang_Vars[73].L_S;
+  Bim_StatusNA.Caption := Lang_Vars[74].L_S;
+  Bim_StatusOccupied.Caption := Lang_Vars[75].L_S;
+  Bim_StatusDND.Caption := Lang_Vars[76].L_S;
+  Bim_StatusOnline.Caption := Lang_Vars[77].L_S;
+  Bim_StatusInvisible.Caption := Lang_Vars[78].L_S;
+  Bim_StatusInvisibleForAll.Caption := Lang_Vars[79].L_S;
+  Bim_StatusOffline.Caption := Lang_Vars[80].L_S;
+  Bim_AddGroup.Caption := AddGroupCL.Caption;
+  Bim_AddContact.Caption := AddContactCL.Caption;
   // All Statuses
   AllStatusFFC.Caption := Lang_Vars[67].L_S;
   AllStatusEvil.Caption := Lang_Vars[68].L_S;
@@ -759,6 +808,12 @@ begin
   MainFormHideInTray;
 end;
 
+procedure TMainForm.TrayPopupMenuPopup(Sender: TObject);
+begin
+  // Выставляем иконку общего статуса
+  TrayPopupMenu.Items[2].ImageIndex := V_Tray_AllStatus;
+end;
+
 {$ENDREGION}
 {$REGION 'ICQ_Enable'}
 
@@ -782,6 +837,38 @@ begin
     // Стираем из Ростера контакты ICQ
     ClearContacts(C_Icq);
   end;
+  // Вывод плагинам "ICQ [вкл или выкл]"
+  JvPluginManager.BroadcastMessage(5, IntToStr(Integer(OnOff)));
+end;
+{$ENDREGION}
+{$REGION 'Bimoid_Enable'}
+
+procedure TMainForm.Bim_Enable(OnOff: Boolean);
+begin
+  if OnOff then
+  begin
+    // Создаём Bimoid сокет
+    Bim_Socket_Create;
+    // Инициализируем окно настроек протокола Bimoid
+    if not Assigned(BimoidOptionsForm) then
+      Application.CreateForm(TBimoidOptionsForm, BimoidOptionsForm);
+    // Ставим иконку в окне контактов
+    BimoidToolButton.Visible := True;
+  end
+  else
+  begin
+    // Прячем иконку в окне контактов
+    BimoidToolButton.Visible := False;
+    // Высвобождаем окно настроек протокола Bimoid
+    if Assigned(BimoidOptionsForm) then
+      FreeAndNil(BimoidOptionsForm);
+    // Стираем из Ростера контакты Bimoid
+    ClearContacts(C_Bimoid);
+    // Уничтожаем Bimoid сокет
+    Bim_Socket_Free;
+  end;
+  // Вывод плагинам "Bimoid [вкл или выкл]"
+  JvPluginManager.BroadcastMessage(8, IntToStr(Integer(OnOff)));
 end;
 {$ENDREGION}
 {$REGION 'MRA_Enable'}
@@ -806,11 +893,22 @@ begin
     // Стираем из Ростера контакты MRA
     ClearContacts(C_Mra);
   end;
+  // Вывод плагинам "MRA [вкл или выкл]"
+  JvPluginManager.BroadcastMessage(7, IntToStr(Integer(OnOff)));
 end;
+
 procedure TMainForm.MRA_PhotoClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 begin
   // Управляем кукие
-  XLog(MRA_PhotoClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
+  //XLog(MRA_PhotoClient.Name + ' ' + Log_Get + ' ' + C_Cookie, Data, C_HTTP);
+end;
+
+procedure TMainForm.NewMessPanelClick(Sender: TObject);
+begin
+  // Открываем непрочитанное сообщение из очереди
+  if V_InMessList <> nil then
+    if V_InMessList.Count > 0 then
+      TrayIconClick(nil);
 end;
 
 {$ENDREGION}
@@ -847,7 +945,7 @@ procedure TMainForm.MRASettingsClick(Sender: TObject);
 begin
   // Открываем настройки сети MRA протокола
   if not Assigned(MraOptionsForm) then
-    MraOptionsForm := TMraOptionsForm.Create(Self);
+    Application.CreateForm(TMraOptionsForm, MraOptionsForm);
   // Отображаем окно
   XShowForm(MraOptionsForm);
 end;
@@ -871,9 +969,9 @@ end;
 {$REGION 'MRAStatusOnlineClick'}
 
 procedure TMainForm.MRAStatusOnlineClick(Sender: TObject);
-var
-  S_Log: string;
 begin
+  if Assigned(MraOptionsForm) then
+  begin
   // Если логин ICQ или пароль пустые, то выводим окно настроек для их ввода
   if (MRA_LoginUIN = EmptyStr) or (MRA_LoginPassword = EmptyStr) then
   begin
@@ -896,7 +994,6 @@ begin
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   MRA_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   MRA_CurrentStatus_bac := MRA_CurrentStatus;
   // Ставим иконку статуса в окне КЛ
@@ -905,7 +1002,6 @@ begin
   // Подключаемся к MRA серверу
   if MRA_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Login + C_TN + C_BN + MRA_LoginUIN + C_RN;
     // Ставим иконку подключения
     MRAToolButton.ImageIndex := 25;
     // Блокируем контролы логина и пароля MRA
@@ -933,13 +1029,11 @@ begin
     begin
       MRAWSocket.Addr := V_HttpProxy_Address;
       MRAWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       MRAWSocket.Addr := MRA_LoginServerAddr;
       MRAWSocket.Port := MRA_LoginServerPort;
-      S_Log := S_Log + Log_Connect + C_TN + C_BN + MRA_LoginServerAddr + C_TN + MRA_LoginServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -948,8 +1042,8 @@ begin
   end;
   // Отправляем статус
   // if MRA_Work_Phaze then ;
-  // Пишем в лог
-  XLog(C_Mra, S_Log, C_Mra);
+
+  end;
 end;
 
 {$ENDREGION}
@@ -975,7 +1069,10 @@ begin
     // Стираем из Ростера контакты Jabber
     ClearContacts(C_Jabber);
   end;
+  // Вывод плагинам "Jabber [вкл или выкл]"
+  JvPluginManager.BroadcastMessage(6, IntToStr(Integer(OnOff)));
 end;
+
 procedure TMainForm.JoinConf_MenuClick(Sender: TObject);
 begin
   // Открываем окно входа в конференцию
@@ -1016,22 +1113,22 @@ var
 begin
   // Начинаем добаление новой группы
   GProto := C_Jabber;
-  if InputQuery(AddGroupCL.Caption + C_BN + GProto, AddGroupCL.Caption + C_TN, GName) then
+  if InputQuery(AddGroupCL.Caption + ' ' + GProto, AddGroupCL.Caption + ':', GName) then
   begin
     // Если имя группы пустое, то выходим
     if GName = EmptyStr then
       Exit;
     // Ищем есть ли такая группа уже в Ростере
-    Get_Node := RosterGetItem(GProto, C_Group + C_SS, C_Name, UrlEncode(GName));
+    Get_Node := RosterGetItem(GProto, C_Group + 's', C_Name, UrlEncode(GName));
     if Get_Node <> nil then
     begin
-      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
+      DAShow(Lang_Vars[19].L_S + ' ' + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
       Exit;
     end;
-    Get_Node := RosterGetItem(GProto, C_Contact + C_SS, C_Group + C_Id, UrlEncode(GName));
+    Get_Node := RosterGetItem(GProto, C_Contact + 's', C_Group + C_Id, UrlEncode(GName));
     if Get_Node <> nil then
     begin
-      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
+      DAShow(Lang_Vars[19].L_S + ' ' + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
       Exit;
     end;
     if Get_Node = nil then
@@ -1047,10 +1144,10 @@ begin
             if XML_Node <> nil then
             begin
               // Открываем раздел групп
-              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
               if Sub_Node <> nil then
               begin
-                Tri_Node := Sub_Node.Items.Add(C_Group + C_DD + IntToStr(Sub_Node.Items.Count + 1));
+                Tri_Node := Sub_Node.Items.Add(C_Group + '_' + IntToStr(Sub_Node.Items.Count + 1));
                 Tri_Node.Properties.Add(C_Name, URLEncode(GName));
                 Tri_Node.Properties.Add(C_Id, URLEncode(GName));
               end;
@@ -1061,7 +1158,7 @@ begin
       // Строим локальный КЛ
       UpdateFullCL;
       // Сообщаем об успешном добавлении группы
-      DAShow(Lang_Vars[16].L_S + C_BN + GProto, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
+      DAShow(Lang_Vars[16].L_S + ' ' + GProto, Lang_Vars[101].L_S, EmptyStr, 133, 3, 0);
     end;
   end;
 end;
@@ -1070,7 +1167,7 @@ procedure TMainForm.JabberSettingsClick(Sender: TObject);
 begin
   // Открываем настройки сети Jabber протокола
   if not Assigned(JabberOptionsForm) then
-    JabberOptionsForm := TJabberOptionsForm.Create(Self);
+    Application.CreateForm(TJabberOptionsForm, JabberOptionsForm);
   // Отображаем окно
   XShowForm(JabberOptionsForm);
 end;
@@ -1078,8 +1175,8 @@ end;
 procedure TMainForm.JabberStatusOfflineClick(Sender: TObject);
 begin
   // Уводим ICQ протокол в оффлайн
-  Jab_GoOffline;
   Jabber_Reconnect := False;
+  Jab_GoOffline;
 end;
 
 {$ENDREGION}
@@ -1087,31 +1184,51 @@ end;
 
 procedure TMainForm.JabberStatusOnlineClick(Sender: TObject);
 var
-  S_Log: string;
+  FrmLogin: TLoginForm;
+  LoginYes: Boolean;
 begin
+  if Assigned(JabberOptionsForm) then
+  begin
+  LoginYes := False;
   // Если логин Jabber или пароль пустые, то выводим окно настроек для их ввода
   if (Jabber_JID = EmptyStr) or (Jabber_LoginPassword = EmptyStr) then
   begin
     // Показываем сообщение об этой ошибке
     DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Jabber]), EmptyStr, 133, 3, 0);
-    // Открываем настройки Jabber
-    JabberSettingsClick(Self);
-    // Ставим фокусы в поле ввода логина или пароля
-    with JabberOptionsForm do
-    begin
-      if (JabberJIDEdit.CanFocus) and (JabberJIDEdit.Text = EmptyStr) then
-        JabberJIDEdit.SetFocus
-      else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then
-        PassEdit.SetFocus;
+    // Открываем маленькое окно логина
+    FrmLogin := TLoginForm.Create(Application);
+    try
+      MainForm.AllImageList.GetIcon(43, FrmLogin.Icon);
+      FrmLogin.Caption := C_Jabber;
+      if JabberOptionsForm.JabberJIDEdit.Text <> EmptyStr then
+        FrmLogin.AccountEdit.Text := JabberOptionsForm.JabberJIDEdit.Text;
+      // Модально спрашиваем логин и пароль
+      if FrmLogin.ShowModal = MrOk then
+      begin
+        // Заполняем настройки логина ICQ
+        with JabberOptionsForm do
+        begin
+          JabberJIDEdit.Text := FrmLogin.AccountEdit.Text;
+          PassEdit.Text := FrmLogin.PasswordEdit.Text;
+          SavePassCheckBox.Checked := FrmLogin.SavePassCheckBox.Checked;
+          if (JabberJIDEdit.Text = EmptyStr) or (PassEdit.Text = EmptyStr) then
+            LoginYes := False
+          else
+            LoginYes := True;
+          ApplyButtonClick(nil);
+        end;
+      end;
+    finally
+      FreeAndNil(FrmLogin);
     end;
-    // Выходим от сюда
-    Exit;
+    // Если отмена, то выходим от сюда
+    if not LoginYes then
+      Exit;
   end;
   // Делаем выбранный статус в меню выделенным
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   Jabber_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   Jabber_CurrentStatus_bac := Jabber_CurrentStatus;
   // Ставим иконки статуса в окне и в трэе
@@ -1120,7 +1237,6 @@ begin
   // Подключаемся к Jabber серверу
   if Jabber_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Login + C_TN + C_BN + Jabber_JID + C_RN;
     // Если сервер и порт указаны вручную
     with JabberOptionsForm do
       if CustomServerCheckBox.Checked then
@@ -1155,13 +1271,11 @@ begin
     begin
       JabberWSocket.Addr := V_HttpProxy_Address;
       JabberWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       JabberWSocket.Addr := Jabber_ServerAddr;
       JabberWSocket.Port := Jabber_ServerPort;
-      S_Log := S_Log + Log_Connect + C_TN + C_BN + Jabber_ServerAddr + C_TN + Jabber_ServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -1173,12 +1287,18 @@ begin
   // Отсылаем пакет со статусом
   if Jabber_Work_Phaze then
     Jab_SendPkt(Jab_SetStatus(Jabber_CurrentStatus));
-  // Пишем в лог
-  XLog(C_Jabber, S_Log, C_Jabber);
+  end;
 end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TMainForm.HCategoryPanelGroupCanResize(Sender: TObject; var NewWidth, NewHeight: Integer; var Resize: Boolean);
+begin
+  // Подгоняем размер открытой группы
+  if Resize then
+    HCategoryPanelGroup.SetOpenPanelHeight;
+end;
 
 procedure TMainForm.HideEmptyGroupsClick(Sender: TObject);
 begin
@@ -1241,7 +1361,7 @@ begin
       if Location <> EmptyStr then
       begin
         SetClipBoardText(Location);
-        XLog(Name + C_BN + Log_Get, Location, C_HTTP);
+        //XLog(Name + ' ' + Log_Get, Location, C_HTTP);
         DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[161].L_S, [Location]), EmptyStr, 133, 3, 60000);
       end;
       // Высвобождаем память отправки данных
@@ -1283,8 +1403,8 @@ var
   end;
 
 begin
-  C_Flag1 := False;
-  C_Flag2 := False;
+  //C_Flag1 := False;
+  //C_Flag2 := False;
   try
     // Высвобождаем память отправки данных
     if HttpClient.SendStream <> nil then
@@ -1313,7 +1433,7 @@ begin
                 with JvXML do
                 begin
                   LoadFromStream(HttpClient.RcvdStream);
-                  Xlog(HttpClient.Name + C_BN + Log_Get, Trim(UTF8ToString(XMLData)), C_HTTP);
+                  //Xlog(HttpClient.Name + ' ' + Log_Get, Trim(UTF8ToString(XMLData)), C_HTTP);
                   if Root <> nil then
                   begin
                     // Получаем версию сборки
@@ -1373,7 +1493,7 @@ begin
                 // Разбираем данные в листе
                 if Str <> EmptyStr then
                 begin
-                  Xlog(HttpClient.Name + C_BN + Log_Get, Str, C_HTTP);
+                  Xlog(HttpClient.Name + ' ' + Log_Get, Str, C_HTTP);
                 end;
               finally
                 List.Free;
@@ -1390,13 +1510,13 @@ begin
       end;
     end;
     // Обрабатываем флаги
-    if C_Flag1 then
+    {if C_Flag1 then
       Update_Info_OK(False);
     if C_Flag2 then
-      Update_Info_OK(True);
+      Update_Info_OK(True);}
   except
     on E: Exception do
-      IMaderingEventsException(Self, E);
+      AppException(Self, E);
   end;
 end;
 
@@ -1413,7 +1533,7 @@ end;
 procedure TMainForm.HttpClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 begin
   // Управляем кукие
-  ParseCookie(Data);
+  //ParseCookie(Data);
 end;
 
 procedure TMainForm.HttpClientDocBegin(Sender: TObject);
@@ -1453,7 +1573,7 @@ var
 begin
   // Начинаем добаление новой группы
   GProto := C_Icq;
-  if InputQuery(AddGroupCL.Caption + C_BN + GProto, AddGroupCL.Caption + C_TN, GName) then
+  if InputQuery(AddGroupCL.Caption + ' ' + GProto, AddGroupCL.Caption + ':', GName) then
   begin
     // Проверяем в сети ли этот протокол
     if NotProtoOnline(GProto) then
@@ -1461,17 +1581,17 @@ begin
     // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
     if ICQ_SSI_Phaze then
     begin
-      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[19].L_S + ' ' + GProto, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
       Exit;
     end;
     // Если имя группы пустое, то выходим
     if GName = EmptyStr then
       Exit;
     // Ищем есть ли такая группа уже в Ростере
-    Get_Node := RosterGetItem(GProto, C_Group + C_SS, C_Name, UrlEncode(GName));
+    Get_Node := RosterGetItem(GProto, C_Group + 's', C_Name, UrlEncode(GName));
     if Get_Node <> nil then
     begin
-      DAShow(Lang_Vars[19].L_S + C_BN + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
+      DAShow(Lang_Vars[19].L_S + ' ' + GProto, Lang_Vars[97].L_S, EmptyStr, 133, 0, 0);
       Exit;
     end
     else
@@ -1481,7 +1601,7 @@ begin
       Randomize;
       NewId := IntToHex(Random($7FFF), 4);
       // Ищем нет ли уже такого идентификатора в списке контактов
-      Get_Node := RosterGetItem(GProto, C_Group + C_SS, C_Id, NewId);
+      Get_Node := RosterGetItem(GProto, C_Group + 's', C_Id, NewId);
       if Get_Node <> nil then
         goto X;
       // Открываем сессию и добавляем группу
@@ -1508,7 +1628,7 @@ begin
       SearchJabber
     else if Sender = MRASearchNewContact then
       SearchMRA;
-    Caption := HelpKeyword + C_BN + SearchProto;
+    Caption := HelpKeyword + ' ' + SearchProto;
   end;
   // Открываем окно
   XShowForm(ContactSearchForm);
@@ -1518,7 +1638,7 @@ procedure TMainForm.ICQSettingsClick(Sender: TObject);
 begin
   // Открываем окно настроек ICQ протокола
   if not Assigned(IcqOptionsForm) then
-    IcqOptionsForm := TIcqOptionsForm.Create(Self);
+    Application.CreateForm(TIcqOptionsForm, IcqOptionsForm);
   // Отображаем окно
   XShowForm(IcqOptionsForm);
 end;
@@ -1526,9 +1646,8 @@ end;
 procedure TMainForm.ICQStatusOfflineClick(Sender: TObject);
 begin
   // Уводим ICQ протокол в оффлайн
-  XLog(C_Icq, Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption, C_Icq);
-  ICQ_GoOffline;
   ICQ_Reconnect := False;
+  ICQ_GoOffline;
 end;
 
 {$ENDREGION}
@@ -1536,31 +1655,51 @@ end;
 
 procedure TMainForm.ICQStatusOnlineClick(Sender: TObject);
 var
-  S_Log: string;
+  FrmLogin: TLoginForm;
+  LoginYes: Boolean;
 begin
+  if Assigned(IcqOptionsForm) then
+  begin
+  LoginYes := False;
   // Если логин ICQ или пароль пустые, то выводим окно настроек для их ввода
   if (ICQ_LoginUIN = EmptyStr) or (ICQ_LoginPassword = EmptyStr) then
   begin
     // Показываем сообщение об этой ошибке
     DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Icq]), EmptyStr, 133, 3, 0);
-    // Открываем настройки ICQ
-    ICQSettingsClick(Self);
-    // Ставим фокусы в поле ввода логина или пароля
-    with IcqOptionsForm do
-    begin
-      if (ICQUINEdit.CanFocus) and (ICQUINEdit.Text = EmptyStr) then
-        ICQUINEdit.SetFocus
-      else if (PassEdit.CanFocus) and (PassEdit.Text = EmptyStr) then
-        PassEdit.SetFocus;
+    // Открываем маленькое окно логина
+    FrmLogin := TLoginForm.Create(Application);
+    try
+      MainForm.AllImageList.GetIcon(81, FrmLogin.Icon);
+      FrmLogin.Caption := C_Icq;
+      if IcqOptionsForm.ICQUINEdit.Text <> EmptyStr then
+        FrmLogin.AccountEdit.Text := IcqOptionsForm.ICQUINEdit.Text;
+      // Модально спрашиваем логин и пароль
+      if FrmLogin.ShowModal = MrOk then
+      begin
+        // Заполняем настройки логина ICQ
+        with IcqOptionsForm do
+        begin
+          ICQUINEdit.Text := FrmLogin.AccountEdit.Text;
+          PassEdit.Text := FrmLogin.PasswordEdit.Text;
+          SavePassCheckBox.Checked := FrmLogin.SavePassCheckBox.Checked;
+          if (ICQUINEdit.Text = EmptyStr) or (PassEdit.Text = EmptyStr) then
+            LoginYes := False
+          else
+            LoginYes := True;
+          ApplyButtonClick(nil);
+        end;
+      end;
+    finally
+      FreeAndNil(FrmLogin);
     end;
-    // Выходим от сюда
-    Exit;
+    // Если отмена, то выходим от сюда
+    if not LoginYes then
+      Exit;
   end;
   // Делаем выбранный статус в меню выделенным
   TMenuItem(Sender).default := True;
   // Ставим статус для протокола
   ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
-  S_Log := Log_Set_Status + C_TN + C_BN + TMenuItem(Sender).Caption + C_RN;
   // Ставим запасное значение статуса для протокола
   ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
   // Ставим иконку статуса в окне КЛ
@@ -1575,7 +1714,6 @@ begin
   // Подключаемся к ICQ серверу
   if ICQ_Offline_Phaze then
   begin
-    S_Log := S_Log + C_Login + C_TN + C_BN + ICQ_LoginUIN + C_RN;
     // Ставим иконку подключения
     ICQToolButton.ImageIndex := 80;
     // Блокируем контролы логина и пароля ICQ
@@ -1602,13 +1740,11 @@ begin
     begin
       ICQWSocket.Addr := V_HttpProxy_Address;
       ICQWSocket.Port := V_HttpProxy_Port;
-      S_Log := S_Log + Log_HTTP_Proxy_Connect + C_TN + C_BN + V_HttpProxy_Address + C_TN + V_HttpProxy_Port;
     end
     else
     begin
       ICQWSocket.Addr := ICQ_LoginServerAddr;
       ICQWSocket.Port := ICQ_LoginServerPort;
-      S_Log := S_Log + Log_Connect + C_TN + C_BN + ICQ_LoginServerAddr + C_TN + ICQ_LoginServerPort;
     end;
     // Прорисовываем интерфэйс
     Update;
@@ -1618,8 +1754,7 @@ begin
   // Отправляем статус
   if ICQ_Work_Phaze then
     ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);
-  // Пишем в лог
-  XLog(C_Icq, S_Log, C_Icq);
+  end;
 end;
 
 {$ENDREGION}
@@ -1634,7 +1769,7 @@ end;
 procedure TMainForm.ICQToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  PopUp_Top(ICQToolButton, RightICQPopupMenu);
+  PopUp_Top(ICQToolButton, ICQPopupMenu);
 end;
 
 procedure TMainForm.MainButtonONMenuClick(Sender: TObject);
@@ -1697,38 +1832,6 @@ begin
   end;
 end;
 {$ENDREGION}
-{$REGION 'OpenFromTrayMessage'}
-
-procedure TMainForm.OpenFromTrayMessage(HUIN: string);
-label
-  X;
-var
-  MUIN: string;
-begin
-  if HUIN <> EmptyStr then
-  begin
-    MUIN := HUIN;
-    goto X;
-  end;
-  // Если список входящих сообщений пустой, то обнуляем флаг и выходим
-  if V_InMessList.Count = 0 then
-  begin
-    //ICQTrayIcon.Tag := 0;
-    //MRATrayIcon.Tag := 0;
-    //JabberTrayIcon.Tag := 0;
-    Exit;
-  end;
-  // Получаем учётную запись отправителя сообщения с самого низа списка
-  MUIN := V_InMessList.Strings[V_InMessList.Count - 1];
-  // Если она вдруг пустая, то выходим
-  if MUIN = EmptyStr then
-    Exit;
-  X: ;
-  // Открываем чат с этим контактом
-  //RosterForm.OpenChatPage(nil, MUIN);
-end;
-
-{$ENDREGION}
 {$REGION 'ICQWSocketDataAvailable'}
 
 procedure TMainForm.ICQWSocketDataAvailable(Sender: TObject; ErrCode: Word);
@@ -1736,12 +1839,14 @@ label
   X,
     Z;
 var
-  Pkt, HexPkt, TLV, S_Name, MD5_Key, S, S_Log: string;
+  Pkt, HexPkt, TLV, S_Name, MD5_Key, S: string;
   I, Len, ProxyErr, PktSize, PktType: Integer;
 begin
   try
     // Получаем пришедшие от сервера данные с сокета
     Pkt := ICQWSocket.ReceiveStr;
+    // Вывод плагинам "ICQ протокол [входящие данные]"
+    JvPluginManager.BroadcastMessage(9, Pkt);
     // Если при получении данных возникла ошибка, то сообщаем об этом
     if ErrCode <> 0 then
     begin
@@ -1753,8 +1858,6 @@ begin
     // HTTP прокси коннект
     if (V_HttpProxy_Enable) and ((ICQ_Connect_Phaze) or (ICQ_BosConnect_Phaze)) and (not ICQ_HTTP_Connect_Phaze) then
     begin
-      // Пишем в лог ответ прокси
-      XLog(C_Icq + C_BN + Log_Get, Pkt, C_Icq);
       // Заносим данные в специальный буфер
       ICQ_myBeautifulSocketBuffer := ICQ_myBeautifulSocketBuffer + Pkt;
       // Если нет ответа нормального от прокси, то выходим
@@ -1769,17 +1872,16 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         ICQ_HTTP_Connect_Phaze := True;
-        XLog(C_Icq + C_BN + Log_Get, Log_Proxy_OK, C_Icq);
       end
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
         ProxyErr := 1;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[118].L_S, EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[119].L_S, EmptyStr, 134, 2, 0);
       end;
       // Забираем из буфера пакет с данными ICQ
       Pkt := ICQ_myBeautifulSocketBuffer;
@@ -1806,7 +1908,7 @@ begin
     if ((ICQ_BuffPkt > EmptyStr) and (ICQ_BuffPkt[1] <> #$2A)) or ((Length(ICQ_BuffPkt) > 2) and ((ICQ_BuffPkt[2] = #$00) or (ICQ_BuffPkt[2] > #$05))) then
     begin
       // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
       ICQ_GoOffline;
       Exit;
     end;
@@ -1815,30 +1917,13 @@ begin
     X: ;
     PktSize := ICQ_BodySize(ICQ_BuffPkt);
     // Проверяем если ли в буфере хоть один целый пакет
-    if (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE) and (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE + PktSize) or ((ICQ_BuffPkt[2] = #$04) and (PktSize = 0)) then
+    if (Length(ICQ_BuffPkt) >= ICQ_FLAP_HEAD_SIZE + PktSize) or ((ICQ_BuffPkt[2] = #$04) and (PktSize = 0)) then
     begin
       // Забираем из буфера один целый пакет
       HexPkt := NextData(ICQ_BuffPkt, ICQ_FLAP_HEAD_SIZE + PktSize);
       // Разбираем пакет данных если его длинна больше нуля
       if Length(HexPkt) > 0 then
       begin
-        // Пишем в лог данные пакета
-        S_Name := EmptyStr;
-        if Assigned(LogForm) then
-          if LogForm.ICQDumpSpeedButton.Down then
-          begin
-            if Length(HexPkt) >= 10 then
-              PktType := HexToInt(Text2Hex(HexPkt[8] + HexPkt[10]))
-            else
-              PktType := 0;
-            for I := low(ICQ_Pkt_Names) to high(ICQ_Pkt_Names) do
-              if ICQ_Pkt_Names[I].Pkt_Code = PktType then
-              begin
-                S_Name := ICQ_Pkt_Names[I].Pkt_Name;
-                Break;
-              end;
-            XLog(C_Icq + C_BN + Log_Get + C_BN + S_Name, Trim(Dump(HexPkt)), C_Icq);
-          end;
         // Ещё раз делаем проверку на начало пакета ICQ протокола по метке $2A
         if NextData(HexPkt, 1) = #$2A then
         begin
@@ -1915,7 +2000,7 @@ begin
                           end;
                         $0015:
                           begin
-                            // Смотрим раздел флагов
+                            {// Смотрим раздел флагов
                             if HexPkt[1] = #$80 then
                               NextData(HexPkt, 14)
                             else
@@ -1925,10 +2010,8 @@ begin
                             begin
                               TLV := Text2Hex(NextData(HexPkt, 2)); // Пропускаем TLV
                               Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                              S_Log := S_Log + 'URL' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + NextData(HexPkt, Len) + C_RN;
-                            end;
-                            // Пишем в лог данные пакета
-                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[9].Pkt_Name, Trim(S_Log), C_Icq);
+                              NextData(HexPkt, Len);
+                            end;}
                           end;
                         $000F:
                           begin
@@ -1956,7 +2039,6 @@ begin
                               Len := HexToInt(Text2Hex(NextData(HexPkt, 1)));
                               // Забираем Hash
                               ICQ_MyIcon_Hash := Text2Hex(NextData(HexPkt, Len));
-                              //XLog(C_Icq + Log_Parsing + Log_Icon_Hash + C_RN + ICQ_MyIcon_Hash, C_Icq);
                             end;
                           end;
                       end;
@@ -2130,11 +2212,16 @@ begin
                               ICQ_BosConnect_Phaze := False;
                               ICQ_Work_Phaze := True;
                               ICQ_Offline_Phaze := False;
-                              // Отключаем метку пересоединения ведь мы уже и так онлайн!
-                              ICQ_Reconnect := False;
+                              // Активируем метку пересоединения
+                              if Assigned(SettingsForm) then
+                              begin
+                                if SettingsForm.ReconnectCheckBox.Checked then
+                                  ICQ_Reconnect := True
+                                else
+                                  ICQ_Reconnect := False;
+                              end;
                               // Запускаем таймер отсылки пинг пакетов
-                              if ICQ_KeepAlive then
-                                JvTimerList.Events[5].Enabled := True;
+                              JvTimerList.Events[5].Enabled := True;
                               // Запоминаем время подключения
                               MyConnTime := DateTimeToStr(Now);
                               // Устанавливаем иконку статуса
@@ -2153,6 +2240,18 @@ begin
                             // Разбираем пакет подтверждения операций со списком контактов
                             ICQ_Parse_130E_UpdateAck(HexPkt);
                           end;
+
+                        $0019:
+                          begin
+                            // Смотрим раздел флагов
+                            if HexPkt[1] = #$80 then
+                              NextData(HexPkt, 14)
+                            else
+                              NextData(HexPkt, 6);
+                            // Разбираем пакет запроса авторизации
+                            ICQ_Parse_1319_ReqAuth(HexPkt);
+                          end;
+
                       end;
                     end;
                   $0015:
@@ -2195,7 +2294,6 @@ begin
                             Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                             // Отсылаем логин в формате MD5 шифрования
                             MD5_Key := NextData(HexPkt, Len);
-                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[5].Pkt_Name, MD5_Key, C_Icq);
                             ICQ_SendPkt('2', ICQ_MD5CliLoginPkt(ICQ_LoginPassword, MD5_Key));
                           end;
                         $0003:
@@ -2210,17 +2308,10 @@ begin
                             begin
                               TLV := Text2Hex(NextData(HexPkt, 2));
                               case HexToInt(TLV) of
-                                $0001:
-                                  begin
-                                    Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                    S := NextData(HexPkt, Len);
-                                    S_Log := S_Log + C_Login + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
-                                  end;
                                 $0008:
                                   begin // TLV с ошибкой авторизации
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     S := Text2Hex(NextData(HexPkt, Len));
-                                    S_Log := S_Log + 'ErrorCode' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + S + C_RN;
                                     DAShow(Lang_Vars[17].L_S, ICQ_NotifyAuthCookieError(S), EmptyStr, 134, 2, 0);
                                     ICQ_GoOffline;
                                   end;
@@ -2228,7 +2319,6 @@ begin
                                   begin // TLV с адресом для коннекта к основному серверу
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     ICQ_Bos_Addr := NextData(HexPkt, Len);
-                                    S_Log := S_Log + Log_BosServer + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Bos_Addr + C_RN;
                                     ICQ_Bos_IP := Parse(':', ICQ_Bos_Addr, 1);
                                     ICQ_Bos_Port := Parse(':', ICQ_Bos_Addr, 2);
                                   end;
@@ -2236,17 +2326,14 @@ begin
                                   begin // TLV с куком для коннекта к основному серверу
                                     Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
                                     ICQ_Bos_Cookie := Text2Hex(NextData(HexPkt, Len));
-                                    S_Log := S_Log + 'BosCookie' + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + ICQ_Bos_Cookie + C_RN;
                                   end
                               else // Если пакет содержит другие TLV, то пропускаем их
                                 begin
                                   Len := HexToInt(Text2Hex(NextData(HexPkt, 2)));
-                                  S_Log := S_Log + C_Unk + C_BN + C_PN + C_BN + C_TLV + C_TN + C_BN + TLV + C_BN + C_Value + C_TN + C_BN + Text2Hex(NextData(HexPkt, Len)) + C_RN;
+                                  NextData(HexPkt, Len);
                                 end;
                               end;
                             end;
-                            // Пишем в лог данные пакета
-                            XLog(C_Icq + C_BN + Log_Parsing + C_BN + ICQ_Pkt_Names[7].Pkt_Name, Trim(S_Log), C_Icq);
                           end;
                       end;
                     end;
@@ -2264,7 +2351,6 @@ begin
                   Inc(ICQ_Seq);
                   // Закрываем сокет и ждём пока он закроется
                   ICQWSocket.Close;
-                  ICQWSocket.WaitForClose;
                   // Если это фаза первичного коннекта
                   if ICQ_Connect_Phaze then
                   begin
@@ -2280,18 +2366,19 @@ begin
                     begin
                       ICQWSocket.Addr := V_HttpProxy_Address;
                       ICQWSocket.Port := V_HttpProxy_Port;
-                      XLog(C_Icq + C_BN + Log_HTTP_Proxy_Connect, V_HttpProxy_Address + C_TN + V_HttpProxy_Port, C_Icq);
                     end
                     else
                     begin
                       ICQWSocket.Addr := ICQ_Bos_IP;
                       ICQWSocket.Port := ICQ_Bos_Port;
-                      XLog(C_Icq + C_BN + Log_Connect, ICQ_Bos_IP + C_TN + ICQ_Bos_Port, C_Icq);
                     end;
-                    // Начинаем подключение к основному серверу
-                    ICQWSocket.Connect;
-                    // Выходим от сюда
-                    Exit;
+                    // Запускаем таймер подключения к основному серверу
+                    JvTimerList.Events[16].Enabled := True;
+                  end
+                  else
+                  begin
+                    // Активиуем режим оффлайн
+                    ICQ_GoOffline;
                   end;
                 end
                 else
@@ -2319,7 +2406,7 @@ begin
         begin
           // Если начальная метка пакета не правильная,
           // то выводим сообщение об ошибке разбора и выходим в оффлайн
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Icq + C_BN + C_EN, EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[17].L_S + ' ' + C_Icq, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
           ICQ_GoOffline;
           Exit;
         end;
@@ -2331,7 +2418,7 @@ begin
     end;
   except
     on E: Exception do
-      IMaderingEventsException(Self, E);
+      AppException(Self, E);
   end;
 end;
 
@@ -2366,8 +2453,6 @@ begin
     DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, ErrCode), EmptyStr, 134, 2, 0);
     // Активируем режим оффлайн
     ICQ_GoOffline;
-    // Если нужно переподключаться, то активируем этот таймер
-    ICQ_Reconnect := True;
   end;
 end;
 
@@ -2390,19 +2475,19 @@ begin
   begin
     // Составляем адрес
     if ICQ_Connect_Phaze then
-      Http_data := ICQ_LoginServerAddr + C_TN + ICQ_LoginServerPort
+      Http_data := ICQ_LoginServerAddr + ':' + ICQ_LoginServerPort
     else
-      Http_data := ICQ_Bos_IP + C_TN + ICQ_Bos_Port;
+      Http_data := ICQ_Bos_IP + ':' + ICQ_Bos_Port;
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
-      Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
-      Http_login := C_Proxy_Auth + C_BN + Http_login + C_RN;
+      Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
+      Http_login := C_Proxy_Auth + ' ' + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
-    Http_data := C_Proxy_Connect + C_BN + Http_data + C_BN + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
-     + C_Proxy_Alive + C_RN + C_Proxy_Host + C_TN + C_BN + Http_data + C_RN + Http_login + C_RN;
-    XLog(C_Icq + C_BN + Log_Send, Http_data, C_Icq, False);
+    Http_data := C_Proxy_Connect + ' ' + Http_data + ' ' + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
+    + C_Proxy_Alive + C_RN + C_Proxy_Host + ':' + ' ' + Http_data + C_RN + Http_login + C_RN;
+    //XLog(C_Icq + ' ' + Log_Send, Http_data, C_Icq, False);
     // Отсылаем запрос для прокси
     ICQWSocket.SendStr(Http_data);
   end;
@@ -2427,7 +2512,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
   begin
-    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Icq + ' ]', EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + ':' + C_Icq + ' ]', EmptyStr, 134, 2, 0);
     // Активируем режим оффлайн
     ICQ_GoOffline;
   end;
@@ -2442,26 +2527,6 @@ begin
   FormShowInWorkArea(XStatusForm);
 end;
 
-procedure TMainForm.IMaderingEventsException(Sender: TObject; E: Exception);
-var
-  SList: TStringList;
-begin
-  // Перехватываем глобально все ошибки в программе и выводим их в лог
-  if not Assigned(LogForm) then
-    Application.CreateForm(TLogForm, LogForm);
-  XShowForm(LogForm);
-  with LogForm do
-  begin
-    SList := TStringList.Create;
-    try
-      JclLastExceptStackListToStrings(SList, False, False, False, False);
-      AddLogText(Lang_Vars[52].L_S, SList.Text + C_RN + Lang_Vars[53].L_S, True);
-    finally
-      SList.Free;
-    end;
-  end;
-end;
-
 procedure TMainForm.JabberToolButtonClick(Sender: TObject);
 begin
   // Открываем меню над этим элементом
@@ -2471,13 +2536,13 @@ end;
 procedure TMainForm.JabberToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  PopUp_Top(JabberToolButton, RightJabberPopupMenu);
+  PopUp_Top(JabberToolButton, JabberPopupMenu);
 end;
 
 procedure TMainForm.SocketBgException(Sender: TObject; E: Exception; var CanClose: Boolean);
 begin
   // Логируем ошибки сокетов
-  IMaderingEventsException(Self, E);
+  AppException(Self, E);
   CanClose := False;
 end;
 
@@ -2505,7 +2570,7 @@ begin
     if (V_HttpProxy_Enable) and (Jabber_Connect_Phaze) and (not Jabber_HTTP_Connect_Phaze) then
     begin
       // Пишем ответ прокси в лог
-      XLog(C_Jabber + C_BN + Log_Get, Pkt, C_Jabber);
+      //XLog(C_Jabber + ' ' + Log_Get, Pkt, C_Jabber);
       // Заносим данные в специальный буфер
       Jabber_myBeautifulSocketBuffer := Jabber_myBeautifulSocketBuffer + Pkt;
       // Если нет ответа нормального от прокси, то выходим
@@ -2520,7 +2585,7 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         Jabber_HTTP_Connect_Phaze := True;
-        XLog(C_Jabber + C_BN + Log_Get, Log_Proxy_OK, C_Jabber);
+        //XLog(C_Jabber + ' ' + Log_Get, Log_Proxy_OK, C_Jabber);
         // Отсылаем строку начала сессии с сервером
         // Если активно SSL
         if Jabber_UseSSL then
@@ -2530,19 +2595,19 @@ begin
         end;
         // Если сервер и порт указаны вручную
         if JabberOptionsForm.CustomServerCheckBox.Checked then
-          Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
+          Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
         else
           Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
       end
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
         ProxyErr := 1;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Jabber + C_BN + C_EN, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Jabber, Lang_Vars[118].L_S, EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Jabber + C_BN + C_EN, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Jabber, Lang_Vars[119].L_S, EmptyStr, 134, 2, 0);
       end;
       // Забираем из буфера пакет с данными Jabber
       Pkt := Jabber_myBeautifulSocketBuffer;
@@ -2590,7 +2655,7 @@ begin
               if Root <> nil then
               begin
                 // Пишем в лог данные пакета
-                XLog(C_Jabber + C_BN + Log_Get, UTF8ToString(Trim(Root.SaveToString)), C_Jabber);
+                //XLog(C_Jabber + ' ' + Log_Get, UTF8ToString(Trim(Root.SaveToString)), C_Jabber);
                 // Если это стадия подключения к серверу жаббер
                 if Jabber_Connect_Phaze then
                 begin
@@ -2619,13 +2684,14 @@ begin
                     else
                       // Отсылаем пакет с авторизацией
                       Jab_SendPkt(Jab_DigestMD5_Auth(UnicodeToAnsi(Jabber_LoginUIN, CP_UTF8), //
-                       UnicodeToAnsi(Jabber_ServerAddr, CP_UTF8), UnicodeToAnsi(Jabber_LoginPassword, CP_UTF8), //
+                        UnicodeToAnsi(Parse('@', Jabber_JID, 2), CP_UTF8), UnicodeToAnsi(Jabber_LoginPassword, CP_UTF8), //
                         Challenge, GetRandomHexBytes(32)));
                   end
                   else if (Pos('failure', Pkt) > 0) and (Pos('auth', Pkt) > 0) then
                   begin
                     // Отображаем сообщение, что авторизация не пройдена и закрываем сеанс
                     DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[120].L_S, [C_Jabber]), EmptyStr, 134, 2, 0);
+                    Jabber_LoginPassword := EmptyStr;
                     Jab_GoOffline;
                     Exit;
                   end
@@ -2636,17 +2702,22 @@ begin
                     Jabber_HTTP_Connect_Phaze := False;
                     Jabber_Work_Phaze := True;
                     Jabber_Offline_Phaze := False;
-                    // Отключаем метку пересоединения ведь мы уже и так онлайн!
-                    Jabber_Reconnect := False;
+                    // Активируем метку пересоединения
+                    if Assigned(SettingsForm) then
+                    begin
+                      if SettingsForm.ReconnectCheckBox.Checked then
+                        Jabber_Reconnect := True
+                      else
+                        Jabber_Reconnect := False;
+                    end;
                     // Запускаем таймер отсылки пинг пакетов
-                    if Jabber_KeepAlive then
-                      JvTimerList.Events[9].Enabled := True;
+                    JvTimerList.Events[9].Enabled := True;
                     // Очищаем группы Jabber в Ростере
                     ClearContacts(C_Jabber);
                     // Закрепляем сессию с жаббер сервером
                     // Если сервер и порт указаны вручную
                     if JabberOptionsForm.CustomServerCheckBox.Checked then
-                      Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
+                      Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
                     else
                       Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
                     // Устанавливаем иконку статуса
@@ -2687,20 +2758,21 @@ begin
     until ((Pkt = EmptyStr) or (Jabber_BuffPkt = EmptyStr));
   except
     on E: Exception do
-      IMaderingEventsException(Self, E);
+      AppException(Self, E);
   end;
 end;
 
-{$ENDREGION}
-{$REGION 'Other'}
-
 procedure TMainForm.JabberWSocketError(Sender: TObject);
 begin
+  // Блокировка ошибок сокета в дебагере
   // Отображаем ошибки сокета
   DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
   // Активируем режим оффлайн
   Jab_GoOffline;
 end;
+
+{$ENDREGION}
+{$REGION 'Other'}
 
 procedure TMainForm.JabberWSocketSendData(Sender: TObject; BytesSent: Integer);
 begin
@@ -2730,8 +2802,6 @@ begin
     DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Jabber, ErrCode), EmptyStr, 134, 2, 0);
     // Активируем режим оффлайн
     Jab_GoOffline;
-    // Если нужно переподключаться, то активируем этот таймер
-    Jabber_Reconnect := True;
   end;
 end;
 
@@ -2754,17 +2824,17 @@ begin
   begin
     // Составляем адрес
     if Jabber_Connect_Phaze then
-      Http_data := Jabber_ServerAddr + C_TN + Jabber_ServerPort;
+      Http_data := Jabber_ServerAddr + ':' + Jabber_ServerPort;
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
-      Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
-      Http_login := C_Proxy_Auth + C_BN + Http_login + C_RN;
+      Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
+      Http_login := C_Proxy_Auth + ' ' + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
-    Http_data := C_Proxy_Connect + C_BN + Http_data + C_BN + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
-     + C_Proxy_Alive + C_RN + C_Proxy_Host + C_TN + C_BN + Http_data + C_RN + Http_login + C_RN;
-    XLog(C_Jabber + C_BN + Log_Send, Http_data, C_Jabber, False);
+    Http_data := C_Proxy_Connect + ' ' + Http_data + ' ' + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
+    + C_Proxy_Alive + C_RN + C_Proxy_Host + ':' + ' ' + Http_data + C_RN + Http_login + C_RN;
+    //XLog(C_Jabber + ' ' + Log_Send, Http_data, C_Jabber, False);
     // Отсылаем запрос для прокси
     JabberWSocket.SendStr(Http_data);
     Exit;
@@ -2774,7 +2844,7 @@ begin
     JabberWSocket.SslEnable := True;
   // Отсылаем строку начала сессии с сервером
   if JabberOptionsForm.CustomServerCheckBox.Checked then
-    Jab_SendPkt(Format(J_StreamHead, [Parse(C_EE, Jabber_JID, 2), V_CurrentLang]))
+    Jab_SendPkt(Format(J_StreamHead, [Parse('@', Jabber_JID, 2), V_CurrentLang]))
   else
     Jab_SendPkt(Format(J_StreamHead, [Jabber_ServerAddr, V_CurrentLang]));
 end;
@@ -2798,7 +2868,7 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
   begin
-    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + C_TN + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + '[ ' + Lang_Vars[94].L_S + ':' + C_Jabber + ' ]', EmptyStr, 134, 2, 0);
     // Активируем режим оффлайн
     Jab_GoOffline;
   end;
@@ -2817,30 +2887,20 @@ end;
 {$REGION 'JabberWSocketSslVerifyPeer'}
 
 procedure TMainForm.JabberWSocketSslVerifyPeer(Sender: TObject; var Ok: Integer; Cert: TX509Base);
-var
-  FrmShowCert: TShowCertForm;
 begin
-  // Показываем форму принятия сертификата
-  FrmShowCert := TShowCertForm.Create(Application);
-  try
-    // Вдруг, уже принимали этот сертификат
-    if not FrmShowCert.CheckAccepted(Text2Hex(Cert.Sha1Hash)) then
-    begin
-      // Показываем форму сертификата модально
-      FrmShowCert.ShowCert(Cert);
-      FrmShowCert.ShowModal;
-      Ok := Integer(FrmShowCert.CertAccepted);
-    end
-    else
-      Ok := Integer(True);
-  finally
-    FreeAndNil(FrmShowCert);
-  end;
+  // Принимаем SSL сертификат от сервера
+  Ok := 1;
 end;
 
 {$ENDREGION}
 {$REGION 'Show Profile Form Timer'}
 {$HINTS OFF}
+
+procedure TMainForm.JvPluginManagerPlugInError(Sender: TObject; AError: Exception);
+begin
+  // Отображаем ошибки плагинов
+  AppException(Self, AError);
+end;
 
 procedure TMainForm.JvTimerListEvents0Timer(Sender: TObject);
 var
@@ -2849,7 +2909,7 @@ begin
   // Создаём окно выбора профиля пользователя
   Application.CreateForm(TProfileForm, ProfileForm);
   // Подгружаем иконку программы в трэй
-  AllImageList.GetIcon(0, TrayIcon.Icon);
+  AllImageList.GetIcon(V_Tray_AllStatus, TrayIcon.Icon);
   TrayIcon.Hint := C_IMadering;
   TrayIcon.Visible := True;
   // Отображаем окно выбора профиля или входим в профиль автоматически
@@ -2857,7 +2917,7 @@ begin
   HMutex := CreateMutex(nil, True, 'IMadering client');
   if GetLastError = ERROR_ALREADY_EXISTS then
     XShowForm(ProfileForm)
-  else if (ProfileForm.AutoSignCheckBox.Checked) and (ProfileForm.ProfileComboBox.Text <> EmptyStr) then
+  else if (ProfileForm.NoShowProfileFormCheckBox.Checked) and (ProfileForm.ProfileComboBox.Text <> EmptyStr) then
     ProfileForm.LoginButton.Click
   else
     XShowForm(ProfileForm);
@@ -2927,6 +2987,62 @@ begin
   if not Visible then
     XShowForm(MainForm);
 end;
+
+procedure TMainForm.JvTimerListEvents16Timer(Sender: TObject);
+begin
+  // Начинаем подключение к основному серверу
+  if ICQ_BosConnect_Phaze then
+    ICQWSocket.Connect;
+end;
+
+procedure TMainForm.JvTimerListEvents17Timer(Sender: TObject);
+var
+  I: Integer;
+  xChannel, xPluginData, S1, S2: string;
+begin
+  // Запрашиваем данные у плагинов
+  JvPluginManager.BroadcastMessage(12, EmptyStr);
+  // Выполняем команды от плагинов
+  for I := 0 to JvPluginManager.PluginCount - 1 do
+  begin
+    xPluginData := JvPluginManager.Plugins[I].Copyright;
+    if xPluginData <> EmptyStr then
+    begin
+      if Pos(';', xPluginData) > 0 then
+      begin
+        xChannel := Parse(';', xPluginData, 1);
+        if ExisValidCharactersDigit(xChannel) then
+        begin
+          xPluginData := Parse(';', xPluginData, 2);
+          if xChannel <> EmptyStr then
+          begin
+            case StrToInt(xChannel) of
+              1:
+                begin
+                  S1 := Parse(':', xPluginData, 1);
+                  S2 := Parse(':', xPluginData, 2);
+                  DAShow(S1, S2, EmptyStr, 133, 3, 10);
+                end;
+              2:
+                begin
+                  S1 := Parse(':', xPluginData, 1);
+                  S2 := Parse(':', xPluginData, 2);
+                  if (S1 <> EmptyStr) and (S2 <> EmptyStr) then
+                  begin
+                    if ICQ_Work_Phaze then
+                      ICQ_SendMessage_0406(S1, S2, True);
+                  end;
+                end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+  // Стираем полученные данные в плагинах
+  JvPluginManager.BroadcastMessage(13, EmptyStr);
+end;
+
 {$ENDREGION}
 {$REGION 'Message Icon Timer'}
 
@@ -3002,7 +3118,7 @@ begin
   begin
     // Мигаем иконкой
     if TrayIcon.IconIndex = 165 then
-      TrayIcon.IconIndex := 0 { TODO 1 -cосновное : потом сделать смену иконки на общий статус }
+      TrayIcon.IconIndex := V_Tray_AllStatus
     else
       TrayIcon.IconIndex := 165;
     // Ставим флаг для трэя что есть сообщения в очереди
@@ -3010,8 +3126,27 @@ begin
   end
   else // Сбрасываем иконку в трэе
   begin
-    TrayIcon.IconIndex := 0; { TODO 1 -cосновное : потом сделать смену иконки на общий статус }
+    TrayIcon.IconIndex := V_Tray_AllStatus;
     TrayIcon.Tag := 0;
+  end;
+  // Проверяем общий статус с трэе
+  if (ICQToolButton.Visible and ICQ_Work_Phaze) //
+    or (JabberToolButton.Visible and Jabber_Work_Phaze) //
+    or (MRAToolButton.Visible and MRA_Work_Phaze) //
+    or (BimoidToolButton.Visible and Bim_Work_Phaze) then
+      V_Tray_AllStatus := 254
+  else
+    V_Tray_AllStatus := 256;
+  // Отображаем панель с количеством непрочитаных сообщений
+  if V_InMessList <> nil then
+  begin
+    if V_InMessList.Count > 0 then
+    begin
+      NewMessPanel.Caption := Format(Lang_Vars[169].L_S, [V_InMessList.Count]);
+      NewMessPanel.Visible := True;
+    end
+    else
+      NewMessPanel.Visible := False;
   end;
 end;
 
@@ -3035,7 +3170,7 @@ begin
     // Запускаем проверку обновлений программы на сайте
     LocationChangeMaxCount := 5;
     URL := C_UpdateURL;
-    XLog(Name + C_BN + Log_Send, URL, C_HTTP, False);
+    //XLog(Name + ' ' + Log_Send, URL, C_HTTP, False);
     GetASync;
   end;
 end;
@@ -3071,6 +3206,8 @@ end;
 {$REGION 'ICQ Ping Timer'}
 
 procedure TMainForm.JvTimerListEvents5Timer(Sender: TObject);
+var
+  I: Integer;
 begin
   // Отсылаем пакет с пингом ICQ равным 60 секундам
   if ICQ_Work_Phaze then
@@ -3078,6 +3215,18 @@ begin
   // Отсылаем пинг для ICQ сервера аватар равным 60 секундам
   if ICQ_Avatar_Work_Phaze then
     ICQA_SendPkt('5', '0000003C');
+  // Пересоединяемся
+  if (ICQ_Reconnect) and (ICQ_Offline_Phaze) then
+  begin
+    for I := 0 to ICQPopupMenu.Items.Count - 1 do
+    begin
+      if ICQPopupMenu.Items[I].ImageIndex = ICQ_CurrentStatus_bac then
+      begin
+        ICQPopupMenu.Items[I].Click;
+        Break;
+      end;
+    end;
+  end;
 end;
 
 {$ENDREGION}
@@ -3097,10 +3246,24 @@ begin
 end;
 
 procedure TMainForm.JvTimerListEvents9Timer(Sender: TObject);
+var
+  I: Integer;
 begin
   // Отсылаем пакет с пингом Jabber равным 60 секундам
   if Jabber_Work_Phaze then
-    Jab_SendPkt(C_BN + #09 + C_BN);
+    Jab_SendPkt(' ' + #09 + ' ');
+  // Пересоединяемся
+  if (Jabber_Reconnect) and (Jabber_Offline_Phaze) then
+  begin
+    for I := 0 to JabberPopupMenu.Items.Count - 1 do
+    begin
+      if JabberPopupMenu.Items[I].ImageIndex = Jabber_CurrentStatus_bac then
+      begin
+        JabberPopupMenu.Items[I].Click;
+        Break;
+      end;
+    end;
+  end;
 end;
 
 {$ENDREGION}
@@ -3109,7 +3272,7 @@ end;
 procedure TMainForm.JvTimerListEvents8Timer(Sender: TObject);
 begin
   // Автоматически сканируем список буфера сообщений для перевода
-  if Assigned(GTransForm) then
+  {if Assigned(GTransForm) then
   begin
     with GTransForm do
     begin
@@ -3122,7 +3285,7 @@ begin
         GetTranslation;
       end;
     end;
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -3198,7 +3361,7 @@ end;
 procedure TMainForm.MRAToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   // Открываем меню над этим элементом
-  PopUp_Top(MRAToolButton, RightMRAPopupMenu);
+  PopUp_Top(MRAToolButton, MRAPopupMenu);
 end;
 
 {$ENDREGION}
@@ -3209,7 +3372,7 @@ label
   X,
     Z;
 var
-  Pkt, HexPkt, S_Name, PktType: string;
+  Pkt, HexPkt: string;
   I, Len, ProxyErr, PktSize, C: Integer;
 begin
   try
@@ -3227,7 +3390,7 @@ begin
     if (V_HttpProxy_Enable) and ((MRA_Connect_Phaze) or (MRA_BosConnect_Phaze)) and (not MRA_HTTP_Connect_Phaze) then
     begin
       // Пишем ответ прокси в лог
-      XLog(C_Mra + C_BN + Log_Get, Pkt, C_Mra);
+      //XLog(C_Mra + ' ' + Log_Get, Pkt, C_Mra);
       // Заносим данные в специальный буфер
       MRA_myBeautifulSocketBuffer := MRA_myBeautifulSocketBuffer + Pkt;
       // Если нет ответа нормального от прокси, то выходим
@@ -3241,7 +3404,7 @@ begin
       if StartsStr(C_Proxy_S0_OK, Pkt) or StartsStr(C_Proxy_S1_OK, Pkt) or StartsStr(C_Proxy_0_OK, Pkt) or StartsStr(C_Proxy_1_OK, Pkt) then
       begin
         MRA_HTTP_Connect_Phaze := True;
-        XLog(C_Mra + C_BN + Log_Get, Log_Proxy_OK, C_Mra);
+        //XLog(C_Mra + ' ' + Log_Get, Log_Proxy_OK, C_Mra);
         // Если уже подключились в Bos серверу
         if MRA_BosConnect_Phaze then
         begin
@@ -3253,12 +3416,12 @@ begin
       else if StartsStr(C_Proxy_S0_Err, Pkt) or StartsStr(C_Proxy_S1_Err, Pkt) or StartsStr(C_Proxy_0_Err, Pkt) or StartsStr(C_Proxy_1_Err, Pkt) then
       begin
         ProxyErr := 1;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[118].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Mra, Lang_Vars[118].L_S, EmptyStr, 134, 2, 0);
       end
       else
       begin
         ProxyErr := 2;
-        DAShow(Lang_Vars[17].L_S, Lang_Vars[119].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+        DAShow(Lang_Vars[17].L_S + ' ' + C_Mra, Lang_Vars[119].L_S, EmptyStr, 134, 2, 0);
       end;
       // Забираем из буфера пакет с данными MRA
       Pkt := MRA_myBeautifulSocketBuffer;
@@ -3285,10 +3448,10 @@ begin
     if MRA_Connect_Phaze then
     begin
       MRA_Bos_Addr := Trim(MRA_BuffPkt);
-      XLog(C_Mra + C_BN + Log_Parsing + C_BN + Log_BosServer, MRA_Bos_Addr, C_Mra);
+      //XLog(C_Mra + ' ' + Log_Parsing + ' ' + Log_BosServer, MRA_Bos_Addr, C_Mra);
       // Получаем адрес Bos сервера для подключения
-      MRA_Bos_IP := Parse(C_TN, MRA_Bos_Addr, 1);
-      MRA_Bos_Port := Parse(C_TN, MRA_Bos_Addr, 2);
+      MRA_Bos_IP := Parse(':', MRA_Bos_Addr, 1);
+      MRA_Bos_Port := Parse(':', MRA_Bos_Addr, 2);
       // Закрываем сокет и ждём пока он закроется
       MRAWSocket.Close;
       MRAWSocket.WaitForClose;
@@ -3319,7 +3482,7 @@ begin
     if ((MRA_BuffPkt > EmptyStr) and (Text2Hex(LeftStr(MRA_BuffPkt, 4)) <> MRA_MagKey)) then
     begin
       // Если в пакете есть ошибки, то активируем оффлайн и выводим сообщение об ошибке
-      DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+      DAShow(Lang_Vars[17].L_S + ' ' + C_Mra, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
       MRA_GoOffline;
       Exit;
     end;
@@ -3336,7 +3499,7 @@ begin
       if Length(HexPkt) > 0 then
       begin
         // Пишем в лог данные пакета
-        if Assigned(LogForm) then
+        {if Assigned(LogForm) then
           if LogForm.MRADumpSpeedButton.Down then
           begin
             PktType := HexPkt;
@@ -3349,8 +3512,8 @@ begin
                 S_Name := MRA_Pkt_Names[I].Pkt_Name;
                 Break;
               end;
-            XLog(C_Mra + C_BN + Log_Get + C_BN + S_Name, Trim(Dump(HexPkt)), C_Mra);
-          end;
+            XLog(C_Mra + ' ' + Log_Get + ' ' + S_Name, Trim(Dump(HexPkt)), C_Mra);
+          end;}
         // Ещё раз делаем проверку на начало пакета MRA протокола по магическому ключу
         if Text2Hex(NextData(HexPkt, 4)) = MRA_MagKey then
         begin
@@ -3372,7 +3535,7 @@ begin
                 // Получаем интервал пакетов Ping
                 I := HexToInt(Text2Hex(NextData(HexPkt, Len)));
                 JvTimerList.Events[10].Interval := Swap32(I) * 1000;
-                Xlog(C_Mra + C_BN + Log_Parsing + C_BN + Log_PingInterval, IntToStr(JvTimerList.Events[10].Interval), C_Mra);
+                //Xlog(C_Mra + ' ' + Log_Parsing + ' ' + Log_PingInterval, IntToStr(JvTimerList.Events[10].Interval), C_Mra);
                 // Отправляем пакет авторизации на сервере
                 MRA_Login_2;
                 // Запускаем таймер MRA Alive
@@ -3419,7 +3582,7 @@ begin
         else
         begin
           // Если начальная метка пакета не правильная, то выводим сообщение об ошибке разбора и выходим в оффлайн
-          DAShow(Lang_Vars[17].L_S, Lang_Vars[22].L_S + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[17].L_S + ' ' + C_Mra, Lang_Vars[22].L_S, EmptyStr, 134, 2, 0);
           MRA_GoOffline;
           Exit;
         end;
@@ -3431,7 +3594,7 @@ begin
     end;
   except
     on E: Exception do
-      IMaderingEventsException(Self, E);
+      AppException(Self, E);
   end;
 end;
 
@@ -3487,11 +3650,36 @@ begin
   SoundOnOffToolButton.Visible := not SoundOnOffToolButton.Visible;
 end;
 
-procedure TMainForm.ChatTabCloseActionExecute(Sender: TObject);
+procedure TMainForm.ChangeMyICQDetails_MenuClick(Sender: TObject);
 begin
-  // Закрываем активную вкладку чата по нажатию Alt + F4
-  if Application.ActiveFormHandle = ChatForm.Handle then
-    ChatForm.CloseTabBitBtnClick(Self);
+  // Изменяем свои ICQ данные
+  if Assigned(IcqOptionsForm) then
+  begin
+    // Отображаем окно
+    XShowForm(IcqOptionsForm);
+    // Активируем раздел
+    with IcqOptionsForm do
+    begin
+      OptionJvPageList.ActivePageIndex := 5;
+      ICQOptionButtonGroup.ItemIndex := 5;
+    end;
+  end;
+end;
+
+procedure TMainForm.ChangeMyJabberDetails_MenuClick(Sender: TObject);
+begin
+  // Изменяем свои Jabber данные
+  if Assigned(JabberOptionsForm) then
+  begin
+    // Отображаем окно
+    XShowForm(JabberOptionsForm);
+    // Активируем раздел
+    with JabberOptionsForm do
+    begin
+      OptionJvPageList.ActivePageIndex := 3;
+      JabberOptionButtonGroup.ItemIndex := 3;
+    end;
+  end;
 end;
 
 procedure TMainForm.CheckStatusContactClick(Sender: TObject);
@@ -3523,9 +3711,9 @@ begin
   if not Assigned(TrafficForm) then
     Application.CreateForm(TTrafficForm, TrafficForm);
   // Показываем сколько трафика передано за эту сессию
-  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_BN + C_PN + C_BN + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_BN + C_PN + C_BN + DateTimeToStr(V_SesDataTraf);
+  TrafficForm.CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + ' ' + C_KB + ' ' + '|' + ' ' + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + ' ' + C_KB + ' ' + '|' + ' ' + DateTimeToStr(V_SesDataTraf);
   // Показываем сколько трафика передано всего
-  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_BN + C_PN + C_BN + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_BN + C_PN + C_BN + V_AllSesDataTraf;
+  TrafficForm.AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + ' ' + C_MB + ' ' + '|' + ' ' + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + ' ' + C_MB + ' ' + '|' + ' ' + V_AllSesDataTraf;
   // Отображаем окно
   XShowForm(TrafficForm);
 end;
@@ -3589,10 +3777,16 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
-procedure TMainForm.PingICQServerClick(Sender: TObject);
+procedure TMainForm.PluginsToolButtonClick(Sender: TObject);
 begin
-  // Отправляем пакет для проверки связи с сервером ICQ
-  // if not NotProtoOnline(S_Icq) then
+  // Открываем меню над этим элементом
+  PopUp_Top(PluginsToolButton, PluginsPopupMenu);
+end;
+
+procedure TMainForm.PluginsToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  // Открываем меню над этим элементом
+  PopUp_Top(PluginsToolButton, PluginsPopupMenu);
 end;
 
 procedure TMainForm.PostInTwitter_MenuClick(Sender: TObject);
@@ -3617,7 +3811,7 @@ begin
   // Запускаем второй экземпляр программы для выбора другого профиля
   Spath := V_MyPath + C_ExeName;
   R := ShellExecute(0, 'open', 'Imadering.exe', nil, PChar(V_MyPath), SW_SHOW);
-  XLog(C_IMadering, Spath + C_BN + IntToStr(R), EmptyStr);
+  //XLog(C_IMadering, Spath + ' ' + IntToStr(R), EmptyStr);
   if R < 32 then
     DAShow(Lang_Vars[17].L_S, Lang_Vars[65].L_S, EmptyStr, 134, 2, 0);
 end;
@@ -3667,6 +3861,63 @@ begin
   // Отображаем окно
   XShowForm(SettingsForm);
 end;
+
+procedure TMainForm.ShowMyBimoidDetails_MenuClick(Sender: TObject);
+begin
+  // Отображем свои Bimoid данные
+  if not Assigned(ContactInfoForm) then
+    Application.CreateForm(TContactInfoForm, ContactInfoForm);
+  // Присваиваем UIN инфу которого хотим смотреть
+  ContactInfoForm.ReqUIN := Bim_LoginUIN;
+  ContactInfoForm.ReqProto := C_Bimoid;
+  // Загружаем информацию о нем
+  ContactInfoForm.LoadUserUnfo;
+  // Отображаем окно
+  XShowForm(ContactInfoForm);
+end;
+
+procedure TMainForm.ShowMyICQDetails_MenuClick(Sender: TObject);
+begin
+  // Отображем свои ICQ данные
+  if not Assigned(ContactInfoForm) then
+    Application.CreateForm(TContactInfoForm, ContactInfoForm);
+  // Присваиваем UIN инфу которого хотим смотреть
+  ContactInfoForm.ReqUIN := ICQ_LoginUIN;
+  ContactInfoForm.ReqProto := C_Icq;
+  // Загружаем информацию о нем
+  ContactInfoForm.LoadUserUnfo;
+  // Отображаем окно
+  XShowForm(ContactInfoForm);
+end;
+
+procedure TMainForm.ShowMyJabberDetails_MenuClick(Sender: TObject);
+begin
+  // Отображем свои Jabber данные
+  if not Assigned(ContactInfoForm) then
+    Application.CreateForm(TContactInfoForm, ContactInfoForm);
+  // Присваиваем UIN инфу которого хотим смотреть
+  ContactInfoForm.ReqUIN := Jabber_JID;
+  ContactInfoForm.ReqProto := C_Jabber;
+  // Загружаем информацию о нем
+  ContactInfoForm.LoadUserUnfo;
+  // Отображаем окно
+  XShowForm(ContactInfoForm);
+end;
+
+procedure TMainForm.ShowMyMRADetails_MenuClick(Sender: TObject);
+begin
+  // Отображем свои MRA данные
+  if not Assigned(ContactInfoForm) then
+    Application.CreateForm(TContactInfoForm, ContactInfoForm);
+  // Присваиваем UIN инфу которого хотим смотреть
+  ContactInfoForm.ReqUIN := MRA_LoginUIN;
+  ContactInfoForm.ReqProto := C_Mra;
+  // Загружаем информацию о нем
+  ContactInfoForm.LoadUserUnfo;
+  // Отображаем окно
+  XShowForm(ContactInfoForm);
+end;
+
 {$ENDREGION}
 {$REGION 'RenemeGroupCLClick'}
 
@@ -3686,7 +3937,7 @@ begin
     OldGName := GName;
     GProto := RoasterGroup.GroupType;
     GId := RoasterGroup.GroupId;
-    if InputQuery(RenemeGroupCL.Caption + C_BN + GProto, RenemeGroupCL.Caption + C_TN, GName) then
+    if InputQuery(RenemeGroupCL.Caption + ' ' + GProto, RenemeGroupCL.Caption + ':', GName) then
     begin
       // Проверяем в сети ли этот протокол
       if NotProtoOnline(GProto) then
@@ -3697,7 +3948,7 @@ begin
         // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
         if ICQ_SSI_Phaze then
         begin
-          DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[19].L_S + ' ' + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
           Exit;
         end;
         // Если это нередактируемые группы, то выходим
@@ -3717,7 +3968,7 @@ begin
                 if XML_Node <> nil then
                 begin
                   // Открываем раздел групп
-                  Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
                   if Sub_Node <> nil then
                   begin
                     for I := 0 to Sub_Node.Items.Count - 1 do
@@ -3743,7 +3994,7 @@ begin
           GroupsIds.Free;
         end;
         // Переименовываем группу в Ростере
-        Get_Node := RosterGetItem(C_Icq, C_Group + C_SS, C_Id, GId);
+        Get_Node := RosterGetItem(C_Icq, C_Group + 's', C_Id, GId);
         if Get_Node <> nil then
           RosterUpdateProp(Get_Node, C_Name, UrlEncode(GName));
       end
@@ -3761,20 +4012,29 @@ begin
   end;
 end;
 
-{$ENDREGION}
-{$REGION 'Other'}
-
-procedure TMainForm.RightICQPopupMenuPopup(Sender: TObject);
+procedure TMainForm.ReqAuthContactClick(Sender: TObject);
 begin
-  // Управляем иконками доп. меню ICQ
-  with UnstableICQStatus do
+  // Отправляем запрос авторизации
+  if ContactList.SelectedItem <> nil then
   begin
-    if Checked then
-      ImageIndex := 140
+    // Открываем окно с сообщением для авторизации
+    if not Assigned(MemoForm) then
+      Application.CreateForm(TMemoForm, MemoForm)
     else
-      ImageIndex := 230;
+      MemoForm.Hide;
+    with MemoForm do
+    begin
+      xUIN := (ContactList.SelectedItem as TButtonItem).UIN;
+      xNick := (ContactList.SelectedItem as TButtonItem).Caption;
+      xProto := C_Icq;
+      xReqAuthEnable(ReqAuthContact.Caption);
+      ShowModal;
+    end;
   end;
 end;
+
+{$ENDREGION}
+{$REGION 'Other'}
 
 procedure TMainForm.AboutIMadering_MenuClick(Sender: TObject);
 begin
@@ -3783,15 +4043,6 @@ begin
     Application.CreateForm(TAboutForm, AboutForm);
   // Отображаем окно
   XShowForm(AboutForm);
-end;
-
-procedure TMainForm.CloseActiveFormActionExecute(Sender: TObject);
-begin
-  // Закрываем активное окно по нажатию на Esc
-  if Application.ActiveFormHandle = Handle then
-    MainFormHideInTray
-  else
-    ShowWindow(Application.ActiveFormHandle, SW_HIDE);
 end;
 
 procedure TMainForm.CloseGroupsCLClick(Sender: TObject);
@@ -3847,7 +4098,7 @@ begin
   // Запоминаем индекс кнопки
   ButtonInd := Button.index;
   // Перерисовываем компонент
-  ContactList.Update;
+  ContactList.Repaint;
 end;
 
 {$ENDREGION}
@@ -3868,16 +4119,16 @@ begin
         if Root <> nil then
         begin
           // Ищем раздел состояния групп
-          XML_Node := Root.Items.ItemNamed[C_Group + C_SS];
+          XML_Node := Root.Items.ItemNamed[C_Group + 's'];
           if XML_Node = nil then
-            XML_Node := Root.Items.Add(C_Group + C_SS);
+            XML_Node := Root.Items.Add(C_Group + 's');
           // Очищаем раздел
           XML_Node.Clear;
           // Записываем в него состояние групп
           with ContactList do
           begin
             for I := 0 to Categories.Count - 1 do
-              XML_Node.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add(C_CS, Categories[I].Collapsed);
+              XML_Node.Items.Add(ChangeCP(URLEncode(Categories[I].GroupCaption + Categories[I].GroupType + Categories[I].GroupId))).Properties.Add('c', Categories[I].Collapsed);
           end;
         end;
       end;
@@ -3911,21 +4162,18 @@ begin
       DelYourSelfContact.Visible := True;
       CheckStatusContact.Visible := True;
       GrandAuthContact.Visible := True;
-      SendAddContact.Visible := True;
     end
     else if RoasterButton.ContactType = C_Jabber then // Для Jabber
     begin
       DelYourSelfContact.Visible := False;
       CheckStatusContact.Visible := False;
       GrandAuthContact.Visible := False;
-      SendAddContact.Visible := False;
     end
     else if RoasterButton.ContactType = C_Mra then // Для MRA
     begin
       DelYourSelfContact.Visible := False;
       CheckStatusContact.Visible := False;
       GrandAuthContact.Visible := False;
-      SendAddContact.Visible := False;
     end;
     // Отображаем меню
     ContactPopupMenu.Popup(FCursor.X, FCursor.Y);
@@ -3959,7 +4207,7 @@ begin
     ContactListPopupMenu.Popup(FCursor.X, FCursor.Y);
   end;
   // Перерисовываем компонент
-  ContactList.Update;
+  ContactList.Repaint;
 end;
 
 {$ENDREGION}
@@ -3985,6 +4233,9 @@ begin
     // Открываем информацию о контакте
     AnketaContactClick(Self);
   end;
+  // Перерисовываем компонент
+  ContactList.SelectedItem := nil;
+  ContactList.FocusedItem := nil;
 end;
 
 procedure TMainForm.ContactListPopupMenuPopup(Sender: TObject);
@@ -4022,10 +4273,10 @@ begin
     UIN := (ContactList.SelectedItem as TButtonItem).UIN;
     Nick := (ContactList.SelectedItem as TButtonItem).Caption;
     Proto := (ContactList.SelectedItem as TButtonItem).ContactType;
-    if MessageBox(Handle, PChar(Format(Lang_Vars[83].L_S, [Nick])), PChar(DeleteContact.Caption + C_BN + Proto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
+    if MessageBox(Handle, PChar(Format(Lang_Vars[83].L_S, [Nick])), PChar(DeleteContact.Caption + ' ' + Proto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
     begin
       // Обновляем параметры этого контакта в Ростере
-      Get_Node := RosterGetItem(Proto, C_Contact + C_SS, C_Login, UIN);
+      Get_Node := RosterGetItem(Proto, C_Contact + 's', C_Login, UIN);
       if Get_Node <> nil then
       begin
         if Get_Node.Properties.Value(C_Group + C_Id) <> C_NoCL then
@@ -4039,7 +4290,7 @@ begin
             // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
             if ICQ_SSI_Phaze then
             begin
-              DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+              DAShow(Lang_Vars[19].L_S + ' ' + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
               Exit;
             end;
             // Смотрим из какой группы этот контакт
@@ -4099,7 +4350,7 @@ begin
     GName := RoasterGroup.GroupCaption;
     GProto := RoasterGroup.GroupType;
     GId := RoasterGroup.GroupId;
-    if MessageBox(Handle, PChar(Format(Lang_Vars[117].L_S, [GName])), PChar(DeleteGroupCL.Caption + C_BN + GProto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
+    if MessageBox(Handle, PChar(Format(Lang_Vars[117].L_S, [GName])), PChar(DeleteGroupCL.Caption + ' ' + GProto), MB_TOPMOST or MB_YESNO or MB_ICONQUESTION) = mrYes then
     begin
       // Если это группа не "Не в списке"
       if GId <> C_NoCL then
@@ -4113,7 +4364,7 @@ begin
           // Если фаза работы с серверным КЛ ещё активна, то ждём её окончания
           if ICQ_SSI_Phaze then
           begin
-            DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+            DAShow(Lang_Vars[19].L_S + ' ' + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
             Exit;
           end;
           // Удаляем группу временных контактов
@@ -4136,7 +4387,7 @@ begin
                     if XML_Node <> nil then
                     begin
                       // Открываем раздел групп
-                      Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                      Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
                       if Sub_Node <> nil then
                       begin
                         for I := 0 to Sub_Node.Items.Count - 1 do
@@ -4145,8 +4396,8 @@ begin
                           if Tri_Node <> nil then
                           begin
                             if Tri_Node.Properties.Value(C_Group + C_Id) = '0000' then
-                              TCL.Add(UrlDecode(Tri_Node.Properties.Value(C_Login)) + C_LN + Tri_Node.Properties.Value(C_Id) //
-                                + C_LN + Tri_Node.Properties.Value(C_Type) + C_LN + Tri_Node.Properties.Value(C_Time + C_Id));
+                              TCL.Add(UrlDecode(Tri_Node.Properties.Value(C_Login)) + ';' + Tri_Node.Properties.Value(C_Id) //
+                                + ';' + Tri_Node.Properties.Value(C_Type) + ';' + Tri_Node.Properties.Value(C_Time + C_Id));
                           end;
                         end;
                       end;
@@ -4182,7 +4433,7 @@ begin
                 if XML_Node <> nil then
                 begin
                   // Открываем раздел групп
-                  Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+                  Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
                   if Sub_Node <> nil then
                   begin
                     for I := 0 to Sub_Node.Items.Count - 1 do
@@ -4220,7 +4471,7 @@ begin
             if XML_Node <> nil then
             begin
               // Открываем раздел групп
-              Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
               if Sub_Node <> nil then
               begin
                 for I := 0 to Sub_Node.Items.Count - 1 do
@@ -4237,7 +4488,7 @@ begin
                 end;
               end;
               // Открываем раздел контактов
-              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
               if Sub_Node <> nil then
               begin
                 for I := 0 to Sub_Node.Items.Count - 1 do
@@ -4339,10 +4590,10 @@ begin
     HttpClient.Abort;
     MRA_PhotoClient.Abort;
     TwitterClient.Abort;
-    if Assigned(FileTransferForm) then
+    {if Assigned(FileTransferForm) then
       FileTransferForm.SendFileClient.Abort;
     if Assigned(GTransForm) then
-      GTransForm.GtransClient.Abort;
+      GTransForm.GtransClient.Abort;}
     // Уничтожаем ресурсы списков
     if Assigned(V_InMessList) then
       FreeAndNil(V_InMessList);
@@ -4363,17 +4614,12 @@ begin
       FreeAndNil(V_XStatusMem);
     // Делаем текущую локальную копию списка контактов для отображения при запуске программы
     if V_Roster <> nil then
-    begin
       V_Roster.SaveToFile(V_ProfilePath + C_ContactListFileName);
-      // Уничтожаем Ростер
-      FreeAndNil(V_Roster);
-    end;
-    // Высвобождаем окно подсказок
-    if Assigned(SH_HintWindow) then
-      FreeAndNil(SH_HintWindow);
     // Если создан AppBar, то уничтожаем его
     if V_DockAppBar then
       AppBarDestroy;
+    // Уничтожаем сокеты протоколов
+    Bim_Socket_Free;
   end;
 end;
 
@@ -4445,35 +4691,6 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'OpenDumpProtoLog'}
-
-procedure TMainForm.DumpICQClick(Sender: TObject);
-begin
-  // Включаем лог отладки протокола ICQ
-  if not Assigned(LogForm) then
-    Application.CreateForm(TLogForm, LogForm);
-  LogForm.ICQDumpSpeedButton.Down := True;
-  XShowForm(LogForm);
-end;
-
-procedure TMainForm.DumpJabberClick(Sender: TObject);
-begin
-  // Включаем лог отладки протокола Jabber
-  if not Assigned(LogForm) then
-    Application.CreateForm(TLogForm, LogForm);
-  LogForm.JabberDumpSpeedButton.Down := True;
-  XShowForm(LogForm);
-end;
-
-procedure TMainForm.DumpMRAClick(Sender: TObject);
-begin
-  // Включаем лог отладки протокола MRA
-  if not Assigned(LogForm) then
-    Application.CreateForm(TLogForm, LogForm);
-  LogForm.MRADumpSpeedButton.Down := True;
-  XShowForm(LogForm);
-end;
-{$ENDREGION}
 {$REGION 'Other'}
 
 procedure TMainForm.EditContactClick(Sender: TObject);
@@ -4489,6 +4706,18 @@ end;
 procedure TMainForm.AppDeactivate(Sender: TObject);
 begin
   FormDeactivate(Self);
+end;
+
+procedure TMainForm.BimoidToolButtonClick(Sender: TObject);
+begin
+  // Открываем меню над этим элементом
+  PopUp_Top(BimoidToolButton, BimoidPopupMenu);
+end;
+
+procedure TMainForm.BimoidToolButtonContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  // Открываем меню над этим элементом
+  PopUp_Top(BimoidToolButton, BimoidPopupMenu);
 end;
 
 procedure TMainForm.BottomPanelPopupMenuPopup(Sender: TObject);
@@ -4529,14 +4758,23 @@ begin
   ShowWindow(Application.Handle, SW_HIDE);
 end;
 
+procedure TMainForm.AppException(Sender: TObject; E: Exception);
+begin
+  // Перехватываем глобально все ошибки в программе и выводим их в лог
+  if not Assigned(BugReportForm) then
+    Application.CreateForm(TBugReportForm, BugReportForm);
+  // Заполняем отчет об ошибке
+  JclLastExceptStackListToStrings(BugReportForm.BugReportMemo.Lines, False, False, False, False);
+  BugReportForm.BugReportMemo.Lines.Add(C_MaskPass + C_MaskPass + C_MaskPass + C_MaskPass);
+  // Отображаем окно
+  XShowForm(BugReportForm);
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   S: string;
   Buf: array[0..$FF] of Char;
   Size: Integer;
-  Lang: Word;
-  VI: TOSVersionInfo;
-  Language: array[0..100] of char;
 begin
   // Управляем скрытием кнопки на панели задач
   with Application do
@@ -4551,29 +4789,21 @@ begin
     // Назначаем продвинутые функции активации и деактивации
     OnActivate := AppActivate;
     OnDeactivate := AppDeactivate;
+    // Назначаем обработчик ошибок в программе
+    OnException := AppException;
   end;
   // Устанавливаем начальное значение ширины окна КЛ
   Width := 200;
   // Узнаём путь откуда запущена программа
   V_MyPath := ExtractFilePath(Application.ExeName);
   // Смотрим язык системы
-  Lang := GetSystemDefaultLangID;
-  if Lang = 1049 then
+  if GetSystemDefaultLangID = 1049 then
     V_CurrentLang := 'ru';
-  // Узнаём версию Windows
-  VI.DwOSVersionInfoSize := SizeOf(TOSVersionInfo);
-  GetVersionEx(VI);
-  V_StartLog := Format(Log_WinVer, [VI.DwMajorVersion, VI.DwMinorVersion, VI.DwBuildNumber, VI.SzCSDVersion]) + C_RN;
-  // Пишем в лог код локального языка системы
-  VerLanguageName(Lang, Language, 100);
-  V_StartLog := V_StartLog + Log_Lang_Code + C_TN + C_BN + string(Language) + C_BN + C_QN + IntToStr(Lang) + C_EN + C_RN;
-  // Пишем в лог путь к программе
-  V_StartLog := V_StartLog + LogMyPath + C_TN + C_BN + V_MyPath;
   // Если профиль не найден, то создаём его в настройках юзера виндовс
   V_ProfilePath := V_MyPath + C_Profiles;
   if not DirectoryExists(V_ProfilePath) then
   begin
-    S := '%APPDATA%' + C_SN + C_IMadering + C_SN;
+    S := '%APPDATA%' + '\' + C_IMadering + '\';
     Size := ExpandEnvironmentStrings(PChar(S), Buf, Sizeof(Buf));
     V_ProfilePath := Copy(Buf, 1, Size);
   end;
@@ -4593,6 +4823,16 @@ begin
   // Создаём окно подсказок
   SH_HintWindow := THintWindow.Create(Application);
   SH_HintWindow.Color := ClInfoBk;
+  // Загружаем плагины
+  JvPluginManager.PluginFolder := V_MyPath + C_PluginsFolder;
+  JvPluginManager.LoadPlugins;
+  // Отображаем кнопку плагинов в главном окне
+  if JvPluginManager.PluginCount > 0 then
+    PluginsToolButton.Visible := True;
+  // Вывод плагинам "Старт программы [путь к программе]"
+  JvPluginManager.BroadcastMessage(1, V_MyPath);
+  // Запускаем таймер обработки данных от плагинов
+  JvTimerList.Events[17].Enabled := True;
   // Запускаем таймер отображения окна выбора профиля
   JvTimerList.Events[0].Enabled := True;
 end;
@@ -4609,7 +4849,7 @@ begin
   // Окно смайлов убрать (глюк в вайн)
   if Assigned(SmilesForm) then
     if SmilesForm.Visible then
-      SmilesForm.Hide;
+      SmilesForm.Close;
   // Высвобождаем общую память приложения (вспоминая qip)
   if Win32Platform = VER_PLATFORM_WIN32_NT then
     SetProcessWorkingSetSize(GetCurrentProcess, $FFFFFFFF, $FFFFFFFF);
@@ -4629,6 +4869,12 @@ var
 begin
   if Key = #13 then
     Exit;
+  // Если нажата клавиша Esc, то закрываем окно
+  if Key = #27 then
+  begin
+    MainFormHideInTray;
+    Exit;
+  end;
   // Делаем поиск по списку контактов
   if V_PKeySearch <> Key then
   begin
@@ -4715,7 +4961,7 @@ begin
         if Root <> nil then
         begin
           // Проверяем есть ли нода главной формы
-          XML_Node := Root.Items.ItemNamed[C_MainForm];
+          XML_Node := Root.Items.ItemNamed[Self.Name];
           if XML_Node <> nil then
           begin
             // Загружаем позицию окна
@@ -4726,7 +4972,7 @@ begin
             // Определяем не находится ли окно за пределами экрана
             FormSetInWorkArea(Self);
             // Загружаем состояние кнопки звуков
-            Sub_Node := XML_Node.Items.ItemNamed[C_Sounds];
+            Sub_Node := XML_Node.Items.ItemNamed[SoundOnOffToolButton.Name];
             if Sub_Node <> nil then
               if Sub_Node.BoolValue then
               begin
@@ -4734,7 +4980,7 @@ begin
                 SoundOnOffToolButtonClick(Self);
               end;
             // Загружаем состояние кнопки только онлайн
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormOnlyOnline];
+            Sub_Node := XML_Node.Items.ItemNamed[OnlyOnlineContactsToolButton.Name];
             if Sub_Node <> nil then
               if Sub_Node.BoolValue then
               begin
@@ -4742,27 +4988,28 @@ begin
                 OnlyOnlineContactsToolButtonClick(Self);
               end;
             // Загружаем режим окна КЛ выше всех окон
-            Sub_Node := XML_Node.Items.ItemNamed[С_MainFormTop];
+            Sub_Node := XML_Node.Items.ItemNamed[TopModeToolButton.Name];
             if Sub_Node <> nil then
               if Sub_Node.BoolValue then
               begin
                 TopModeToolButton.Down := True;
                 TopModeToolButtonClick(Self);
               end;
-            // Загружаем был ли первый старт
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormFirst];
-            if Sub_Node <> nil then
-              V_FirstStart := Sub_Node.BoolValue;
             // Загружаем выбранные протоколы
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormProto];
+            Sub_Node := XML_Node.Items.ItemNamed[ICQToolButton.Name];
             if Sub_Node <> nil then
-            begin
-              ICQ_Enable(Sub_Node.Properties.BoolValue(C_Icq, False));
-              MRA_Enable(Sub_Node.Properties.BoolValue(C_Mra, False));
-              Jab_Enable(Sub_Node.Properties.BoolValue(C_Jabber, False));
-            end;
+              ICQ_Enable(Sub_Node.BoolValue);
+            Sub_Node := XML_Node.Items.ItemNamed[JabberToolButton.Name];
+            if Sub_Node <> nil then
+              Jab_Enable(Sub_Node.BoolValue);
+            Sub_Node := XML_Node.Items.ItemNamed[MRAToolButton.Name];
+            if Sub_Node <> nil then
+              MRA_Enable(Sub_Node.BoolValue);
+            Sub_Node := XML_Node.Items.ItemNamed[BimoidToolButton.Name];
+            if Sub_Node <> nil then
+              Bim_Enable(Sub_Node.BoolValue);
             // Загружаем данные трафика
-            Sub_Node := XML_Node.Items.ItemNamed[C_Traffic];
+            Sub_Node := XML_Node.Items.ItemNamed[TrafficToolButton.Name];
             if Sub_Node <> nil then
             begin
               V_AllTrafSend := Sub_Node.Properties.IntValue(C_TS, 0);
@@ -4770,68 +5017,70 @@ begin
               V_AllSesDataTraf := Sub_Node.Properties.Value(C_TD);
             end;
             // Загружаем пункты меню
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormHEG];
+            Sub_Node := XML_Node.Items.ItemNamed[HideEmptyGroups.Name];
             if Sub_Node <> nil then
               HideEmptyGroups.Checked := Sub_Node.BoolValue;
-            // Загружаем состояние верхней панели
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormTP];
+            // Загружаем отображение верхней панели
+            Sub_Node := XML_Node.Items.ItemNamed[TopPanelToolButton.Name];
             if Sub_Node <> nil then
-            begin
-              // Загружаем состояние кнопок
-              MainToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '0');
-              TopMainButtonONMenu.Checked := MainToolTopButton.Visible;
-              //
-              OnlyOnlineContactsTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '1');
-              TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
-              //
-              SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
-              TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
-              //
-              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
-              TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
-              //
-              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
-              TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
-              //
-              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
-              TopCLSearchONMenu.Checked := CLSearchTopToolButton.Visible;
-              //
-              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
-              TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
-              //
               if not Sub_Node.BoolValue then
               begin
                 TopPanelToolButton.Down := False;
                 TopToolBar.Visible := False;
               end;
-            end;
-            // Загружаем состояние нижней панели
-            Sub_Node := XML_Node.Items.ItemNamed[C_MainFormBP];
+            // Загружаем состояние верхней панели
+            Sub_Node := XML_Node.Items.ItemNamed[TopPanelPopupMenu.Name];
             if Sub_Node <> nil then
             begin
               // Загружаем состояние кнопок
-              MainToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '0');
+              MainToolTopButton.Visible := Sub_Node.Properties.BoolValue('c' + '0');
+              TopMainButtonONMenu.Checked := MainToolTopButton.Visible;
+              //
+              OnlyOnlineContactsTopButton.Visible := Sub_Node.Properties.BoolValue('c' + '1');
+              TopOnlyOnlineONMenu.Checked := OnlyOnlineContactsTopButton.Visible;
+              //
+              SoundOnOffToolTopButton.Visible := Sub_Node.Properties.BoolValue('c' + '2');
+              TopSoundsONMenu.Checked := SoundOnOffToolTopButton.Visible;
+              //
+              HistoryTopToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '3');
+              TopHistoryONMenu.Checked := HistoryTopToolButton.Visible;
+              //
+              SettingsTopToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '4');
+              TopSettingsONMenu.Checked := SettingsTopToolButton.Visible;
+              //
+              CLSearchTopToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '5');
+              TopCLSearchONMenu.Checked := CLSearchTopToolButton.Visible;
+              //
+              TrafficTopToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '6');
+              TopTrafficONMenu.Checked := TrafficTopToolButton.Visible;
+            end;
+            // Загружаем состояние нижней панели
+            Sub_Node := XML_Node.Items.ItemNamed[BottomPanelPopupMenu.Name];
+            if Sub_Node <> nil then
+            begin
+              // Загружаем состояние кнопок
+              MainToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '0');
               MainButtonONMenu.Checked := MainToolButton.Visible;
               //
-              OnlyOnlineContactsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '1');
+              OnlyOnlineContactsToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '1');
               OnlyOnlineONMenu.Checked := OnlyOnlineContactsToolButton.Visible;
               //
-              SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '2');
+              SoundOnOffToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '2');
               SoundsONMenu.Checked := SoundOnOffToolButton.Visible;
               //
-              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '3');
+              HistoryToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '3');
               HistoryONMenu.Checked := HistoryToolButton.Visible;
               //
-              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '4');
+              SettingsToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '4');
               SettingsONMenu.Checked := SettingsToolButton.Visible;
               //
-              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '5');
+              CLSearchToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '5');
               CLSearchONMenu.Checked := CLSearchToolButton.Visible;
               //
-              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '6');
+              TrafficToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '6');
               TrafficONMenu.Checked := TrafficToolButton.Visible;
               //
-              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue(C_PB + '7');
+              TopPanelToolButton.Visible := Sub_Node.Properties.BoolValue('c' + '7');
               TopPanelONMenu.Checked := TopPanelToolButton.Visible;
             end;
           end;
@@ -4867,44 +5116,44 @@ begin
       if Root <> nil then
       begin
         // Очищаем раздел главной формы если он есть
-        XML_Node := Root.Items.ItemNamed[C_MainForm];
+        XML_Node := Root.Items.ItemNamed[Self.Name];
         if XML_Node <> nil then
           XML_Node.Clear
         else
-          XML_Node := Root.Items.Add(C_MainForm);
+          XML_Node := Root.Items.Add(Self.Name);
         // Сохраняем позицию окна
         XML_Node.Properties.Add(C_FT, Top);
         XML_Node.Properties.Add(C_FL, Left);
         XML_Node.Properties.Add(C_FH, Height);
         XML_Node.Properties.Add(C_FW, Width);
         // Сохраняем звук вкл. выкл.
-        XML_Node.Items.Add(C_Sounds, SoundOnOffToolButton.Down);
+        XML_Node.Items.Add(SoundOnOffToolButton.Name, SoundOnOffToolButton.Down);
         // Сохраняем отображать только онлайн вкл. выкл.
-        XML_Node.Items.Add(C_MainFormOnlyOnline, OnlyOnlineContactsToolButton.Down);
+        XML_Node.Items.Add(OnlyOnlineContactsToolButton.Name, OnlyOnlineContactsToolButton.Down);
         // Сохраняем режим окна КЛ выше всех окон
-        XML_Node.Items.Add(С_MainFormTop, TopModeToolButton.Down);
-        // Записываем что первый запуск программы уже состоялся и показывать окно настройки протоколов больше не будем при запуске
-        XML_Node.Items.Add(C_MainFormFirst, True);
+        XML_Node.Items.Add(TopModeToolButton.Name, TopModeToolButton.Down);
         // Сохраняем активные протоколы
-        Sub_Node := XML_Node.Items.Add(C_MainFormProto);
-        Sub_Node.Properties.Add(C_Icq, ICQToolButton.Visible);
-        Sub_Node.Properties.Add(C_Mra, MRAToolButton.Visible);
-        Sub_Node.Properties.Add(C_Jabber, JabberToolButton.Visible);
+        XML_Node.Items.Add(ICQToolButton.Name, ICQToolButton.Visible);
+        XML_Node.Items.Add(JabberToolButton.Name, JabberToolButton.Visible);
+        XML_Node.Items.Add(MRAToolButton.Name, MRAToolButton.Visible);
+        XML_Node.Items.Add(BimoidToolButton.Name, BimoidToolButton.Visible);
         // Сохраняем трафик
-        Sub_Node := XML_Node.Items.Add(C_Traffic);
+        Sub_Node := XML_Node.Items.Add(TrafficToolButton.Name);
         Sub_Node.Properties.Add(C_TS, V_AllTrafSend);
         Sub_Node.Properties.Add(C_TR, V_AllTrafRecev);
         Sub_Node.Properties.Add(C_TD, V_AllSesDataTraf);
         // Сохраняем пункты меню
-        XML_Node.Items.Add(C_MainFormHEG, HideEmptyGroups.Checked);
+        XML_Node.Items.Add(HideEmptyGroups.Name, HideEmptyGroups.Checked);
+        // Сохраняем отображение верхней панели
+        XML_Node.Items.Add(TopPanelToolButton.Name, TopPanelToolButton.Down);
         // Сохраняем состояние верхней панели
-        Sub_Node := XML_Node.Items.Add(C_MainFormTP, TopPanelToolButton.Down);
+        Sub_Node := XML_Node.Items.Add(TopPanelPopupMenu.Name);
         for I := 0 to TopPanelPopupMenu.Items.Count - 1 do
-          Sub_Node.Properties.Add(C_PB + IntToStr(I), TopPanelPopupMenu.Items[I].Checked);
+          Sub_Node.Properties.Add('c' + IntToStr(I), TopPanelPopupMenu.Items[I].Checked);
         // Сохраняем состояние нижней панели
-        Sub_Node := XML_Node.Items.Add(C_MainFormBP);
+        Sub_Node := XML_Node.Items.Add(BottomPanelPopupMenu.Name);
         for I := 0 to BottomPanelPopupMenu.Items.Count - 1 do
-          Sub_Node.Properties.Add(C_PB + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
+          Sub_Node.Properties.Add('c' + IntToStr(I), BottomPanelPopupMenu.Items[I].Checked);
         // Записываем сам файл
         SaveToFile(V_ProfilePath + C_SettingsFileName);
       end;
@@ -4918,10 +5167,10 @@ end;
 {$REGION 'SendFileUpWapruClick'}
 
 procedure TMainForm.SendFileUpWapruClick(Sender: TObject);
-var
-  Fsize: Longint;
+{var
+  Fsize: Longint;}
 begin
-  if NotProtoOnline((ContactList.SelectedItem as TButtonItem).ContactType) then
+  {if NotProtoOnline((ContactList.SelectedItem as TButtonItem).ContactType) then
     Exit;
   // Открываем форму отправки файлов
   if not Assigned(FileTransferForm) then
@@ -4954,7 +5203,7 @@ begin
     begin
       T_FilePath := SendFileOpenDialog.FileName;
       T_FileName := GetFileName(SendFileOpenDialog.FileName);
-      FileNamePanel.Caption := C_BN + T_FileName;
+      FileNamePanel.Caption := ' ' + T_FileName;
       FileNamePanel.Hint := T_FileName;
       // Вычисляем размер файла
       Fsize := GetFileSize(SendFileOpenDialog.FileName);
@@ -4965,7 +5214,7 @@ begin
       // Отображаем окно
       XShowForm(FileTransferForm);
     end;
-  end;
+  end;}
 end;
 
 {$ENDREGION}
@@ -4978,21 +5227,6 @@ begin
     Application.CreateForm(TCLSearchForm, CLSearchForm);
   // Отображаем окно
   XShowForm(CLSearchForm);
-end;
-
-procedure TMainForm.SendAddContactClick(Sender: TObject);
-begin
-  // Отправляем пакет "Вас добавили"
-  if ContactList.SelectedItem <> nil then
-  begin
-    if ICQ_Work_Phaze then
-      ICQ_SendYouAdded((ContactList.SelectedItem as TButtonItem).UIN);
-  end;
-end;
-
-procedure TMainForm.SendInviteContactClick(Sender: TObject);
-begin
-  ShowMessage(Lang_Vars[6].L_S);
 end;
 
 procedure TMainForm.SendMessageForContactClick(Sender: TObject);
@@ -5184,7 +5418,7 @@ end;
 procedure TMainForm.TwitterClientCookie(Sender: TObject; const Data: string; var Accept: Boolean);
 begin
   // Управляем кукие
-  XLog(TwitterClient.Name + C_BN + Log_Get + C_BN + C_Cookie, Data, C_HTTP);
+  //XLog(TwitterClient.Name + ' ' + Log_Get + ' ' + C_Cookie, Data, C_HTTP);
 end;
 
 procedure TMainForm.TwitterClientRequestDone(Sender: TObject; RqType: THttpRequest; ErrCode: Word);
@@ -5230,14 +5464,14 @@ begin
               // Разбираем данные в листе
               if S <> EmptyStr then
               begin
-                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                //XLog(C_Twitter + ' ' + Log_Get, S, C_Twitter);
                 // Парсим ключи
-                V_Twitter_OAuth_Token := IsolateTextString(S, C_Twitter_OAuth_Token, C_AN);
-                V_Twitter_OAuth_Token_Secret := IsolateTextString(S, C_Twitter_OAuth_Token_Secret, C_AN);
+                V_Twitter_OAuth_Token := IsolateTextString(S, C_Twitter_OAuth_Token, '&');
+                V_Twitter_OAuth_Token_Secret := IsolateTextString(S, C_Twitter_OAuth_Token_Secret, '&');
                 if (V_Twitter_OAuth_Token <> EmptyStr) and (V_Twitter_OAuth_Token_Secret <> EmptyStr) then
                 begin
-                  XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
-                    + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
+                  {XLog(C_Twitter + ' ' + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
+                    + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);}
                   // Ставим флаг для получения формы логина
                   Form_Flag := True;
                   //OpenURL(C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token);
@@ -5252,13 +5486,13 @@ begin
               // Разбираем данные в листе
               if S <> EmptyStr then
               begin
-                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                //XLog(C_Twitter + ' ' + Log_Get, S, C_Twitter);
                 V_Twitter_Authenticity_Token := IsolateTextString(S, 'name="authenticity_token"', '>');
                 V_Twitter_Authenticity_Token := EncodeRFC3986(IsolateTextString(V_Twitter_Authenticity_Token, 'value="', '"'));
                 // Ставим флаг для получения ПИН кода
                 if V_Twitter_Authenticity_Token <> EmptyStr then
                 begin
-                  XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token, C_Twitter);
+                  //XLog(C_Twitter + ' ' + Log_Parsing, C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token, C_Twitter);
                   PIN_Flag := True;
                 end;
               end;
@@ -5271,13 +5505,13 @@ begin
               // Разбираем данные в листе
               if S <> EmptyStr then
               begin
-                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                //XLog(C_Twitter + ' ' + Log_Get, S, C_Twitter);
                 V_Twitter_OAuth_PIN := IsolateTextString(S, 'id="oauth_pin"', '/');
                 V_Twitter_OAuth_PIN := Trim(IsolateTextString(V_Twitter_OAuth_PIN, '>', '<'));
                 // Ставим флаг для логина с полученным ПИН кодом
                 if V_Twitter_OAuth_PIN <> EmptyStr then
                 begin
-                  XLog(C_Twitter + C_BN + Log_Parsing, 'PIN' + C_TN + C_BN + C_QN + V_Twitter_OAuth_PIN + C_EN, C_Twitter);
+                  //XLog(C_Twitter + ' ' + Log_Parsing, 'PIN' + C_S5 + ' ' + C_S14 + V_Twitter_OAuth_PIN + C_S15, C_Twitter);
                   Login_Flag := True;
                 end
                 else // Сообщаем, что были введены не верные логин или пароль
@@ -5296,16 +5530,16 @@ begin
               // Разбираем данные в листе
               if S <> EmptyStr then
               begin
-                XLog(C_Twitter + C_BN + Log_Get, S, C_Twitter);
+                //XLog(C_Twitter + ' ' + Log_Get, S, C_Twitter);
                 V_Twitter_OAuth_Token := EmptyStr;
                 V_Twitter_OAuth_Token_Secret := EmptyStr;
-                V_Twitter_OAuth_Token := IsolateTextString(S, C_Twitter_OAuth_Token, C_AN);
-                V_Twitter_OAuth_Token_Secret := IsolateTextString(S, C_Twitter_OAuth_Token_Secret, C_AN);
+                V_Twitter_OAuth_Token := IsolateTextString(S, C_Twitter_OAuth_Token, '&');
+                V_Twitter_OAuth_Token_Secret := IsolateTextString(S, C_Twitter_OAuth_Token_Secret, '&');
                 // Ставим флаг для постинга сообщения
                 if (V_Twitter_OAuth_Token <> EmptyStr) and (V_Twitter_OAuth_Token_Secret <> EmptyStr) then
                 begin
-                  XLog(C_Twitter + C_BN + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
-                    + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);
+                  {XLog(C_Twitter + ' ' + Log_Parsing, C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_RN //
+                    + C_Twitter_OAuth_Token_Secret + V_Twitter_OAuth_Token_Secret, C_Twitter);}
                   PostMsg_Flag := True;
                 end;
               end;
@@ -5318,13 +5552,13 @@ begin
                 with JvXML do
                 begin
                   LoadFromStream(TwitterClient.RcvdStream);
-                  XLog(C_Twitter + C_BN + Log_Get, Trim(XMLData), C_Twitter);
+                  //XLog(C_Twitter + ' ' + Log_Get, Trim(XMLData), C_Twitter);
                   if Root <> nil then
                   begin
                     // Проверяем на ошибки и отображаем если они есть
                     XML_Node := Root.Items.ItemNamed['error'];
                     if XML_Node <> nil then
-                      DAShow(Lang_Vars[17].L_S + C_BN + C_Twitter, XML_Node.Value, EmptyStr, 134, 2, 0);
+                      DAShow(Lang_Vars[17].L_S + ' ' + C_Twitter, XML_Node.Value, EmptyStr, 134, 2, 0);
                     // Проверяем на успешную публикацию
                     XML_Node := Root.Items.ItemNamed['created_at'];
                     if XML_Node <> nil then
@@ -5354,8 +5588,8 @@ begin
         // Ставим флаг задания
         Tag := 1;
         // Запускаем получение формы логина
-        URL := C_Twitter_Host + C_Twitter_Authorize + C_GT + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token;
-        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        URL := C_Twitter_Host + C_Twitter_Authorize + '?' + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token;
+        //XLog(C_Twitter + ' ' + Log_Send, URL, C_Twitter, False);
         GetASync;
       end;
       Exit;
@@ -5372,12 +5606,12 @@ begin
         // Ставим флаг задания
         Tag := 2;
         // Запускаем получение ПИН кода
-        URL := C_Twitter_Host + C_Twitter_Authorize + C_GT //
-        + C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token + C_AN //
-        + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + C_AN //
-        + C_Twitter_Username + EncodeRFC3986(V_Twitter_Username) + C_AN //
+        URL := C_Twitter_Host + C_Twitter_Authorize + '?' //
+        + C_Twitter_Authenticity_Token + V_Twitter_Authenticity_Token + '&' //
+        + C_Twitter_OAuth_Token + V_Twitter_OAuth_Token + '&' //
+        + C_Twitter_Username + EncodeRFC3986(V_Twitter_Username) + '&' //
         + C_Twitter_Password + EncodeRFC3986(V_Twitter_Password);
-        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        //XLog(C_Twitter + ' ' + Log_Send, URL, C_Twitter, False);
         SendStream := TMemoryStream.Create;
         SendStream.Write(PostData[1], Length(PostData));
         SendStream.Seek(0, 0);
@@ -5418,7 +5652,7 @@ begin
         Tag := 3;
         // Запускаем логин с полученным ПИН кодом
         URL := V_Twitter_OAuth_Signature;
-        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        //XLog(C_Twitter + ' ' + Log_Send, URL, C_Twitter, False);
         SendStream := TMemoryStream.Create;
         SendStream.Write(PostData[1], Length(PostData));
         SendStream.Seek(0, 0);
@@ -5459,7 +5693,7 @@ begin
         Tag := 4;
         // Запускаем логин с полученным ПИН кодом
         URL := V_Twitter_OAuth_Signature;
-        XLog(C_Twitter + C_BN + Log_Send, URL, C_Twitter, False);
+        //XLog(C_Twitter + ' ' + Log_Send, URL, C_Twitter, False);
         SendStream := TMemoryStream.Create;
         SendStream.Write(PostData[1], Length(PostData));
         SendStream.Seek(0, 0);
@@ -5468,7 +5702,7 @@ begin
     end;
   except
     on E: Exception do
-      IMaderingEventsException(Self, E);
+      AppException(Self, E);
   end;
 end;
 
@@ -5487,41 +5721,33 @@ begin
   end;
 end;
 {$ENDREGION}
-{$REGION 'UniqContactSettingsMenuClick'}
-
-procedure TMainForm.UniqContactSettingsMenuClick(Sender: TObject);
-begin
-  // Открываем окно уникальных настроек контакта
-  if not Assigned(UniqForm) then
-    UniqForm := TUniqForm.Create(Self);
-  if (ContactList.SelectedItem as TButtonItem).ContactType = C_Icq then
-    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + UpperCase(C_Icq) + C_TN + (ContactList.SelectedItem as TButtonItem).UIN
-  else if (ContactList.SelectedItem as TButtonItem).ContactType = C_Jabber then
-    UniqForm.AccountPanel.Caption := Lang_Vars[20].L_S + C_BN + C_Jabber + C_TN + (ContactList.SelectedItem as TButtonItem).UIN;
-  // Отображаем окно
-  XShowForm(UniqForm);
-end;
-{$ENDREGION}
 {$REGION 'Other'}
 
 procedure TMainForm.UnstableICQStatusClick(Sender: TObject);
 begin
   // Активируем или деактивируем таймер нестабильного статуса
-  if not UnstableICQStatus.Checked then
+  with UnstableICQStatus do
   begin
-    UnstableICQStatus.Checked := True;
-    JvTimerList.Events[4].Enabled := True;
-  end
-  else
-    UnstableICQStatus.Checked := False;
+    if not Checked then
+    begin
+      Checked := True;
+      ImageIndex := 140;
+      JvTimerList.Events[4].Enabled := True;
+    end
+    else
+    begin
+      Checked := False;
+      ImageIndex := 230;
+    end;
+  end;
 end;
 
 procedure TMainForm.OpenGame_MenuClick(Sender: TObject);
 begin
   // Открываем в окне чата закладку с играми
-  if not Assigned(GamesForm) then
+  {if not Assigned(GamesForm) then
     Application.CreateForm(TGamesForm, GamesForm);
-  XShowForm(GamesForm);
+  XShowForm(GamesForm);}
 end;
 
 procedure TMainForm.OpenGroupsCLClick(Sender: TObject);
@@ -5585,25 +5811,9 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
   begin
-    S := Format(Lang_Vars[23].L_S, [(Sender as THttpCli).name]) + C_BN + Msg + C_BN + C_QN + Format(Lang_Vars[27].L_S, [Error]) + C_EN;
+    S := Format(Lang_Vars[23].L_S, [(Sender as THttpCli).name]) + ' ' + Msg + ' ' + '[' + Format(Lang_Vars[27].L_S, [Error]) + ']';
     DAShow(Lang_Vars[17].L_S, S, EmptyStr, 134, 2, 0);
   end;
-end;
-
-procedure TMainForm.ICQWSocketError(Sender: TObject);
-begin
-  // Отображаем ошибки сокета
-  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
-  // Активируем режим оффлайн
-  ICQ_GoOffline;
-end;
-
-procedure TMainForm.MRAWSocketError(Sender: TObject);
-begin
-  // Отображаем ошибки сокета
-  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
-  // Активируем режим оффлайн
-  MRA_GoOffline;
 end;
 
 procedure TMainForm.MRAWSocketSendData(Sender: TObject; BytesSent: Integer);
@@ -5658,19 +5868,19 @@ begin
   begin
     // Составляем адрес
     if MRA_Connect_Phaze then
-      Http_data := MRA_LoginServerAddr + C_TN + MRA_LoginServerPort
+      Http_data := MRA_LoginServerAddr + ':' + MRA_LoginServerPort
     else
-      Http_data := MRA_Bos_IP + C_TN + MRA_Bos_Port;
+      Http_data := MRA_Bos_IP + ':' + MRA_Bos_Port;
     // Если авторизация на прокси
     if V_HttpProxy_Auth then
     begin
-      Http_login := Base64Encode(V_HttpProxy_Login + C_TN + V_HttpProxy_Password);
-      Http_login := C_Proxy_Auth + C_BN + Http_login + C_RN;
+      Http_login := Base64Encode(V_HttpProxy_Login + ':' + V_HttpProxy_Password);
+      Http_login := C_Proxy_Auth + ' ' + Http_login + C_RN;
     end;
     // Формируем основной запрос для http прокси
-    Http_data := C_Proxy_Connect + C_BN + Http_data + C_BN + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
-     + C_Proxy_Alive + C_RN + C_Proxy_Host + C_TN + C_BN + Http_data + C_RN + Http_login + C_RN;
-    XLog(C_Mra + C_BN + Log_Send, Http_data, C_Mra, False);
+    Http_data := C_Proxy_Connect + ' ' + Http_data + ' ' + C_Proxy_Type + SettingsForm.ProxyVersionComboBox.Text + C_RN //
+    + C_Proxy_Alive + C_RN + C_Proxy_Host + ':' + ' ' + Http_data + C_RN + Http_login + C_RN;
+    //XLog(C_Mra + ' ' + Log_Send, Http_data, C_Mra, False);
     // Отсылаем запрос для прокси
     MRAWSocket.SendStr(Http_data);
     Exit;
@@ -5683,6 +5893,31 @@ end;
 {$ENDREGION}
 {$REGION 'Other'}
 
+procedure TMainForm.ICQWSocketError(Sender: TObject);
+begin
+  // Блокировка ошибок сокета в дебагере
+  // Отображаем ошибки сокета
+  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  // Активируем режим оффлайн
+  ICQ_GoOffline;
+end;
+
+procedure TMainForm.ICQAvatarWSocketError(Sender: TObject);
+begin
+  // Блокировка ошибок сокета в дебагере
+  // Отображаем ошибки сокета
+  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Icq + ' ' + 'Avatar', WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+end;
+
+procedure TMainForm.MRAWSocketError(Sender: TObject);
+begin
+  // Блокировка ошибок сокета в дебагере
+  // Отображаем ошибки сокета
+  DAShow(Lang_Vars[17].L_S, NotifyConnectError(C_Mra, WSocket_WSAGetLastError), EmptyStr, 134, 2, 0);
+  // Активируем режим оффлайн
+  MRA_GoOffline;
+end;
+
 procedure TMainForm.LinkCompress_MenuClick(Sender: TObject);
 const
   P = 'url=%s&security_token=null';
@@ -5691,7 +5926,7 @@ var
   S: AnsiString;
 begin
   // Делаем запрос для укорочения ссылки
-  if InputQuery(LinkCompress_Menu.Caption, 'URL' + C_TN, L) then
+  if InputQuery(LinkCompress_Menu.Caption, 'URL' + ':', L) then
   begin
     if L <> EmptyStr then
     begin
@@ -5708,8 +5943,8 @@ begin
         Tag := 4;
         // Запускаем получение укороченной ссылки
         LocationChangeMaxCount := 0;
-        URL := 'http://goo.gl/api/shorten' + C_GT + L;
-        XLog(Name + C_BN + Log_Send, URL, C_HTTP, False);
+        URL := 'http://goo.gl/api/shorten' + '?' + L;
+        //XLog(Name + ' ' + Log_Send, URL, C_HTTP, False);
         SendStream := TMemoryStream.Create;
         SendStream.Write(S[1], Length(S));
         SendStream.Seek(0, 0);
@@ -5735,18 +5970,10 @@ begin
   // Если возникла ошибка, то сообщаем об этом
   if Error <> 0 then
   begin
-    DAShow(Lang_Vars[17].L_S, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]) + C_RN + C_QN + C_BN + Log_Socket + C_TN + C_BN + C_Mra + C_BN + C_EN, EmptyStr, 134, 2, 0);
+    DAShow(Lang_Vars[17].L_S + ' ' + C_Mra, Lang_Vars[23].L_S + C_RN + Msg + C_RN + Format(Lang_Vars[27].L_S, [Error]), EmptyStr, 134, 2, 0);
     // Активируем режим оффлайн
     MRA_GoOffline;
   end;
-end;
-
-procedure TMainForm.ShowLog_MenuClick(Sender: TObject);
-begin
-  // Отображаем окно
-  if not Assigned(LogForm) then
-    Application.CreateForm(TLogForm, LogForm);
-  XShowForm(LogForm);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -5775,9 +6002,361 @@ begin
   end;
 end;
 {$ENDREGION}
+{$REGION 'Bim_StatusOnlineClick'}
+
+procedure TMainForm.Bim_SettingsClick(Sender: TObject);
+begin
+  // Открываем окно настроек ICQ протокола
+  if not Assigned(BimoidOptionsForm) then
+    Application.CreateForm(TBimoidOptionsForm, BimoidOptionsForm);
+  // Отображаем окно
+  XShowForm(BimoidOptionsForm);
+end;
+
+procedure TMainForm.Bim_StatusOfflineClick(Sender: TObject);
+begin
+  // Отключаемся от сервера Bimoid
+
+end;
+
+procedure TMainForm.Bim_StatusOnlineClick(Sender: TObject);
+var
+  FrmLogin: TLoginForm;
+  LoginYes: Boolean;
+begin
+  if Assigned(BimoidOptionsForm) then
+  begin
+LoginYes := False;
+  // Если логин Bimoid или пароль пустые, то выводим окно для их ввода
+  if (Bim_LoginUIN = EmptyStr) or (Bim_LoginPassword = EmptyStr) then
+  begin
+    // Показываем сообщение об этой ошибке
+    DAShow(Lang_Vars[16].L_S, Format(Lang_Vars[21].L_S, [C_Bimoid]), EmptyStr, 133, 3, 0);
+    // Открываем маленькое окно логина
+    FrmLogin := TLoginForm.Create(Application);
+    try
+      MainForm.AllImageList.GetIcon(297, FrmLogin.Icon);
+      FrmLogin.Caption := C_Bimoid;
+      if BimoidOptionsForm.BimoidLoginEdit.Text <> EmptyStr then
+        FrmLogin.AccountEdit.Text := BimoidOptionsForm.BimoidLoginEdit.Text;
+      // Модально спрашиваем логин и пароль
+      if FrmLogin.ShowModal = MrOk then
+      begin
+        // Заполняем настройки логина Bimoid
+        with BimoidOptionsForm do
+        begin
+          BimoidLoginEdit.Text := FrmLogin.AccountEdit.Text;
+          PassEdit.Text := FrmLogin.PasswordEdit.Text;
+          SavePassCheckBox.Checked := FrmLogin.SavePassCheckBox.Checked;
+          if (BimoidLoginEdit.Text = EmptyStr) or (PassEdit.Text = EmptyStr) then
+            LoginYes := False
+          else
+            LoginYes := True;
+          ApplyButtonClick(nil);
+        end;
+      end;
+    finally
+      FreeAndNil(FrmLogin);
+    end;
+    // Если отмена, то выходим от сюда
+    if not LoginYes then
+      Exit;
+  end;
+  {// Делаем выбранный статус в меню выделенным
+  TMenuItem(Sender).default := True;
+  // Ставим статус для протокола
+  ICQ_CurrentStatus := TMenuItem(Sender).ImageIndex;
+  // Ставим запасное значение статуса для протокола
+  ICQ_CurrentStatus_bac := ICQ_CurrentStatus;
+  // Ставим иконку статуса в окне КЛ
+  if not ICQ_Offline_Phaze then
+    ICQToolButton.ImageIndex := ICQ_CurrentStatus;
+  // Отключаем статус Нестабильный если он включен
+  if JvTimerList.Events[4].Enabled then
+  begin
+    JvTimerList.Events[4].Enabled := False;
+    UnstableICQStatus.Checked := False;
+  end;
+  // Подключаемся к ICQ серверу
+  if ICQ_Offline_Phaze then
+  begin
+    // Ставим иконку подключения
+    ICQToolButton.ImageIndex := 80;
+    // Блокируем контролы логина и пароля ICQ
+    if Assigned(IcqOptionsForm) then
+    begin
+      with IcqOptionsForm do
+      begin
+        ICQUINEdit.Enabled := False;
+        ICQUINEdit.Color := ClBtnFace;
+        PassEdit.Enabled := False;
+        PassEdit.Color := ClBtnFace;
+      end;
+    end;
+    // Активируем фазу коннекта к серверу ICQ
+    ICQ_Connect_Phaze := True;
+    ICQ_HTTP_Connect_Phaze := False;
+    ICQ_BosConnect_Phaze := False;
+    ICQ_Work_Phaze := False;
+    ICQ_Offline_Phaze := False;
+    // Устанавливаем параметры сокета
+    ICQWSocket.Proto := C_SocketProto;
+    // Устанавливаем настройки прокси
+    if V_HttpProxy_Enable then
+    begin
+      ICQWSocket.Addr := V_HttpProxy_Address;
+      ICQWSocket.Port := V_HttpProxy_Port;
+    end
+    else
+    begin
+      ICQWSocket.Addr := ICQ_LoginServerAddr;
+      ICQWSocket.Port := ICQ_LoginServerPort;
+    end;
+    // Прорисовываем интерфэйс
+    Update;
+    // Подключаем сокет
+    ICQWSocket.Connect;
+  end;
+  // Отправляем статус
+  if ICQ_Work_Phaze then
+    ICQ_SendPkt('2', ICQ_CreateShortStatusPkt);}
+  end;
+end;
+{$ENDREGION}
+{$REGION 'DoHotKey'}
+
+procedure TMainForm.DoHotKey(Sender: TObject);
+begin
+  // Мля комбинации клавиш на "Ctrl + Shift + ..." подвисают 0_o
+  // Обрабатываем нажатия глобальных клавиш
+  case (Sender as TJvApplicationHotKey).Tag of
+    1: MainFormHideInTray;
+    2: TrayIconClick(nil);
+    3:
+      begin
+        if Assigned(ChatForm) then
+        begin
+          if ChatForm.Visible then
+            ChatForm.Close
+          else
+            XShowForm(ChatForm);
+        end;
+      end;
+    4:
+      begin
+        if Assigned(SettingsForm) then
+        begin
+          if SettingsForm.Visible then
+            SettingsForm.Close
+          else
+            XShowForm(SettingsForm);
+        end;
+      end;
+    5:
+      begin
+        if not Assigned(CLSearchForm) then
+          SearchInCL_MenuClick(nil)
+        else
+        begin
+          if CLSearchForm.Visible then
+            CLSearchForm.Close
+          else
+            XShowForm(CLSearchForm);
+        end;
+      end;
+    6: ;
+  end;
+end;
+
+procedure TMainForm.DoHotKeyRegisterFailed(Sender: TObject; var HotKey: TShortCut);
+begin
+  // Ошибка регистрации этой горячей комбинации
+  DAShow(Lang_Vars[17].L_S, Format(Lang_Vars[167].L_S, [ShortCutToText(HotKey)]), EmptyStr, 134, 2, 0);
+end;
+
+{$ENDREGION}
+{$REGION 'JvPluginManagerNewCommand'}
+
+  procedure TMainForm.JvPluginManagerNewCommand(Sender: TObject; ACaption, AHint, AData: string; AShortCut: TShortCut; ABitmap: TBitmap; AEvent: TNotifyEvent);
+  var
+    Item: TMenuItem;
+    Img1: TBitmap;
+  begin
+    // Добавляем команды плагинов в меню команд плагинов
+    if ABitmap <> nil then
+    begin
+      Img1 := TBitmap.Create;
+      try
+        Img1.Height := 16;
+        Img1.Width := 16;
+        Img1.Handle := ABitmap.Handle;
+        PluginsImageList.AddMasked(Img1, ClFuchsia);
+      finally
+        Img1.Free;
+      end;
+    end;
+    Item := NewItem(ACaption, 0, False, True, AEvent, 0, 'MenuItem' + IntToStr(PluginsPopupMenu.Items.Count));
+    Item.ImageIndex := PluginsImageList.Count - 1;
+    PluginsPopupMenu.Items.Add(Item);
+  end;
+{$ENDREGION}
+{$REGION 'AllStatusOfflineClick'}
+
+  procedure TMainForm.AllStatusOfflineClick(Sender: TObject);
+  begin
+    // Управляем общим статусом
+    case (Sender as TMenuItem).ImageIndex of
+      254: // онлайн
+        begin
+          // ICQ
+          ICQStatusOnline.Click;
+          // Jabber
+          JabberStatusOnline.Click;
+          // MRA
+          MRAStatusOnline.Click;
+          // Bimoid
+          Bim_StatusOnline.Click;
+        end;
+      255: // отошел
+        begin
+          // ICQ
+          ICQStatusAway.Click;
+          // Jabber
+          JabberStatusAway.Click;
+          // MRA
+          MRAStatusAway.Click;
+          // Bimoid
+          Bim_StatusAway.Click;
+        end;
+      256: // оффлайн
+        begin
+          // ICQ
+          ICQStatusOffline.Click;
+          // Jabber
+          JabberStatusOffline.Click;
+          // MRA
+          MRAStatusOffline.Click;
+          // Bimoid
+          Bim_StatusOffline.Click;
+        end;
+      257: // невидимый
+        begin
+          // ICQ
+          ICQStatusInvisible.Click;
+          // Jabber
+          JabberStatusInvisible.Click;
+          // MRA
+          MRAStatusInvisible.Click;
+          // Bimoid
+          Bim_StatusInvisible.Click;
+        end;
+      258: // занят
+        begin
+          // ICQ
+          ICQStatusOccupied.Click;
+          // Jabber
+          JabberStatusOccupied.Click;
+          // MRA
+          MRAStatusOccupied.Click;
+          // Bimoid
+          Bim_StatusOccupied.Click;
+        end;
+      259: // DND не беспокоить
+        begin
+          // ICQ
+          ICQStatusDND.Click;
+          // Jabber
+          JabberStatusDND.Click;
+          // MRA
+          MRAStatusDND.Click;
+          // Bimoid
+          Bim_StatusDND.Click;
+        end;
+      260: // NA недоступен
+        begin
+          // ICQ
+          ICQStatusNA.Click;
+          // Jabber
+          JabberStatusNA.Click;
+          // MRA
+          MRAStatusNA.Click;
+          // Bimoid
+          Bim_StatusNA.Click;
+        end;
+      261: // кушаю
+        begin
+          // ICQ
+          ICQStatusLunch.Click;
+          // Jabber
+          JabberStatusLunch.Click;
+          // MRA
+          MRAStatusLunch.Click;
+          // Bimoid
+          Bim_StatusLunch.Click;
+        end;
+      262: // свободен для чата
+        begin
+          // ICQ
+          ICQStatusFFC.Click;
+          // Jabber
+          JabberStatusFFC.Click;
+          // MRA
+          MRAStatusFFC.Click;
+          // Bimoid
+          Bim_StatusFFC.Click;
+        end;
+      263: // депрессия
+        begin
+          // ICQ
+          ICQStatusDepres.Click;
+          // Jabber
+          JabberStatusDepression.Click;
+          // MRA
+          MRAStatusDepres.Click;
+        end;
+      264: // злой
+        begin
+          // ICQ
+          ICQStatusEvil.Click;
+          // Jabber
+          JabberStatusEvil.Click;
+          // MRA
+          MRAStatusEvil.Click;
+        end;
+      265: // дома
+        begin
+          // ICQ
+          ICQStatusHome.Click;
+          // Jabber
+          JabberStatusHome.Click;
+          // MRA
+          MRAStatusHome.Click;
+          // Bimoid
+          Bim_StatusHome.Click;
+        end;
+      266: // на работе
+        begin
+          // ICQ
+          ICQStatusWork.Click;
+          // Jabber
+          JabberStatusWork.Click;
+          // MRA
+          MRAStatusWork.Click;
+          // Bimoid
+          Bim_StatusWork.Click;
+        end;
+    end;
+  end;
+{$ENDREGION}
 {$REGION 'Init and Final'}
 
 initialization
+
+  // Включаем режим автоматического отображения утечек памяти при завершении программы
+  ReportMemoryLeaksOnShutdown := False;
+
+  // Никогда не спать в многопроцессорных системах
+  NeverSleepOnMMThreadContention := True;
 
   // Стартуем встроенный в программу отладчик
   Include(JclStackTrackingOptions, StRawMode);
@@ -5794,4 +6373,5 @@ finalization
 {$ENDREGION}
 
 end.
+
 

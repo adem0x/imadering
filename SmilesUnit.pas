@@ -70,8 +70,8 @@ begin
       Width := StrToInt(IsolateTextString(V_SmilesList.Strings[0], '<width>', '</width>'));
     end;
   // Загружаем смайлы из смайлпака
-  if FileExists(V_MyPath + 'Smilies\' + V_CurrentSmiles + '\smilies.htm') then
-    SmiliesHTMLViewer.LoadFromFile(V_MyPath + 'Smilies\' + V_CurrentSmiles + '\smilies.htm');
+  if FileExists(V_MyPath + C_SmiliesFolder + V_CurrentSmiles + '\smilies.htm') then
+    SmiliesHTMLViewer.LoadFromFile(V_MyPath + C_SmiliesFolder + V_CurrentSmiles + '\smilies.htm');
 end;
 
 {$ENDREGION}
@@ -86,7 +86,7 @@ end;
 procedure TSmilesForm.FormDeactivate(Sender: TObject);
 begin
   // Закрываем окно
-  Hide;
+  Close;
 end;
 
 procedure TSmilesForm.FormShow(Sender: TObject);
@@ -114,7 +114,7 @@ begin
   // Вставляем выбранный смайлик в поле ввода в окне чата
   with ChatForm.InputRichEdit do
     begin
-      Text := Text + C_BN + SmiliesHTMLViewer.TitleAttr;
+      Text := Text + ' ' + SmiliesHTMLViewer.TitleAttr;
       SelStart := GetTextLen;
       Modified := True;
     end;

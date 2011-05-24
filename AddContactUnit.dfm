@@ -6,6 +6,7 @@ object AddContactForm: TAddContactForm
   ClientHeight = 129
   ClientWidth = 330
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,7 +14,7 @@ object AddContactForm: TAddContactForm
   Font.Style = []
   HelpFile = 'T'
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate
   OnDblClick = FormDblClick

@@ -50,6 +50,7 @@ type
 
   private
     { Private declarations }
+    f_t, f_l, f_h, f_w: integer;
   public
     { Public declarations }
     procedure TranslateForm;
@@ -70,12 +71,6 @@ uses
   UtilsUnit,
   OverbyteIcsUrl,
   RosterUnit;
-
-{$ENDREGION}
-{$REGION 'MyConst'}
-
-const
-  C_CLSearchForm = 'cl_search_form';
 
 {$ENDREGION}
 {$REGION 'CLSearchEditChange'}
@@ -101,7 +96,7 @@ var
           if XML_Node <> nil then
           begin
             // Открываем раздел контактов
-            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+            Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
             if Sub_Node <> nil then
             begin
               // Ищем параметр этого контакта
@@ -115,10 +110,12 @@ var
                   // Если нашли текст в учётной записи или нике
                   if (Pos(SearchText, UIN) > 0) or (Pos(SearchText, Nick) > 0) then
                   begin
+                    CLSearchJvListView.Items.BeginUpdate;
                     CLSearchJvListView.Items.Add.Caption := URLDecode(Tri_Node.Properties.Value(C_Login));
                     CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(URLDecode(Tri_Node.Properties.Value(C_Nick)));
                     CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].SubItems.Append(Proto);
                     CLSearchJvListView.Items[CLSearchJvListView.Items.Count - 1].ImageIndex := StrToInt(Tri_Node.Properties.Value(C_Status));
+                    CLSearchJvListView.Items.EndUpdate;
                   end;
                 end;
               end;
@@ -152,6 +149,12 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
+
+procedure TCLSearchForm.FormDeactivate(Sender: TObject);
+begin
+  // Сбрасываем выделенние
+  CLSearchJvListView.Selected := nil;
+end;
 
 procedure TCLSearchForm.CLSearchJvListViewColumnClick(Sender: TObject; Column: TListColumn);
 var
@@ -241,13 +244,20 @@ begin
         LoadFromFile(V_ProfilePath + C_SettingsFileName);
         if Root <> nil then
         begin
-          XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
+          XML_Node := Root.Items.ItemNamed[Self.Name];
           if XML_Node <> nil then
           begin
-            Top := XML_Node.Properties.IntValue('t');
-            Left := XML_Node.Properties.IntValue('l');
-            Height := XML_Node.Properties.IntValue('h');
-            Width := XML_Node.Properties.IntValue('w');
+            // Загружаем позицию окна
+            Top := XML_Node.Properties.IntValue(C_FT);
+            Left := XML_Node.Properties.IntValue(C_FL);
+            Height := XML_Node.Properties.IntValue(C_FH);
+            Width := XML_Node.Properties.IntValue(C_FW);
+            f_t := Top;
+            f_l := Left;
+            f_h := Height;
+            f_w := Width;
+            if XML_Node.Properties.BoolValue(C_FM, False) then
+              WindowState := wsMaximized;
             // Определяем не находится ли окно за пределами экрана
             FormSetInWorkArea(Self);
           end;
@@ -269,12 +279,6 @@ end;
 {$ENDREGION}
 {$REGION 'FormDestroy'}
 
-procedure TCLSearchForm.FormDeactivate(Sender: TObject);
-begin
-  // Сбрасываем выделенние
-  CLSearchJvListView.Selected := nil;
-end;
-
 procedure TCLSearchForm.FormDestroy(Sender: TObject);
 var
   JvXML: TJvSimpleXml;
@@ -293,16 +297,28 @@ begin
       if Root <> nil then
       begin
         // Очищаем раздел формы если он есть
-        XML_Node := Root.Items.ItemNamed[C_CLSearchForm];
+        XML_Node := Root.Items.ItemNamed[Self.Name];
         if XML_Node <> nil then
           XML_Node.Clear
         else
-          XML_Node := Root.Items.Add(C_CLSearchForm);
+          XML_Node := Root.Items.Add(Self.Name);
         // Сохраняем позицию окна
-        XML_Node.Properties.Add('t', Top);
-        XML_Node.Properties.Add('l', Left);
-        XML_Node.Properties.Add('h', Height);
-        XML_Node.Properties.Add('w', Width);
+        if WindowState = wsMaximized then
+        begin
+          XML_Node.Properties.Add(C_FM, True);
+          XML_Node.Properties.Add(C_FT, f_t);
+          XML_Node.Properties.Add(C_FL, f_l);
+          XML_Node.Properties.Add(C_FH, f_h);
+          XML_Node.Properties.Add(C_FW, f_w);
+        end
+        else
+        begin
+          XML_Node.Properties.Add(C_FM, False);
+          XML_Node.Properties.Add(C_FT, Top);
+          XML_Node.Properties.Add(C_FL, Left);
+          XML_Node.Properties.Add(C_FH, Height);
+          XML_Node.Properties.Add(C_FW, Width);
+        end;
       end;
       // Записываем сам файл
       SaveToFile(V_ProfilePath + C_SettingsFileName);
