@@ -105,7 +105,7 @@
     <AddContactErr_3 c="First create at least one group."/>
     <AddContactErr_4 c="Error when adding a contact."/>
     <URLOpenErr c="Browser to open the link was not found._r_Link copied to the clipboard."/>
-    <HistoryNotFile c="The history of communications with the contact no."/>
+    <HistoryNotFile c="No messages history"/>
     <GroupContacts c="%d of %d"/>
     <HistoryLoading c="Loading history ..."/>
     <DellYourSelf c="Remove myself from contacts list: %s._r_Are you sure?"/>
@@ -123,7 +123,6 @@
     <DellProfile c="Delete profile: %s._r_Are you sure?"/>
     <LinkCompress c="Shorten the link URL"/>
     <NotInGroups c="Outside groups"/>
-    <DumpProto c="Debugging protocol %s"/>
     <HexToText c="Show%s as %s text"/>
     <SMS_ACK c="SMS message sent."/>
     <GMale c="Male"/>
@@ -168,35 +167,27 @@
     <DellContactErr c="Error when deleting a contact."/>
     <Send c="Send"/>
     <BuildDate c="Build date"/>
+    <HotKeyErr c="Error of registration of combination of the keys &quot;%s&quot;"/>
+    <TranslationErr c="Translation error for &quot;%s&quot;"/>
+    <Donate c="Donate for IMadering project"/>
+    <NewMessages c="New messages: %d"/>
+    <IgGroupCaption c="Ignored"/>
+    <AuthYes c="Authorize"/>
+    <AuthNo c="Decline"/>
+    <X c=""/>
   </Vars>
   <ProfileForm c="Select profile">
     <ProfileLabel c="Local Profile:"/>
     <LangsSpeedButton h="_b_Interface language_d__r_Choose the localization of the program"/>
     <LoginButton c="Sign in profile"/>
     <DellProfileSpeedButton h="_b_Delete profile_d__r_Remove the profile folder from the hard disk"/>
-    <AutoSignCheckBox c="Login automatically"/>
+    <NoShowProfileFormCheckBox c="Login automatically"/>
     <AutoDellProfileCheckBox c="Delete profile when exit"/>
     <OpenProfilesSpeedButton h="_b_Profile folder_d__r_Open the profile folder for remove or copying"/>
   </ProfileForm>
-  <LogForm c="Event log program">
-    <ICQDumpSpeedButton h="_b_Dumps ICQ_d__r_Enable or disable_r_the display of log data protocol"/>
-    <JabberDumpSpeedButton h="_b_Packages Jabber_d__r_Enable or disable_r_the display of log data protocol"/>
-    <MRADumpSpeedButton h="_b_Dumps MRA_d__r_Enable or disable_r_the display of log data protocol"/>
-    <TwitDumpSpeedButton h="_b_Packages Twitter_d__r_Enable or disable_r_the display of log data protocol"/>
-    <WriteLogSpeedButton h="_b_An entry in the log_d__r_Allow or pause the recording of events in the log"/>
-    <SearchSpeedButton h="_b_Search_d__r_Find for text in the log"/>
-    <SaveLogSpeedButton h="_b_Save_d__r_Record data in the log file"/>
-    <ClearLogSpeedButton h="_b_Clean_d__r_Delete all the log"/>
-    <SendEmailSpeedButton h="_b_Send by E-mail_d__r_Send all or selected text to the developers"/>
-    <RosterSpeedButton h="_b_Unload roster_d__r_Save the database of contacts in the file"/>
-    <HTTP_DumpSpeedButton h="_b_Packages HTTP_d__r_Enable or disable_r_the display of log data protocol"/>
-    <CopySelText_Menu c="Copy"/>
-    <CopyAllText_Menu c="Copy all"/>
-  </LogForm>
   <MainForm c="IMadering">
     <CloseProgram_Menu c="Exit IMadering"/>
-    <ShowLog_MenuTray c="Debugging program"/>
-    <Status_MenuTray c="Status"/>
+    <Status_MenuTray c="General status"/>
     <Settings_Menu c="Settings"/>
     <CheckUpdate_Menu c="Check update"/>
     <MainToolButton h="_b_Main menu_d__r_Access to essential items"/>
@@ -225,7 +216,6 @@
     <SendFileUpWapru c="Send files through UpWap.ru"/>
     <CheckStatusContact c="Check status"/>
     <AnketaContact c="Contact details"/>
-    <UniqContactSettingsMenu c="Unique settings"/>
     <HistoryContact c="Message history"/>
     <CopyAccountContact c="Copy account name"/>
     <AddNewContact c="Add contact to list"/>
@@ -234,10 +224,7 @@
     <FloatContactMenu c="Floating contact"/>
     <NextContactMenu c="Additional"/>
     <GrandAuthContact c="Allow contact add me"/>
-    <SendAddContact c="Send You added"/>
     <DelYourSelfContact c="Remove myself from contacts list"/>
-    <SendInviteContact c="Invitation"/>
-    <PingICQServer c="Check connection"/>
     <UnstableICQStatus c="Unstable status"/>
     <MainButtonONMenu c="Button - Main menu"/>
     <OnlyOnlineONMenu c="Button - Hide offline contacts"/>
@@ -256,6 +243,12 @@
     <MraSMSSendMenu c="Send SMS"/>
     <JoinConf_Menu c="Create or Join Groupchat"/>
     <ConfList_Menu c="Browse Chatrooms"/>
+    <MyICQDetails_Menu c="My details"/>
+    <ShowMyICQDetails_Menu c="Show my details"/>
+    <ChangeMyICQDetails_Menu c="Change my details"/>
+    <PluginsToolButton h="_b_Plugins_d__r_The command Menu of the plugins"/>
+    <NewMessPanel h="_b_Not readed messages_d__r_Press to read the message"/>
+    <ReqAuthContact c="Request authorization"/>
   </MainForm>
   <SettingsForm c="Settings">
     <SettingButtonGroup_0 c="General"/>
@@ -273,7 +266,7 @@
     <SettingButtonGroup_12 c="Accounts"/>
     <GeneralOptionGroupBox c="General parameters"/>
     <HideInTrayProgramStartCheckBox c="Run hide in tray"/>
-    <AutoUpdateCheckBox c="Check for new version at startup"/>
+    <AutoUpdateCheckBox c="Check for new version on startup"/>
     <BestPrioritetCheckBox c="Start program with high priority"/>
     <CLWindowGroupBox c="Window"/>
     <AlwaylTopCheckBox c="Always on top"/>
@@ -283,8 +276,20 @@
     <HeadTextGroupBox c="Window title text"/>
     <CLOptionsGroupBox c="Options"/>
     <ChatFormGroupBox c="Settings window messages"/>
-    <EventsGroupBox c="Setting alerts on events in the program"/>
-    <HistoryGroupBox c="History"/>
+    <PopupGroupBox c="Pop-up messages windows"/>
+    <HistoryGroupBox c="Saving options"/>
+    <RecentGroupBox c="Recent messages"/>
+    <HistoryPathGroupBox c="Paths"/>
+    <SaveHistoryCheckBox c="Save messages history"/>
+    <SaveNoCLHistoryCheckBox c="Save messages history for &quot;Not in list&quot; contacts"/>
+    <SaveServiceHistoryCheckBox c="Save service messages"/>
+    <SaveSpamHistoryCheckBox c="Save anti-spam bot messages"/>
+    <SavePluginsHistoryCheckBox c="Save plugins messages"/>
+    <ShowRecentMessCheckBox c="Show recent messages in chat window"/>
+    <NumberRecentMessLabel c="- Number of messages to show"/>
+    <HistoryPathLabel c="History saving path:"/>
+    <HistoryPathSpeedButton h="Change"/>
+    <HistoryArchiveLabel c="- Size to make a new archive of history (Kbytes)"/>
     <StatusesGroupBox c="Status mode"/>
     <AntiSpamGroupBox c="Anti-spam"/>
     <SoundsGroupBox c="Sounds"/>
@@ -314,8 +319,6 @@
     <LangDownButton c="Download more ..."/>
     <TextSmiliesCheckBox c="Use text smilies"/>
     <SoundOnOffCheckBox c="Disable sounds"/>
-    <SoundOffForStatusCheckBox c="Don't play sounds if my status is Occupied or Not Available"/>
-    <SoundAlwaysUniqCheckBox c="Always play unique settings sounds of contacts"/>
     <SoundPathListView_0 c="Events"/>
     <SoundPathListView_1 c="Sound file"/>
     <SoundPathButton c="Change"/>
@@ -324,16 +327,46 @@
     <NoShowProfileFormCheckBox c="Don't show Profile selection on start up"/>
     <ProfilePathLabel c="Profile path:"/>
     <OpenProfileSpeedButton h="_b_Profile folder_d__r_Open the profile folder"/>
-    <NoTaskBarMainButtonCheckBox c="Do not show contacts list window on the taskbar."/>
-    <KeyboardSoundsCheckBox c="Play the key sounds."/>
+    <NoTaskBarMainButtonCheckBox c="Do not show contacts list window on the taskbar"/>
+    <KeyboardSoundsCheckBox c="Play the key sounds"/>
+    <PopupPosLabel c="Popup position:"/>
+    <PopupShowLabel c="Showing:"/>
+    <SecondsLabel c="seconds"/>
+    <PopupRowsLabel c="Amount of rows:"/>
+    <PopupContactsCheckBox c="Showing pop-up messages windows only from my contacts"/>
+    <PopupEventsLabel c="Notify when contacts:"/>
+    <PopupSignOnCheckBox c="Sign on"/>
+    <PopupSignOffCheckBox c="Sign off"/>
+    <PopupTypingCheckBox c="Typing message to me"/>
+    <PopupPosComboBox>
+Upper left corner
+Upper right corner
+Lower left corner
+Lower right corner
+    </PopupPosComboBox>
+    <PopupTestButton c="Test"/>
+    <PluginsListView_0 c="Plugin name"/>
+    <PluginsListView_1 c="Author"/>
+    <PluginsListView_2 c="Description"/>
+    <UnloadPluginButton c="Delete plugin"/>
+    <ReloadPluginsButton c="Reload plugins"/>
+    <EnableHotKeysCheckBox c="Activate global keyboard shortcuts"/>
+    <HotKeysListView_0 c="Action"/>
+    <HotKeysListView_1 c="Shortcut"/>
+    <HotKeySetButton c="Assign"/>
+    <HotKeyDellButton c="Remove"/>
+    <PopupMessEnableCheckBox c="Don&apos;t show pop-up messages"/>
+    <AutoOpenSiteCheckBox c="Open the news of IMadering on startup"/>
   </SettingsForm>
   <Infos>
     <DumpInfoRichEdit c="Warning this feature is designed for very experienced users. Use it only if you know exactly what you are doing. The consequences could be unpredictable."/>
-    <About c="IMadering is a graphical messaging client which is capable of connecting to ICQ, XMPP, Twitter and MRA all at once. It is written using Delphi 2010. Project with open source._r__r_You may modify and redistribute the program under the terms of the GPL (version 2 or later). A copy of the GPL is contained in the file distributed with IMadering. IMadering is copyrighted by its contributors. We provide no warranty for this program."/>
-    <ClientId c="Warning! These settings are for advanced users. If you do not know what it is, please leave everything as is. Change the customer ID may make certain features unavailable or cause unstable operation of the program."/>
+    <AboutRichEdit c="IMadering is a graphical messaging client which is capable of connecting to ICQ, XMPP, Twitter and MRA all at once. It is written using Delphi 2010. Project with open source._r__r_You may modify and redistribute the program under the terms of the GPL (version 2 or later). A copy of the GPL is contained in the file distributed with IMadering. IMadering is copyrighted by its contributors. We provide no warranty for this program."/>
+    <ClientIdInfoRichEdit c="Warning! These settings are for advanced users. If you do not know what it is, please leave everything as is. Change the customer ID may make certain features unavailable or cause unstable operation of the program."/>
     <PassChangeInfoRichEdit c="To change your password, you must enter your current password and new password twice. It is strongly recommended to use the new password a combination of numbers and letters of the alphabet. Your password must be between 6 to 8 characters."/>
-    <Language c="English._r_Author: Eduard Tolmachev._r__r_Don't see your native language? Please visit the IMadering website and look for it there. If you have translated IMadering into your language and would like to share it with other users, feel free to post the translation in our forum http://imadering.mybb.ru_r_Date: 27.01.2010"/>
+    <Language c="English translate_r_Author: Edward Tolmachev_r_Date: 06.01.2011"/>
     <EyeInfoRichEdit c="All-seeing eye feature allows you to see who added you, who tried to read your status message, and all other service packets from all users who are not in your contact list."/>
+    <BugInfoRichEdit c="Sorry, an error occurred in the application._r_Please, send bug report to IMadering team. Thank you."/>
+    <PluginsInfoRichEdit c="IMadering team assumes no responsibility for errors, safety and using downloaded third parties modules. The use of the modules is done at your own discretion and risk and with agreement that you will be solely responsible for any damage to your computer system or loss of data that results from such activities."/>
   </Infos>
   <AboutForm c="About">
     <SiteLabel c="Site program:"/>
@@ -344,16 +377,17 @@
     <CopyRichText c="Copy"/>
   </AboutForm>
   <Devels>
-    <c0 c="Author of the project and lead programmer;Eduard Tolmachev"/>
-    <c1 c="Programming;Francois PIETTE (Ics components)"/>
-    <c2 c="Programming;David Baldwin (HTML components)"/>
-    <c3 c="Programming;Project Jedi (jvcl components)"/>
-    <c4 c="Programming;Igor Pavlov (7-Zip component)"/>
+    <c0 c="Author of the project and lead programmer;Edward Tolmachev"/>
+    <c1 c="Programming;Francois PIETTE - ICS components"/>
+    <c2 c="Programming;David Baldwin - HTML components"/>
+    <c3 c="Programming;Project Jedi - JVCL components"/>
+    <c4 c="Programming;Igor Pavlov - 7-Zip component"/>
     <c5 c="Design;Petr Stepanov"/>
-    <c6 c="Design;Michael Niedermayr (www.greensmilies.com)"/>
-    <c7 c="Testing and Support;Pavel Novikov"/>
-    <c8 c="Special thanks;Margarita Evdokimova"/>
-    <c9 c="IMadering;Thank you all!"/>
+    <c6 c="Design;Michael Niedermayr - GreenSmilies.com"/>
+    <c7 c="Testing and Support;Asechka.ru"/>
+    <c8 c="Testing and Support;Pavel Novikov"/>
+    <c9 c="Special thanks;Margarita Evdokimova"/>
+    <c10 c="IMadering;Thank you all!"/>
   </Devels>
   <TrafficForm c="Counting traffic">
     <TrafGroupBox c="Traffic"/>
@@ -368,8 +402,7 @@
     <CLSearchJvListView_2 c="Protocol"/>
   </CLSearchForm>
   <HistoryForm c="History">
-    <ContactsLabel c="Contact:"/>
-    <ArhiveLabel c="Archive:"/>
+    <ArchivesLabel c="Search scope, archives:"/>
     <SearchTextLabel c="Search text:"/>
     <SearchTextBitBtn c="Find next"/>
     <RegistrCheckBox c="Match case"/>
@@ -381,6 +414,12 @@
     <DeleteHistoryBitBtn c="Delete"/>
     <CopyHistorySelText c="Copy"/>
     <CopyAllHistoryText c="Copy all"/>
+    <TextSearchGroupBox c="Find text in messages history"/>
+    <SearchStatusPanel h="Search status;Not found;Found"/>
+    <ArchivesComboBox h="Current history ..."/>
+    <HButtonGroup_0 c="Anti-spam messages"/>
+    <HButtonGroup_1 c="Service messages"/>
+    <HButtonGroup_2 c="Plugins messages"/>
   </HistoryForm>
   <ContactSearchForm c="Search new contacts">
     <NotPreviousClearCheckBox c="Do not clear the previous results"/>
@@ -423,12 +462,10 @@
   </ContactSearchForm>
   <ChatForm c="Messaging window">
     <ChatFontToolButton h="_b_Font and styles_d__r_Font settings and text colors"/>
-    <UniqToolButton h="_b_Unique settings_d__r_Edit settings for this contact"/>
     <ContactMenuToolButton h="_b_Contact menu_d__r_Managing the current contact"/>
     <ChatSettingsToolButton h="_b_Settings_d__r_View the settings of the chat window"/>
     <EnterKeyToolButton h="_b_Send to Enter_d__r_Enable or disable the sending of a message Enter key_r__r_Otherwise, send messages by pressing Ctrl + Enter key"/>
     <TypingTextToolButton h="_b_Typing notifications_d__r_Enable or disable sending_r_typing text notifications"/>
-    <KeySoundToolButton h="_b_Sound keys_d__r_Enable or disable the voice acting keystrokes"/>
     <SendMessageBitBtn c="Submit"/>
     <SmiliesSpeedButton h="_b_Smilies_d__r_View emoticon selection window"/>
     <QSpeedButton h="_b_Quote_d__r_Insert last message received"/>
@@ -461,6 +498,7 @@
     <SendUpWapRu c="Send files through UpWap.ru"/>
     <ChatHTMLQTextTwitter c="Quote of Twitter (140 characters)"/>
     <SearchInGoogle c="Search in Google"/>
+    <PluginsToolButton h="_b_Plugins_d__r_The command Menu of the plugins"/>
   </ChatForm>
   <FileTransferForm c="File Transfer">
     <FileNameLabel c="Current file:"/>
@@ -478,61 +516,62 @@
     <GtransListView_3 c="Protocol"/>
     <GtansReset c="Reset and Rerun"/>
     <GTClearList c="Delete messages"/>
+    <TranslitCheckBox c="Show translit"/>
+    <YourLangComboBox>
+[af] Afrikaans
+[sq] Albanian
+[ar] Arabic
+[be] Belarusian
+[bg] Bulgarian
+[ca] Catalan
+[zh-CN] Chinese (Simplified)
+[zh-TW] Chinese (Traditional)
+[hr] Croatian
+[cs] Czech
+[da] Danish
+[nl] Dutch
+[en] English
+[et] Estonian
+[tl] Filipino
+[fi] Finnish
+[fr] French
+[gl] Galician
+[de] German
+[el] Greek
+[iw] Hebrew
+[hi] Hindi
+[hu] Hungarian
+[is] Icelandic
+[id] Indonesian
+[ga] Irish
+[it] Italian
+[ja] Japanese
+[ko] Korean
+[lv] Latvian
+[lt] Lithuanian
+[mk] Macedonian
+[ms] Malay
+[mt] Maltese
+[no] Norwegian
+[fa] Persian
+[pl] Polish
+[pt] Portuguese
+[ro] Romanian
+[ru] Russian
+[sr] Serbian
+[sk] Slovak
+[sl] Slovenian
+[es] Spanish
+[sw] Swahili
+[sv] Swedish
+[th] Thai
+[tr] Turkish
+[uk] Ukrainian
+[vi] Vietnamese
+[cy] Welsh
+[yi] Yiddish
+    </YourLangComboBox>
   </GTransForm>
-  <GTranslateCode>
-    <c1 c="[af] Afrikaans"/>
-    <c2 c="[sq] Albanian"/>
-    <c3 c="[ar] Arabic"/>
-    <c4 c="[be] Belarusian"/>
-    <c5 c="[bg] Bulgarian"/>
-    <c6 c="[ca] Catalan"/>
-    <c7 c="[zh-CN] Chinese (Simplified)"/>
-    <c8 c="[zh-TW] Chinese (Traditional)"/>
-    <c9 c="[hr] Croatian"/>
-    <c10 c="[cs] Czech"/>
-    <c11 c="[da] Danish"/>
-    <c12 c="[nl] Dutch"/>
-    <c13 c="[en] English"/>
-    <c14 c="[et] Estonian"/>
-    <c15 c="[tl] Filipino"/>
-    <c16 c="[fi] Finnish"/>
-    <c17 c="[fr] French"/>
-    <c18 c="[gl] Galician"/>
-    <c19 c="[de] German"/>
-    <c20 c="[el] Greek"/>
-    <c21 c="[iw] Hebrew"/>
-    <c22 c="[hi] Hindi"/>
-    <c23 c="[hu] Hungarian"/>
-    <c24 c="[is] Icelandic"/>
-    <c25 c="[id] Indonesian"/>
-    <c26 c="[ga] Irish"/>
-    <c27 c="[it] Italian"/>
-    <c28 c="[ja] Japanese"/>
-    <c29 c="[ko] Korean"/>
-    <c30 c="[lv] Latvian"/>
-    <c31 c="[lt] Lithuanian"/>
-    <c32 c="[mk] Macedonian"/>
-    <c33 c="[ms] Malay"/>
-    <c34 c="[mt] Maltese"/>
-    <c35 c="[no] Norwegian"/>
-    <c36 c="[fa] Persian"/>
-    <c37 c="[pl] Polish"/>
-    <c38 c="[pt] Portuguese"/>
-    <c39 c="[ro] Romanian"/>
-    <c40 c="[ru] Russian"/>
-    <c41 c="[sr] Serbian"/>
-    <c42 c="[sk] Slovak"/>
-    <c43 c="[sl] Slovenian"/>
-    <c44 c="[es] Spanish"/>
-    <c45 c="[sw] Swahili"/>
-    <c46 c="[sv] Swedish"/>
-    <c47 c="[th] Thai"/>
-    <c48 c="[tr] Turkish"/>
-    <c49 c="[uk] Ukrainian"/>
-    <c50 c="[vi] Vietnamese"/>
-    <c51 c="[cy] Welsh"/>
-    <c52 c="[yi] Yiddish"/>
-  </GTranslateCode>
   <AddContactForm c="Add contact">
     <AccountLabel c="Account:"/>
     <NameLabel c="Contact name:"/>
@@ -545,7 +584,7 @@
     <ICQOptionButtonGroup_2 c="Privacy"/>
     <ICQOptionButtonGroup_3 c="Client ID"/>
     <ICQOptionButtonGroup_4 c="All-seeing Eye"/>
-    <ICQOptionButtonGroup_5 c="My profile"/>
+    <ICQOptionButtonGroup_5 c="My details"/>
     <ICQOptionButtonGroup_6 c="Home"/>
     <ICQOptionButtonGroup_7 c="Work"/>
     <ICQOptionButtonGroup_8 c="Personal"/>
@@ -636,501 +675,501 @@
     <EyeListView_0 c="Account"/>
     <EyeListView_1 c="Event time"/>
     <ChangePassLabel c="Change password"/>
+    <CountryInfoComboBox>
+---
+[93] Afghanistan
+[355] Albania
+[213] Algeria
+[684] American Samoa
+[376] Andorra
+[244] Angola
+[101] Anguilla
+[102] Antigua
+[1021] Antigua and Barbuda
+[5902] Antilles
+[54] Argentina
+[374] Armenia
+[297] Aruba
+[247] Ascension Island
+[61] Australia
+[43] Austria
+[994] Azerbaijan
+[103] Bahamas
+[973] Bahrain
+[880] Bangladesh
+[104] Barbados
+[120] Barbuda
+[375] Belarus
+[32] Belgium
+[501] Belize
+[229] Benin
+[105] Bermuda
+[975] Bhutan
+[591] Bolivia
+[387] Bosnia and Herzegovina
+[267] Botswana
+[55] Brazil
+[106] British Virgin Islands
+[673] Brunei
+[359] Bulgaria
+[226] Burkina Faso
+[257] Burundi
+[855] Cambodia
+[237] Cameroon
+[107] Canada
+[178] Canary Islands
+[238] Cape Verde Islands
+[108] Cayman Islands
+[236] Central African Rep.
+[235] Chad
+[56] Chile, Rep.
+[86] China
+[672] Christmas Island
+[6101] Cocos-Keeling Islands
+[57] Colombia
+[2691] Comoros
+[243] Congo, Democratic Rep.
+[242] Congo, Rep.
+[682] Cook Islands
+[506] Costa Rica
+[225] Cote Ivoire (Ivory Coast)
+[385] Croatia
+[53] Cuba
+[357] Cyprus
+[42] Czech Rep.
+[45] Denmark
+[246] Diego Garcia
+[253] Djibouti
+[109] Dominica
+[110] Dominican Rep.
+[593] Ecuador
+[20] Egypt
+[503] El Salvador
+[240] Equatorial Guinea
+[291] Eritrea
+[372] Estonia
+[251] Ethiopia
+[298] Faeroe Islands
+[500] Falkland Islands
+[679] Fiji
+[358] Finland
+[33] France
+[5901] French Antilles
+[594] French Guiana
+[689] French Polynesia
+[241] Gabon
+[220] Gambia
+[995] Georgia
+[49] Germany
+[233] Ghana
+[350] Gibraltar
+[30] Greece
+[299] Greenland
+[111] Grenada
+[590] Guadeloupe
+[671] Guam, US Territory
+[502] Guatemala
+[224] Guinea
+[245] Guinea-Bissau
+[592] Guyana
+[509] Haiti
+[504] Honduras
+[852] Hong Kong
+[36] Hungary
+[354] Iceland
+[91] India
+[62] Indonesia
+[98] Iran, Islamic Rep.
+[964] Iraq
+[353] Ireland
+[972] Israel
+[39] Italy
+[112] Jamaica
+[81] Japan
+[962] Jordan
+[705] Kazakhstan
+[6102] Keeling Islands
+[254] Kenya
+[686] Kiribati
+[850] Korea, North
+[82] Korea, South
+[965] Kuwait
+[706] Kyrgyzstan
+[856] Laos
+[371] Latvia
+[961] Lebanon
+[266] Lesotho
+[231] Liberia
+[218] Libyan Arab Jamahiriya
+[4101] Liechtenstein
+[370] Lithuania
+[352] Luxembourg
+[853] Macao
+[389] Macedonia
+[261] Madagascar
+[265] Malawi
+[60] Malaysia
+[960] Maldives
+[223] Mali
+[356] Malta
+[692] Marshall Islands
+[596] Martinique
+[222] Mauritania
+[230] Mauritius
+[269] Mayotte Island
+[52] Mexico
+[691] Micronesia, Federated States
+[373] Moldova, Rep.
+[377] Monaco
+[976] Mongolia
+[382] Montenegro
+[113] Montserrat
+[212] Morocco
+[258] Mozambique
+[95] Myanmar
+[264] Namibia
+[674] Nauru
+[977] Nepal
+[31] Netherlands
+[599] Netherlands Antilles
+[114] Nevis
+[687] New Caledonia
+[64] New Zealand
+[505] Nicaragua
+[227] Niger
+[234] Nigeria
+[683] Niue
+[6722] Norfolk Island
+[47] Norway
+[968] Oman
+[9999] Other
+[92] Pakistan
+[680] Palau
+[507] Panama
+[675] Papua New Guinea
+[595] Paraguay
+[51] Peru
+[63] Philippines
+[48] Poland
+[351] Portugal
+[121] Puerto Rico
+[974] Qatar
+[262] Reunion Island
+[40] Romania
+[6701] Rota Island
+[7] Russia
+[250] Rwanda
+[122] Saint Lucia
+[670] Saipan Island
+[378] San Marino
+[239] Sao Tome and Principe
+[966] Saudi Arabia
+[442] Scotland
+[221] Senegal
+[381] Serbia
+[248] Seychelles
+[232] Sierra Leone
+[65] Singapore
+[4201] Slovakia
+[386] Slovenia
+[677] Solomon Islands
+[252] Somalia
+[27] South Africa
+[34] Spain
+[94] Sri Lanka
+[290] St. Helena
+[115] St. Kitts
+[1141] St. Kitts and Nevis
+[508] St. Pierre and Miquelon
+[116] St. Vincent and the Grenadines
+[249] Sudan
+[597] Suriname
+[268] Swaziland
+[46] Sweden
+[41] Switzerland
+[963] Syrian Arab Rep.
+[886] Taiwan
+[708] Tajikistan
+[255] Tanzania
+[66] Thailand
+[6702] Tinian Island
+[228] Togo
+[690] Tokelau
+[676] Tonga
+[117] Trinidad and Tobago
+[216] Tunisia
+[90] Turkey
+[709] Turkmenistan
+[118] Turks and Caicos Islands
+[688] Tuvalu
+[256] Uganda
+[380] Ukraine
+[971] United Arab Emirates
+[44] United Kingdom
+[598] Uruguay
+[1] USA
+[711] Uzbekistan
+[678] Vanuatu
+[379] Vatican City
+[58] Venezuela
+[84] Viet Nam
+[123] Virgin Islands (USA)
+[441] Wales
+[681] Wallis and Futuna Islands
+[685] Western Samoa
+[967] Yemen
+[3811] Yugoslavia
+[260] Zambia
+[263] Zimbabwe
+    </CountryInfoComboBox>
+    <CompanyProfInfoComboBox>
+---
+[2] Agriculture
+[3] Arts
+[4] Construction
+[5] Consumer Goods
+[6] Corporate Services
+[7] Education
+[8] Finance
+[9] Government
+[10] High Tech
+[11] Legal
+[12] Manufacturing
+[13] Media
+[14] Medical and Health Care
+[15] Non-Profit Organization Management
+[16] Travel and Entertainment
+[17] Service Industry
+[18] Transportation
+[19] Other
+    </CompanyProfInfoComboBox>
+    <PersonalMaritalInfoComboBox>
+---
+[10] Single
+[11] Long term relationship
+[12] Engaged
+[20] Married
+[30] Divorced
+[31] Separated
+[40] Widowed
+[50] Open relationship
+[255] Other
+    </PersonalMaritalInfoComboBox>
+    <PersonalChildrenInfoComboBox>
+---
+[1] 1 children
+[2] 2 childrens
+[3] 3 childrens
+[4] 4 childrens
+[5] 5 childrens
+[6] 6 childrens
+[7] 7 childrens
+[8] 8 childrens
+[9] More than 8
+[255] No childrens
+    </PersonalChildrenInfoComboBox>
+    <PersonalReligionInfoComboBox>
+---
+[2] Agnostic
+[3] Atheist
+[4] Baha'i
+[5] Buddhist
+[6] Christian
+[7] Hindu
+[8] Jain
+[9] Jewish
+[11] Mormon
+[10] Muslim
+[12] Neo-paganist
+[19] Other
+[13] Rastafarian
+[14] Shinto
+[15] Sikh
+[16] Spiritual but not religious
+[17] Unitarian
+[18] Zoroastrian
+    </PersonalReligionInfoComboBox>
+    <PersonalHeightInfoComboBox>
+---
+[140] 140 cm
+[145] 141 - 145 cm
+[150] 146 - 150 cm
+[155] 151 - 155 cm
+[160] 156 - 160 cm
+[165] 161 - 165 cm
+[170] 166 - 170 cm
+[175] 171 - 175 cm
+[180] 176 - 180 cm
+[185] 181 - 185 cm
+[190] 186 - 190 cm
+[195] 191 - 195 cm
+[200] 196 - 200 cm
+[205] 201 - 205 cm
+[210] 206 - 210 cm
+[220] 220 cm
+    </PersonalHeightInfoComboBox>
+    <PersonalSmokInfoComboBox>
+---
+[1] No
+[2] Sometimes
+[3] Yes
+[4] Quitting
+[5] Social Smoker
+[128] Other
+    </PersonalSmokInfoComboBox>
+    <PersonalHairColourInfoComboBox>
+---
+[2] Auburn
+[3] Black
+[4] Blonde
+[5] Light Brown
+[6] Dark Brown
+[7] Red
+[8] Gray
+[9] White
+[10] Bald
+[11] Changes often
+[12] Other
+    </PersonalHairColourInfoComboBox>
+    <PersonalSexInfoComboBox>
+---
+[2] Straight
+[3] Gay
+[5] Lesbian
+[4] Bi-sexual
+[10] Other
+    </PersonalSexInfoComboBox>
+    <Interest1InfoComboBox>
+---
+[137] 50's
+[134] 60's
+[135] 70's
+[136] 80's
+[100] Art
+[128] Astronomy
+[147] Audio and visual
+[125] Business and Economy
+[146] Business services
+[101] Cars
+[102] Celebrity Fans
+[130] Clothing
+[103] Collections
+[104] Computers
+[140] Consumer electronics
+[105] Culture and Literature
+[139] Entertainment
+[138] Finance and corporate
+[106] Fitness
+[107] Games
+[124] Government
+[142] Health and beauty
+[108] Hobbies
+[150] Home automation
+[144] Household products
+[109] ICQ - Providing Help
+[110] Internet
+[111] Lifestyle
+[145] Mail order catalog
+[143] Media
+[112] Movies and TV
+[113] Music
+[126] Mystics
+[122] Nature and Environment
+[123] News and Media
+[114] Outdoor Activities
+[115] Parenting
+[131] Parties
+[116] Pets and Animals
+[149] Publishing
+[117] Religion
+[141] Retail stores
+[118] Science and Technology
+[119] Skills
+[133] Social science
+[129] Space
+[148] Sporting and athletic
+[120] Sports
+[127] Travel
+[121] Web Design
+[132] Women
+    </Interest1InfoComboBox>
+    <Lang1InfoComboBox>
+---
+[55] Afrikaans
+[58] Albanian
+[1] Arabic
+[59] Armenian
+[68] Azerbaijani
+[72] Belorussian
+[2] Bhojpuri
+[56] Bosnian
+[3] Bulgarian
+[4] Burmese
+[5] Cantonese
+[6] Catalan
+[61] Chamorro
+[7] Chinese
+[8] Croatian
+[9] Czech
+[10] Danish
+[11] Dutch
+[12] English
+[13] Esperanto
+[14] Estonian
+[15] Farci
+[16] Finnish
+[17] French
+[18] Gaelic
+[19] German
+[20] Greek
+[70] Gujarati
+[21] Hebrew
+[22] Hindi
+[23] Hungarian
+[24] Icelandic
+[25] Indonesian
+[26] Italian
+[27] Japanese
+[28] Khmer
+[29] Korean
+[69] Kurdish
+[30] Lao
+[31] Latvian
+[32] Lithuanian
+[65] Macedonian
+[33] Malay
+[63] Mandarin
+[62] Mongolian
+[34] Norwegian
+[57] Persian
+[35] Polish
+[36] Portuguese
+[60] Punjabi
+[37] Romanian
+[38] Russian
+[39] Serbo-Croatian
+[66] Sindhi
+[40] Slovak
+[41] Slovenian
+[42] Somali
+[43] Spanish
+[44] Swahili
+[45] Swedish
+[46] Tagalog
+[64] Taiwanese
+[71] Tamil
+[47] Tatar
+[48] Thai
+[49] Turkish
+[50] Ukrainian
+[255] Unknown
+[51] Urdu
+[52] Vietnamese
+[67] Welsh
+[53] Yiddish
+[54] Yoruba
+    </Lang1InfoComboBox>
   </IcqOptionsForm>
-  <icq_countries>
-    <c1 c=""/>
-    <c2 c="[93] Afghanistan"/>
-    <c3 c="[355] Albania"/>
-    <c4 c="[213] Algeria"/>
-    <c5 c="[684] American Samoa"/>
-    <c6 c="[376] Andorra"/>
-    <c7 c="[244] Angola"/>
-    <c8 c="[101] Anguilla"/>
-    <c9 c="[102] Antigua"/>
-    <c10 c="[1021] Antigua and Barbuda"/>
-    <c11 c="[5902] Antilles"/>
-    <c12 c="[54] Argentina"/>
-    <c13 c="[374] Armenia"/>
-    <c14 c="[297] Aruba"/>
-    <c15 c="[247] Ascension Island"/>
-    <c16 c="[61] Australia"/>
-    <c17 c="[43] Austria"/>
-    <c18 c="[994] Azerbaijan"/>
-    <c19 c="[103] Bahamas"/>
-    <c20 c="[973] Bahrain"/>
-    <c21 c="[880] Bangladesh"/>
-    <c22 c="[104] Barbados"/>
-    <c23 c="[120] Barbuda"/>
-    <c24 c="[375] Belarus"/>
-    <c25 c="[32] Belgium"/>
-    <c26 c="[501] Belize"/>
-    <c27 c="[229] Benin"/>
-    <c28 c="[105] Bermuda"/>
-    <c29 c="[975] Bhutan"/>
-    <c30 c="[591] Bolivia"/>
-    <c31 c="[387] Bosnia and Herzegovina"/>
-    <c32 c="[267] Botswana"/>
-    <c33 c="[55] Brazil"/>
-    <c34 c="[106] British Virgin Islands"/>
-    <c35 c="[673] Brunei"/>
-    <c36 c="[359] Bulgaria"/>
-    <c37 c="[226] Burkina Faso"/>
-    <c38 c="[257] Burundi"/>
-    <c39 c="[855] Cambodia"/>
-    <c40 c="[237] Cameroon"/>
-    <c41 c="[107] Canada"/>
-    <c42 c="[178] Canary Islands"/>
-    <c43 c="[238] Cape Verde Islands"/>
-    <c44 c="[108] Cayman Islands"/>
-    <c45 c="[236] Central African Rep."/>
-    <c46 c="[235] Chad"/>
-    <c47 c="[56] Chile, Rep."/>
-    <c48 c="[86] China"/>
-    <c49 c="[672] Christmas Island"/>
-    <c50 c="[6101] Cocos-Keeling Islands"/>
-    <c51 c="[57] Colombia"/>
-    <c52 c="[2691] Comoros"/>
-    <c53 c="[243] Congo, Democratic Rep."/>
-    <c54 c="[242] Congo, Rep."/>
-    <c55 c="[682] Cook Islands"/>
-    <c56 c="[506] Costa Rica"/>
-    <c57 c="[225] Cote Ivoire (Ivory Coast)"/>
-    <c58 c="[385] Croatia"/>
-    <c59 c="[53] Cuba"/>
-    <c60 c="[357] Cyprus"/>
-    <c61 c="[42] Czech Rep."/>
-    <c62 c="[45] Denmark"/>
-    <c63 c="[246] Diego Garcia"/>
-    <c64 c="[253] Djibouti"/>
-    <c65 c="[109] Dominica"/>
-    <c66 c="[110] Dominican Rep."/>
-    <c67 c="[593] Ecuador"/>
-    <c68 c="[20] Egypt"/>
-    <c69 c="[503] El Salvador"/>
-    <c70 c="[240] Equatorial Guinea"/>
-    <c71 c="[291] Eritrea"/>
-    <c72 c="[372] Estonia"/>
-    <c73 c="[251] Ethiopia"/>
-    <c74 c="[298] Faeroe Islands"/>
-    <c75 c="[500] Falkland Islands"/>
-    <c76 c="[679] Fiji"/>
-    <c77 c="[358] Finland"/>
-    <c78 c="[33] France"/>
-    <c79 c="[5901] French Antilles"/>
-    <c80 c="[594] French Guiana"/>
-    <c81 c="[689] French Polynesia"/>
-    <c82 c="[241] Gabon"/>
-    <c83 c="[220] Gambia"/>
-    <c84 c="[995] Georgia"/>
-    <c85 c="[49] Germany"/>
-    <c86 c="[233] Ghana"/>
-    <c87 c="[350] Gibraltar"/>
-    <c88 c="[30] Greece"/>
-    <c89 c="[299] Greenland"/>
-    <c90 c="[111] Grenada"/>
-    <c91 c="[590] Guadeloupe"/>
-    <c92 c="[671] Guam, US Territory"/>
-    <c93 c="[502] Guatemala"/>
-    <c94 c="[224] Guinea"/>
-    <c95 c="[245] Guinea-Bissau"/>
-    <c96 c="[592] Guyana"/>
-    <c97 c="[509] Haiti"/>
-    <c98 c="[504] Honduras"/>
-    <c99 c="[852] Hong Kong"/>
-    <c100 c="[36] Hungary"/>
-    <c101 c="[354] Iceland"/>
-    <c102 c="[91] India"/>
-    <c103 c="[62] Indonesia"/>
-    <c104 c="[98] Iran, Islamic Rep."/>
-    <c105 c="[964] Iraq"/>
-    <c106 c="[353] Ireland"/>
-    <c107 c="[972] Israel"/>
-    <c108 c="[39] Italy"/>
-    <c109 c="[112] Jamaica"/>
-    <c110 c="[81] Japan"/>
-    <c111 c="[962] Jordan"/>
-    <c112 c="[705] Kazakhstan"/>
-    <c113 c="[6102] Keeling Islands"/>
-    <c114 c="[254] Kenya"/>
-    <c115 c="[686] Kiribati"/>
-    <c116 c="[850] Korea, North"/>
-    <c117 c="[82] Korea, South"/>
-    <c118 c="[965] Kuwait"/>
-    <c119 c="[706] Kyrgyzstan"/>
-    <c120 c="[856] Laos"/>
-    <c121 c="[371] Latvia"/>
-    <c122 c="[961] Lebanon"/>
-    <c123 c="[266] Lesotho"/>
-    <c124 c="[231] Liberia"/>
-    <c125 c="[218] Libyan Arab Jamahiriya"/>
-    <c126 c="[4101] Liechtenstein"/>
-    <c127 c="[370] Lithuania"/>
-    <c128 c="[352] Luxembourg"/>
-    <c129 c="[853] Macao"/>
-    <c130 c="[389] Macedonia"/>
-    <c131 c="[261] Madagascar"/>
-    <c132 c="[265] Malawi"/>
-    <c133 c="[60] Malaysia"/>
-    <c134 c="[960] Maldives"/>
-    <c135 c="[223] Mali"/>
-    <c136 c="[356] Malta"/>
-    <c137 c="[692] Marshall Islands"/>
-    <c138 c="[596] Martinique"/>
-    <c139 c="[222] Mauritania"/>
-    <c140 c="[230] Mauritius"/>
-    <c141 c="[269] Mayotte Island"/>
-    <c142 c="[52] Mexico"/>
-    <c143 c="[691] Micronesia, Federated States"/>
-    <c144 c="[373] Moldova, Rep."/>
-    <c145 c="[377] Monaco"/>
-    <c146 c="[976] Mongolia"/>
-    <c147 c="[382] Montenegro"/>
-    <c148 c="[113] Montserrat"/>
-    <c149 c="[212] Morocco"/>
-    <c150 c="[258] Mozambique"/>
-    <c151 c="[95] Myanmar"/>
-    <c152 c="[264] Namibia"/>
-    <c153 c="[674] Nauru"/>
-    <c154 c="[977] Nepal"/>
-    <c155 c="[31] Netherlands"/>
-    <c156 c="[599] Netherlands Antilles"/>
-    <c157 c="[114] Nevis"/>
-    <c158 c="[687] New Caledonia"/>
-    <c159 c="[64] New Zealand"/>
-    <c160 c="[505] Nicaragua"/>
-    <c161 c="[227] Niger"/>
-    <c162 c="[234] Nigeria"/>
-    <c163 c="[683] Niue"/>
-    <c164 c="[6722] Norfolk Island"/>
-    <c165 c="[47] Norway"/>
-    <c166 c="[968] Oman"/>
-    <c167 c="[9999] Other"/>
-    <c168 c="[92] Pakistan"/>
-    <c169 c="[680] Palau"/>
-    <c170 c="[507] Panama"/>
-    <c171 c="[675] Papua New Guinea"/>
-    <c172 c="[595] Paraguay"/>
-    <c173 c="[51] Peru"/>
-    <c174 c="[63] Philippines"/>
-    <c175 c="[48] Poland"/>
-    <c176 c="[351] Portugal"/>
-    <c177 c="[121] Puerto Rico"/>
-    <c178 c="[974] Qatar"/>
-    <c179 c="[262] Reunion Island"/>
-    <c180 c="[40] Romania"/>
-    <c181 c="[6701] Rota Island"/>
-    <c182 c="[7] Russia"/>
-    <c183 c="[250] Rwanda"/>
-    <c184 c="[122] Saint Lucia"/>
-    <c185 c="[670] Saipan Island"/>
-    <c186 c="[378] San Marino"/>
-    <c187 c="[239] Sao Tome and Principe"/>
-    <c188 c="[966] Saudi Arabia"/>
-    <c189 c="[442] Scotland"/>
-    <c190 c="[221] Senegal"/>
-    <c191 c="[381] Serbia"/>
-    <c192 c="[248] Seychelles"/>
-    <c193 c="[232] Sierra Leone"/>
-    <c194 c="[65] Singapore"/>
-    <c195 c="[4201] Slovakia"/>
-    <c196 c="[386] Slovenia"/>
-    <c197 c="[677] Solomon Islands"/>
-    <c198 c="[252] Somalia"/>
-    <c199 c="[27] South Africa"/>
-    <c200 c="[34] Spain"/>
-    <c201 c="[94] Sri Lanka"/>
-    <c202 c="[290] St. Helena"/>
-    <c203 c="[115] St. Kitts"/>
-    <c204 c="[1141] St. Kitts and Nevis"/>
-    <c205 c="[508] St. Pierre and Miquelon"/>
-    <c206 c="[116] St. Vincent and the Grenadines"/>
-    <c207 c="[249] Sudan"/>
-    <c208 c="[597] Suriname"/>
-    <c209 c="[268] Swaziland"/>
-    <c210 c="[46] Sweden"/>
-    <c211 c="[41] Switzerland"/>
-    <c212 c="[963] Syrian Arab Rep."/>
-    <c213 c="[886] Taiwan"/>
-    <c214 c="[708] Tajikistan"/>
-    <c215 c="[255] Tanzania"/>
-    <c216 c="[66] Thailand"/>
-    <c217 c="[6702] Tinian Island"/>
-    <c218 c="[228] Togo"/>
-    <c219 c="[690] Tokelau"/>
-    <c220 c="[676] Tonga"/>
-    <c221 c="[117] Trinidad and Tobago"/>
-    <c222 c="[216] Tunisia"/>
-    <c223 c="[90] Turkey"/>
-    <c224 c="[709] Turkmenistan"/>
-    <c225 c="[118] Turks and Caicos Islands"/>
-    <c226 c="[688] Tuvalu"/>
-    <c227 c="[256] Uganda"/>
-    <c228 c="[380] Ukraine"/>
-    <c229 c="[971] United Arab Emirates"/>
-    <c230 c="[44] United Kingdom"/>
-    <c231 c="[598] Uruguay"/>
-    <c232 c="[1] USA"/>
-    <c233 c="[711] Uzbekistan"/>
-    <c234 c="[678] Vanuatu"/>
-    <c235 c="[379] Vatican City"/>
-    <c236 c="[58] Venezuela"/>
-    <c237 c="[84] Viet Nam"/>
-    <c238 c="[123] Virgin Islands (USA)"/>
-    <c239 c="[441] Wales"/>
-    <c240 c="[681] Wallis and Futuna Islands"/>
-    <c241 c="[685] Western Samoa"/>
-    <c242 c="[967] Yemen"/>
-    <c243 c="[3811] Yugoslavia"/>
-    <c244 c="[260] Zambia"/>
-    <c245 c="[263] Zimbabwe"/>
-  </icq_countries>
-  <icq_languages>
-    <c1 c=""/>
-    <c2 c="[55] Afrikaans"/>
-    <c3 c="[58] Albanian"/>
-    <c4 c="[1] Arabic"/>
-    <c5 c="[59] Armenian"/>
-    <c6 c="[68] Azerbaijani"/>
-    <c7 c="[72] Belorussian"/>
-    <c8 c="[2] Bhojpuri"/>
-    <c9 c="[56] Bosnian"/>
-    <c10 c="[3] Bulgarian"/>
-    <c11 c="[4] Burmese"/>
-    <c12 c="[5] Cantonese"/>
-    <c13 c="[6] Catalan"/>
-    <c14 c="[61] Chamorro"/>
-    <c15 c="[7] Chinese"/>
-    <c16 c="[8] Croatian"/>
-    <c17 c="[9] Czech"/>
-    <c18 c="[10] Danish"/>
-    <c19 c="[11] Dutch"/>
-    <c20 c="[12] English"/>
-    <c21 c="[13] Esperanto"/>
-    <c22 c="[14] Estonian"/>
-    <c23 c="[15] Farci"/>
-    <c24 c="[16] Finnish"/>
-    <c25 c="[17] French"/>
-    <c26 c="[18] Gaelic"/>
-    <c27 c="[19] German"/>
-    <c28 c="[20] Greek"/>
-    <c29 c="[70] Gujarati"/>
-    <c30 c="[21] Hebrew"/>
-    <c31 c="[22] Hindi"/>
-    <c32 c="[23] Hungarian"/>
-    <c33 c="[24] Icelandic"/>
-    <c34 c="[25] Indonesian"/>
-    <c35 c="[26] Italian"/>
-    <c36 c="[27] Japanese"/>
-    <c37 c="[28] Khmer"/>
-    <c38 c="[29] Korean"/>
-    <c39 c="[69] Kurdish"/>
-    <c40 c="[30] Lao"/>
-    <c41 c="[31] Latvian"/>
-    <c42 c="[32] Lithuanian"/>
-    <c43 c="[65] Macedonian"/>
-    <c44 c="[33] Malay"/>
-    <c45 c="[63] Mandarin"/>
-    <c46 c="[62] Mongolian"/>
-    <c47 c="[34] Norwegian"/>
-    <c48 c="[57] Persian"/>
-    <c49 c="[35] Polish"/>
-    <c50 c="[36] Portuguese"/>
-    <c51 c="[60] Punjabi"/>
-    <c52 c="[37] Romanian"/>
-    <c53 c="[38] Russian"/>
-    <c54 c="[39] Serbo-Croatian"/>
-    <c55 c="[66] Sindhi"/>
-    <c56 c="[40] Slovak"/>
-    <c57 c="[41] Slovenian"/>
-    <c58 c="[42] Somali"/>
-    <c59 c="[43] Spanish"/>
-    <c60 c="[44] Swahili"/>
-    <c61 c="[45] Swedish"/>
-    <c62 c="[46] Tagalog"/>
-    <c63 c="[64] Taiwanese"/>
-    <c64 c="[71] Tamil"/>
-    <c65 c="[47] Tatar"/>
-    <c66 c="[48] Thai"/>
-    <c67 c="[49] Turkish"/>
-    <c68 c="[50] Ukrainian"/>
-    <c69 c="[255] Unknown"/>
-    <c70 c="[51] Urdu"/>
-    <c71 c="[52] Vietnamese"/>
-    <c72 c="[67] Welsh"/>
-    <c73 c="[53] Yiddish"/>
-    <c74 c="[54] Yoruba"/>
-  </icq_languages>
-  <icq_interests>
-    <c1 c=""/>
-    <c2 c="[137] 50's"/>
-    <c3 c="[134] 60's"/>
-    <c4 c="[135] 70's"/>
-    <c5 c="[136] 80's"/>
-    <c6 c="[100] Art"/>
-    <c7 c="[128] Astronomy"/>
-    <c8 c="[147] Audio and visual"/>
-    <c9 c="[125] Business and Economy"/>
-    <c10 c="[146] Business services"/>
-    <c11 c="[101] Cars"/>
-    <c12 c="[102] Celebrity Fans"/>
-    <c13 c="[130] Clothing"/>
-    <c14 c="[103] Collections"/>
-    <c15 c="[104] Computers"/>
-    <c16 c="[140] Consumer electronics"/>
-    <c17 c="[105] Culture and Literature"/>
-    <c18 c="[139] Entertainment"/>
-    <c19 c="[138] Finance and corporate"/>
-    <c20 c="[106] Fitness"/>
-    <c21 c="[107] Games"/>
-    <c22 c="[124] Government"/>
-    <c23 c="[142] Health and beauty"/>
-    <c24 c="[108] Hobbies"/>
-    <c25 c="[150] Home automation"/>
-    <c26 c="[144] Household products"/>
-    <c27 c="[109] ICQ - Providing Help"/>
-    <c28 c="[110] Internet"/>
-    <c29 c="[111] Lifestyle"/>
-    <c30 c="[145] Mail order catalog"/>
-    <c31 c="[143] Media"/>
-    <c32 c="[112] Movies and TV"/>
-    <c33 c="[113] Music"/>
-    <c34 c="[126] Mystics"/>
-    <c35 c="[122] Nature and Environment"/>
-    <c36 c="[123] News and Media"/>
-    <c37 c="[114] Outdoor Activities"/>
-    <c38 c="[115] Parenting"/>
-    <c39 c="[131] Parties"/>
-    <c40 c="[116] Pets and Animals"/>
-    <c41 c="[149] Publishing"/>
-    <c42 c="[117] Religion"/>
-    <c43 c="[141] Retail stores"/>
-    <c44 c="[118] Science and Technology"/>
-    <c45 c="[119] Skills"/>
-    <c46 c="[133] Social science"/>
-    <c47 c="[129] Space"/>
-    <c48 c="[148] Sporting and athletic"/>
-    <c49 c="[120] Sports"/>
-    <c50 c="[127] Travel"/>
-    <c51 c="[121] Web Design"/>
-    <c52 c="[132] Women"/>
-  </icq_interests>
-  <icq_occupation>
-    <c1 c=""/>
-    <c2 c="[2] Agriculture"/>
-    <c3 c="[3] Arts"/>
-    <c4 c="[4] Construction"/>
-    <c5 c="[5] Consumer Goods"/>
-    <c6 c="[6] Corporate Services"/>
-    <c7 c="[7] Education"/>
-    <c8 c="[8] Finance"/>
-    <c9 c="[9] Government"/>
-    <c10 c="[10] High Tech"/>
-    <c11 c="[11] Legal"/>
-    <c12 c="[12] Manufacturing"/>
-    <c13 c="[13] Media"/>
-    <c14 c="[14] Medical and Health Care"/>
-    <c15 c="[15] Non-Profit Organization Management"/>
-    <c16 c="[16] Travel and Entertainment"/>
-    <c17 c="[17] Service Industry"/>
-    <c18 c="[18] Transportation"/>
-    <c19 c="[19] Other"/>
-  </icq_occupation>
-  <icq_hair>
-    <c1 c=""/>
-    <c2 c="[2] Auburn"/>
-    <c3 c="[3] Black"/>
-    <c4 c="[4] Blonde"/>
-    <c5 c="[5] Light Brown"/>
-    <c6 c="[6] Dark Brown"/>
-    <c7 c="[7] Red"/>
-    <c8 c="[8] Gray"/>
-    <c9 c="[9] White"/>
-    <c10 c="[10] Bald"/>
-    <c11 c="[11] Changes often"/>
-    <c12 c="[12] Other"/>
-  </icq_hair>
-  <icq_children>
-    <c1 c=""/>
-    <c2 c="[1] 1"/>
-    <c3 c="[2] 2"/>
-    <c4 c="[3] 3"/>
-    <c5 c="[4] 4"/>
-    <c6 c="[5] 5"/>
-    <c7 c="[6] 6"/>
-    <c8 c="[7] 7"/>
-    <c9 c="[8] 8"/>
-    <c10 c="[9] More than 8"/>
-    <c11 c="[255] No"/>
-  </icq_children>
-  <icq_height>
-    <c1 c=""/>
-    <c2 c="[140] 140 cm"/>
-    <c3 c="[145] 141 - 145 cm"/>
-    <c4 c="[150] 146 - 150 cm"/>
-    <c5 c="[155] 151 - 155 cm"/>
-    <c6 c="[160] 156 - 160 cm"/>
-    <c7 c="[165] 161 - 165 cm"/>
-    <c8 c="[170] 166 - 170 cm"/>
-    <c9 c="[175] 171 - 175 cm"/>
-    <c10 c="[180] 176 - 180 cm"/>
-    <c11 c="[185] 181 - 185 cm"/>
-    <c12 c="[190] 186 - 190 cm"/>
-    <c13 c="[195] 191 - 195 cm"/>
-    <c14 c="[200] 196 - 200 cm"/>
-    <c15 c="[205] 201 - 205 cm"/>
-    <c16 c="[210] 206 - 210 cm"/>
-    <c17 c="[220] 220 cm"/>
-  </icq_height>
-  <icq_smoking>
-    <c1 c=""/>
-    <c2 c="[1] No"/>
-    <c3 c="[2] Sometimes"/>
-    <c4 c="[3] Yes"/>
-    <c5 c="[4] Quitting"/>
-    <c6 c="[5] Social Smoker"/>
-    <c7 c="[128] Other"/>
-  </icq_smoking>
-  <icq_religion>
-    <c1 c=""/>
-    <c2 c="[2] Agnostic"/>
-    <c3 c="[3] Atheist"/>
-    <c4 c="[4] Baha'i"/>
-    <c5 c="[5] Buddhist"/>
-    <c6 c="[6] Christian"/>
-    <c7 c="[7] Hindu"/>
-    <c8 c="[8] Jain"/>
-    <c9 c="[9] Jewish"/>
-    <c10 c="[11] Mormon"/>
-    <c11 c="[10] Muslim"/>
-    <c12 c="[12] Neo-paganist"/>
-    <c13 c="[19] Other"/>
-    <c14 c="[13] Rastafarian"/>
-    <c15 c="[14] Shinto"/>
-    <c16 c="[15] Sikh"/>
-    <c17 c="[16] Spiritual but not religious"/>
-    <c18 c="[17] Unitarian"/>
-    <c19 c="[18] Zoroastrian"/>
-  </icq_religion>
-  <icq_sexual>
-    <c1 c=""/>
-    <c2 c="[2] Straight"/>
-    <c3 c="[3] Gay"/>
-    <c4 c="[5] Lesbian"/>
-    <c5 c="[4] Bi-sexual"/>
-    <c6 c="[10] Other"/>
-  </icq_sexual>
-  <icq_marital>
-    <c1 c=""/>
-    <c2 c="[10] Single"/>
-    <c3 c="[11] Long term relationship"/>
-    <c4 c="[12] Engaged"/>
-    <c5 c="[20] Married"/>
-    <c6 c="[30] Divorced"/>
-    <c7 c="[31] Separated"/>
-    <c8 c="[40] Widowed"/>
-    <c9 c="[50] Open relationship"/>
-    <c10 c="[255] Other"/>
-  </icq_marital>
   <ContactInfoForm c="">
     <ReqInfoBitBtn c="Request"/>
     <TopCopyHTML c="Copy"/>
@@ -1140,20 +1179,11 @@
     <NoBitBtn c="No"/>
     <LastVerLabel c="You are using version:"/>
     <NewVerLabel c="The latest available version:"/>
+    <InfoMemo h="Please authorize my request."/>
   </MemoForm>
   <XStatusForm c=" Additional ICQ status">
     <BirthDayCheckBox c="Show ball birthday"/>
   </XStatusForm>
-  <UniqForm c="Unique settings">
-    <SoundsGroupBox c="Sounds"/>
-    <OnlineSoundPathSpeedButton h="_b_File_d__r_Specify the path to the file"/>
-    <OnlineSoundPlaySpeedButton h="_b_Play_d__r_Listen to audio file"/>
-    <OnlineSoundCheckBox c="Play specific online alert sound"/>
-    <MessSoundCheckBox c="Play specific sound incoming messages"/>
-    <OptionGroupBox c="Options"/>
-    <SaveHistoryCheckBox c="Always save message history for this contact"/>
-    <SendTranslitCheckBox c="Always send transliterated messages"/>
-  </UniqForm>
   <LoginForm c="">
     <AccountLabel c="Account:"/>
     <PasswordLabel c="Password:"/>
@@ -1163,7 +1193,7 @@
     <JabberOptionButtonGroup_0 c="Account"/>
     <JabberOptionButtonGroup_1 c="Connecting"/>
     <JabberOptionButtonGroup_2 c="Additional"/>
-    <JabberOptionButtonGroup_3 c="My profile"/>
+    <JabberOptionButtonGroup_3 c="My details"/>
     <JabberOptionButtonGroup_4 c="Home"/>
     <JabberOptionButtonGroup_5 c="Work"/>
     <JabberOptionButtonGroup_6 c="Personal"/>
@@ -1239,28 +1269,16 @@
     <PlayButton c="Play"/>
     <ResetButton c="Reset"/>
   </GamesForm>
-  <SoundsNames>
-    <S0 c="Connection established"/>
-    <S1 c="Incoming message"/>
-    <S2 c="Message sent"/>
-    <S3 c="Contact online alert"/>
-    <S4 c="Service alert"/>
-    <S5 c="File transfer complete"/>
-    <S6 c="Error message"/>
-    <S7 c="Contact disconnected"/>
-  </SoundsNames>
-  <ShowCertForm c="Manage certificates for SSL">
-    <CertGroupBox c="Certificate"/>
-    <LblIssuer c="Publisher:"/>
-    <LblSubject c="Subject"/>
-    <LblSerial c="Serial number"/>
-    <LblValidBefore c="Acts with"/>
-    <lblValidAfter c="Acts until"/>
-    <LblShaHash c="Hash"/>
-    <LblCertExpired c="Warning: the certificate has expired!"/>
-    <AcceptCertButton c="Accept"/>
-    <RefuseCertButton c="Reject"/>
-  </ShowCertForm>
+  <SoundPathListView>
+    <c0 c="Connection established"/>
+    <c1 c="Incoming message"/>
+    <c2 c="Message sent"/>
+    <c3 c="Contact online alert"/>
+    <c4 c="Service alert"/>
+    <c5 c="File transfer complete"/>
+    <c6 c="Error message"/>
+    <c7 c="Contact disconnected"/>
+  </SoundPathListView>
   <ConfForm c="Create or Join Groupchat">
     <ConfGroupBox c="Room information"/>
     <ConfServerLabel c="Server:"/>
@@ -1270,4 +1288,32 @@
     <AddBookmarkCheckBox c="Add groupchat in bookmarks"/>
     <JoinButton c="Join"/>
   </ConfForm>
+  <BimoidOptionsForm c="Options: Bimoid">
+    <BimOptionButtonGroup_0 c="Account"/>
+    <BimOptionButtonGroup_1 c="Connecting"/>
+    <BimOptionButtonGroup_2 c="Additional"/>
+    <AccountGroupBox c="Account"/>
+    <ReqPassLabel c="Forgot your password?"/>
+    <BimoidLoginLabel c="Login:"/>
+    <PassLabel c="Password:"/>
+    <ShowPassCheckBox c="Show password"/>
+    <SavePassCheckBox c="Save password"/>
+    <ServerGroupBox c="Server"/>
+    <BimLoginServerLabel c="Address:"/>
+    <BimLoginServerPortLabel c="Port:"/>
+  </BimoidOptionsForm>
+  <BugReportForm c="Bug report">
+    <SendBugReportBitBtn c="Send bug report on Email"/>
+  </BugReportForm>
+  <HotKeys>
+    <g0 c="Global changeable shortcuts"/>
+    <g1 c="IMadering unchangeable shortcuts"/>
+    <c0 c="Show/Hide contact list window"/>
+    <c1 c="Read new incoming message"/>
+    <c2 c="Show/Hide chat window"/>
+    <c3 c="Show/Hide settings window"/>
+    <c4 c="Show/Hide find in contact list window"/>
+    <c5 c="Anti-boss activate/deactivate"/>
+    <c6 c="Close current window"/>
+  </HotKeys>
 </root>

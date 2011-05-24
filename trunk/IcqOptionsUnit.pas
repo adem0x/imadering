@@ -286,20 +286,7 @@ uses
 {$REGION 'MyConst'}
 
 const
-  C_ClientId = 'ClientId';
   C_ClientLoginID = 'ClientLoginID';
-  C_IcqCountries = 'icq_countries';
-  C_IcqLangs = 'icq_languages';
-  C_IcqInteres = 'icq_interests';
-  C_IcqOccup = 'icq_occupation';
-  C_IcqHair = 'icq_hair';
-  C_IcqChild = 'icq_children';
-  C_IcqHeight = 'icq_height';
-  C_IcqSmok = 'icq_smoking';
-  C_Relig = 'icq_religion';
-  C_IcqSex = 'icq_sexual';
-  C_IcqMarital = 'icq_marital';
-  C_IcqGender = 'icq_gender';
 
 {$ENDREGION}
 {$REGION 'LoadSettings'}
@@ -331,7 +318,7 @@ begin
             PassEdit.Text := XML_Node.Properties.Value(C_Pass);
             if PassEdit.Text <> EmptyStr then
             begin
-              PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
+              PassEdit.HelpKeyword := URLDecode(Base64Decode(PassEdit.Text));
               PassEdit.Text := C_MaskPass;
             end;
             PassEdit.OnChange := PassEditChange;
@@ -384,10 +371,10 @@ begin
       ClearContacts(C_Icq); // Очищаем контакты предыдущего аккаунта
       ICQ_LoginUIN := ICQUINEdit.Text;
     end;
-    ICQ_LoginPassword := PassEdit.Hint;
+    ICQ_LoginPassword := PassEdit.HelpKeyword;
     // Делаем подсказку
     if ICQ_LoginUIN <> EmptyStr then
-      MainForm.ICQToolButton.Hint := Format(C_AS, [C_Icq]) + C_BN + C_NN + C_BN + C_QN + ICQ_LoginUIN + C_EN
+      MainForm.ICQToolButton.Hint := Format(C_AS, [C_Icq]) + ' ' + '-' + ' ' + '[' + ICQ_LoginUIN + ']'
     else
       MainForm.ICQToolButton.Hint := Format(C_AS, [C_Icq]);
   end;
@@ -436,7 +423,7 @@ begin
         XML_Node.Properties.Add(C_Login, ICQUINEdit.Text);
         XML_Node.Properties.Add(C_SavePass, SavePassCheckBox.Checked);
         if SavePassCheckBox.Checked then
-          XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.Hint)))
+          XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.HelpKeyword)))
         else
         begin
           XML_Node.Properties.Add(C_Pass, EmptyStr);
@@ -444,7 +431,11 @@ begin
         end;
         // Маскируем пароль
         if PassEdit.Text <> EmptyStr then
+        begin
+          PassEdit.OnChange := nil;
           PassEdit.Text := C_MaskPass;
+          PassEdit.OnChange := PassEditChange;
+        end;
         // --------------------------------------------------------------------------
         // Сохраняем сервер подключения
         Sub_Node := XML_Node.Items.Add(C_CustomServer);
@@ -471,7 +462,6 @@ end;
 
 procedure TIcqOptionsForm.TranslateForm;
 var
-  I: Integer;
   JvXML: TJvSimpleXml;
   XML_Node, Sub_Node: TJvSimpleXmlElem;
 begin
@@ -479,12 +469,16 @@ begin
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
+  // Другое
+  ClientIdInfoRichEdit.Lines.Text := EmptyStr;
+  EyeInfoRichEdit.Lines.Text := EmptyStr;
+  DumpInfoRichEdit.Lines.Text := EmptyStr;
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
     with JvXML do
     begin
-      // Загружаем настройки
+      // Загружаем текущий файл языка
       if FileExists(V_MyPath + Format(C_LangPath, [V_CurrentLang])) then
       begin
         // Загружаем файл языка
@@ -495,148 +489,15 @@ begin
           if XML_Node <> nil then
           begin
             // Загружаем инфы
-            Sub_Node := XML_Node.Items.ItemNamed[C_ClientId];
+            Sub_Node := XML_Node.Items.ItemNamed[ClientIdInfoRichEdit.Name];
             if Sub_Node <> nil then
-              ClientIdInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
+              ClientIdInfoRichEdit.Lines.Strings[0] := Sub_Node.Properties.Value('c');
             Sub_Node := XML_Node.Items.ItemNamed[EyeInfoRichEdit.Name];
             if Sub_Node <> nil then
-              EyeInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
+              EyeInfoRichEdit.Lines.Strings[0] := Sub_Node.Properties.Value('c');
             Sub_Node := XML_Node.Items.ItemNamed[DumpInfoRichEdit.Name];
             if Sub_Node <> nil then
-              DumpInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
-          end;
-          // Загружаем списки
-          // Страны
-          XML_Node := Root.Items.ItemNamed[C_IcqCountries];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                CountryInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Языки
-          XML_Node := Root.Items.ItemNamed[C_IcqLangs];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                Lang1InfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Интересы
-          XML_Node := Root.Items.ItemNamed[C_IcqInteres];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                Interest1InfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Профессия
-          XML_Node := Root.Items.ItemNamed[C_IcqOccup];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                CompanyProfInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Цвет волос
-          XML_Node := Root.Items.ItemNamed[C_IcqHair];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalHairColourInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Детей
-          XML_Node := Root.Items.ItemNamed[C_IcqChild];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalChildrenInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Рост
-          XML_Node := Root.Items.ItemNamed[C_IcqHeight];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalHeightInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Курение
-          XML_Node := Root.Items.ItemNamed[C_IcqSmok];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalSmokInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Религия
-          XML_Node := Root.Items.ItemNamed[C_Relig];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalReligionInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Секс
-          XML_Node := Root.Items.ItemNamed[C_IcqSex];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalSexInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Соц. статус
-          XML_Node := Root.Items.ItemNamed[C_IcqMarital];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalMaritalInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
-          end;
-          // Пол
-          XML_Node := Root.Items.ItemNamed[C_IcqGender];
-          if XML_Node <> nil then
-          begin
-            for I := 1 to XML_Node.Items.Count do
-            begin
-              Sub_Node := XML_Node.Items.ItemNamed['c' + IntToStr(I)];
-              if Sub_Node <> nil then
-                PersonalGenderInfoComboBox.Items.Add(Sub_Node.Properties.Value('c'));
-            end;
+              DumpInfoRichEdit.Lines.Strings[0] := Sub_Node.Properties.Value('c');
           end;
         end;
       end;
@@ -668,6 +529,10 @@ begin
   WorkPhoneInfoLabel.Caption := PhoneInfoLabel.Caption;
   WorkFaxInfoLabel.Caption := FaxInfoLabel.Caption;
   WorkStreetInfoLabel.Caption := StreetInfoLabel.Caption;
+  PersonalGenderInfoComboBox.Clear;
+  PersonalGenderInfoComboBox.Items.Add(EmptyStr);
+  PersonalGenderInfoComboBox.Items.Add(Lang_Vars[50].L_S);
+  PersonalGenderInfoComboBox.Items.Add(Lang_Vars[51].L_S);
   // Расширяем комбобоксы
   SetCustomWidthComboBox(CountryInfoComboBox);
   SetCustomWidthComboBox(OCountryInfoComboBox);
@@ -721,7 +586,7 @@ end;
 
 procedure TIcqOptionsForm.PassEditChange(Sender: TObject);
 begin
-  PassEdit.Hint := PassEdit.Text;
+  PassEdit.HelpKeyword := PassEdit.Text;
   // Активируем кнопку применения настроек
   ApplyButton.Enabled := True;
 end;
@@ -810,25 +675,25 @@ begin
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Назначаем разделитель значений для списков
-  CountryInfoComboBox.Items.NameValueSeparator := C_BN;
-  OCountryInfoComboBox.Items.NameValueSeparator := C_BN;
-  WorkCountryInfoComboBox.Items.NameValueSeparator := C_BN;
-  Lang1InfoComboBox.Items.NameValueSeparator := C_BN;
-  Lang2InfoComboBox.Items.NameValueSeparator := C_BN;
-  Lang3InfoComboBox.Items.NameValueSeparator := C_BN;
-  Interest1InfoComboBox.Items.NameValueSeparator := C_BN;
-  Interest2InfoComboBox.Items.NameValueSeparator := C_BN;
-  Interest3InfoComboBox.Items.NameValueSeparator := C_BN;
-  Interest4InfoComboBox.Items.NameValueSeparator := C_BN;
-  CompanyProfInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalHairColourInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalChildrenInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalHeightInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalSmokInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalReligionInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalSexInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalMaritalInfoComboBox.Items.NameValueSeparator := C_BN;
-  PersonalGenderInfoComboBox.Items.NameValueSeparator := C_BN;
+  CountryInfoComboBox.Items.NameValueSeparator := ' ';
+  OCountryInfoComboBox.Items.NameValueSeparator := ' ';
+  WorkCountryInfoComboBox.Items.NameValueSeparator := ' ';
+  Lang1InfoComboBox.Items.NameValueSeparator := ' ';
+  Lang2InfoComboBox.Items.NameValueSeparator := ' ';
+  Lang3InfoComboBox.Items.NameValueSeparator := ' ';
+  Interest1InfoComboBox.Items.NameValueSeparator := ' ';
+  Interest2InfoComboBox.Items.NameValueSeparator := ' ';
+  Interest3InfoComboBox.Items.NameValueSeparator := ' ';
+  Interest4InfoComboBox.Items.NameValueSeparator := ' ';
+  CompanyProfInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalHairColourInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalChildrenInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalHeightInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalSmokInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalReligionInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalSexInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalMaritalInfoComboBox.Items.NameValueSeparator := ' ';
+  PersonalGenderInfoComboBox.Items.NameValueSeparator := ' ';
   // Логин ID
   ClientLoginIdEdit.Text := ICQ_ClientLoginID;
   // Сервер
@@ -841,8 +706,8 @@ begin
   // Применяем настройки
   ApplySettings;
   // Подгружаем произвольный пакет
-  if FileExists(V_ProfilePath + C_Icq + C_BN + C_PacketFileName) then
-    SendCustomICQPacketRichEdit.Lines.LoadFromFile(V_ProfilePath + C_Icq + C_BN + C_PacketFileName);
+  if FileExists(V_ProfilePath + C_Icq + ' ' + C_PacketFileName) then
+    SendCustomICQPacketRichEdit.Lines.LoadFromFile(V_ProfilePath + C_Icq + ' ' + C_PacketFileName);
 end;
 
 {$ENDREGION}
@@ -884,15 +749,15 @@ begin
   ParamInfoRichEdit.Lines.BeginUpdate;
   // Добавляем информацию не вошедшую в другие разделы
   if ICQ_CollSince <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[48].L_S + C_TN + ICQ_CollSince);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[48].L_S + ':' + ICQ_CollSince);
   if ICQ_OnlineDays <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[49].L_S + C_TN + ICQ_OnlineDays);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[49].L_S + ':' + ICQ_OnlineDays);
   if ICQ_AwayMess <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[50].L_S + C_TN + ICQ_AwayMess);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[50].L_S + ':' + ICQ_AwayMess);
   if ICQ_Bos_Addr <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[51].L_S + C_TN + ICQ_Bos_Addr);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[51].L_S + ':' + ICQ_Bos_Addr);
   if ICQ_MyIcon_Hash <> EmptyStr then
-    ParamInfoRichEdit.Lines.Add(Lang_Vars[52].L_S + C_TN + ICQ_MyIcon_Hash);
+    ParamInfoRichEdit.Lines.Add(Lang_Vars[52].L_S + ':' + ICQ_MyIcon_Hash);
   // Заканчиваем заполнение строк
   ParamInfoRichEdit.Lines.EndUpdate;
   // Прокручиваем
@@ -905,10 +770,10 @@ end;
 
 procedure TIcqOptionsForm.SendCustomICQPacketButtonClick(Sender: TObject);
 var
-  Pkt: string;
+  Pkt, Chan: string;
 begin
   // Сохраняем пакет локально для дальнейшего использования
-  SendCustomICQPacketRichEdit.Lines.SaveToFile(V_ProfilePath + C_Icq + C_BN + C_PacketFileName);
+  SendCustomICQPacketRichEdit.Lines.SaveToFile(V_ProfilePath + C_Icq + ' ' + C_PacketFileName);
   // Если пакет больше нуля и рабочая фаза icq подключения
   if NotProtoOnline(C_Icq) then
     Exit;
@@ -923,12 +788,13 @@ begin
     // Если пакет с заголовком, то удаляем из пакета заголовок
     if (Length(Pkt) > 2) and (UpperCase(Pkt[1] + Pkt[2]) = '2A') then
     begin
+      // Запоминаем канал
+      Chan := Pkt[4];
+      // Удаляем заголовок пакета
       NextData(Pkt, 12);
       // Отправляем пакет по второму каналу
-      ICQ_SendPkt('2', Pkt);
-    end
-    else
-      ICQ_SendPkt('2', Pkt);
+      ICQ_SendPkt(Chan, Pkt);
+    end;
   end;
 end;
 {$ENDREGION}

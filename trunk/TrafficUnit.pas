@@ -88,7 +88,7 @@ begin
   V_TrafRecev := 0;
   V_SesDataTraf := Now;
   // Показываем сколько трафика передано за эту сессию
-  CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_BN + C_PN + C_BN + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + C_BN + C_KB + C_BN + C_PN + C_BN + DateTimeToStr(V_SesDataTraf);
+  CurTrafEdit.Text := FloatToStrF(V_TrafRecev / 1000, FfFixed, 18, 3) + ' ' + C_KB + ' ' + '|' + ' ' + FloatToStrF(V_TrafSend / 1000, FfFixed, 18, 3) + ' ' + C_KB + ' ' + '|' + ' ' + DateTimeToStr(V_SesDataTraf);
 end;
 
 procedure TTrafficForm.ResetAllTrafButtonClick(Sender: TObject);
@@ -98,7 +98,7 @@ begin
   V_AllTrafRecev := 0;
   V_AllSesDataTraf := DateTimeToStr(Now);
   // Показываем сколько трафика передано всего
-  AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_BN + C_PN + C_BN + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + C_BN + C_MB + C_BN + C_PN + C_BN + V_AllSesDataTraf;
+  AllTrafEdit.Text := FloatToStrF(V_AllTrafRecev / 1000000, FfFixed, 18, 3) + ' ' + C_MB + ' ' + '|' + ' ' + FloatToStrF(V_AllTrafSend / 1000000, FfFixed, 18, 3) + ' ' + C_MB + ' ' + '|' + ' ' + V_AllSesDataTraf;
 end;
 
 {$ENDREGION}

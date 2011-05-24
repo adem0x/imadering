@@ -4,7 +4,7 @@
 program Imadering;
 
 uses
-  ShareMem,
+  ShareMem, // Закомментировать этот юнит при проверке утечек памяти
   SysUtils,
   Windows,
   Forms,
@@ -22,22 +22,14 @@ uses
   ContactSearchUnit in 'ContactSearchUnit.pas' {ContactSearchForm},
   XStatusUnit in 'XStatusUnit.pas' {XStatusForm},
   SmilesUnit in 'SmilesUnit.pas' {SmilesForm},
-  MraOptionsUnit in 'MraOptionsUnit.pas' {MraOptionsForm},
   JabberOptionsUnit in 'JabberOptionsUnit.pas' {JabberOptionsForm},
   TrafficUnit in 'TrafficUnit.pas' {TrafficForm},
-  FileTransferUnit in 'FileTransferUnit.pas' {FileTransferForm},
-  ShowCertUnit in 'ShowCertUnit.pas' {ShowCertForm},
-  LogUnit in 'LogUnit.pas' {LogForm},
-  GtransUnit in 'GtransUnit.pas' {GTransForm},
-  UniqUnit in 'UniqUnit.pas' {UniqForm},
   ProfileUnit in 'ProfileUnit.pas' {ProfileForm},
   LoginUnit in 'LoginUnit.pas' {LoginForm},
   ProfilesFolderUnit in 'ProfilesFolderUnit.pas' {ProfilesFolderForm},
   SMSUnit in 'SMSUnit.pas' {SMSForm},
-  GamesUnit in 'GamesUnit.pas' {GamesForm},
   IcqProtoUnit in 'IcqProtoUnit.pas',
   JabberProtoUnit in 'JabberProtoUnit.pas',
-  MraProtoUnit in 'MraProtoUnit.pas',
   VarsUnit in 'VarsUnit.pas',
   RosterUnit in 'RosterUnit.pas',
   UtilsUnit in 'UtilsUnit.pas',
@@ -52,11 +44,14 @@ uses
   ButtonGroup in 'lib\ButtonGroup.pas',
   ImgList in 'lib\ImgList.pas',
   ConfUnit in 'ConfUnit.pas' {ConfForm},
-  JBrowseUnit in 'JBrowseUnit.pas' {JBrowseForm};
+  JBrowseUnit in 'JBrowseUnit.pas' {JBrowseForm},
+  BimoidOptionsUnit in 'BimoidOptionsUnit.pas' {BimoidOptionsForm},
+  BimoidProtoUnit in 'BimoidProtoUnit.pas',
+  MraOptionsUnit in 'MraOptionsUnit.pas' {MraOptionsForm},
+  BugReportUnit in 'BugReportUnit.pas' {BugReportForm};
 
 {$R *.res}
-{$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or
-  IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP}
+{$SETPEFLAGS IMAGE_FILE_RELOCS_STRIPPED or IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP}
 
 begin
   Application.Initialize;
@@ -65,3 +60,4 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
+

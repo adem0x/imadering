@@ -237,9 +237,9 @@ object AboutForm: TAboutForm
     Width = 269
     Height = 126
     TabStop = False
-    BevelKind = bkFlat
+    BevelKind = bkTile
     BorderStyle = bsNone
-    Color = clBtnFace
+    Color = clInfoBk
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
     Font.Height = -12

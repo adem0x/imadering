@@ -28,32 +28,50 @@ uses
   Buttons,
   Menus,
   ExtDlgs,
-  JvSimpleXml;
+  JvSimpleXml,
+  CategoryButtons,
+  ButtonGroup,
+  IOUtils;
 
 type
   THistoryForm = class(TForm)
-    TopPanel: TPanel;
+    LeftPanel: TPanel;
+    PanelSplitter: TSplitter;
+    RightPanel: TPanel;
     BottomPanel: TPanel;
-    HTMLHistoryViewer: THTMLViewer;
-    ContactsComboBox: TComboBox;
-    ArhiveComboBox: TComboBox;
-    Bevel1: TBevel;
-    ContactsLabel: TLabel;
-    ArhiveLabel: TLabel;
-    SearchTextLabel: TLabel;
-    SearchTextEdit: TEdit;
-    SearchTextBitBtn: TBitBtn;
-    RegistrCheckBox: TCheckBox;
-    FullSearchTextCheckBox: TCheckBox;
     ReloadHistoryBitBtn: TBitBtn;
     SaveHistoryAsBitBtn: TBitBtn;
     DeleteHistoryBitBtn: TBitBtn;
+    MessCountPanel: TPanel;
     HistoryPopupMenu: TPopupMenu;
     CopyHistorySelText: TMenuItem;
     CopyAllHistoryText: TMenuItem;
+    HTMLHistoryViewer: THTMLViewer;
+    TopPanel: TPanel;
+    ContactSearchBitBtn: TBitBtn;
+    HButtonGroup: TButtonGroup;
+    HCategoryPanelGroup: TCategoryPanelGroup;
+    Bim_HCategoryPanel: TCategoryPanel;
+    MRA_HCategoryPanel: TCategoryPanel;
+    Jab_HCategoryPanel: TCategoryPanel;
+    ICQ_HCategoryPanel: TCategoryPanel;
+    ICQ_HCategoryButtons: TCategoryButtons;
+    HBevel: TBevel;
+    Jab_HCategoryButtons: TCategoryButtons;
+    MRA_HCategoryButtons: TCategoryButtons;
+    Bim_HCategoryButtons: TCategoryButtons;
+    TextSearchGroupBox: TGroupBox;
+    ArchivesLabel: TLabel;
+    ArchivesComboBox: TComboBox;
+    SBevel: TBevel;
+    SearchTextEdit: TEdit;
+    SearchTextBitBtn: TBitBtn;
+    SearchTextLabel: TLabel;
+    RegistrCheckBox: TCheckBox;
+    FullSearchTextCheckBox: TCheckBox;
     UpSearchCheckBox: TRadioButton;
     DownSearchCheckBox: TRadioButton;
-    CloseBitBtn: TBitBtn;
+    SearchStatusPanel: TPanel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -66,16 +84,20 @@ type
     procedure ContactsComboBoxChange(Sender: TObject);
     procedure CopyHistorySelTextClick(Sender: TObject);
     procedure CopyAllHistoryTextClick(Sender: TObject);
-    procedure CloseBitBtnClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure HTMLHistoryViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure HTMLHistoryViewerHotSpotClick(Sender: TObject; const SRC: string; var Handled: Boolean);
+    procedure HCategoryPanelGroupCanResize(Sender: TObject; var NewWidth, NewHeight: Integer; var Resize: Boolean);
+    procedure CategoryButtonsButtonClicked(Sender: TObject; const Button: TButtonItem);
+    procedure HButtonGroupButtonClicked(Sender: TObject; Index: Integer);
 
   private
     { Private declarations }
+    f_t, f_l, f_h, f_w: integer;
     HTMLStyle: string;
     MyHUIN: string;
     HistoryFile: string;
+    procedure BuildHistoryCL;
   public
     { Public declarations }
     ReqHUIN: string;
@@ -92,6 +114,7 @@ var
 implementation
 
 {$R *.dfm}
+
 {$REGION 'MyUses'}
 
 uses
@@ -101,13 +124,8 @@ uses
   VarsUnit,
   IcqProtoUnit,
   MraProtoUnit,
-  JabberProtoUnit;
-
-{$ENDREGION}
-{$REGION 'MyConst'}
-
-const
-  C_HistoryForm = 'history_form';
+  JabberProtoUnit,
+  OverbyteIcsUtils;
 
 {$ENDREGION}
 {$REGION 'LoadHistoryFromFile'}
@@ -116,7 +134,7 @@ procedure THistoryForm.LoadHistoryFromFile;
 var
   Doc, H: string;
 begin
-  ContactsComboBox.OnChange := nil;
+  {ContactsComboBox.OnChange := nil;
   // Вычисляем нашу текущую учётную запись
   if ReqCType = C_Icq then
     MyHUIN := ICQ_LoginUIN
@@ -130,7 +148,7 @@ begin
   LoadHTMLStrings(HTMLHistoryViewer, Doc);
   HTMLHistoryViewer.Refresh;
   // Загружаем файл истории сообщений
-  HistoryFile := V_ProfilePath + C_HistoryFolder + ReqCType + C_BN + MyHUIN + C_BN + ReqHUIN + '.htm';
+  HistoryFile := V_ProfilePath + C_HistoryFolder + ReqCType + C_S9 + MyHUIN + C_S9 + ReqHUIN + C_Htm_Ext;
   if FileExists(HistoryFile) then
     begin
       // Находим этот контакт в списке файлов историй
@@ -166,7 +184,7 @@ begin
   ArhiveComboBox.Clear;
   if ContactsComboBox.Text <> EmptyStr then
     ListFileInDir(V_ProfilePath + C_HistoryFolder + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
-  ContactsComboBox.OnChange := ContactsComboBoxChange;
+  ContactsComboBox.OnChange := ContactsComboBoxChange;}
 end;
 
 {$ENDREGION}
@@ -174,12 +192,10 @@ end;
 
 procedure THistoryForm.TranslateForm;
 begin
-  // Создаём шаблон для перевода
-  // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
   // Другое
-  CloseBitBtn.Caption := Lang_Vars[8].L_S;
+  SearchStatusPanel.Caption := Parse(';', SearchStatusPanel.Hint, 1);
 end;
 
 {$ENDREGION}
@@ -196,6 +212,28 @@ begin
   // Копируем весь текст в буфер обмена
   HTMLHistoryViewer.SelectAll;
   HTMLHistoryViewer.CopyToClipboard;
+end;
+
+procedure THistoryForm.HButtonGroupButtonClicked(Sender: TObject; Index: Integer);
+begin
+  // Сбрасываем выделение с истории контактов
+  ICQ_HCategoryButtons.SelectedItem := nil;
+  ICQ_HCategoryButtons.FocusedItem := nil;
+  Jab_HCategoryButtons.SelectedItem := nil;
+  Jab_HCategoryButtons.FocusedItem := nil;
+  MRA_HCategoryButtons.SelectedItem := nil;
+  MRA_HCategoryButtons.FocusedItem := nil;
+  Bim_HCategoryButtons.SelectedItem := nil;
+  Bim_HCategoryButtons.FocusedItem := nil;
+  // Открываем историю выбранного пункта
+
+end;
+
+procedure THistoryForm.HCategoryPanelGroupCanResize(Sender: TObject; var NewWidth, NewHeight: Integer; var Resize: Boolean);
+begin
+  // Подгоняем размер открытой группы
+  if Resize then
+    HCategoryPanelGroup.SetOpenPanelHeight;
 end;
 
 procedure THistoryForm.HistoryPopupMenuPopup(Sender: TObject);
@@ -219,10 +257,10 @@ end;
 procedure THistoryForm.ReloadHistoryBitBtnClick(Sender: TObject);
 begin
   // Если путь к файлу пустой, то выходим
-  if ContactsComboBox.Text = EmptyStr then
+  {if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Перезагружаем файл истории
-  ContactsComboBoxChange(nil);
+  ContactsComboBoxChange(nil); }
 end;
 
 {$ENDREGION}
@@ -232,7 +270,7 @@ procedure THistoryForm.SaveHistoryAsBitBtnClick(Sender: TObject);
 var
   List: TStringList;
 begin
-  // Если путь к файлу пустой, то выходим
+  {// Если путь к файлу пустой, то выходим
   if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Указываем начальное имя файла
@@ -255,7 +293,7 @@ begin
       finally
         List.Free;
       end;
-    end;
+    end;}
 end;
 
 {$ENDREGION}
@@ -265,7 +303,7 @@ procedure THistoryForm.DeleteHistoryBitBtnClick(Sender: TObject);
 var
   I: Integer;
 begin
-  // Если путь к файлу пустой, то выходим
+  {// Если путь к файлу пустой, то выходим
   if ContactsComboBox.Text = EmptyStr then
     Exit;
   // Выводим запрос на удаление файла истории
@@ -280,7 +318,7 @@ begin
       HTMLHistoryViewer.Clear;
       // Удаляем эту запись из списка файлов истори
       ContactsComboBox.Items.Delete(ContactsComboBox.ItemIndex);
-    end;
+    end;}
 end;
 
 {$ENDREGION}
@@ -292,7 +330,7 @@ var
 begin
   // Загружаем файл с историей выбранного контакта
   // --Очистили компонент истории и выводим надпись, что история загружается
-  Doc := HTMLStyle;
+  {Doc := HTMLStyle;
   Doc := Doc + '<span class=b>' + Lang_Vars[116].L_S + '</span>';
   LoadHTMLStrings(HTMLHistoryViewer, Doc);
   HTMLHistoryViewer.Refresh;
@@ -322,7 +360,7 @@ begin
   ListFileInDir(V_ProfilePath + C_HistoryFolder + ContactsComboBox.Text + '*.7z', '.7z', ArhiveComboBox.Items);
   // Ставим фокус в поле поиска текста
   if SearchTextEdit.CanFocus then
-    SearchTextEdit.SetFocus;
+    SearchTextEdit.SetFocus;}
 end;
 
 {$ENDREGION}
@@ -337,27 +375,34 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      // Загружаем настройки
+      if FileExists(V_ProfilePath + C_SettingsFileName) then
       begin
-        // Загружаем настройки
-        if FileExists(V_ProfilePath + C_SettingsFileName) then
+        LoadFromFile(V_ProfilePath + C_SettingsFileName);
+        // Загружаем позицию окна
+        if Root <> nil then
+        begin
+          XML_Node := Root.Items.ItemNamed[Self.Name];
+          if XML_Node <> nil then
           begin
-            LoadFromFile(V_ProfilePath + C_SettingsFileName);
             // Загружаем позицию окна
-            if Root <> nil then
-              begin
-                XML_Node := Root.Items.ItemNamed[C_HistoryForm];
-                if XML_Node <> nil then
-                  begin
-                    Top := XML_Node.Properties.IntValue('t');
-                    Left := XML_Node.Properties.IntValue('l');
-                    Height := XML_Node.Properties.IntValue('h');
-                    Width := XML_Node.Properties.IntValue('w');
-                    // Определяем не находится ли окно за пределами экрана
-                    FormSetInWorkArea(Self);
-                  end;
-              end;
+            Top := XML_Node.Properties.IntValue(C_FT);
+            Left := XML_Node.Properties.IntValue(C_FL);
+            Height := XML_Node.Properties.IntValue(C_FH);
+            Width := XML_Node.Properties.IntValue(C_FW);
+            f_t := Top;
+            f_l := Left;
+            f_h := Height;
+            f_w := Width;
+            if XML_Node.Properties.BoolValue(C_FM, False) then
+              WindowState := wsMaximized;
+            // Определяем не находится ли окно за пределами экрана
+            FormSetInWorkArea(Self);
           end;
+        end;
       end;
+    end;
   finally
     JvXML.Free;
   end;
@@ -365,21 +410,27 @@ begin
   TranslateForm;
   // Формируем строку стиля
   HTMLHistoryViewer.DoubleBuffered := True;
-  HTMLStyle := '<html><head>' + V_ChatCSS + '<title>Chat</title></head><body>';
+  HTMLStyle := Format(C_HTML_head, [V_ChatCSS, C_IMadering]);
   // Назначаем иконки окну и кнопкам
   MainForm.AllImageList.GetIcon(147, Icon);
   MainForm.AllImageList.GetBitmap(221, SearchTextBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(6, ReloadHistoryBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(225, SaveHistoryAsBitBtn.Glyph);
   MainForm.AllImageList.GetBitmap(148, DeleteHistoryBitBtn.Glyph);
-  MainForm.AllImageList.GetBitmap(3, CloseBitBtn.Glyph);
+  MainForm.AllImageList.GetBitmap(215, ContactSearchBitBtn.Glyph);
+  ICQ_HCategoryPanel.xImageIndex := 81;
+  Jab_HCategoryPanel.xImageIndex := 43;
+  MRA_HCategoryPanel.xImageIndex := 66;
+  Bim_HCategoryPanel.xImageIndex := 297;
   // Создаём список имеющихся файлов истории для выбора
-  ListFileInDir(V_ProfilePath + C_HistoryFolder + '*.htm', '.htm', ContactsComboBox.Items);
+  BuildHistoryCL;
   // Делаем окно независимым и ставим его кнопку в панель задач
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
   // Назначаем событие выбора файла истории
-  ContactsComboBox.OnChange := ContactsComboBoxChange;
+  //ContactsComboBox.OnChange := ContactsComboBoxChange;
+  // Исправляем глюк со скролом в Win 7
+  HTMLHistoryViewer.VScrollBar.DoubleBuffered := False;
 end;
 
 {$ENDREGION}
@@ -397,26 +448,38 @@ begin
   JvXML_Create(JvXML);
   try
     with JvXML do
+    begin
+      if FileExists(V_ProfilePath + C_SettingsFileName) then
+        LoadFromFile(V_ProfilePath + C_SettingsFileName);
+      if Root <> nil then
       begin
-        if FileExists(V_ProfilePath + C_SettingsFileName) then
-          LoadFromFile(V_ProfilePath + C_SettingsFileName);
-        if Root <> nil then
-          begin
-            // Очищаем раздел формы истории если он есть
-            XML_Node := Root.Items.ItemNamed[C_HistoryForm];
-            if XML_Node <> nil then
-              XML_Node.Clear
-            else
-              XML_Node := Root.Items.Add(C_HistoryForm);
-            // Сохраняем позицию окна
-            XML_Node.Properties.Add('t', Top);
-            XML_Node.Properties.Add('l', Left);
-            XML_Node.Properties.Add('h', Height);
-            XML_Node.Properties.Add('w', Width);
-            // Записываем сам файл
-            SaveToFile(V_ProfilePath + C_SettingsFileName);
-          end;
+        // Очищаем раздел формы истории если он есть
+        XML_Node := Root.Items.ItemNamed[Self.Name];
+        if XML_Node <> nil then
+          XML_Node.Clear
+        else
+          XML_Node := Root.Items.Add(Self.Name);
+        // Сохраняем позицию окна
+        if WindowState = wsMaximized then
+        begin
+          XML_Node.Properties.Add(C_FM, True);
+          XML_Node.Properties.Add(C_FT, f_t);
+          XML_Node.Properties.Add(C_FL, f_l);
+          XML_Node.Properties.Add(C_FH, f_h);
+          XML_Node.Properties.Add(C_FW, f_w);
+        end
+        else
+        begin
+          XML_Node.Properties.Add(C_FM, False);
+          XML_Node.Properties.Add(C_FT, Top);
+          XML_Node.Properties.Add(C_FL, Left);
+          XML_Node.Properties.Add(C_FH, Height);
+          XML_Node.Properties.Add(C_FW, Width);
+        end;
       end;
+      // Записываем сам файл
+      SaveToFile(V_ProfilePath + C_SettingsFileName);
+    end;
   finally
     JvXML.Free;
   end;
@@ -424,12 +487,6 @@ end;
 
 {$ENDREGION}
 {$REGION 'Other'}
-
-procedure THistoryForm.CloseBitBtnClick(Sender: TObject);
-begin
-  // Закрываем окно с историей
-  Close;
-end;
 
 procedure THistoryForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -458,9 +515,9 @@ procedure THistoryForm.HTMLHistoryViewerKeyDown(Sender: TObject; var Key: Word; 
 begin
   // При нажатии клавиш контрл + с копируем выделенный текст в буфер обмена
   if (GetKeyState(VK_CONTROL) < 0) and (Key = 67) then
-    begin
-      HTMLHistoryViewer.CopyToClipboard;
-    end;
+  begin
+    HTMLHistoryViewer.CopyToClipboard;
+  end;
 end;
 
 procedure THistoryForm.HTMLHistoryViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -469,26 +526,255 @@ var
 begin
   // При движениях мыши определяем всплывание подсказок
   if (not MainForm.JvTimerList.Events[14].Enabled) and (Assigned(ActiveControl)) then
+  begin
+    if ActiveControl.Focused then
     begin
-      if ActiveControl.Focused then
-        begin
-          // Запоминаем вызывающий компонент и атрибут
-          SH_HTMLViewer := HTMLHistoryViewer;
-          TitleStr := HTMLHistoryViewer.TitleAttr;
-          // Проверяем содержимое атрибута
-          if TitleStr = EmptyStr then
-            SH_OldTitle := EmptyStr
-          else if TitleStr <> SH_OldTitle then
-            begin
-              SH_TimerCount := 0;
-              // Запускаем таймер показа подсказки с атрибутом
-              MainForm.JvTimerList.Events[14].Enabled := True;
-              SH_OldTitle := TitleStr;
-            end;
-        end;
+      // Запоминаем вызывающий компонент и атрибут
+      SH_HTMLViewer := HTMLHistoryViewer;
+      TitleStr := HTMLHistoryViewer.TitleAttr;
+      // Проверяем содержимое атрибута
+      if TitleStr = EmptyStr then
+        SH_OldTitle := EmptyStr
+      else if TitleStr <> SH_OldTitle then
+      begin
+        SH_TimerCount := 0;
+        // Запускаем таймер показа подсказки с атрибутом
+        MainForm.JvTimerList.Events[14].Enabled := True;
+        SH_OldTitle := TitleStr;
+      end;
     end;
+  end;
+end;
+
+procedure THistoryForm.CategoryButtonsButtonClicked(Sender: TObject; const Button: TButtonItem);
+var
+  Proto, HistoryFile, Doc: string;
+begin
+  // Сбрасываем выделение системной истории
+  HButtonGroup.ItemIndex := -1;
+  // Сбрасываем выделение с других протоколов
+  Proto := Button.Category.GroupType;
+  if Proto = C_Icq then
+  begin
+    Jab_HCategoryButtons.SelectedItem := nil;
+    Jab_HCategoryButtons.FocusedItem := nil;
+    MRA_HCategoryButtons.SelectedItem := nil;
+    MRA_HCategoryButtons.FocusedItem := nil;
+    Bim_HCategoryButtons.SelectedItem := nil;
+    Bim_HCategoryButtons.FocusedItem := nil;
+  end
+  else if Proto = C_Jabber then
+  begin
+    ICQ_HCategoryButtons.SelectedItem := nil;
+    ICQ_HCategoryButtons.FocusedItem := nil;
+    MRA_HCategoryButtons.SelectedItem := nil;
+    MRA_HCategoryButtons.FocusedItem := nil;
+    Bim_HCategoryButtons.SelectedItem := nil;
+    Bim_HCategoryButtons.FocusedItem := nil;
+  end
+  else if Proto = C_Mra then
+  begin
+    ICQ_HCategoryButtons.SelectedItem := nil;
+    ICQ_HCategoryButtons.FocusedItem := nil;
+    Jab_HCategoryButtons.SelectedItem := nil;
+    Jab_HCategoryButtons.FocusedItem := nil;
+    Bim_HCategoryButtons.SelectedItem := nil;
+    Bim_HCategoryButtons.FocusedItem := nil;
+  end
+  else if Proto = C_Bimoid then
+  begin
+    ICQ_HCategoryButtons.SelectedItem := nil;
+    ICQ_HCategoryButtons.FocusedItem := nil;
+    Jab_HCategoryButtons.SelectedItem := nil;
+    Jab_HCategoryButtons.FocusedItem := nil;
+    MRA_HCategoryButtons.SelectedItem := nil;
+    MRA_HCategoryButtons.FocusedItem := nil;
+  end;
+  // Очистили компонент истории и выводим надпись, что история загружается
+  HTMLHistoryViewer.Clear;
+  Doc := HTMLStyle;
+  Doc := Doc + Format(C_HistoryLoad, [Lang_Vars[116].L_S]);
+  LoadHTMLStrings(HTMLHistoryViewer, Doc);
+  HTMLHistoryViewer.Refresh;
+  // Загружаем файл истории сообщений
+  HistoryFile := Button.ContactType;
+  if FileExists(HistoryFile) then
+  begin
+    // Ичищаем компонент просмотра истории
+    HTMLHistoryViewer.Clear;
+    // Добавляем стили
+    Doc := HTMLStyle;
+    // Загружаем весь текст истории
+    Doc := Doc + ReadFromFile(HistoryFile, True);
+    // Применяем смайлы
+    if not V_TextSmilies then
+      CheckMessage_Smilies(Doc);
+    // Отображаем историю в компоненте
+    SetLength(Doc, Length(Doc) - 6);
+    LoadHTMLStrings(HTMLHistoryViewer, Doc);
+    // Ставим каретку в самый низ текста
+    HTMLHistoryViewer.VScrollBarPosition := HTMLHistoryViewer.VScrollBar.Max;
+    HTMLHistoryViewer.CaretPos := Length(HTMLHistoryViewer.DocumentSource);
+  end
+  else
+  begin
+    // Очистили компонент истории и выводим сообщение, что история не найдена
+    HTMLHistoryViewer.Clear;
+    Doc := HTMLStyle;
+    Doc := Doc + Format(C_HistoryInfo, [Lang_Vars[109].L_S]);
+    LoadHTMLStrings(HTMLHistoryViewer, Doc);
+  end;
 end;
 
 {$ENDREGION}
+{$REGION 'BuildHistoryCL'}
+
+procedure THistoryForm.BuildHistoryCL;
+var
+  I: Integer;
+  Folder: string;
+  CHF: TStringList;
+begin
+  // Строим КЛ истории
+  CHF := TStringList.Create;
+  try
+    if DirectoryExists(V_ProfilePath + C_HistoryFolder + C_Icq) then
+    begin
+      // Делаем панель видимой
+      ICQ_HCategoryPanel.Visible := True;
+      // Создаем группы из папок учёток
+      for Folder in TDirectory.GetDirectories(V_ProfilePath + C_HistoryFolder + C_Icq) do
+      begin
+        with ICQ_HCategoryButtons.Categories.Add do
+        begin
+          Caption := IcsExtractLastDir(Folder);
+          GroupCaption := Caption;
+          GroupType := C_Icq;
+          GroupImage := -1;
+          // Добавляем все файлы из этой директории
+          CHF.Clear;
+          ListFileInDir(V_ProfilePath + C_HistoryFolder + C_Icq + '\' + Caption + '\' + '*' + C_Htm_Ext, C_Htm_Ext, CHF);
+          for I := 0 to CHF.Count - 1 do
+          begin
+            with Items.Add do
+            begin
+              UIN := CHF.Strings[I];
+              Caption := UIN;
+              ContactType := V_ProfilePath + C_HistoryFolder + C_Icq + '\' + Category.Caption + '\' + UIN + C_Htm_Ext;
+              Hint := ContactType;
+              ImageIndex := 81;
+              XImageIndex := -1;
+              CImageIndex := -1;
+              PImageIndex := -1;
+            end;
+          end;
+        end;
+      end;
+    end;
+    if DirectoryExists(V_ProfilePath + C_HistoryFolder + C_Jabber) then
+    begin
+      // Делаем панель видимой
+      Jab_HCategoryPanel.Visible := True;
+      // Создаем группы из папок учёток
+      for Folder in TDirectory.GetDirectories(V_ProfilePath + C_HistoryFolder + C_Jabber) do
+      begin
+        with Jab_HCategoryButtons.Categories.Add do
+        begin
+          Caption := IcsExtractLastDir(Folder);
+          GroupCaption := Caption;
+          GroupType := C_Jabber;
+          GroupImage := -1;
+          // Добавляем все файлы из этой директории
+          CHF.Clear;
+          ListFileInDir(V_ProfilePath + C_HistoryFolder + C_Jabber + '\' + Caption + '\' + '*' + C_Htm_Ext, C_Htm_Ext, CHF);
+          for I := 0 to CHF.Count - 1 do
+          begin
+            with Items.Add do
+            begin
+              UIN := CHF.Strings[I];
+              Caption := UIN;
+              ContactType := V_ProfilePath + C_HistoryFolder + C_Jabber + '\' + Category.Caption + '\' + UIN + C_Htm_Ext;
+              Hint := ContactType;
+              ImageIndex := 43;
+              XImageIndex := -1;
+              CImageIndex := -1;
+              PImageIndex := -1;
+            end;
+          end;
+        end;
+      end;
+    end;
+    if DirectoryExists(V_ProfilePath + C_HistoryFolder + C_Mra) then
+    begin
+      // Делаем панель видимой
+      MRA_HCategoryPanel.Visible := True;
+      // Создаем группы из папок учёток
+      for Folder in TDirectory.GetDirectories(V_ProfilePath + C_HistoryFolder + C_Mra) do
+      begin
+        with MRA_HCategoryButtons.Categories.Add do
+        begin
+          Caption := IcsExtractLastDir(Folder);
+          GroupCaption := Caption;
+          GroupType := C_Mra;
+          GroupImage := -1;
+          // Добавляем все файлы из этой директории
+          CHF.Clear;
+          ListFileInDir(V_ProfilePath + C_HistoryFolder + C_Mra + '\' + Caption + '\' + '*' + C_Htm_Ext, C_Htm_Ext, CHF);
+          for I := 0 to CHF.Count - 1 do
+          begin
+            with Items.Add do
+            begin
+              UIN := CHF.Strings[I];
+              Caption := UIN;
+              ContactType := V_ProfilePath + C_HistoryFolder + C_Mra + '\' + Category.Caption + '\' + UIN + C_Htm_Ext;
+              Hint := ContactType;
+              ImageIndex := 66;
+              XImageIndex := -1;
+              CImageIndex := -1;
+              PImageIndex := -1;
+            end;
+          end;
+        end;
+      end;
+    end;
+    if DirectoryExists(V_ProfilePath + C_HistoryFolder + C_Bimoid) then
+    begin
+      // Делаем панель видимой
+      Bim_HCategoryPanel.Visible := True;
+      // Создаем группы из папок учёток
+      for Folder in TDirectory.GetDirectories(V_ProfilePath + C_HistoryFolder + C_Bimoid) do
+      begin
+        with Bim_HCategoryButtons.Categories.Add do
+        begin
+          Caption := IcsExtractLastDir(Folder);
+          GroupCaption := Caption;
+          GroupType := C_Bimoid;
+          GroupImage := -1;
+          // Добавляем все файлы из этой директории
+          CHF.Clear;
+          ListFileInDir(V_ProfilePath + C_HistoryFolder + C_Bimoid + '\' + Caption + '\' + '*' + C_Htm_Ext, C_Htm_Ext, CHF);
+          for I := 0 to CHF.Count - 1 do
+          begin
+            with Items.Add do
+            begin
+              UIN := CHF.Strings[I];
+              Caption := UIN;
+              ContactType := V_ProfilePath + C_HistoryFolder + C_Bimoid + '\' + Category.Caption + '\' + UIN + C_Htm_Ext;
+              Hint := ContactType;
+              ImageIndex := 297;
+              XImageIndex := -1;
+              CImageIndex := -1;
+              PImageIndex := -1;
+            end;
+          end;
+        end;
+      end;
+    end;
+  finally
+    CHF.Free;
+  end;
+end;
+{$ENDREGION}
 
 end.
+

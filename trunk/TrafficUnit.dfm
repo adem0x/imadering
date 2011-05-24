@@ -6,6 +6,7 @@ object TrafficForm: TTrafficForm
   ClientHeight = 171
   ClientWidth = 430
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,7 +14,7 @@ object TrafficForm: TTrafficForm
   Font.Style = []
   HelpFile = 'T'
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate

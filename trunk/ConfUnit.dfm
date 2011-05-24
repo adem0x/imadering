@@ -6,6 +6,7 @@ object ConfForm: TConfForm
   ClientHeight = 229
   ClientWidth = 369
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -14,6 +15,7 @@ object ConfForm: TConfForm
   HelpFile = 'T'
   OldCreateOrder = False
   Position = poScreenCenter
+  Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
   OnDblClick = FormDblClick
@@ -31,6 +33,7 @@ object ConfForm: TConfForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
+    TabStop = True
     object ConfServerLabel: TLabel
       Left = 63
       Top = 30

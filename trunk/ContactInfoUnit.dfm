@@ -6,6 +6,7 @@ object ContactInfoForm: TContactInfoForm
   ClientHeight = 418
   ClientWidth = 561
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

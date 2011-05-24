@@ -6,6 +6,7 @@ object MraOptionsForm: TMraOptionsForm
   ClientHeight = 413
   ClientWidth = 597
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,7 +14,7 @@ object MraOptionsForm: TMraOptionsForm
   Font.Style = []
   HelpFile = 'T'
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate
   OnDblClick = FormDblClick
@@ -74,7 +75,7 @@ object MraOptionsForm: TMraOptionsForm
         ImageIndex = 162
       end
       item
-        ImageIndex = 171
+        ImageIndex = 274
       end
       item
         ImageIndex = 172
@@ -101,7 +102,7 @@ object MraOptionsForm: TMraOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = ConnectPage
+      ActivePage = AccountPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -110,7 +111,6 @@ object MraOptionsForm: TMraOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -283,7 +283,6 @@ object MraOptionsForm: TMraOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ConnectPage'
         object ServerGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -365,21 +364,18 @@ object MraOptionsForm: TMraOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'OptionsPage'
       end
       object IDClientPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'IDClientPage'
       end
       object ConsolePage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ConsolePage'
       end
     end
   end

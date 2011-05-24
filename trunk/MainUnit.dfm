@@ -3,8 +3,8 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   ClientHeight = 401
-  ClientWidth = 282
-  Color = clWhite
+  ClientWidth = 305
+  Color = clBtnFace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 100
   Font.Charset = DEFAULT_CHARSET
@@ -27,17 +27,12 @@ object MainForm: TMainForm
   PixelsPerInch = 96
   TextHeight = 13
   object ContactList: TCategoryButtons
-    AlignWithMargins = True
     Left = 0
     Top = 26
-    Width = 282
-    Height = 350
-    Margins.Left = 0
-    Margins.Top = 1
-    Margins.Right = 0
-    Margins.Bottom = 0
-    Align = alClient
-    BackgroundGradientDirection = gdVertical
+    Width = 305
+    Height = 127
+    Align = alTop
+    BackgroundGradientColor = clWhite
     BevelInner = bvNone
     BevelOuter = bvNone
     BorderStyle = bsNone
@@ -45,6 +40,7 @@ object MainForm: TMainForm
     ButtonHeight = 20
     ButtonOptions = [boFullSize, boGradientFill, boShowCaptions, boBoldCaptions, boUsePlusMinus, boCaptionOnlyBorder]
     Categories = <>
+    Color = clWhite
     DoubleBuffered = True
     GradientDirection = gdVertical
     Images = AllImageList
@@ -64,7 +60,7 @@ object MainForm: TMainForm
   object BottomToolBar: TToolBar
     Left = 0
     Top = 376
-    Width = 282
+    Width = 305
     Height = 25
     Align = alBottom
     Color = clBtnFace
@@ -79,7 +75,6 @@ object MainForm: TMainForm
     Wrapable = False
     OnMouseDown = BottomToolBarMouseDown
     object MainToolButton: TToolButton
-      Tag = 1
       Left = 0
       Top = 0
       ImageIndex = 0
@@ -90,7 +85,6 @@ object MainForm: TMainForm
       OnContextPopup = MainToolButtonContextPopup
     end
     object ICQToolButton: TToolButton
-      Tag = 2
       Left = 23
       Top = 0
       ImageIndex = 9
@@ -101,21 +95,8 @@ object MainForm: TMainForm
       OnClick = ICQToolButtonClick
       OnContextPopup = ICQToolButtonContextPopup
     end
-    object MRAToolButton: TToolButton
-      Tag = 3
-      Left = 46
-      Top = 0
-      ImageIndex = 23
-      ParentShowHint = False
-      PopupMenu = MRAPopupMenu
-      ShowHint = True
-      Visible = False
-      OnClick = MRAToolButtonClick
-      OnContextPopup = MRAToolButtonContextPopup
-    end
     object JabberToolButton: TToolButton
-      Tag = 4
-      Left = 69
+      Left = 46
       Top = 0
       ImageIndex = 30
       ParentShowHint = False
@@ -125,8 +106,30 @@ object MainForm: TMainForm
       OnClick = JabberToolButtonClick
       OnContextPopup = JabberToolButtonContextPopup
     end
-    object OnlyOnlineContactsToolButton: TToolButton
+    object MRAToolButton: TToolButton
+      Left = 69
+      Top = 0
+      ImageIndex = 23
+      ParentShowHint = False
+      PopupMenu = MRAPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = MRAToolButtonClick
+      OnContextPopup = MRAToolButtonContextPopup
+    end
+    object BimoidToolButton: TToolButton
       Left = 92
+      Top = 0
+      ImageIndex = 298
+      ParentShowHint = False
+      PopupMenu = BimoidPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = BimoidToolButtonClick
+      OnContextPopup = BimoidToolButtonContextPopup
+    end
+    object OnlyOnlineContactsToolButton: TToolButton
+      Left = 115
       Top = 0
       ImageIndex = 138
       ParentShowHint = False
@@ -137,7 +140,7 @@ object MainForm: TMainForm
       OnClick = OnlyOnlineContactsToolButtonClick
     end
     object SoundOnOffToolButton: TToolButton
-      Left = 115
+      Left = 138
       Top = 0
       ImageIndex = 135
       ParentShowHint = False
@@ -148,7 +151,7 @@ object MainForm: TMainForm
       OnClick = SoundOnOffToolButtonClick
     end
     object HistoryToolButton: TToolButton
-      Left = 138
+      Left = 161
       Top = 0
       ImageIndex = 147
       ParentShowHint = False
@@ -158,7 +161,7 @@ object MainForm: TMainForm
       OnClick = History_MenuClick
     end
     object SettingsToolButton: TToolButton
-      Left = 161
+      Left = 184
       Top = 0
       ImageIndex = 2
       ParentShowHint = False
@@ -168,7 +171,7 @@ object MainForm: TMainForm
       OnClick = Settings_MenuClick
     end
     object CLSearchToolButton: TToolButton
-      Left = 184
+      Left = 207
       Top = 0
       ImageIndex = 215
       ParentShowHint = False
@@ -178,7 +181,7 @@ object MainForm: TMainForm
       OnClick = SearchInCL_MenuClick
     end
     object TrafficToolButton: TToolButton
-      Left = 207
+      Left = 230
       Top = 0
       ImageIndex = 226
       ParentShowHint = False
@@ -188,7 +191,7 @@ object MainForm: TMainForm
       OnClick = Traffic_MenuClick
     end
     object TopPanelToolButton: TToolButton
-      Left = 230
+      Left = 253
       Top = 0
       Down = True
       ImageIndex = 244
@@ -198,12 +201,28 @@ object MainForm: TMainForm
       Style = tbsCheck
       OnClick = TopPanelToolButtonClick
     end
+    object PluginsToolButton: TToolButton
+      Left = 276
+      Top = 0
+      ImageIndex = 184
+      ParentShowHint = False
+      PopupMenu = PluginsPopupMenu
+      ShowHint = True
+      Visible = False
+      OnClick = PluginsToolButtonClick
+      OnContextPopup = PluginsToolButtonContextPopup
+    end
   end
   object TopToolBar: TToolBar
+    AlignWithMargins = True
     Left = 0
-    Top = 0
-    Width = 282
+    Top = 1
+    Width = 305
     Height = 25
+    Margins.Left = 0
+    Margins.Top = 1
+    Margins.Right = 0
+    Margins.Bottom = 0
     Color = clBtnFace
     DoubleBuffered = True
     EdgeBorders = [ebBottom]
@@ -292,9 +311,213 @@ object MainForm: TMainForm
       OnClick = TopModeToolButtonClick
     end
   end
+  object NewMessPanel: TPanel
+    Left = 0
+    Top = 358
+    Width = 305
+    Height = 18
+    Cursor = crHandPoint
+    Align = alBottom
+    BevelEdges = [beTop]
+    BevelKind = bkTile
+    BevelOuter = bvNone
+    Color = clInfoBk
+    DoubleBuffered = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentDoubleBuffered = False
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 3
+    Visible = False
+    OnClick = NewMessPanelClick
+  end
+  object HCategoryPanelGroup: TCategoryPanelGroup
+    Left = 0
+    Top = 153
+    Width = 305
+    Height = 205
+    HorzScrollBar.Visible = False
+    VertScrollBar.Tracking = True
+    VertScrollBar.Visible = False
+    Align = alClient
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    Color = clBtnFace
+    Ctl3D = True
+    GradientBaseColor = clWhite
+    GradientColor = clActiveBorder
+    HeaderFont.Charset = DEFAULT_CHARSET
+    HeaderFont.Color = clWindowText
+    HeaderFont.Height = -11
+    HeaderFont.Name = 'Tahoma'
+    HeaderFont.Style = []
+    HeaderHeight = 20
+    Images = AllImageList
+    ParentCtl3D = False
+    TabOrder = 4
+    OnCanResize = HCategoryPanelGroupCanResize
+    object Bim_HCategoryPanel: TCategoryPanel
+      Top = 270
+      Height = 90
+      Caption = 'Bimoid'
+      Color = clWhite
+      CollapsedHotImageIndex = 251
+      CollapsedImageIndex = 251
+      CollapsedPressedImageIndex = 251
+      ExpandedHotImageIndex = 252
+      ExpandedImageIndex = 252
+      ExpandedPressedImageIndex = 252
+      TabOrder = 0
+      Visible = False
+      object Bim_HCategoryButtons: TCategoryButtons
+        Left = 0
+        Top = 0
+        Width = 301
+        Height = 68
+        Align = alClient
+        BackgroundGradientColor = clWhite
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        ButtonFlow = cbfVertical
+        ButtonHeight = 20
+        ButtonOptions = [boFullSize, boGradientFill, boShowCaptions, boBoldCaptions, boUsePlusMinus, boCaptionOnlyBorder]
+        Categories = <>
+        DoubleBuffered = True
+        GradientDirection = gdVertical
+        Images = AllImageList
+        ParentDoubleBuffered = False
+        RegularButtonColor = clWhite
+        SelectedButtonColor = 15717318
+        ShowHint = True
+        TabOrder = 0
+        TabStop = False
+      end
+    end
+    object MRA_HCategoryPanel: TCategoryPanel
+      Top = 180
+      Height = 90
+      Caption = 'MRA'
+      Color = clWhite
+      CollapsedHotImageIndex = 251
+      CollapsedImageIndex = 251
+      CollapsedPressedImageIndex = 251
+      ExpandedHotImageIndex = 252
+      ExpandedImageIndex = 252
+      ExpandedPressedImageIndex = 252
+      TabOrder = 1
+      Visible = False
+      object MRA_HCategoryButtons: TCategoryButtons
+        Left = 0
+        Top = 0
+        Width = 301
+        Height = 68
+        Align = alClient
+        BackgroundGradientColor = clWhite
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        ButtonFlow = cbfVertical
+        ButtonHeight = 20
+        ButtonOptions = [boFullSize, boGradientFill, boShowCaptions, boBoldCaptions, boUsePlusMinus, boCaptionOnlyBorder]
+        Categories = <>
+        DoubleBuffered = True
+        GradientDirection = gdVertical
+        Images = AllImageList
+        ParentDoubleBuffered = False
+        RegularButtonColor = clWhite
+        SelectedButtonColor = 15717318
+        ShowHint = True
+        TabOrder = 0
+        TabStop = False
+      end
+    end
+    object Jab_HCategoryPanel: TCategoryPanel
+      Top = 90
+      Height = 90
+      Caption = 'Jabber'
+      Color = clWhite
+      CollapsedHotImageIndex = 251
+      CollapsedImageIndex = 251
+      CollapsedPressedImageIndex = 251
+      ExpandedHotImageIndex = 252
+      ExpandedImageIndex = 252
+      ExpandedPressedImageIndex = 252
+      TabOrder = 2
+      Visible = False
+      object Jab_HCategoryButtons: TCategoryButtons
+        Left = 0
+        Top = 0
+        Width = 301
+        Height = 68
+        Align = alClient
+        BackgroundGradientColor = clWhite
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        ButtonFlow = cbfVertical
+        ButtonHeight = 20
+        ButtonOptions = [boFullSize, boGradientFill, boShowCaptions, boBoldCaptions, boUsePlusMinus, boCaptionOnlyBorder]
+        Categories = <>
+        DoubleBuffered = True
+        GradientDirection = gdVertical
+        Images = AllImageList
+        ParentDoubleBuffered = False
+        RegularButtonColor = clWhite
+        SelectedButtonColor = 15717318
+        ShowHint = True
+        TabOrder = 0
+        TabStop = False
+      end
+    end
+    object ICQ_HCategoryPanel: TCategoryPanel
+      Top = 0
+      Height = 90
+      Caption = 'ICQ'
+      Color = clWhite
+      CollapsedHotImageIndex = 251
+      CollapsedImageIndex = 251
+      CollapsedPressedImageIndex = 251
+      ExpandedHotImageIndex = 252
+      ExpandedImageIndex = 252
+      ExpandedPressedImageIndex = 252
+      TabOrder = 3
+      Visible = False
+      object ICQ_HCategoryButtons: TCategoryButtons
+        Left = 0
+        Top = 0
+        Width = 301
+        Height = 68
+        Align = alClient
+        BackgroundGradientColor = clWhite
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        ButtonFlow = cbfVertical
+        ButtonHeight = 20
+        ButtonOptions = [boFullSize, boGradientFill, boShowCaptions, boBoldCaptions, boUsePlusMinus, boCaptionOnlyBorder]
+        Categories = <>
+        DoubleBuffered = True
+        GradientDirection = gdVertical
+        Images = AllImageList
+        ParentDoubleBuffered = False
+        RegularButtonColor = clWhite
+        SelectedButtonColor = 15717318
+        ShowHint = True
+        TabOrder = 0
+        TabStop = False
+      end
+    end
+  end
   object AllImageList: TImageList
-    Left = 16
-    Top = 296
+    Left = 200
+    Top = 48
   end
   object JvTimerList: TJvTimerList
     Events = <
@@ -397,16 +620,27 @@ object MainForm: TMainForm
         Enabled = False
         Interval = 100
         OnTimer = JvTimerListEvents15Timer
+      end
+      item
+        Name = 'ICQBos Connect Timer'
+        Cycled = False
+        Enabled = False
+        OnTimer = JvTimerListEvents16Timer
+      end
+      item
+        Name = 'Plugins Data Timer'
+        Enabled = False
+        OnTimer = JvTimerListEvents17Timer
       end>
-    Left = 16
-    Top = 184
+    Left = 168
+    Top = 80
   end
   object MainPopupMenu: TPopupMenu
     AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
     Left = 16
-    Top = 328
+    Top = 288
     object OpenGame_Menu: TMenuItem
       ImageIndex = 60
       OnClick = OpenGame_MenuClick
@@ -454,10 +688,6 @@ object MainForm: TMainForm
     object Settings_Menu: TMenuItem
       ImageIndex = 2
       OnClick = Settings_MenuClick
-    end
-    object ShowLog_Menu: TMenuItem
-      ImageIndex = 245
-      OnClick = ShowLog_MenuClick
     end
     object N29: TMenuItem
       Caption = '-'
@@ -634,6 +864,7 @@ object MainForm: TMainForm
     ListenBacklog = 5
     ReqVerLow = 1
     ReqVerHigh = 1
+    OnError = ICQAvatarWSocketError
     OnBgException = SocketBgException
     Left = 48
     Top = 32
@@ -676,7 +907,7 @@ object MainForm: TMainForm
     Images = AllImageList
     OnPopup = ContactListPopupMenuPopup
     Left = 16
-    Top = 240
+    Top = 232
     object OpenGroupsCL: TMenuItem
       ImageIndex = 151
       OnClick = OpenGroupsCLClick
@@ -726,14 +957,27 @@ object MainForm: TMainForm
     AutoPopup = False
     Images = AllImageList
     Left = 48
-    Top = 328
+    Top = 288
     object ICQSettings: TMenuItem
       ImageIndex = 160
       OnClick = ICQSettingsClick
     end
+    object MyICQDetails_Menu: TMenuItem
+      ImageIndex = 178
+      object ShowMyICQDetails_Menu: TMenuItem
+        ImageIndex = 178
+        OnClick = ShowMyICQDetails_MenuClick
+      end
+      object ChangeMyICQDetails_Menu: TMenuItem
+        ImageIndex = 178
+        OnClick = ChangeMyICQDetails_MenuClick
+      end
+    end
     object ICQ_Addition: TMenuItem
       ImageIndex = 274
-      object TMenuItem
+      object UnstableICQStatus: TMenuItem
+        ImageIndex = 230
+        OnClick = UnstableICQStatusClick
       end
     end
     object N16: TMenuItem
@@ -835,11 +1079,21 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
-    Left = 80
-    Top = 328
+    Left = 112
+    Top = 288
     object MRASettings: TMenuItem
       ImageIndex = 160
       OnClick = MRASettingsClick
+    end
+    object MyMRADetails_Menu: TMenuItem
+      ImageIndex = 178
+      object ShowMyMRADetails_Menu: TMenuItem
+        ImageIndex = 178
+        OnClick = ShowMyMRADetails_MenuClick
+      end
+      object ChangeMyMRADetails_Menu: TMenuItem
+        ImageIndex = 178
+      end
     end
     object MRA_Addition: TMenuItem
       ImageIndex = 274
@@ -945,11 +1199,22 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     AutoPopup = False
     Images = AllImageList
-    Left = 112
-    Top = 328
+    Left = 80
+    Top = 288
     object JabberSettings: TMenuItem
       ImageIndex = 160
       OnClick = JabberSettingsClick
+    end
+    object MyJabberDetails_Menu: TMenuItem
+      ImageIndex = 178
+      object ShowMyJabberDetails_Menu: TMenuItem
+        ImageIndex = 178
+        OnClick = ShowMyJabberDetails_MenuClick
+      end
+      object ChangeMyJabberDetails_Menu: TMenuItem
+        ImageIndex = 178
+        OnClick = ChangeMyJabberDetails_MenuClick
+      end
     end
     object Jabber_Addition: TMenuItem
       ImageIndex = 274
@@ -1058,7 +1323,7 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     Left = 48
-    Top = 240
+    Top = 232
     object SendMessageForContact: TMenuItem
       ImageIndex = 163
       OnClick = SendMessageForContactClick
@@ -1075,16 +1340,16 @@ object MainForm: TMainForm
       ImageIndex = 172
       OnClick = CheckStatusContactClick
     end
+    object ReqAuthContact: TMenuItem
+      ImageIndex = 277
+      OnClick = ReqAuthContactClick
+    end
     object N21: TMenuItem
       Caption = '-'
     end
     object AnketaContact: TMenuItem
       ImageIndex = 178
       OnClick = AnketaContactClick
-    end
-    object UniqContactSettingsMenu: TMenuItem
-      ImageIndex = 247
-      OnClick = UniqContactSettingsMenuClick
     end
     object HistoryContact: TMenuItem
       ImageIndex = 147
@@ -1113,49 +1378,23 @@ object MainForm: TMainForm
     object N27: TMenuItem
       Caption = '-'
     end
-    object FloatContactMenu: TMenuItem
-      ImageIndex = 248
-      OnClick = FloatContactMenuClick
-    end
-    object N23: TMenuItem
-      Caption = '-'
-    end
     object NextContactMenu: TMenuItem
       ImageIndex = 223
       object GrandAuthContact: TMenuItem
         ImageIndex = 140
         OnClick = GrandAuthContactClick
       end
-      object SendAddContact: TMenuItem
-        OnClick = SendAddContactClick
-      end
       object DelYourSelfContact: TMenuItem
         ImageIndex = 139
         OnClick = DelYourSelfContactClick
       end
-      object SendInviteContact: TMenuItem
-        OnClick = SendInviteContactClick
-      end
     end
-  end
-  object RightICQPopupMenu: TPopupMenu
-    AutoHotkeys = maManual
-    AutoPopup = False
-    Images = AllImageList
-    OnPopup = RightICQPopupMenuPopup
-    Left = 48
-    Top = 296
-    object PingICQServer: TMenuItem
-      ImageIndex = 162
-      OnClick = PingICQServerClick
+    object N23: TMenuItem
+      Caption = '-'
     end
-    object UnstableICQStatus: TMenuItem
-      ImageIndex = 230
-      OnClick = UnstableICQStatusClick
-    end
-    object DumpICQ: TMenuItem
-      ImageIndex = 171
-      OnClick = DumpICQClick
+    object FloatContactMenu: TMenuItem
+      ImageIndex = 248
+      OnClick = FloatContactMenuClick
     end
   end
   object MRA_PhotoClient: THttpCli
@@ -1187,61 +1426,13 @@ object MainForm: TMainForm
     Left = 48
     Top = 64
   end
-  object RightMRAPopupMenu: TPopupMenu
-    AutoHotkeys = maManual
-    AutoPopup = False
-    Images = AllImageList
-    Left = 80
-    Top = 296
-    object PingMRAServer: TMenuItem
-      ImageIndex = 162
-    end
-    object UnstableMRAStatus: TMenuItem
-      ImageIndex = 230
-    end
-    object DumpMRA: TMenuItem
-      ImageIndex = 171
-      OnClick = DumpMRAClick
-    end
-  end
-  object RightJabberPopupMenu: TPopupMenu
-    AutoHotkeys = maManual
-    AutoPopup = False
-    Images = AllImageList
-    Left = 112
-    Top = 296
-    object PingJabberServer: TMenuItem
-      ImageIndex = 162
-    end
-    object UnstableJabberStatus: TMenuItem
-      ImageIndex = 230
-    end
-    object DumpJabber: TMenuItem
-      ImageIndex = 171
-      OnClick = DumpJabberClick
-    end
-  end
-  object MainActionList: TActionList
-    Left = 192
-    Top = 48
-    object CloseActiveFormAction: TAction
-      Caption = 'CloseActiveFormAction'
-      ShortCut = 27
-      OnExecute = CloseActiveFormActionExecute
-    end
-    object ChatTabCloseAction: TAction
-      Caption = 'ChatTabCloseAction'
-      ShortCut = 32883
-      OnExecute = ChatTabCloseActionExecute
-    end
-  end
   object TopPanelPopupMenu: TPopupMenu
     Alignment = paRight
     AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
-    Left = 192
-    Top = 160
+    Left = 200
+    Top = 144
     object TopMainButtonONMenu: TMenuItem
       ImageIndex = 230
       OnClick = TopMainButtonONMenuClick
@@ -1281,8 +1472,8 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Images = AllImageList
     OnPopup = BottomPanelPopupMenuPopup
-    Left = 192
-    Top = 192
+    Left = 200
+    Top = 176
     object MainButtonONMenu: TMenuItem
       Checked = True
       ImageIndex = 140
@@ -1335,11 +1526,6 @@ object MainForm: TMainForm
     Left = 136
     Top = 48
   end
-  object IMaderingEvents: TApplicationEvents
-    OnException = IMaderingEventsException
-    Left = 192
-    Top = 80
-  end
   object TrayIcon: TTrayIcon
     Icons = AllImageList
     PopupMenu = TrayPopupMenu
@@ -1351,6 +1537,7 @@ object MainForm: TMainForm
   object TrayPopupMenu: TPopupMenu
     AutoHotkeys = maManual
     Images = AllImageList
+    OnPopup = TrayPopupMenuPopup
     Left = 136
     Top = 192
     object HideInTray_MenuTray: TMenuItem
@@ -1365,52 +1552,64 @@ object MainForm: TMainForm
       Visible = False
       object AllStatusFFC: TMenuItem
         ImageIndex = 262
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusEvil: TMenuItem
         ImageIndex = 264
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusDepres: TMenuItem
         ImageIndex = 263
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusHome: TMenuItem
         ImageIndex = 265
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusWork: TMenuItem
         ImageIndex = 266
+        OnClick = AllStatusOfflineClick
       end
       object N41: TMenuItem
         Caption = '-'
       end
       object AllStatusLunch: TMenuItem
         ImageIndex = 261
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusAway: TMenuItem
         ImageIndex = 255
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusNA: TMenuItem
         ImageIndex = 260
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusOccupied: TMenuItem
         ImageIndex = 258
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusDND: TMenuItem
         ImageIndex = 259
+        OnClick = AllStatusOfflineClick
       end
       object N35: TMenuItem
         Caption = '-'
       end
       object AllStatusOnline: TMenuItem
         ImageIndex = 254
+        OnClick = AllStatusOfflineClick
       end
       object AllStatusInvisible: TMenuItem
         ImageIndex = 257
+        OnClick = AllStatusOfflineClick
       end
       object N32: TMenuItem
         Caption = '-'
       end
       object AllStatusOffline: TMenuItem
-        Default = True
         ImageIndex = 256
+        OnClick = AllStatusOfflineClick
       end
     end
     object N28: TMenuItem
@@ -1420,10 +1619,6 @@ object MainForm: TMainForm
       ImageIndex = 2
       Visible = False
       OnClick = Settings_MenuClick
-    end
-    object ShowLog_MenuTray: TMenuItem
-      ImageIndex = 245
-      OnClick = ShowLog_MenuClick
     end
     object N24: TMenuItem
       Caption = '-'
@@ -1476,5 +1671,133 @@ object MainForm: TMainForm
       'Unicode')
     Left = 136
     Top = 80
+  end
+  object BimoidPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
+    AutoPopup = False
+    Images = AllImageList
+    Left = 144
+    Top = 288
+    object Bim_Settings: TMenuItem
+      ImageIndex = 160
+      OnClick = Bim_SettingsClick
+    end
+    object MyBimoidDetails_Menu: TMenuItem
+      ImageIndex = 178
+      object ShowMyBimoidDetails_Menu: TMenuItem
+        ImageIndex = 178
+        OnClick = ShowMyBimoidDetails_MenuClick
+      end
+      object ChangeMyBimoidDetails_Menu: TMenuItem
+        ImageIndex = 178
+      end
+    end
+    object Bim_Addition: TMenuItem
+      ImageIndex = 274
+      object TMenuItem
+      end
+    end
+    object MenuItem3: TMenuItem
+      Caption = '-'
+    end
+    object Bim_SearchNewContact: TMenuItem
+      ImageIndex = 235
+    end
+    object MenuItem5: TMenuItem
+      Caption = '-'
+    end
+    object Bim_AddGroup: TMenuItem
+      ImageIndex = 153
+    end
+    object Bim_AddContact: TMenuItem
+      ImageIndex = 143
+    end
+    object MenuItem8: TMenuItem
+      Caption = '-'
+    end
+    object Bim_XStatus: TMenuItem
+      ImageIndex = 44
+    end
+    object MenuItem10: TMenuItem
+      Caption = '-'
+    end
+    object Bim_StatusFFC: TMenuItem
+      ImageIndex = 310
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusHome: TMenuItem
+      ImageIndex = 308
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusWork: TMenuItem
+      ImageIndex = 309
+      OnClick = Bim_StatusOnlineClick
+    end
+    object MenuItem16: TMenuItem
+      Caption = '-'
+    end
+    object Bim_StatusLunch: TMenuItem
+      ImageIndex = 307
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusAway: TMenuItem
+      ImageIndex = 303
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusNA: TMenuItem
+      ImageIndex = 304
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusOccupied: TMenuItem
+      ImageIndex = 305
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusDND: TMenuItem
+      ImageIndex = 306
+      OnClick = Bim_StatusOnlineClick
+    end
+    object MenuItem22: TMenuItem
+      Caption = '-'
+    end
+    object Bim_StatusOnline: TMenuItem
+      ImageIndex = 297
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusInvisible: TMenuItem
+      ImageIndex = 301
+      OnClick = Bim_StatusOnlineClick
+    end
+    object Bim_StatusInvisibleForAll: TMenuItem
+      ImageIndex = 302
+      OnClick = Bim_StatusOnlineClick
+    end
+    object MenuItem26: TMenuItem
+      Caption = '-'
+    end
+    object Bim_StatusOffline: TMenuItem
+      Default = True
+      ImageIndex = 298
+      OnClick = Bim_StatusOfflineClick
+    end
+  end
+  object JvPluginManager: TJvPluginManager
+    Extension = 'dll'
+    PluginKind = plgDLL
+    ShowLoadPluginErrors = True
+    OnNewCommand = JvPluginManagerNewCommand
+    OnPlugInError = JvPluginManagerPlugInError
+    Left = 168
+    Top = 48
+  end
+  object PluginsPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
+    AutoPopup = False
+    Images = PluginsImageList
+    Left = 232
+    Top = 288
+  end
+  object PluginsImageList: TImageList
+    Left = 232
+    Top = 256
   end
 end

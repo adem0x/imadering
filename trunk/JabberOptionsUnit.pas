@@ -109,7 +109,6 @@ type
     EyeDisableCheckBox: TCheckBox;
     EyeInfoRichEdit: TRichEdit;
     EyeListView: TListView;
-    JvStandardPage1: TJvStandardPage;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure JIDonserverLabelMouseEnter(Sender: TObject);
@@ -197,7 +196,7 @@ begin
             PassEdit.Text := XML_Node.Properties.Value(C_Pass);
             if PassEdit.Text <> EmptyStr then
             begin
-              PassEdit.Hint := URLDecode(Base64Decode(PassEdit.Text));
+              PassEdit.HelpKeyword := URLDecode(Base64Decode(PassEdit.Text));
               PassEdit.Text := C_MaskPass;
             end;
             PassEdit.OnChange := PassEditChange;
@@ -241,13 +240,13 @@ begin
       ClearContacts(C_Jabber); // Очищаем контакты предыдущего аккаунта
       Jabber_JID := JabberJIDEdit.Text;
     end;
-    Jabber_LoginPassword := PassEdit.Hint;
+    Jabber_LoginPassword := PassEdit.HelpKeyword;
     // Разбираем JID на логин и сервер
-    Jabber_LoginUIN := Parse(C_EE, Jabber_JID, 1);
-    Jabber_ServerAddr := Parse(C_EE, Jabber_JID, 2);
+    Jabber_LoginUIN := Parse('@', Jabber_JID, 1);
+    Jabber_ServerAddr := Parse('@', Jabber_JID, 2);
     // Делаем подсказку
     if Jabber_JID <> EmptyStr then
-      MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]) + C_BN + C_NN + C_BN + C_QN + Jabber_JID + C_EN
+      MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]) + ' ' + '-' + ' ' + '[' + Jabber_JID + ']'
     else
       MainForm.JabberToolButton.Hint := Format(C_AS, [C_Jabber]);
   end;
@@ -293,7 +292,7 @@ begin
         XML_Node.Properties.Add(C_Login, JabberJIDEdit.Text);
         XML_Node.Properties.Add(C_SavePass, SavePassCheckBox.Checked);
         if SavePassCheckBox.Checked then
-          XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.Hint)))
+          XML_Node.Properties.Add(C_Pass, Base64Encode(URLEncode(PassEdit.HelpKeyword)))
         else
         begin
           XML_Node.Properties.Add(C_Pass, EmptyStr);
@@ -301,7 +300,11 @@ begin
         end;
         // Маскируем пароль
         if PassEdit.Text <> EmptyStr then
+        begin
+          PassEdit.OnChange := nil;
           PassEdit.Text := C_MaskPass;
+          PassEdit.OnChange := PassEditChange;
+        end;
         // --------------------------------------------------------------------------
         // Сохраняем настройки сервера
         Sub_Node := XML_Node.Items.Add(C_CustomServer);
@@ -351,7 +354,7 @@ begin
             // Загружаем инфы
             Sub_Node := XML_Node.Items.ItemNamed[DumpInfoRichEdit.Name];
             if Sub_Node <> nil then
-              DumpInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value(C_CS));
+              DumpInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
             Sub_Node := XML_Node.Items.ItemNamed[EyeInfoRichEdit.Name];
             if Sub_Node <> nil then
               EyeInfoRichEdit.Lines.Text := CheckText_RN(Sub_Node.Properties.Value('c'));
@@ -435,8 +438,8 @@ begin
   // Применяем настройки
   ApplySettings;
   // Подгружаем произвольный пакет
-  if FileExists(V_ProfilePath + C_Jabber + C_BN + C_PacketFileName) then
-    SendCustomXMLPacketRichEdit.Lines.LoadFromFile(V_ProfilePath + C_Jabber + C_BN + C_PacketFileName);
+  if FileExists(V_ProfilePath + C_Jabber + ' ' + C_PacketFileName) then
+    SendCustomXMLPacketRichEdit.Lines.LoadFromFile(V_ProfilePath + C_Jabber + ' ' + C_PacketFileName);
 end;
 
 {$ENDREGION}
@@ -608,7 +611,7 @@ end;
 
 procedure TJabberOptionsForm.PassEditChange(Sender: TObject);
 begin
-  PassEdit.Hint := PassEdit.Text;
+  PassEdit.HelpKeyword := PassEdit.Text;
   // Активируем кнопку применения настроек
   ApplyButton.Enabled := True;
 end;
@@ -635,7 +638,7 @@ var
   S: string;
 begin
   // Открываем регистрацию нового аккаунта на сайте
-  S := Parse(C_EE, JabberJIDEdit.Text, 2);
+  S := Parse('@', JabberJIDEdit.Text, 2);
   if S <> EmptyStr then
     OpenURL(S);
 end;
@@ -648,7 +651,7 @@ var
   Pkt: string;
 begin
   // Сохраняем пакет локально для дальнейшего использования
-  SendCustomXMLPacketRichEdit.Lines.SaveToFile(V_ProfilePath + C_Jabber + C_BN + C_PacketFileName);
+  SendCustomXMLPacketRichEdit.Lines.SaveToFile(V_ProfilePath + C_Jabber + ' ' + C_PacketFileName);
   // Если пакет больше нуля и рабочая фаза icq подключения
   if NotProtoOnline(C_Jabber) then
     Exit;

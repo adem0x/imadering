@@ -6,6 +6,7 @@ object JabberOptionsForm: TJabberOptionsForm
   ClientHeight = 413
   ClientWidth = 597
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,7 +14,7 @@ object JabberOptionsForm: TJabberOptionsForm
   Font.Style = []
   HelpFile = 'T'
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate
   OnDblClick = FormDblClick
@@ -124,7 +125,7 @@ object JabberOptionsForm: TJabberOptionsForm
       Top = 3
       Width = 428
       Height = 356
-      ActivePage = JvStandardPage1
+      ActivePage = WorkPage
       PropagateEnable = False
       ShowDesignCaption = sdcNone
       Align = alClient
@@ -133,7 +134,6 @@ object JabberOptionsForm: TJabberOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AccountPage'
         object AccountGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -398,7 +398,6 @@ object JabberOptionsForm: TJabberOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ConnectPage'
         object ConnectionGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -529,49 +528,42 @@ object JabberOptionsForm: TJabberOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'OptionPage'
       end
       object AnketaPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AnketaPage'
       end
       object HomePage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'HomePage'
       end
       object WorkPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'WorkPage'
       end
       object PersonalPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'PersonalPage'
       end
       object AvatarPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'AvatarPage'
       end
       object ParamsPage: TJvStandardPage
         Left = 0
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ParamsPage'
         object ParamInfoGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -611,7 +603,6 @@ object JabberOptionsForm: TJabberOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'ConsolePage'
         object ConsoleGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -696,7 +687,6 @@ object JabberOptionsForm: TJabberOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'PassChangePage'
         object PassChangeGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -846,7 +836,6 @@ object JabberOptionsForm: TJabberOptionsForm
         Top = 0
         Width = 428
         Height = 356
-        Caption = 'Eye'
         object EyeGroupBox: TGroupBox
           Left = 0
           Top = 0
@@ -934,13 +923,6 @@ object JabberOptionsForm: TJabberOptionsForm
             ViewStyle = vsReport
           end
         end
-      end
-      object JvStandardPage1: TJvStandardPage
-        Left = 0
-        Top = 0
-        Width = 428
-        Height = 356
-        Caption = 'JvStandardPage1'
       end
     end
   end

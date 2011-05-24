@@ -196,17 +196,17 @@ begin
   // Добавляем стили для верхнего уровня
   AddHTML(TopHTMLViewer, HTMLStyle, EmptyStr, False, False, True);
   // Отображаем учётную запись контакта
-  AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + C_BN + ReqProto + C_TN + C_BN, C_cbold);
+  AddHTML(TopHTMLViewer, Lang_Vars[20].L_S + ' ' + ReqProto + ':' + ' ', C_cbold);
   AddHTML(TopHTMLViewer, ReqUIN, C_cdef, True);
   // Очищаем картинку гороскопа
   HoroImage.Picture.Assign(nil);
   // Загружаем аватар
   AvatarImage.Picture.Assign(nil);
-  AvatarFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_NoAvatarFileName;
+  AvatarFile := V_MyPath + C_IconsFolder + V_CurrentIcons + '\' + C_NoAvatarFileName;
   if FileExists(AvatarFile) then
     AvatarImage.Picture.LoadFromFile(AvatarFile);
   // Ищем локально файл с информацией
-  if FileExists(V_ProfilePath + C_AnketaFolder + ReqProto + C_BN + ReqUIN + C_XML_Ext) then
+  if FileExists(V_ProfilePath + C_AnketaFolder + ReqProto + ' ' + ReqUIN + C_XML_Ext) then
   begin
     // Инициализируем XML
     JvXML_Create(JvXML);
@@ -214,7 +214,7 @@ begin
       with JvXML do
       begin
         // Загружаем настройки
-        LoadFromFile(V_ProfilePath + C_AnketaFolder + ReqProto + C_BN + ReqUIN + C_XML_Ext);
+        LoadFromFile(V_ProfilePath + C_AnketaFolder + ReqProto + ' ' + ReqUIN + C_XML_Ext);
         if Root <> nil then
         begin
           // Открываем раздел с информацией
@@ -326,18 +326,18 @@ begin
         // Вставляем ник и имена
         if Nick <> EmptyStr then
         begin
-          AddHTML(TopHTMLViewer, Lang_Vars[128].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(TopHTMLViewer, Lang_Vars[128].L_S + ':' + ' ', C_cbold);
           AddHTML(TopHTMLViewer, Nick, C_cdef, True);
         end;
         if (First <> EmptyStr) or (Last <> EmptyStr) or (FullName <> EmptyStr) then
         begin
-          AddHTML(TopHTMLViewer, Lang_Vars[129].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(TopHTMLViewer, Lang_Vars[129].L_S + ':' + ' ', C_cbold);
           if Trim(FullName) <> EmptyStr then
             AddHTML(TopHTMLViewer, FullName, C_cdef)
           else
           begin
             if Trim(First) <> EmptyStr then
-              AddHTML(TopHTMLViewer, First + C_BN);
+              AddHTML(TopHTMLViewer, First + ' ');
             AddHTML(TopHTMLViewer, Last, C_cdef);
           end;
         end;
@@ -355,22 +355,22 @@ begin
       begin
         if Trim(Email0) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, C_Email + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, C_Email + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Format(C_HTML_Email, [Email0, Email0]), C_cmargin, True);
         end;
         if Trim(Email1) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, C_Email + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, C_Email + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Format(C_HTML_Email, [Email1, Email1]), C_cmargin, True);
         end;
         if Trim(Email2) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, C_Email + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, C_Email + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Format(C_HTML_Email, [Email2, Email2]), C_cmargin, True);
         end;
         if Trim(Email3) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, C_Email + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, C_Email + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Format(C_HTML_Email, [Email3, Email3]), C_cmargin, True);
         end;
         // Вставляем разделитель
@@ -391,7 +391,7 @@ begin
       if ReqProto = C_Icq then
       begin
         if Assigned(IcqOptionsForm) then
-          Country := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + Country + C_EN];
+          Country := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + Country + ']'];
         CountryFlag := GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr);
       end
       else if ReqProto = C_Jabber then
@@ -404,9 +404,9 @@ begin
       end;
       if IsNotNull([Country, City]) then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[132].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[132].L_S + ':' + ' ', C_cbold);
         if (Country <> EmptyStr) and (CountryFlag <> EmptyStr) then
-          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [CountryFlag]) + StrArrayToStr([Country, City]), C_cdef, True)
+          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + ' ', [CountryFlag]) + StrArrayToStr([Country, City]), C_cdef, True)
         else
           AddHTML(BottomHTMLViewer, StrArrayToStr([Country, City]), C_cdef, True);
       end;
@@ -414,17 +414,17 @@ begin
       begin
         if Trim(Address) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[134].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[134].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Address, C_cdef, True);
         end;
         if Trim(State) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, State, C_cdef, True);
         end;
         if Trim(Zip) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[136].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[136].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Zip, C_cdef, True);
         end;
       end;
@@ -443,13 +443,13 @@ begin
       Gender := XML_Node.Properties.Value(C_Gender);
       if Gender = '1' then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[130].L_S + C_TN + C_BN, C_cbold);
-        AddHTML(BottomHTMLViewer, Lang_Vars[51].L_S + C_BN + Format(C_HTML_Female, [V_CurrentIcons]), C_cdef, True);
+        AddHTML(BottomHTMLViewer, Lang_Vars[130].L_S + ':' + ' ', C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[51].L_S + ' ' + Format(C_HTML_Female, [V_CurrentIcons]), C_cdef, True);
       end
       else if Gender = '2' then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[130].L_S + C_TN + C_BN, C_cbold);
-        AddHTML(BottomHTMLViewer, Lang_Vars[50].L_S + C_BN + Format(C_HTML_Male, [V_CurrentIcons]), C_cdef, True);
+        AddHTML(BottomHTMLViewer, Lang_Vars[130].L_S + ':' + ' ', C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[50].L_S + ' ' + Format(C_HTML_Male, [V_CurrentIcons]), C_cdef, True);
       end;
     end;
     // Дата рождения
@@ -466,12 +466,12 @@ begin
       IYear := XML_Node.Properties.Value(C_Year);
       if (Age <> '0') and (Age <> EmptyStr) then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[131].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[131].L_S + ':' + ' ', C_cbold);
         AddHTML(BottomHTMLViewer, Age, C_cdef, True);
       end;
       if (IDay <> '0') and (IMonth <> '0') and (IYear <> '0') then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[133].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[133].L_S + ':' + ' ', C_cbold);
         AddHTML(BottomHTMLViewer, IDay + '.' + IMonth + '.' + IYear, C_cdef, True);
       end;
       // Вставляем разделитель
@@ -488,7 +488,7 @@ begin
       if ReqProto = C_Icq then
       begin
         if Assigned(IcqOptionsForm) then
-          OCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + OCountry + C_EN];
+          OCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + OCountry + ']'];
         CountryFlag := GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr);
       end
       else if ReqProto = C_Jabber then
@@ -503,15 +503,15 @@ begin
       OState := URLDecode(XML_Node.Properties.Value(C_State));
       if IsNotNull([OCountry, OCity]) then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[137].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[137].L_S + ':' + ' ', C_cbold);
         if (OCountry <> EmptyStr) and (CountryFlag <> EmptyStr) then
-          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [CountryFlag]) + StrArrayToStr([OCountry, OCity]), C_cdef, True)
+          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + ' ', [CountryFlag]) + StrArrayToStr([OCountry, OCity]), C_cdef, True)
         else
           AddHTML(BottomHTMLViewer, StrArrayToStr([OCountry, OCity]), C_cdef, True);
       end;
       if Trim(OState) <> EmptyStr then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + ':' + ' ', C_cbold);
         AddHTML(BottomHTMLViewer, OState, C_cdef, True);
       end;
       // Вставляем разделитель
@@ -537,7 +537,7 @@ begin
       if ReqProto = C_Icq then
       begin
         if Assigned(IcqOptionsForm) then
-          WCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values[C_QN + WCountry + C_EN];
+          WCountry := IcqOptionsForm.CountryInfoComboBox.Items.Values['[' + WCountry + ']'];
         CountryFlag := GetFlagFile(V_MyPath + C_FlagsFolder, XML_Node.Properties.Value(C_Country), EmptyStr);
       end
       else if ReqProto = C_Jabber then
@@ -550,12 +550,12 @@ begin
       end;
       // Получаем текст занятия из кода
       if Assigned(IcqOptionsForm) then
-        Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Values[C_QN + Occupation + C_EN];
+        Occupation := IcqOptionsForm.CompanyProfInfoComboBox.Items.Values['[' + Occupation + ']'];
       if IsNotNull([WCountry, WCity]) then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[138].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[138].L_S + ':' + ' ', C_cbold);
         if (WCountry <> EmptyStr) and (CountryFlag <> EmptyStr) then
-          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + C_BN, [CountryFlag]) + StrArrayToStr([WCountry, WCity]), C_cdef, True)
+          AddHTML(BottomHTMLViewer, Format(C_HTML_Flags + ' ', [CountryFlag]) + StrArrayToStr([WCountry, WCity]), C_cdef, True)
         else
           AddHTML(BottomHTMLViewer, StrArrayToStr([WCountry, WCity]), C_cdef, True);
       end;
@@ -563,17 +563,17 @@ begin
       begin
         if Trim(WAddress) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[134].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[134].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, WAddress, C_cdef, True);
         end;
         if Trim(WState) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[135].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, WState, C_cdef, True);
         end;
         if Trim(WZip) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[136].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[136].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, WZip, C_cdef, True);
         end;
       end;
@@ -581,28 +581,28 @@ begin
       begin
         if Trim(Company) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[139].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[139].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Company, C_cdef, True);
         end;
         if Trim(Department) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[140].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[140].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Department, C_cdef, True);
         end;
         if Trim(Position) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[141].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[141].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Position, C_cdef, True);
         end;
         if Trim(Occupation) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[142].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[142].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Occupation, C_cdef, True);
         end;
         if Trim(WSite) <> EmptyStr then
         begin
           DecorateURL(WSite);
-          AddHTML(BottomHTMLViewer, Lang_Vars[143].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[143].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, WSite, C_cdef, True);
         end;
       end;
@@ -623,27 +623,27 @@ begin
       begin
         if Trim(Phone) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[144].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[144].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Phone, C_cdef, True);
         end;
         if Trim(Fax) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[145].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[145].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Fax, C_cdef, True);
         end;
         if Trim(Cellular) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[146].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[146].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Cellular, C_cdef, True);
         end;
         if Trim(WPhone) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[147].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[147].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, WPhone, C_cdef, True);
         end;
         if Trim(WFax) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[148].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[148].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, WFax, C_cdef, True);
         end;
         // Вставляем разделитель
@@ -654,10 +654,10 @@ begin
     XML_Node := Info_Node.Items.ItemNamed[C_IntInfo];
     if XML_Node <> nil then
     begin
-      Int1 := URLDecode(XML_Node.Properties.Value(C_CS + '1'));
-      Int2 := URLDecode(XML_Node.Properties.Value(C_CS + '2'));
-      Int3 := URLDecode(XML_Node.Properties.Value(C_CS + '3'));
-      Int4 := URLDecode(XML_Node.Properties.Value(C_CS + '4'));
+      Int1 := URLDecode(XML_Node.Properties.Value('c' + '1'));
+      Int2 := URLDecode(XML_Node.Properties.Value('c' + '2'));
+      Int3 := URLDecode(XML_Node.Properties.Value('c' + '3'));
+      Int4 := URLDecode(XML_Node.Properties.Value('c' + '4'));
     end;
     XML_Node := Info_Node.Items.ItemNamed[C_IntIdInfo];
     if XML_Node <> nil then
@@ -671,38 +671,38 @@ begin
       begin
         with IcqOptionsForm do
         begin
-          I1 := Interest1InfoComboBox.Items.Values[C_QN + I1 + C_EN];
-          I2 := Interest1InfoComboBox.Items.Values[C_QN + I2 + C_EN];
-          I3 := Interest1InfoComboBox.Items.Values[C_QN + I3 + C_EN];
-          I4 := Interest1InfoComboBox.Items.Values[C_QN + I4 + C_EN];
+          I1 := Interest1InfoComboBox.Items.Values['[' + I1 + ']'];
+          I2 := Interest1InfoComboBox.Items.Values['[' + I2 + ']'];
+          I3 := Interest1InfoComboBox.Items.Values['[' + I3 + ']'];
+          I4 := Interest1InfoComboBox.Items.Values['[' + I4 + ']'];
         end;
       end;
       // Формируем отображение интересов
       if IsNotNull([I1, I2, I3, I4, Int1, Int2, Int3, Int4]) then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[149].L_S + C_TN + C_BN, C_cbold, True);
+        AddHTML(BottomHTMLViewer, Lang_Vars[149].L_S + ':' + ' ', C_cbold, True);
         if (Trim(I1) <> EmptyStr) or (Trim(Int1) <> EmptyStr) then
         begin
           AddHTML(BottomHTMLViewer, C_nbsp + C_nbsp);
-          AddHTML(BottomHTMLViewer, I1 + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, I1 + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Int1, C_cdef, True);
         end;
         if (Trim(I2) <> EmptyStr) or (Trim(Int2) <> EmptyStr) then
         begin
           AddHTML(BottomHTMLViewer, C_nbsp + C_nbsp);
-          AddHTML(BottomHTMLViewer, I2 + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, I2 + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Int2, C_cdef, True);
         end;
         if (Trim(I3) <> EmptyStr) or (Trim(Int3) <> EmptyStr) then
         begin
           AddHTML(BottomHTMLViewer, C_nbsp + C_nbsp);
-          AddHTML(BottomHTMLViewer, I3 + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, I3 + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Int3, C_cdef, True);
         end;
         if (Trim(I4) <> EmptyStr) or (Trim(Int4) <> EmptyStr) then
         begin
           AddHTML(BottomHTMLViewer, C_nbsp + C_nbsp);
-          AddHTML(BottomHTMLViewer, I4 + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, I4 + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Int4, C_cdef, True);
         end;
         // Вставляем разделитель
@@ -725,13 +725,13 @@ begin
       begin
         with IcqOptionsForm do
         begin
-          Marital := PersonalMaritalInfoComboBox.Items.Values[C_QN + Marital + C_EN];
-          Sexual := PersonalSexInfoComboBox.Items.Values[C_QN + Sexual + C_EN];
-          Relig := PersonalReligionInfoComboBox.Items.Values[C_QN + Relig + C_EN];
-          Smok := PersonalSmokInfoComboBox.Items.Values[C_QN + Smok + C_EN];
-          Hair := PersonalHairColourInfoComboBox.Items.Values[C_QN + Hair + C_EN];
-          XHeight := PersonalHeightInfoComboBox.Items.Values[C_QN + XHeight + C_EN];
-          Children := PersonalChildrenInfoComboBox.Items.Values[C_QN + Children + C_EN];
+          Marital := PersonalMaritalInfoComboBox.Items.Values['[' + Marital + ']'];
+          Sexual := PersonalSexInfoComboBox.Items.Values['[' + Sexual + ']'];
+          Relig := PersonalReligionInfoComboBox.Items.Values['[' + Relig + ']'];
+          Smok := PersonalSmokInfoComboBox.Items.Values['[' + Smok + ']'];
+          Hair := PersonalHairColourInfoComboBox.Items.Values['[' + Hair + ']'];
+          XHeight := PersonalHeightInfoComboBox.Items.Values['[' + XHeight + ']'];
+          Children := PersonalChildrenInfoComboBox.Items.Values['[' + Children + ']'];
         end;
       end;
       // Формируем отображение
@@ -739,37 +739,37 @@ begin
       begin
         if Trim(Marital) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[153].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[153].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Marital, C_cdef, True);
         end;
         if Trim(Sexual) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[154].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[154].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Sexual, C_cdef, True);
         end;
         if Trim(XHeight) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[155].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[155].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, XHeight, C_cdef, True);
         end;
         if Trim(Relig) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[156].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[156].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Relig, C_cdef, True);
         end;
         if Trim(Smok) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[157].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[157].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Smok, C_cdef, True);
         end;
         if Trim(Hair) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[158].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[158].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Hair, C_cdef, True);
         end;
         if Trim(Children) <> EmptyStr then
         begin
-          AddHTML(BottomHTMLViewer, Lang_Vars[159].L_S + C_TN + C_BN, C_cbold);
+          AddHTML(BottomHTMLViewer, Lang_Vars[159].L_S + ':' + ' ', C_cbold);
           AddHTML(BottomHTMLViewer, Children, C_cdef, True);
         end;
         // Вставляем разделитель
@@ -789,15 +789,15 @@ begin
       begin
         with IcqOptionsForm do
         begin
-          Lang1 := Lang1InfoComboBox.Items.Values[C_QN + Lang1 + C_EN];
-          Lang2 := Lang1InfoComboBox.Items.Values[C_QN + Lang2 + C_EN];
-          Lang3 := Lang1InfoComboBox.Items.Values[C_QN + Lang3 + C_EN];
+          Lang1 := Lang1InfoComboBox.Items.Values['[' + Lang1 + ']'];
+          Lang2 := Lang1InfoComboBox.Items.Values['[' + Lang2 + ']'];
+          Lang3 := Lang1InfoComboBox.Items.Values['[' + Lang3 + ']'];
         end;
       end;
       // Формируем отображение языков
       if IsNotNull([Lang1, Lang2, Lang3]) then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[152].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[152].L_S + ':' + ' ', C_cbold);
         AddHTML(BottomHTMLViewer, StrArrayToStr([Lang1, Lang2, Lang3]), C_cdef, True);
         // Вставляем разделитель
         AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
@@ -810,7 +810,7 @@ begin
       About := URLDecode(XML_Node.Value);
       if Trim(About) <> EmptyStr then
       begin
-        AddHTML(BottomHTMLViewer, Lang_Vars[150].L_S + C_TN + C_BN, C_cbold);
+        AddHTML(BottomHTMLViewer, Lang_Vars[150].L_S + ':' + ' ', C_cbold);
         AddHTML(BottomHTMLViewer, About, C_cdef, True);
         // Вставляем разделитель
         AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
@@ -820,7 +820,7 @@ begin
     if Trim(HomePage) <> EmptyStr then
     begin
       DecorateURL(HomePage);
-      AddHTML(BottomHTMLViewer, Lang_Vars[151].L_S + C_TN + C_BN, C_cbold);
+      AddHTML(BottomHTMLViewer, Lang_Vars[151].L_S + ':' + ' ', C_cbold);
       AddHTML(BottomHTMLViewer, HomePage, C_cmargin, True);
       // Вставляем разделитель
       AddHTML(BottomHTMLViewer, C_HR, EmptyStr, False, True);
@@ -828,14 +828,14 @@ begin
     // Дата последнего обновления, дополнительные данные
     if Trim(LastUpdateInfo) <> EmptyStr then
     begin
-      AddHTML(BottomHTMLViewer, Lang_Vars[160].L_S + C_TN + C_BN, C_cbold);
+      AddHTML(BottomHTMLViewer, Lang_Vars[160].L_S + ':' + ' ', C_cbold);
       AddHTML(BottomHTMLViewer, LastUpdateInfo, C_cdef, True);
     end;
     // Вычисляем знак гороскопа
     if ((IDay <> '00') and (IMonth <> '00')) and ((IDay <> '0') and (IMonth <> '0')) and ((IDay <> EmptyStr) and (IMonth <> EmptyStr)) then
     begin
       // Загружаем картинку гороскопа
-      HoroImg := V_MyPath + C_IconsFolder + V_CurrentIcons + C_SN + 'horoscope1' + C_BMP_Ext;
+      HoroImg := V_MyPath + C_IconsFolder + V_CurrentIcons + '\' + 'horoscope1' + C_BMP_Ext;
       if FileExists(HoroImg) then
         HoroImage.Picture.LoadFromFile(HoroImg);
       // Прокручиваем на картинку этого знака
@@ -845,17 +845,17 @@ begin
   // Загружаем аватар
   try
     // JPG
-    if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_JPG_Ext) then
-      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_JPG_Ext)
+    if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_JPG_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_JPG_Ext)
         // GIF
-    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_GIF_Ext) then
-      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_GIF_Ext)
+    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_GIF_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_GIF_Ext)
         // BMP
-    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_BMP_Ext) then
-      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_BMP_Ext)
+    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_BMP_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_BMP_Ext)
         // PNG
-    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_PNG_Ext) then
-      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + C_BN + ReqUIN + C_PNG_Ext);
+    else if FileExists(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_PNG_Ext) then
+      AvatarImage.Picture.LoadFromFile(V_ProfilePath + C_AvatarFolder + ReqProto + ' ' + ReqUIN + C_PNG_Ext);
   except
   end;
   {else
@@ -963,6 +963,8 @@ begin
   // Помещаем кнопку формы в таскбар и делаем независимой
   SetWindowLong(Handle, GWL_HWNDPARENT, 0);
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_APPWINDOW);
+  // Исправляем глюк со скролом в Win 7
+  BottomHTMLViewer.VScrollBar.DoubleBuffered := False;
 end;
 
 {$ENDREGION}

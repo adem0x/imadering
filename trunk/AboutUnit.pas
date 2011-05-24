@@ -105,7 +105,6 @@ uses
 {$REGION 'MyConst'}
 
 const
-  C_InfoAbout = 'About';
   C_InfoDev = 'Devels';
 
 {$ENDREGION}
@@ -123,6 +122,8 @@ begin
   // CreateLang(Self);
   // Применяем язык
   SetLang(Self);
+  // Другое
+  AboutRichEdit.Lines.Text := EmptyStr;
   // Инициализируем XML
   JvXML_Create(JvXML);
   try
@@ -139,9 +140,9 @@ begin
           XML_Node := Root.Items.ItemNamed[C_Infos];
           if XML_Node <> nil then
           begin
-            XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[C_InfoAbout];
+            XML_Node := Root.Items.ItemNamed[C_Infos].Items.ItemNamed[AboutRichEdit.Name];
             if XML_Node <> nil then
-              AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value(C_CS));
+              AboutRichEdit.Lines.Text := CheckText_RN(XML_Node.Properties.Value('c'));
           end;
           // Загружаем список разработчиков
           XML_Node := Root.Items.ItemNamed[C_InfoDev];
@@ -151,9 +152,9 @@ begin
           // Загружаем строки в массив
           for I := 0 to Length(AboutList) - 1 do
           begin
-            XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed[C_CS + IntToStr(I)];
+            XML_Node := Root.Items.ItemNamed[C_InfoDev].Items.ItemNamed['c' + IntToStr(I)];
             if XML_Node <> nil then
-              AboutList[I] := XML_Node.Properties.Value(C_CS);
+              AboutList[I] := XML_Node.Properties.Value('c');
           end;
         end;
       end;
@@ -233,7 +234,7 @@ end;
 procedure TAboutForm.ForumBitBtnClick(Sender: TObject);
 begin
   // Поддержим проект
-  OpenURL('http://imadering.mybb.ru');
+  OpenURL(C_SitePage);
 end;
 
 procedure TAboutForm.CopyRichTextClick(Sender: TObject);
@@ -245,7 +246,7 @@ end;
 procedure TAboutForm.EmailBitBtnClick(Sender: TObject);
 begin
   // Открываем форму отправки письма
-  OpenURL(C_MailTo + Format(C_MailText, [C_IMadering, C_IMadering + C_BN + WideLowerCase(VersionLabel.Caption) + C_MN]));
+  OpenURL(C_MailTo + Format(C_MailText, [C_IMadering, C_IMadering + ' ' + WideLowerCase(VersionLabel.Caption) + C_MN]));
 end;
 
 procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -271,7 +272,7 @@ begin
   // Переводим форму на другие языки
   TranslateForm;
   // Загружаем логотип программы
-  LogoFile := V_MyPath + C_IconsFolder + V_CurrentIcons + C_NoAvatarFileName;
+  LogoFile := V_MyPath + C_IconsFolder + V_CurrentIcons + '\' + C_NoAvatarFileName;
   if FileExists(LogoFile) then
     LogoImage.Picture.LoadFromFile(LogoFile);
   LogoFile := V_MyPath + C_FlagsFolder + GetFlagFile(V_MyPath + C_FlagsFolder, EmptyStr, 'ru');
@@ -283,7 +284,7 @@ begin
   // Сведения о версии программы
   VersionLabel.Caption := Format(Lang_Vars[4].L_S, [V_FullVersion]);
   // Получаем дату компиляци файла
-  DataLabel.Caption := Lang_Vars[166].L_S + C_TN + C_BN + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
+  DataLabel.Caption := Lang_Vars[166].L_S + ':' + ' ' + DateToStr(GetFileDateTime(V_MyPath + C_ExeName));
   // Присваиваем начальное значение длинны списка титров
   AboutLen := 0;
   // Стартуем показ титров

@@ -89,7 +89,7 @@ begin
         if XML_Node <> nil then
         begin
           // Открываем раздел групп
-          Sub_Node := XML_Node.Items.ItemNamed[C_Group + C_SS];
+          Sub_Node := XML_Node.Items.ItemNamed[C_Group + 's'];
           if Sub_Node <> nil then
           begin
             if GProto = C_Icq then // Список для ICQ
@@ -103,7 +103,7 @@ begin
                   if GId <> EmptyStr then
                   begin
                     if (GId <> '0000') and (GId <> C_NoCL) and (GId <> '0001') then
-                      GroupComboBox.Items.Add(UrlDecode(Tri_Node.Properties.Value(C_Name)) + C_BN + C_QN + Tri_Node.Properties.Value(C_Id) + C_EN);
+                      GroupComboBox.Items.Add(UrlDecode(Tri_Node.Properties.Value(C_Name)) + ' ' + '[' + Tri_Node.Properties.Value(C_Id) + ']');
                   end;
                 end;
               end;
@@ -125,7 +125,7 @@ begin
                 end;
               end;
               // Смотрим группы в разделе контактов
-              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + C_SS];
+              Sub_Node := XML_Node.Items.ItemNamed[C_Contact + 's'];
               if Sub_Node <> nil then
               begin
                 for Z := 0 to Sub_Node.Items.Count - 1 do
@@ -163,7 +163,7 @@ begin
       begin
         for Z := 0 to GroupComboBox.Items.Count - 1 do
         begin
-          if IsolateTextString(GroupComboBox.Items.Strings[Z], C_QN, C_EN) = xId then
+          if IsolateTextString(GroupComboBox.Items.Strings[Z], '[', ']') = xId then
             GroupComboBox.ItemIndex := Z;
         end;
       end
@@ -221,10 +221,10 @@ begin
       if Trim(NameEdit.Text) = EmptyStr then
         NameEdit.Text := AccountEdit.Text;
       // Ищем такой контакт в Ростере
-      Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Login, UrlEncode(AccountEdit.Text));
+      Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Login, UrlEncode(AccountEdit.Text));
       if Get_Node <> nil then
       begin
-        DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[103].L_S, EmptyStr, 133, 0, 0);
+        DAShow(Lang_Vars[19].L_S + ' ' + C_Icq, Lang_Vars[103].L_S, EmptyStr, 133, 0, 0);
         Exit;
       end
       else
@@ -232,7 +232,7 @@ begin
         // Если фаза добавления контакта ещё активна, то ждём её окончания
         if ICQ_SSI_Phaze then
         begin
-          DAShow(Lang_Vars[19].L_S + C_BN + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
+          DAShow(Lang_Vars[19].L_S + ' ' + C_Icq, Lang_Vars[104].L_S, EmptyStr, 134, 2, 0);
           Exit;
         end;
         // Если группа не выбрана
@@ -246,17 +246,17 @@ begin
         Randomize;
         NewId := IntToHex(Random($7FFF), 4);
         // Ищем нет ли уже такого идентификатора в списке контактов
-        Get_Node := RosterGetItem(C_Icq, C_Contact + C_SS, C_Id, NewId);
+        Get_Node := RosterGetItem(C_Icq, C_Contact + 's', C_Id, NewId);
         if Get_Node <> nil then
           goto X;
         // Получаем идентификатор выбранной группы
-        GId := IsolateTextString(GroupComboBox.Text, C_QN, C_EN);
+        GId := IsolateTextString(GroupComboBox.Text, '[', ']');
         // Открываем сессию и добавляем контакт
         if (NewId <> EmptyStr) and (GId <> EmptyStr) then
         begin
           ICQ_SSI_Phaze := True;
           ICQ_Add_Contact_Phaze := True;
-          ICQ_Add_Group_Name := Trim(Parse(C_QN, GroupComboBox.Text, 1));
+          ICQ_Add_Group_Name := Trim(Parse('[', GroupComboBox.Text, 1));
           ICQ_AddContact(AccountEdit.Text, GId, NewId, NameEdit.Text, False);
         end;
       end;
@@ -274,10 +274,10 @@ begin
       if Trim(NameEdit.Text) = EmptyStr then
         NameEdit.Text := AccountEdit.Text;
       // Ищем такой контакт в Ростере
-      Get_Node := RosterGetItem(C_Jabber, C_Contact + C_SS, C_Login, UrlEncode(AccountEdit.Text));
+      Get_Node := RosterGetItem(C_Jabber, C_Contact + 's', C_Login, UrlEncode(AccountEdit.Text));
       if Get_Node <> nil then
       begin
-        DAShow(Lang_Vars[19].L_S + C_BN + C_Jabber, Lang_Vars[103].L_S, EmptyStr, 133, 0, 0);
+        DAShow(Lang_Vars[19].L_S + ' ' + C_Jabber, Lang_Vars[103].L_S, EmptyStr, 133, 0, 0);
         Exit;
       end
       else
@@ -334,7 +334,7 @@ begin
   if (AccountEdit.CanFocus) and (AccountEdit.Text = EmptyStr) then
     AccountEdit.SetFocus;
   // Подставляем название протокола в заголовок
-  Caption := Caption + C_BN + ContactType;
+  Caption := Caption + ' ' + ContactType;
 end;
 
 {$ENDREGION}
