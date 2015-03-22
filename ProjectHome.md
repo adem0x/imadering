@@ -1,0 +1,1 @@
+## IMadering talk protocols client for: ICQ, Jabber, MRA, Twitter, Bimoid ##
